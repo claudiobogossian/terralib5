@@ -157,7 +157,15 @@ namespace te
           \param property
           \return true if contained, false otherwise
         */
-        virtual bool contains(Property property);
+        virtual bool contains(Property property) const;
+
+        /*!
+          \brief Checks if the property is contained within the set of properties.
+
+          \param propertyName
+          \return true if contained, false otherwise
+        */
+        virtual bool contains( const std::string& propertyName ) const;
 
         /*!
           \brief Checks if the name is contained within the set of properties.
@@ -290,7 +298,7 @@ namespace te
       m_typeObj = type;
     }
 
-    inline bool Properties::contains( Property property )
+    inline bool Properties::contains( Property property ) const
     {
       bool is_present = false;
       
@@ -300,6 +308,13 @@ namespace te
       }
 
       return is_present;
+    }
+
+    inline bool Properties::contains( const std::string& propertyName ) const
+    {
+      Property property(0);
+      property.setName(propertyName);
+      return contains(property);
     }
 
     inline const te::layout::Property& Properties::getProperty( const std::string& name ) const

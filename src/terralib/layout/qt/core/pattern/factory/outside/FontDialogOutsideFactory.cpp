@@ -18,24 +18,35 @@
  */
 
 /*!
-  \file SystematicScaleModel.h
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/outside/ColorDialogOutsideFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for arrow item.
 */
 
 // TerraLib
-#include "SystematicScaleController.h"
+#include "FontDialogOutsideFactory.h"
+#include "../../../../../outside/FontDialogModel.h"
+#include "../../../../../core/pattern/mvc/AbstractOutsideController.h"
 
-te::layout::SystematicScaleController::SystematicScaleController(AbstractOutsideModel* o) :
-  AbstractOutsideController(o)
+te::layout::AbstractOutsideView* te::layout::FontDialogOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
-  
+  FontDialogModel* model = new FontDialogModel();
+
+  AbstractOutsideController* controller = new AbstractOutsideController(model);
+  AbstractOutsideView* view = controller->getView();
+
+  return dynamic_cast<AbstractOutsideView*>(view);
 }
 
-te::layout::SystematicScaleController::~SystematicScaleController()
+te::layout::FontDialogOutsideFactory::FontDialogOutsideFactory() :
+  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getFontDialog()->getName())
 {
 
 }
+
+te::layout::FontDialogOutsideFactory::~FontDialogOutsideFactory()
+{
+
+}
+
 

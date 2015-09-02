@@ -43,7 +43,7 @@ namespace te
 {
   namespace layout
   {
-    class AbstractItemModel;
+    class Scene;
   /*!
   \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
     An object of a type is created from a coordinated. Also an object of a type can be built from the properties saved in a template.
@@ -62,7 +62,7 @@ namespace te
     /*!
           \brief Constructor
         */
-        BuildGraphicsItem();
+        BuildGraphicsItem(Scene* scene = 0);
 
     /*!
           \brief Destructor
@@ -99,19 +99,10 @@ namespace te
         */
         QGraphicsItem* createItem(te::layout::EnumType* itemType, bool draw = true);
 
-        /*!
-          \brief Checks whether the coordinated intersects an item and adds a child. 
-          Checks ItemModelObservable::isEnableChildren().
-
-          \param x axis x coordinate
-          \param y axis y coordinate
-        */
-        virtual bool addChild(QGraphicsItem* child, int x, int y);
-
       signals:
 
         void addChildFinalized(QGraphicsItem* parent, QGraphicsItem* child);
-
+        
       protected:
     
         /*!
@@ -132,182 +123,9 @@ namespace te
         */
         virtual void afterBuild(QGraphicsItem* item, bool draw = true);
 
-        virtual void setProperties(AbstractItemModel* model);
+      protected:
 
-        /*!
-          \brief Create graphic object of type PaperItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createPaper();
-
-        /*!
-          \brief Create graphic object of type MapItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createMap();
-            
-        /*!
-          \brief Create graphic object of type GridMapItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createGridMap();
-
-        /*!
-          \brief Create graphic object of type TextItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createText();
-    
-        /*!
-          \brief Create graphic object of type RectangleItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createRectangle();
-
-        /*!
-          \brief Create graphic object of type LegendItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createLegend();
-    
-        /*!
-          \brief Create graphic object of type ScaleItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createScale();
-    
-        /*!
-          \brief Create graphic object of type ItemGroup
-            
-          \return new object 
-        */
-        QGraphicsItem* createItemGroup();
-
-        /*!
-          \brief Create graphic object of type MovingItemGroup
-            
-          \return new object 
-        */
-        QGraphicsItem* createMovingItemGroup();
-
-        /*!
-          \brief Create graphic object of type ImageItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createImage();  
-    
-        /*!
-          \brief Create graphic object of type ArrowItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createArrow();
-    
-        /*!
-          \brief Create graphic object of type EllipseItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createEllipse();
-    
-        /*!
-          \brief Create graphic object of type PointItem
-            
-          \return new object 
-        */        
-        QGraphicsItem* createPoint();
-
-        /*!
-          \brief Create graphic object of type TextGridItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createTextGrid();
-    
-        /*!
-          \brief Create graphic object of type TitleItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createTitle();
-    
-        /*!
-          \brief Create graphic object of type LegendChildItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createLegendChild();
-
-        /*!
-          \brief Create graphic object of type LineItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createLineItem();
-
-       /*!
-          \brief Create graphic object of type PolygonItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createPolygonItem();
-
-        /*!
-          \brief Create graphic object of type SVGItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createSVG();
-       /*!
-          \brief Create graphic object of type Balloon
-            
-          \return new object 
-        */
-
-        QGraphicsItem* createBalloon();
-        
-        /*!
-          \brief Create graphic object of type BarCode
-            
-          \return new object 
-        */
-        QGraphicsItem* createBarCode();
-
-        /*!
-          \brief Create graphic object of type GridPlanarItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createGridPlanar();
-
-        /*!
-          \brief Create graphic object of type GridGeodesicItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createGridGeodesic();
-
-        /*!
-          \brief Create graphic object of type NorthItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createNorth();
-
-        /*!
-          \brief Create graphic object of type MapLocationItem
-            
-          \return new object 
-        */
-        QGraphicsItem* createMapLocation();
+        Scene*      m_scene;
     };
   }
 }

@@ -18,23 +18,35 @@
  */
 
 /*!
-  \file PageSetupController.h
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/outside/PropertiesOutsideFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for arrow item.
 */
 
 // TerraLib
-#include "PageSetupController.h"
+#include "PropertiesOutsideFactory.h"
+#include "../../../../../outside/PropertiesModel.h"
+#include "../../../../../outside/PropertiesController.h"
 
-te::layout::PageSetupController::PageSetupController(AbstractOutsideModel* o) :
-  AbstractOutsideController(o)
+te::layout::AbstractOutsideView* te::layout::PropertiesOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
-  
+  PropertiesModel* model = new PropertiesModel();
+
+  PropertiesController* controller = new PropertiesController(model);
+  AbstractOutsideView* view = controller->getView();
+
+  return dynamic_cast<AbstractOutsideView*>(view);
 }
 
-te::layout::PageSetupController::~PageSetupController()
+te::layout::PropertiesOutsideFactory::PropertiesOutsideFactory() :
+  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getPropertiesWindow()->getName())
 {
 
 }
+
+te::layout::PropertiesOutsideFactory::~PropertiesOutsideFactory()
+{
+
+}
+
+

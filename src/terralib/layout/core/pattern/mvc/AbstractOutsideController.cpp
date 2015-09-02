@@ -64,12 +64,12 @@ te::layout::AbstractOutsideController::~AbstractOutsideController()
   }
 }
 
-const te::layout::AbstractOutsideModel* te::layout::AbstractOutsideController::getModel()
+te::layout::AbstractOutsideModel* te::layout::AbstractOutsideController::getModel() const
 {
   return m_model;
 }
 
-const te::layout::AbstractOutsideView* te::layout::AbstractOutsideController::getView()
+te::layout::AbstractOutsideView* te::layout::AbstractOutsideController::getView() const
 {
   return m_view;
 }

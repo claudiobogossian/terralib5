@@ -83,14 +83,14 @@ namespace te
 
           \return model
        */
-      const AbstractOutsideModel* getModel();
+      AbstractOutsideModel* getModel() const;
 
       /*!
           \brief Returns the "View" part of the MVC widget.
 
           \return view 
        */
-      const AbstractOutsideView* getView();
+      AbstractOutsideView* getView() const;
 
       virtual void update(const Subject* subject) override;
 

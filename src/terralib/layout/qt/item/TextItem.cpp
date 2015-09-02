@@ -43,10 +43,10 @@
 #include <QStyleOptionGraphicsItem>
 #include <QTextOption>
 #include <QGraphicsSceneMouseEvent>
+#include <QKeyEvent>
 
 te::layout::TextItem::TextItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
   : AbstractItem<QGraphicsTextItem>(controller, model, true)
-  , m_isInEdition(false)
 {  
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(false);
@@ -89,7 +89,7 @@ QVariant te::layout::TextItem::itemChange ( QGraphicsItem::GraphicsItemChange ch
   }
   else if(change == QGraphicsItem::ItemSelectedHasChanged)
   {
-    if(m_isInEdition && isSelected() == false)
+    if(m_isEditionMode && isSelected() == false)
     {
       leaveEditionMode();
     }
@@ -101,7 +101,7 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
 {
   if(event->button() == Qt::LeftButton)
   {
-    if(m_isInEdition == false)
+    if(m_isEditionMode == true)
     {
       enterEditionMode();
     }
@@ -112,29 +112,20 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
   }
 }
 
-QRectF te::layout::TextItem::boundingRect() const
+void te::layout::TextItem::keyPressEvent(QKeyEvent * event)
 {
-  //if(m_isInEdition == true)
-  if(true)
-  {
-    //when we are editing the item, we let the item handle the changes in the bounding box
-    QRectF rect = QGraphicsTextItem::boundingRect();
-    return QGraphicsTextItem::boundingRect();
-  }
-  else
-  {
-    return AbstractItem<QGraphicsTextItem>::boundingRect();
-  }
+  QGraphicsTextItem::keyPressEvent(event);
 }
 
+QRectF te::layout::TextItem::boundingRect() const
+{
+  //when we are editing the item, we let the item handle the changes in the bounding box
+  QRectF rect = QGraphicsTextItem::boundingRect();
+  return QGraphicsTextItem::boundingRect();
+}
 
 void te::layout::TextItem::enterEditionMode()
 {
-  if(m_isInEdition == true)
-  {
-    return;
-  }
-
   //If enabled is true, this item will accept hover events
   setTextInteractionFlags(Qt::TextEditorInteraction);
   setCursor(Qt::IBeamCursor);
@@ -142,17 +133,10 @@ void te::layout::TextItem::enterEditionMode()
   cursor.clearSelection();
   setTextCursor(cursor);
   setFocus();
-
-  m_isInEdition = true;
 }
 
 void te::layout::TextItem::leaveEditionMode()
 {
-  if(m_isInEdition == false)
-  {
-    return;
-  }
-
   //Necessary clear the selection and focus of the edit 
   //after being completely closed and like this not cause bad behavior.
   QTextCursor cursor(textCursor());
@@ -167,7 +151,6 @@ void te::layout::TextItem::leaveEditionMode()
   {
     controller->textChanged();
   }
-  m_isInEdition = false;
 }
 
 void te::layout::TextItem::updateGeometry( int position, int charsRemoved, int charsAdded )

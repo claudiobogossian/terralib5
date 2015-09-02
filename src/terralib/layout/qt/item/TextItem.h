@@ -38,6 +38,8 @@
 // Qt
 #include <QGraphicsTextItem>
 
+class QKeyEvent;
+
 namespace te
 {
   namespace layout
@@ -95,6 +97,11 @@ namespace te
         virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
+        \brief Reimplemented from QGraphicsTextItem
+        */
+        virtual void keyPressEvent(QKeyEvent * event);
+
+        /*!
           \brief Enters the edition mode
          */
         void enterEditionMode();
@@ -104,13 +111,9 @@ namespace te
          */
         void leaveEditionMode();
 
-protected slots:
+      protected slots:
 
         virtual void updateGeometry( int position, int charsRemoved, int charsAdded );
-
-protected:
-
-        bool           m_isInEdition;
     };
   }
 }

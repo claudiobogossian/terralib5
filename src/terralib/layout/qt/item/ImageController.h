@@ -18,35 +18,48 @@
  */
 
 /*!
-  \file PageSetupController.h
+  \file ImageController.h
    
-  \brief 
-
+  \brief Class that represents image controller.
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PAGE_SETUP_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_PAGE_SETUP_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_IMAGE_CONTROLLER1_H
+#define __TERRALIB_LAYOUT_INTERNAL_IMAGE_CONTROLLER1_H
 
 // TerraLib
-#include "../core/pattern/mvc/AbstractOutsideController.h"
-#include "../core/Config.h"
+#include "../../core/Config.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 
 namespace te
 {
   namespace layout
   {
-    class AbstractOutsideModel;
-
-    class TELAYOUTEXPORT PageSetupController : public AbstractOutsideController
+    /*!
+    \brief Class that represents image controller.
+    
+    \ingroup layout
+    \sa te::layout::AbstractItemController
+    */
+    class TELAYOUTEXPORT ImageController : public AbstractItemController
     {
       public:
 
-        PageSetupController(AbstractOutsideModel* o);
+        /*!
+          \brief Constructor
 
-        virtual ~PageSetupController();
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
+        ImageController( AbstractItemModel* model);
+
+        /*!
+          \brief Destructor
+        */ 
+        virtual ~ImageController();
+
+        virtual void update(const Subject* subject);
     };
   }
 }
-
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_IMAGE_CONTROLLER1_H

@@ -31,25 +31,23 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PAPER_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
     /*!
     \brief Class that represents a graphic sheet of paper. 
     Its coordinate system is the same of scene (millimeters). 
-    This is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+    This is also son of AbstractItem, so it can become observer of a model (Observable). 
     
     \ingroup layout
 
-    \sa te::layout::ObjectItem
+    \sa te::layout::AbstractItem
     */
-    class TELAYOUTEXPORT PaperItem : public ObjectItem
+    class TELAYOUTEXPORT PaperItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -59,7 +57,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        PaperItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        PaperItem( AbstractItemController* controller, AbstractItemModel* model );
 
         /*!
           \brief Destructor

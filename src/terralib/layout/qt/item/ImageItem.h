@@ -58,12 +58,22 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        ImageItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        ImageItem( AbstractItemController* controller, AbstractItemModel* model );
         
         /*!
           \brief Destructor
          */
         virtual ~ImageItem();
+
+        /*!
+          \brief Gets the file name of the image
+         */
+        virtual const std::string& getFileName() const;
+
+        /*!
+          \brief Sets the file name of the image
+         */
+        virtual void setFileName(const std::string& fileName);
 
        protected:
 
@@ -71,7 +81,8 @@ namespace te
 
       protected:
 
-        QImage  m_image; //!< Represents the loaded image
+        QImage      m_image; //!< Represents the loaded image
+        std::string m_fileName; //!< The file name of the loaded image
     };
   }
 }

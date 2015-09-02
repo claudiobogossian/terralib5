@@ -25,9 +25,9 @@
 
 // TerraLib
 #include "ItemGroupItemFactory.h"
+#include "../../../../item/ItemGroupController1.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/ItemGroupModel.h"
-#include "../../../../../core/pattern/mvc/AbstractItemController.h"
 
 te::layout::AbstractItemView* te::layout::ItemGroupItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -39,7 +39,7 @@ te::layout::AbstractItemView* te::layout::ItemGroupItemFactory::build(ItemFactor
    setProperties(model, params);
  }
 
-  AbstractItemController* controller = new AbstractItemController(model);
+  ItemGroupController1* controller = new ItemGroupController1(model);
   AbstractItemView* view = controller->getView();
 
   if (!props.getProperties().empty())

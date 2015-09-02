@@ -37,7 +37,7 @@
 #include "../../core/Config.h"
 
 // Qt
-#include <QGraphicsProxyWidget>
+#include <QGraphicsObject>
 
 //class QGraphicsSceneMouseEvent;
 //class QMimeData;
@@ -50,6 +50,8 @@ namespace te
     namespace widgets
     {
       class MapDisplay;
+      class Pan;
+      class ZoomWheel;
     }
   }
 
@@ -67,7 +69,7 @@ namespace te
 
     \sa te::layout::AbstractItem
   */
-    class TELAYOUTEXPORT MapItem : public AbstractItem<QGraphicsProxyWidget>
+    class TELAYOUTEXPORT MapItem : public AbstractItem<QGraphicsObject>
     {
       Q_OBJECT //for slots/signals
 
@@ -124,8 +126,21 @@ namespace te
           \brief Reimplemented from QGraphicsProxyWidget
          */
         virtual void  dropEvent ( QGraphicsSceneDragDropEvent * event );
+        
+        /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+        */
+        virtual void  wheelEvent ( QGraphicsSceneWheelEvent * event );
 
         virtual void doRefresh();
+
+      protected:
+
+        virtual void enterEditionMode();
+
+        virtual void leaveEditionMode();
+
+        virtual QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRectF& widget) const;
 
     protected slots:
 
@@ -278,7 +293,9 @@ namespace te
 
         virtual void resized();
 
-        te::qt::widgets::MapDisplay*            m_mapDisplay;
+        te::qt::widgets::MapDisplay*  m_mapDisplay;
+        te::qt::widgets::Pan*         m_pan;
+        te::qt::widgets::ZoomWheel*   m_zoomWheel;
         bool                                    m_doRefresh;
     };
   }

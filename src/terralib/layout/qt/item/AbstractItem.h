@@ -218,7 +218,7 @@ namespace te
         | QGraphicsItem::ItemIsFocusable);
 
       //If enabled is true, this item will accept hover events
-      QGraphicsItem::setAcceptHoverEvents(true);
+      T::setAcceptHoverEvents(true);
 
       m_rect = boundingRect();
     }
@@ -540,7 +540,7 @@ namespace te
       {
         checkTouchesCorner(event->pos().x(), event->pos().y());
       }
-      QGraphicsItem::hoverMoveEvent(event);
+      T::hoverMoveEvent(event);
     }
   }
 }
@@ -594,7 +594,7 @@ inline bool te::layout::AbstractItem<T>::checkTouchesCorner( const double& x, co
 template <class T>
 inline void te::layout::AbstractItem<T>::mousePressEvent( QGraphicsSceneMouseEvent * event )
 {  
-  QGraphicsItem::mousePressEvent(event);
+  T::mousePressEvent(event);
 
   m_is_resizing = checkTouchesCorner(event->pos().x(), event->pos().y());
   if (m_is_resizing)
@@ -612,21 +612,21 @@ inline void te::layout::AbstractItem<T>::mouseMoveEvent( QGraphicsSceneMouseEven
     T::setOpacity(0.5);
     m_finalCoord = event->pos();
     calculateResize();
-    QGraphicsItem::prepareGeometryChange();
+    T::prepareGeometryChange();
   }
   else
   {
     if(m_is_resizing == false)
       T::setOpacity(1.);
 
-    QGraphicsItem::mouseMoveEvent(event);
+    T::mouseMoveEvent(event);
   }
 }
 
 template <class T>
 inline void te::layout::AbstractItem<T>::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {  
- QGraphicsItem::mouseReleaseEvent(event);
+ T::mouseReleaseEvent(event);
   if(m_is_resizing)
   {
     m_finalCoord = event->pos();
