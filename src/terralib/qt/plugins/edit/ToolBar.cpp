@@ -846,7 +846,6 @@ void te::qt::plugins::edit::ToolBar::createUndoView(bool)
 void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> acts, const bool& enable)
 {
   std::size_t geomType = 0;
-  std::string message = "";
   te::map::AbstractLayerPtr layer = getSelectedLayer();
 
   for(QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
@@ -855,18 +854,14 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> act
   if (enable)
   {
     if (layer.get() == 0 || layer->getSRID() == 0)
-    {
-      m_toolBar->setEnabled(false);
-      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Layer is not selected/SRID invalid"));
       return;
-    }
 
     te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
 
     if (info->getType() != "POSTGIS" && info->getType() != "OGR")
     {
       m_toolBar->setEnabled(false);
-      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The DataSource associated to this layer is incompatible!"));
+      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The DataSource is incompatible!"));
       return;
     }
 
