@@ -8,14 +8,14 @@
 #include "TINGeneration.h"
 #include "Utils.h"
 
-// TerraLib
-#include "terralib/dataaccess/utils/Utils.h"
+// ../..
+#include "../../dataaccess/utils/Utils.h"
 
-#include "terralib/geometry/Envelope.h"
-#include "terralib/geometry/Geometry.h"
-#include "terralib\geometry\LineString.h"
-#include "terralib\geometry\Point.h"
-#include "terralib\geometry\TIN.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/Geometry.h"
+#include "../../geometry/LineString.h"
+#include "../../geometry/Point.h"
+#include "../../geometry/TIN.h"
 
 
 te::mnt::TINGeneration::TINGeneration()

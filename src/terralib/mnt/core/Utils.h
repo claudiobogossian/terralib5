@@ -1,6 +1,6 @@
-#include <terralib\geometry\Coord2D.h>
-#include "terralib\geometry\LineString.h"
-#include "terralib\geometry\PointZ.h"
+#include "../../geometry/Coord2D.h"
+#include "../../geometry/LineString.h"
+#include "../../geometry/PointZ.h"
 
 #include "Config.h"
 

@@ -1,5 +1,5 @@
 #include "Utils.h"
-#include "terralib\geometry\Point.h"
+#include "../../geometry/Point.h"
 
 
 double te::mnt::Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2)

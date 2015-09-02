@@ -11,12 +11,12 @@ Adapted from SPRING
 // Terralib Includes
 #include "Config.h"
 
-#include "terralib\dataaccess\dataset\DataSet.h"
-#include "terralib/dataaccess/dataset/DataSetType.h"
-#include "terralib/dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
 
-#include "terralib\geometry\Envelope.h"
-#include "terralib\geometry\PointZ.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/PointZ.h"
 
 #include <vector>
 
@@ -105,7 +105,11 @@ namespace te
       TinLine(int32_t& nodefrom, int32_t &nodeto, int32_t &leftpoly, int32_t &rightpoly, Ltype type) 
         : m_nodefrom(nodefrom), m_nodeto(nodeto), m_leftpoly(leftpoly), m_rightpoly(rightpoly), m_type(type) {}
 
-      bool operator==(const TinLine &rhs);
+      bool operator==(const TinLine &rhs) const;
+
+      bool operator>(const TinLine &rhs) const;
+
+      bool operator<(const TinLine &rhs) const;
 
       /*!  Set initial node number.*/
       void setNodeFrom(int32_t nodeid) { m_nodefrom = nodeid; }
@@ -190,7 +194,11 @@ namespace te
 
       TinNode(const TinNode &rhs){ m_type = rhs.m_type; m_edge = rhs.m_edge; m_point = rhs.m_point; }
 
-      bool operator== (const TinNode &rhs);
+      bool operator== (const TinNode &rhs) const;
+
+      bool operator> (const TinNode &rhs) const;
+
+      bool operator< (const TinNode &rhs) const;
 
       void setEdge(int32_t edge) { m_edge = edge; }
 

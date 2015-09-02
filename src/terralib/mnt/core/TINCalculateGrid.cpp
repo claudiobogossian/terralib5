@@ -8,6 +8,12 @@
 #include "TINCalculateGrid.h"
 #include "Utils.h"
 
+#include "../../raster.h"
+#include "../../raster/BandProperty.h"
+#include "../../raster/Grid.h"
+#include "../../raster/RasterFactory.h"
+
+
 /*!
 \brief Method that generates a regular Grid from a given TIN
 \param grid is a pointer to the grid that will be created
@@ -19,8 +25,28 @@ bool te::mnt::TINCalculateGrid::run()
 {
   LoadTin(m_inDsrc, m_inDsetName);
 
-  double rx1 = m_env.getLowerLeftX() + m_resx / 2.;
-  double ry2 = m_env.getUpperRightY() - m_resy / 2.;
+  double rx1 = m_env.getLowerLeftX();
+  double ry2 = m_env.getUpperRightY();
+
+  int outputWidth = int(m_env.getWidth() / m_resx);
+  int outputHeight = int(m_env.getHeight() / m_resy);
+
+  te::gm::Coord2D ulc(m_env.getLowerLeftX(), m_env.getUpperRightY());
+
+  te::rst::Grid* grid = new te::rst::Grid(outputWidth, outputHeight, m_resx, m_resy, &ulc, m_srid);
+
+  std::vector<te::rst::BandProperty*> bands;
+
+  bands.push_back(new te::rst::BandProperty(0, te::dt::FLOAT_TYPE, "DTM GRID"));
+  bands[0]->m_nblocksx = 1;
+  bands[0]->m_nblocksy = outputHeight;
+  bands[0]->m_blkw = outputWidth;
+  bands[0]->m_blkh = 1;
+  bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
+
+  m_rst = te::rst::RasterFactory::make(grid, bands, m_tgrInfo);
+
+  double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
 
   int32_t fbnode = 0;
 
@@ -42,8 +68,7 @@ bool te::mnt::TINCalculateGrid::run()
 
   //	To each triangle
   for (int32_t i = 1; i < (int32_t) m_triang.size(); i++)
-  {
-    // Find Triangle Box
+  { // Find Triangle Box
     NodesId(i, nodesid);
     if (!DefineInterLinesColumns(nodesid, flin, llin, fcol, lcol))
       continue;
@@ -57,7 +82,9 @@ bool te::mnt::TINCalculateGrid::run()
     if ((p3da[0].getZ() > BIGFLOAT) ||
       (p3da[1].getZ() > BIGFLOAT) ||
       (p3da[2].getZ() > BIGFLOAT))
-      FillGridValue(i, flin, llin, fcol, lcol, FLT_MAX);
+    {
+       FillGridValue(i, flin, llin, fcol, lcol, dummyvalue);
+    }
     else if ((p3da[0].getZ() == p3da[1].getZ()) &&
       (p3da[0].getZ() == p3da[2].getZ()) && (m_gridtype == Linear))
       FillGridValue(i, flin, llin, fcol, lcol, p3da[0].getZ());
@@ -82,6 +109,7 @@ bool te::mnt::TINCalculateGrid::run()
   if (m_gridtype == Quintico)		//Quintic Surface Adjust without breaklines
     m_fbnode = fbnode;
 
+  delete m_rst;
   return true;
 }
 
@@ -97,9 +125,9 @@ void te::mnt::TINCalculateGrid::setInput(te::da::DataSourcePtr inDsrc,
   m_oidSet = oidSet;
 }
 
-void te::mnt::TINCalculateGrid::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)
+void te::mnt::TINCalculateGrid::setOutput(std::map<std::string, std::string> &tgrInfo, std::string dsname)
 {
-  m_outDsrc = outDsrc;
+  m_tgrInfo = tgrInfo;
   m_outDsetName = dsname;
 
 }
@@ -123,8 +151,8 @@ void te::mnt::TINCalculateGrid::setParams(double resx, double resy, GridType gt)
 
 bool te::mnt::TINCalculateGrid::DefineInterLinesColumns(int32_t *nodesid, int32_t &flin, int32_t &llin, int32_t &fcol, int32_t &lcol)
 {
-  double rx1 = m_grid->getExtent()->getLowerLeftX() + m_resx / 2.;
-  double ry2 = m_grid->getExtent()->getUpperRightY() - m_resy / 2.;
+  double rx1 = m_rst->getExtent()->getLowerLeftX() + m_resx/2;
+  double ry2 = m_rst->getExtent()->getUpperRightY() - m_resy/2;
 
   te::gm::Point llpt(FLT_MAX, FLT_MAX);
   te::gm::Point urpt(-FLT_MAX, -FLT_MAX);
@@ -135,23 +163,23 @@ bool te::mnt::TINCalculateGrid::DefineInterLinesColumns(int32_t *nodesid, int32_
   }
 
   //	Calculate lines and coluns intercepted
-  fcol = (int32_t)((llpt.getX() - rx1) / m_resx);
-  lcol = (int32_t)((urpt.getX() - rx1) / m_resx);
-  flin = (int32_t)((ry2 - urpt.getY()) / m_resy);
-  llin = (int32_t)((ry2 - llpt.getY()) / m_resy);
+  fcol = (int32_t)((llpt.getX() - rx1) / m_resx + .5);
+  lcol = (int32_t)((urpt.getX() - rx1) / m_resx + .5);
+  flin = (int32_t)((ry2 - urpt.getY()) / m_resy + .5);
+  llin = (int32_t)((ry2 - llpt.getY()) / m_resy + .5);
 
-  if (((int32_t)m_grid->getNumberOfColumns() <= fcol) || (lcol < 0) ||
-    ((int32_t)m_grid->getNumberOfRows() <= flin) || (llin < 0))
+  if (((int32_t)m_rst->getNumberOfColumns() <= fcol) || (lcol < 0) ||
+    ((int32_t)m_rst->getNumberOfRows() <= flin) || (llin < 0))
     return false;
 
   if (fcol < 0)
     fcol = 0;
   if (flin < 0)
     flin = 0;
-  if ((int32_t)m_grid->getNumberOfColumns() <= lcol)
-    lcol = m_grid->getNumberOfColumns() - 1;
-  if ((int32_t)m_grid->getNumberOfRows() <= llin)
-    llin = m_grid->getNumberOfRows() - 1;
+  if ((int32_t)m_rst->getNumberOfColumns() <= lcol)
+    lcol = m_rst->getNumberOfColumns() - 1;
+  if ((int32_t)m_rst->getNumberOfRows() <= llin)
+    llin = m_rst->getNumberOfRows() - 1;
 
   return true;
 }
@@ -171,21 +199,22 @@ bool te::mnt::TINCalculateGrid::FillGridValue(int32_t triid, int32_t flin, int32
   int32_t	nlin, ncol;
   double	rx1, ry2;
   te::gm::PointZ pg;
-  //double dummyvalue = m_grid->.gdummyValue();
+  double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
 
-  rx1 = m_grid->getExtent()->getLowerLeftX() + m_resx / 2.;
-  ry2 = m_grid->getExtent()->getUpperRightY() - m_resy / 2.;
+  rx1 = m_rst->getExtent()->getLowerLeftX();
+  ry2 = m_rst->getExtent()->getUpperRightY();
 
   for (nlin = flin; nlin <= llin; nlin++){
     for (ncol = fcol; ncol <= lcol; ncol++){
-      pg.setX(rx1 + (float)ncol*m_resx);
-      pg.setY(ry2 - (float)nlin*m_resy);
-      if (!(ContainsPoint(triid, pg)))
-        continue;
-/*      if (zvalue > BIGFLOAT)
-        m_grid->setIValue(nlin, ncol, dummyvalue);
-      else*/{
-        m_grid->setIValue(nlin, ncol, zvalue);
+    //  pg.setX(rx1 + (float)ncol*m_resx);
+     // pg.setY(ry2 - (float)nlin*m_resy);
+     // if (!(ContainsPoint(triid, pg)))
+     //   continue;
+      if (zvalue > BIGFLOAT)
+        m_rst->setValue(nlin, ncol, dummyvalue);
+      else
+      {
+        m_rst->setValue(ncol, nlin, zvalue);
       }
     }
   }
@@ -213,10 +242,10 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
   double rx1, ry2;
   double zvalue;
   int32_t nlin, ncol;
-  double dummyvalue = BIGFLOAT;// m_grid->dummyValue();
+  double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
 
-  rx1 = m_grid->getExtent()->getLowerLeftX() + m_resx / 2.;
-  ry2 = m_grid->getExtent()->getUpperRightY() - m_resy / 2.;
+  rx1 = m_rst->getExtent()->getLowerLeftX() + m_resx / 2.;
+  ry2 = m_rst->getExtent()->getUpperRightY() - m_resy / 2.;
 
   x1_x0 = p3da[1].getX() - p3da[0].getX();
   x2_x0 = p3da[2].getX() - p3da[0].getX();
@@ -240,9 +269,9 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
         p3da[0].getZ()) / -detz);
 
       if (zvalue > BIGFLOAT)
-        m_grid->setIValue(nlin, ncol,dummyvalue);
+        m_rst->setValue(ncol, nlin, dummyvalue);
       else{
-        m_grid->setIValue(nlin, ncol,zvalue);
+        m_rst->setValue(ncol, nlin, zvalue);
       }
     }
   }

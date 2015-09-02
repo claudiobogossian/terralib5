@@ -2,9 +2,6 @@
 #ifndef __TERRALIB_MNT_CORE_INTERNAL_CONFIG_H
 #define __TERRALIB_MNT_CORE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../Config.h"
-
 #define TE_MNT_MODULE_NAME "te.mnt"
 
 

@@ -8,10 +8,10 @@
 #include "TINCreateIsolines.h"
 #include "Utils.h"
 
-#include "terralib/datatype/SimpleProperty.h"
-#include "terralib/geometry/GeometryProperty.h"
-#include "terralib/memory/DataSet.h"
-#include "terralib/memory/DataSetItem.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../geometry/GeometryProperty.h"
+#include "../../memory/DataSet.h"
+#include "../../memory/DataSetItem.h"
 
 //#include <fstream>      // std::ofstream
 

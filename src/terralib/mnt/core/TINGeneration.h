@@ -13,13 +13,13 @@
 #include "Config.h"
 #include "Tin.h"
 
-#include "terralib\dataaccess\dataset\DataSet.h"
-#include "terralib/dataaccess/dataset/DataSetType.h"
-#include "terralib/dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
 
-#include "terralib\geometry\MultiLineString.h"
-#include "terralib\geometry\MultiPoint.h"
-#include "terralib\geometry\PointZ.h"
+#include "../../geometry/MultiLineString.h"
+#include "../../geometry/MultiPoint.h"
+#include "../../geometry/PointZ.h"
 
 namespace te
 {

@@ -8,21 +8,21 @@
 #include "Tin.h"
 #include "Utils.h"
 
-#include "terralib/dataaccess/datasource/DataSourceTransactor.h"
-#include "terralib/dataaccess/utils/Utils.h"
+#include "../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../dataaccess/utils/Utils.h"
 
-#include "terralib/datatype/Property.h"
-#include "terralib/datatype/SimpleProperty.h"
-#include "terralib/datatype/StringProperty.h"
+#include "../../datatype/Property.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../datatype/StringProperty.h"
 
-#include "terralib/geometry/GeometryProperty.h"
-#include "terralib\geometry\MultiPolygon.h"
+#include "../../geometry/GeometryProperty.h"
+#include "../../geometry/MultiPolygon.h"
 
-#include "terralib/memory/DataSet.h"
-#include "terralib/memory/DataSetItem.h"
+#include "../../memory/DataSet.h"
+#include "../../memory/DataSetItem.h"
 
 
-bool te::mnt::TinLine::operator== (const TinLine &rhs)
+bool te::mnt::TinLine::operator== (const TinLine &rhs) const
 {
   if ((this->m_nodefrom != rhs.m_nodefrom) ||
     (this->m_nodeto != rhs.m_nodeto) ||
@@ -33,6 +33,32 @@ bool te::mnt::TinLine::operator== (const TinLine &rhs)
   else
     return true;
 }
+
+bool te::mnt::TinLine::operator > (const TinLine &rhs) const
+{
+  if ((this->m_nodefrom <= rhs.m_nodefrom) ||
+    (this->m_nodeto <= rhs.m_nodeto) ||
+    (this->m_leftpoly <= rhs.m_leftpoly) ||
+    (this->m_rightpoly <= rhs.m_rightpoly)
+    )
+    return false;
+  else
+    return true;
+}
+
+bool te::mnt::TinLine::operator < (const TinLine &rhs) const
+{
+  if ((this->m_nodefrom >= rhs.m_nodefrom) ||
+    (this->m_nodeto >= rhs.m_nodeto) ||
+    (this->m_leftpoly >= rhs.m_leftpoly) ||
+    (this->m_rightpoly >= rhs.m_rightpoly)
+    )
+    return false;
+  else
+    return true;
+}
+
+
 
 bool te::mnt::TinLine::ExchangePolygon(int32_t oldPolyId, int32_t newPolyId)
 {
@@ -59,13 +85,31 @@ bool te::mnt::TinLine::ExchangeNode(int32_t oldNodeId, int32_t newNodeId)
   return true;
 }
 
-bool te::mnt::TinNode::operator== (const TinNode &rhs)
+bool te::mnt::TinNode::operator== (const TinNode &rhs) const
 {
   if ((this->m_point.getX() != rhs.m_point.getX()) ||
     (this->m_point.getY() != rhs.m_point.getY()))
     return false;
   else
     return true;
+}
+
+bool te::mnt::TinNode::operator> (const TinNode &rhs) const
+{
+  if ((this->m_point.getX() > rhs.m_point.getX()) &&
+    (this->m_point.getY() > rhs.m_point.getY()))
+    return true;
+  else
+    return false;
+}
+
+bool te::mnt::TinNode::operator< (const TinNode &rhs) const
+{
+  if ((this->m_point.getX() < rhs.m_point.getX()) &&
+    (this->m_point.getY() < rhs.m_point.getY()))
+    return true;
+  else
+    return false;
 }
 
 void te::mnt::Tin::setSRID(int srid)
@@ -296,7 +340,8 @@ bool te::mnt::Tin::TrianglePoints(int32_t triangId, te::gm::PointZ *vertex)
 {
   int32_t	linesid[3];
 
-  m_triang[triangId].LinesId(linesid);
+  if (!m_triang[triangId].LinesId(linesid))
+    return false;
   if (m_line[linesid[0]].getNodeTo() == m_line[linesid[1]].getNodeTo())
   {
     vertex[0].setX(m_node[m_line[linesid[0]].getNodeFrom()].getX());
@@ -1223,7 +1268,13 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
   inDset->moveBeforeFirst();
+
   std::size_t pos = 0;
+  bool first = true;
+  std::map<te::mnt::TinLine, int32_t> linemap;
+  std::map<te::mnt::TinLine, int32_t>::iterator itline;
+  std::map<te::mnt::TinNode, int32_t> nodemap;
+  std::map<te::mnt::TinNode, int32_t>::iterator itnode;
 
   while (inDset->moveNext())
   {
@@ -1242,7 +1293,7 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
     left[2] = inDset->getInt32("left3");
 
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
-    te::gm::Polygon *g = dynamic_cast<te::gm::Polygon*>(gin.get());
+    te::gm::Polygon *g = dynamic_cast<te::gm::Polygon*>(gin.get()->clone());
     te::gm::Curve* c = g->getRingN(0);
     te::gm::LinearRing* lr = dynamic_cast<te::gm::LinearRing*>(c);
     for (std::size_t j = 0; j < 3; ++j)
@@ -1251,44 +1302,95 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
       te::gm::Point *p = lr->getPointN(j);
       val[j] = val[j] > zmax || val[j] < zmin ? BIGFLOAT : val[j];
       nd.Init(p->getX(), p->getY(), (float)val[j], type[j]);
-      pos = std::find(m_node.begin(), m_node.end(), nd) - m_node.begin();
-      if (pos == m_node.size())
+      itnode = nodemap.find(nd);
+      if (itnode != nodemap.end())
       {
+        if ((*itnode).first == nd)
+          no[j] = (*itnode).second;
+        else
+        {
+          nodemap.insert(std::pair<TinNode, int32_t>(nd, (int32_t)m_node.size()));
+          no[j] = (int32_t)m_node.size();
+          m_node.push_back(nd);
+        }
+      }
+      else
+      {
+        nodemap.insert(std::pair<TinNode, int32_t>(nd, (int32_t)m_node.size()));
         no[j] =(int32_t) m_node.size();
         m_node.push_back(nd);
       }
-      else
-        no[j] = (int32_t)pos;
     }
-    TinLine tl0(no[0], no[1], left[0], right[0], Normalline);
-    pos = std::find(m_line.begin(), m_line.end(), tl0) - m_line.begin();
-    if (pos == m_line.size())
+
+    if (first)
     {
+      m_env = *lr->getMBR();
+      first = false;
+    }
+    else
+      m_env.Union(*lr->getMBR());
+
+    TinLine tl0(no[0], no[1], left[0], right[0], Normalline);
+    TinLine tl1(no[1], no[2], left[1], right[1], Normalline);
+    TinLine tl2(no[2], no[0], left[2], right[2], Normalline);
+
+    itline = linemap.find(tl0);
+    if (itline != linemap.end())
+    {
+      if ((*itline).first == tl0)
+        lid[0] = (*itline).second;
+      else
+      {
+        linemap.insert(std::pair<TinLine, int32_t>(tl0, (int32_t)m_line.size()));
+        lid[0] = (int32_t)m_line.size();
+        m_line.push_back(tl0);
+      }
+    }
+    else
+    {
+      linemap.insert(std::pair<TinLine, int32_t>(tl0, (int32_t)m_line.size()));
       lid[0] = (int32_t)m_line.size();
       m_line.push_back(tl0);
     }
-    else
-      lid[0] = (int32_t)pos;
 
-    TinLine tl1(no[1], no[2], left[1], right[1], Normalline);
-    pos = std::find(m_line.begin(), m_line.end(), tl1) - m_line.begin();
-    if (pos == m_line.size())
+    itline = linemap.find(tl1);
+    if (itline != linemap.end())
     {
+      if ((*itline).first == tl1)
+        lid[1] = (*itline).second;
+      else
+      {
+        linemap.insert(std::pair<TinLine, int32_t>(tl1, (int32_t)m_line.size()));
+        lid[1] = (int32_t)m_line.size();
+        m_line.push_back(tl1);
+      }
+    }
+    else
+    {
+      linemap.insert(std::pair<TinLine, int32_t>(tl1, (int32_t)m_line.size()));
       lid[1] = (int32_t)m_line.size();
       m_line.push_back(tl1);
     }
-    else
-      lid[1] = (int32_t)pos;
 
-    TinLine tl2(no[2], no[0], left[2], right[2], Normalline);
-    pos =std::find(m_line.begin(), m_line.end(), tl2) - m_line.begin();
-    if (pos == m_line.size())
+    itline = linemap.find(tl2);
+    if (itline != linemap.end())
     {
+      if ((*itline).first == tl2)
+        lid[2] = (*itline).second;
+      else
+      {
+        linemap.insert(std::pair<TinLine, int32_t>(tl2, (int32_t)m_line.size()));
+        lid[2] = (int32_t)m_line.size();
+        m_line.push_back(tl2);
+      }
+    }
+    else
+    {
+      linemap.insert(std::pair<TinLine, int32_t>(tl2, (int32_t)m_line.size()));
       lid[2] = (int32_t)m_line.size();
       m_line.push_back(tl2);
     }
-    else
-      lid[2] = (int32_t)pos;
+
 
     m_triang[id].setEdges(lid[0], lid[1], lid[2]);
   }

@@ -12,11 +12,11 @@ Adapted from SPRING
 #include "Config.h"
 #include "Tin.h"
 
-#include "terralib\dataaccess\dataset\DataSet.h"
-#include "terralib/dataaccess/dataset/DataSetType.h"
-#include "terralib/dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
 
-#include "terralib\raster\Raster.h"
+#include "../../raster/Raster.h"
 
 namespace te
 {
@@ -47,7 +47,7 @@ namespace te
         std::auto_ptr<te::da::DataSetType> inDsetType,
         const te::da::ObjectIdSet* oidSet = 0);
 
-      void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
+      void setOutput(std::map<std::string, std::string> &tgrInfo, std::string dsname);
 
       void setParams(double resx, double resy, GridType gt);
 
@@ -66,13 +66,13 @@ namespace te
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
       const te::da::ObjectIdSet* m_oidSet;
 
-      te::da::DataSourcePtr m_outDsrc;
+      std::map<std::string, std::string> m_tgrInfo;
       std::string m_outDsetName;
 
       double m_resx, m_resy;
       GridType m_gridtype;
 
-      te::rst::Raster* m_grid;
+      te::rst::Raster* m_rst;
     };
   }
 }

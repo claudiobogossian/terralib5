@@ -12,9 +12,9 @@ Adapted from SPRING
 #include "Config.h"
 #include "Tin.h"
 
-#include "terralib\dataaccess\dataset\DataSet.h"
-#include "terralib/dataaccess/dataset/DataSetType.h"
-#include "terralib/dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
 
 namespace te
 {
