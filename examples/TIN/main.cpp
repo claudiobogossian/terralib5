@@ -1,0 +1,512 @@
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file examples/dataaccess/main.cpp
+
+  \brief A list of examples for the TerraLib TIN Module.
+*/
+#include "TINExamples.h"
+
+// TerraLib
+#include <terralib/common/TerraLib.h>
+
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+
+#include <terralib/plugin.h>
+
+#include <terralib/mnt/core/Tin.h>
+#include <terralib/mnt/core/TINCreateIsolines.h>
+#include <terralib/mnt/core/TINCalculateGrid.h>
+#include <terralib/mnt/core/TINGeneration.h>
+#include <terralib/mnt/core/Utils.h>
+
+// STL
+#include "iostream"
+
+
+//TESTES *********
+
+#include <terralib/dataaccess/datasource/DataSourceTransactor.h>
+#include <terralib/dataaccess/utils/Utils.h>
+
+#include <terralib/datatype/Property.h>
+#include <terralib/datatype/SimpleProperty.h>
+#include <terralib/datatype/StringProperty.h>
+
+#include <terralib/geometry/Envelope.h>
+#include <terralib/geometry/Geometry.h>
+#include <terralib/geometry/GeometryProperty.h>
+#include <terralib/geometry/LineString.h>
+#include <terralib/geometry/Point.h>
+#include <terralib/geometry/TIN.h>
+#include <terralib/geometry/GEOSGeometryFactory.h>
+
+
+#include <terralib/geometry/GEOSWriter.h>
+#include <terralib/geometry/GEOSReader.h>
+
+
+#include <terralib/memory/DataSet.h>
+#include <terralib/memory/DataSetItem.h>
+
+#include <geos.h>
+#include <geos/triangulate/DelaunayTriangulationBuilder.h>
+
+
+te::da::DataSet* create_ds_memory(const std::string& datasetName, te::da::DataSetType* datasettype, std::auto_ptr<geos::geom::Geometry> results)
+{
+  te::mem::DataSet* ds = new te::mem::DataSet(datasettype);
+  te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
+
+  std::size_t ntri = results->getNumGeometries();
+  std::string gtype = results->getGeometryType();
+  int id_tri = 0;
+
+  geos::geom::Geometry *gout = results->clone();
+  te::gm::GeometryCollection* tinout = dynamic_cast<te::gm::GeometryCollection*> (te::gm::GEOSReader::read(gout));
+  tinout->setSRID(results.get()->getSRID());
+  for (unsigned int tIdx = 0; tIdx < tinout->getNumGeometries(); ++tIdx)
+  {
+    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
+    std::vector<std::string> pt_value;
+    te::gm::Geometry* gout = tinout->getGeometryN(tIdx);
+    std::size_t n = gout->getNPoints();
+    te::gm::Polygon* gpol = dynamic_cast<te::gm::Polygon*>(gout);
+
+    for (std::size_t i = 0; i < gpol->getNumRings(); ++i)
+    {
+      te::gm::Curve* c = gpol->getRingN(i);
+      te::gm::LinearRing* lr = dynamic_cast<te::gm::LinearRing*>(c);
+      for (std::size_t j = 0; j < lr->getNPoints(); ++j)
+      {
+        te::gm::Point *p = lr->getPointN(j);
+        pt_value.push_back(p->toString());
+      }
+    }
+    dataSetItem->setInt32("TIN_ID", id_tri++);
+    dataSetItem->setString("Pt1", pt_value[0]);
+    dataSetItem->setString("Pt2", pt_value[1]);
+    dataSetItem->setString("Pt3", pt_value[2]);
+    dataSetItem->setGeometry("triangle", (te::gm::Geometry*)gout->clone());
+
+    ds->add(dataSetItem);
+  }
+
+  return ds;
+}
+
+void SaveTIN_shp(std::string dir, std::string out, std::auto_ptr<geos::geom::Geometry> results)
+{
+  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(out));
+
+  //Primary key
+  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("TIN_ID", te::dt::INT32_TYPE);
+  prop0->setAutoNumber(true);
+  te::dt::SimpleProperty* prop1 = new te::dt::SimpleProperty("Pt1", te::dt::STRING_TYPE);
+  te::dt::SimpleProperty* prop2 = new te::dt::SimpleProperty("Pt2", te::dt::STRING_TYPE);
+  te::dt::SimpleProperty* prop3 = new te::dt::SimpleProperty("Pt3", te::dt::STRING_TYPE);
+  te::gm::GeometryProperty* prop4 = new te::gm::GeometryProperty("triangle", 0, te::gm::TINZType, true);
+  prop4->setSRID(results.get()->getSRID());
+  dt->add(prop0);
+  dt->add(prop1);
+  dt->add(prop2);
+  dt->add(prop3);
+  dt->add(prop4);
+
+  std::auto_ptr<te::da::DataSet> dataset(create_ds_memory(out, dt.get(), results));
+
+  std::map<std::string, std::string> connInfo;
+  std::string filename(dir);
+  filename.append(out);
+  filename.append(".shp");
+  connInfo["URI"] = filename;
+  connInfo["DRIVER"] = "ESRI Shapefile";
+
+  te::da::DataSourcePtr datasource = te::da::DataSourceFactory::make("OGR");
+  datasource->setConnectionInfo(connInfo);
+  datasource->open();
+
+  dataset->moveBeforeFirst();
+
+  te::da::Create(datasource.get(), dt.get(), dataset.get());
+
+  datasource->close();
+  connInfo.clear();
+  dt.release();
+
+}
+
+void LoadIsolines(const std::string &filename,
+  te::gm::MultiPoint &mpt,
+  te::gm::MultiLineString &isolines,
+  std::string &geostype, std::string atributo)
+{
+
+
+  int SRID = 4291;
+  double tol = 0.00018000000;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
+  double maxdist = 20.*tol;
+  double minedge = tol / 5.;
+
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = filename;
+  // connInfo["DRIVER"] = "ESRI Shapefile";
+
+  std::auto_ptr<te::da::DataSource> datasource = te::da::DataSourceFactory::make("OGR");
+  datasource->setConnectionInfo(connInfo);
+  datasource->open();
+
+  te::da::DataSourceTransactor* transactor = (datasource->getTransactor()).release();
+
+  std::vector<std::string> datasetNames = datasource->getDataSetNames();
+
+  te::da::DataSet* inDset = (datasource->getDataSet(datasetNames[0])).release();
+
+  const std::size_t np = inDset->getNumProperties();
+  const std::size_t ng = inDset->size();
+
+  //Lendo atributos do shape
+  std::vector<std::string>pnames;
+  std::vector<int> ptypes;
+  for (std::size_t i = 0; i != np; ++i)
+  {
+    pnames.push_back(inDset->getPropertyName(i));
+    ptypes.push_back(inDset->getPropertyDataType(i));
+  }
+
+  te::gm::MultiLineString isolines_simp(0, te::gm::MultiLineStringZType, isolines.getSRID());
+
+  std::size_t pos = 0;
+  while (inDset->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry("OGR_GEOMETRY");
+    //   std::cout << gin.get()->toString() <<std::endl;
+    geostype = gin.get()->getGeometryType();//g->getGeometryType();
+
+    if (geostype == "MultiPoint")
+    {
+      te::gm::MultiPoint *g = dynamic_cast<te::gm::MultiPoint*>(gin.get());
+      std::size_t np = g->getNumGeometries();
+       double value = inDset->getDouble(atributo); //teste pegar da interface
+      for (std::size_t i = 0; i < np; ++i)
+      {
+        te::gm::Point *p = dynamic_cast<te::gm::Point*>(g->getGeometryN(i));
+        te::gm::PointZ pz(p->getX(), p->getY(), value);
+        mpt.add(dynamic_cast<te::gm::Geometry*>(pz.clone()));
+      }
+    }
+    if (geostype == "LineString")
+    {
+      te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(gin.get());
+      double value = inDset->getDouble(atributo); //teste pegar da interface
+      isolines.add(dynamic_cast<te::gm::Geometry*>(l->clone()));
+
+      te::gm::LineString *ls = te::mnt::pointListSimplify(l, tol, maxdist, value);
+
+      for (std::size_t j = 0; j < ls->getNPoints(); ++j)
+      {
+        mpt.add(ls->getPointN(j));
+      }
+    }
+    if (geostype == "MultiLineString")
+    {
+      te::gm::MultiLineString *g = dynamic_cast<te::gm::MultiLineString*>(gin.get());
+      std::size_t np = g->getNumGeometries();
+      double value = inDset->getDouble(atributo); //teste pegar da interface
+      for (std::size_t i = 0; i < np; ++i)
+      {
+        te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(g->getGeometryN(i));
+        te::gm::LineString *lz = new te::gm::LineString(l->size(), te::gm::LineStringZType, isolines.getSRID());
+        for (std::size_t il = 0; il < l->size(); il++)
+        {
+          lz->setPointZ(il, l->getX(il), l->getY(il), value);
+        }
+        isolines.add(dynamic_cast<te::gm::Geometry*>(lz));
+        l->setSRID(isolines.getSRID());
+        te::gm::LineString *ls = te::mnt::pointListSimplify(l, tol, maxdist, value);
+
+        for (std::size_t j = 0; j < ls->getNPoints(); ++j)
+        {
+          mpt.add(ls->getPointN(j));
+        }
+
+        isolines_simp.add(dynamic_cast<te::gm::Geometry*>(ls));
+      }
+    }
+
+  }
+  delete inDset;
+  delete transactor;
+
+}
+
+void TesteGEOS()
+{
+
+
+  int SRID = 4291;
+  double tol = 0.00018000000;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
+  double maxdist = 20.*tol;
+  double minedge = tol / 5.;
+
+  const geos::geom::GeometryFactory *geomFact = te::gm::GEOSGeometryFactory::getGeomFactory();
+  te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, SRID);
+  te::gm::MultiLineString isolines_simp(0, te::gm::MultiLineStringZType, SRID);
+  std::string geostype;
+
+  //Lendo shape das Isolinhas
+  std::string filename("D:/TA46-testes/altimetria_1_l3d.shp");
+
+  LoadIsolines(filename, mpt, isolines_simp, geostype, "avg_z");
+  mpt.setSRID(SRID);
+  isolines_simp.setSRID(SRID);
+
+  geos::triangulate::DelaunayTriangulationBuilder *tri = new geos::triangulate::DelaunayTriangulationBuilder();
+
+   std::auto_ptr<geos::geom::Geometry> results;
+   geos::geom::MultiPoint* gin = te::gm::GEOSWriter::write(&mpt);
+   tri->setTolerance(minedge);
+   tri->setSites(*gin);
+
+   std::string dirout("D:/TESTES/");
+   std::string fileout("altimetria1_GEOS_TIN");
+
+
+    results = tri->getTriangles(*geomFact);
+    results.get()->setSRID(SRID);
+    SaveTIN_shp(dirout, fileout, results);
+
+    results.release();
+
+}
+///******
+
+void GenerateTIN()
+{
+  //Lendo shape das Isolinhas
+  std::string filename("D:/TA46-testes/altimetria_1_l3d.shp");
+
+  int SRID = 4291;
+  double tol = 0.00018000000;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
+  double maxdist = 20.*tol;
+  double minedge = tol / 5.;
+  std::string atributoz("avg_z");
+
+  std::map<std::string, std::string> srcInfo;
+  srcInfo["URI"] = filename;
+  srcInfo["DRIVER"] = "ESRI Shapefile";
+
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR").release());
+  srcDs->setConnectionInfo(srcInfo);
+  srcDs->open();
+
+  std::string inDsetName = "altimetria_1_l3d";
+  if (!srcDs->dataSetExists(inDsetName))
+  {
+    std::cout << "Input dataset not found: " << inDsetName << std::endl;
+    throw;
+  }
+
+  std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
+  std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
+
+  std::string file_result = "D:/TESTES/altimetria_1_TIN_xx.shp";
+
+  std::map<std::string, std::string> tgrInfo;
+  tgrInfo["URI"] = file_result;
+  tgrInfo["DRIVER"] = "ESRI Shapefile";
+
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR").release());
+  trgDs->setConnectionInfo(tgrInfo);
+  trgDs->open();
+
+  std::string outDS = "altimetria_1_TIN_xx";
+
+  if (trgDs->dataSetExists(outDS))
+  {
+    std::cout << "A dataset with the same requested output dataset name already exists: " << outDS << std::endl;
+    throw;
+  }
+
+  te::mnt::TINGeneration *Tin = new te::mnt::TINGeneration();
+
+  Tin->setInput(srcDs, inDsetName, inDsetType);
+  Tin->setOutput(trgDs, outDS);
+  Tin->setParams(tol, maxdist, minedge, atributoz);
+  Tin->setSRID(SRID);
+
+  bool result = Tin->run();
+
+  trgDs->close();
+  inDsetType.release();
+  srcDs->close();
+
+}
+
+void GenerateIso()
+{
+  std::string filename = "D:/TESTES/altimetria_TIN_xx.shp";
+
+  int SRID = 4291;
+  double tol = 0.000001;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
+
+  std::vector<double> val;
+  for (double n = 300; n < 1101; n += 100)
+    val.push_back(n);
+
+  std::map<std::string, std::string> srcInfo;
+  srcInfo["URI"] = filename;
+  srcInfo["DRIVER"] = "ESRI Shapefile";
+
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR").release());
+  srcDs->setConnectionInfo(srcInfo);
+  srcDs->open();
+
+  std::string inDsetName = "altimetria_TIN_xx";
+  if (!srcDs->dataSetExists(inDsetName))
+  {
+    std::cout << "Input dataset not found: " << inDsetName << std::endl;
+    throw;
+  }
+
+  std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
+  std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
+
+  std::string file_result = "D:/TESTES/altimetria_iso.shp";
+
+  std::map<std::string, std::string> tgrInfo;
+  tgrInfo["URI"] = file_result;
+  tgrInfo["DRIVER"] = "ESRI Shapefile";
+
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR").release());
+  trgDs->setConnectionInfo(tgrInfo);
+  trgDs->open();
+
+  std::string outDS = "altimetria_iso";
+
+  if (trgDs->dataSetExists(outDS))
+  {
+    std::cout << "A dataset with the same requested output dataset name already exists: " << outDS << std::endl;
+    throw;
+  }
+
+  te::mnt::TINCreateIsolines *Tin = new te::mnt::TINCreateIsolines();
+
+  Tin->setInput(srcDs, inDsetName, inDsetType);
+  Tin->setOutput(trgDs, outDS);
+  Tin->setSRID(SRID);
+  Tin->setParams(val, tol);
+
+  bool result = Tin->run();
+
+  trgDs->close();
+  inDsetType.release();
+  srcDs->close();
+
+}
+
+void CalculateGrid()
+{
+  std::string filename = "D:/TESTES/altimetria_TIN_xx.shp";
+
+  int SRID = 4291;
+  double tol = 0.000001;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
+  double resx = .002, resy = .002;
+
+  std::map<std::string, std::string> srcInfo;
+  srcInfo["URI"] = filename;
+  srcInfo["DRIVER"] = "ESRI Shapefile";
+
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR").release());
+  srcDs->setConnectionInfo(srcInfo);
+  srcDs->open();
+
+  std::string inDsetName = "altimetria_TIN_xx";
+  if (!srcDs->dataSetExists(inDsetName))
+  {
+    std::cout << "Input dataset not found: " << inDsetName << std::endl;
+    throw;
+  }
+
+  std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
+  std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
+
+  std::string file_result = "D:/TESTES/altimetria_GRID1.tif";
+
+  std::map<std::string, std::string> tgrInfo;
+  tgrInfo["URI"] = file_result;
+
+  std::string outDS = "altimetria_GRID1";
+
+  te::mnt::TINCalculateGrid *Tin = new te::mnt::TINCalculateGrid();
+
+  Tin->setInput(srcDs, inDsetName, inDsetType);
+  Tin->setOutput(tgrInfo, outDS);
+  Tin->setSRID(SRID);
+  Tin->setParams(resx, resy, te::mnt::Linear);
+
+  bool result = Tin->run();
+
+  inDsetType.release();
+  srcDs->close();
+
+}
+
+int main(int /*argc*/, char** /*argv*/)
+{
+  try
+  {
+    // Initialize the Terralib support
+    TerraLib::getInstance().initialize();
+
+    LoadModules();
+
+ //   TesteGEOS();
+
+//    GenerateTIN();
+
+ //   GenerateIso();
+
+    CalculateGrid();
+
+    te::plugin::PluginManager::getInstance().unloadAll();
+
+    TerraLib::getInstance().finalize();
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
+    return EXIT_FAILURE;
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  return EXIT_SUCCESS;
+}
+
+void UnloadModules()
+{
+  te::plugin::PluginManager::getInstance().unloadAll();
+
+  TerraLib::getInstance().finalize();
+}
