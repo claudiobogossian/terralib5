@@ -39,22 +39,12 @@ te::layout::ImageModel::ImageModel()
 {
   std::string fileName("");
   te::gm::Envelope box(0., 0., 90., 90.);
-  te::color::RGBAColor contourColor(0, 0, 0, 255);
 
   this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getImageItem());
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   //adding properties
-  {
-    Property property(0);
-    property.setName("contour_color");
-    property.setLabel("Contour Color");
-    property.setValue(contourColor, dataType->getDataTypeColor());
-    property.setMenu(true);
-    m_properties.addProperty(property);
-  }
-
   {
     Property property(0);
     property.setName("file_name");

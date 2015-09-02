@@ -73,13 +73,9 @@ void te::layout::ImageItem::setFileName(const std::string& fileName)
 
 void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  painter->save();
-
-  const Property& pContourColor = m_controller->getProperty("contour_color");
-
-  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
-
-  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+  const Property& pFrameColor = m_controller->getProperty("frame_color");
+  const te::color::RGBAColor& framwColor = pFrameColor.getValue().toColor();
+  QColor qContourColor(framwColor.getRed(), framwColor.getGreen(), framwColor.getBlue(), framwColor.getAlpha());
   
   QPen pen(qContourColor, 0, Qt::SolidLine);
 
