@@ -405,7 +405,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
     }
   }
 
-  emit addItemFinalized();
+  insertItem((QGraphicsItem*)group);
 
   return group;
 }
