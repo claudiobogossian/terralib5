@@ -13,6 +13,7 @@
 #include <QPointF>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include <QDialog>
 
 namespace te
 {
@@ -54,9 +55,7 @@ namespace te
 
       void reset();
 
-      void storeEditedFeature();
-
-      void storeUndoCommand();
+      void updateCursor();
 
       void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
@@ -64,20 +63,19 @@ namespace te
 
       void getInfo(const te::gm::Envelope& e);
 
+      std::auto_ptr<te::dt::AbstractData> getValue(int type, QString value) const;
+
       te::da::DataSet* m_dataset;                           //!< The attributes dataset type.
       std::map<std::size_t, te::dt::AbstractData*> m_data;
       std::vector<std::size_t> m_restrictivePropertyPos;
+      QDialog* m_dialog;
       QTreeWidget* m_infoWidget;                            //!< Widget used to show the informations.
 
     private slots:
 
-      //void onOkPushButtonPressed();
+      void onOkPushButtonPressed();
 
       void onAttributesTreeWidgetItemDoubleClicked(QTreeWidgetItem* item, int column);
-
-    protected:
-
-      std::vector<Feature*> m_updateWatches;
 
     };
 

@@ -436,6 +436,9 @@ void te::edit::VertexTool::storeUndoCommand()
 {
     std::size_t count = 0;
 
+    if (m_feature == 0)
+      return;
+
     m_updateWatches.push_back(m_feature->clone());
 
     for (std::size_t i = 0; i < m_updateWatches.size(); ++i)

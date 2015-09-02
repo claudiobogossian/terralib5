@@ -44,7 +44,6 @@
 #include "../../../edit/qt/tools/MergeGeometriesTool.h"
 #include "../../../edit/qt/tools/EditInfoTool.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
-#include "../../../edit/qt/FeatureAttributesDialog.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/GeometryCollection.h"
 #include "../../../maptools/DataSetLayer.h"
@@ -85,7 +84,7 @@ QObject(parent),
   m_deleteGeometryToolAction(0),
   m_aggregateAreaToolAction(0),
   m_subtractAreaToolAction(0),
-  m_mergeGeometriesToolAction(0),
+  //m_mergeGeometriesToolAction(0),
   //m_splitPolygonToolAction(0),
   m_featureAttributesAction(0),
   m_undoToolAction(0),
@@ -260,7 +259,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_aggregateAreaToolAction, tr("Aggregate Area"), "vector-processing-aggregation", true, false, "aggregate_area", SLOT(onAggregateAreaToolActivated(bool)));
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "vector-processing-subtraction", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
-  createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
+  //createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
   //createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, false, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
   createAction(m_featureAttributesAction, tr("Feature Attributes"), "attributefill-icon", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
 
@@ -276,7 +275,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_aggregateAreaToolAction);
   toolsGroup->addAction(m_subtractAreaToolAction);
   toolsGroup->addAction(m_deleteGeometryToolAction);
-  toolsGroup->addAction(m_mergeGeometriesToolAction);
+  //toolsGroup->addAction(m_mergeGeometriesToolAction);
   //toolsGroup->addAction(m_splitPolygonToolAction);
   toolsGroup->addAction(m_featureAttributesAction);
 
@@ -289,7 +288,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_aggregateAreaToolAction);
   m_tools.push_back(m_subtractAreaToolAction);
   m_tools.push_back(m_deleteGeometryToolAction);
-  m_tools.push_back(m_mergeGeometriesToolAction);
+  //m_tools.push_back(m_mergeGeometriesToolAction);
  // m_tools.push_back(m_splitPolygonToolAction);
   m_tools.push_back(m_featureAttributesAction);
 
@@ -681,67 +680,12 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated(bool)
     return;
   }
 
-  if (layer.get()->getSelected() == 0)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
-    return;
-  }
-
-  if (layer.get()->getSelected()->size() != 1)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select one geometry first!"));
-    return;
-  }
-
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
 
   assert(e.m_display);
 
-  //setCurrentTool(new te::edit::EditInfoTool(e.m_display->getDisplay(), layer, 0), e.m_display);
-
-  te::edit::FeatureAttributesDialog options(m_toolBar);
-
-  // Get the geometry type
-  std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
-
-  const te::da::ObjectIdSet* objSet = layer->getSelected();
-
-  std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
-
-  // Get the geometry type
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
-
-  if (ds->moveNext())
-  {
-    te::gm::Coord2D coord(0, 0);
-
-    std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-
-    // Try finds the geometry centroid
-    coord = geom->getMBR()->getCenter();
-
-    // Build the search envelope
-    te::gm::Envelope env(coord.getX(), coord.getY(), coord.getX(), coord.getY());
-
-    // Get the feature
-    te::edit::Feature* m_feature = PickFeature(layer, env, e.m_display->getDisplay()->getSRID(), te::edit::GEOMETRY_UPDATE);
-
-    if (m_feature == 0)
-    {
-      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Feature Not Found!"));
-      return;
-    }
-
-    // Retrieves the data from layer
-    std::auto_ptr<te::da::DataSet> dataset(layer->getData(objSet));
-
-    options.set(dataset.get(), m_feature, layer);
-
-    options.exec();
-
-    m_featureAttributesAction->setChecked(false);
-  }
+  setCurrentTool(new te::edit::EditInfoTool(e.m_display->getDisplay(), layer, 0), e.m_display);
 
 }
 
@@ -809,6 +753,7 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool)
     return;
   }
 }
+
 
 void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 {
@@ -949,7 +894,7 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> act
     m_aggregateAreaToolAction->setEnabled(geomType == 1 ? true : false);
     m_subtractAreaToolAction->setEnabled(geomType == 1 ? true : false);
     m_deleteGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
-    m_mergeGeometriesToolAction->setEnabled(geomType == 1 ? true : false);
+    //m_mergeGeometriesToolAction->setEnabled(geomType == 1 ? true : false);
     //m_splitPolygonToolAction->setEnabled(geomType == 1 ? true : false);
 
   }

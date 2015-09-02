@@ -76,6 +76,7 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     if (m_feature == 0) // Can not stop yet...
     {
+      te::edit::CreateLineTool::clear();
       QMessageBox::critical(m_display, tr("Error"), QString(tr("Error aggregating area to the polygon")));
       return false;
     }

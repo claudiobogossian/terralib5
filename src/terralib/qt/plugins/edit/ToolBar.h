@@ -146,7 +146,7 @@ namespace te
           QAction* m_deleteGeometryToolAction;
           QAction* m_aggregateAreaToolAction;
           QAction* m_subtractAreaToolAction;
-          QAction* m_mergeGeometriesToolAction;
+          //QAction* m_mergeGeometriesToolAction;
           //QAction* m_splitPolygonToolAction;
           QAction* m_featureAttributesAction;
           QAction* m_undoToolAction;
