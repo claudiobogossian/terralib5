@@ -56,6 +56,9 @@ te::layout::MainLayout::MainLayout(AbstractProxyProject* proxyProject) :
 
 te::layout::MainLayout::~MainLayout()
 {
+
+  onExit();
+
   if(m_outsideArea)
   {
     delete m_outsideArea;
@@ -73,8 +76,6 @@ te::layout::MainLayout::~MainLayout()
     delete m_statusBar;
     m_statusBar = 0;
   }
-
-  onExit();
 
   if(m_buildContext)
   {
