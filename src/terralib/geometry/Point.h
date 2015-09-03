@@ -184,16 +184,21 @@ namespace te
         */
         virtual void setM(const double& m);
 
+        /*!
+        \brief Less then operator.
+
+        \param rhs The source object to be compared.
+
+        \return True if the point have the coordinates values is less.
+        */
+        bool operator<(const Point& rhs);
+
+
         //@}
 
-      protected:
+      public:
 
-        /** @name Protected Initializers
-         *  Just subclasses can access these constructors.
-         */
-        //@{
-
-        /*!
+         /*!
           \brief It initializes the Geometry with the specified spatial reference system id and envelope.
        
           \param t    The internal type of the Geometry.

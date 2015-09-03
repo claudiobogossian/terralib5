@@ -107,6 +107,27 @@ namespace te
 
         //@}
 
+		/*!
+		\brief It sets the n-th triangle in this TIN.
+
+		\param i The index of the given polygon element.
+		\param g The polygon that will be placed on the position indicated by index.
+
+		\note It doesn't check the index range.
+
+		\note TerraLib extended method.
+		*/
+		void setGeometryN(std::size_t i, te::gm::Polygon* g);
+		
+		/*!
+		\brief It adds the triangle into the TIN.
+
+		\param g The geometry you want to add to the TIN.
+
+		\note TerraLib extended method.
+		*/
+		void add(te::gm::Polygon* g);
+
       private:
 
         static const std::string sm_typeName; //!< Geometry type name for TIN.

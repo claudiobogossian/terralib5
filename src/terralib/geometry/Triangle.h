@@ -104,6 +104,17 @@ namespace te
         Triangle& operator=(const Triangle& rhs);
 
         //@}
+
+	public:
+		std::size_t number_of_children; //!< number of children of the triangle
+		std::size_t number_of_parents;  //!< number of parents of the triangle
+		std::vector<Triangle> children; //!< references to the children of the triangle
+		Triangle *adjacent[3]; //!< references to the adjacentof the triangle
+		Triangle *parents[2]; //!< references to the parents of the triangle
+		int triangle_index;	//!< triangle index in vector
+		double xc, yc; 	//!< circumcenter coordinates of the circunference defined from the 3 points of the triangle
+		double r; //!< circunference radius
+		bool processed, visited; //!< flags
     };
 
   } // end namespace gm

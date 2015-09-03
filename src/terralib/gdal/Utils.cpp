@@ -170,10 +170,10 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds, const int multiResLevel)
     double gridAffineParams[ 6 ];
     gridAffineParams[ 0 ] = gtp[ 1 ];
     gridAffineParams[ 1 ] = gtp[ 2 ];
-    gridAffineParams[ 2 ] = gtp[ 0 ];
+    gridAffineParams[ 2 ] = gtp[ 0 ] + ( gtp[ 1 ] / 2.0 );
     gridAffineParams[ 3 ] = gtp[ 4 ];
     gridAffineParams[ 4 ] = gtp[ 5 ];
-    gridAffineParams[ 5 ] = gtp[ 3 ];     
+    gridAffineParams[ 5 ] = gtp[ 3 ] + ( gtp[ 5 ] / 2.0 );     
     
     if( multiResLevel == -1 )
     {
@@ -555,18 +555,18 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
   if(poDataset == 0)
     throw Exception("Could not create raster!");
   
-  const double* cgt = g->getGeoreference();
+  const double* gridAffineParams = g->getGeoreference();
   
-  double gt[6];
+  double gtp[6];
   
-  gt[0] = cgt[2]; 
-  gt[1] = cgt[0]; 
-  gt[2] = cgt[1]; 
-  gt[3] = cgt[5]; 
-  gt[4] = cgt[3]; 
-  gt[5] = cgt[4];
+  gtp[0] = gridAffineParams[2] - ( gridAffineParams[ 0 ] / 2.0 ); 
+  gtp[1] = gridAffineParams[0]; 
+  gtp[2] = gridAffineParams[1]; 
+  gtp[3] = gridAffineParams[5] - ( gridAffineParams[ 4 ] / 2.0  ); 
+  gtp[4] = gridAffineParams[3]; 
+  gtp[5] = gridAffineParams[4];
   
-  poDataset->SetGeoTransform(gt);
+  poDataset->SetGeoTransform(gtp);
   
   OGRSpatialReference oSRS;
   

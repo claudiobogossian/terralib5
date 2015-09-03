@@ -37,6 +37,8 @@
 #include "MultiPoint.h"
 #include "MultiPolygon.h"
 #include "Point.h"
+#include "PointZ.h"
+#include "PointZM.h"
 #include "Polygon.h"
 
 // GEOS
@@ -50,6 +52,7 @@
 #include <geos/geom/MultiPolygon.h>
 #include <geos/geom/Point.h>
 #include <geos/geom/Polygon.h>
+#include <geos/geom/Dimension.h>
 
 // STL
 #include <cassert>
@@ -93,7 +96,22 @@ te::gm::Point* te::gm::GEOSReader::read(const geos::geom::Point* geosPt)
 {
   assert((geosPt != 0) && (geosPt->getGeometryTypeId() == geos::geom::GEOS_POINT));
 
-  Point* pt = new Point(geosPt->getX(), geosPt->getY(), geosPt->getSRID(), 0);
+  te::gm::GeomType gtype;
+  Point* pt;
+  switch (geosPt->getCoordinateDimension())
+  {
+  case 3:
+    gtype = PointZType;
+    pt = new PointZ(geosPt->getX(), geosPt->getY(), geosPt->getCoordinate()->z, geosPt->getSRID(), 0);
+    break;
+  case 4:
+    gtype = PointZMType;
+    pt = new PointZM(geosPt->getX(), geosPt->getY(), geosPt->getCoordinate()->z, geosPt->getCoordinate()->z, geosPt->getSRID(), 0);
+    break;
+  default:
+    gtype = PointType;
+    pt = new Point(gtype, geosPt->getSRID(), 0, geosPt->getX(), geosPt->getY());
+  }
 
   return pt;
 }
@@ -125,13 +143,30 @@ te::gm::LinearRing* te::gm::GEOSReader::read(const geos::geom::LinearRing* geosR
 
   std::size_t size = cs->getSize();
 
-  LinearRing* r = new LinearRing(size, LineStringType, geosRing->getSRID(), 0);
+  te::gm::GeomType gtype;
+  switch (cs->getDimension())
+  {
+  case 3:
+	  gtype = LineStringZType;
+	  break;
+  case 4:
+	  gtype = LineStringZMType;
+	  break;
+  default:
+	  gtype = LineStringType;
+  }
+
+  LinearRing* r = new LinearRing(size, gtype, geosRing->getSRID(), 0);
 
   for(std::size_t i = 0; i < size; ++i)
   {
     r->setX(i, cs->getX(i));
-    r->setY(i, cs->getY(i));
-  } 
+	r->setY(i, cs->getY(i));
+	if ((gtype & 0xF00) == 0x300)
+		r->setZ(i, cs->getOrdinate(i, 2)); //Z value
+	if ((gtype & 0xF00) == 0x700)
+		r->setM(i, cs->getOrdinate(i, 3)); //m value
+  }
   
   return r;
 
@@ -144,9 +179,16 @@ te::gm::Polygon* te::gm::GEOSReader::read(const geos::geom::Polygon* geosPoly)
   if(geosPoly->isEmpty())
     return new Polygon(0, PolygonType, geosPoly->getSRID());
 
+  te::gm::GeomType gtype;
+  if (geosPoly->getDimension() == geos::geom::Dimension::A)
+	gtype = PolygonZType;
+  else
+	gtype = PolygonType;
+
   std::size_t holesSize = geosPoly->getNumInteriorRing();
 
-  Polygon* poly = new Polygon(holesSize + 1, PolygonType, geosPoly->getSRID(), 0);
+
+  Polygon* poly = new Polygon(holesSize + 1, gtype, geosPoly->getSRID(), 0);
 
   LinearRing* r = read(static_cast<const geos::geom::LinearRing*>(geosPoly->getExteriorRing()));
 

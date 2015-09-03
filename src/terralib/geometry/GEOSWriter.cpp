@@ -29,9 +29,11 @@
 #ifdef TERRALIB_GEOS_ENABLED
 // TerraLib
 #include "../common/Translator.h"
+#include "Envelope.h"
 #include "Exception.h"
 #include "GeometryCollection.h"
 #include "GEOSGeometryFactory.h"
+#include "Line.h"
 #include "LineString.h"
 #include "LinearRing.h"
 #include "MultiLineString.h"
@@ -46,7 +48,9 @@
 // GEOS
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/CoordinateArraySequence.h>
+#include <geos/geom/Envelope.h>
 #include <geos/geom/GeometryCollection.h>
+#include <geos/geom/LineSegment.h>
 #include <geos/geom/LineString.h>
 #include <geos/geom/LinearRing.h>
 #include <geos/geom/MultiLineString.h>
@@ -277,6 +281,8 @@ geos::geom::MultiLineString* te::gm::GEOSWriter::write(const MultiLineString* te
 
   std::vector<geos::geom::Geometry*>* geoms = getGeometries(teMLine);
 
+  assert(geoms);
+
   geos::geom::MultiLineString* mline = GEOSGeometryFactory::getGeomFactory()->createMultiLineString(geoms);
   
   assert(mline);
@@ -288,20 +294,38 @@ geos::geom::MultiLineString* te::gm::GEOSWriter::write(const MultiLineString* te
 
 geos::geom::MultiPoint* te::gm::GEOSWriter::write(const MultiPoint* teMPt)
 {
-  assert((teMPt != 0) && (teMPt->getGeomTypeId() == MultiPointType ||
-                          teMPt->getGeomTypeId() == MultiPointMType ||
-                          teMPt->getGeomTypeId() == MultiPointZType ||
-                          teMPt->getGeomTypeId() == MultiPointZMType));
+	assert((teMPt != 0) && (teMPt->getGeomTypeId() == MultiPointType ||
+		teMPt->getGeomTypeId() == MultiPointMType ||
+		teMPt->getGeomTypeId() == MultiPointZType ||
+		teMPt->getGeomTypeId() == MultiPointZMType));
 
-  std::vector<geos::geom::Geometry*>* geoms = getGeometries(teMPt);
+	std::vector<geos::geom::Geometry*>* geoms = getGeometries(teMPt);
 
-  geos::geom::MultiPoint* mpt = GEOSGeometryFactory::getGeomFactory()->createMultiPoint(geoms);
-  
-  assert(mpt);
+	geos::geom::MultiPoint* mpt = GEOSGeometryFactory::getGeomFactory()->createMultiPoint(geoms);
 
-  mpt->setSRID(teMPt->getSRID());
+	assert(mpt);
 
-  return mpt;
+	mpt->setSRID(teMPt->getSRID());
+
+	return mpt;
+}
+
+geos::geom::Envelope* te::gm::GEOSWriter::write(const Envelope* teEnv)
+{
+	assert(teEnv);
+	geos::geom::Envelope* env = new geos::geom::Envelope(teEnv->getLowerLeftX(), teEnv->getUpperRightX(), teEnv->getLowerLeftY(), teEnv->getUpperRightY());
+	assert(env);
+
+	return env;
+}
+
+geos::geom::LineSegment* te::gm::GEOSWriter::write(const Line* teLin)
+{
+	assert(teLin);
+	geos::geom::LineSegment *ls = new geos::geom::LineSegment(teLin->getX(0), teLin->getY(0), teLin->getX(1), teLin->getY(1));
+	assert(ls);
+
+	return ls;
 }
 
 geos::geom::GeometryCollection* te::gm::GEOSWriter::write(const GeometryCollection* teGeomColl)
@@ -339,6 +363,10 @@ geos::geom::CoordinateSequence* te::gm::GEOSWriter::getCoordinateSequence(const 
   {
     (*geosCoords)[i].x = teCoords[i].x;
     (*geosCoords)[i].y = teCoords[i].y;
+	if (teLine->getGeomTypeId() == LineStringMType ||
+		teLine->getGeomTypeId() == LineStringZType ||
+		teLine->getGeomTypeId() == LineStringZMType)
+		(*geosCoords)[i].z = teLine->getZ(i);
   }
 
   geos::geom::CoordinateSequence* cl = new geos::geom::CoordinateArraySequence(geosCoords);

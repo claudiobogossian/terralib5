@@ -88,6 +88,7 @@ namespace te
           \param r The row position (double).
           \param v The output value or the current input raster no-data value if the requested coordinates are outside the valid image bounds.
           \param b The band to obtain the value.
+          \note The caller of this method must be aware that the returned value may be outside the original input rasters valid values range.
         */
         inline void getValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b)
         {
@@ -101,6 +102,7 @@ namespace te
           \param c The column position (double).
           \param r The row position (double).
           \param v A vector of values, for all bands, or the current input raster no-data values if the requested coordinates are outside the valid image bounds..
+          \note The caller of this method must be aware that the returned values may be outside the original input rasters valid values range.
         */
         void getValues(const double& c, const double& r, std::vector<std::complex<double> >& values);
         
