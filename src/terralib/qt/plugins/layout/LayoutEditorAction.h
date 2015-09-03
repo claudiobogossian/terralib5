@@ -29,6 +29,10 @@
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
+#include "../../../layout/qt/default/DisplayDock.h"
+#include "../../../layout/qt/default/MainLayout.h"
+#include <QGroupBox>
+#include <QVBoxLayout>
 
 namespace te
 {
@@ -38,6 +42,7 @@ namespace te
     {
       namespace layout
       {
+
         /*!
           \class LayoutEditorAction
 
@@ -54,9 +59,26 @@ namespace te
 
             virtual ~LayoutEditorAction();
 
+            virtual void createMenu();
+
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            virtual void onExit();
+
+
+
+
+          protected:
+
+          te::layout::DisplayDock*              m_dockLayoutDisplay;
+          te::layout::MainLayout*               m_mainLayout;
+          QGroupBox*                            m_groupBox;
+          QStatusBar*                           m_statusBar;
+          QVBoxLayout*                          m_verticalLayout;
+
+
         };
 
       } // end namespace layout

@@ -86,7 +86,7 @@ namespace te
 
       virtual void setView(AbstractOutsideView* view);
 
-      virtual void update(const Subject* subject) override;
+      virtual void update(const Subject* subject);
 
     protected:
       

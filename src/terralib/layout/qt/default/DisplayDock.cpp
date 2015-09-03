@@ -31,7 +31,7 @@
 // Qt
 #include <QMainWindow>
 
-te::qt::plugins::layout::DisplayDock::DisplayDock( QWidget * parent, Qt::WindowFlags flags ) :
+te::layout::DisplayDock::DisplayDock( QWidget * parent, Qt::WindowFlags flags ) :
   QDockWidget(parent, flags),
   m_previousCentralWidget(0),
   m_previousCentralWidgetVisibilite(true)
@@ -40,12 +40,12 @@ te::qt::plugins::layout::DisplayDock::DisplayDock( QWidget * parent, Qt::WindowF
   setWindowTitle("Layout Display");
 }
 
-te::qt::plugins::layout::DisplayDock::~DisplayDock()
+te::layout::DisplayDock::~DisplayDock()
 {
 
 }
 
-void te::qt::plugins::layout::DisplayDock::closeEvent( QCloseEvent * event )
+void te::layout::DisplayDock::closeEvent( QCloseEvent * event )
 {
   QDockWidget::closeEvent(event);
 
@@ -57,14 +57,14 @@ void te::qt::plugins::layout::DisplayDock::closeEvent( QCloseEvent * event )
   removeDock();
 }
 
-void te::qt::plugins::layout::DisplayDock::setPreviousCentralWidget( QWidget* previous )
+void te::layout::DisplayDock::setPreviousCentralWidget( QWidget* previous )
 {
   m_previousCentralWidget = previous;
 
   m_previousCentralWidget->setParent(0);
 }
 
-void te::qt::plugins::layout::DisplayDock::removeDock()
+void te::layout::DisplayDock::removeDock()
 {
   QMainWindow* mw = (QMainWindow*)parentWidget();
 
@@ -81,7 +81,7 @@ void te::qt::plugins::layout::DisplayDock::removeDock()
   }
 }
 
-void te::qt::plugins::layout::DisplayDock::onExit()
+void te::layout::DisplayDock::onExit()
 {
   close();
 }

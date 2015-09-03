@@ -37,7 +37,7 @@
 #include <QSizePolicy>
 #include <QString>
 
-te::qt::plugins::layout::EditTemplateDock::EditTemplateDock( QWidget * parent, Qt::WindowFlags flags ) :
+te::layout::EditTemplateDock::EditTemplateDock( QWidget * parent, Qt::WindowFlags flags ) :
   QDockWidget(parent, flags),
   m_editTemplate(0),
   m_tab(0),
@@ -69,12 +69,12 @@ te::qt::plugins::layout::EditTemplateDock::EditTemplateDock( QWidget * parent, Q
   allInstallEventFilter();
 }
 
-te::qt::plugins::layout::EditTemplateDock::~EditTemplateDock()
+te::layout::EditTemplateDock::~EditTemplateDock()
 {
 
 }
 
-void te::qt::plugins::layout::EditTemplateDock::create()
+void te::layout::EditTemplateDock::create()
 {
   te::layout::BuildGraphicsOutside buildOutside;
 
@@ -92,17 +92,17 @@ void te::qt::plugins::layout::EditTemplateDock::create()
   m_editTemplate = dynamic_cast<te::layout::EditTemplateOutside*>(widget);   
 }
 
-te::layout::EditTemplateOutside* te::qt::plugins::layout::EditTemplateDock::getEditTemplateOutside()
+te::layout::EditTemplateOutside* te::layout::EditTemplateDock::getEditTemplateOutside()
 {
   return m_editTemplate;
 }
 
-void te::qt::plugins::layout::EditTemplateDock::onCurrentChanged( int index )
+void te::layout::EditTemplateDock::onCurrentChanged( int index )
 {
   
 }
 
-int te::qt::plugins::layout::EditTemplateDock::getHeightTabBar()
+int te::layout::EditTemplateDock::getHeightTabBar()
 {
   QList<QTabBar*> tabBar = m_tab->findChildren<QTabBar*>();
   tabBar.at(0)->setCursor(Qt::PointingHandCursor);
@@ -111,14 +111,14 @@ int te::qt::plugins::layout::EditTemplateDock::getHeightTabBar()
   return h;
 }
 
-void te::qt::plugins::layout::EditTemplateDock::allInstallEventFilter()
+void te::layout::EditTemplateDock::allInstallEventFilter()
 {
   QList<QTabBar*> tabBar = m_tab->findChildren<QTabBar*>();
   for(int i = 0 ; i < tabBar.count() ; ++i)
     tabBar.at(i)->installEventFilter(this);
 }
 
-bool te::qt::plugins::layout::EditTemplateDock::eventFilter( QObject * watched, QEvent * event )
+bool te::layout::EditTemplateDock::eventFilter( QObject * watched, QEvent * event )
 {
   QList<QTabBar*> tabBar = m_tab->findChildren<QTabBar*>();
   for(int i = 0 ; i < tabBar.count() ; ++i)
@@ -136,7 +136,7 @@ bool te::qt::plugins::layout::EditTemplateDock::eventFilter( QObject * watched, 
   return QDockWidget::eventFilter(watched, event);
 }
 
-void te::qt::plugins::layout::EditTemplateDock::selectionEditTemplateTab( int index )
+void te::layout::EditTemplateDock::selectionEditTemplateTab( int index )
 {
   if(m_currentTab == index)
   {

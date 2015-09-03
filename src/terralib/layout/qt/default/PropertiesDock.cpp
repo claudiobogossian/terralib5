@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ObjectInspectorOutside.cpp
+  \file PropertiesDock.cpp
    
   \brief 
 
@@ -26,50 +26,59 @@
 */
 
 // TerraLib
-#include "ObjectInspectorDock.h"
-#include "../../../layout/qt/outside/ObjectInspectorOutside.h"
+#include "PropertiesDock.h"
 #include "../../../layout/qt/core/BuildGraphicsOutside.h"
 #include "../../../layout/core/enum/Enums.h"
+#include "../../../layout/qt/outside/PropertiesOutside.h"
 
-
-te::qt::plugins::layout::ObjectInspectorDock::ObjectInspectorDock( QWidget * parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
+te::layout::PropertiesDock::PropertiesDock( QWidget * parent, Qt::WindowFlags flags ) :
   QDockWidget(parent, flags)
 {
-  setWindowTitle("Object Inspector");
+  setVisible(false);
+  setWindowTitle("Properties");
   setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
   create();
 
-  setWidget(m_inspector);
+  setWidget(m_properties);
 }
 
-te::qt::plugins::layout::ObjectInspectorDock::~ObjectInspectorDock()
+te::layout::PropertiesDock::~PropertiesDock()
 {
-
+  
 }
 
-void te::qt::plugins::layout::ObjectInspectorDock::create()
+void te::layout::PropertiesDock::create()
 {
   te::layout::BuildGraphicsOutside buildOutside;
-  
+
   te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
   if(!objectType)
   {
     return;
   }
 
-  QWidget* widget = buildOutside.createOuside(objectType->getObjectInspectorWindow());
+  QWidget* widget = buildOutside.createOuside(objectType->getPropertiesWindow());
   if(!widget)
   {
     return;
   }
-  m_inspector = dynamic_cast<te::layout::ObjectInspectorOutside*>(widget);  
+  m_properties = dynamic_cast<te::layout::PropertiesOutside*>(widget);   
 }
 
-te::layout::ObjectInspectorOutside* te::qt::plugins::layout::ObjectInspectorDock::getObjectInspectorOutside()
+te::layout::PropertiesOutside* te::layout::PropertiesDock::getPropertiesOutside()
 {
-  return m_inspector;
+  return m_properties;
 }
+
+void te::layout::PropertiesDock::closeEvent( QCloseEvent * event )
+{
+  // Closing the PropertiesDock, all open windows from a property will be closed.
+  m_properties->close();
+}
+
+
+
 
 
 

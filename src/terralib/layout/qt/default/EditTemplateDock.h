@@ -42,47 +42,41 @@ namespace te
   {
     class EditTemplateOutside;
   }    
-  namespace qt
+  namespace layout
   {
-    namespace plugins
+    class EditTemplateDock : public QDockWidget
     {
-      namespace layout
-      {
-        class EditTemplateDock : public QDockWidget
-        {
-          Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
-        public:
+    public:
 
-          EditTemplateDock( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
-          virtual ~EditTemplateDock();
+      EditTemplateDock( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
+      virtual ~EditTemplateDock();
 
-          te::layout::EditTemplateOutside* getEditTemplateOutside();
+      te::layout::EditTemplateOutside* getEditTemplateOutside();
 
-          virtual bool eventFilter( QObject * watched, QEvent * event );
+      virtual bool eventFilter( QObject * watched, QEvent * event );
 
-        protected slots:
+    protected slots:
 
-          virtual void onCurrentChanged ( int index );
-          
-        protected:
+      virtual void onCurrentChanged ( int index );
 
-          virtual void create();
-          
-          virtual int getHeightTabBar(); 
+    protected:
 
-          virtual void allInstallEventFilter();
+      virtual void create();
 
-          virtual void selectionEditTemplateTab(int index);
+      virtual int getHeightTabBar();
 
-          te::layout::EditTemplateOutside* m_editTemplate;
-          QTabWidget*                      m_tab;
-          int                              m_currentTab;
-          double                           m_tabHeight;
-          QRectF                           m_editTemplateSize;
-        };
-      }
-    }
+      virtual void allInstallEventFilter();
+
+      virtual void selectionEditTemplateTab(int index);
+
+      te::layout::EditTemplateOutside* m_editTemplate;
+      QTabWidget*                      m_tab;
+      int                              m_currentTab;
+      double                           m_tabHeight;
+      QRectF                           m_editTemplateSize;
+    };
   }
 }
 

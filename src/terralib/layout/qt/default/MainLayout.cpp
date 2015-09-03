@@ -30,7 +30,6 @@
 #include "../../../geometry/Envelope.h"
 #include "OutsideArea.h"
 #include "DisplayDock.h"
-#include "ProxyProject.h"
 #include "../../../layout/core/pattern/singleton/Context.h"
 
 // Qt
@@ -41,21 +40,21 @@
 #include <QString>
 #include <QVBoxLayout>
 
-te::qt::plugins::layout::MainLayout::MainLayout() :
+#include "../../../qt/plugins/layout/ProxyProject.h"
+
+te::layout::MainLayout::MainLayout(AbstractProxyProject* proxyProject) :
   m_view(0),
-  m_dockLayoutDisplay(0),
-  m_groupBox(0),
   m_statusBar(0),
   m_buildContext(0),
   m_outsideArea(0),
   m_buildEnums(0),
-  m_proxyProject(0)
+  m_proxyProject(proxyProject)
 {
   m_buildContext = new te::layout::BuildContext;
   m_buildEnums = new te::layout::BuildEnums;
 }
 
-te::qt::plugins::layout::MainLayout::~MainLayout()
+te::layout::MainLayout::~MainLayout()
 {
   if(m_outsideArea)
   {
@@ -69,7 +68,13 @@ te::qt::plugins::layout::MainLayout::~MainLayout()
     m_view = 0;
   }
   
-  finish();  
+  if(m_statusBar)
+  {
+    delete m_statusBar;
+    m_statusBar = 0;
+  }
+
+  onExit();
 
   if(m_buildContext)
   {
@@ -90,22 +95,10 @@ te::qt::plugins::layout::MainLayout::~MainLayout()
   }
 }
 
-void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLayout)
+void te::layout::MainLayout::init(const QSize& size, const QRect& screen)
 {
+
   bool create = false;
-
-  QSize size(800, 600);
-  QRect screen = QApplication::desktop()->screen()->rect();
-
-  if(mainWindow)
-  {
-    QMainWindow* mw = dynamic_cast<QMainWindow*>(mainWindow);
-    if(mw)
-    {
-      size = mw->centralWidget()->size();
-      screen = mw->centralWidget()->geometry();
-    }
-  }
 
   if(!m_view)
   {
@@ -118,6 +111,7 @@ void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLa
   m_view->move( screen.center() - m_view->rect().center() );
 
   createEnums();
+
   createLayoutContext(size.width(), size.height());
 
   if(create)
@@ -126,76 +120,81 @@ void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLa
     m_view->config();
   }
 
-  createDockLayoutDisplay(mainWindow, m_view);
-    
-  if(!m_outsideArea)
-  {
-    m_outsideArea = new OutsideArea(m_view, mainWindow, mnuLayout, m_statusBar);
-    m_outsideArea->connect(m_outsideArea, SIGNAL(exit()), m_dockLayoutDisplay, SLOT(onExit()));
-  }
-
-  m_view->show();
-  m_outsideArea->openMainMenu();
-  m_outsideArea->openAllDocks();
+  m_statusBar = new QStatusBar;
+  m_statusBar->setMinimumSize(200, 10);
+  m_statusBar->showMessage("Map Layout - TerraLib 5");
 }
 
-void te::qt::plugins::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, te::layout::View* view)
+void te::layout::MainLayout::postInit()
 {
-  if(mainWindow)
-  {
-    QMainWindow* mw = dynamic_cast<QMainWindow*>(mainWindow);
-    if(!m_dockLayoutDisplay)
-    {
-      m_dockLayoutDisplay = new DisplayDock;    
+  if(!m_outsideArea)
+   {
+     m_outsideArea = new OutsideArea(m_view, m_statusBar);
+ /* TODO: DONE Evento de exit sendo tratado do lado de fora para matar o dock quando mainlayout morrer*/
+     m_outsideArea->connect(m_outsideArea, SIGNAL(exit()), this, SLOT(onExit()));
+   }
 
-      m_statusBar = new QStatusBar;
-      m_statusBar->setMinimumSize(200, 10);
-      m_statusBar->showMessage("Map Layout - TerraLib 5");
-
-      QVBoxLayout* vLayout = new QVBoxLayout;
-      vLayout->addWidget(view);
-      vLayout->addWidget(m_statusBar);
-
-      m_groupBox = new QGroupBox(m_dockLayoutDisplay);
-      m_groupBox->setLayout(vLayout);
-    }   
-
-    m_dockLayoutDisplay->setWidget(m_groupBox);
-    m_dockLayoutDisplay->setPreviousCentralWidget(mw->centralWidget());
-    m_dockLayoutDisplay->setParent(mw); 
-
-    mw->setCentralWidget(m_dockLayoutDisplay);
-    m_dockLayoutDisplay->setVisible(true);      
-  }
+   m_view->show();
+   m_outsideArea->openMainMenu();
 }
 
-void te::qt::plugins::layout::MainLayout::createLayoutContext(int width, int height)
+void te::layout::MainLayout::createLayoutContext(int width, int height)
 {
   if(!m_buildContext)
     return;
 
   m_buildContext->createLayoutContext(width, height, m_view);
-  m_proxyProject = new ProxyProject;
+  //m_proxyProject = proxyProject;
   if(!te::layout::Context::getInstance().getProxyProject())
   {
     te::layout::Context::getInstance().setProxyProject(m_proxyProject);
   }
 }
 
-void te::qt::plugins::layout::MainLayout::finish()
+void te::layout::MainLayout::onExit()
 {
-  if(m_dockLayoutDisplay)
-  {
-    m_dockLayoutDisplay->close();
-    delete m_dockLayoutDisplay;
-    m_dockLayoutDisplay = 0;
-  }
+  emit exit();
 }
 
-void te::qt::plugins::layout::MainLayout::createEnums()
+void te::layout::MainLayout::createEnums()
 {
   if(!m_buildEnums)
     return;
 
   m_buildEnums->build();
+}
+
+QStatusBar* te::layout::MainLayout::getStatusBar()
+{
+  return m_statusBar;
+}
+
+te::layout::View* te::layout::MainLayout::getView()
+{
+  return m_view;
+}
+
+te::layout::PropertiesDock* te::layout::MainLayout::getProperties()
+{
+  return m_outsideArea->getPropertiesDock();
+}
+
+te::layout::ObjectInspectorDock* te::layout::MainLayout::getObjectInspector()
+{
+  return m_outsideArea->getObjectInspectorDock();
+}
+
+te::layout::ToolbarOutside* te::layout::MainLayout::getToolbar()
+{
+  return m_outsideArea->getToolbar();
+}
+
+te::layout::EditTemplateDock* te::layout::MainLayout::getEditTemplate()
+{
+  return m_outsideArea->getEditTemplate();
+}
+
+QMenu* te::layout::MainLayout::getMenu(QMenu* parentMenu)
+{
+  return m_outsideArea->getMenu(parentMenu);
 }

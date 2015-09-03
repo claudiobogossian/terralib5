@@ -35,38 +35,32 @@ class QCloseEvent;
 
 namespace te
 {
-  namespace qt
+  namespace layout
   {
-    namespace plugins
+    class DisplayDock : public QDockWidget
     {
-      namespace layout
-      {
-        class DisplayDock : public QDockWidget
-        {
-          Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
-        public:
+    public:
 
-          DisplayDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
-          virtual ~DisplayDock();
-                
-          void setPreviousCentralWidget(QWidget* previous);
-      
-          virtual void removeDock();
+      DisplayDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+      virtual ~DisplayDock();
 
-        protected slots:
+      void setPreviousCentralWidget(QWidget* previous);
 
-          virtual void onExit();
-      
-        protected:
+      virtual void removeDock();
 
-          virtual void  closeEvent ( QCloseEvent * event );
+    protected slots:
 
-          QWidget* m_previousCentralWidget; /* Previous central display of application */
-          bool     m_previousCentralWidgetVisibilite;
-        };
-      }
-    }
+      virtual void onExit();
+
+    protected:
+
+      virtual void  closeEvent ( QCloseEvent * event );
+
+      QWidget* m_previousCentralWidget; /* Previous central display of application */
+      bool     m_previousCentralWidgetVisibilite;
+    };
   }
 }
 

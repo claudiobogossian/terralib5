@@ -18,49 +18,51 @@
  */
 
 /*!
-  \file ObjectInspectorOutside.h
+  \file PropertiesDock.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_OBJECT_INSPECTOR_DOCK_H 
-#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_OBJECT_INSPECTOR_DOCK_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_PROPERTIES_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_PROPERTIES_DOCK_H
 
 // Qt
 #include <QDockWidget>
-#include "../../../layout/qt/outside/ObjectInspectorOutside.h"
+
+// STL
+#include <vector>
+
+class QCloseEvent;
 
 namespace te
 {
-  namespace qt
+  namespace layout
   {
-    namespace plugins
+    class PropertiesOutside;
+    class PropertiesDock : public QDockWidget
     {
-      namespace layout
-      {
-        class ObjectInspectorDock : public QDockWidget
-        {
-          Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
-        public:
+    public:
 
-          ObjectInspectorDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+      PropertiesDock( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
+      virtual ~PropertiesDock();
 
-          virtual ~ObjectInspectorDock();
+      te::layout::PropertiesOutside* getPropertiesOutside();
 
-          te::layout::ObjectInspectorOutside* getObjectInspectorOutside();
-    
-        protected:
+    protected:
 
-          virtual void create();
+      virtual void  closeEvent ( QCloseEvent * event );
 
-          te::layout::ObjectInspectorOutside* m_inspector;
-        };
-      }
-    }
+      virtual void create();
+
+      te::layout::PropertiesOutside* m_properties;
+
+    };
   }
 }
+
 
 #endif
