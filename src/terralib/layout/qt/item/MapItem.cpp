@@ -209,7 +209,7 @@ te::qt::widgets::MapDisplay* te::layout::MapItem::getMapDisplay()
 void te::layout::MapItem::contextUpdated(const ContextObject& context)
 {
   const int zoom = (const int) context.getZoom();
-  ((MapController1 *) m_controller)->setZoom(zoom);
+  ((MapController *) m_controller)->setZoom(zoom);
 
   Utils* utils = Context::getInstance().getUtils();
 

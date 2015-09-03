@@ -131,7 +131,7 @@ void te::layout::MapController::extentChanged(const te::gm::Envelope& envelope, 
   }
 }
 
-void te::layout::MapController1::setZoom( const int& zoom )
+void te::layout::MapController::setZoom( const int& zoom )
 {
   m_zoom = zoom;
 }

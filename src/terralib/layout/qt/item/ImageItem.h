@@ -54,25 +54,36 @@ namespace te
       public:
 
         /*!
-          \brief Constructor
+        \brief Constructor
 
-          \param controller "Controller" part of MVC component
-          \param o "Model" part of MVC component
-        */ 
-        ImageItem(AbstractItemController* controller, bool invertedMatrix = false);
-        
+        \param controller "Controller" part of MVC component
+        \param o "Model" part of MVC component
+        */
+        ImageItem(AbstractItemController* controller);
+
         /*!
-          \brief Destructor
-         */
+        \brief Destructor
+        */
         virtual ~ImageItem();
 
-       protected:
+        /*!
+        \brief Gets the file name of the image
+        */
+        virtual const std::string& getFileName() const;
 
-        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        /*!
+        \brief Sets the file name of the image
+        */
+        virtual void setFileName(const std::string& fileName);
 
       protected:
 
-        QImage  m_image; //!< Represents the loaded image
+        virtual void drawItem(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+
+      protected:
+
+        QImage      m_image; //!< Represents the loaded image
+        std::string m_fileName; //!< The file name of the loaded image
     };
   }
 }

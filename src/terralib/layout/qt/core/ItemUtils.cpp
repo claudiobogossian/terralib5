@@ -72,17 +72,13 @@ std::vector<te::layout::MapItem*> te::layout::ItemUtils::getMapItemList(bool sel
   std::vector<te::layout::MapItem*> list;
 
   QList<QGraphicsItem*> graphicsItems = getItems(selected);
-  foreach( QGraphicsItem *item, graphicsItems) 
+  foreach(QGraphicsItem *item, graphicsItems)
   {
-    if(!item)
+    if (!item)
       continue;
 
-    te::layout::AbstractItemView* lItem = dynamic_cast<te::layout::AbstractItemView*>(item);
-    if(!lItem)
-      continue;
-
-    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(lItem);
-    if(!mit)
+    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(item);
+    if (!mit)
       continue;
 
     list.push_back(mit);
