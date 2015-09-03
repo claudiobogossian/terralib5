@@ -100,6 +100,8 @@ namespace te
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
+        void draw();
+
         void storeRemovedFeature();
 
     };
