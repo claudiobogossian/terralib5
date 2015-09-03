@@ -301,33 +301,50 @@ void TesteGEOS()
 void GenerateTIN()
 {
   //Lendo shape das Isolinhas
-  std::string filename("D:/TA46-testes/altimetria_1_l3d.shp");
+  std::string filename_iso(""TERRALIB_DATA_DIR"/mnt/Isolinhas.shp");
+  std::string filename_pts(""TERRALIB_DATA_DIR"/mnt/Pontos_cotados.shp");
 
-  int SRID = 4291;
-  double tol = 0.00018000000;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
+  int SRID = 32723;
+  double tol = 20;// 0.00018000000;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
   double maxdist = 20.*tol;
   double minedge = tol / 5.;
-  std::string atributoz("avg_z");
+  std::string atributoz_iso("Avg_Z");
+  std::string atributoz_sample("Avg_Z");
 
   std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename;
+  srcInfo["URI"] = filename_iso;
   srcInfo["DRIVER"] = "ESRI Shapefile";
 
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR").release());
-  srcDs->setConnectionInfo(srcInfo);
-  srcDs->open();
+  te::da::DataSourcePtr srcDsiso(te::da::DataSourceFactory::make("OGR").release());
+  srcDsiso->setConnectionInfo(srcInfo);
+  srcDsiso->open();
 
-  std::string inDsetName = "altimetria_1_l3d";
-  if (!srcDs->dataSetExists(inDsetName))
+  std::string inDsetNameiso = "Isolinhas";
+  if (!srcDsiso->dataSetExists(inDsetNameiso))
   {
-    std::cout << "Input dataset not found: " << inDsetName << std::endl;
+    std::cout << "Input dataset not found: " << inDsetNameiso << std::endl;
     throw;
   }
 
-  std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
-  std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
+  std::auto_ptr<te::da::DataSet> inDsetiso = srcDsiso->getDataSet(inDsetNameiso);
+  std::auto_ptr<te::da::DataSetType> inDsetTypeiso(srcDsiso->getDataSetType(inDsetNameiso));
 
-  std::string file_result = "D:/TESTES/altimetria_1_TIN_xx.shp";
+  srcInfo["URI"] = filename_pts;
+  te::da::DataSourcePtr srcDspts(te::da::DataSourceFactory::make("OGR").release());
+  srcDspts->setConnectionInfo(srcInfo);
+  srcDspts->open();
+
+  std::string inDsetNamepts = "Pontos_cotados";
+  if (!srcDspts->dataSetExists(inDsetNamepts))
+  {
+    std::cout << "Input dataset not found: " << inDsetNamepts << std::endl;
+    throw;
+  }
+
+  std::auto_ptr<te::da::DataSet> inDsetpts = srcDspts->getDataSet(inDsetNamepts);
+  std::auto_ptr<te::da::DataSetType> inDsetTypepts(srcDspts->getDataSetType(inDsetNamepts));
+
+  std::string file_result = ""TERRALIB_DATA_DIR"/mnt/TIN.shp";
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = file_result;
@@ -337,7 +354,7 @@ void GenerateTIN()
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
 
-  std::string outDS = "altimetria_1_TIN_xx";
+  std::string outDS = "TIN";
 
   if (trgDs->dataSetExists(outDS))
   {
@@ -347,28 +364,31 @@ void GenerateTIN()
 
   te::mnt::TINGeneration *Tin = new te::mnt::TINGeneration();
 
-  Tin->setInput(srcDs, inDsetName, inDsetType);
+  Tin->setInput(srcDsiso, inDsetNameiso, inDsetTypeiso, te::mnt::Isolines);
+  Tin->setInput(srcDspts, inDsetNamepts, inDsetTypepts, te::mnt::Samples);
   Tin->setOutput(trgDs, outDS);
-  Tin->setParams(tol, maxdist, minedge, atributoz);
+  Tin->setParams(tol, maxdist, minedge, atributoz_iso, atributoz_sample);
   Tin->setSRID(SRID);
 
   bool result = Tin->run();
 
   trgDs->close();
-  inDsetType.release();
-  srcDs->close();
+  inDsetTypeiso.release();
+  srcDsiso->close();
+  inDsetTypepts.release();
+  srcDspts->close();
 
 }
 
 void GenerateIso()
 {
-  std::string filename = "D:/TESTES/altimetria_TIN_xx.shp";
+  std::string filename = ""TERRALIB_DATA_DIR"/mnt/TIN.shp";
 
-  int SRID = 4291;
-  double tol = 0.000001;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
+  int SRID = 32723;
+  double tol = 2;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
 
   std::vector<double> val;
-  for (double n = 300; n < 1101; n += 100)
+  for (double n = 1010; n < 1172; n += 10)
     val.push_back(n);
 
   std::map<std::string, std::string> srcInfo;
@@ -379,7 +399,7 @@ void GenerateIso()
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
 
-  std::string inDsetName = "altimetria_TIN_xx";
+  std::string inDsetName = "TIN";
   if (!srcDs->dataSetExists(inDsetName))
   {
     std::cout << "Input dataset not found: " << inDsetName << std::endl;
@@ -389,7 +409,7 @@ void GenerateIso()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
 
-  std::string file_result = "D:/TESTES/altimetria_iso.shp";
+  std::string file_result = ""TERRALIB_DATA_DIR"/mnt/TIN_iso.shp";
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = file_result;
@@ -399,7 +419,7 @@ void GenerateIso()
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
 
-  std::string outDS = "altimetria_iso";
+  std::string outDS = "TIN_iso";
 
   if (trgDs->dataSetExists(outDS))
   {
@@ -424,11 +444,11 @@ void GenerateIso()
 
 void CalculateGrid()
 {
-  std::string filename = "D:/TESTES/altimetria_TIN_xx.shp";
+  std::string filename = ""TERRALIB_DATA_DIR"/mnt/TIN.shp";
 
-  int SRID = 4291;
-  double tol = 0.000001;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
-  double resx = .002, resy = .002;
+  int SRID = 32723;
+  double tol = 2;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
+  double resx = 30, resy = 30;
 
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
@@ -438,7 +458,7 @@ void CalculateGrid()
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
 
-  std::string inDsetName = "altimetria_TIN_xx";
+  std::string inDsetName = "TIN";
   if (!srcDs->dataSetExists(inDsetName))
   {
     std::cout << "Input dataset not found: " << inDsetName << std::endl;
@@ -448,12 +468,12 @@ void CalculateGrid()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
 
-  std::string file_result = "D:/TESTES/altimetria_GRID1.tif";
+  std::string file_result = ""TERRALIB_DATA_DIR"/mnt/TIN_GRD.tif";
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = file_result;
 
-  std::string outDS = "altimetria_GRID1";
+  std::string outDS = "TIN_GRD";
 
   te::mnt::TINCalculateGrid *Tin = new te::mnt::TINCalculateGrid();
 
@@ -480,9 +500,9 @@ int main(int /*argc*/, char** /*argv*/)
 
  //   TesteGEOS();
 
-//    GenerateTIN();
+    GenerateTIN();
 
- //   GenerateIso();
+    GenerateIso();
 
     CalculateGrid();
 
