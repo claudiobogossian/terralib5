@@ -60,13 +60,13 @@ void te::layout::MapController1::update(const te::layout::Subject* subject)
   mapDisplay->setLayerList(layerList);
   if(mapDisplay->getSRID() != srid)
   {
-    mapDisplay->setSRID(srid);
+    mapDisplay->setSRID(srid, false);
     doRefresh = true;
   }
 
   if(mapDisplay->getExtent().equals(envelope) == false)
   {
-    mapDisplay->setExtent(envelope);
+    mapDisplay->setExtent(envelope, false);
     doRefresh = true;
   }
 

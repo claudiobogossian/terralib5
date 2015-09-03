@@ -564,24 +564,16 @@ bool te::layout::Scene::buildTemplate( VisualizationArea* vzArea, EnumType* type
 
 void te::layout::Scene::redrawSelectionMap()
 {
-  /*
   QList<QGraphicsItem*> selected = selectedItems();
   foreach(QGraphicsItem *item, selected) 
   {
-    if(item)
+    MapItem* mapItem = dynamic_cast<MapItem*>(item);
+    if(mapItem)
     {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-      if(it)
-      {
-        MapItem* mt = dynamic_cast<MapItem*>(it);
-        if(mt)
-        {
-          mt->redraw();
-        }
-      }
+      mapItem->doRefresh();
+      mapItem->refresh();
     }
   }
-  */
 }
 
 void te::layout::Scene::exportItemsToImage(std::string dir)
