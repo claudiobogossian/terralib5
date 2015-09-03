@@ -36,9 +36,6 @@
 #include "../../core/Config.h"
 #include "pattern/factory/item/ItemFactoryParamsCreate.h"
 
-// Qt
-#include <QObject>
-
 class QGraphicsItem;
 
 namespace te
@@ -55,12 +52,9 @@ namespace te
 
     \sa te::layout::AbstractBuildGraphicsItem
   */
-    class TELAYOUTEXPORT BuildGraphicsItem : public QObject, public AbstractBuildGraphicsItem
+    class TELAYOUTEXPORT BuildGraphicsItem : public AbstractBuildGraphicsItem
     {
-      Q_OBJECT //for slots/signals
-
       public:
-
     /*!
           \brief Constructor
         */
