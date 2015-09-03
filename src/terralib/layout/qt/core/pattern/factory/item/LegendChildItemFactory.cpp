@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/LegendChildModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/LegendChildItem.h"
 
 te::layout::AbstractItemView* te::layout::LegendChildItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::LegendChildItemFactory::build(ItemFact
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  LegendChildItem* view = new LegendChildItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::LegendChildItemFactory::LegendChildItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getLegendChildItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getLegendChildItem()->getName())
 {
 
 }

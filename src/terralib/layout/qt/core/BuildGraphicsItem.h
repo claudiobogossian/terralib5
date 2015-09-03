@@ -32,7 +32,9 @@
 
 //TerraLib
 #include "../../core/AbstractBuildGraphicsItem.h"
+#include "../../core/property/Properties.h"
 #include "../../core/Config.h"
+#include "pattern/factory/item/ItemFactoryParamsCreate.h"
 
 // Qt
 #include <QObject>
@@ -62,7 +64,7 @@ namespace te
     /*!
           \brief Constructor
         */
-        BuildGraphicsItem(Scene* scene = 0);
+        BuildGraphicsItem(Scene* scene);
 
     /*!
           \brief Destructor
@@ -77,7 +79,7 @@ namespace te
       
       \return z value
         */
-        QGraphicsItem* rebuildItem(te::layout::Properties props, bool draw = true);
+        QGraphicsItem* buildItem(te::layout::Properties props);
     
        /*!
          \brief Method to create a graphic object from the properties.
@@ -88,7 +90,7 @@ namespace te
       
          \return z value
         */
-        QGraphicsItem* createItem(te::layout::EnumType* itemType, const te::gm::Coord2D& coordinate, double width = 0, double height = 0, bool draw = true);
+        QGraphicsItem* createItem(te::layout::EnumType* itemType, const te::gm::Coord2D& coordinate, double width = 0, double height = 0);
 
         /*!
           \brief Method to create a graphic object from the type.
@@ -97,12 +99,8 @@ namespace te
       
           \return item value
         */
-        QGraphicsItem* createItem(te::layout::EnumType* itemType, bool draw = true);
-
-      signals:
-
-        void addChildFinalized(QGraphicsItem* parent, QGraphicsItem* child);
-        
+        QGraphicsItem* createItem(te::layout::EnumType* itemType);
+                
       protected:
     
         /*!
@@ -121,9 +119,11 @@ namespace te
           \param item built item
           \param draw if true the component will be redraw, false otherwise
         */
-        virtual void afterBuild(QGraphicsItem* item, bool draw = true);
+        virtual void afterBuild(QGraphicsItem* item);
 
       protected:
+
+        virtual ItemFactoryParamsCreate createParams(te::layout::EnumType* type);
 
         Scene*      m_scene;
     };

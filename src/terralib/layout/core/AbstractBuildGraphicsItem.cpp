@@ -32,7 +32,6 @@
 #include "property/Properties.h"
 
 te::layout::AbstractBuildGraphicsItem::AbstractBuildGraphicsItem() :
-  m_zValue(0),
   m_id(0),
   m_width(0),
   m_height(0),
@@ -73,7 +72,7 @@ te::gm::Coord2D te::layout::AbstractBuildGraphicsItem::findCoordinate( te::layou
 
 int te::layout::AbstractBuildGraphicsItem::findZValue( te::layout::Properties props )
 {
-  int zValue = 0;
+  int zValue = -1;
 
   Property pro_zValue = props.getProperty("zValue");
 
@@ -85,10 +84,20 @@ int te::layout::AbstractBuildGraphicsItem::findZValue( te::layout::Properties pr
   return zValue;
 }
 
+std::string te::layout::AbstractBuildGraphicsItem::findName(te::layout::Properties props)
+{
+  std::string name = "";
+  Property pro_name = props.getProperty("name");
+  if (!pro_name.isNull())
+  {
+    name = pro_name.getValue().toString();
+  }
+  return name;
+}
+
 void te::layout::AbstractBuildGraphicsItem::clear()
 {
   m_id = 0;
-  m_zValue = 0;
   m_props.clear();
   m_width = 0;
   m_height = 0;

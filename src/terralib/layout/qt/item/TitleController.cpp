@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "TitleController1.h"
+#include "TitleController.h"
 
 #include "../core/pattern/command/ChangePropertyCommand.h"
 #include "../../core/enum/EnumAlignmentType.h"
@@ -33,17 +33,17 @@
 #include <QTextCursor>
 #include <QTextTable>
 
-te::layout::TitleController1::TitleController1( te::layout::AbstractItemModel* model)
-  : TextController1(model)
+te::layout::TitleController::TitleController(AbstractItemModel* model)
+  : TextController(model)
   , m_table(0)
 {
 }
 
-te::layout::TitleController1::~TitleController1()
+te::layout::TitleController::~TitleController()
 {
 }
 
-QSizeF te::layout::TitleController1::updateView()
+QSizeF te::layout::TitleController::updateView()
 {
   TextItem* view = dynamic_cast<TextItem*>(m_view);
   if(view == 0)
@@ -132,7 +132,7 @@ QSizeF te::layout::TitleController1::updateView()
   return boundingRect.size();
 }
 
-void te::layout::TitleController1::textChanged()
+void te::layout::TitleController::textChanged()
 {
   TextItem* view = dynamic_cast<TextItem*>(m_view);
   if(view != 0)

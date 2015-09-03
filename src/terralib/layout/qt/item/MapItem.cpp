@@ -27,7 +27,7 @@
 
 // TerraLib
 #include "MapItem.h"
-#include "MapController1.h"
+#include "MapController.h"
 
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/singleton/Context.h"
@@ -45,8 +45,8 @@
 #include <QWheelEvent>
 #include <QMouseEvent>
 
-te::layout::MapItem::MapItem( AbstractItemController* controller, AbstractItemModel* model )
-  : AbstractItem<QGraphicsObject>(controller, model)
+te::layout::MapItem::MapItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsObject>(controller, invertedMatrix)
   , m_mapDisplay(0)
   , m_pan(0)
   , m_zoomWheel(0)
@@ -78,7 +78,7 @@ te::qt::widgets::MapDisplay* te::layout::MapItem::getMapDisplay()
 void te::layout::MapItem::contextUpdated(const ContextObject& context)
 {
   const int zoom = (const int) context.getZoom();
-  ((MapController1 *) m_controller)->setZoom(zoom);
+  ((MapController *) m_controller)->setZoom(zoom);
 
   Utils* utils = Context::getInstance().getUtils();
 
@@ -246,7 +246,7 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
     listLayers.push_back(layer);
   }
 
-  MapController1* mapController = dynamic_cast<MapController1*>(m_controller);
+  MapController* mapController = dynamic_cast<MapController*>(m_controller);
   if(mapController != 0)
   {
     mapController->addLayers(listLayers);
@@ -329,7 +329,7 @@ QPointF te::layout::MapItem::remapPointToViewport(const QPointF& point, const QR
 
 void te::layout::MapItem::extentChanged()
 {
-  MapController1* mapController = dynamic_cast<MapController1*>(m_controller);
+  MapController* mapController = dynamic_cast<MapController*>(m_controller);
   if(mapController != 0)
   {
     mapController->extentChanged(m_mapDisplay->getExtent(), m_mapDisplay->getScale());

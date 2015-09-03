@@ -27,19 +27,21 @@
 #include "SVGDialogOutsideFactory.h"
 #include "../../../../../outside/SVGDialogModel.h"
 #include "../../../../../outside/SVGDialogController.h"
+#include "../../../../outside/SVGDialogOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::SVGDialogOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   SVGDialogModel* model = new SVGDialogModel();
 
   SVGDialogController* controller = new SVGDialogController(model);
-  AbstractOutsideView* view = controller->getView();
+  SVGDialogOutside* view = new SVGDialogOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::SVGDialogOutsideFactory::SVGDialogOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getSVGDialog()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getSVGDialog()->getName())
 {
 
 }

@@ -54,7 +54,7 @@
 
 te::layout::GridPlanarModel::GridPlanarModel()
   : GridMapModel()
-  , NewObserver()
+  , Observer()
 {
   LayoutUnit unit(StyleKilometer);
   int srid = 0;

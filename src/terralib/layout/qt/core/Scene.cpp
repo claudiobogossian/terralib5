@@ -343,15 +343,10 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 
   EnumObjectType* object = Enums::getInstance().getEnumObjectType();
 
-  //Create a new group
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
-  if(!build)
-    return p;
-
+  BuildGraphicsItem build(this);
+  
   te::gm::Coord2D coord(0,0);
-  QGraphicsItem* item = build->createItem(object->getItemGroup(), coord, false);
+  QGraphicsItem* item = build.createItem(object->getItemGroup(), coord);
 
   double x = 0.;
   double y = 0.;
@@ -412,14 +407,12 @@ void te::layout::Scene::destroyItemGroup( QGraphicsItemGroup *group )
 te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QList<QGraphicsItem*>& items )
 {
   //Create a new group
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
+  BuildGraphicsItem build(this);
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
   QGraphicsItem* item = 0;
   
-  item = build->createItem(enumObj->getMovingItemGroup());
+  item = build.createItem(enumObj->getMovingItemGroup());
 
   te::layout::MovingItemGroup* movingItem = dynamic_cast<MovingItemGroup*>(item);
 
@@ -531,12 +524,8 @@ void te::layout::Scene::reset()
 
 bool te::layout::Scene::buildTemplate( VisualizationArea* vzArea, EnumType* type, std::string fileName )
 {
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
-  if(!build)
-    return false;
-
+  BuildGraphicsItem build(this);
+  
   std::vector<te::layout::Properties> props = importTemplateToProperties(type, fileName);
 
   if(props.empty())
@@ -556,7 +545,7 @@ bool te::layout::Scene::buildTemplate( VisualizationArea* vzArea, EnumType* type
     if(proper.getProperties().empty())
       continue;
 
-    build->rebuildItem(proper);
+    build.buildItem(proper);
   }
 
   return true;

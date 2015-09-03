@@ -25,9 +25,10 @@
 
 // TerraLib
 #include "ItemGroupItemFactory.h"
-#include "../../../../item/ItemGroupController1.h"
+#include "../../../../item/ItemGroupController.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/ItemGroupModel.h"
+#include "../../../../item/ItemGroup.h"
 
 te::layout::AbstractItemView* te::layout::ItemGroupItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -39,18 +40,19 @@ te::layout::AbstractItemView* te::layout::ItemGroupItemFactory::build(ItemFactor
    setProperties(model, params);
  }
 
-  ItemGroupController1* controller = new ItemGroupController1(model);
-  AbstractItemView* view = controller->getView();
+  ItemGroupController* controller = new ItemGroupController(model);
+  ItemGroup* view = new ItemGroup(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::ItemGroupItemFactory::ItemGroupItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getItemGroup()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getItemGroup()->getName())
 {
 
 }

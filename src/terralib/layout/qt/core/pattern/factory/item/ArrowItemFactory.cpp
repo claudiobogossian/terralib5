@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/ArrowModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/ArrowItem.h"
 
 te::layout::AbstractItemView* te::layout::ArrowItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::ArrowItemFactory::build(ItemFactoryPar
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  ArrowItem* view = new ArrowItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::ArrowItemFactory::ArrowItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getArrowItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getArrowItem()->getName())
 {
 
 }

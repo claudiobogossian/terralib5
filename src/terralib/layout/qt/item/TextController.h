@@ -24,8 +24,8 @@
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER1_H
-#define __TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER1_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H
 
 // TerraLib
 #include "../../core/Config.h"
@@ -43,7 +43,7 @@ namespace te
     \ingroup layout
     \sa te::layout::AbstractItemController
     */
-    class TELAYOUTEXPORT TextController1 : public AbstractItemController
+    class TELAYOUTEXPORT TextController : public AbstractItemController
     {
       public:
 
@@ -53,12 +53,12 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        TextController1( AbstractItemModel* model);
+        TextController(AbstractItemModel* model);
 
         /*!
           \brief Destructor
         */ 
-        virtual ~TextController1();
+        virtual ~TextController();
 
         /*!
           \brief Method called by the subject to inform changes in the model
@@ -92,6 +92,13 @@ namespace te
           \brief This function will be called by the view every time the item´s text was changed
          */
         virtual void textChanged();
+    
+      protected:
+
+        /*!
+        \brief Reimplemented from AbstractItemController
+        */
+        virtual void refresh();
     };
   }
 }

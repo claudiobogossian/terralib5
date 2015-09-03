@@ -39,6 +39,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic Arrow. 
         Its coordinate system is the same of scene (millimeters). 
@@ -53,31 +54,31 @@ namespace te
       public:
 
         /*!
-          \brief Constructor
+        \brief Constructor
 
-          \param controller "Controller" part of MVC component
-          \param o "Model" part of MVC component
-        */ 
-        ImageItem( AbstractItemController* controller, AbstractItemModel* model );
-        
+        \param controller "Controller" part of MVC component
+        \param o "Model" part of MVC component
+        */
+        ImageItem(AbstractItemController* controller);
+
         /*!
-          \brief Destructor
-         */
+        \brief Destructor
+        */
         virtual ~ImageItem();
 
         /*!
-          \brief Gets the file name of the image
-         */
+        \brief Gets the file name of the image
+        */
         virtual const std::string& getFileName() const;
 
         /*!
-          \brief Sets the file name of the image
-         */
+        \brief Sets the file name of the image
+        */
         virtual void setFileName(const std::string& fileName);
 
-       protected:
+      protected:
 
-        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        virtual void drawItem(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
 
       protected:
 

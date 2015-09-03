@@ -28,7 +28,6 @@
 // TerraLib
 #include "ObjectInspectorDock.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
-#include "../../../layout/core/pattern/singleton/Context.h"
 #include "../../../layout/qt/core/BuildGraphicsOutside.h"
 #include "../../../layout/core/enum/Enums.h"
 
@@ -51,25 +50,15 @@ te::qt::plugins::layout::ObjectInspectorDock::~ObjectInspectorDock()
 
 void te::qt::plugins::layout::ObjectInspectorDock::create()
 {
-  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
-  if(!abstractBuildOutside)
-  {
-    return;
-  }
-
-  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
-  if(!buildOutside)
-  {
-    return;
-  }
-
+  te::layout::BuildGraphicsOutside buildOutside;
+  
   te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
   if(!objectType)
   {
     return;
   }
 
-  QWidget* widget = buildOutside->createOuside(objectType->getObjectInspectorWindow());
+  QWidget* widget = buildOutside.createOuside(objectType->getObjectInspectorWindow());
   if(!widget)
   {
     return;

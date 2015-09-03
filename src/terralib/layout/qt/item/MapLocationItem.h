@@ -40,6 +40,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief This class is a proxy MapDisplay. This makes it possible to add a MapDisplay as item of a scene. 
     This object is of type QGraphicsProxyWidget. He have a directly interaction by user. 
@@ -64,7 +65,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        MapLocationItem( AbstractItemController* controller, AbstractItemModel* model );
+        MapLocationItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

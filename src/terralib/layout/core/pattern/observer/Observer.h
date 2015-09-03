@@ -18,52 +18,58 @@
  */
 
 /*!
-  \file ItemGroupController.h
+  \file Observer.h
    
-   \brief Class that represents a "Controller" part of ItemGroup MVC component. 
-   Its coordinate system is the same of scene (millimeters).
-   This is also son of ItemController, so it can become a controller.
+  \brief Abstract class to represent an observer. "View" part of MVC component.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_OBSERVER_H
+#define __TERRALIB_LAYOUT_INTERNAL_OBSERVER_H
 
-// TerraLib
-#include "../core/pattern/mvc/ItemController.h"
-#include "../core/Config.h"
+//TerraLib
+#include "../../Config.h"
 
 namespace te
 {
   namespace layout
   {
-    /*!
-      \brief Class that represents a "Controller" part of ItemGroup MVC component. 
-          Its coordinate system is the same of scene (millimeters). 
-          This is also the son of ItemController, so it can become a controller.
-          
-      \ingroup layout
+    class Subject;
 
-      \sa te::layout::ItemController
+    /*!
+      \brief Abstract class to represent an observer. "View" part of MVC component.
+    
+      \ingroup layout
     */
-    class TELAYOUTEXPORT ItemGroupController : public ItemController
+    class TELAYOUTEXPORT Observer
     {
+
       public:
 
         /*!
-          \brief Constructor
-
-          \param o "Model" part of MVC component
-        */
-        ItemGroupController( Observable* o );
+            \brief Constructor
+         */ 
+        Observer();
 
         /*!
-          \brief Destructor
-        */
-        virtual ~ItemGroupController();
+            \brief Destructor
+         */ 
+        virtual ~Observer();
+
+        /*!
+            \brief This method is called when a change has occurred in the state of the observable.
+              Reimplement this function in a ItemObserver subclass to provide the item's updateObserver implementation.
+
+            \param context maintaining the drawing context of a MVC component.
+         */ 
+        virtual void update(const Subject* subject) = 0;
+
+      protected:
+
+        Subject*  m_subject;
     };
   }
 }
 
-#endif 
+#endif //__TERRALIB_LAYOUT_INTERNAL_NEWOBSERVER_H

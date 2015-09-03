@@ -27,19 +27,21 @@
 #include "LegendChoiceOutsideFactory.h"
 #include "../../../../../outside/LegendChoiceModel.h"
 #include "../../../../../outside/LegendChoiceController.h"
+#include "../../../../outside/LegendChoiceOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::LegendChoiceOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   LegendChoiceModel* model = new LegendChoiceModel();
 
   LegendChoiceController* controller = new LegendChoiceController(model);
-  AbstractOutsideView* view = controller->getView();
+  LegendChoiceOutside* view = new LegendChoiceOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::LegendChoiceOutsideFactory::LegendChoiceOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getLegendChoice()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getLegendChoice()->getName())
 {
 
 }

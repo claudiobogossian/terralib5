@@ -27,22 +27,12 @@
 
 // TerraLib
 #include "ImageItem.h"
-/*
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/ImageModel.h"
-*/
 
 // Qt
 #include <QStyleOptionGraphicsItem>
 
-te::layout::ImageItem::ImageItem( AbstractItemController* controller, AbstractItemModel* model )
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::ImageItem::ImageItem(AbstractItemController* controller)
+: AbstractItem<QGraphicsItem>(controller)
 {
 }
 
@@ -58,30 +48,32 @@ const std::string& te::layout::ImageItem::getFileName() const
 void te::layout::ImageItem::setFileName(const std::string& fileName)
 {
   m_fileName = fileName;
-  if(m_fileName.empty() == true)
+  if (m_fileName.empty() == true)
   {
     m_image = QImage();
   }
   else
   {
-    if(m_image.load(m_fileName.c_str()) == true)
+    if (m_image.load(m_fileName.c_str()) == true)
     {
       m_image = m_image.mirrored();
     }
   }
 }
 
-void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
+void te::layout::ImageItem::drawItem(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+  painter->save();
+
   const Property& pFrameColor = m_controller->getProperty("frame_color");
-  const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
-  QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
-  
+  const te::color::RGBAColor& framwColor = pFrameColor.getValue().toColor();
+  QColor qContourColor(framwColor.getRed(), framwColor.getGreen(), framwColor.getBlue(), framwColor.getAlpha());
+
   QPen pen(qContourColor, 0, Qt::SolidLine);
 
   QRectF boundRect = boundingRect();
-  
-  if(m_image.isNull() == true)
+
+  if (m_image.isNull() == true)
   {
     painter->save();
 
@@ -99,10 +91,12 @@ void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGrap
   painter->save();
 
   painter->setPen(pen);
-  painter->setRenderHint( QPainter::Antialiasing, true );
+  painter->setRenderHint(QPainter::Antialiasing, true);
 
   //draws the item
   painter->drawImage(boundRect, m_image, sourceRect);
 
   painter->restore();
 }
+
+

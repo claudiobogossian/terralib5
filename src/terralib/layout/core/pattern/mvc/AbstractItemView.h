@@ -53,7 +53,7 @@ namespace te
         /*!
           \brief Constructor
         */ 
-        AbstractItemView(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false);
+        AbstractItemView(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -64,6 +64,11 @@ namespace te
           \brief Gets the controller
         */ 
         virtual AbstractItemController* getController() const;
+
+        /*!
+        \brief Set the controller. This object will be the owner of the controller.
+        */
+        void setController(AbstractItemController* controller);
 
         /*!
           \brief Refreshes the drawings of the view
@@ -95,13 +100,13 @@ namespace te
         virtual void setEditionMode(bool editionMode);
 
         bool isEditionMode();
-
+        
     protected:
 
         virtual void enterEditionMode();
 
         virtual void leaveEditionMode();
-        
+                
       protected:
 
         AbstractItemController* m_controller; //!< The controller

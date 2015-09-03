@@ -38,7 +38,7 @@ namespace te
 {
   namespace layout
   {
-    class NewObserver; 
+    class Observer; 
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
@@ -59,14 +59,14 @@ namespace te
           \param o specified observer
           \return true if add, false otherwise
         */
-        virtual bool attach(NewObserver* observer);
+        virtual bool attach(Observer* observer);
 
         /*!
           \brief Removes an observer from the set of observers of this object.
           \param o specified observer
           \return true if remove, false otherwise
         */
-        virtual bool detach(NewObserver* observer);
+        virtual bool detach(Observer* observer);
 
       protected:
 
@@ -84,7 +84,7 @@ namespace te
 
     private:
 
-      std::vector<NewObserver*> m_observers;
+      std::vector<Observer*> m_observers;
 
     };
   }

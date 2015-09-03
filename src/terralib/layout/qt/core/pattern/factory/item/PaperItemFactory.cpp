@@ -28,6 +28,7 @@
 #include "../../../../../item/PaperModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../../../core/property/Properties.h"
+#include "../../../../item/PaperItem.h"
 
 te::layout::AbstractItemView* te::layout::PaperItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::PaperItemFactory::build(ItemFactoryPar
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  PaperItem* view = new PaperItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::PaperItemFactory::PaperItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getPaperItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getPaperItem()->getName())
 {
 
 }

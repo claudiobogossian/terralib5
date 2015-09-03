@@ -4,12 +4,12 @@
 #include "AbstractItemController.h"
 #include "AbstractItemModel.h"
 
-te::layout::AbstractItemView::AbstractItemView(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
+te::layout::AbstractItemView::AbstractItemView(AbstractItemController* controller, bool invertedMatrix)
   : m_controller(controller)
   , m_invertedMatrix(invertedMatrix)
   , m_isEditionMode(false)
 {
-
+  
 }
 
 te::layout::AbstractItemView::~AbstractItemView()
@@ -17,12 +17,23 @@ te::layout::AbstractItemView::~AbstractItemView()
   if(m_controller != 0)
   {
     delete m_controller;
+    m_controller = 0;
   }
 }
 
 te::layout::AbstractItemController* te::layout::AbstractItemView::getController() const
 {
   return m_controller;
+}
+
+void te::layout::AbstractItemView::setController(AbstractItemController* controller)
+{
+  if (m_controller != 0)
+  {
+    delete m_controller;
+    m_controller = 0;
+  }
+  m_controller = controller;
 }
 
 bool te::layout::AbstractItemView::isInverted()
@@ -62,4 +73,7 @@ void te::layout::AbstractItemView::leaveEditionMode()
 {
   //do nothing
 }
+
+
+
 

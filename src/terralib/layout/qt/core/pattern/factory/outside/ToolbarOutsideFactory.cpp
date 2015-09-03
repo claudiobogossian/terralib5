@@ -34,15 +34,15 @@ te::layout::AbstractOutsideView* te::layout::ToolbarOutsideFactory::build(Outsid
   ToolbarModel* model = new ToolbarModel();
 
   ToolbarController* controller = new ToolbarController(model);
-  AbstractOutsideView* view = controller->getView();
-  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(view);
-  toolbar->createToolbar();
+  ToolbarOutside* view = new ToolbarOutside(controller);
+  controller->setView(view);
+  view->createToolbar();
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::ToolbarOutsideFactory::ToolbarOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getToolbar()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getToolbar()->getName())
 {
 
 }

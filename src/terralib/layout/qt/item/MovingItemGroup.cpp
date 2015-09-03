@@ -27,8 +27,8 @@
 
 #include "MovingItemGroup.h"
 
-te::layout::MovingItemGroup::MovingItemGroup( AbstractItemController* controller, AbstractItemModel* model )
-  : ItemGroup( controller, model )
+te::layout::MovingItemGroup::MovingItemGroup(AbstractItemController* controller, bool invertedMatrix)
+  : ItemGroup(controller, invertedMatrix)
 {
 
 }
@@ -38,11 +38,6 @@ te::layout::MovingItemGroup::~MovingItemGroup()
 
 }
 
-/*
-void te::layout::MovingItemGroup::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
-{
 
-}
-*/
 
 

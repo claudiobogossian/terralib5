@@ -18,50 +18,36 @@
  */
 
 /*!
-  \file ObjectItem.h
+  \file TextController.h
    
-   \brief Abstract class that represents a graphic item. This object is of type QGraphicsObject. 
-
+  \brief Class that represents text controller.
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_OBJECT_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_OBJECT_ITEM_H
-
-// Qt
-#include <QGraphicsObject>
-#include <QPixmap>
-#include <QVariant>
-#include <QPainter>
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER_H
+#define __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER_H
 
 // TerraLib
-#include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../../geometry/Envelope.h"
-#include "../../core/enum/AbstractType.h"
-#include "../../../color/RGBAColor.h"
+#include "TextController.h"
 #include "../../core/Config.h"
-#include "ParentItem.h"
 
-class QGraphicsSceneMouseEvent;
-class QGraphicsSceneHoverEvent;
-class QStyleOptionGraphicsItem;
-class QWidget;
+
+class QSizeF;
+class QTextTable;
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemModel;
     /*!
-    \brief Abstract class that represents a graphic item. This object is of type QGraphicsObject.
+    \brief Class that represents text controller.
     
     \ingroup layout
-
-    \sa te::layout::ItemObserver
-  */
-    class TELAYOUTEXPORT ObjectItem : public ParentItem<QGraphicsObject>
+    \sa te::layout::TextController1
+    */
+    class TELAYOUTEXPORT TitleController : public TextController
     {
-      Q_OBJECT //for slots/signals
-
       public:
 
         /*!
@@ -69,15 +55,30 @@ namespace te
 
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
-        */
-        ObjectItem(ItemController* controller = 0, Observable* o = 0, bool invertedMatrix = false);
+        */ 
+        TitleController(AbstractItemModel* model);
 
         /*!
           \brief Destructor
+        */ 
+        virtual ~TitleController();
+
+        /*!
+          \brief Updates the view with the current configuration of the model
+          \return The new size of the view
         */
-        virtual ~ObjectItem();
+        virtual QSizeF updateView();
+
+        /*!
+          \brief This function will be called by the view every time the item´s text was changed
+         */
+        virtual void textChanged();
+
+    protected:
+
+      QTextTable* m_table;
+
     };
   }
 }
-
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H

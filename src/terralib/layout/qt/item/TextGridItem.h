@@ -37,6 +37,7 @@ namespace te
   namespace layout
   {
     class Observable;
+    class AbstractItemController;
 
     /*!
       \brief Class daughter of te::layout::TitleItem representing a grid with cells which can be inserted texts.
@@ -55,7 +56,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        TextGridItem(  AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        TextGridItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

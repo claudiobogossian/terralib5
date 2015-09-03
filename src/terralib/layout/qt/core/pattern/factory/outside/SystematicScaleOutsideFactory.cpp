@@ -27,19 +27,21 @@
 #include "SystematicScaleOutsideFactory.h"
 #include "../../../../../outside/SystematicScaleModel.h"
 #include "../../../../../core/pattern/mvc/AbstractOutsideController.h"
+#include "../../../../outside/SystematicScaleOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::SystematicScaleOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   SystematicScaleModel* model = new SystematicScaleModel();
 
   AbstractOutsideController* controller = new AbstractOutsideController(model);
-  AbstractOutsideView* view = controller->getView();
+  SystematicScaleOutside* view = new SystematicScaleOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::SystematicScaleOutsideFactory::SystematicScaleOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getSystematicScale()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getSystematicScale()->getName())
 {
 
 }

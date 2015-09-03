@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/PolygonModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/PolygonItem.h"
 
 te::layout::AbstractItemView* te::layout::PolygonItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::PolygonItemFactory::build(ItemFactoryP
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  PolygonItem* view = new PolygonItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::PolygonItemFactory::PolygonItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getPolygonItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getPolygonItem()->getName())
 {
 
 }

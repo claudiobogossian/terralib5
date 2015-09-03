@@ -27,19 +27,21 @@
 #include "MapLayerChoiceOutsideFactory.h"
 #include "../../../../../outside/MapLayerChoiceModel.h"
 #include "../../../../../outside/MapLayerChoiceController.h"
+#include "../../../../outside/MapLayerChoiceOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::MapLayerChoiceOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   MapLayerChoiceModel* model = new MapLayerChoiceModel();
 
   MapLayerChoiceController* controller = new MapLayerChoiceController(model);
-  AbstractOutsideView* view = controller->getView();
+  MapLayerChoiceOutside* view = new MapLayerChoiceOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::MapLayerChoiceOutsideFactory::MapLayerChoiceOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getMapLayerChoice()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getMapLayerChoice()->getName())
 {
 
 }

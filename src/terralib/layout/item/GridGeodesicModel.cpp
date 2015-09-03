@@ -51,7 +51,7 @@
 
 te::layout::GridGeodesicModel::GridGeodesicModel() 
   : GridMapModel()
-  , NewObserver()
+  , Observer()
   /*: GridMapModel(new GeodesicGridSettingsConfigProperties),
   m_pointTextSizeCorner(12),
   m_degreesText(true),

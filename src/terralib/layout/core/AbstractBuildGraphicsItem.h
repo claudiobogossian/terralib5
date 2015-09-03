@@ -92,6 +92,15 @@ namespace te
         virtual int findZValue(te::layout::Properties props);
 
         /*!
+        \brief Search for property of a graphic object that represent name value.
+
+        \param props properties
+
+        \return z value
+        */
+        virtual std::string findName(te::layout::Properties props);
+
+        /*!
           \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
 
           \param name name of the class type of the graphic object
@@ -105,7 +114,6 @@ namespace te
 
         te::layout::Properties  m_props; //!< Properties of a graphic object.
         te::gm::Coord2D         m_coord; //!< Coordinate of a graphic object.
-        int                     m_zValue; //!< Z Value of a graphic object.
         int                     m_id; //!< Id of a graphic object.
         double                  m_width;
         double                  m_height;

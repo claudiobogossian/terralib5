@@ -31,18 +31,19 @@
 // TerraLib
 #include "LegendItem.h"
 #include "../../core/Config.h"
-#include "../../core/pattern/mvc/AbstractItemController.h"
-#include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "AbstractItem.h"
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
+
     class TELAYOUTEXPORT LegendChildItem : public AbstractItem<QGraphicsItem>
     {
     public:
 
-      LegendChildItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+      LegendChildItem(AbstractItemController* controller, bool invertedMatrix = false);
 
       virtual ~LegendChildItem();
 

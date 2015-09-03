@@ -29,8 +29,8 @@
 #include "EllipseItem.h"
 #include "../../../color/RGBAColor.h"
 
-te::layout::EllipseItem::EllipseItem( AbstractItemController* controller, AbstractItemModel* model )
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::EllipseItem::EllipseItem(AbstractItemController* controller, bool invertedMatrix)
+: AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {
 }
 

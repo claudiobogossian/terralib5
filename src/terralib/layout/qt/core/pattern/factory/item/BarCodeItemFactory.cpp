@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/BarCodeModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/BarCodeItem.h"
 
 te::layout::AbstractItemView* te::layout::BarCodeItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,7 +41,8 @@ te::layout::AbstractItemView* te::layout::BarCodeItemFactory::build(ItemFactoryP
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  BarCodeItem* view = new BarCodeItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
@@ -50,7 +52,7 @@ te::layout::AbstractItemView* te::layout::BarCodeItemFactory::build(ItemFactoryP
 }
 
 te::layout::BarCodeItemFactory::BarCodeItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getBarCodeItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getBarCodeItem()->getName())
 {
 
 }

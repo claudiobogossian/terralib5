@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "MapController1.h"
+#include "MapController.h"
 
 #include "MapItem.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
@@ -26,17 +26,18 @@
 #include "terralib/maptools/MapDisplay.h"
 
 
-te::layout::MapController1::MapController1( te::layout::AbstractItemModel* model)
+te::layout::MapController::MapController(AbstractItemModel* model)
   : AbstractItemController(model)
 {
+
 }
 
-te::layout::MapController1::~MapController1()
+te::layout::MapController::~MapController()
 {
+
 }
 
-
-void te::layout::MapController1::update(const te::layout::Subject* subject)
+void te::layout::MapController::update(const te::layout::Subject* subject)
 {
   MapItem* view = dynamic_cast<MapItem*>(m_view);
   if(view == 0)
@@ -87,7 +88,7 @@ void te::layout::MapController1::update(const te::layout::Subject* subject)
   AbstractItemController::update(subject);
 }
 
-void te::layout::MapController1::addLayers(const std::list<te::map::AbstractLayerPtr>& layerList)
+void te::layout::MapController::addLayers(const std::list<te::map::AbstractLayerPtr>& layerList)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -101,7 +102,7 @@ void te::layout::MapController1::addLayers(const std::list<te::map::AbstractLaye
   m_model->setProperty(property);
 }
 
-void te::layout::MapController1::extentChanged(const te::gm::Envelope& envelope, double scale)
+void te::layout::MapController::extentChanged(const te::gm::Envelope& envelope, double scale)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -130,7 +131,7 @@ void te::layout::MapController1::extentChanged(const te::gm::Envelope& envelope,
   }
 }
 
-void te::layout::MapController1::setZoom( const int& zoom )
+void te::layout::MapController::setZoom( const int& zoom )
 {
   m_zoom = zoom;
 }

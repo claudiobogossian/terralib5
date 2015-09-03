@@ -36,13 +36,9 @@ namespace te
 {
   namespace layout
   {
-    class ItemFactory;
-    class OutsideFactory;
     class Utils;
-    class BuildGraphicsItem;
     class SystematicScaleConfig;
     class ItemUtils;
-    class BuildGraphicsOutside;
 
     class BuildContext 
     {
@@ -56,14 +52,10 @@ namespace te
 
       protected:
    
-        ItemFactory*              m_itemFactory;
-        OutsideFactory*           m_outsideFactory;
         Utils*                    m_utils;
         te::qt::widgets::Canvas*  m_canvas;
-        BuildGraphicsItem*        m_buildGraphicsItem;
         SystematicScaleConfig*    m_systematicConfig;
         ItemUtils*                m_itemUtils;
-        BuildGraphicsOutside*     m_buildGraphicsOutside;
     };
   }
 }

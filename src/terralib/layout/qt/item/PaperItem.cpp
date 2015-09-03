@@ -29,12 +29,10 @@
 #include "PaperItem.h"
 #include "../../../color/RGBAColor.h"
 
-te::layout::PaperItem::PaperItem( AbstractItemController* controller, AbstractItemModel* model ) 
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::PaperItem::PaperItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {  
-
   this->setFlags(QGraphicsItem::ItemSendsGeometryChanges);
-  //m_canChangeGraphicOrder = false;
 }
 
 te::layout::PaperItem::~PaperItem()

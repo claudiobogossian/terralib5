@@ -27,19 +27,21 @@
 #include "ColorDialogOutsideFactory.h"
 #include "../../../../../outside/ColorDialogModel.h"
 #include "../../../../../core/pattern/mvc/AbstractOutsideController.h"
+#include "../../../../outside/ColorDialogOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::ColorDialogOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   ColorDialogModel* model = new ColorDialogModel();
 
   AbstractOutsideController* controller = new AbstractOutsideController(model);
-  AbstractOutsideView* view = controller->getView();
+  ColorDialogOutside* view = new ColorDialogOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::ColorDialogOutsideFactory::ColorDialogOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getColorDialog()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getColorDialog()->getName())
 {
 
 }

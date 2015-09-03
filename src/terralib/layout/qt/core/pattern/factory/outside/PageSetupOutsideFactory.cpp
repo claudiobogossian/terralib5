@@ -27,19 +27,21 @@
 #include "PageSetupOutsideFactory.h"
 #include "../../../../../outside/PageSetupModel.h"
 #include "../../../../../core/pattern/mvc/AbstractOutsideController.h"
+#include "../../../../outside/PageSetupOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::PageSetupOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   PageSetupModel* model = new PageSetupModel();
 
   AbstractOutsideController* controller = new AbstractOutsideController(model);
-  AbstractOutsideView* view = controller->getView();
+  PageSetupOutside* view = new PageSetupOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::PageSetupOutsideFactory::PageSetupOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getPageSetup()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getPageSetup()->getName())
 {
 
 }
