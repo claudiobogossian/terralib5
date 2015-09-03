@@ -27,9 +27,7 @@
 
 // TerraLib
 #include "ImageItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
@@ -40,9 +38,10 @@
 #include <QStyleOptionGraphicsItem>
 #include "AbstractItem.h"
 
-te::layout::ImageItem::ImageItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::ImageItem::ImageItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {
+
 }
 
 te::layout::ImageItem::~ImageItem()
@@ -84,3 +83,5 @@ void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGrap
   painter->drawImage(boundRect, m_image, sourceRect);
   painter->restore();*/
 }
+
+

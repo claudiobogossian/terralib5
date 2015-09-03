@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../../../core/Config.h"
-#include "NewOutsideFactory.h"
+#include "OutsideFactory.h"
 #include "OutsideFactoryParamsCreate.h"
 
 namespace te
@@ -43,7 +43,7 @@ namespace te
 
       \sa NewOutsideFactory, ParameterizedAbstractFactory, AbstractOutsideView
     */
-    class TELAYOUTEXPORT GridSettingsOutsideFactory : public NewOutsideFactory
+    class TELAYOUTEXPORT GridSettingsOutsideFactory : public OutsideFactory
     {
       public:
 

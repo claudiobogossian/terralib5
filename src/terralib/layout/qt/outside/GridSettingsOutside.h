@@ -47,9 +47,9 @@ namespace te
 {
   namespace layout
   {
-    class AbstractOutsideController;
     class PlanarGridSettingsConfigProperties;
     class GeodesicGridSettingsConfigProperties;
+    class AbstractOutsideController;
 
     /*!
     \brief Window (QDialog) map grid setting (MapItem).

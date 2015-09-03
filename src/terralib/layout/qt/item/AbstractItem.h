@@ -51,14 +51,14 @@
 #include <QColor>
 #include <QGraphicsSceneHoverEvent>
 
-class AbstractItemModel;
-
 class QWidget;
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
+    class AbstractItemModel;
     /*!
     \brief Abstract class that represents a graphic item.  
       Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
@@ -82,7 +82,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false);
+        AbstractItem(AbstractItemController* controller,  bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -205,9 +205,9 @@ namespace te
     };
 
     template <class T>
-    inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
+    inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, bool invertedMatrix)
       : T()
-      , AbstractItemView(controller, model, invertedMatrix)
+      , AbstractItemView(controller, invertedMatrix)
       , m_move(false)
       , m_is_resizing(false),
         m_enumSides(TPNoneSide)
@@ -227,22 +227,6 @@ namespace te
     inline te::layout::AbstractItem<T>::~AbstractItem()
     {
     }
-
-    /*
-    template <class T>
-    inline void te::layout::AbstractItem<T>::update(const Subject* subject)
-    {
-      double x = m_model->getProperty("x").getValue().toDouble();
-      double y = m_model->getProperty("y").getValue().toDouble();
-
-      if(x != this->x() || y != this->y())
-      {
-        this->prepareGeometryChange();
-        this->setPos(x, y);
-      }
-
-      T::update();
-    }*/
 
     template <class T>
     inline QRectF te::layout::AbstractItem<T>::boundingRect() const

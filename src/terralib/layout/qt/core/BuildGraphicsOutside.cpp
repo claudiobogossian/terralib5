@@ -28,7 +28,7 @@
 // TerraLib
 #include "BuildGraphicsOutside.h"
 #include "../../core/enum/Enums.h"
-#include "pattern/factory/outside/NewOutsideFactory.h"
+#include "pattern/factory/outside/OutsideFactory.h"
 #include "pattern/factory/outside/OutsideFactoryParamsCreate.h"
 #include "../../core/pattern/mvc/AbstractOutsideView.h"
 
@@ -57,7 +57,7 @@ QWidget* te::layout::BuildGraphicsOutside::createOuside( te::layout::EnumType* t
 
   std::string name = type->getName();
 
-  AbstractOutsideView* abstractItem = te::layout::NewOutsideFactory::make(name, params);
+  AbstractOutsideView* abstractItem = te::layout::OutsideFactory::make(name, params);
   widget = dynamic_cast<QWidget*>(abstractItem);
   
   return widget;

@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "TextController1.h"
+#include "TextController.h"
 
 #include "../core/pattern/command/ChangePropertyCommand.h"
 #include "../../core/enum/EnumAlignmentType.h"
@@ -30,18 +30,17 @@
 #include <QTextDocument>
 #include <QFontMetricsF>
 
-te::layout::TextController1::TextController1( te::layout::AbstractItemModel* model)
+te::layout::TextController::TextController(AbstractItemModel* model)
   : AbstractItemController(model)
 {
-  // init component
-  updateView();
+  
 }
 
-te::layout::TextController1::~TextController1()
+te::layout::TextController::~TextController()
 {
 }
 
-QSizeF te::layout::TextController1::updateView()
+QSizeF te::layout::TextController::updateView()
 {
   TextItem* view = dynamic_cast<TextItem*>(m_view);
   if(view != 0)
@@ -129,7 +128,7 @@ QSizeF te::layout::TextController1::updateView()
   return QSizeF();
 }
 
-void te::layout::TextController1::updateModel(const QSizeF& size)
+void te::layout::TextController::updateModel(const QSizeF& size)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -148,7 +147,7 @@ void te::layout::TextController1::updateModel(const QSizeF& size)
   m_model->setProperties(properties);
 }
 
-void te::layout::TextController1::update(const te::layout::Subject* subject)
+void te::layout::TextController::update(const te::layout::Subject* subject)
 {
   if(sync() == true)
   {
@@ -158,7 +157,7 @@ void te::layout::TextController1::update(const te::layout::Subject* subject)
   AbstractItemController::update(subject);
 }
 
-bool te::layout::TextController1::sync()
+bool te::layout::TextController::sync()
 {
   const Property& pWidth = getProperty("width");
   const Property& pHeight = getProperty("height");
@@ -179,12 +178,12 @@ bool te::layout::TextController1::sync()
   return false;
 }
 
-void te::layout::TextController1::sceneChanged()
+void te::layout::TextController::sceneChanged()
 {
   sync();
 }
 
-void te::layout::TextController1::textChanged()
+void te::layout::TextController::textChanged()
 {
   TextItem* view = dynamic_cast<TextItem*>(m_view);
   if(view != 0)
@@ -216,3 +215,9 @@ void te::layout::TextController1::textChanged()
     }
   }
 }
+
+void te::layout::TextController::refresh()
+{
+  updateView();
+}
+

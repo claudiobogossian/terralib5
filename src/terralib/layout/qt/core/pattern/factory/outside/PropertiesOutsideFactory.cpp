@@ -27,19 +27,21 @@
 #include "PropertiesOutsideFactory.h"
 #include "../../../../../outside/PropertiesModel.h"
 #include "../../../../../outside/PropertiesController.h"
+#include "../../../../outside/PropertiesOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::PropertiesOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   PropertiesModel* model = new PropertiesModel();
 
   PropertiesController* controller = new PropertiesController(model);
-  AbstractOutsideView* view = controller->getView();
+  PropertiesOutside* view = new PropertiesOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::PropertiesOutsideFactory::PropertiesOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getPropertiesWindow()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getPropertiesWindow()->getName())
 {
 
 }

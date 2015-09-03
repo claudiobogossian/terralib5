@@ -25,9 +25,10 @@
 
 // TerraLib
 #include "MapItemFactory.h"
-#include "../../../../item/MapController1.h"
+#include "../../../../item/MapController.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/MapModel.h"
+#include "../../../../item/MapItem.h"
 
 te::layout::AbstractItemView* te::layout::MapItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -39,18 +40,19 @@ te::layout::AbstractItemView* te::layout::MapItemFactory::build(ItemFactoryParam
     setProperties(model, params);
   }
 
-  MapController1* controller = new MapController1(model);
-  AbstractItemView* view = controller->getView();
+  MapController* controller = new MapController(model);
+  MapItem* view = new MapItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::MapItemFactory::MapItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getMapItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getMapItem()->getName())
 {
 
 }

@@ -28,11 +28,10 @@
 // TerraLib
 #include "MapLocationItem.h"
 
-te::layout::MapLocationItem::MapLocationItem( AbstractItemController* controller, AbstractItemModel* model ) :
-  MapItem(controller, model)
+te::layout::MapLocationItem::MapLocationItem(AbstractItemController* controller, bool invertedMatrix) :
+  MapItem(controller, invertedMatrix)
 {    
-  //m_mapDisplay->setAcceptDrops(false);
-  //m_mapDisplay->setMouseTracking(false);
+
 }
 
 te::layout::MapLocationItem::~MapLocationItem()

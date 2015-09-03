@@ -27,19 +27,21 @@
 #include "EditTemplateOutsideFactory.h"
 #include "../../../../../outside/EditTemplateModel.h"
 #include "../../../../../outside/EditTemplateController.h"
+#include "../../../../outside/EditTemplateOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::EditTemplateOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   EditTemplateModel* model = new EditTemplateModel();
 
   EditTemplateController* controller = new EditTemplateController(model);
-  AbstractOutsideView* view = controller->getView();
+  EditTemplateOutside* view = new EditTemplateOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::EditTemplateOutsideFactory::EditTemplateOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getEditTemplate()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getEditTemplate()->getName())
 {
 
 }

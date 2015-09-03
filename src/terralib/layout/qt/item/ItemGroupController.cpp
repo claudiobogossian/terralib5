@@ -18,23 +18,23 @@
  */
 
 // TerraLib
-#include "ItemGroupController1.h"
+#include "ItemGroupController.h"
 
 #include "ItemGroup.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
 
 
-te::layout::ItemGroupController1::ItemGroupController1( te::layout::AbstractItemModel* model)
+te::layout::ItemGroupController::ItemGroupController(AbstractItemModel* model)
   : AbstractItemController(model)
 {
 }
 
-te::layout::ItemGroupController1::~ItemGroupController1()
+te::layout::ItemGroupController::~ItemGroupController()
 {
 }
 
 
-void te::layout::ItemGroupController1::itemAdded()
+void te::layout::ItemGroupController::itemAdded()
 {
   ItemGroup* item = dynamic_cast<ItemGroup*>(m_view);
   if(item == 0)

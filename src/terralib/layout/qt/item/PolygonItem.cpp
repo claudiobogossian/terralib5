@@ -37,10 +37,10 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::PolygonItem::PolygonItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
-  : LineItem(controller, model)
+te::layout::PolygonItem::PolygonItem(AbstractItemController* controller, bool invertedMatrix)
+  : LineItem(controller, invertedMatrix)
 { 
-  //m_nameClass = std::string(this->metaObject()->className());
+  
 }
 
 te::layout::PolygonItem::~PolygonItem()

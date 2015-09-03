@@ -40,6 +40,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic Ellipse. 
         Its coordinate system is the same of scene (millimeters). 
@@ -59,7 +60,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        EllipseItem( AbstractItemController* controller, AbstractItemModel* model );
+        EllipseItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

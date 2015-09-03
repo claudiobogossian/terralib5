@@ -35,29 +35,13 @@
 #include "AbstractItem.h"
 
 // Qt
-//#include <QGraphicsItemGroup>
 #include <QGraphicsItem>
-//#include <QPainter>
-//#include <QPixmap>
-
-// TerraLib
-/*
-#include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../core/enum/AbstractType.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../color/RGBAColor.h"
-#include "../../core/Config.h"
-*/
-
-//class QMouseEvent;
-//class QWheelEvent;
-//class QKeyEvent;
-//class QString;
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
         Its coordinate system is the same of scene (millimeters). 
@@ -67,11 +51,11 @@ namespace te
 
       \sa te::layout::ItemObserver
     */
-    class TELAYOUTEXPORT ItemGroup : public AbstractItem < QGraphicsItemGroup >
+    class TELAYOUTEXPORT ItemGroup : public AbstractItem<QGraphicsItemGroup>
     {
       public:
 
-        ItemGroup( AbstractItemController* controller, AbstractItemModel* model );
+        ItemGroup(AbstractItemController* controller, bool invertedMatrix = false);
 
         virtual ~ItemGroup();
 
@@ -86,43 +70,6 @@ namespace te
           \brief Reimplemented from QGraphicsItem to capture changes in the item
          */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
-
-        /*
-        virtual void updateObserver(ContextItem context);
-
-        virtual te::gm::Coord2D getPosition();
-
-        void setPixmap( const QPixmap& pixmap );
-
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
-        virtual bool contains(const QPointF &point) const;
-
-        void  setZValue ( qreal z );
-
-        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
-
-      protected:
-
-        virtual void setPosition(const double& x, const double& y);
-
-        void drawBackground( QPainter * painter );
-
-        void drawSelection( QPainter* painter );
-
-        virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent* event );
-
-        virtual void mousePressEvent ( QGraphicsSceneMouseEvent* event );
-
-        virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent* event );
-        
-        virtual int getZValueItem();
-
-        virtual void applyRotation();
-        
-      protected:
-
-        QPixmap m_pixmap;*/
     };
   }
 }

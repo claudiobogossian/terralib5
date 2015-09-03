@@ -24,28 +24,27 @@
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER1_H
-#define __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER1_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_CONTROLLER_H
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_CONTROLLER_H
 
 // TerraLib
-#include "TextController1.h"
 #include "../../core/Config.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 
-
-class QSizeF;
-class QTextTable;
+#include "../../../maptools/AbstractLayer.h"
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemModel;
     /*!
     \brief Class that represents text controller.
     
     \ingroup layout
-    \sa te::layout::TextController1
+    \sa te::layout::AbstractItemController
     */
-    class TELAYOUTEXPORT TitleController1 : public TextController1
+    class TELAYOUTEXPORT MapController : public AbstractItemController
     {
       public:
 
@@ -55,28 +54,27 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        TitleController1( AbstractItemModel* model);
+        MapController(AbstractItemModel* model);
 
         /*!
           \brief Destructor
         */ 
-        virtual ~TitleController1();
+        virtual ~MapController();
 
         /*!
-          \brief Updates the view with the current configuration of the model
-          \return The new size of the view
+          \brief Method called by the subject to inform changes in the model
         */
-        virtual QSizeF updateView();
+        virtual void update(const Subject* subject);
 
         /*!
-          \brief This function will be called by the view every time the item´s text was changed
-         */
-        virtual void textChanged();
+          \brief Method called by the view to inform that new layers have been added
+        */
+        virtual void addLayers(const std::list<te::map::AbstractLayerPtr>& layerList);
 
-    protected:
-
-      QTextTable* m_table;
-
+        /*!
+          \brief Method called by the view to inform that the extent and scale have been changed
+        */
+        virtual void extentChanged(const te::gm::Envelope& envelope, double scale);
     };
   }
 }

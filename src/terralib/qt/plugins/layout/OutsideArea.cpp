@@ -30,7 +30,6 @@
 #include "PropertiesDock.h"
 #include "ObjectInspectorDock.h"
 #include "EditTemplateDock.h"
-#include "../../../layout/core/pattern/singleton/Context.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 #include "../../../layout/core/enum/Enums.h"
@@ -127,17 +126,7 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(this, SIGNAL(changeMenuMode(te::layout::EnumType*)), m_view, SLOT(onMainMenuChangeMode(te::layout::EnumType*)));
     connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
   }
-
-  te::layout::AbstractBuildGraphicsItem* abstractBuildItem = te::layout::Context::getInstance().getAbstractBuildGraphicsItem();
-  if(abstractBuildItem)
-  {
-    te::layout::BuildGraphicsItem* buildItem = dynamic_cast<te::layout::BuildGraphicsItem*>(abstractBuildItem);
-    if(buildItem)
-    {
-      connect(buildItem, SIGNAL(addChildFinalized(QGraphicsItem*, QGraphicsItem*)), this, SLOT(onAddChildFinalized(QGraphicsItem*, QGraphicsItem*)));
-    }
-  }
-
+  
   createPropertiesDock();
 
   createInspectorDock();
@@ -191,18 +180,8 @@ void te::qt::plugins::layout::OutsideArea::createToolbar()
 
   if(!win)
     return;
-  
-  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
-  if(!abstractBuildOutside)
-  {
-    return;
-  }
 
-  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
-  if(!buildOutside)
-  {
-    return;
-  }
+  te::layout::BuildGraphicsOutside buildOutside;
 
   te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
   if(!objectType)
@@ -210,7 +189,7 @@ void te::qt::plugins::layout::OutsideArea::createToolbar()
     return;
   }
 
-  QWidget* widget = buildOutside->createOuside(objectType->getToolbar());
+  QWidget* widget = buildOutside.createOuside(objectType->getToolbar());
   if(!widget)
   {
     return;

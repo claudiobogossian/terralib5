@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "../../Config.h"
-#include "../observer/NewObserver.h"
+#include "../observer/Observer.h"
 #include "terralib/geometry/Coord2D.h"
 
 // STL
@@ -55,17 +55,13 @@ namespace te
     
       \ingroup layout
     */
-    class TELAYOUTEXPORT AbstractItemController : public NewObserver
+    class TELAYOUTEXPORT AbstractItemController : public Observer
     {
       public:
-
-        virtual void resized(const double& width, const double& height);
-
         /*
           \brief Constructor
         */ 
-        AbstractItemController( AbstractItemModel* model );
-
+        AbstractItemController(AbstractItemModel* model);
         
         virtual ~AbstractItemController();
 
@@ -73,6 +69,8 @@ namespace te
           \brief Gets the view
         */ 
         virtual AbstractItemView* getView() const;
+
+        virtual void setView(AbstractItemView* view);
 
         /*!
           \brief Gets the model
@@ -97,7 +95,11 @@ namespace te
         */
         virtual bool contains(const te::gm::Coord2D &coord) const;
 
+        virtual void resized(const double& width, const double& height);
+
       protected:
+
+        virtual void refresh();
 
         AbstractItemModel*    m_model; //!< The model of the view
         AbstractItemView*     m_view; //!< The view

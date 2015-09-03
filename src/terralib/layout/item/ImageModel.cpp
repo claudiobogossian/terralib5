@@ -32,7 +32,6 @@
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
 #include "../core/property/Property.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 #include "../core/pattern/singleton/Context.h"

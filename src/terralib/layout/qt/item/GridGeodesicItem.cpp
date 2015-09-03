@@ -33,35 +33,10 @@
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/property/GridSettingsConfigProperties.h"
 
-
-/*
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/GridMapModel.h"
-#include "MapItem.h"
-#include "../../core/WorldTransformer.h"
-#include "../../item/MapModel.h"
-#include "../../item/GridGeodesicModel.h"
-#include "../../../geometry/LinearRing.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "../../core/Utils.h"
-#include "../core/ItemUtils.h"
-
-//Qt
-#include <QStyleOptionGraphicsItem>
-#include <QPointF>
-#include <QLineF>
-*/
-
-te::layout::GridGeodesicItem::GridGeodesicItem( AbstractItemController* controller, AbstractItemModel* model) 
-  : GridMapItem(controller, model)
+te::layout::GridGeodesicItem::GridGeodesicItem(AbstractItemController* controller, bool invertedMatrix)
+  : GridMapItem(controller, invertedMatrix)
 {  
-  //m_nameClass = std::string(this->metaObject()->className());
+  
 }
 
 te::layout::GridGeodesicItem::~GridGeodesicItem()

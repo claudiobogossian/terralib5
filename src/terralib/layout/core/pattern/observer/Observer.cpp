@@ -15,26 +15,29 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
- */
+    */
 
-/*!
-  \file PolygonController.cpp
-   
-  \brief 
+    /*!
+    \file Observer.h
 
-  \ingroup layout
+    \brief Abstract class to represent an observer. "View" part of MVC component.
+
+    \ingroup layout
 */
 
 // TerraLib
-#include "PolygonController.h"
+#include "Observer.h"
 
-te::layout::PolygonController::PolygonController( Observable* o ) :
-  LineController(o)
+#include "Subject.h"
+
+te::layout::Observer::Observer()
+  : m_subject(0)
 {
-  
+
 }
 
-te::layout::PolygonController::~PolygonController()
+te::layout::Observer::~Observer()
 {
-  
+  if(m_subject != 0)
+    m_subject->detach(this);
 }

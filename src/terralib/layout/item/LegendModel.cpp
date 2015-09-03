@@ -57,7 +57,7 @@
 
 te::layout::LegendModel::LegendModel()
   : AbstractItemModel()
-  , NewObserver()
+  , Observer()
   /*m_mapName(""),
   m_layer(0),
   m_borderDisplacement(1),

@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/MapLocationModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/MapLocationItem.h"
 
 te::layout::AbstractItemView* te::layout::MapLocationItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::MapLocationItemFactory::build(ItemFact
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  MapLocationItem* view = new MapLocationItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::MapLocationItemFactory::MapLocationItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getMapLocationItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getMapLocationItem()->getName())
 {
 
 }

@@ -38,6 +38,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic sheet of paper. 
     Its coordinate system is the same of scene (millimeters). 
@@ -57,7 +58,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        PaperItem( AbstractItemController* controller, AbstractItemModel* model );
+        PaperItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

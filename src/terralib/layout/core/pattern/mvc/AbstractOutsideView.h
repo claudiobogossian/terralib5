@@ -93,7 +93,7 @@ namespace te
           \return controller
        */
       virtual AbstractOutsideController* getController();
-      
+            
     protected:
 
       AbstractOutsideController*  m_controller; //!< "Controller" part of MVC widget.

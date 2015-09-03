@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/SVGModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/SVGItem.h"
 
 te::layout::AbstractItemView* te::layout::SVGItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::SVGItemFactory::build(ItemFactoryParam
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  SVGItem* view = new SVGItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::SVGItemFactory::SVGItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getSVGItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getSVGItem()->getName())
 {
 
 }

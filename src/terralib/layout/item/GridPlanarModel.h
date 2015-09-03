@@ -31,7 +31,7 @@
 // TerraLib
 #include "GridMapModel.h"
 #include "../core/Config.h"
-#include "../core/pattern/observer/NewObserver.h"
+#include "../core/pattern/observer/Observer.h"
 
 /*
 #include "../core/enum/AbstractType.h"
@@ -43,7 +43,7 @@ namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT GridPlanarModel: public GridMapModel, public NewObserver
+    class TELAYOUTEXPORT GridPlanarModel: public GridMapModel, public Observer
     {
       public:
 

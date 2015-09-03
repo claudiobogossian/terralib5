@@ -27,19 +27,21 @@
 #include "ObjectInspectorOutsideFactory.h"
 #include "../../../../../outside/ObjectInspectorModel.h"
 #include "../../../../../outside/ObjectInspectorController.h"
+#include "../../../../outside/ObjectInspectorOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::ObjectInspectorOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   ObjectInspectorModel* model = new ObjectInspectorModel();
 
   ObjectInspectorController* controller = new ObjectInspectorController(model);
-  AbstractOutsideView* view = controller->getView();
+  ObjectInspectorOutside* view = new ObjectInspectorOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::ObjectInspectorOutsideFactory::ObjectInspectorOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getObjectInspectorWindow()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getObjectInspectorWindow()->getName())
 {
 
 }

@@ -27,9 +27,8 @@
 
 // TerraLib
 #include "TextItem.h"
-#include "TextController1.h"
+#include "TextController.h"
 #include "../../item/TextModel.h"
-
 #include "../../qt/core/Scene.h"
 
 // STL
@@ -45,8 +44,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
 
-te::layout::TextItem::TextItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
-  : AbstractItem<QGraphicsTextItem>(controller, model, true)
+te::layout::TextItem::TextItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsTextItem>(controller, true)
 {  
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(false);
@@ -79,7 +78,7 @@ QVariant te::layout::TextItem::itemChange ( QGraphicsItem::GraphicsItemChange ch
         QTransform transf = transfView.inverted();
         this->setTransform(transf);
 
-        TextController1* controller = dynamic_cast<TextController1*>(m_controller);
+        TextController* controller = dynamic_cast<TextController*>(m_controller);
         if(controller != 0)
         {
           controller->sceneChanged();
@@ -146,19 +145,19 @@ void te::layout::TextItem::leaveEditionMode()
   unsetCursor();
   clearFocus();
 
-  TextController1* controller = dynamic_cast<TextController1*>(m_controller);
+  TextController* controller = dynamic_cast<TextController*>(m_controller);
   if(controller != 0)
   {
     controller->textChanged();
   }
 }
 
-void te::layout::TextItem::updateGeometry( int position, int charsRemoved, int charsAdded )
+void te::layout::TextItem::updateGeometry(int position, int charsRemoved, int charsAdded)
 {
   setTextWidth(-1);
   setTextWidth(boundingRect().width());
   
-  TextController1* controller = dynamic_cast<TextController1*>(m_controller);
+  TextController* controller = dynamic_cast<TextController*>(m_controller);
   if(controller != 0)
   {
     controller->textChanged();

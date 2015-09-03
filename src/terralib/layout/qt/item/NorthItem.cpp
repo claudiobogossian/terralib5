@@ -30,10 +30,10 @@
 #include "../../item/NorthModel.h"
 #include "../../core/enum/EnumNorthArrowType.h"
 
-te::layout::NorthItem::NorthItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) :
-  AbstractItem<QGraphicsItem>(controller, model)
+te::layout::NorthItem::NorthItem(AbstractItemController* controller, bool invertedMatrix) :
+  AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {  
-  //m_nameClass = std::string(this->metaObject()->className());
+
 }
 
 te::layout::NorthItem::~NorthItem()

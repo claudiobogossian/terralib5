@@ -27,19 +27,21 @@
 #include "GridSettingsOutsideFactory.h"
 #include "../../../../../outside/GridSettingsModel.h"
 #include "../../../../../outside/GridSettingsController.h"
+#include "../../../../outside/GridSettingsOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::GridSettingsOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   GridSettingsModel* model = new GridSettingsModel();
 
   GridSettingsController* controller = new GridSettingsController(model);
-  AbstractOutsideView* view = controller->getView();
+  GridSettingsOutside* view = new GridSettingsOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::GridSettingsOutsideFactory::GridSettingsOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getGridSettings()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getGridSettings()->getName())
 {
 
 }

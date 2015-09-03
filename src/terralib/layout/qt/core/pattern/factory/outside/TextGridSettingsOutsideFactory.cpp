@@ -27,19 +27,21 @@
 #include "TextGridSettingsOutsideFactory.h"
 #include "../../../../../outside/TextGridSettingsModel.h"
 #include "../../../../../outside/TextGridSettingsController.h"
+#include "../../../../outside/TextGridSettingsOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::TextGridSettingsOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   TextGridSettingsModel* model = new TextGridSettingsModel();
 
   TextGridSettingsController* controller = new TextGridSettingsController(model);
-  AbstractOutsideView* view = controller->getView();
+  TextGridSettingsOutside* view = new TextGridSettingsOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::TextGridSettingsOutsideFactory::TextGridSettingsOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getTextGridSettings()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getTextGridSettings()->getName())
 {
 
 }

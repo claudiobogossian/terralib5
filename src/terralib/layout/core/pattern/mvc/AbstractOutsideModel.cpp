@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "AbstractOutsideModel.h"
-#include "Observer.h"
 #include "../../property/Property.h"
 #include "../../property/Properties.h"
 #include "../singleton/Context.h"

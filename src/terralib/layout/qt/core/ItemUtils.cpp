@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "ItemUtils.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
@@ -41,7 +40,6 @@
 #include "../../item/TextModel.h"
 #include "../item/LegendChildItem.h"
 #include "../../item/LegendChildModel.h"
-#include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridPlanarModel.h"
 #include "Scene.h"
@@ -79,7 +77,7 @@ std::vector<te::layout::MapItem*> te::layout::ItemUtils::getMapItemList(bool sel
     if(!item)
       continue;
 
-    te::layout::ItemObserver* lItem = dynamic_cast<te::layout::ItemObserver*>(item);
+    te::layout::AbstractItemView* lItem = dynamic_cast<te::layout::AbstractItemView*>(item);
     if(!lItem)
       continue;
 

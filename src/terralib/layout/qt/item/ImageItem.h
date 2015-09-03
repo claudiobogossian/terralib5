@@ -39,6 +39,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic Arrow. 
         Its coordinate system is the same of scene (millimeters). 
@@ -58,7 +59,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        ImageItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        ImageItem(AbstractItemController* controller, bool invertedMatrix = false);
         
         /*!
           \brief Destructor

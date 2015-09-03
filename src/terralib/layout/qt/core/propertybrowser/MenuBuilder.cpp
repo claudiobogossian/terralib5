@@ -32,7 +32,6 @@
 #include "../../../outside/GridSettingsController.h"
 #include "../../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../outside/GridSettingsOutside.h"
-#include "../../../core/pattern/mvc/ItemController.h"
 #include "../../../core/enum/Enums.h"
 #include "../../../outside/TextGridSettingsModel.h"
 #include "../../../outside/TextGridSettingsController.h"

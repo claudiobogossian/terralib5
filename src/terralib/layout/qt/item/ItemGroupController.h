@@ -18,32 +18,50 @@
  */
 
 /*!
-  \file LineController.h
+  \file TextController.h
    
-  \brief 
-
+  \brief Class that represents text controller.
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_POLYGON_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_POLYGON_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_CONTROLLER_H
+#define __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_CONTROLLER_H
 
 // TerraLib
-#include "LineController.h"
+#include "../../core/Config.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 
 namespace te
 {
   namespace layout
   {
-    class PolygonController : public LineController
+    class AbstractItemModel;
+    class AbstractItemView;
+    /*!
+    \brief Class that represents text controller.
+    
+    \ingroup layout
+    \sa te::layout::AbstractItemController
+    */
+    class TELAYOUTEXPORT ItemGroupController : public AbstractItemController
     {
       public:
 
-        PolygonController( Observable* o );
+        /*!
+          \brief Constructor
 
-        virtual ~PolygonController();
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
+        ItemGroupController(AbstractItemModel* model);
+
+        /*!
+          \brief Destructor
+        */ 
+        virtual ~ItemGroupController();
+
+        void itemAdded();
     };
   }
 }
-
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_CONTROLLER1_H

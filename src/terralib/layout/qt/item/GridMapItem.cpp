@@ -29,28 +29,9 @@
 #include "GridMapItem.h"
 
 #include "../../core/property/GridSettingsConfigProperties.h"
-/*
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/GridMapModel.h"
-#include "../../core/WorldTransformer.h"
-#include "MapItem.h"
-#include "../../item/MapModel.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "../core/ItemUtils.h"
-#include "../../core/ContextObject.h"
 
-// Qt
-#include <QStyleOptionGraphicsItem>
-*/
-
-te::layout::GridMapItem::GridMapItem( AbstractItemController* controller, AbstractItemModel* model ) 
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::GridMapItem::GridMapItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
   , m_maxWidthTextMM(0)
   , m_maxHeigthTextMM(0)
   , m_onePointMM(0.3527777778)

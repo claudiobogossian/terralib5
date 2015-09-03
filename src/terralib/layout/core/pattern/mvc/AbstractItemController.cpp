@@ -27,15 +27,10 @@
 #include "../factory/AbstractItemFactory.h"
 
 te::layout::AbstractItemController::AbstractItemController(AbstractItemModel* model)
-  : NewObserver()
+  : Observer()
   , m_model(model)
   , m_view(0)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, model);
-
-  m_view = factory->make(m_model->getProperties().getTypeObj(), params);
-
   if(m_model != 0)
   {
     m_model->attach(this);
@@ -68,6 +63,11 @@ const te::layout::Property& te::layout::AbstractItemController::getProperty(cons
 
 void te::layout::AbstractItemController::update(const te::layout::Subject* subject)
 {
+  if (!m_view)
+  {
+    return;
+  }
+
   const Property& property = m_model->getProperty("rotation");
   if(property.getValue().toDouble() != m_view->getItemRotation())
   {
@@ -80,7 +80,13 @@ bool te::layout::AbstractItemController::contains(const te::gm::Coord2D &coord) 
   return m_model->contains(coord);
 }
 
-void te::layout::AbstractItemController::resized( const double& width, const double& height )
+void te::layout::AbstractItemController::setView(AbstractItemView* view)
+{
+  m_view = view;
+  refresh(); // controller could be refresh your view
+}
+
+void te::layout::AbstractItemController::resized(const double& width, const double& height)
 {
   Properties properties;
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
@@ -102,5 +108,10 @@ void te::layout::AbstractItemController::resized( const double& width, const dou
     properties.addProperty(property);
   }
   m_model->setProperties(properties);
+}
+
+void te::layout::AbstractItemController::refresh()
+{
+  // do nothing
 }
 

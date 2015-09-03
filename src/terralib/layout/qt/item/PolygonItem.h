@@ -38,11 +38,13 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
+
     class PolygonItem : public LineItem
     {
       public:
 
-        PolygonItem ( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        PolygonItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         virtual ~PolygonItem ();
 

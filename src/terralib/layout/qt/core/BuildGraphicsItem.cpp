@@ -28,8 +28,7 @@
 // TerraLib
 #include "BuildGraphicsItem.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "pattern/factory/item/ItemFactoryParamsCreate.h"
-#include "pattern/factory/item/NewItemFactory.h"
+#include "pattern/factory/item/ItemFactory.h"
 #include "pattern/command/AddCommand.h"
 #include "Scene.h"
 #include "ItemUtils.h"
@@ -42,7 +41,7 @@
 #include <QGraphicsItem>
 #include <QUndoCommand> 
 
-te::layout::BuildGraphicsItem::BuildGraphicsItem(Scene* scene ) :
+te::layout::BuildGraphicsItem::BuildGraphicsItem(Scene* scene) :
   m_scene(scene)
 {
  
@@ -53,7 +52,7 @@ te::layout::BuildGraphicsItem::~BuildGraphicsItem()
  
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Properties props, bool draw )
+QGraphicsItem* te::layout::BuildGraphicsItem::buildItem(te::layout::Properties props)
 {
   QGraphicsItem* item = 0;
 
@@ -62,13 +61,12 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
 
   clear();
 
-  m_props = props;  
+  m_props = props;
   m_coord = findCoordinate(props);
-  m_zValue = findZValue(props);
   
   EnumType* type = props.getTypeObj();
 
-  item = createItem(type, draw);
+  item = createItem(type);
 
   clear();
   
@@ -76,7 +74,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* itemType, const te::gm::Coord2D& coordinate, 
-    double width, double height, bool draw)
+    double width, double height)
 {
   QGraphicsItem* item = 0;
 
@@ -86,14 +84,14 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* i
   m_width = width;
   m_height = height;
 
-  item = createItem(itemType, draw);
+  item = createItem(itemType);
 
   clear();
 
   return item;
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* itemType, bool draw)
+QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* itemType)
 {
   QGraphicsItem* item = 0;
 
@@ -102,13 +100,11 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* i
     return item;
   }
   
-  std::string strName = nameItem(itemType);
-
-  ItemFactoryParamsCreate params(strName, m_zValue, m_id, m_coord, m_width, m_height);
+  ItemFactoryParamsCreate params = createParams(itemType);
 
   std::string name = itemType->getName();
 
-  AbstractItemView* abstractItem = te::layout::NewItemFactory::make(name, params);
+  AbstractItemView* abstractItem = te::layout::ItemFactory::make(name, params);
   item = dynamic_cast<QGraphicsItem*>(abstractItem);
 
   if (!item)
@@ -121,7 +117,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* i
     m_scene->insertItem(item);
   }
 
-  afterBuild(item, draw);
+  afterBuild(item);
 
   return item;
 }
@@ -160,7 +156,7 @@ std::string te::layout::BuildGraphicsItem::nameItem( te::layout::EnumType* type 
   return name;
 }
 
-void te::layout::BuildGraphicsItem::afterBuild(QGraphicsItem* item, bool draw)
+void te::layout::BuildGraphicsItem::afterBuild(QGraphicsItem* item)
 {
   if (!item)
   {
@@ -185,7 +181,11 @@ void te::layout::BuildGraphicsItem::afterBuild(QGraphicsItem* item, bool draw)
 
   if (!m_props.getProperties().empty())
   {
-    item->setZValue(m_zValue);
+    int zValue = findZValue(m_props);
+    if (zValue > -1)
+    {
+      item->setZValue(zValue);
+    }
   }
 
   if (item)
@@ -198,4 +198,20 @@ void te::layout::BuildGraphicsItem::afterBuild(QGraphicsItem* item, bool draw)
   }
 }
 
+te::layout::ItemFactoryParamsCreate te::layout::BuildGraphicsItem::createParams(te::layout::EnumType* type)
+{
+  std::string strName = nameItem(type);
+
+  if (m_props.getProperties().empty())
+  {
+    return ItemFactoryParamsCreate(strName, m_id, m_coord, m_width, m_height);
+  }
+
+  std::string name = findName(m_props);
+  if (name.empty())
+  {
+    return ItemFactoryParamsCreate(strName, m_coord, m_props);
+  }  
+  return ItemFactoryParamsCreate(m_props);
+}
 

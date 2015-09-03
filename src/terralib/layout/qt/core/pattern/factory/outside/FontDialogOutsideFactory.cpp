@@ -27,19 +27,21 @@
 #include "FontDialogOutsideFactory.h"
 #include "../../../../../outside/FontDialogModel.h"
 #include "../../../../../core/pattern/mvc/AbstractOutsideController.h"
+#include "../../../../outside/FontDialogOutside.h"
 
 te::layout::AbstractOutsideView* te::layout::FontDialogOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
   FontDialogModel* model = new FontDialogModel();
 
   AbstractOutsideController* controller = new AbstractOutsideController(model);
-  AbstractOutsideView* view = controller->getView();
+  FontDialogOutside* view = new FontDialogOutside(controller);
+  controller->setView(view);
 
-  return dynamic_cast<AbstractOutsideView*>(view);
+  return view;
 }
 
 te::layout::FontDialogOutsideFactory::FontDialogOutsideFactory() :
-  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getFontDialog()->getName())
+  OutsideFactory(Enums::getInstance().getEnumObjectType()->getFontDialog()->getName())
 {
 
 }

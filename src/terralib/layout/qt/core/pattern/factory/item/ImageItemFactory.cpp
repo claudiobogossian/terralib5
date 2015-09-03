@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/ImageModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/ImageItem.h"
 
 te::layout::AbstractItemView* te::layout::ImageItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,7 +41,8 @@ te::layout::AbstractItemView* te::layout::ImageItemFactory::build(ItemFactoryPar
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  ImageItem* view = new ImageItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
@@ -50,7 +52,7 @@ te::layout::AbstractItemView* te::layout::ImageItemFactory::build(ItemFactoryPar
 }
 
 te::layout::ImageItemFactory::ImageItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getImageItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getImageItem()->getName())
 {
 
 }
