@@ -18,33 +18,30 @@
  */
 
 /*!
-  \file TextController.h
+  \file ImageController.h
    
-  \brief Class that represents text controller.
+  \brief Class that represents image controller.
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_CONTROLLER_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_IMAGE_CONTROLLER1_H
+#define __TERRALIB_LAYOUT_INTERNAL_IMAGE_CONTROLLER1_H
 
 // TerraLib
 #include "../../core/Config.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 
-#include "../../../maptools/AbstractLayer.h"
-
 namespace te
 {
   namespace layout
   {
-    class AbstractItemModel;
     /*!
-    \brief Class that represents text controller.
+    \brief Class that represents image controller.
     
     \ingroup layout
     \sa te::layout::AbstractItemController
     */
-    class TELAYOUTEXPORT MapController : public AbstractItemController
+    class TELAYOUTEXPORT ImageController : public AbstractItemController
     {
       public:
 
@@ -54,32 +51,15 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        MapController(AbstractItemModel* model);
+        ImageController( AbstractItemModel* model);
 
         /*!
           \brief Destructor
         */ 
-        virtual ~MapController();
+        virtual ~ImageController();
 
-        /*!
-          \brief Method called by the subject to inform changes in the model
-        */
         virtual void update(const Subject* subject);
-
-        /*!
-          \brief Method called by the view to inform that new layers have been added
-        */
-        virtual void addLayers(const std::list<te::map::AbstractLayerPtr>& layerList);
-
-        /*!
-          \brief Method called by the view to inform that the extent and scale have been changed
-        */
-        virtual void extentChanged(const te::gm::Envelope& envelope, double scale);
-
-        virtual void setZoom(const int& zoom);
-
-        int m_zoom;
     };
   }
 }
-#endif //__TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H
+#endif //__TERRALIB_LAYOUT_INTERNAL_IMAGE_CONTROLLER1_H

@@ -109,6 +109,7 @@ te::layout::MapItem::MapItem(AbstractItemController* controller, bool invertedMa
   , m_mapDisplay(0)
   , m_pan(0)
   , m_zoomWheel(0)
+  , m_doRefresh(false)
   /*,
   m_mime(0),
   m_mapDisplay(0),
@@ -207,6 +208,9 @@ te::qt::widgets::MapDisplay* te::layout::MapItem::getMapDisplay()
 
 void te::layout::MapItem::contextUpdated(const ContextObject& context)
 {
+  const int zoom = (const int) context.getZoom();
+  ((MapController1 *) m_controller)->setZoom(zoom);
+
   Utils* utils = Context::getInstance().getUtils();
 
   QRectF boxMM = boundingRect();
@@ -228,6 +232,11 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
 
 void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
+  if (m_doRefresh)
+  {
+    m_doRefresh = false;
+    m_mapDisplay->refresh();
+  }
   QPixmap pixmap(m_mapDisplay->width(), m_mapDisplay->height());
   pixmap.fill(Qt::transparent);
 
@@ -1413,3 +1422,7 @@ void te::layout::MapItem::resized()
   }
 }
 
+void te::layout::MapItem::doRefresh()
+{
+  m_doRefresh = true;
+}

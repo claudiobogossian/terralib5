@@ -17,65 +17,36 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*!
-  \file ContextObject.cpp
-   
-  \brief 
-
-  \ingroup layout
-*/
-
 // TerraLib
-#include "ContextObject.h"
+#include "ImageController.h"
+#include "ImageItem.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 
-te::layout::ContextObject::ContextObject( int zoom, int dpiX, int dpiY, PaperConfig* config, EnumType* mode ):
-  m_zoom(zoom),
-  m_dpiX(dpiX),
-  m_dpiY(dpiY),
-  m_config(config),
-  m_mode(mode)
+
+te::layout::ImageController::ImageController( te::layout::AbstractItemModel* model)
+  : AbstractItemController(model)
 {
- 
 }
 
-te::layout::ContextObject::~ContextObject()
+te::layout::ImageController::~ImageController()
 {
-
 }
 
-int te::layout::ContextObject::getZoom() const
+void te::layout::ImageController::update(const Subject* subject)
 {
-  return m_zoom;
-}
-
-int te::layout::ContextObject::getDpiX()
-{
-  return m_dpiX;
-}
-
-int te::layout::ContextObject::getDpiY()
-{
-  return m_dpiY;
-}
-
-te::layout::PaperConfig* te::layout::ContextObject::getPaperConfig()
-{
-  return m_config;
-}
-
-te::layout::EnumType* te::layout::ContextObject::getCurrentMode()
-{
-  return m_mode;
-}
-
-bool te::layout::ContextObject::isValid()
-{
-  bool result = true;
-  if(m_zoom <= 0 || m_dpiX <= 0 || 
-    m_dpiY <= 0 || m_config == 0 || m_mode == 0)
+  ImageItem* imageItem = dynamic_cast<ImageItem*>(this->getView());
+  if(imageItem == 0)
   {
-    result = false;
+    return;
   }
-  return result;
-}
 
+  const Property& pNewFileName = m_model->getProperty("file_name");
+  const std::string& newFileName = pNewFileName.getValue().toString();
+  
+  const std::string& currentFileName = imageItem->getFileName();
+
+  if(newFileName != currentFileName)
+  {
+    imageItem->setFileName(newFileName);
+  }
+}

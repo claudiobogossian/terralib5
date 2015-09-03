@@ -101,6 +101,7 @@ te::layout::AbstractItemModel::AbstractItemModel()
     Property property(0);
     property.setName("resizable");
     property.setLabel("Resizable");
+    property.setVisible(false);
     property.setValue(true, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
