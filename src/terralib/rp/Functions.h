@@ -83,7 +83,7 @@ namespace te
       \param rasterGrid The template grid used to create the output raster.
       \param bandsProperties The template band properties used to create the output raster.
       \param outDataSetName The data set name to give to the created data set.
-      \param dataSourceType The data source type string (i.e. GDAL, MEM.).
+      \param dataSourceType The data source type string (i.e. GDAL, MEM.)( See te::rst::RasterFactory dictionary for valid registered values ).
       \param outRasterHandler The created raster handler.
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
