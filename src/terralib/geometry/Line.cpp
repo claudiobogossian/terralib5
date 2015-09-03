@@ -30,6 +30,8 @@
 
 // STL
 #include <cassert>
+#include <cmath>
+#include <climits>
 
 //GEOS
 #include <geos/algorithm/LineIntersector.h>
@@ -112,7 +114,7 @@ double te::gm::Line::Angle()
   double dx = m_coords[0].x - m_coords[1].x;
   double dy = m_coords[0].y - m_coords[1].y;
   if (dx == 0.)
-    return DBL_MAX;
+    return std::numeric_limits< double >::max();
   return(dy / dx);
 }
 
@@ -144,7 +146,7 @@ double te::gm::Line::distance(te::gm::Point p)
   A = m_coords[0].y - m_coords[1].y;
   B = m_coords[1].x - m_coords[0].x;
   C = (m_coords[0].x - m_coords[1].x)* m_coords[0].y + (m_coords[1].y - m_coords[0].y)*m_coords[0].x;
-  distance = abs(A*(p.getX()) + B*(p.getY()) + C) / sqrt(A*A + B*B);
+  distance = abs(A*(p.getX()) + B*(p.getY()) + C) / std::sqrt(A*A + B*B);
 
   return(distance);
 }

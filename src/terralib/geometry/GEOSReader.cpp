@@ -52,6 +52,7 @@
 #include <geos/geom/MultiPolygon.h>
 #include <geos/geom/Point.h>
 #include <geos/geom/Polygon.h>
+#include <geos/geom/Dimension.h>
 
 // STL
 #include <cassert>
@@ -179,7 +180,7 @@ te::gm::Polygon* te::gm::GEOSReader::read(const geos::geom::Polygon* geosPoly)
     return new Polygon(0, PolygonType, geosPoly->getSRID());
 
   te::gm::GeomType gtype;
-  if (geosPoly->getDimension() == geos::geom::Dimension::DimensionType::A)
+  if (geosPoly->getDimension() == geos::geom::Dimension::A)
 	gtype = PolygonZType;
   else
 	gtype = PolygonType;
