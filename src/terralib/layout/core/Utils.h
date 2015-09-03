@@ -30,15 +30,10 @@
 
 // TerraLib
 #include "../../geometry/Envelope.h"
-#include "../../geometry/LinearRing.h"
 #include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
 #include "../../maptools/WorldDeviceTransformer.h"
-#include "WorldTransformer.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../maptools/Enums.h"
-#include "../../geometry/Point.h"
-#include "../../geometry/Polygon.h"
 #include "Config.h"
 
 // STL
@@ -56,8 +51,20 @@
 
 namespace te
 {
+  namespace gm
+  {
+    class Envelope;
+    class LinearRing;
+    class Point;
+    class Polygon;
+  }
+
   namespace layout
   {
+    class PaperConfig;
+    class Properties;
+    class WorldTransformer;
+
     /*!
       \brief Utility class with functions to manipulate the canvas and conversion between projections.
     
@@ -308,7 +315,17 @@ namespace te
           \brief Clears the canvas content and fills with the background color. Sets all width with 1. 
         */
         virtual void resetCanvas();
-                
+
+        /*!
+          \brief Converts from PaperConfig to Properties
+        */
+        static Properties convertToProperties(const PaperConfig& paperConfig);
+
+        /*!
+          \brief Converts from Properties to Paper Config
+        */
+        static PaperConfig convertToPaperConfig(const Properties& properties);
+
       protected:
         
         /*!

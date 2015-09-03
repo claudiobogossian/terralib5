@@ -22,6 +22,7 @@
 #include "../View.h"
 #include "../Scene.h"
 #include "../../../core/pattern/mvc/AbstractItemView.h"
+#include "../BuildGraphicsItem.h"
 
 // Qt
 #include <QtGui/QMouseEvent>
@@ -112,9 +113,10 @@ bool te::layout::CreateItemTool::mouseReleaseEvent(QMouseEvent* e)
     coord.x = scenePos.x();
     coord.y = scenePos.y();
   }
-  
+
   // create a new item
-  QGraphicsItem* item = sc->createItem(m_itemType, coord, width, height);
+  BuildGraphicsItem buildItem(sc);
+  QGraphicsItem* item = buildItem.createItem(m_itemType, coord, width, height);
   if (!item)
     return false;
 

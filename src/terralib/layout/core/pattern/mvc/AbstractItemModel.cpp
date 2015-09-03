@@ -101,6 +101,7 @@ te::layout::AbstractItemModel::AbstractItemModel()
     Property property(0);
     property.setName("resizable");
     property.setLabel("Resizable");
+    property.setVisible(false);
     property.setValue(true, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
@@ -133,6 +134,14 @@ te::layout::AbstractItemModel::AbstractItemModel()
   {
     Property property(0);
     property.setName("connect_item_position");
+    property.setVisible(false);
+    property.setValue(false, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("editable");
     property.setVisible(false);
     property.setValue(false, dataType->getDataTypeBool());
     m_properties.addProperty(property);

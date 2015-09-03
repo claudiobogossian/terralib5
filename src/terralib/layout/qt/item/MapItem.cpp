@@ -27,17 +27,23 @@
 
 // TerraLib
 #include "MapItem.h"
-#include "MapController1.h"
+#include "MapController.h"
 
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../qt/core/Scene.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h" //rever esta dependencia
+#include "../../../qt/widgets/tools/Pan.h"
+#include "../../../qt/widgets/tools/ZoomWheel.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneDragDropEvent>
 #include <QMimeData>
+#include <QApplication>
+#include <QEvent>
+#include <QWheelEvent>
+#include <QMouseEvent>
 
 /*
 #include "../../core/pattern/singleton/Context.h"
@@ -98,9 +104,12 @@
 #include <QTextEdit>
 */
 
-te::layout::MapItem::MapItem( AbstractItemController* controller, AbstractItemModel* model )
-  : AbstractItem<QGraphicsProxyWidget>(controller, model)
+te::layout::MapItem::MapItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsObject>(controller, invertedMatrix)
   , m_mapDisplay(0)
+  , m_pan(0)
+  , m_zoomWheel(0)
+  , m_doRefresh(false)
   /*,
   m_mime(0),
   m_mapDisplay(0),
@@ -112,18 +121,20 @@ te::layout::MapItem::MapItem( AbstractItemController* controller, AbstractItemMo
   m_currentMapScale(0),
   m_forceMapRefresh(false)*/
 {
+  this->setAcceptDrops(true);
+
   m_mapDisplay = new te::qt::widgets::MapDisplay();
   m_mapDisplay->setAcceptDrops(true);
   m_mapDisplay->setBackgroundColor(Qt::transparent);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
 
-  setWidget(m_mapDisplay);
+  //setWidget(m_mapDisplay);
 
-  m_mapDisplay->show();
+  //m_mapDisplay->show();
 
   this->prepareGeometryChange();
-  this->setGeometry(boundingRect());
+  m_mapDisplay->setGeometry(0, 0, 10, 10);
 
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(extentChanged()));
 
@@ -178,6 +189,8 @@ te::layout::MapItem::MapItem( AbstractItemController* controller, AbstractItemMo
 
 te::layout::MapItem::~MapItem()
 {
+  delete m_mapDisplay;
+
   /*
   clearCurrentTool();
   if(m_zoomWheel)
@@ -195,6 +208,9 @@ te::qt::widgets::MapDisplay* te::layout::MapItem::getMapDisplay()
 
 void te::layout::MapItem::contextUpdated(const ContextObject& context)
 {
+  const int zoom = (const int) context.getZoom();
+  ((MapController *) m_controller)->setZoom(zoom);
+
   Utils* utils = Context::getInstance().getUtils();
 
   QRectF boxMM = boundingRect();
@@ -216,6 +232,11 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
 
 void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
+  if (m_doRefresh)
+  {
+    m_doRefresh = false;
+    m_mapDisplay->refresh();
+  }
   QPixmap pixmap(m_mapDisplay->width(), m_mapDisplay->height());
   pixmap.fill(Qt::transparent);
 
@@ -285,25 +306,76 @@ QVariant te::layout::MapItem::itemChange ( QGraphicsItem::GraphicsItemChange cha
       contextUpdated(myScene->getContext());
     }
   }
-  return AbstractItem<QGraphicsProxyWidget>::itemChange(change, value);
+  return AbstractItem<QGraphicsObject>::itemChange(change, value);
 }
 
 void te::layout::MapItem::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
-  //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
-  QGraphicsItem::mousePressEvent(event);
+  if(m_isEditionMode == false)
+  {
+    AbstractItem<QGraphicsObject>::mousePressEvent(event);
+    return;
+  }
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  QRectF rect = boundingRect();
+  QPointF point = event->pos();
+  QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+  QMouseEvent mouseEvent(QEvent::MouseButtonPress, remappedPoint.toPoint(), event->button(),event->buttons(), event->modifiers());
+  QApplication::sendEvent(m_mapDisplay, &mouseEvent);
+  event->setAccepted(mouseEvent.isAccepted());
+
+  refresh();
 }
 
 void  te::layout::MapItem::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
-  //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
-  QGraphicsItem::mouseMoveEvent(event);
+  if(m_isEditionMode == false)
+  {
+    AbstractItem<QGraphicsObject>::mouseMoveEvent(event);
+    return;
+  }
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  QRectF rect = boundingRect();
+  QPointF point = event->pos();
+  QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+  QMouseEvent mouseEvent(QEvent::MouseMove, remappedPoint.toPoint(), event->button(),event->buttons(), event->modifiers());
+  QApplication::sendEvent(m_mapDisplay, &mouseEvent);
+  event->setAccepted(mouseEvent.isAccepted());
+
+  refresh();
 }
 
 void  te::layout::MapItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 {
-  //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
-  QGraphicsItem::mouseReleaseEvent(event);
+    if(m_isEditionMode == false)
+  {
+    AbstractItem<QGraphicsObject>::mouseReleaseEvent(event);
+    return;
+  }
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  QRectF rect = boundingRect();
+  QPointF point = event->pos();
+  QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+  QMouseEvent mouseEvent(QEvent::MouseButtonRelease, remappedPoint.toPoint(), event->button(),event->buttons(), event->modifiers());
+  QApplication::sendEvent(m_mapDisplay, &mouseEvent);
+  event->setAccepted(mouseEvent.isAccepted());
+
+  refresh();
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -323,11 +395,12 @@ void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
 
 void te::layout::MapItem::dragLeaveEvent( QGraphicsSceneDragDropEvent * event )
 {
+  AbstractItem<QGraphicsObject>::dragLeaveEvent(event);
 }
 
 void te::layout::MapItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 {
-
+  AbstractItem<QGraphicsObject>::dragMoveEvent(event);
 }
 
 void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
@@ -349,16 +422,92 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
     listLayers.push_back(layer);
   }
 
-  MapController1* mapController = dynamic_cast<MapController1*>(m_controller);
+  MapController* mapController = dynamic_cast<MapController*>(m_controller);
   if(mapController != 0)
   {
     mapController->addLayers(listLayers);
   }
+
+  refresh();
+}
+
+void te::layout::MapItem::wheelEvent ( QGraphicsSceneWheelEvent * event )
+{
+  if(m_isEditionMode == false)
+  {
+    AbstractItem<QGraphicsObject>::wheelEvent(event);
+    return;
+  }
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  QRectF rect = boundingRect();
+  QPointF point = event->pos();
+  QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+  QWheelEvent wheelEvent(remappedPoint.toPoint(), event->delta(),event->buttons(), event->modifiers());
+  QApplication::sendEvent(m_mapDisplay, &wheelEvent);
+  event->setAccepted(wheelEvent.isAccepted());
+
+  QGraphicsItem::update();
+}
+
+void te::layout::MapItem::enterEditionMode()
+{
+  //we now install the visualization tools in the map display and forward all the mouse and keyboards events to it
+  if(m_pan == 0)
+  {
+    m_pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
+  }
+  if(m_zoomWheel == 0)
+  {
+    m_zoomWheel = new te::qt::widgets::ZoomWheel(m_mapDisplay);
+  }
+
+  m_mapDisplay->installEventFilter(m_pan);
+  m_mapDisplay->installEventFilter(m_zoomWheel);
+
+  this->setCursor(Qt::OpenHandCursor);
+}
+
+void te::layout::MapItem::leaveEditionMode()
+{
+  //we now unistall the visualization tools from the map display and no more events will be forward to it
+  if(m_pan != 0)
+  {
+    m_mapDisplay->removeEventFilter(m_pan);
+    delete m_pan;
+    m_pan = 0;
+  }
+
+  if(m_zoomWheel != 0)
+  {
+    m_mapDisplay->removeEventFilter(m_zoomWheel);
+    delete m_zoomWheel;
+    m_zoomWheel = 0;
+  }
+
+  this->setCursor(Qt::ArrowCursor);
+}
+
+QPointF te::layout::MapItem::remapPointToViewport(const QPointF& point, const QRectF& item, const QRectF& widget) const
+{
+  double resX = widget.width() / item.width();
+  double resY = widget.height() / item.height();
+
+  QMatrix matrix;
+  matrix.scale(resX, -resY);
+  matrix.translate(-item.bottomLeft().x(), -item.bottomLeft().y());
+
+  QPointF remappedPoint = matrix.map(point);
+  return remappedPoint;
 }
 
 void te::layout::MapItem::extentChanged()
 {
-  MapController1* mapController = dynamic_cast<MapController1*>(m_controller);
+  MapController* mapController = dynamic_cast<MapController*>(m_controller);
   if(mapController != 0)
   {
     mapController->extentChanged(m_mapDisplay->getExtent(), m_mapDisplay->getScale());
@@ -1263,3 +1412,17 @@ void te::layout::MapItem::updateScale()
   }
 }
 */
+
+void te::layout::MapItem::resized()
+{
+  Scene* myScene = dynamic_cast<Scene*>(this->scene());
+  if(myScene != 0)
+  {
+    contextUpdated(myScene->getContext());
+  }
+}
+
+void te::layout::MapItem::doRefresh()
+{
+  m_doRefresh = true;
+}

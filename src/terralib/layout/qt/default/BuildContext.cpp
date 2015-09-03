@@ -28,52 +28,26 @@
 // TerraLib
 #include "BuildContext.h"
 #include "../../../layout/core/pattern/singleton/Context.h"
-#include "../../../layout/qt/core/pattern/factory/item/ItemFactory.h"
-#include "../../../layout/qt/core/pattern/factory/outside/OutsideFactory.h"
 #include "../../../layout/core/Utils.h"
 #include "../../../layout/qt/core/Scene.h"
-#include "../../../layout/qt/core/BuildGraphicsItem.h"
 #include "../../../layout/qt/core/ItemUtils.h"
-#include "../../../layout/qt/core/BuildGraphicsOutside.h"
 
 te::layout::BuildContext::BuildContext() :
-  m_itemFactory(0),
-  m_outsideFactory(0),
   m_utils(0),
   m_canvas(0),
-  m_buildGraphicsItem(0),
-  m_itemUtils(0),
-  m_buildGraphicsOutside(0)
+  m_itemUtils(0)
 {
 
 }
 
 te::layout::BuildContext::~BuildContext()
-{  
-  if(m_itemFactory)
-  {
-    delete m_itemFactory;
-    m_itemFactory = 0;
-  }
-
-  if(m_outsideFactory)
-  {
-    delete m_outsideFactory;
-    m_outsideFactory = 0;
-  }
-  
+{    
   if(m_utils)
   {
     delete m_utils;
     m_utils = 0;
   }
   
-  if(m_buildGraphicsItem)
-  {
-    delete m_buildGraphicsItem;
-    m_buildGraphicsItem = 0;
-  }
-
   if(m_canvas)
   {
     delete m_canvas;
@@ -85,28 +59,10 @@ te::layout::BuildContext::~BuildContext()
     delete m_itemUtils;
     m_itemUtils = 0;
   }
-
-  if(m_buildGraphicsOutside)
-  {
-    delete m_buildGraphicsOutside;
-    m_buildGraphicsOutside = 0;
-  }
 }
 
 void te::layout::BuildContext::createLayoutContext( int width, int height, View* view )
 {
-  if(!Context::getInstance().getItemFactory())
-  {
-    m_itemFactory = new ItemFactory;
-    Context::getInstance().setItemFactory(m_itemFactory);
-  }
-
-  if(!Context::getInstance().getOutsideFactory())
-  {
-    m_outsideFactory = new OutsideFactory;
-    Context::getInstance().setOutsideFactory(m_outsideFactory);
-  }
-
   if(!Context::getInstance().getUtils())
   {
     m_utils = new Utils;
@@ -136,11 +92,6 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
     if(lScene)
       Context::getInstance().setScene(lScene);
   }  
-  if(!Context::getInstance().getAbstractBuildGraphicsItem())
-  {
-    m_buildGraphicsItem = new BuildGraphicsItem;
-    Context::getInstance().setAbstractBuildGraphicsItem(m_buildGraphicsItem);
-  }
   if(!Context::getInstance().getSystematicScaleConfig())
   {
     m_systematicConfig = new SystematicScaleConfig;
@@ -154,11 +105,6 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
       m_itemUtils = new ItemUtils(view->scene());
       Context::getInstance().setItemUtils(m_itemUtils);
     }
-  }
-  if(!Context::getInstance().getAbstractBuildGraphicsOutside())
-  {
-    m_buildGraphicsOutside = new BuildGraphicsOutside;
-    Context::getInstance().setAbstractBuildGraphicsOutside(m_buildGraphicsOutside);
   }
 }
 

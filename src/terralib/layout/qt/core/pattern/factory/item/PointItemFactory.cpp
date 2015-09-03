@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/PointModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/PointItem.h"
 
 te::layout::AbstractItemView* te::layout::PointItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::PointItemFactory::build(ItemFactoryPar
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  PointItem* view = new PointItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::PointItemFactory::PointItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getPointItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getPointItem()->getName())
 {
 
 }

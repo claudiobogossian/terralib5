@@ -31,13 +31,13 @@
 // TerraLib
 #include "GridMapModel.h"
 #include "../core/Config.h"
-#include "../core/pattern/observer/NewObserver.h"
+#include "../core/pattern/observer/Observer.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT GridGeodesicModel: public GridMapModel, public NewObserver
+    class TELAYOUTEXPORT GridGeodesicModel: public GridMapModel, public Observer
     {
       public:
 

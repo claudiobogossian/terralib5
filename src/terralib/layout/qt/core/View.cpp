@@ -33,17 +33,11 @@
 #include "VisualizationArea.h"
 #include "../item/ItemGroup.h"
 #include "tools/ZoomClickTool.h"
-#include "../../outside/PageSetupController.h"
-#include "../../outside/PageSetupModel.h"
-#include "../../outside/SystematicScaleController.h"
-#include "../../outside/SystematicScaleModel.h"
 #include "HorizontalRuler.h"
 #include "VerticalRuler.h"
 #include "PrintScene.h"
 #include "../../core/enum/EnumTemplateType.h"
 #include "ItemUtils.h"
-#include "../../item/LineModel.h"
-#include "../item/MapItem.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "pattern/factory/tool/ToolFactoryParamsCreate.h"
 #include "pattern/factory/tool/ToolFactory.h"
@@ -59,6 +53,7 @@
 #include <QFileDialog>
 #include <QPainterPath>
 #include <QEvent>
+#include "BuildGraphicsOutside.h"
 
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
@@ -226,11 +221,27 @@ void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
     sc->updateSelectedItemsPositions();
   }
 
-  emit reloadProperties();
-  m_selectionChange = false;
+  if (!sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
 }
 
-void te::layout::View::wheelEvent( QWheelEvent *event )
+void te::layout::View::mouseDoubleClickEvent(QMouseEvent * event)
+{
+  QGraphicsView::mouseDoubleClickEvent(event);
+
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if (!sc)
+    return;
+
+  if (sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
+}
+
+void te::layout::View::wheelEvent(QWheelEvent *event)
 {
   ViewportUpdateMode mode = viewportUpdateMode();
   setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -518,10 +529,10 @@ void te::layout::View::showPageSetup()
 {
   if(!m_pageSetupOutside)
   {
-    PageSetupModel* model = new PageSetupModel;
-    PageSetupController* controller = new PageSetupController(model);
-    AbstractOutsideView* observer = const_cast<AbstractOutsideView*>(controller->getView());
-    m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(observer);
+    BuildGraphicsOutside build;
+    EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+    QWidget* outside = build.createOuside(type->getPageSetup());
+    m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(outside);
     connect(m_pageSetupOutside, SIGNAL(changeConfig()), this, SLOT(onChangeConfig()));
   }
 
@@ -563,10 +574,10 @@ void te::layout::View::showSystematicScale()
 {
   if(!m_systematicOutside)
   {
-    SystematicScaleModel* model = new SystematicScaleModel;
-    SystematicScaleController* controller = new SystematicScaleController(model);
-    AbstractOutsideView* observer = const_cast<AbstractOutsideView*>(controller->getView());
-    m_systematicOutside = dynamic_cast<SystematicScaleOutside*>(observer);
+    BuildGraphicsOutside build;
+    EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+    QWidget* outside = build.createOuside(type->getSystematicScale());
+    m_systematicOutside = dynamic_cast<SystematicScaleOutside*>(outside);
     connect(m_systematicOutside, SIGNAL(systematicApply(double,SystematicScaleType)), this, SLOT(onSystematicApply(double,SystematicScaleType)));
   }
 
@@ -662,6 +673,12 @@ QCursor te::layout::View::createCursor( std::string pathIcon )
   QCursor cur(pixmap);
 
   return cur;
+}
+
+void te::layout::View::reload()
+{
+  m_selectionChange = false;
+  emit reloadProperties();
 }
 
 void te::layout::View::resetView()
@@ -1026,13 +1043,15 @@ void te::layout::View::onSelectionItem(std::string name)
 
   scne->selectItem(name);
 
-  emit reloadProperties();
-  m_selectionChange = false;
+  if (!scne->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
 }
 
 void te::layout::View::refreshAllProperties()
 {
-  emit reloadProperties();
+  reload();
 }
 
 void te::layout::View::disableUpdate()

@@ -40,13 +40,13 @@ namespace te
 {
   namespace layout
   {
-    class Observable;
+    class AbstractItemController;
 
     class BarCodeItem : public TextItem
     {
       public:
 
-        BarCodeItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        BarCodeItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         virtual ~BarCodeItem();
         

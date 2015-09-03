@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ItemFactory.cpp
+  \file NewItemFactory.cpp
    
   \brief 
 
@@ -27,164 +27,68 @@
 
 // TerraLib
 #include "ItemFactory.h"
-#include "../../../../../core/pattern/mvc/Observer.h"
-#include "../../../../../core/enum/EnumType.h"
-#include "../../../../../core/pattern/factory/ItemParamsCreate.h"
+#include "terralib/geometry/Coord2D.h"
 #include "../../../../../core/enum/Enums.h"
-#include "../../../../item/ItemGroup.h"
-#include "../../../../item/PaperItem.h"
-#include "../../../../item/MapItem.h"
-#include "../../../../item/GridMapItem.h"
-#include "../../../../item/MovingItemGroup.h"
-#include "../../../../item/GridPlanarItem.h"
-#include "../../../../item/GridGeodesicItem.h"
-#include "../../../../item/MapLocationItem.h"
-#include "../../../../item/RectangleItem.h"
-#include "../../../../item/EllipseItem.h"
-#include "../../../../item/ArrowItem.h"
-#include "../../../../item/ScaleItem.h"
-#include "../../../../item/PointItem.h"
-#include "../../../../item/TextItem.h"
-#include "../../../../item/TitleItem.h"
-#include "../../../../item/TextGridItem.h"
-#include "../../../../item/BarCodeItem.h"
-#include "../../../../item/NorthItem.h"
-#include "../../../../item/LineItem.h"
-#include "../../../../item/PolygonItem.h"
-#include "../../../../item/ImageItem.h"
-#include "../../../../item/LegendItem.h"
-#include "../../../../item/LegendChildItem.h"
-#include "../../../../item/SVGItem.h"
-#include "../../../../../core/enum/EnumObjectType.h"
+#include "../../../../../core/property/Properties.h"
+#include "../../../../../core/pattern/mvc/AbstractItemModel.h"
 
-te::layout::ItemFactory::ItemFactory()
-{
-
-}
+// STL
+#include <string>
 
 te::layout::ItemFactory::~ItemFactory()
 {
 
 }
 
-te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsCreate params /*= LayoutItemParamsCreate()*/ )
+te::layout::ItemFactory::ItemFactory(const std::string& factoryKey)
+: te::common::ParameterizedAbstractFactory<AbstractItemView, std::string, ItemFactoryParamsCreate>(factoryKey)
 {
-  Observer* item = 0;
 
-  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-
-  if(type == enumObj->getPaperItem())
-  {
-    PaperItem* paper = new PaperItem(params.getController(), params.getModel());
-    item = (Observer*)paper;
-  }
-
-  return item;
 }
 
-te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, ItemParamsCreate params)
+void te::layout::ItemFactory::setProperties(AbstractItemModel* model, ItemFactoryParamsCreate params)
 {
-  AbstractItemView* item = 0;
+  if (!model)
+    return;
 
-  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  std::string     name = params.getName();
+  int             id = params.getId();
+  double          width = params.getWidth();
+  double          height = params.getHeight();
 
-  if(type == enumObj->getRectangleItem())
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Properties props;
+
+  Property prop_name(0);
+  prop_name.setName("name");
+  prop_name.setValue(name, dataType->getDataTypeString());
+  props.addProperty(prop_name);
+
+  Property prop_id(0);
+  prop_id.setName("id");
+  prop_id.setValue(id, dataType->getDataTypeInt());
+  props.addProperty(prop_id);
+
+  if (width > 0)
   {
-    item = new RectangleItem(params.m_newController, params.m_newModel);
+    Property prop_width(0);
+    prop_width.setName("width");
+    prop_width.setLabel("Width");
+    prop_width.setValue(width, dataType->getDataTypeDouble());
+    props.addProperty(prop_width);
   }
-  else if(type == enumObj->getEllipseItem())
+
+  if (height > 0)
   {
-    item = new EllipseItem(params.m_newController, params.m_newModel);
+    Property prop_height(0);
+    prop_height.setName("height");
+    prop_height.setLabel("Height");
+    prop_height.setValue(height, dataType->getDataTypeDouble());
+    props.addProperty(prop_height);
   }
-  else if(type == enumObj->getArrowItem())
-  {
-    item = new ArrowItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getScaleItem())
-  {
-    item = new ScaleItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getPointItem())
-  {
-    item = new PointItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getTextItem())
-  {
-    item = new TextItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getTitleItem())
-  {
-    item = new TitleItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getTextGridItem())
-  {
-    item = new TextGridItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getBarCodeItem())
-  {
-    item = new BarCodeItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getNorthItem())
-  {
-    item = new NorthItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getLineItem())
-  {
-    item = new LineItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getPolygonItem())
-  {
-    item = new PolygonItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getMapItem())
-  {
-    item = new MapItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getMapLocationItem())
-  {
-    item = new MapLocationItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getGridMapItem())
-  {
-    item = new GridMapItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getGridPlanarItem())
-  {
-    item = new GridPlanarItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getGridGeodesicItem())
-  {
-    item = new GridGeodesicItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getImageItem())
-  {
-    item = new ImageItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getLegendItem())
-  {
-    item = new LegendItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getLegendChildItem())
-  {
-    item = new LegendChildItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getSVGItem())
-  {
-    item = new SVGItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getBalloonItem())
-  {
-    item = new BarCodeItem(params.m_newController, params.m_newModel);
-  }
-  else if(type == enumObj->getItemGroup())
-  {
-    item = new ItemGroup(params.m_newController, params.m_newModel);
-  }
-  else if (type == enumObj->getMovingItemGroup())
-  {
-    item = new MovingItemGroup(params.m_newController, params.m_newModel);
-  }
-  
-  return item;
+
+  //update properties
+  model->setProperties(props);
 }
 

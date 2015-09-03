@@ -29,16 +29,19 @@
 #include "AbstractOutsideView.h"
 #include "AbstractOutsideController.h"
 
-te::layout::AbstractOutsideView::AbstractOutsideView(AbstractOutsideController* controller) :
-  m_controller(controller)
+te::layout::AbstractOutsideView::AbstractOutsideView(AbstractOutsideController* controller)
+  : m_controller(controller)
 {
   
 }
 
 te::layout::AbstractOutsideView::~AbstractOutsideView()
 {
-  if(m_controller)
-    delete (AbstractOutsideController*)m_controller;
+  if (m_controller != 0)
+  {
+    delete m_controller;
+    m_controller = 0;
+  }
 }
 
 void te::layout::AbstractOutsideView::refresh()
@@ -51,6 +54,9 @@ te::layout::AbstractOutsideController* te::layout::AbstractOutsideView::getContr
 {
   return m_controller;
 }
+
+
+
 
 
 

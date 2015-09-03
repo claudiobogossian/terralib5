@@ -30,7 +30,6 @@
 #include "PropertiesDock.h"
 #include "ObjectInspectorDock.h"
 #include "EditTemplateDock.h"
-#include "../../../layout/core/pattern/singleton/Context.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 #include "../../../layout/core/enum/Enums.h"
@@ -121,17 +120,7 @@ void te::layout::OutsideArea::init()
     connect(this, SIGNAL(changeMenuMode(te::layout::EnumType*)), m_view, SLOT(onMainMenuChangeMode(te::layout::EnumType*)));
     connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
   }
-
-  te::layout::AbstractBuildGraphicsItem* abstractBuildItem = te::layout::Context::getInstance().getAbstractBuildGraphicsItem();
-  if(abstractBuildItem)
-  {
-    te::layout::BuildGraphicsItem* buildItem = dynamic_cast<te::layout::BuildGraphicsItem*>(abstractBuildItem);
-    if(buildItem)
-    {
-      connect(buildItem, SIGNAL(addChildFinalized(QGraphicsItem*, QGraphicsItem*)), this, SLOT(onAddChildFinalized(QGraphicsItem*, QGraphicsItem*)));
-    }
-  }
-
+  
   createPropertiesDock();
 
   createInspectorDock();
@@ -151,8 +140,9 @@ void te::layout::OutsideArea::init()
 
   if(m_dockInspector)
   {
-    connect(m_view->scene(), SIGNAL(deleteFinalized(std::vector<std::string>)), 
-      m_dockInspector->getObjectInspectorOutside(), SLOT(onRemoveProperties(std::vector<std::string>)));
+    connect(m_view->scene(), SIGNAL(deleteFinalized(std::vector<std::string>)), this, SLOT(onDeleteFinalized(std::vector<std::string>)));
+
+    connect(m_dockInspector->getObjectInspectorOutside(), SIGNAL(selectionChanged(QList<QGraphicsItem*>)), this, SLOT(onSelectionChanged(QList<QGraphicsItem*>)));
   }
 
   if(m_dockProperties)
@@ -179,17 +169,7 @@ void te::layout::OutsideArea::createInspectorDock()
 void te::layout::OutsideArea::createToolbar()
 {
 
-  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
-  if(!abstractBuildOutside)
-  {
-    return;
-  }
-
-  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
-  if(!buildOutside)
-  {
-    return;
-  }
+  te::layout::BuildGraphicsOutside buildOutside;
 
   te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
   if(!objectType)
@@ -197,7 +177,7 @@ void te::layout::OutsideArea::createToolbar()
     return;
   }
 
-  QWidget* widget = buildOutside->createOuside(objectType->getToolbar());
+  QWidget* widget = buildOutside.createOuside(objectType->getToolbar());
   if(!widget)
   {
     return;
@@ -452,25 +432,25 @@ void te::layout::OutsideArea::closeMainMenu()
   m_view->closeOutsideWindows();
 }
 
-void te::layout::OutsideArea::onSelectionChanged()
-{
-  QList<QGraphicsItem*> graphicsItems = m_view->scene()->selectedItems();
-  QList<QGraphicsItem*> allItems = m_view->scene()->items();
-
-  //Refresh Property window   
-  if(m_dockProperties)
-    m_dockProperties->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
-
-  if(m_dockInspector)
-    m_dockInspector->getObjectInspectorOutside()->selectItems(graphicsItems);
-}
-
 void te::layout::OutsideArea::onAddItemFinalized()
 {
   QList<QGraphicsItem*> allItems = m_view->scene()->items();
   //Refresh Inspector Object window
   if(m_dockInspector)
     m_dockInspector->getObjectInspectorOutside()->itemsInspector(allItems);
+}
+
+void te::layout::OutsideArea::onSelectionChanged(QList<QGraphicsItem*> selectedItems)
+{
+  m_view->scene()->clearSelection();
+  foreach(QGraphicsItem* item, selectedItems) 
+  {
+    item->setSelected(true);
+  }
+
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+  if(m_dockProperties)
+    m_dockProperties->getPropertiesOutside()->itemsSelected(selectedItems, allItems);
 }
 
 void te::layout::OutsideArea::onShowView()
@@ -524,6 +504,14 @@ void te::layout::OutsideArea::onRefreshStatusBar()
 }
 
 void te::layout::OutsideArea::onAddChildFinalized( QGraphicsItem* parent, QGraphicsItem* child )
+{
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+  //Refresh Inspector Object window
+  if(m_dockInspector)
+    m_dockInspector->getObjectInspectorOutside()->itemsInspector(allItems);
+}
+
+void te::layout::OutsideArea::onDeleteFinalized(std::vector<std::string>)
 {
   QList<QGraphicsItem*> allItems = m_view->scene()->items();
   //Refresh Inspector Object window

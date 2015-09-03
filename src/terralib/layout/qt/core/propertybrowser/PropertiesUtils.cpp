@@ -37,7 +37,6 @@
 #include "../ItemUtils.h"
 #include "../Scene.h"
 #include "../pattern/command/ChangePropertyCommand.h"
-#include "../../../core/pattern/mvc/Observable.h"
 
 // Qt
 #include <QGraphicsItem>

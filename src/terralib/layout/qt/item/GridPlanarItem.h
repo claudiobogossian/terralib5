@@ -37,7 +37,7 @@ namespace te
 {
   namespace layout
   {
-
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic GridMap. 
         Its coordinate system is the same of scene (millimeters). 
@@ -57,7 +57,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridPlanarItem( AbstractItemController* controller, AbstractItemModel* model );
+        GridPlanarItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

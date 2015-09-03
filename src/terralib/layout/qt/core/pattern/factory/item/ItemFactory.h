@@ -18,51 +18,72 @@
  */
 
 /*!
-  \file ItemFactory.h
-   
-  \brief Factory for creating families of related or dependent graphic objects (MVC components).
+  \file terralib/layout/qt/pattern/factory/ToolFactory.h
 
-  \ingroup layout
+  \brief This is the abstract factory for items.
 */
 
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H 
 #define __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H
 
 // TerraLib
-#include "../../../../../core/pattern/factory/AbstractItemFactory.h"
+#include "terralib/geometry/Coord2D.h"
+#include "../../../../../../common/ParameterizedAbstractFactory.h"
 #include "../../../../../core/Config.h"
+#include "../../../../../core/pattern/mvc/AbstractItemView.h"
+#include "ItemFactoryParamsCreate.h"
+
+// Qt
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemModel;
     /*!
-    \brief Factory for creating families of related or dependent graphic objects (MVC components).
-    
-    \ingroup layout
+      \class NewItemFactory
 
-    \sa te::layout::AbstractItemFactory
+      \brief This is the abstract factory for items.
+
+      It will create objects of type AbstractItemView and will pass
+      parameters of type ItemFactoryParamsCreate to their factories constructors.
+
+      If you want a new item you can use a command like:
+      <code>
+        te::layout::AbstractItem* pEngine = te::layout::NewItemFactory::make("RECTANGLE_ITEM");
+      </code>
+      Or
+      <code>
+        te::layout::EnumObjectType* item = Enums::getInstance().getEnumObjectType();
+        te::layout::EnumType* rectItem = item->getRectangleItem();
+        te::layout::AbstractItem* pEngine = te::layout::NewItemFactory::make(rectItem->getName());
+      </code>
+
+      \note The caller of the method make will take the ownership of the returned item.
+
+      \sa AbstractItemView, AbstractFactory, ParameterizedAbstractFactory
     */
-    class TELAYOUTEXPORT ItemFactory : public AbstractItemFactory
+    class TELAYOUTEXPORT ItemFactory : public te::common::ParameterizedAbstractFactory<AbstractItemView, std::string, ItemFactoryParamsCreate>
     {
       public:
 
-        /*!
-          \brief Constructor
-        */
-        ItemFactory();
-
-        /*!
-          \brief Destructor
-        */
+        /*! \brief Virtual destructor. */
         virtual ~ItemFactory();
 
-        /*!
-          \brief Reimplemented from AbstractItemFactory
-        */
-        virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
+      protected:
 
-        virtual AbstractItemView* makeNew(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
+        /*!
+        \brief It creates the factory.
+
+        The key of a ToolFactory is a string.
+
+        \param factoryKey The key that identifies the factory.
+        */
+        ItemFactory(const std::string& factoryKey);
+
+        virtual void setProperties(AbstractItemModel* model, ItemFactoryParamsCreate params);
+        
     };
   }
 }

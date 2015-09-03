@@ -44,8 +44,8 @@ namespace te
 {
   namespace layout
   {
-    class AbstractOutsideController;
     class TextGridSettingsConfigProperties;
+    class AbstractOutsideController;
 
     class TELAYOUTEXPORT TextGridSettingsOutside : public QDialog, public AbstractOutsideView
     {

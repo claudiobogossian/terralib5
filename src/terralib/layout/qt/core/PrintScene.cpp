@@ -95,7 +95,6 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
 
   //Impressão de parte da Cena
   //Não é necessário mudar a escala do View
-
   QPainter newPainter(printer);
   newPainter.setRenderHint(QPainter::Antialiasing);
 
@@ -186,19 +185,25 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
   //Box Paper in the Scene (Source)
   QRectF mmSourceRect(0, 0, w, h);
   
-  //Paper size using the printer dpi (Target)
-  QRect pxTargetRect(0, 0, newPainter->device()->width(), newPainter->device()->height());
-
-  /* Print Paper (Scene to Printer)
-  draw items with printer painter */
+  /* Gets the margins */
+  qreal top = 0;
+  qreal bottom = 0;
+  qreal left = 0;
+  qreal right = 0;
+  printer->getPageMargins(&left, &top, &right, &bottom, QPrinter::DevicePixel);
   
+  //Paper size using the printer dpi (Target)
   //Convert Paper Size world to screen coordinate. Uses dpi printer.
+  //Adjusts the destination box to use 100% of the paper, including the unprintable area.
+  //In this case, items that are at the edge of the paper mu be cut off.
+  QPointF origin(-left, top);
   QSizeF paperPixelBox = printer->paperSize(QPrinter::DevicePixel);
+  QRectF pxTargetRect(origin, paperPixelBox);
 
   //Mirroring Y-Axis
-  newPainter->translate( paperPixelBox.width() / 2, paperPixelBox.height() / 2 );
+  newPainter->translate( paperPixelBox.width() / 2., paperPixelBox.height() / 2. );
   newPainter->scale( 1, -1 );
-  newPainter->translate( -(paperPixelBox.width() / 2), -(paperPixelBox.height() / 2) );
+  newPainter->translate( -(paperPixelBox.width() / 2.), -(paperPixelBox.height() / 2.) );
 
   sc->deselectAllItems();
 

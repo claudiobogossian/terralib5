@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "../../Config.h"
-#include "../observer/NewObserver.h"
+#include "../observer/Observer.h"
 
 namespace te
 {
@@ -46,7 +46,7 @@ namespace te
     
       \ingroup layout
     */
-    class TELAYOUTEXPORT AbstractOutsideController : public NewObserver
+    class TELAYOUTEXPORT AbstractOutsideController : public Observer
     {
     public:
 
@@ -56,15 +56,7 @@ namespace te
           \param o "Model" part of MVC widget
        */
       AbstractOutsideController(AbstractOutsideModel* o);
-
-      /*!
-          \brief Constructor
-
-          \param o "Model" part of MVC widget
-          \param type type of the MVC widget.
-       */
-      AbstractOutsideController(AbstractOutsideModel* o, EnumType* type);
-
+      
       /*!
           \brief Destructor
        */ 
@@ -83,24 +75,21 @@ namespace te
 
           \return model
        */
-      const AbstractOutsideModel* getModel();
+      AbstractOutsideModel* getModel() const;
 
       /*!
           \brief Returns the "View" part of the MVC widget.
 
           \return view 
        */
-      const AbstractOutsideView* getView();
+      AbstractOutsideView* getView() const;
+
+      virtual void setView(AbstractOutsideView* view);
 
       virtual void update(const Subject* subject);
 
     protected:
-
-      /*!
-          \brief Call factory to create the "View" part of the MVC widget and passes the model and himself as controller.
-         */
-      virtual void create();
-
+      
       AbstractOutsideModel* m_model; //!< "Model" part of the MVC widget.
       AbstractOutsideView* m_view; //!< "View" part of the MVC widget.
     };

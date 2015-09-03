@@ -28,10 +28,9 @@
 // TerraLib
 #include "EllipseItem.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
 
-te::layout::EllipseItem::EllipseItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix )
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::EllipseItem::EllipseItem(AbstractItemController* controller, bool invertedMatrix)
+: AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {
 }
 

@@ -29,38 +29,14 @@
 #include "GridGeodesicItem.h"
 
 #include "../core/ItemUtils.h"
+#include "../../core/WorldTransformer.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/property/GridSettingsConfigProperties.h"
 
-
-/*
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/GridMapModel.h"
-#include "MapItem.h"
-#include "../../core/WorldTransformer.h"
-#include "../../item/MapModel.h"
-#include "../../item/GridGeodesicModel.h"
-#include "../../../geometry/LinearRing.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "../../core/Utils.h"
-#include "../core/ItemUtils.h"
-
-//Qt
-#include <QStyleOptionGraphicsItem>
-#include <QPointF>
-#include <QLineF>
-*/
-
-te::layout::GridGeodesicItem::GridGeodesicItem( AbstractItemController* controller, AbstractItemModel* model) 
-  : GridMapItem(controller, model)
+te::layout::GridGeodesicItem::GridGeodesicItem(AbstractItemController* controller, bool invertedMatrix)
+  : GridMapItem(controller, invertedMatrix)
 {  
-  //m_nameClass = std::string(this->metaObject()->className());
+  
 }
 
 te::layout::GridGeodesicItem::~GridGeodesicItem()
@@ -78,11 +54,9 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
   const Property& pHeight = m_controller->getProperty("height");
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
 
-  //double scale = mapModel->getFixedScale();
   const te::gm::Envelope& geographicBox = pGeographicBox.getValue().toEnvelope();
   double width = pWidth.getValue().toDouble();
   double height = pHeight.getValue().toDouble();
-  //const te::gm::Envelope& newBoxMM = pReferenceBoxMM.getValue().toEnvelope();
   const std::string& style = pStyle.getValue().toString();
 
   EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
@@ -107,14 +81,19 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
   //model->calculateGaps(box); //TODO rever
   
   // Box necessario para desenhar a curvatura
-  te::gm::Envelope planarBoxGeodesic = geographicBox;
+  te::gm::Envelope planarBox = geographicBox;
   int zone = utils->calculatePlanarZone(geographicBox);
+  if(zone < 0 || zone > 60)
+  {
+    painter->drawRect(boundingRect());
+    return;
+  }
 
-  utils->remapToPlanar(&planarBoxGeodesic, zone);
+  utils->remapToPlanar(&planarBox, zone);
  // model->setPlanarBox(planarBoxGeodesic);
 
-  calculateVertical(geographicBox, newBoxMM);
-  calculateHorizontal(geographicBox, newBoxMM);
+  calculateVertical(geographicBox, planarBox, newBoxMM);
+  calculateHorizontal(geographicBox, planarBox, newBoxMM);
 
   EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
   if(!gridStyle)
@@ -188,18 +167,16 @@ double te::layout::GridGeodesicItem::initHorizontalLines( const te::gm::Envelope
   return xInit;
 }
 
-void te::layout::GridGeodesicItem::calculateVertical(const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
+void te::layout::GridGeodesicItem::calculateVertical(const te::gm::Envelope& geoBox, const te::gm::Envelope& planarBox, const te::gm::Envelope& boxMM )
 {
   GridSettingsConfigProperties settingsConfig;
 
-  const Property& pPlanarBox = m_controller->getProperty("planar_box");
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
   const Property& pShowDegreesText = m_controller->getProperty("show_degrees_text");
   const Property& pShowMinutesText = m_controller->getProperty("show_minutes_text");
   const Property& pShowSecondsText = m_controller->getProperty("show_seconds_text");
   const Property& pHorizontalDisplacement = m_controller->getProperty(settingsConfig.getLneHrzDisplacement());
 
-  const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
   double verticalGap = pVerticalGap.getValue().toDouble();
   bool showDegreesText = pShowDegreesText.getValue().toBool();
   bool showMinutesText = pShowMinutesText.getValue().toBool();
@@ -215,6 +192,10 @@ void te::layout::GridGeodesicItem::calculateVertical(const te::gm::Envelope& geo
   transf.setMirroring(false);
 
   int zone = utils->calculatePlanarZone(geoBox);
+  if(zone < 0 || zone > 60)
+  {
+    return;
+  }
 
   double y1 = initVerticalLines(geoBox);
 
@@ -256,19 +237,17 @@ void te::layout::GridGeodesicItem::calculateVertical(const te::gm::Envelope& geo
   }
 }
 
-void te::layout::GridGeodesicItem::calculateHorizontal( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
+void te::layout::GridGeodesicItem::calculateHorizontal( const te::gm::Envelope& geoBox, const te::gm::Envelope& planarBox, const te::gm::Envelope& boxMM )
 {
   GridSettingsConfigProperties settingsConfig;
 
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
-  const Property& pPlanarBox = m_controller->getProperty("planar_box");
   const Property& pShowDegreesText = m_controller->getProperty("show_degrees_text");
   const Property& pShowMinutesText = m_controller->getProperty("show_minutes_text");
   const Property& pShowSecondsText = m_controller->getProperty("show_seconds_text");
   const Property& pVerticalDisplacement = m_controller->getProperty(settingsConfig.getLneVrtDisplacement());
   
   double horizontalGap = pHorizontalGap.getValue().toDouble();
-  const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
   bool showDegreesText = pShowDegreesText.getValue().toBool();
   bool showMinutesText = pShowMinutesText.getValue().toBool();
   bool showSecondsText = pShowSecondsText.getValue().toBool();
@@ -283,6 +262,10 @@ void te::layout::GridGeodesicItem::calculateHorizontal( const te::gm::Envelope& 
   transf.setMirroring(false);
 
   int zone = utils->calculatePlanarZone(geoBox);
+  if(zone < 0 || zone > 60)
+  {
+    return;
+  }
 
   double x1 = initHorizontalLines(geoBox);
 

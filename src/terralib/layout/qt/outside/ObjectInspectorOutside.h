@@ -29,10 +29,9 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_OUTSIDE_H
 
 // TerraLib
-#include "../core/propertybrowser/PropertyBrowser.h"
-#include "../../core/pattern/mvc/AbstractOutsideView.h"
-#include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
+
 
 // STL
 #include <string>
@@ -42,13 +41,13 @@
 
 class QtProperty;
 class QGraphicsItem;
+class QTreeWidget;
 
 namespace te
 {
   namespace layout
   {
     class AbstractOutsideController;
-    class AbstractItemView;
 
     /*!
     \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
@@ -63,7 +62,7 @@ namespace te
 
     public:
 
-      ObjectInspectorOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser = 0);
+      ObjectInspectorOutside(AbstractOutsideController* controller);
       
       virtual ~ObjectInspectorOutside();
             
@@ -75,26 +74,24 @@ namespace te
 
       virtual void selectItems(QList<QGraphicsItem*> graphicsItems);
 
-      virtual PropertyBrowser* getObjectInspector();
-            
     protected slots:
       
       virtual void onRemoveProperties(std::vector<std::string> names);
 
-      virtual bool hasMoveItemGroup(QList<QGraphicsItem*> graphicsItems);
+      virtual void itemSelectionChanged();
+
+    signals:
+
+      void currentItemChanged(QGraphicsItem* item);
+
+      void selectionChanged(QList<QGraphicsItem*> graphicsItems);
+
 
     protected:
-      
-      virtual QtProperty* addProperty(QGraphicsItem* item);
 
-      virtual Property createProperty(AbstractItemView* item);
-
-      virtual void createSubProperty(QGraphicsItem* item, QtProperty* prop);
-
-      virtual bool hasProperty(Property property);
-      
-      PropertyBrowser* m_layoutPropertyBrowser;
-      QList<QGraphicsItem*> m_graphicsItems;
+      QTreeWidget*            m_treeWidget;
+      bool                    m_isChangingSelection;
+      QList<QGraphicsItem*>   m_graphicsItems;
     };
   }
 }

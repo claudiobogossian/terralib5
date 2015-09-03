@@ -316,6 +316,11 @@ namespace te
         */
         virtual void  mouseReleaseEvent ( QMouseEvent * event );
 
+        /*!
+        \brief Reimplemented from QGraphicsView
+        */
+        virtual void	mouseDoubleClickEvent(QMouseEvent * event);
+
     /*!
           \brief Reimplemented from QGraphicsView
         */
@@ -359,6 +364,11 @@ namespace te
         virtual void showSystematicScale();
         
         virtual QCursor createCursor(std::string pathIcon);
+
+        /*!
+          \brief Reload properties because selection change
+        */
+        virtual void reload();
 
       protected:
 

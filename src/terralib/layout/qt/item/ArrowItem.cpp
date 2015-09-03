@@ -34,8 +34,8 @@
 #include <QPointF>
 #include "qglobal.h"
 
-te::layout::ArrowItem::ArrowItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::ArrowItem::ArrowItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {
 }
 

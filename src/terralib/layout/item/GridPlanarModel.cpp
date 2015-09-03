@@ -29,9 +29,11 @@
 #include "GridPlanarModel.h"
 
 #include "../core/pattern/singleton/Context.h"
+#include "../core/property/GridSettingsConfigProperties.h"
 #include "../../common/StringUtils.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
+
 
 /*
 #include "GridPlanarModel.h"
@@ -52,7 +54,7 @@
 
 te::layout::GridPlanarModel::GridPlanarModel()
   : GridMapModel()
-  , NewObserver()
+  , Observer()
 {
   LayoutUnit unit(StyleKilometer);
   int srid = 0;
@@ -131,6 +133,7 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   const Property& pNewHeight = subjectModel->getProperty("height");
   const Property& pNewWorldBox = subjectModel->getProperty("world_box");
   const Property& pNewSrid = subjectModel->getProperty("srid");
+  const Property& pNewScale = subjectModel->getProperty("scale");
 
   //current properties
   const Property& pCurrentWidth = this->getProperty("width");
@@ -144,6 +147,7 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   int newSrid = pNewSrid.getValue().toInt();
   const te::gm::Envelope& newWorldBox = pNewWorldBox.getValue().toEnvelope();
   te::gm::Envelope newPlanarBox = getWorldBoxInPlanar(newWorldBox, newSrid);
+  double newScale = pNewScale.getValue().toDouble();
 
   //current values
   double currentWidth = pCurrentWidth.getValue().toDouble();
@@ -168,15 +172,47 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   if(doUpdate == true)
   {
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-    Property property(0);
-    property.setName("planar_box");
-    property.setValue(newPlanarBox, dataType->getDataTypeEnvelope());
+    GridSettingsConfigProperties settingsConfig;
 
     Properties properties("");
     properties.addProperty(pNewWidth);
     properties.addProperty(pNewHeight);
-    properties.addProperty(property);
+
+    {
+      Property property(0);
+      property.setName("planar_box");
+      property.setValue(newPlanarBox, dataType->getDataTypeEnvelope());
+      properties.addProperty(property);
+    }
+
+    te::gm::Envelope defaultPlanarBox(0, 0, 10000, 10000);
+    if(newPlanarBox.equals(defaultPlanarBox) == false)
+    {
+      {
+        Property property(0);
+        property.setName(settingsConfig.getInitialGridPointX());
+        property.setValue(newPlanarBox.getLowerLeftX(), dataType->getDataTypeDouble());
+        properties.addProperty(property);
+      }
+      {
+        Property property(0);
+        property.setName(settingsConfig.getInitialGridPointY());
+        property.setValue(newPlanarBox.getLowerLeftY(), dataType->getDataTypeDouble());
+        properties.addProperty(property);
+      }
+      {
+        Property property(0);
+        property.setName(settingsConfig.getLneHrzGap());
+        property.setValue(newScale * 0.05, dataType->getDataTypeDouble());
+        properties.addProperty(property);
+      }
+      {
+        Property property(0);
+        property.setName(settingsConfig.getLneVrtGap());
+        property.setValue(newScale * 0.05, dataType->getDataTypeDouble());
+        properties.addProperty(property);
+      }
+    }
 
     setProperties(properties);
   }

@@ -30,8 +30,8 @@
 #include "../../../color/RGBAColor.h"
 #include "../../core/enum/EnumScaleType.h"
 
-te::layout::ScaleItem::ScaleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix )
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::ScaleItem::ScaleItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {  
 }
 

@@ -27,10 +27,12 @@
 
 // TerraLib
 #include "VisualizationArea.h"
-#include "../../item/PaperModel.h"
-#include "../../item/PaperController.h"
-#include "../item/PaperItem.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
+#include "pattern/factory/item/ItemFactoryParamsCreate.h"
+#include "../../core/property/Properties.h"
+#include "../../core/Utils.h"
+#include "Scene.h"
+#include "BuildGraphicsItem.h"
+#include "../../core/enum/Enums.h"
 
 te::layout::VisualizationArea::VisualizationArea( Scene* scene, te::gm::Envelope boxArea ) :
   m_scene(scene),
@@ -51,23 +53,32 @@ void te::layout::VisualizationArea::build()
 
 void te::layout::VisualizationArea::createPaper()
 {
-  PaperConfig* pConfig = m_scene->getPaperConfig();
-  //Paper
-  PaperModel* modelPaper = new PaperModel(pConfig);  
+  PaperConfig* paperConfig = m_scene->getPaperConfig();
+  int zValue = 0;
 
-  double x = modelPaper->getBox().getLowerLeftX();
-  double y = modelPaper->getBox().getLowerLeftY();
+  Properties properties = Utils::convertToProperties(*paperConfig);
 
-  PaperController* controllerPaper = new PaperController(modelPaper);
-  ItemObserver* itemPaper = (ItemObserver*)controllerPaper->getView();
-  PaperItem* qPaper = dynamic_cast<PaperItem*>(itemPaper);
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  EnumObjectType* objType = Enums::getInstance().getEnumObjectType();
+
+  Property prop(0);
+  prop.setName("zValue");
+  prop.setLabel("zValue");
+  prop.setValue(zValue, dataType->getDataTypeInt());
+  properties.addProperty(prop);
+  properties.setTypeObj(objType->getPaperItem());
   
-  qPaper->setPos(QPointF(x,y));
-  qPaper->setZValue(0);
-  qPaper->redraw();
+  // Create paper item
+  BuildGraphicsItem build(m_scene);
+  QGraphicsItem* item = build.buildItem(properties);
+  if (item)
+  {
+    item->setPos(0, 0);
+  }
 }
 
 void te::layout::VisualizationArea::changeBoxArea( te::gm::Envelope boxArea )
 {
   m_boxArea = boxArea;
 }
+

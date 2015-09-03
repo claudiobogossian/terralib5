@@ -88,6 +88,13 @@ te::layout::LineModel::LineModel()
     property.setValue(line, dataType->getDataTypeGeometry());
     this->m_properties.addProperty(property);
   }
+
+  {
+    Property property(0);
+    property.setName("resizable");
+    property.setValue(false, dataType->getDataTypeBool());
+    this->m_properties.updateProperty(property);
+  }
 }
 
 te::layout::LineModel::~LineModel()

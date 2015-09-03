@@ -63,13 +63,19 @@
 #include <QPrinter>
 #include <QGraphicsTextItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QPainterPath>
+#include <QColor>
+#include <QPen>
+#include <QKeyEvent>
 
 te::layout::Scene::Scene( QObject* object): 
   QGraphicsScene(object),
   m_undoStack(0),
   m_align(0),
   m_moveWatched(false),
-  m_paperConfig(0)
+  m_paperConfig(0),
+  m_currentItemEdition(0),
+  m_isEditionMode(false)
 {
   m_backgroundColor = QColor(109,109,109);
   setBackgroundBrush(QBrush(m_backgroundColor));
@@ -148,7 +154,7 @@ void te::layout::Scene::insertItem(AbstractItemView* item)
 
 void te::layout::Scene::insertItem(QGraphicsItem* item)
 {
-  if(!item)
+  if(item == 0)
   {
     return;
   }
@@ -158,18 +164,11 @@ void te::layout::Scene::insertItem(QGraphicsItem* item)
     return;
   }
 
-  int total = 0;
-
-  total = this->items().count();
+  int total = this->items().count();
   
   AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
-  if (!abstractItem)
+  if (abstractItem == 0)
   {
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-    if (obs)
-    {
-      this->addItem(item);
-    }
     return;
   }
 
@@ -344,15 +343,10 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 
   EnumObjectType* object = Enums::getInstance().getEnumObjectType();
 
-  //Create a new group
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
-  if(!build)
-    return p;
-
+  BuildGraphicsItem build(this);
+  
   te::gm::Coord2D coord(0,0);
-  QGraphicsItem* item = build->createItem(object->getItemGroup(), coord, false);
+  QGraphicsItem* item = build.createItem(object->getItemGroup(), coord);
 
   double x = 0.;
   double y = 0.;
@@ -397,7 +391,9 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
       QUndoCommand* command = new AddCommand(group);
       addUndoStack(command);
     }
-  }  
+  }
+
+  insertItem((QGraphicsItem*)group);
 
   return group;
 }
@@ -411,14 +407,12 @@ void te::layout::Scene::destroyItemGroup( QGraphicsItemGroup *group )
 te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QList<QGraphicsItem*>& items )
 {
   //Create a new group
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
+  BuildGraphicsItem build(this);
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
   QGraphicsItem* item = 0;
   
-  item = build->createItem(enumObj->getMovingItemGroup());
+  item = build.createItem(enumObj->getMovingItemGroup());
 
   te::layout::MovingItemGroup* movingItem = dynamic_cast<MovingItemGroup*>(item);
 
@@ -433,48 +427,6 @@ te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QLi
   }
 
   return movingItem;
-}
-
-QGraphicsItem* te::layout::Scene::createItem(EnumType* itemType, const te::gm::Coord2D& coord, double width, double height)
-{
-  QGraphicsItem* item = 0;
-
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
-  if(!build)
-    return item;
-  
-  item = build->createItem(itemType, coord, width, height);
-
-  if(item)
-  {
-    QUndoCommand* command = new AddCommand(item);
-    addUndoStack(command);
-  }
-  
-  return item;
-}
-
-QGraphicsItem* te::layout::Scene::createItem(EnumType* itemType)
-{
-  QGraphicsItem* item = 0;
-
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
-  if (!build)
-    return item;
-    
-  item = build->createItem(itemType);
-
-  if (item)
-  {
-    QUndoCommand* command = new AddCommand(item);
-    addUndoStack(command);
-  }
-
-  return item;
 }
 
 void te::layout::Scene::calculateSceneMeasures(double widthMM, double heightMM)
@@ -572,12 +524,8 @@ void te::layout::Scene::reset()
 
 bool te::layout::Scene::buildTemplate( VisualizationArea* vzArea, EnumType* type, std::string fileName )
 {
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
-  if(!build)
-    return false;
-
+  BuildGraphicsItem build(this);
+  
   std::vector<te::layout::Properties> props = importTemplateToProperties(type, fileName);
 
   if(props.empty())
@@ -597,7 +545,7 @@ bool te::layout::Scene::buildTemplate( VisualizationArea* vzArea, EnumType* type
     if(proper.getProperties().empty())
       continue;
 
-    build->rebuildItem(proper);
+    build.buildItem(proper);
   }
 
   return true;
@@ -627,6 +575,7 @@ void te::layout::Scene::redrawSelectionMap()
 
 void te::layout::Scene::exportItemsToImage(std::string dir)
 {
+  /*
   Utils* utils = Context::getInstance().getUtils();
 
   QList<QGraphicsItem*> selected = selectedItems();
@@ -667,24 +616,35 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
       }
     }
   }
+  */
 }
 
 void te::layout::Scene::mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
+  QGraphicsScene::mouseMoveEvent(mouseEvent);
+
+  if (m_isEditionMode) // Don't have move event in edition mode
+  {
+    return;
+  }
+
   QGraphicsItem* item = mouseGrabberItem();
-  if (item)
+  if (item) // MoveCommand block
   {
     m_moveWatched = true;
   }
-  QGraphicsScene::mouseMoveEvent(mouseEvent);
 }
 
 void te::layout::Scene::mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
   QGraphicsScene::mousePressEvent(mouseEvent);
 
+  if (m_isEditionMode) // Don't have move event in edition mode
+  {
+    return;
+  }
   QGraphicsItem* item = mouseGrabberItem();
-  if (item)
+  if (item) // MoveCommand block
   {
     QList<QGraphicsItem*> its = selectedItems();
     m_moveWatches.clear();
@@ -698,21 +658,86 @@ void te::layout::Scene::mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent)
 
 void te::layout::Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
-  QGraphicsItem* item = mouseGrabberItem();
-  if (item)
+  if(!m_isEditionMode) // Don't have move event in edition mode
   {
-    if (m_moveWatched)
+    QGraphicsItem* item = mouseGrabberItem();
+    if (item) // MoveCommand block
     {
-      QUndoCommand* command = new MoveCommand(m_moveWatches);
-      addUndoStack(command);
-      m_moveWatched = false;
+      if (m_moveWatched)
+      {
+        QUndoCommand* command = new MoveCommand(m_moveWatches);
+        addUndoStack(command);
+        m_moveWatched = false;
+      }
     }
+    m_moveWatches.clear();
   }
-  m_moveWatches.clear();
   QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
-void te::layout::Scene::selectItem( std::string name )
+void te::layout::Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent)
+{
+  QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
+  setEditionMode(true);
+}
+
+void te::layout::Scene::keyPressEvent(QKeyEvent * keyEvent)
+{
+  if (keyEvent->key() == Qt::Key_Escape)
+  {
+    setEditionMode(false); //Edition off
+  }
+  QGraphicsScene::keyPressEvent(keyEvent);
+}
+
+void te::layout::Scene::drawForeground(QPainter * painter, const QRectF & rect)
+{
+  if (m_isEditionMode)
+  {
+    if (!m_currentItemEdition)
+      return;
+
+    if (m_currentItemEdition->isEditionMode() == true)
+    {
+      QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(m_currentItemEdition);
+      if (!item)
+        return;
+
+      painter->save();
+
+      QRectF rec = item->sceneBoundingRect();
+
+      QPainterPath outerPath;
+      outerPath.setFillRule(Qt::WindingFill);
+      outerPath.addRect(rect); //rectangle outside
+
+      QPainterPath innerPath;
+      innerPath.addRect(rec); // rectangle inside
+      QPainterPath fillPath = outerPath.subtracted(innerPath);
+
+      //config painter
+      QColor backgroundColor(0, 0, 0, 80);
+      painter->setRenderHint(QPainter::Antialiasing);
+      painter->fillPath(fillPath, backgroundColor);
+
+      /* paint the outlines
+      QPainterPath::simplified() : this converts the set of layered shapes
+      into one QPainterPath which has no intersections */
+      QColor contourColor(178, 34, 34);
+      QPen penOuterPath(Qt::NoPen);
+      QPen penInnerPath(contourColor, 2);
+      QPainterPath simplifiedPath = outerPath.simplified();
+      painter->strokePath(simplifiedPath, penOuterPath);
+      painter->strokePath(innerPath, penInnerPath);
+
+      painter->restore();
+    }
+  }
+  
+  QGraphicsScene::drawForeground(painter, rect);
+}
+
+void te::layout::Scene::selectItem(std::string name)
 {
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems) 
@@ -1068,8 +1093,54 @@ te::layout::PaperConfig* te::layout::Scene::getPaperConfig()
   return m_paperConfig;
 }
 
+void te::layout::Scene::setEditionMode(bool editionMode)
+{
+  m_isEditionMode = editionMode;
+  if(m_isEditionMode)
+  {
+    enterEditionMode();
+  }
+  else
+  {
+    leaveEditionMode();
+  }
+}
 
+bool te::layout::Scene::isEditionMode()
+{
+  return m_isEditionMode;
+}
 
+void te::layout::Scene::enterEditionMode()
+{
+  if (!mouseGrabberItem())
+  {
+    return;
+  }
+
+  AbstractItemView* item = dynamic_cast<AbstractItemView*>(mouseGrabberItem());
+  if (!item)
+    return;
+
+  if (m_currentItemEdition)
+    m_currentItemEdition->setEditionMode(false);
+
+  m_currentItemEdition = item;
+  m_isEditionMode = true;
+  m_currentItemEdition->setEditionMode(true);
+  update();
+}
+
+void te::layout::Scene::leaveEditionMode()
+{
+  if (!m_currentItemEdition)
+  {
+    return;
+  }
+  m_isEditionMode = false;
+  m_currentItemEdition->setEditionMode(false);
+  update();
+}
 
 
 

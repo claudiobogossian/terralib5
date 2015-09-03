@@ -37,7 +37,7 @@
 #include "../../core/Config.h"
 
 // Qt
-#include <QGraphicsProxyWidget>
+#include <QGraphicsObject>
 
 //class QGraphicsSceneMouseEvent;
 //class QMimeData;
@@ -50,11 +50,14 @@ namespace te
     namespace widgets
     {
       class MapDisplay;
+      class Pan;
+      class ZoomWheel;
     }
   }
 
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief This class is a proxy MapDisplay. This makes it possible to add a MapDisplay as item of a scene. 
     This object is of type QGraphicsProxyWidget. He have a directly interaction by user. 
@@ -67,7 +70,7 @@ namespace te
 
     \sa te::layout::AbstractItem
   */
-    class TELAYOUTEXPORT MapItem : public AbstractItem<QGraphicsProxyWidget>
+    class TELAYOUTEXPORT MapItem : public AbstractItem<QGraphicsObject>
     {
       Q_OBJECT //for slots/signals
 
@@ -79,7 +82,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        MapItem( AbstractItemController* controller, AbstractItemModel* model );
+        MapItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -124,6 +127,21 @@ namespace te
           \brief Reimplemented from QGraphicsProxyWidget
          */
         virtual void  dropEvent ( QGraphicsSceneDragDropEvent * event );
+        
+        /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+        */
+        virtual void  wheelEvent ( QGraphicsSceneWheelEvent * event );
+
+        virtual void doRefresh();
+
+      protected:
+
+        virtual void enterEditionMode();
+
+        virtual void leaveEditionMode();
+
+        virtual QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRectF& widget) const;
 
     protected slots:
 
@@ -274,7 +292,12 @@ namespace te
       //  int                                           m_oldMapScale;
       //  bool                                          m_forceMapRefresh;
 
-        te::qt::widgets::MapDisplay*            m_mapDisplay;
+        virtual void resized();
+
+        te::qt::widgets::MapDisplay*  m_mapDisplay;
+        te::qt::widgets::Pan*         m_pan;
+        te::qt::widgets::ZoomWheel*   m_zoomWheel;
+        bool                                    m_doRefresh;
     };
   }
 }

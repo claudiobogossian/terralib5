@@ -100,11 +100,14 @@ void te::layout::PropertyBrowser::createManager()
 
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(Property)), this, SLOT(onChangeDlgProperty(Property)));
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(std::vector<Property>)), this, SLOT(onChangeDlgProperty(std::vector<Property>)));
+  
 
   m_propertyEditor->setFactoryForManager(m_dialogPropertiesBrowser->getStringPropertyManager(), m_dialogPropertiesBrowser->getDlgEditorFactory());
   m_propertyEditor->setFactoryForManager(m_variantPropertiesBrowser->getVariantPropertyManager(), m_variantPropertiesBrowser->getVariantEditorFactory());
   m_propertyEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   m_propertyEditor->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
+
+  connect(m_propertyEditor, SIGNAL(currentItemChanged(QtBrowserItem*)), this, SLOT(onCurrentItemChanged(QtBrowserItem*)));
 }
 
 void te::layout::PropertyBrowser::propertyEditorValueChanged( QtProperty *property, const QVariant &value )
@@ -139,6 +142,15 @@ void te::layout::PropertyBrowser::onChangeDlgProperty( Property property )
 void te::layout::PropertyBrowser::onChangeDlgProperty( std::vector<Property> props )
 {
   emit changePropertyValue(props);
+}
+
+void te::layout::PropertyBrowser::onCurrentItemChanged(QtBrowserItem* item)
+{
+  if(item == 0)
+  {
+    return;
+  }
+  emit currentItemChanged(item);
 }
 
 void te::layout::PropertyBrowser::updateExpandState()

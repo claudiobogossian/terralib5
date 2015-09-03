@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/BalloonModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/BalloonItem.h"
 
 te::layout::AbstractItemView* te::layout::BalloonItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::BalloonItemFactory::build(ItemFactoryP
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  BalloonItem* view = new BalloonItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::BalloonItemFactory::BalloonItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getBalloonItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getBalloonItem()->getName())
 {
 
 }

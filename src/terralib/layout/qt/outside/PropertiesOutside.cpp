@@ -28,20 +28,17 @@
 // TerraLib
 #include "PropertiesOutside.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../core/propertybrowser/PropertyBrowser.h"
 #include "../item/MapItem.h"
 #include "../../core/property/SharedProperties.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../item/MapModel.h"
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
-#include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 #include "../../core/enum/Enums.h"
 #include "../core/pattern/command/ChangePropertyCommand.h"
 #include "../core/Scene.h"
@@ -327,7 +324,7 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
       AbstractItemView* selectedAbsView = dynamic_cast<AbstractItemView*>(selectedItem);
       if(selectedAbsView != 0)
       {
-        NewObserver* selectedObserver = dynamic_cast<NewObserver*>(selectedAbsView->getController()->getModel());
+        Observer* selectedObserver = dynamic_cast<Observer*>(selectedAbsView->getController()->getModel());
         if(selectedObserver != 0)
         {
           mapItem->getController()->getModel()->attach(selectedObserver);

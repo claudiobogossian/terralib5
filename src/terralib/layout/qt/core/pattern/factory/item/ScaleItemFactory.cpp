@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/ScaleModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/ScaleItem.h"
 
 te::layout::AbstractItemView* te::layout::ScaleItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::ScaleItemFactory::build(ItemFactoryPar
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  ScaleItem* view = new ScaleItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::ScaleItemFactory::ScaleItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getScaleItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getScaleItem()->getName())
 {
 
 }

@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/MovingItemGroupModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/MovingItemGroup.h"
 
 te::layout::AbstractItemView* te::layout::MovingItemGroupItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::MovingItemGroupItemFactory::build(Item
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  MovingItemGroup* view = new MovingItemGroup(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::MovingItemGroupItemFactory::MovingItemGroupItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getMovingItemGroup()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getMovingItemGroup()->getName())
 {
 
 }

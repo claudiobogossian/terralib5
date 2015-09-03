@@ -38,8 +38,8 @@
 #include <QPainterPath>
 #include "geos/platform.h"
 
-te::layout::PointItem::PointItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::PointItem::PointItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {
 }
 

@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/GridPlanarModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/GridPlanarItem.h"
 
 te::layout::AbstractItemView* te::layout::GridPlanarItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,7 +41,8 @@ te::layout::AbstractItemView* te::layout::GridPlanarItemFactory::build(ItemFacto
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  GridPlanarItem* view = new GridPlanarItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
@@ -50,7 +52,7 @@ te::layout::AbstractItemView* te::layout::GridPlanarItemFactory::build(ItemFacto
 }
 
 te::layout::GridPlanarItemFactory::GridPlanarItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getGridPlanarItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getGridPlanarItem()->getName())
 {
 
 }

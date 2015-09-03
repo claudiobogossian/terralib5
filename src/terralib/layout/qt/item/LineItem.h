@@ -35,18 +35,19 @@
 #include <QGraphicsItem>
 
 class QPen;
-
 class QGraphicsSceneMouseEvent;
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
+
     class LineItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
-        LineItem ( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        LineItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         virtual ~LineItem ();
 
