@@ -27,6 +27,7 @@
 #define __TE_QT_PLUGINS_LAYOUT_INTERNAL_MAINLAYOUT_H
 
 // TerraLib
+#include "../../core/Config.h"
 #include "../../../layout/qt/core/View.h"
 #include "BuildContext.h"
 #include "BuildEnums.h"
@@ -57,7 +58,7 @@ namespace te
     \brief A class ...within TerraLib environment.
 
     */
-    class MainLayout : public QObject
+    class TELAYOUTEXPORT MainLayout : public QObject
     {
       Q_OBJECT //for slots/signals
 

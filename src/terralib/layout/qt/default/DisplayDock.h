@@ -28,6 +28,8 @@
 #ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_DISPLAY_DOCK_H 
 #define __TE_QT_PLUGINS_LAYOUT_INTERNAL_DISPLAY_DOCK_H
 
+#include "../../core/Config.h"
+
 // Qt
 #include <QDockWidget>
 
@@ -37,7 +39,7 @@ namespace te
 {
   namespace layout
   {
-    class DisplayDock : public QDockWidget
+    class TELAYOUTEXPORT DisplayDock : public QDockWidget
     {
       Q_OBJECT //for slots/signals
 
