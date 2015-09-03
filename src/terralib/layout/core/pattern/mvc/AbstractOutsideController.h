@@ -92,7 +92,7 @@ namespace te
        */
       const AbstractOutsideView* getView();
 
-      virtual void update(const Subject* subject) override;
+      virtual void update(const Subject* subject);
 
     protected:
 
