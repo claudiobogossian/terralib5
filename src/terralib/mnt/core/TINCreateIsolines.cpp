@@ -13,7 +13,6 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 
-//#include <fstream>      // std::ofstream
 
 bool te::mnt::TINCreateIsolines::run()
 {
@@ -35,13 +34,9 @@ bool te::mnt::TINCreateIsolines::run()
 
   LoadTin(m_inDsrc, m_inDsetName, zmin, zmax);
 
-   //std::ofstream ofs("d:\\teste\\Point_GI.txt", std::ofstream::out);
-   //ofs.precision(8);
-
   for (size_t v = 0; v < m_values.size(); v++)
   {
     cvalue = m_values[v];
-    //ofs << cvalue << std::endl;
 
     for (size_t i = 1; i < m_triang.size(); i++)
     {
@@ -62,26 +57,15 @@ bool te::mnt::TINCreateIsolines::run()
 
     if (pts.size() > 2)
     {
-      //ofs << "Pts " << pts.size() << std::endl;
-      //for (size_t i = 0; i < pts.size(); i++)
-      //  ofs << pts[i].getX() << " " << pts[i].getY() << " "<< pts[i].getZ() << std::endl;
       if (!extractLines(pts, m_isolist, m_tol))
       {
         return false;
       }
- /*     ofs << "Isolist " << m_isolist.size() << std::endl;
-      for (size_t i = 0; i < m_isolist.size(); i++)
-      {
-        ofs << "Iso " << i << " " << m_isolist[i].size() << std::endl;
-        for (size_t j = 0; j < m_isolist[i].size(); j++)
-          ofs << m_isolist[i].getX(j) << " " << m_isolist[i].getY(j) << " " << m_isolist[i].getZ(j) << std::endl;
-      }*/
-      
+       
       pts.clear();
     }
   }
 
-  //ofs.close();
   SaveIso();
 
   return true;
@@ -89,13 +73,11 @@ bool te::mnt::TINCreateIsolines::run()
 
 void te::mnt::TINCreateIsolines::setInput(te::da::DataSourcePtr inDsrc,
   std::string inDsetName,
-  std::auto_ptr<te::da::DataSetType> inDsetType,
-  const te::da::ObjectIdSet* oidSet)
+  std::auto_ptr<te::da::DataSetType> inDsetType)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
   m_inDsetType = inDsetType;
-  m_oidSet = oidSet;
 }
 
 void te::mnt::TINCreateIsolines::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)

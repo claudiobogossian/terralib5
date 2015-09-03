@@ -35,7 +35,7 @@ bool te::mnt::Equal(te::gm::PointZ &p1, te::gm::PointZ &p2, double &tol)
 
 bool te::mnt::equalFptSpt(te::gm::PointZ & fpt, te::gm::PointZ &spt, double scale)
 {
-  double	delta = (double)(scale/* * 0.04 / 1000.*/); // point one percent of map tolerance
+  double  delta = (double)(scale/* * 0.04 / 1000.*/); // point one percent of map tolerance
 
   if ((fpt.getX() == spt.getX()) && (fpt.getY() == spt.getY())) return true;
   if (fabs(fpt.getX() - spt.getX()) > delta) return false;
@@ -234,7 +234,7 @@ double te::mnt::pointToSegmentDistance(te::gm::PointZ &fseg, te::gm::PointZ &lse
     }
   }
 
-  double	a, b, c, k, dist, aabb;
+  double  a, b, c, k, dist, aabb;
 
   a = lseg.getY() - fseg.getY();
   b = fseg.getX() - lseg.getX();
@@ -260,14 +260,14 @@ double te::mnt::pointToSegmentDistance(te::gm::PointZ &fseg, te::gm::PointZ &lse
 
 short te::mnt::findCenter(te::gm::PointZ* vert, double* pcx, double* pcy)
 {
-  double	m1 = 10., m2 = 10.;	// normais aos segmentos 1 e 2 
-  double	xm1, ym1, 		// coords do ponto medio do segm. 1 
-    xm2, ym2,		// coords do ponto medio do segm. 2 
+  double  m1 = 10., m2 = 10.;  // normais aos segmentos 1 e 2 
+  double  xm1, ym1,     // coords do ponto medio do segm. 1 
+    xm2, ym2,    // coords do ponto medio do segm. 2 
     xaux, yaux,
     px[3], py[3];
-  bool	perpvert1 = false,	// perpendicular vertical ao segmento 1 
-    perpvert2 = false;	// perpendicular vertical ao segmento 2 
-  short	i;
+  bool  perpvert1 = false,  // perpendicular vertical ao segmento 1 
+    perpvert2 = false;  // perpendicular vertical ao segmento 2 
+  short  i;
 
   for (i = 0; i < 3; i++)
   {
@@ -275,12 +275,12 @@ short te::mnt::findCenter(te::gm::PointZ* vert, double* pcx, double* pcy)
     py[i] = vert[i].getY();
   }
 
-  //	calcula o coeficiente angular perpendicular a reta 1
+  //  calcula o coeficiente angular perpendicular a reta 1
   if ((float)py[0] == (float)py[1])
   {
     if ((float)px[0] == (float)px[1])
     {
-      //			pontos sao iguais-> retorna
+      //      pontos sao iguais-> retorna
       return false;
     }
     perpvert1 = true;
@@ -288,12 +288,12 @@ short te::mnt::findCenter(te::gm::PointZ* vert, double* pcx, double* pcy)
   else
     m1 = -(px[1] - px[0]) / (py[1] - py[0]);
 
-  //	calcula o coeficiente angular da perpendicular a reta 2
+  //  calcula o coeficiente angular da perpendicular a reta 2
   if ((float)py[1] == (float)py[2])
   {
     if ((float)px[1] == (float)px[2])
     {
-      //			pontos sao iguais-> retorna
+      //      pontos sao iguais-> retorna
       return false;
     }
     perpvert2 = false;
@@ -301,24 +301,24 @@ short te::mnt::findCenter(te::gm::PointZ* vert, double* pcx, double* pcy)
   else
     m2 = -(px[2] - px[1]) / (py[2] - py[1]);
 
-  //	Caso as retas sejam coincidentes, uma circunferencia 
-  //	 nao eh definida
+  //  Caso as retas sejam coincidentes, uma circunferencia 
+  //   nao eh definida
   if ((float)m1 == (float)m2)
   {
     return false;
   }
 
-  //	passou pelos testes: os pontos definem uma circunferencia
-  //	calculo do ponto medio do segmento ponto0-ponto1 (segmento 1)
+  //  passou pelos testes: os pontos definem uma circunferencia
+  //  calculo do ponto medio do segmento ponto0-ponto1 (segmento 1)
   xm1 = (px[0] + px[1]) / 2.;
   ym1 = (py[0] + py[1]) / 2.;
 
-  //	calculo do ponto medio do segmento ponto1-ponto2 (segmento 2)
+  //  calculo do ponto medio do segmento ponto1-ponto2 (segmento 2)
   xm2 = (px[1] + px[2]) / 2.;
   ym2 = (py[1] + py[2]) / 2.;
 
-  //	calculo das coordenadas do centro: ponto de interseccao das mediatrizes
-  //	 dos segmentos ponto0-ponto1 e ponto1-ponto2
+  //  calculo das coordenadas do centro: ponto de interseccao das mediatrizes
+  //   dos segmentos ponto0-ponto1 e ponto1-ponto2
   if (perpvert1 == true)
   {
     xaux = xm1;
@@ -346,7 +346,7 @@ short te::mnt::findCenter(te::gm::PointZ* vert, double* pcx, double* pcy)
 */
 short te::mnt::segIntersect(te::gm::PointZ &pfr, te::gm::PointZ &pto, te::gm::PointZ &lfr, te::gm::PointZ &lto)
 {
-  te::gm::PointZ	pt;
+  te::gm::PointZ  pt;
 
   return segInterPoint(pfr, pto, lfr, lto, &pt);
 }
@@ -359,11 +359,11 @@ short te::mnt::segIntersect(te::gm::PointZ &pfr, te::gm::PointZ &pto, te::gm::Po
 
 bool te::mnt::segInterPoint(te::gm::PointZ &pfr, te::gm::PointZ &pto, te::gm::PointZ &lfr, te::gm::PointZ &lto, te::gm::PointZ *pt)
 {
-  //	Adapted from TWO-DIMENSIONAL CLIPPING: A VECTOR-BASED APPROACH
-  //	Hans J.W. Spoelder, Fons H. Ullings in:
-  ////	Graphics Gems I, pp.701, 
+  //  Adapted from TWO-DIMENSIONAL CLIPPING: A VECTOR-BASED APPROACH
+  //  Hans J.W. Spoelder, Fons H. Ullings in:
+  ////  Graphics Gems I, pp.701, 
 
-  double	a, b, c,
+  double  a, b, c,
     px, py, lx, ly, lpx, lpy, s;
 
   px = pto.getX() - pfr.getX();
@@ -410,17 +410,17 @@ bool te::mnt::segInterPoint(te::gm::PointZ &pfr, te::gm::PointZ &pto, te::gm::Po
 */
 bool te::mnt::testVertexValues(double isolin, te::gm::PointZ *p3da)
 {
-  double	delta = (float).9999;
-  size_t	i;
+  double  delta = (float).9999;
+  size_t  i;
 
   for (i = 0; i < 3; i++)
     if (p3da[i].getZ() == isolin)
       p3da[i].setZ(isolin*delta);
 
 
-  if ((p3da[0].getZ() > BIGFLOAT) ||
-    (p3da[1].getZ() > BIGFLOAT) ||
-    (p3da[2].getZ() > BIGFLOAT))
+  if ((p3da[0].getZ() == std::numeric_limits<double>::max()) ||
+    (p3da[1].getZ() == std::numeric_limits<double>::max()) ||
+    (p3da[2].getZ() == std::numeric_limits<double>::max()))
     return false;
 
   if ((p3da[0].getZ() < isolin) &&
@@ -510,7 +510,7 @@ bool te::mnt::defineInterEdge(std::vector<te::gm::PointZ> &ptline, te::gm::Point
 {
   te::gm::PointZ dvect; // Vector from fpt to spt
   te::gm::PointZ pt;
-  double	paux;// Parametric variable
+  double  paux;// Parametric variable
 
   if (spt.getZ() == fpt.getZ())
     return false;
@@ -632,17 +632,17 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
 }
 
 /*************************************************************
-NAME		: initLineVector
-AUTHOR		: Laercio Namikawa			aug-95
-RESUME		: Initialize Line Vector with points of a line.
-INPUT		: pline		line
-OUTPUT		: vect		line with first and second points
-RETURN		: TRUE		successful
-FALSE		failure
+NAME    : initLineVector
+AUTHOR    : Laercio Namikawa      aug-95
+RESUME    : Initialize Line Vector with points of a line.
+INPUT    : pline    line
+OUTPUT    : vect    line with first and second points
+RETURN    : TRUE    successful
+FALSE    failure
 *************************************************************/
 bool te::mnt::initLineVector(std::vector<te::gm::PointZ> &pline, std::vector<te::gm::PointZ> &vect)
 {
-  short	c;
+  short  c;
   std::vector<te::gm::PointZ>::iterator it;
 
   if (vect.size() != 0)
@@ -664,14 +664,14 @@ bool te::mnt::initLineVector(std::vector<te::gm::PointZ> &pline, std::vector<te:
 
 
 /*************************************************************
-NAME		: assembLine
-AUTHOR		: Laercio Namikawa			aug-95
-RESUME		: Assemble a line with Line points and
+NAME    : assembLine
+AUTHOR    : Laercio Namikawa      aug-95
+RESUME    : Assemble a line with Line points and
 save in LineList.
-INPUT		: vect		line with points
-OUTPUT		: linlout	output linelist
-RETURN		: TRUE		successful
-FALSE		failure
+INPUT    : vect    line with points
+OUTPUT    : linlout  output linelist
+RETURN    : TRUE    successful
+FALSE    failure
 *************************************************************/
 bool te::mnt::assembLine(std::vector<te::gm::LineString> &linlout, std::vector<te::gm::PointZ> &vect)
 {

@@ -50,13 +50,13 @@ bool te::mnt::TINCalculateGrid::run()
 
   int32_t fbnode = 0;
 
-  if (m_gridtype == Quintico)		//Quintic Surface Adjust without breaklines
+  if (m_gridtype == Quintico)    //Quintic Surface Adjust without breaklines
   {
     fbnode = m_fbnode;
     m_fbnode = 0;
   }
 
-  //if ((m_gridtype == QuinticoBrkLine) || (m_gridtype == Quintico))		//Quintic Surface Adjust
+  //if ((m_gridtype == QuinticoBrkLine) || (m_gridtype == Quintico))    //Quintic Surface Adjust
   //  if (!Tnsderiv)
   //    if (NodeDerivatives() == FALSE)
   //      return FALSE;
@@ -66,8 +66,8 @@ bool te::mnt::TINCalculateGrid::run()
   int32_t flin, llin, fcol, lcol;
   short j;
 
-  //	To each triangle
-  for (int32_t i = 1; i < (int32_t) m_triang.size(); i++)
+  //  To each triangle
+  for (int32_t i = 0; i < (int32_t) m_triang.size(); i++)
   { // Find Triangle Box
     NodesId(i, nodesid);
     if (!DefineInterLinesColumns(nodesid, flin, llin, fcol, lcol))
@@ -79,9 +79,9 @@ bool te::mnt::TINCalculateGrid::run()
       p3da[j].setZ(m_node[nodesid[j]].getZ());
     }
 
-    if ((p3da[0].getZ() > BIGFLOAT) ||
-      (p3da[1].getZ() > BIGFLOAT) ||
-      (p3da[2].getZ() > BIGFLOAT))
+    if ((p3da[0].getZ() == dummyvalue) ||
+      (p3da[1].getZ() == dummyvalue) ||
+      (p3da[2].getZ() == dummyvalue))
     {
        FillGridValue(i, flin, llin, fcol, lcol, dummyvalue);
     }
@@ -100,13 +100,13 @@ bool te::mnt::TINCalculateGrid::run()
     //    FillGridQuintic(grid, i, p3da, flin, llin, fcol, lcol, coef);
     //  }
     //  else
-    //    FillGridValue(grid, i, flin, llin, fcol, lcol, MAXFLOAT);
+    //    FillGridValue(grid, i, flin, llin, fcol, lcol, dummyvalue);
     //}
     else
       FillGridLinear(i, p3da, flin, llin, fcol, lcol);
   }
 
-  if (m_gridtype == Quintico)		//Quintic Surface Adjust without breaklines
+  if (m_gridtype == Quintico)    //Quintic Surface Adjust without breaklines
     m_fbnode = fbnode;
 
   delete m_rst;
@@ -116,13 +116,11 @@ bool te::mnt::TINCalculateGrid::run()
 
 void te::mnt::TINCalculateGrid::setInput(te::da::DataSourcePtr inDsrc,
   std::string inDsetName,
-  std::auto_ptr<te::da::DataSetType> inDsetType,
-  const te::da::ObjectIdSet* oidSet)
+  std::auto_ptr<te::da::DataSetType> inDsetType)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
   m_inDsetType = inDsetType;
-  m_oidSet = oidSet;
 }
 
 void te::mnt::TINCalculateGrid::setOutput(std::map<std::string, std::string> &tgrInfo, std::string dsname)
@@ -162,7 +160,7 @@ bool te::mnt::TINCalculateGrid::DefineInterLinesColumns(int32_t *nodesid, int32_
     urpt = Max(urpt, m_node[nodesid[j]].getNPoint());
   }
 
-  //	Calculate lines and coluns intercepted
+  //  Calculate lines and coluns intercepted
   fcol = (int32_t)((llpt.getX() - rx1) / m_resx + .5);
   lcol = (int32_t)((urpt.getX() - rx1) / m_resx + .5);
   flin = (int32_t)((ry2 - urpt.getY()) / m_resy + .5);
@@ -196,8 +194,8 @@ bool te::mnt::TINCalculateGrid::DefineInterLinesColumns(int32_t *nodesid, int32_
 */
 bool te::mnt::TINCalculateGrid::FillGridValue(int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double zvalue)
 {
-  int32_t	nlin, ncol;
-  double	rx1, ry2;
+  int32_t  nlin, ncol;
+  double  rx1, ry2;
   te::gm::PointZ pg;
   double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
 
@@ -210,12 +208,7 @@ bool te::mnt::TINCalculateGrid::FillGridValue(int32_t triid, int32_t flin, int32
      // pg.setY(ry2 - (float)nlin*m_resy);
      // if (!(ContainsPoint(triid, pg)))
      //   continue;
-      if (zvalue > BIGFLOAT)
-        m_rst->setValue(nlin, ncol, dummyvalue);
-      else
-      {
         m_rst->setValue(ncol, nlin, zvalue);
-      }
     }
   }
 
@@ -265,14 +258,14 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
         (pg.getY() - p3da[0].getY());
       detz = (x1_x0 * y2_y0) - (x2_x0 * y1_y0);
 
-      zvalue = (float)((detx + dety - detz *
-        p3da[0].getZ()) / -detz);
+      zvalue = ((detx + dety - detz * p3da[0].getZ()) / -detz);
 
-      if (zvalue > BIGFLOAT)
-        m_rst->setValue(ncol, nlin, dummyvalue);
-      else{
-        m_rst->setValue(ncol, nlin, zvalue);
-      }
+      if (zvalue > m_max)
+        zvalue = dummyvalue;
+      if (zvalue < m_min)
+        zvalue = dummyvalue;
+
+       m_rst->setValue(ncol, nlin, zvalue);
     }
   }
 
@@ -289,7 +282,7 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
 
 //bool te::mnt::TINCalculateGrid::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef)
 //{
-//  double	a, b, c, d,
+//  double  a, b, c, d,
 //    aa, bb, cc, dd,
 //    ad, bc, det,
 //    ap, bp, cp, dp,
@@ -305,8 +298,8 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
 //    h1, h2, h3, g1, g2,
 //    fg, eh, ee, gg,
 //    zu[3], zv[3], zuu[3], zvv[3], zuv[3];
-//  short	i, bside;
-//  int32_t	lids[3], nodid;
+//  short  i, bside;
+//  int32_t  lids[3], nodid;
 //
 //  // Coeficients of conversion from UV to XY coordinates
 //  a = p3d[1].getX() - p3d[0].getX();
@@ -389,7 +382,7 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
 //      return false;
 //    }
 //
-//    if (fderiv[nodid].Y() > BIGFLOAT)
+//    if (fderiv[nodid].Y() == dummyvalue)
 //    {
 //      zu[i] = 0.; zv[i] = 0.;
 //    }
@@ -400,7 +393,7 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
 //      zv[i] = b * fderiv[nodid].X() +
 //        d * fderiv[nodid].Y();
 //    }
-//    if (sderiv[nodid].Z() > BIGFLOAT)
+//    if (sderiv[nodid].Z() == dummyvalue)
 //    {
 //      zuu[i] = 0.;
 //      zuv[i] = 0.;

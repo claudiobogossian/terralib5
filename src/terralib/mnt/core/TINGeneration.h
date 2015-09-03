@@ -26,6 +26,11 @@ namespace te
   namespace mnt
   {
     
+    enum InputType
+    {
+      Isolines,
+      Samples
+    };
     /*!
     \class TINGeneration
 
@@ -45,14 +50,14 @@ namespace te
       void setInput(te::da::DataSourcePtr inDsrc,
         std::string inDsetName,
         std::auto_ptr<te::da::DataSetType> inDsetType,
-        const te::da::ObjectIdSet* oidSet = 0);
+        InputType type);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
       void setParams(const double& tolerance,
         const double &maxdist,
         const double &minedgesize,
-        const std::string &atrz);
+        const std::string &atrz_iso, const std::string &atrz_pt);
 
       /*! Function used to set Triangulation lines simplification tolerance */
       void setTolerance(double tolerance) { m_tolerance = tolerance; };
@@ -64,6 +69,8 @@ namespace te
       void setMinedgesize(double minedgesize) { m_minedgesize = minedgesize; };
 
     protected:
+      size_t ReadPoints(te::gm::MultiPoint &mpt, std::string &geostype);
+
       size_t ReadSamples(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
 
       /*! Create the two initial triangles, based on box.*/
@@ -237,15 +244,19 @@ namespace te
 
     protected:
 
-      te::da::DataSourcePtr m_inDsrc;
-      std::string m_inDsetName;
-      std::auto_ptr<te::da::DataSetType> m_inDsetType;
-      const te::da::ObjectIdSet* m_oidSet;
+      te::da::DataSourcePtr m_inDsrc_sample;
+      std::string m_inDsetName_sample;
+      std::auto_ptr<te::da::DataSetType> m_inDsetType_sample;
+
+      te::da::DataSourcePtr m_inDsrc_point;
+      std::string m_inDsetName_point;
+      std::auto_ptr<te::da::DataSetType> m_inDsetType_point;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDsetName;
 
-      std::string m_atrZ;
+      std::string m_atrZ_sample;
+      std::string m_atrZ_point;
 
       //te::gm::MultiPoint m_Points;
       //te::gm::MultiLineString m_Lines;

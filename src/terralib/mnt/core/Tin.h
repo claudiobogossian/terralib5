@@ -69,7 +69,7 @@ namespace te
         m_line[2] = tLine;
       }
 
-      //		Fill in vector of triangle lines Ids.
+      //....Fill in vector of triangle lines Ids.
       bool LinesId(int32_t *linesId)
       {
         linesId[0] = m_line[0];
@@ -80,11 +80,11 @@ namespace te
         return true;
       }
 
-      //		Get the line at an edge of the triangle.
-      //		Input:
-      //			edge: edge number (0, 1 or 2).
-      //		Return:
-      //			Line at edge number.
+      //....Get the line at an edge of the triangle.
+      //....Input:
+      //......edge: edge number (0, 1 or 2).
+      //....Return:
+      //......Line at edge number.
       int32_t LineAtEdge(short edge)
       {
         if ((edge > -1) && (edge < 3))
@@ -93,7 +93,7 @@ namespace te
           return -1;
       }
     protected:
-      int32_t	m_line[3];// line numbers vector
+      int32_t  m_line[3];// line numbers vector
     };
 
 
@@ -248,7 +248,7 @@ namespace te
       //!\param yvalue: Y axis coordinate.
       //!\param zvalue: Height value.
       //!\param ntype: Type (default value = NORMAL).
-      void Init(double xvalue, double yvalue, float zvalue, Ntype ntype = Normalnode)
+      void Init(double xvalue, double yvalue, double zvalue, Ntype ntype = Normalnode)
       {
         m_point.setX(xvalue);
         m_point.setY(yvalue);
@@ -271,7 +271,7 @@ namespace te
     class TEMNTEXPORT Tin
     {
     public:
-      Tin(){}
+      Tin() : m_nodatavalue(std::numeric_limits<double>::max()), m_min(std::numeric_limits<double>::max()), m_max(std::numeric_limits<double>::min()) {}
 
       /*! Function used to set the Spatial Reference System ID  */
       void setSRID(int srid);
@@ -283,7 +283,7 @@ namespace te
       \brief Method used to load a triangular network (TIN)
       \return true if the TIN is loaded with no errors or false otherwise
       */
-      bool LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetName, double zmin = -BIGFLOAT, double zmax = BIGFLOAT);
+      bool LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetName, double zmin = std::numeric_limits<double>::min(), double zmax = std::numeric_limits<double>::max());
 
       bool SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetName);
 
@@ -416,8 +416,7 @@ namespace te
       \return true always
       */
       bool ReallocateVectors(size_t nSize);
-
-
+      
       int m_srid;                                  //!< Attribute with spatial reference information
 
       te::gm::Envelope m_env;                      //!< Attribute used to restrict the area to generate the samples.
@@ -435,6 +434,9 @@ namespace te
       int32_t m_ltriang; //!<Triangulation last triangle number.
       int32_t m_lline; //!<Triangulation last line number.
 
+      double m_nodatavalue;
+      double m_max;
+      double m_min;
     };
 
   } // end namespace mnt

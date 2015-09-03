@@ -44,8 +44,7 @@ namespace te
 
       void setInput(te::da::DataSourcePtr inDsrc,
         std::string inDsetName,
-        std::auto_ptr<te::da::DataSetType> inDsetType,
-        const te::da::ObjectIdSet* oidSet = 0);
+        std::auto_ptr<te::da::DataSetType> inDsetType);
 
       void setOutput(std::map<std::string, std::string> &tgrInfo, std::string dsname);
 
@@ -64,7 +63,6 @@ namespace te
       te::da::DataSourcePtr m_inDsrc;
       std::string m_inDsetName;
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
-      const te::da::ObjectIdSet* m_oidSet;
 
       std::map<std::string, std::string> m_tgrInfo;
       std::string m_outDsetName;

@@ -8,10 +8,6 @@
 /*! Defines the attribute name Bayes used in Bayes operation*/
 #define TE_MNT_CREATEISOLINES_ATTR_NAME "CreateIsolines"
 
-#ifndef BIGFLOAT
-const double BIGFLOAT = 3.4E35;
-#endif
-
 /** @name DLL/LIB Module
 *  Flags for building TerraLib as a DLL or as a Static Library
 */
@@ -35,7 +31,7 @@ const double BIGFLOAT = 3.4E35;
 
 
 #ifdef TEMNTCORESTATIC
-#define TEMNTEXPORT                          // Don't need to export/import... it is a static library
+#define TEMNTEXPORT                          // Don't need to export/import  . it is a static library
 #elif TEMNTCOREDLL
 #define TEMNTEXPORT  __declspec(dllexport)   // export DLL information
 #else
