@@ -85,6 +85,8 @@ namespace te
       virtual void onAddChildFinalized(QGraphicsItem* parent, QGraphicsItem* child);
       virtual void onDeleteFinalized(std::vector<std::string>);
       virtual void onSelectionChanged(QList<QGraphicsItem*> selectedItems);
+      virtual void onSelectionChanged();
+
 
     signals:
 

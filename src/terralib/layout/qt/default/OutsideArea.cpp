@@ -432,6 +432,19 @@ void te::layout::OutsideArea::closeMainMenu()
   m_view->closeOutsideWindows();
 }
 
+void te::layout::OutsideArea::onSelectionChanged()
+{
+  QList<QGraphicsItem*> graphicsItems = m_view->scene()->selectedItems();
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+
+  //Refresh Property window   
+  if(m_dockProperties)
+    m_dockProperties->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
+
+  if(m_dockInspector)
+    m_dockInspector->getObjectInspectorOutside()->selectItems(graphicsItems);
+}
+
 void te::layout::OutsideArea::onAddItemFinalized()
 {
   QList<QGraphicsItem*> allItems = m_view->scene()->items();
