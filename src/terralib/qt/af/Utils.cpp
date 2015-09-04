@@ -47,6 +47,7 @@
 #include "Exception.h"
 //#include "Project.h"
 #include "Utils.h"
+#include "XMLFormatter.h"
 
 // STL
 #include <cassert>
@@ -166,7 +167,7 @@ void te::qt::af::SaveDataSourcesFile(te::qt::af::ApplicationController* appContr
 
   te::qt::af::XMLFormatter::formatDataSourceInfos(true);
 
-  te::serialize::xml::Save(fileName.toString().toStdString());
+  te::serialize::xml::Save(fileName.toStdString());
 
   te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 }

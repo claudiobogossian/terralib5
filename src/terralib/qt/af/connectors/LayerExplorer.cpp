@@ -96,25 +96,6 @@ te::qt::widgets::LayerItemView* te::qt::af::LayerExplorer::getExplorer() const
   return m_explorer;
 }
 
-void te::qt::af::LayerExplorer::removeLayers(const std::list<te::qt::widgets::AbstractTreeItem*>& layers)
-{
-  for(std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it = layers.begin(); it != layers.end(); ++it)
-  {
-    te::map::AbstractLayerPtr l = (*it)->getLayer();
-
-    m_explorer->remove(*it);
-
-    ApplicationController::getInstance().getProject()->remove(l);
-
-    te::qt::af::evt::LayerRemoved e(l);
-
-    ApplicationController::getInstance().broadcast(&e);
-  }
-
-  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
-}
-
 void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* evt)
 {
   switch(evt->m_id)

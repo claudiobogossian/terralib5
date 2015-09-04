@@ -25,69 +25,15 @@
 #include <terralib/dataaccess/datasource/DataSourceInfo.h>
 #include <terralib/dataaccess/datasource/DataSourceInfoManager.h>
 #include <terralib/maptools/DataSetLayer.h>
+#include <terralib/qt/af/XMLFormatter.h>
 
 #include <QUrl>
 
 void XMLFormatter::format(ProjectMetadata* p, const std::list<te::map::AbstractLayerPtr>& layers, const bool& encode)
 {
-  p->m_author = QString::fromStdString(format(p->m_author.toStdString(), encode).c_str());
-  p->m_title = QString::fromStdString(format(p->m_title.toStdString(), encode));
+  p->m_author = QString::fromStdString(te::qt::af::XMLFormatter::format(p->m_author.toStdString(), encode).c_str());
+  p->m_title = QString::fromStdString(te::qt::af::XMLFormatter::format(p->m_title.toStdString(), encode));
 
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
-    format((*it).get(), encode);
-}
-
-void XMLFormatter::format(te::map::AbstractLayer *l, const bool &encode)
-{
-  if(l == 0)
-    return;
-
-  l->setTitle(format(l->getTitle(), encode));
-
-  std::list<te::common::TreeItemPtr> ls = l->getChildren();
-  std::list<te::common::TreeItemPtr>::iterator it;
-
-  if(l->getType() == "DATASETLAYER")
-  {
-    te::map::DataSetLayer* dl = static_cast<te::map::DataSetLayer*>(l);
-
-    dl->setDataSetName(format(dl->getDataSetName(), encode));
-  }
-
-  for(it = ls.begin(); it != ls.end(); ++it)
-    format(dynamic_cast<te::map::AbstractLayer*>((*it).get()), encode);
-}
-
-void XMLFormatter::format(te::da::DataSourceInfo *d, const bool &encode)
-{
-  d->setTitle(format(d->getTitle(), encode));
-  d->setDescription(format(d->getDescription(), encode));
-
-  std::map<std::string, std::string>& i = d->getConnInfo();
-  std::map<std::string, std::string>::iterator it = i.find("SOURCE");
-
-  if(it != i.end())
-    it->second = format(it->second, encode);
-
-  it = i.find("URI");
-
-  if(it != i.end())
-    it->second = format(it->second, encode);
-}
-
-void XMLFormatter::formatDataSourceInfos(const bool &encode)
-{
-  te::da::DataSourceInfoManager::iterator it;
-  te::da::DataSourceInfoManager::iterator beg = te::da::DataSourceInfoManager::getInstance().begin();
-  te::da::DataSourceInfoManager::iterator end = te::da::DataSourceInfoManager::getInstance().end();
-
-  for(it = beg; it != end; ++it)
-    format(it->second.get(), encode);
-}
-
-std::string XMLFormatter::format(const std::string &s, const bool& encode)
-{
-  return (encode) ?
-        QUrl::toPercentEncoding(s.c_str()).data() :
-        QUrl::fromPercentEncoding(QByteArray(s.c_str())).toStdString();
+    te::qt::af::XMLFormatter::format((*it).get(), encode);
 }

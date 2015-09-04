@@ -52,6 +52,7 @@
 #include <terralib/qt/af/events/ToolEvents.h>
 #include <terralib/qt/af/settings/SettingsDialog.h>
 #include <terralib/qt/af/Utils.h>
+#include <terralib/qt/af/XMLFormatter.h>
 #include <terralib/qt/widgets/canvas/EyeBirdMapDisplayWidget.h>
 #include <terralib/qt/widgets/canvas/MultiThreadMapDisplay.h>
 #include <terralib/qt/widgets/canvas/ZoomInMapDisplayWidget.h>
@@ -301,7 +302,7 @@ void TerraView::init()
   else
     setWindowTitle(windowTitle() + " - " + m_project->m_title);
 
-  XMLFormatter::formatDataSourceInfos(false);
+  te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 }
 
 void TerraView::startProject(const QString& projectFileName)
@@ -920,14 +921,14 @@ void TerraView::onSaveProjectTriggered()
   m_tvController->updateRecentProjects(m_project->m_fileName, m_project->m_title);
 
   XMLFormatter::format(m_project, lays, true);
-  XMLFormatter::formatDataSourceInfos(true);
+  te::qt::af::XMLFormatter::formatDataSourceInfos(true);
 
   SaveProject(*m_project, lays);
 
   te::qt::af::SaveDataSourcesFile(m_app);
 
   XMLFormatter::format(m_project, lays, false);
-  XMLFormatter::formatDataSourceInfos(false);
+  te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 }
 
 void TerraView::onSaveProjectAsTriggered()
@@ -1910,7 +1911,7 @@ void TerraView::openProject(const QString& prjFileName)
     LoadProject(prjFileName, *m_project, lst);
 
     XMLFormatter::format(m_project, lst, false);
-    XMLFormatter::formatDataSourceInfos(false);
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
     getLayerExplorer()->setLayers(lst);
 

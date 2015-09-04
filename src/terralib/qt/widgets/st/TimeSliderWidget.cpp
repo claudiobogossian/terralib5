@@ -27,7 +27,7 @@
 #include "../../../st/maptools/TrajectoryDataSetLayer.h"
 #include "../../../st/core/trajectory/TrajectoryDataSet.h"
 #include "../canvas/MapDisplay.h"
-#include "../layer/explorer/AbstractTreeItem.h"
+//#include "../layer/explorer/AbstractTreeItem.h"
 #include "../utils/ScopedCursor.h"
 #include "AnimationView.h"
 #include "Animation.h"
@@ -427,16 +427,16 @@ void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEven
     QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
     if(ba.count() != 0)
     {
-      QString s(ba);
-      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
-      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
-      for(it = ditems->begin(); it != ditems->end(); ++it)
-      {
-        te::qt::widgets::AbstractTreeItem* ati = *it;
-        std::string ltype = ati->getLayer()->getType();
-        if(ltype == "TRAJECTORYDATASETLAYER")
-          accept = true;
-      }
+      //QString s(ba);
+      //std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+      //std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+      //for(it = ditems->begin(); it != ditems->end(); ++it)
+      //{
+      //  te::qt::widgets::AbstractTreeItem* ati = *it;
+      //  std::string ltype = ati->getLayer()->getType();
+      //  if(ltype == "TRAJECTORYDATASETLAYER")
+      //    accept = true;
+      //}
     }
   }
   else
@@ -537,7 +537,7 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
   {
     if(m_dropBA.count() != 0)
     {
-      QString s(m_dropBA);
+      /*QString s(m_dropBA);
       std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
       std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
       for(it = ditems->begin(); it != ditems->end(); ++it)
@@ -555,7 +555,7 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
           else
             addTrajectory(tl, "");
         }
-      }
+      }*/
     }
   }
   else

@@ -23,8 +23,8 @@
  * \brief A class for xml serialization formatting strings.
  */
 
-#ifndef TE_QT_AF_XMLFORMATTER_H
-#define TE_QT_AF_XMLFORMATTER_H
+#ifndef TE_TERRAVIEW_XMLFORMATTER_H
+#define TE_TERRAVIEW_XMLFORMATTER_H
 
 #include "Config.h"
 
@@ -67,43 +67,6 @@ public:
            */
   static void format(ProjectMetadata* p, const std::list<te::map::AbstractLayerPtr>& layers, const bool& encode);
 
-  /*!
-            \brief Formats the layer informations.
-
-            \param l The layer.
-
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
-
-            \note The sublayers will be formatted too, using the \a encode passed.
-           */
-  static void format(te::map::AbstractLayer* l, const bool& encode);
-
-  /*!
-            \brief Formats the data source informations.
-
-            \param d The data source info.
-
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
-           */
-  static void format(te::da::DataSourceInfo* d, const bool& encode);
-
-  /*!
-            \brief Formats all data source informations registered in the \a te::da::DataSourceInfoManager object.
-
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
-
-            \sa te::da::DataSourceInfoManager
-           */
-  static void formatDataSourceInfos(const bool& encode);
-
-  /*!
-            \brief Formats the string.
-
-            \param s The string.
-
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
-           */
-  static std::string format (const std::string& s, const bool& encode);
 };
 
-#endif // TE_QT_AF_XMLFORMATTER_H
+#endif // TE_TERRAVIEW_XMLFORMATTER_H

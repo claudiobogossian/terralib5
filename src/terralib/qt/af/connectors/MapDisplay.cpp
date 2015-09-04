@@ -64,7 +64,7 @@
 #include <utility>
 
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::ApplicationController* app)
-  : QObject(display),
+  : QObject(),
     m_app(app),
     m_display(display),
     m_tool(0),
