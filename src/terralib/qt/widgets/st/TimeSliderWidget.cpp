@@ -24,10 +24,11 @@
 */
 
 //Terralib
+#include "../../../common/TreeItem.h"
 #include "../../../st/maptools/TrajectoryDataSetLayer.h"
 #include "../../../st/core/trajectory/TrajectoryDataSet.h"
+#include "../../../qt/widgets/layer/explorer/LayerItem.h"
 #include "../canvas/MapDisplay.h"
-//#include "../layer/explorer/AbstractTreeItem.h"
 #include "../utils/ScopedCursor.h"
 #include "AnimationView.h"
 #include "Animation.h"
@@ -427,16 +428,15 @@ void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEven
     QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
     if(ba.count() != 0)
     {
-      //QString s(ba);
-      //std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
-      //std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
-      //for(it = ditems->begin(); it != ditems->end(); ++it)
-      //{
-      //  te::qt::widgets::AbstractTreeItem* ati = *it;
-      //  std::string ltype = ati->getLayer()->getType();
-      //  if(ltype == "TRAJECTORYDATASETLAYER")
-      //    accept = true;
-      //}
+      QString s(ba);
+      unsigned long v = s.toULongLong();
+      std::vector<te::qt::widgets::TreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::TreeItem*>*>(v);
+
+      for (std::vector<te::qt::widgets::TreeItem*>::iterator it = draggedItems->begin(); it != draggedItems->end(); ++it)
+      {
+        if ((*it)->getType() == "TRAJECTORYDATASETLAYER")
+          accept = true;
+      }
     }
   }
   else
@@ -537,25 +537,27 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
   {
     if(m_dropBA.count() != 0)
     {
-      /*QString s(m_dropBA);
-      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
-      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
-      for(it = ditems->begin(); it != ditems->end(); ++it)
+      QString s(m_dropBA);
+      unsigned long v = s.toULongLong();
+      std::vector<te::qt::widgets::TreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::TreeItem*>*>(v);
+
+      for (std::vector<te::qt::widgets::TreeItem*>::iterator it = draggedItems->begin(); it != draggedItems->end(); ++it)
       {
-        te::qt::widgets::AbstractTreeItem* ati = *it;
-        te::st::TrajectoryDataSetLayer* tl = dynamic_cast<te::st::TrajectoryDataSetLayer*>(ati->getLayer().get());
+        te::qt::widgets::LayerItem* lItem = (te::qt::widgets::LayerItem*)(*it);
+        te::st::TrajectoryDataSetLayer* tl = dynamic_cast<te::st::TrajectoryDataSetLayer*>(lItem->getLayer().get());
         std::string ltype = tl->getType();
-        if(ltype == "TRAJECTORYDATASETLAYER")
+        
+        if (ltype == "TRAJECTORYDATASETLAYER")
         {
-          QString layerId(ati->getLayer()->getId().c_str());
-          QString title(ati->getLayer()->getTitle().c_str());
+          QString layerId(lItem->getLayer()->getId().c_str());
+          QString title(lItem->getLayer()->getTitle().c_str());
           QPair<QString, QString> p(title, layerId);
-          if(trajectoryAlreadyExists(p))
+          if (trajectoryAlreadyExists(p))
             QMessageBox::information(this, "animation already exists", title + " is already being animated!");
           else
             addTrajectory(tl, "");
         }
-      }*/
+      }
     }
   }
   else
