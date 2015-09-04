@@ -53,7 +53,7 @@
 #include "../../core/enum/Enums.h"
 #include "../core/Scene.h"
 #include "../../core/pattern/proxy/AbstractProxyProject.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+#include "../../../qt/widgets/layer/explorer/LayerItem.h"
 #include "GridMapItem.h"
 
 // STL
@@ -446,7 +446,7 @@ void te::layout::MapItem::getMimeData( const QMimeData* mime )
 {
   QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
   unsigned long v = s.toULongLong();
-  std::vector<te::qt::widgets::AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::AbstractTreeItem*>*>(v);
+  std::vector<te::qt::widgets::TreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::TreeItem*>*>(v);
 
   if(draggedItems->empty())
     return;
@@ -457,10 +457,10 @@ void te::layout::MapItem::getMimeData( const QMimeData* mime )
     return;
   }
 
-  for(unsigned int i = 0 ; i < draggedItems->size() ; ++i)
+  for(std::vector<te::qt::widgets::TreeItem*>::iterator it = draggedItems->begin(); it != draggedItems->end(); ++it)
   {
-    te::qt::widgets::AbstractTreeItem* treeItem = draggedItems->operator[](i);  
-    model->addLayer(treeItem->getLayer());
+    if((*it)->getType() == "LAYER")
+      model->addLayer(((te::qt::widgets::LayerItem*)(*it))->getLayer());
   }
 }
 

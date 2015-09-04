@@ -77,6 +77,22 @@ namespace te
         */
         T* getDecorated();
 
+        /*!
+         * \brief Returns the Decorator that decorates this item.
+         * \param decorated The decorated item that we are looking for.
+         *
+         * \return The Decorator we are looking for or this if there's no decorators or 0 if not found.
+         */
+        T* findDecorator(T* decorated);
+
+        /*!
+         * \brief Removes The decorator of the \a decorated.
+         * \param decorated The item that we are searching for the decorator.
+         *
+         * \return The new item to be used as new Delegate or NULL.
+         */
+        T* removeDecorator(T* decorated);
+
       protected:
 
         T * m_decorated;      //!< The object decorated.
@@ -118,6 +134,42 @@ namespace te
     T* Decorator<T>::getDecorated() 
     {
       return m_decorated;
+    }
+
+    template<class T>
+    T* Decorator<T>::findDecorator(T* decorated)
+    {
+      if(decorated == m_decorated)
+        return this;
+
+      Decorator<T>* d = dynamic_cast< Decorator<T>* >(m_decorated);
+
+      if(d != 0)
+        return findDecorator(d);
+
+      return 0;
+    }
+
+    template<class T>
+    T* Decorator<T>::removeDecorator(T* decorated)
+    {
+      if(decorated == this)
+      {
+        m_delDecorated = false;
+        return m_decorated;
+      }
+
+      T* fd = findDecorator(decorated);
+
+      Decorator<T>* aux = dynamic_cast< Decorator<T>* >(decorated);
+
+      if(aux != 0)
+      {
+        aux->m_delDecorated = false;
+        ((Decorator<T>*)fd)->m_decorated = aux->m_decorated;
+      }
+
+      return 0;
     }
 
   } // end namespace common

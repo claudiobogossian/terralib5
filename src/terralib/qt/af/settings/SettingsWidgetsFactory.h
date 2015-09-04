@@ -36,7 +36,7 @@ namespace te
   {
     namespace af
     {
-      class SettingsWidgetsFactory : public te::common::AbstractFactory<AbstractSettingWidget, std::string>
+      class TEQTAFEXPORT SettingsWidgetsFactory : public te::common::AbstractFactory<AbstractSettingWidget, std::string>
       {
         public:
           

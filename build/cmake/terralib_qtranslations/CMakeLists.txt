@@ -112,7 +112,7 @@ if(DEFINED TERRALIB_QTRANSLATION_ENABLED)
 
   install(
     FILES ${_qm_files}
-    DESTINATION ${TERRALIB_DESTINATION_SHARE}/translations
+    DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/translations
     COMPONENT runtime
   )
 

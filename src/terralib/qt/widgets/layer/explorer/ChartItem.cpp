@@ -1,156 +1,85 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
-
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
-
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
-
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
- */
-
-/*!
-  \file terralib/qt/widgets/layer/explorer/ChartItem.cpp
-
-  \brief A class that represents a chart of a layer in a LayerTreeModel.
-*/
-
-// TerraLib
+#include "../../../../color/RGBAColor.h"
+#include "../../../../maptools/AbstractLayer.h"
 #include "../../../../maptools/Chart.h"
-#include "../../Utils.h"
+//#include "../../../../se/Categorize.h"
+//#include "../../../../se/ColorMap.h"
+//#include "../../../../se/Interpolate.h"
+//#include "../../../../se/InterpolationPoint.h"
+//#include "../../../../se/RasterSymbolizer.h"
+//#include "../../../../se/Utils.h"
+
 #include "ChartItem.h"
 #include "ChartSliceItem.h"
+#include "LayerItem.h"
 
-// Qt
-#include <QMenu>
+#include <QColor>
+#include <QObject>
 
-// STL
-#include <vector>
-
-te::qt::widgets::ChartItem::ChartItem(te::map::Chart* chart, QObject* parent)
-  : AbstractTreeItem(parent),
-    m_chart(chart),
-    m_isCheckable(true),
-    m_isChecked(true)
+void AddSliceItems(te::qt::widgets::ChartItem* item, const te::map::Chart* chart)
 {
+  int contourWidth = (int)chart->getContourWidth();
+  QColor contourColor(chart->getContourColor().getRed(), chart->getContourColor().getGreen(), chart->getContourColor().getBlue());
+
+  std::vector<std::string> properties = chart->getProperties();
+
+  for(std::size_t i = 0; i < properties.size(); ++i)
+  {
+    te::color::RGBAColor c = chart->getColor(i);
+    QColor color(c.getRed(), c.getGreen(), c.getBlue());
+    item->addChild(new te::qt::widgets::ChartSliceItem(properties[i].c_str(), color, contourColor, contourWidth));
+  }
+}
+
+te::qt::widgets::ChartItem::ChartItem(te::map::Chart* chart) :
+  TreeItem("CHART"),
+  m_chart(chart)
+{
+  switch(m_chart->getType())
+  {
+    case te::map::Pie:
+      m_label = QObject::tr("Pie Chart").toStdString();
+    break;
+
+    case te::map::Bar:
+      m_label = QObject::tr("Bar Chart").toStdString();
+    break;
+
+    default:
+      m_label = QObject::tr("Chart").toStdString();
+  }
+
+  AddSliceItems(this, m_chart);
 }
 
 te::qt::widgets::ChartItem::~ChartItem()
 {
-}
-
-int te::qt::widgets::ChartItem::columnCount() const
-{
-  return 1;
-}
-
-QVariant te::qt::widgets::ChartItem::data(int /*column*/, int role) const
-{
-  if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme("chart-pie"));
-
-  if(role == Qt::DisplayRole)
-  {
-    switch(m_chart->getType())
-    {
-      case te::map::Pie:
-        return QVariant(tr("Pie Chart"));
-      
-      case te::map::Bar:
-        return QVariant(tr("Bar Chart"));
-
-      default:
-        return QVariant(tr("Chart"));
-    }
-  }
-
-  if(role == Qt::CheckStateRole && m_isCheckable)
-    return QVariant(m_isChecked ? Qt::Checked : Qt::Unchecked);
-
-  return QVariant();
-}
-
-QMenu* te::qt::widgets::ChartItem::getMenu(QWidget* /*parent*/) const
-{
-  return 0;
-}
-
-bool te::qt::widgets::ChartItem::canFetchMore() const
-{
-  return !m_chart->getProperties().empty() && children().isEmpty();
-}
-
-Qt::ItemFlags te::qt::widgets::ChartItem::flags() const
-{
-  return (m_isCheckable ? (Qt::ItemIsEnabled | Qt::ItemIsUserCheckable) : Qt::ItemIsEnabled);
-}
-
-void te::qt::widgets::ChartItem::fetchMore()
-{
-   if(!children().isEmpty())
+  if(m_parent == 0)
     return;
 
-   int contourWidth = static_cast<int>(m_chart->getContourWidth());
-   QColor contourColor = Convert2Qt(m_chart->getContourColor());
+  te::map::AbstractLayerPtr layer = ((LayerItem*)m_parent)->getLayer();
 
-   const std::vector<std::string>& properties = m_chart->getProperties();
+  te::map::Chart* chart = layer->getChart();
 
-   for(std::size_t i = 0; i < properties.size(); ++i)
-   {
-     QColor color = Convert2Qt(m_chart->getColor(i));
-     new ChartSliceItem(properties[i].c_str(), color, contourColor, contourWidth, this);
-   }
+  if(chart == m_chart)
+    layer->setChart(0);
 }
 
-bool te::qt::widgets::ChartItem::hasChildren() const
+std::string te::qt::widgets::ChartItem::getAsString() const
 {
-  return !m_chart->getProperties().empty();
+  return m_label;
 }
 
-bool te::qt::widgets::ChartItem::setData(int /*column*/, const QVariant& value, int role)
+te::qt::widgets::VISIBLE te::qt::widgets::ChartItem::isVisible() const
 {
-  if(role == Qt::CheckStateRole && m_isCheckable)
-  {
-    bool ok = false;
-    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
-    
-    if(!ok)
-      return false;
-
-    m_isChecked = (checkState == Qt::Checked ? true : false);
-
-    m_chart->setVisibility(m_isChecked);
-
-    return true;
-  }
-
-  return false;
+  return m_chart->isVisible() ? TOTALLY : NONE;
 }
 
-te::map::AbstractLayerPtr te::qt::widgets::ChartItem::getLayer() const
+void te::qt::widgets::ChartItem::setVisible(const VISIBLE& visible, const bool&, const bool&)
 {
-  return te::map::AbstractLayerPtr(0);
+  m_chart->setVisibility(visible == TOTALLY ? true : false);
 }
 
-const std::string te::qt::widgets::ChartItem::getItemType() const
+Qt::ItemFlags te::qt::widgets::ChartItem::flags()
 {
-  return "CHART_ITEM";
-}
-
-void te::qt::widgets::ChartItem::setCheckable(bool checkable)
-{
-  m_isCheckable = checkable;
-}
-
-bool te::qt::widgets::ChartItem::getCheckable()
-{
-  return m_isCheckable;
+  return TreeItem::flags() | Qt::ItemIsUserCheckable;
 }

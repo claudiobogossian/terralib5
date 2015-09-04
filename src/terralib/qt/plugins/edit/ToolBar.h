@@ -42,8 +42,23 @@
 
 namespace te
 {
+  namespace edit
+  {
+    class GeometriesUpdateTool;
+  }
+
   namespace qt
   {
+    namespace af
+    {
+      class MapDisplay;
+
+      namespace evt
+      {
+        struct Event;
+      }
+    }
+
     namespace plugins
     {
       namespace edit
@@ -57,61 +72,104 @@ namespace te
         {
           Q_OBJECT
 
-          public:
+        public:
 
-            ToolBar();
+          ToolBar(QObject* parent = 0);
 
-            ~ToolBar();
+          ~ToolBar();
 
-            QToolBar* get() const;
+          QToolBar* get() const;
 
-          protected slots:
+          void updateLayer(te::map::AbstractLayer* layer, const bool& stashed);
 
-            void onEditActivated(bool checked);
+        private:
 
-            void onSaveActivated();
+          void createUndoView(bool checked);
 
-            void onVertexToolActivated(bool checked);
+        public slots:
 
-            void onCreatePolygonToolActivated(bool checked);
+          void onEditActivated(bool checked);
 
-            void onCreateLineToolActivated(bool checked);
+        protected slots:
 
-            void onMoveGeometryToolActivated(bool checked);
+          void onSaveActivated();
 
-            void onSnapOptionsActivated();
+          void onVertexToolActivated(bool checked);
 
-            void onAggregateAreaToolActivated(bool checked);
+          void onCreatePolygonToolActivated(bool checked);
 
-            void onSubtractAreaToolActivated(bool checked);
+          void onCreateLineToolActivated(bool checked);
 
-            void onMergeGeometriesToolActivated(bool checked);
+          void onMoveGeometryToolActivated(bool checked);
 
-          signals:
+          void onSnapOptionsActivated();
 
-            /*! This signal is emitted when the layer selection changed. */
-            void layerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+          void onAggregateAreaToolActivated(bool checked);
 
-          protected:
+          void onSubtractAreaToolActivated(bool checked);
 
-            QToolBar* m_toolBar;
-            QAction* m_editAction;
-            QAction* m_saveAction;
-            QAction* m_vertexToolAction;
-            QAction* m_createPolygonToolAction;
-            QAction* m_createLineToolAction;
-            QAction* m_moveGeometryToolAction;
-            QAction* m_snapOptionsAction;
-            QAction* m_aggregateAreaToolAction;
-            QAction* m_subtractAreaToolAction;
-            QAction* m_mergeGeometriesToolAction;
-            QList<QAction*> m_tools;
+          void onDeleteGeometryToolActivated(bool checked);
 
-            te::map::AbstractLayerPtr getSelectedLayer();
-            te::map::AbstractLayerPtr getLayer(const std::string& id);
-            void initialize();
-            void initializeActions();
-            void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
+          void onMergeGeometriesToolActivated(bool checked);
+
+          void onToolDeleted();
+
+          void onSplitPolygonToolActivated(bool checked);
+
+          void onFeatureAttributesActivated(bool checked);
+
+        Q_SIGNALS:
+
+          /*! This signal is emitted when the layer selection changed. */
+          void layerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+
+          void triggered(te::qt::af::evt::Event* e);
+
+          void stashed(te::map::AbstractLayer* layer);
+
+          void geometriesEdited();
+
+        protected:
+
+          void enableCurrentTool(const bool& enable);
+
+          void setCurrentTool(te::edit::GeometriesUpdateTool* tool, te::qt::af::MapDisplay* display);
+
+          QToolBar* m_toolBar;
+          QAction* m_editAction;
+          QAction* m_saveAction;
+          QAction* m_vertexToolAction;
+          QAction* m_createPolygonToolAction;
+          QAction* m_createLineToolAction;
+          QAction* m_moveGeometryToolAction;
+          QAction* m_snapOptionsAction;
+          QAction* m_deleteGeometryToolAction;
+          QAction* m_aggregateAreaToolAction;
+          QAction* m_subtractAreaToolAction;
+          //QAction* m_mergeGeometriesToolAction;
+          //QAction* m_splitPolygonToolAction;
+          QAction* m_featureAttributesAction;
+          QAction* m_undoToolAction;
+          QAction* m_redoToolAction;
+          QList<QAction*> m_tools;
+          QUndoView* m_undoView;
+
+          te::edit::GeometriesUpdateTool* m_currentTool;
+
+          bool m_usingStash;
+
+          bool m_layerIsStashed;
+
+          void enableActionsByGeomType(QList<QAction*> acts, const bool& enable);
+
+        public:
+          te::map::AbstractLayerPtr getSelectedLayer();
+
+        protected:
+          te::map::AbstractLayerPtr getLayer(const std::string& id);
+          void initialize();
+          void initializeActions();
+          void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
 
         };
 

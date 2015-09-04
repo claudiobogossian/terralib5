@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
+#include "GeometriesUpdateTool.h"
 #include "../../../sam/rtree/Index.h"
 #include "../../Utils.h"
 #include "../Config.h"
@@ -67,7 +67,7 @@ namespace te
 
       \brief This class implements a concrete tool for vertex operations (move, add, etc.).
     */
-    class TEEDITQTEXPORT VertexTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT VertexTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -142,18 +142,22 @@ namespace te
 
         void storeEditedFeature();
 
+        void storeUndoCommand();
+
       private slots:
 
         void onExtentChanged();
 
       private:
 
-          te::map::AbstractLayerPtr m_layer;
-          Feature* m_feature;
           std::vector<te::gm::LineString*> m_lines;
           VertexIndex m_currentVertexIndex;
           te::sam::rtree::Index<VertexIndex, 8> m_rtree;
           StageType m_currentStage;
+
+      protected:
+
+        std::vector<Feature*> m_updateWatches;
 
     };
 

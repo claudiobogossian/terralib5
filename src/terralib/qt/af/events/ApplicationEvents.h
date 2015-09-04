@@ -30,10 +30,12 @@
 #include "Enums.h"
 
 // Qt
-#include <QtCore/QSize>
+#include <QSize>
+#include <QList>
 
 // Forward declarations
 class QToolBar;
+class QAction;
 
 namespace te
 {
@@ -43,6 +45,7 @@ namespace te
     {
       // Forward declarations
       class MapDisplay;
+      class LayerItemView;
     }
 
     namespace af
@@ -199,6 +202,33 @@ namespace te
           Event(SELECTION_BUTTON_TOGGLED)
           {
           }
+        };
+
+        struct NewActionsAvailable : public Event
+        {
+          NewActionsAvailable() :
+          Event(NEW_ACTIONS_AVAILABLE),
+          m_toolbar(0)
+          {
+
+          }
+
+          std::string m_plgName;
+          std::string m_category;
+          QToolBar* m_toolbar;
+          QList<QAction*> m_actions;
+        };
+
+        struct GetLayerExplorer : public Event
+        {
+          GetLayerExplorer() :
+            Event(GET_LAYERS_VIEW),
+            m_layerExplorer(0)
+          {
+
+          }
+
+          te::qt::widgets::LayerItemView* m_layerExplorer;
         };
       }
     }

@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
+#include "GeometriesUpdateTool.h"
 #include "../Config.h"
 
 // STL
@@ -57,7 +57,7 @@ namespace te
 
       \brief This class implements a concrete tool to create lines.
     */
-    class TEEDITQTEXPORT CreateLineTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT CreateLineTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -100,8 +100,6 @@ namespace te
 
         void draw();
 
-        te::gm::Geometry* buildLine();
-
         void storeNewGeometry();
 
       private slots:
@@ -110,14 +108,13 @@ namespace te
 
       protected:
 
-        te::map::AbstractLayerPtr m_layer;      //!< The layer used by this tool.
         std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
         te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
-        te::gm::LineString* _line;                //!< The line were the coords are added. It is a copy from the current line and it is used to optimize the feedkback speed.
 
         void clear();
+        te::gm::Geometry* buildLine();
     };
 
   }   // end namespace edit

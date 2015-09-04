@@ -28,6 +28,7 @@
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
 #include "../../../af/ApplicationController.h"
+#include "../../../af/events/ApplicationEvents.h"
 #include "../../../af/Utils.h"
 #include "TL4ConverterAction.h"
 #include "TL4ConverterWizard.h"
@@ -53,27 +54,37 @@ void te::qt::plugins::terralib4::Plugin::startup()
   if(m_initialized)
     return;
 
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
+
   TE_LOG_TRACE(TE_TR("TerraLib Qt TERRALIB4 Plugin startup!"));
 
 // add plugin menu
-  //m_terralib4Menu = te::qt::af::ApplicationController::getInstance().getMenu("Terralib4");
+  //m_terralib4Menu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Terralib4");
+
+  te::qt::af::evt::NewActionsAvailable evt;
+  evt.m_category = "Terralib4";
+  evt.m_plgName = "Terralib4Converter";
+
 
 // register actions
   //registerActions();
-  QMenu* mnu = te::qt::af::ApplicationController::getInstance().findMenu("Tools");
-  QAction* act = te::qt::af::ApplicationController::getInstance().findAction("Tools.Customize");
+  //QMenu* mnu = te::qt::af::AppCtrlSingleton::getInstance().findMenu("Tools");
+  //QAction* act = te::qt::af::AppCtrlSingleton::getInstance().findAction("Tools.Customize");
 
-  if(act)
-  {
-    m_showWindow = new QAction(QIcon::fromTheme("tools-terralib4converter"), "TerraLib 4 Converter...", mnu);
+  //if(act)
+  //{
+    m_showWindow = new QAction(QIcon::fromTheme("tools-terralib4converter"), "TerraLib 4 Converter...", this);
     m_showWindow->setObjectName("Tools.TerraLib 4 Converter");
-    mnu->insertAction(act, m_showWindow);
-    mnu->addSeparator();
+    evt.m_actions << m_showWindow;
+    //mnu->insertAction(act, m_showWindow);
+    //mnu->addSeparator();
 
     connect(m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
-  }
 
-  te::qt::af::AddActionToCustomToolbars(m_showWindow);
+    emit triggered(&evt);
+  //}
+
+  //te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_showWindow);
 
   m_initialized = true;
 }
@@ -88,12 +99,16 @@ void te::qt::plugins::terralib4::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt TERRALIB4 Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::terralib4::Plugin::showWindow()
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::qt::plugins::terralib4::TL4ConverterWizard dlg(parent);
+
+  connect(&dlg, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 
   if(dlg.exec() != QDialog::Accepted)
     return;

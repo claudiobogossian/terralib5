@@ -39,10 +39,10 @@
 //#include <boost/noncopyable.hpp>
 
 // Qt
-#include <QtCore/QObject>
-#include <QtCore/QStringList>
-#include <QtCore/QSettings>
-#include <QtGui/QColor>
+#include <QObject>
+#include <QStringList>
+#include <QSettings>
+#include <QColor>
 
 // Forward declarations
 class QAction;
@@ -58,13 +58,20 @@ namespace te
   {
     namespace af
     {
-      class Project;
+//      class Project;
 
       namespace evt
       {
       // Forward declarations
         struct Event;
       }
+
+      enum ListenerType
+      {
+        SENDER,
+        RECEIVER,
+        BOTH
+      };
 
       /*!
         \class ApplicationController
@@ -75,7 +82,7 @@ namespace te
 
         \ingroup af
       */
-      class TEQTAFEXPORT ApplicationController : public QObject, public te::common::Singleton<ApplicationController>
+      class TEQTAFEXPORT ApplicationController : public QObject//, public te::common::Singleton<ApplicationController>
       {
         Q_OBJECT
 
@@ -263,7 +270,7 @@ namespace te
 
             \note If the \a obj was previously registered, nothing will be done.
           */
-          void addListener(QObject* obj);
+          void addListener(QObject* obj, const ListenerType& type = BOTH);
 
           /*!
             \brief Remove the \a obj from the list of event listeners.
@@ -308,7 +315,7 @@ namespace te
           /*!
             \brief Initializes the menus for the most recent open projects.
           */
-          virtual void initializeProjectMenus();
+          //virtual void initializeProjectMenus();
 
           /*!
             \brief Update the list of recent projects. This is commonly used when there's a new most recent project.
@@ -317,7 +324,7 @@ namespace te
 
             \param prj_title Title of the project.
           */
-          void updateRecentProjects(const QString& prjFile, const QString& prjTitle);
+          //void updateRecentProjects(const QString& prjFile, const QString& prjTitle);
 
           /*!
             \brief Set the current project.
@@ -325,7 +332,7 @@ namespace te
             \param prj Pointer to a current project.
 
           */
-          void set(te::qt::af::Project* prj);
+//          void set(te::qt::af::Project* prj);
 
           /*!
             \brief Get the current project.
@@ -333,7 +340,7 @@ namespace te
             \return Pointer to a current project if defined or a null pointer in other case.
 
           */
-          te::qt::af::Project* getProject();
+//          te::qt::af::Project* getProject();
 
           /*!
             \brief Finalize the application framework.
@@ -358,7 +365,7 @@ namespace te
 
             \param evt Event to be sent.
           */
-          void broadcast(te::qt::af::evt::Event* evt);
+//          void broadcast(te::qt::af::evt::Event* evt);
 
         signals:
 
@@ -388,7 +395,7 @@ namespace te
 
             \return Application project extension.
           */
-          const QString& getAppProjectExtension() const;
+          //const QString& getAppProjectExtension() const;
 
           const QString& getAboutLogo() const;
 
@@ -413,7 +420,7 @@ namespace te
 
             \return Application most recent opened project.
           */
-          QString getMostRecentProject() const;
+          //QString getMostRecentProject() const;
 
           /*!
             \brief Returns the application default SRID value.
@@ -455,12 +462,12 @@ namespace te
           QString m_appOrganization;                  //!< Organization name.
           QString m_appName;                          //!< Application name.
           QString m_appTitle;                         //!< Application title.
-          QString m_appProjectExtension;              //!< Application project extension.
+          //QString m_appProjectExtension;              //!< Application project extension.
           QString m_appIconName;                      //!< Icon used in the application.
           QString m_aboutLogo;
           QString m_tLibLogo;
-          QStringList m_recentProjs;                  //!< List of the recent projects.
-          QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
+          //QStringList m_recentProjs;                  //!< List of the recent projects.
+          //QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
           std::string m_appUserSettingsFile;          //!< Name of the user settings file.
           QString m_appPluginsPath;                   //!< Name of the plugins path.
           QString m_appHelpFile;                      //!< Name of the help file.
@@ -473,16 +480,17 @@ namespace te
 
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
 
-          Project* m_project;                         //!< Pointer to current project.
+//          Project* m_project;                         //!< Pointer to current project.
 
           QSettings m_appSettings;
 
           bool m_resetTerralib;
 
-// Singleton instance
-//          static ApplicationController* sm_instance;  //!< There can be only one object of class Application.
       };
 
+      class TEQTAFEXPORT AppCtrlSingleton: public te::common::Singleton<ApplicationController>
+      {
+      };
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

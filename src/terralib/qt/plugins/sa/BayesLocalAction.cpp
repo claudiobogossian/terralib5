@@ -41,7 +41,7 @@ te::qt::plugins::sa::BayesLocalAction::~BayesLocalAction()
 
 void te::qt::plugins::sa::BayesLocalAction::onActionActivated(bool checked)
 {
-  te::sa::BayesLocalDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::BayesLocalDialog dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

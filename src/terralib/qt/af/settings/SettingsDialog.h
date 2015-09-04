@@ -46,6 +46,8 @@ namespace te
   {
     namespace af
     {
+      class ApplicationController;
+
       class TEQTAFEXPORT SettingsDialog : public QDialog
       {
         Q_OBJECT
@@ -56,6 +58,8 @@ namespace te
 
           ~SettingsDialog();
 
+          void setApplicationController(te::qt::af::ApplicationController* app);
+
         protected slots:
 
           void	settingsChanged (QListWidgetItem* current, QListWidgetItem* previous);
@@ -65,6 +69,8 @@ namespace te
         protected:
 
           QMap<QString, int> m_widPos;
+
+          te::qt::af::ApplicationController* m_app;
 
         private:
 

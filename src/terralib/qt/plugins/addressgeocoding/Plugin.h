@@ -40,6 +40,13 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
     namespace plugins
     {
       namespace addressgeocoding
@@ -82,6 +89,10 @@ namespace te
 
             */
             void unRegisterActions();
+
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
 
           protected:
 

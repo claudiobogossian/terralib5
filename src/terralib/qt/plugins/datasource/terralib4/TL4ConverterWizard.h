@@ -99,6 +99,10 @@ namespace te
 
             void help();
 
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
+
           private:
 
             enum

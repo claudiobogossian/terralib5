@@ -36,7 +36,6 @@
 #include "../geometry/Utils.h"
 #include "Feature.h"
 #include "Repository.h"
-#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -52,7 +51,7 @@ te::edit::Repository::~Repository()
   clear();
 }
 
-void te::edit::Repository::add(te::gm::Geometry* geom)
+void te::edit::Repository::add(te::gm::Geometry* geom, OperationType operation)
 {
   assert(geom);
 
@@ -60,17 +59,19 @@ void te::edit::Repository::add(te::gm::Geometry* geom)
 
   assert(!hasIdentifier(id));
 
-  add(id, geom);
+  add(id, geom, operation);
+
 }
 
-void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
 {
   assert(id);
   assert(geom);
 
-  Feature* f = new Feature(id, geom);
+  Feature* f = new Feature(id, geom, operation);
 
   add(f);
+
 }
 
 void te::edit::Repository::add(Feature* f)
@@ -93,12 +94,13 @@ void te::edit::Repository::add(Feature* f)
   set(pos, f);
 }
 
-void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
 {
   assert(id);
   assert(geom);
+  assert(operation);
 
-  Feature* f = new Feature(id, geom);
+  Feature* f = new Feature(id, geom, operation);
 
   set(f);
 }
@@ -114,6 +116,22 @@ void te::edit::Repository::set(Feature* f)
     throw te::common::Exception(TE_TR("Identifier not found!"));
 
   set(pos, f);
+}
+
+void te::edit::Repository::set(const std::size_t& pos, Feature* f)
+{
+  assert(pos != std::string::npos);
+  assert(f);
+  assert(pos < m_features.size());
+
+  // Cleaning...
+  delete m_features[pos];
+
+  // Set the new values
+  m_features[pos] = f;
+
+  // Indexing...
+  buildIndex();
 }
 
 void te::edit::Repository::remove(te::da::ObjectId* id)
@@ -232,22 +250,6 @@ void te::edit::Repository::clear()
   m_features.clear();
 
   clearIndex();
-}
-
-void te::edit::Repository::set(const std::size_t& pos, Feature* f)
-{
-  assert(pos != std::string::npos);
-  assert(f);
-  assert(pos < m_features.size());
-
-  // Cleaning...
-  delete m_features[pos];
-
-  // Set the new values
-  m_features[pos] = f;
-
-  // Indexing...
-  buildIndex();
 }
 
 void te::edit::Repository::clearIndex()

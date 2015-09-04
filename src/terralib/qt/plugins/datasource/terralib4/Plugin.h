@@ -38,6 +38,13 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
     namespace plugins
     {
       namespace terralib4
@@ -62,6 +69,10 @@ namespace te
 
             void showWindow();
 
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
+
           protected:
 
             QAction* m_showWindow;
@@ -73,6 +84,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINTERRALIB4EXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINTERRALIB4EXPORT)
 
 #endif //__TE_QT_PLUGINS_TERRALIB4_INTERNAL_PLUGIN_H

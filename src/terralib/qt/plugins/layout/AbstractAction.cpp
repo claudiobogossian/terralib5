@@ -44,6 +44,8 @@ void te::qt::plugins::layout::AbstractAction::createAction(std::string name, std
 
   m_action->setText(name.c_str());
 
+  m_action->setObjectName("Layout");
+
   if(pixmap.empty() == false)
     m_action->setIcon(QIcon::fromTheme(pixmap.c_str()));
 

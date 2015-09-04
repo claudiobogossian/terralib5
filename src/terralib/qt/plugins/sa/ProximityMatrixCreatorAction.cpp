@@ -41,7 +41,7 @@ te::qt::plugins::sa::ProximityMatrixCreatorAction::~ProximityMatrixCreatorAction
 
 void te::qt::plugins::sa::ProximityMatrixCreatorAction::onActionActivated(bool checked)
 {
-  te::sa::ProximityMatrixCreatorDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::ProximityMatrixCreatorDialog dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

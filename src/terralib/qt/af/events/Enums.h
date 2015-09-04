@@ -52,6 +52,7 @@ namespace te
           LAYER_STYLE_SELECTED,
           LAYER_POPUP_ADD_ACTION,
           LAYER_POPUP_REMOVE_ACTION,
+          LAYER_CHANGED,
           GET_LAYER_SELECTED,
           TOOL_CHANGED,
           COORDINATE_TRACKED,
@@ -70,6 +71,9 @@ namespace te
           SELECTION_BUTTON_TOGGLED,
           GET_MAPDISPLAY,
           DRAWING_FINISHED,
+          NEW_ACTIONS_AVAILABLE,
+          GET_AVAILABLE_LAYERS,
+          GET_LAYERS_VIEW,
           CUSTOM = 1024
         };
 

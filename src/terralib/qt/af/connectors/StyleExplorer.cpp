@@ -21,8 +21,9 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../maptools/RasterLayer.h"
+#include "../../../qt/widgets/layer/explorer/LayerItemView.h"
 #include "../../../qt/widgets/se/StyleDockWidget.h"
-#include "../events/Event.h"
+#include "../events/ApplicationEvents.h"
 #include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
 #include "StyleExplorer.h"
@@ -35,6 +36,8 @@ te::qt::af::StyleExplorer::StyleExplorer(te::qt::widgets::StyleDockWidget* explo
     m_explorer(explorer)
 {
   assert(explorer);
+
+  connect(m_explorer, SIGNAL(symbolChanged(te::map::AbstractLayer*)), SLOT(styleChanged(te::map::AbstractLayer*)));
 }
 
 te::qt::af::StyleExplorer::~StyleExplorer()
@@ -78,4 +81,15 @@ void te::qt::af::StyleExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     default:
       return;
   }
+}
+
+void te::qt::af::StyleExplorer::styleChanged(te::map::AbstractLayer* l)
+{
+  te::qt::af::evt::GetLayerExplorer e;
+  emit triggered(&e);
+
+  e.m_layerExplorer->updateLegend(l);
+
+  te::qt::af::evt::LayerChanged e2(l);
+  emit triggered(&e2);
 }

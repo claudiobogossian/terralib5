@@ -47,7 +47,7 @@ te::qt::plugins::rp::ComposeBandsAction::~ComposeBandsAction()
 
 void te::qt::plugins::rp::ComposeBandsAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ComposeBandsWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::ComposeBandsWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
