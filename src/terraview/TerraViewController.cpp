@@ -27,7 +27,7 @@
 #include <boost/foreach.hpp> // Boost => don't change this include order, otherwise you may have compiling problems! 
 
 // TerraLib
-#include <terralib_config.h>
+#include <terralib/BuildConfig.h>
 #include <terralib/common/SystemApplicationSettings.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 #include <terralib/qt/widgets/utils/ScopedCursor.h>

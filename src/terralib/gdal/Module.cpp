@@ -36,7 +36,6 @@
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
-#include <terralib_config.h>
 #include "RasterFactory.h"
 #include "Utils.h"
 
