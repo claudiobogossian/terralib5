@@ -266,10 +266,6 @@ void te::qt::widgets::TableLinkDialog::getProperties()
         std::string propName = dsType->getProperty(i)->getName();
         std::string fullName = alias + "." + propName;
 
-        std::auto_ptr<te::da::DataSet> dataSet = m_ds->getDataSet(alias);
-
-        dataSetProperties.push_back(i);
-
         if((dsType->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE) || (pk->has(dsType->getProperty(i))))
           fixedProperties.push_back(fullName);
         else
@@ -280,13 +276,6 @@ void te::qt::widgets::TableLinkDialog::getProperties()
         else
         {
           m_ui->m_dataset2ColumnComboBox->addItem(QString::fromStdString(fullName), QVariant(dsType->getProperty(i)->getType()));
-
-          if(i == dsType->size() - 1)
-          {
-            //Adjusting the table that will display the tabular dataset
-            m_tabularView->setDataSet(new te::mem::DataSet(*dataSet.get(), dataSetProperties, 5), m_ds->getEncoding());
-            m_tabularView->resizeColumnsToContents();
-          }
         }
       }
     }
@@ -309,6 +298,7 @@ void te::qt::widgets::TableLinkDialog::done(int r)
     QVariant dsv1, dsv2;
     dsv1 = m_ui->m_dataset1ColumnComboBox->itemData(m_ui->m_dataset1ColumnComboBox->currentIndex());
     dsv2 = m_ui->m_dataset2ColumnComboBox->itemData(m_ui->m_dataset2ColumnComboBox->currentIndex());
+    std::string title = m_ui->m_layerTitleLineEdit->text().toStdString();
 
      if(dsv1 != dsv2)
       {
@@ -318,6 +308,11 @@ void te::qt::widgets::TableLinkDialog::done(int r)
       else if(dsv1.toInt() != te::dt::STRING_TYPE && (dsv1.toInt() < te::dt::INT16_TYPE || dsv1.toInt() > te::dt::UINT64_TYPE))
       {
         QMessageBox::warning(this, tr("Tabular File"), "The types of the selected columns must be either an integer or a string.");
+        return;
+      }
+      else if (title.empty())
+      {
+        QMessageBox::warning(this, tr("Tabular File"), "The new layer must have a title.");
         return;
       }
       else
@@ -361,10 +356,42 @@ void te::qt::widgets::TableLinkDialog::onDataCBIndexChanged(int index)
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName));
 
   getProperties();
+  m_ui->m_tabularFrame->hide();
+  m_tabularView->hide();
+  m_ui->m_dataPreviewGroupBox->hide();
 }
 
 void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
 {
+  std::string aux = m_ui->m_dataset2ColumnComboBox->currentText().toStdString();
+  std::string alias = "";
+  size_t pos = aux.find(".");
+
+  if (pos != std::string::npos)
+    alias = aux.substr(0, pos);
+  else
+    alias = aux;
+
+  //get datasettype
+  std::auto_ptr<te::da::DataSetType> dsType(0);
+  dsType = m_ds->getDataSetType(alias);
+
+  //Get Dataset
+
+  std::auto_ptr<te::da::DataSet> dataSet = m_ds->getDataSet(alias);
+  
+  //Acquiring the dataSet properties
+  std::vector<std::size_t> dataSetProperties;
+
+  for (size_t i = 0; i < dsType->size(); ++i)
+  {
+    dataSetProperties.push_back(i);
+  }
+
+  //Adjusting the table that will display the tabular dataset
+  m_tabularView->setDataSet(new te::mem::DataSet(*dataSet.get(), dataSetProperties, 5), m_ds->getEncoding());
+  m_tabularView->resizeColumnsToContents();
+
   if(m_ui->m_tabularFrame->isHidden())
   {
     m_tabularView->show();

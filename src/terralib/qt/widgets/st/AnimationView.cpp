@@ -119,7 +119,7 @@ void te::qt::widgets::AnimationView::setMatrix()
   QList<QGraphicsItem*>::iterator it;
   for(it = list.begin(); it != list.end(); ++it)
   {
-    AnimationItem* ai = (AnimationItem*)(*it);
+    AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
     ai->m_matrix = matrix;
   }
   QGraphicsView::setMatrix(matrix);

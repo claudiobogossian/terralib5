@@ -75,6 +75,11 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
+  //char** fields = new char*[1];
+  //fields[0] = "OGR_GEOMETRY";
+
+  //layer->SetIgnoredFields((const char**) fields);
+
   return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
 
@@ -97,7 +102,7 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
+//  layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
   
   return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
