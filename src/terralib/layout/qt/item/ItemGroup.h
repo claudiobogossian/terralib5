@@ -22,7 +22,8 @@
    
    \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
    Its coordinate system is the same of scene (millimeters). 
-   He is also the son of AbstractItem, so it can become observer of a model (Observable). 
+   It is also the son of AbstractItem, so it can become observer of a model (Observable). 
+   The group component must be initialized with a position (setPos).
 
   \ingroup layout
 */
@@ -45,8 +46,9 @@ namespace te
     /*!
     \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of AbstractItem, so it can become observer of a model (Observable).  
-    
+        It is also the son of AbstractItem, so it can become observer of a model (Observable).  
+        The group component must be initialized with a position (setPos).
+
       \ingroup layout
 
       \sa te::layout::ItemObserver

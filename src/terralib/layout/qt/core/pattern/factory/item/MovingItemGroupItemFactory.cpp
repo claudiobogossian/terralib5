@@ -27,8 +27,8 @@
 #include "MovingItemGroupItemFactory.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/MovingItemGroupModel.h"
-#include "../../../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../../item/MovingItemGroup.h"
+#include "../../../../item/ItemGroupController.h"
 
 te::layout::AbstractItemView* te::layout::MovingItemGroupItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,7 +40,7 @@ te::layout::AbstractItemView* te::layout::MovingItemGroupItemFactory::build(Item
     setProperties(model, params);
   }
 
-  AbstractItemController* controller = new AbstractItemController(model);
+  ItemGroupController* controller = new ItemGroupController(model);
   MovingItemGroup* view = new MovingItemGroup(controller);
   controller->setView(view);
 

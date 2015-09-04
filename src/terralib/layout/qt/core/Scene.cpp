@@ -371,7 +371,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
   }
 
   ItemGroup* group = dynamic_cast<ItemGroup*>(item);
-  group->setPos(QPointF(x, y));
+  group->setPos(QPointF(x, y)); // The group component must be initialized with a position (setPos).
 
   if(p)
   {
@@ -392,9 +392,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
       addUndoStack(command);
     }
   }
-
-  insertItem((QGraphicsItem*)group);
-
+  
   return group;
 }
 
@@ -418,6 +416,7 @@ te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QLi
 
   if (movingItem)
   {
+    movingItem->setPos(QPointF(0,0)); //The group component must be initialized with a position (setPos).
     foreach(QGraphicsItem* i, items)
     {
       movingItem->addToGroup(i);
