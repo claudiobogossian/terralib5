@@ -69,21 +69,21 @@ te::qt::plugins::layout::LayoutEditorAction::~LayoutEditorAction()
 
   onExit();
 
+  if(m_mainLayout)
+  {
+    m_verticalLayout->removeWidget(m_mainLayout->getView());
+
+    delete m_mainLayout;
+
+    m_mainLayout=0;
+  }
+
   //MainLayout finish
   if(m_dockLayoutDisplay)
   {
-    m_dockLayoutDisplay->close();
-
     delete m_dockLayoutDisplay;
 
     m_dockLayoutDisplay = 0;
-  }
-
-  if(m_mainLayout)
-  {
-    m_mainLayout=0;
-
-    delete m_mainLayout;
   }
   m_menu->clear();
 }
