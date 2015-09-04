@@ -31,6 +31,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../Utils.h"
 #include "../Config.h"
 
 #include "GeometriesUpdateTool.h"
@@ -100,9 +101,7 @@ namespace te
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
-        void draw();
-
-        void storeRemovedFeature();
+        void storeFeature(te::edit::OperationType op);
 
     };
   }   // end namespace edit

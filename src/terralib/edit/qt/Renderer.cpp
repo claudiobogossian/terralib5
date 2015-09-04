@@ -80,15 +80,26 @@ void te::edit::Renderer::drawRepository(const std::string& source, const te::gm:
 
   std::vector<Feature*> features = repository->getFeatures(e, srid);
 
-  for(std::size_t i = 0; i < features.size(); ++i)
+  //need to reconfigure the canvas when there geometries, create a function on repository that count features by operation
+  for (std::size_t i = 0; i < features.size(); ++i)
+  {
+    if (features[i]->getOperationType() == GEOMETRY_DELETE)
+    {
+      m_styleChanged = true;
+      break;
+    }
+  }
+
+  for (std::size_t i = 0; i < features.size(); ++i) 
     draw(features[i]->getGeometry(), false, features[i]->getOperationType() == GEOMETRY_DELETE);
+
 }
 
 void te::edit::Renderer::prepare(te::gm::GeomType type, const bool& removed)
 {
   assert(m_canvas);
 
-  if (m_currentGeomType == type && m_styleChanged == false)// && removed == false)
+  if (m_currentGeomType == type && m_styleChanged == false)
     return; // No need reconfigure the canvas
 
   m_currentGeomType = type;

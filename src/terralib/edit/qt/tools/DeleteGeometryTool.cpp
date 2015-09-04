@@ -20,7 +20,7 @@
 /*!
   \file terralib/edit/qt/tools/DeleteGeometryTool.cpp
 
-  \brief This class implements a concrete tool to move geometries.
+  \brief This class implements a concrete tool to delete geometries.
 */
 
 // TerraLib
@@ -30,6 +30,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
+
 #include "../../Feature.h"
 #include "../../RepositoryManager.h"
 #include "../../Utils.h"
@@ -60,28 +61,37 @@ bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
 {
   m_feature = PickFeature(m_layer, buildEnvelope(e->pos()), m_display->getSRID(), te::edit::GEOMETRY_DELETE);
 
-  if(m_feature == 0)
+  if (m_feature == 0)
   {
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer.")));
     return false;
   }
-  /*
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()->clone()))
-  {
-    //Feature* f = RepositoryManager::getInstance().getFeature(m_layer->getId(), *m_feature->getGeometry()->getMBR(), m_layer->getSRID());
-    //m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *m_feature->getGeometry()->getMBR(), m_layer->getSRID());
-    if (m_feature->clone()->getOperationType() == te::edit::GEOMETRY_DELETE)
-      m_feature->setOperation(te::edit::GEOMETRY_UPDATE);
-    //RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
-
-    draw();
-  }
   else
-  */
-  
-  storeRemovedFeature();
+  {
+    if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()->clone()))
+    {
+      switch (m_feature->clone()->getOperationType())
+      {
+        case te::edit::GEOMETRY_DELETE:
+
+          m_feature->setOperation(te::edit::GEOMETRY_UPDATE);
+          storeFeature(te::edit::GEOMETRY_UPDATE);
+
+          break;
+        case te::edit::GEOMETRY_UPDATE:
+
+          m_feature->setOperation(te::edit::GEOMETRY_DELETE);
+          storeFeature(te::edit::GEOMETRY_DELETE);
+
+          break;
+      }
+    }
+    else
+      storeFeature(te::edit::GEOMETRY_DELETE);
+  }
 
   return true;
+
 }
 
 void te::edit::DeleteGeometryTool::reset()
@@ -107,31 +117,13 @@ te::gm::Envelope te::edit::DeleteGeometryTool::buildEnvelope(const QPointF& pos)
   return env;
 }
 
-void te::edit::DeleteGeometryTool::storeRemovedFeature()
+void te::edit::DeleteGeometryTool::storeFeature(te::edit::OperationType op)
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), GEOMETRY_DELETE);
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), op);
 
   emit geometriesEdited();
+
 }
 
-void te::edit::DeleteGeometryTool::draw()
-{
-  const te::gm::Envelope& env = m_display->getExtent();
-  if (!env.isValid())
-    return;
 
-  // Clear!
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
 
-  // Initialize the renderer
-  Renderer& renderer = Renderer::getInstance();
-  renderer.begin(draft, env, m_display->getSRID());
-
-  // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
-
-  renderer.end();
-
-  m_display->repaint();
-}
