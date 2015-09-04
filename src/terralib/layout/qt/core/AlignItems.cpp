@@ -40,7 +40,8 @@
 
 te::layout::AlignItems::AlignItems( QGraphicsScene* scene, PaperConfig* config ):
   m_scene(scene),
-  m_config(config)
+  m_config(config),
+  m_minimunZValue(0)
 {
  
 }
@@ -105,8 +106,11 @@ void te::layout::AlignItems::sendToBack()
       {
         if (item->zValue() <= zValue)
         {
-          minimumZValue = item->zValue();
-          itemMinimumZValue = item;
+          if (item->zValue() > m_minimunZValue) 
+          {
+            minimumZValue = item->zValue();
+            itemMinimumZValue = item;
+          }
         }
       }
     }
@@ -361,3 +365,14 @@ QRectF te::layout::AlignItems::getSelectionItemsBoundingBox()
 
   return sourceRect;
 }
+
+int te::layout::AlignItems::getMinimumZValue()
+{
+  return m_minimunZValue;
+}
+
+void te::layout::AlignItems::setMinimumZValue(int minimum)
+{
+  m_minimunZValue = minimum;
+}
+
