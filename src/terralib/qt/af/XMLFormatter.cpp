@@ -24,80 +24,59 @@
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../maptools/DataSetLayer.h"
 
-#include "Project.h"
+#include <QUrl>
 
-#include <QtCore/QUrl>
+void te::qt::af::XMLFormatter::format(te::map::AbstractLayer *l, const bool &encode)
+{
+  if(l == 0)
+    return;
 
-namespace te {
-  namespace qt {
-    namespace af {
-      
-      void XMLFormatter::format(Project *p, const bool& encode)
-      {
-        p->setAuthor(format(p->getAuthor(), encode));
-        p->setTitle(format(p->getTitle(), encode));
+  l->setTitle(format(l->getTitle(), encode));
 
-        std::list<te::map::AbstractLayerPtr> ls = p->getTopLayers();
-        std::list<te::map::AbstractLayerPtr>::iterator it;
+  std::list<te::common::TreeItemPtr> ls = l->getChildren();
+  std::list<te::common::TreeItemPtr>::iterator it;
 
-        for(it = ls.begin(); it != ls.end(); ++it)
-          format((*it).get(), encode);
-      }
+  if(l->getType() == "DATASETLAYER")
+  {
+    te::map::DataSetLayer* dl = static_cast<te::map::DataSetLayer*>(l);
 
-      void XMLFormatter::format(map::AbstractLayer *l, const bool &encode)
-      {
-        if(l == 0)
-          return;
+    dl->setDataSetName(format(dl->getDataSetName(), encode));
+  }
 
-        l->setTitle(format(l->getTitle(), encode));
+  for(it = ls.begin(); it != ls.end(); ++it)
+    format(dynamic_cast<te::map::AbstractLayer*>((*it).get()), encode);
+}
 
-        std::list<te::common::TreeItemPtr> ls = l->getChildren();
-        std::list<te::common::TreeItemPtr>::iterator it;
+void te::qt::af::XMLFormatter::format(te::da::DataSourceInfo *d, const bool &encode)
+{
+  d->setTitle(format(d->getTitle(), encode));
+  d->setDescription(format(d->getDescription(), encode));
 
-        if(l->getType() == "DATASETLAYER")
-        {
-          te::map::DataSetLayer* dl = static_cast<te::map::DataSetLayer*>(l);
+  std::map<std::string, std::string>& i = d->getConnInfo();
+  std::map<std::string, std::string>::iterator it = i.find("SOURCE");
 
-          dl->setDataSetName(format(dl->getDataSetName(), encode));
-        }
+  if(it != i.end())
+    it->second = format(it->second, encode);
 
-        for(it = ls.begin(); it != ls.end(); ++it)
-          format(dynamic_cast<te::map::AbstractLayer*>((*it).get()), encode);
-      }
+  it = i.find("URI");
 
-      void XMLFormatter::format(te::da::DataSourceInfo *d, const bool &encode)
-      {
-        d->setTitle(format(d->getTitle(), encode));
-        d->setDescription(format(d->getDescription(), encode));
+  if(it != i.end())
+    it->second = format(it->second, encode);
+}
 
-        std::map<std::string, std::string>& i = d->getConnInfo();
-        std::map<std::string, std::string>::iterator it = i.find("SOURCE");
+void te::qt::af::XMLFormatter::formatDataSourceInfos(const bool &encode)
+{
+  te::da::DataSourceInfoManager::iterator it;
+  te::da::DataSourceInfoManager::iterator beg = te::da::DataSourceInfoManager::getInstance().begin();
+  te::da::DataSourceInfoManager::iterator end = te::da::DataSourceInfoManager::getInstance().end();
 
-        if(it != i.end())
-          it->second = format(it->second, encode);
+  for(it = beg; it != end; ++it)
+    format(it->second.get(), encode);
+}
 
-        it = i.find("URI");
-
-        if(it != i.end())
-          it->second = format(it->second, encode);
-      }
-
-      void XMLFormatter::formatDataSourceInfos(const bool &encode)
-      {
-        te::da::DataSourceInfoManager::iterator it;
-        te::da::DataSourceInfoManager::iterator beg = te::da::DataSourceInfoManager::getInstance().begin();
-        te::da::DataSourceInfoManager::iterator end = te::da::DataSourceInfoManager::getInstance().end();
-
-        for(it = beg; it != end; ++it)
-          format(it->second.get(), encode);
-      }
-
-      std::string XMLFormatter::format(const std::string &s, const bool& encode)
-      {
-        return (encode) ?
-              QUrl::toPercentEncoding(s.c_str()).data() :
-              QUrl::fromPercentEncoding(QByteArray(s.c_str())).toStdString();
-      }
-    } // namespace af
-  } // namespace qt
-} // namespace te
+std::string te::qt::af::XMLFormatter::format(const std::string &s, const bool& encode)
+{
+  return (encode) ?
+        QUrl::toPercentEncoding(s.c_str()).data() :
+        QUrl::fromPercentEncoding(QByteArray(s.c_str())).toStdString();
+}

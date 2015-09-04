@@ -49,7 +49,7 @@ te::qt::plugins::rp::ContrastAction::~ContrastAction()
 
 void te::qt::plugins::rp::ContrastAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ContrastWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::ContrastWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
   
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
@@ -68,7 +68,7 @@ void te::qt::plugins::rp::ContrastAction::onPopUpActionActivated(bool checked)
 
   if(layer.get())
   {
-    te::qt::widgets::ContrastWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+    te::qt::widgets::ContrastWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
     dlg.setLayer(layer);
 
@@ -80,6 +80,6 @@ void te::qt::plugins::rp::ContrastAction::onPopUpActionActivated(bool checked)
   }
   else
   {
-    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
+    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
   }
 }

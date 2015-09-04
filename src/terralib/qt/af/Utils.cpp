@@ -45,7 +45,7 @@
 #include "../../Version.h"
 #include "ApplicationController.h"
 #include "Exception.h"
-#include "Project.h"
+//#include "Project.h"
 #include "Utils.h"
 #include "XMLFormatter.h"
 
@@ -72,282 +72,15 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QToolBar>
+#include <QStandardPaths>
 
 
-te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
-{
-  boost::filesystem::path furi(uri);
-  
-  if (!boost::filesystem::exists(furi) || !boost::filesystem::is_regular_file(furi))   
-    throw Exception((boost::format(TE_TR("Could not read project file: %1%.")) % uri).str());
-  
-  std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
-  xmlReader->setValidationScheme(false);
-  
-  xmlReader->read(uri);
-  
-  if(!xmlReader->next())
-    throw Exception((boost::format(TE_TR("Could not read project information in the file: %1%.")) % uri).str());
-  
-  if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
-    throw Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % uri).str());
-  
-  if(xmlReader->getElementLocalName() != "Project")
-    throw Exception((boost::format(TE_TR("The first tag in the document %1% is not 'Project'.")) % uri).str());
-  
-  Project* proj = ReadProject(*xmlReader);
-  
-  proj->setFileName(uri);
-  
-  XMLFormatter::format(proj, false);
-
-  proj->setProjectAsChanged(false);
-
-  return proj;
-
-}
-
-te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
-{
-  std::auto_ptr<Project> project(new Project);
-
-  reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Title");
-
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  project->setTitle(reader.getElementValue());
-  reader.next(); // End element
-
-  reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Author");
-
-  reader.next();
-
-  if(reader.getNodeType() == te::xml::VALUE)
-  {
-    project->setAuthor(reader.getElementValue());
-    reader.next(); // End element
-  }
-
-  //read data source list from this project
-  reader.next();
-
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSourceList");
-
-  reader.next();
-
-  // DataSourceList contract form
-  if(reader.getNodeType() == te::xml::END_ELEMENT &&
-     reader.getElementLocalName() == "DataSourceList")
-  {
-    reader.next();
-  }
-
-  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
-        (reader.getElementLocalName() == "DataSource"))
-  {
-    te::da::DataSourceInfoPtr ds(te::serialize::xml::ReadDataSourceInfo(reader));
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-  }
-
-  //end read data source list
-
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "ComponentList");
-  reader.next(); // End element
-  reader.next(); // next after </ComponentList>
-
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "LayerList");
-
-  reader.next();
-
-  const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
-
-  // Read the layers
-  while((reader.getNodeType() != te::xml::END_ELEMENT) &&
-        (reader.getElementLocalName() != "LayerList"))
-  {
-    te::map::AbstractLayerPtr layer(lserial.read(reader));
-
-    assert(layer.get());
-
-    project->add(layer);
-  }
-
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
-  assert(reader.getElementLocalName() == "LayerList");
-
-  reader.next();
-  assert((reader.getNodeType() == te::xml::END_ELEMENT) || (reader.getNodeType() == te::xml::END_DOCUMENT));
-  assert(reader.getElementLocalName() == "Project");
-
-  project->setProjectAsChanged(false);
-
-  return project.release();
-}
-
-void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri)
-{
-
-  std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
-
-  writer->setURI(uri);
-
-  Project p(project);
-
-  Save(p, *writer.get());
-
-  /* old way
-  std::ofstream fout(uri.c_str(), std::ios_base::trunc);
-
-  te::xml::Writer w(fout);
-
-  Project p(project);
-
-  XMLFormatter::format(&p, true);
-
-  Save(p, w);
-
-  XMLFormatter::format(&p, false);
-
-  fout.close();*/
-}
-
-void te::qt::af::Save(const te::qt::af::Project& project, te::xml::AbstractWriter& writer)
-{
-  std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
-
-  writer.writeStartDocument("UTF-8", "no");
-  
-  writer.writeStartElement("Project");
-
-  boost::replace_all(schema_loc, " ", "%20");
-
-  writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
-  writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
-  writer.writeAttribute("xmlns:te_map", "http://www.terralib.org/schemas/maptools");
-  writer.writeAttribute("xmlns:te_qt_af", "http://www.terralib.org/schemas/common/af");
-
-  writer.writeAttribute("xmlns:se", "http://www.opengis.net/se");
-  writer.writeAttribute("xmlns:ogc", "http://www.opengis.net/ogc");
-  writer.writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-
-  writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
-  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_loc);
-  writer.writeAttribute("version", TERRALIB_VERSION_STRING);
-
-  writer.writeElement("Title", project.getTitle());
-  writer.writeElement("Author", project.getAuthor());
-
-  //write data source list 
-  writer.writeStartElement("te_da:DataSourceList");
-
-  writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
-
-  te::da::DataSourceInfoManager::iterator itBegin = te::da::DataSourceInfoManager::getInstance().begin();
-  te::da::DataSourceInfoManager::iterator itEnd = te::da::DataSourceInfoManager::getInstance().end();
-  te::da::DataSourceInfoManager::iterator it;
-
-  for(it=itBegin; it!=itEnd; ++it)
-  {
-    bool ogrDsrc = it->second->getAccessDriver() == "OGR";
-
-    writer.writeStartElement("te_da:DataSource");
-
-    writer.writeAttribute("id", it->second->getId());
-    writer.writeAttribute("type", it->second->getType());
-    writer.writeAttribute("access_driver", it->second->getAccessDriver());
-
-    writer.writeStartElement("te_da:Title");
-    writer.writeValue((!ogrDsrc) ? it->second->getTitle() : te::common::ConvertLatin1UTFString(it->second->getTitle()));
-    writer.writeEndElement("te_da:Title");
-
-    writer.writeStartElement("te_da:Description");
-    writer.writeValue((!ogrDsrc) ? it->second->getDescription() : te::common::ConvertLatin1UTFString(it->second->getDescription()));
-    writer.writeEndElement("te_da:Description");
-
-    writer.writeStartElement("te_da:ConnectionInfo");
-    std::map<std::string, std::string> info = it->second->getConnInfo();
-    std::map<std::string, std::string>::iterator conIt;
-
-    for(conIt=info.begin(); conIt!=info.end(); ++conIt)
-    {
-      writer.writeStartElement("te_common:Parameter");
-
-      writer.writeStartElement("te_common:Name");
-      writer.writeValue(conIt->first);
-      writer.writeEndElement("te_common:Name");
-
-      writer.writeStartElement("te_common:Value");
-      writer.writeValue((ogrDsrc && (conIt->first == "URI" || conIt->first == "SOURCE")) ? te::common::ConvertLatin1UTFString(conIt->second) : conIt->second);
-      writer.writeEndElement("te_common:Value");
-
-      writer.writeEndElement("te_common:Parameter");
-    }
-    writer.writeEndElement("te_da:ConnectionInfo");
-
-    writer.writeEndElement("te_da:DataSource");
-  }
-
-  writer.writeEndElement("te_da:DataSourceList");
-  //end write
-
-  writer.writeStartElement("ComponentList");
-  writer.writeEndElement("ComponentList");
-
-  writer.writeStartElement("te_map:LayerList");
-
-  const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
-
-  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = project.getTopLayers().begin();
-      it != project.getTopLayers().end();
-      ++it)
-    lserial.write(it->get(), writer);
-
-  writer.writeEndElement("te_map:LayerList");
-
-  writer.writeEndElement("Project");
-
-  writer.writeToFile();
-
-}
-
-void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)
+void te::qt::af::UpdateUserSettings()
 {
   QSettings user_settings(QSettings::IniFormat,
                           QSettings::UserScope,
                           QApplication::instance()->organizationName(),
                           QApplication::instance()->applicationName());
-  
-// save recent projects
-  if(!prjFiles.empty() && !prjTitles.empty() && (prjFiles.size() == prjTitles.size()))
-  {
-    user_settings.setValue("projects/most_recent/path", prjFiles.at(0));
-    user_settings.setValue("projects/most_recent/title", prjTitles.at(0));
-    
-    if(prjFiles.size() > 1)
-    {
-      user_settings.beginGroup("projects");
-      
-      user_settings.beginWriteArray("recents");
-      
-      for(int i = 1; i != prjFiles.size(); ++i)
-      {
-        user_settings.setArrayIndex(i - 1);
-        user_settings.setValue("projects/path", prjFiles.at(i));
-        user_settings.setValue("projects/title", prjTitles.at(i));
-      }
-      
-      user_settings.endArray();
-      
-      user_settings.endGroup();
-    }
-  }
   
 // save enabled plugins
   user_settings.remove("plugins/enabled");
@@ -410,24 +143,31 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
   user_settings.endGroup();
 }
 
-void te::qt::af::SaveDataSourcesFile()
+void te::qt::af::SaveDataSourcesFile(te::qt::af::ApplicationController* appController)
 {
   QSettings usettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   
-  QVariant fileName = usettings.value("data_sources/data_file");
+  QString fileName = usettings.value("data_sources/data_file").toString();
 
   if(fileName.isNull())
   {
-    const QString& udir = ApplicationController::getInstance().getUserDataDir();
+    const QString& udir = appController->getUserDataDir();
     
     fileName = udir + "/" + QString(TERRALIB_APPLICATION_DATASOURCE_FILE_NAME);
     
-    usettings.setValue("data_sources/data_file", fileName);
+    usettings.setValue("data_sources/data_file", QVariant(fileName));
   }
+
+  QFileInfo info(fileName);
+
+  QDir d = info.absoluteDir();
+
+  if(!d.exists())
+    d.mkpath(d.path());
 
   te::qt::af::XMLFormatter::formatDataSourceInfos(true);
 
-  te::serialize::xml::Save(fileName.toString().toStdString());
+  te::serialize::xml::Save(fileName.toStdString());
 
   te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 }
@@ -454,9 +194,9 @@ void AddToolbarAndActions(QToolBar* bar, QSettings& sett)
   sett.endGroup();
 }
 
-void te::qt::af::UpdateToolBarsInTheSettings()
+void te::qt::af::UpdateToolBarsInTheSettings(te::qt::af::ApplicationController* appController)
 {
-  std::vector<QToolBar*> bars = te::qt::af::ApplicationController::getInstance().getToolBars();
+  std::vector<QToolBar*> bars = appController->getToolBars();
   std::vector<QToolBar*>::const_iterator it;
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
@@ -494,7 +234,7 @@ void te::qt::af::RemoveToolBarFromSettings(QToolBar* bar)
   sett.endGroup();
 }
 
-std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
+std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(te::qt::af::ApplicationController* appController, QWidget* barsParent)
 {
   std::vector<QToolBar*> bars;
 
@@ -530,7 +270,7 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
       }
       else
       {
-        QAction* a = ApplicationController::getInstance().findAction(act);
+        QAction* a = appController->findAction(act);
       
         if(a != 0)
           toolbar->addAction(a);
@@ -568,25 +308,25 @@ void te::qt::af::RestoreState(QMainWindow* mainWindow)
   sett.endGroup();
 }
 
-void te::qt::af::GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved)
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//void te::qt::af::GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved)
+//{
+//  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//
+//  sett.beginGroup("projects");
+//  defaultAuthor = sett.value("author_name").toString();
+//  maxSaved = sett.value("recents_history_size").toInt();
+//  sett.endGroup();
+//}
 
-  sett.beginGroup("projects");
-  defaultAuthor = sett.value("author_name").toString();
-  maxSaved = sett.value("recents_history_size").toInt();
-  sett.endGroup();
-}
-
-void te::qt::af::SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved)
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  sett.beginGroup("projects");
-  sett.setValue("author_name", defaultAuthor);
-  sett.setValue("recents_history_size", maxSaved);
-  sett.endGroup();
-}
+//void te::qt::af::SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved)
+//{
+//  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//
+//  sett.beginGroup("projects");
+//  sett.setValue("author_name", defaultAuthor);
+//  sett.setValue("recents_history_size", maxSaved);
+//  sett.endGroup();
+//}
 
 void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
 {
@@ -595,12 +335,12 @@ void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
   sett.setValue("projects/last datasource used", dsType);
 }
 
-void te::qt::af::SaveOpenLastProjectOnSettings(bool openLast)
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  sett.setValue("projects/openLastDataSource", openLast);
-}
+//void te::qt::af::SaveOpenLastProjectOnSettings(bool openLast)
+//{
+//  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//
+//  sett.setValue("projects/openLastDataSource", openLast);
+//}
 
 QString te::qt::af::GetLastDatasourceFromSettings()
 {
@@ -609,94 +349,18 @@ QString te::qt::af::GetLastDatasourceFromSettings()
   return sett.value("projects/last datasource used").toString();
 }
 
-bool te::qt::af::GetOpenLastProjectFromSettings()
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  QVariant variant = sett.value("projects/openLastDataSource");
-
-  // If the option was never edited
-  if(variant.isNull() || !variant.isValid())
-    return true;
-
-  return variant.toBool();
-}
-
-void te::qt::af::CreateDefaultSettings()
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  sett.beginGroup("toolbars");
-
-  sett.beginGroup("File Tool Bar");
-  sett.setValue("name", "File Tool Bar");
-  sett.beginWriteArray("Actions");
-  sett.setArrayIndex(0);
-  sett.setValue("action", "File.New Project");
-  sett.setArrayIndex(1);
-  sett.setValue("action", "File.Open Project");
-  sett.setArrayIndex(2);
-  sett.setValue("action", "File.Save Project");
-  sett.setArrayIndex(3);
-  sett.setValue("action", "");
-  sett.setArrayIndex(4);
-  sett.setValue("action", "Project.New Folder");
-  sett.setArrayIndex(5);
-  sett.setValue("action", "Project.Add Layer.All Sources");
-  sett.endArray();
-  sett.endGroup();
-
-  sett.beginGroup("View Tool Bar");
-  sett.setValue("name", "View Tool Bar");
-  sett.beginWriteArray("Actions");
-  sett.setArrayIndex(0);
-  sett.setValue("action", "View.Layer Explorer");
-  sett.setArrayIndex(1);
-  sett.setValue("action", "View.Map Display");
-  sett.setArrayIndex(2);
-  sett.setValue("action", "View.Data Table");
-  sett.setArrayIndex(3);
-  sett.setValue("action", "View.Style Explorer");
-  sett.endArray();
-  sett.endGroup();
-
-  sett.beginGroup("Map Tool Bar");
-  sett.setValue("name", "Map Tool Bar");
-  sett.beginWriteArray("Actions");  
-  sett.setArrayIndex(0);
-  sett.setValue("action", "Map.Draw");
-  sett.setArrayIndex(1);
-  sett.setValue("action", "Map.Previous Extent");
-  sett.setArrayIndex(2);
-  sett.setValue("action", "Map.Next Extent");
-  sett.setArrayIndex(3);
-  sett.setValue("action", "Map.Zoom Extent");
-  sett.setArrayIndex(4);
-  sett.setValue("action", "");
-  sett.setArrayIndex(5);
-  sett.setValue("action", "Map.Zoom In");
-  sett.setArrayIndex(6);
-  sett.setValue("action", "Map.Zoom Out");
-  sett.setArrayIndex(7);
-  sett.setValue("action", "Map.Pan");
-  sett.setArrayIndex(8);
-  sett.setValue("action", "");
-  sett.setArrayIndex(9);
-  sett.setValue("action", "Map.Info");
-  sett.setArrayIndex(10);
-  sett.setValue("action", "Map.Selection");
-  sett.endArray();
-  sett.endGroup();
-
-  sett.endGroup();
-
-  sett.beginGroup("projects");
-
-  sett.setValue("author_name", "");
-  sett.setValue("recents_history_size", "8");
-
-  sett.endGroup();
-}
+//bool te::qt::af::GetOpenLastProjectFromSettings()
+//{
+//  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//
+//  QVariant variant = sett.value("projects/openLastDataSource");
+//
+//  // If the option was never edited
+//  if(variant.isNull() || !variant.isValid())
+//    return true;
+//
+//  return variant.toBool();
+//}
 
 QString te::qt::af::UnsavedStar(const QString windowTitle, bool isUnsaved)
 {
@@ -764,7 +428,7 @@ bool te::qt::af::GetAlternateRowColorsFromSettings()
   return isChecked;
 }
 
-void te::qt::af::AddActionToCustomToolbars(QAction* act)
+void te::qt::af::AddActionToCustomToolbars(te::qt::af::ApplicationController* appController, QAction* act)
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
@@ -782,9 +446,11 @@ void te::qt::af::AddActionToCustomToolbars(QAction* act)
 
       QString v = sett.value("action").toString(); 
 
-      if (v == act->objectName())
+      if (!v.isNull() && v.compare(act->objectName()) == 0)
       {
-        ApplicationController::getInstance().getToolBar(*it)->addAction(act);
+        QToolBar* bar = appController->getToolBar(*it);
+        bar->addAction(act);
+      
         break;
       }
     }
@@ -815,12 +481,12 @@ std::vector<std::string> te::qt::af::GetPluginsFiles()
   return res;
 }
 
-std::vector<std::string> te::qt::af::GetDefaultPluginsNames()
+std::vector<std::string> te::qt::af::GetDefaultPluginsNames(te::qt::af::ApplicationController* appController)
 {
   std::vector<std::string> res;
 
 // Finding the Default plugins file.
-  std::string pluginsPath = te::qt::af::ApplicationController::getInstance().getAppPluginsPath().toStdString();
+  std::string pluginsPath = appController->getAppPluginsPath().toStdString();
 
   if (pluginsPath == "")
     return res;
@@ -910,34 +576,34 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
   usrSett.load(fileName.toStdString());
 }
 
-void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
-{
-  boost::property_tree::ptree p;
-
-  std::string schema_location = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
-
-  //Header
-  p.add("Project.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
-  p.add("Project.<xmlattr>.xmlns:te_map", "http://www.terralib.org/schemas/maptools");
-  p.add("Project.<xmlattr>.xmlns:te_qt_af", "http://www.terralib.org/schemas/qt/af");
-  p.add("Project.<xmlattr>.xmlns", "http://www.terralib.org/schemas/qt/af");
-  p.add("Project.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_location);
-  p.add("Project.<xmlattr>.version", TERRALIB_VERSION_STRING);
-
-  //Contents
-  p.add("Project.Title", "Default project");
-  p.add("Project.Author", "");
-  p.add("Project.ComponentList", "");
-  p.add("Project.te_map:LayerList", "");
-
-  //Store file
-#if BOOST_VERSION > 105600
-  boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
-#else
-  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-#endif
-  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
-}
+//void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
+//{
+//  boost::property_tree::ptree p;
+//
+//  std::string schema_location = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
+//
+//  //Header
+//  p.add("Project.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+//  p.add("Project.<xmlattr>.xmlns:te_map", "http://www.terralib.org/schemas/maptools");
+//  p.add("Project.<xmlattr>.xmlns:te_qt_af", "http://www.terralib.org/schemas/qt/af");
+//  p.add("Project.<xmlattr>.xmlns", "http://www.terralib.org/schemas/qt/af");
+//  p.add("Project.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_location);
+//  p.add("Project.<xmlattr>.version", TERRALIB_VERSION_STRING);
+//
+//  //Contents
+//  p.add("Project.Title", "Default project");
+//  p.add("Project.Author", "");
+//  p.add("Project.ComponentList", "");
+//  p.add("Project.te_map:LayerList", "");
+//
+//  //Store file
+//#if BOOST_VERSION > 105600
+//  boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
+//#else
+//  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+//#endif
+//  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
+//}
 
 QString te::qt::af::GetGenerationDate()
 {
@@ -953,32 +619,4 @@ QString te::qt::af::GetGenerationDate()
   f.close();
 
   return s;
-}
-
-QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
-{
-  QString title = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
-  title += TE_TR("Project:");
-  title += " ";
-  title += project.getTitle().c_str();
-  title += " - ";
-
-  boost::filesystem::path p(project.getFileName());
-
-  std::string filename = p.filename().string();
-
-  title += filename.c_str();
-
-  return title;
-}
-
-QString te::qt::af::GetExtensionFilter()
-{
-  QString appName = te::qt::af::ApplicationController::getInstance().getAppName();
-  QString appProjectExtension = te::qt::af::ApplicationController::getInstance().getAppProjectExtension();
-  QString extensionFilter = appName;
-  extensionFilter += QString(" (*.");
-  extensionFilter += appProjectExtension + ")";
-
-  return extensionFilter;
 }

@@ -1,1 +1,132 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html>  <head>    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">    <title>Spatial Reference System</title>  </head>  <body>    <div style="font-family: Calibri Light;" align="center">      <h3><strong></strong>Spatial        Reference System</h3>    </div>    <p style="text-align: justify; font-family: Calibri Light;">The Spatial      Reference System interface      is used to define or change the SRID of a layer,&nbsp; and also to      set      or change&nbsp;the map display SRID.</p>    <p style="text-align: justify; font-family: Calibri Light;">It is      accessible through:</p>    <p style="text-align: justify; font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;      <b>Layer        Explorer &gt; &nbsp;Right Click </b>over a      Layer-name<b> &gt;        Inform SRS...</b>&nbsp;</p>    <p style="text-align: justify; font-family: Calibri Light;">&nbsp;      &nbsp; <b>Map        Display &nbsp;&gt;&nbsp; Right Click </b>inside      the map display area<b>        &nbsp;&gt; &nbsp;SRS...</b></p>    <p style="text-align: justify; font-family: Calibri Light;">The icons      related with SRS are <img style="width: 92px; height: 29px;" alt="srs icons"        src="../../gen_icones/ic_srids.PNG">      &nbsp;and can be added to the <a href="../../apf/settings/toolbar/ToolbarConfig.html">tool        bar</a>. The last icon, called      UnknownSRID,&nbsp;      is used to reset the Map Display SRID.&nbsp;</p>    <p style="text-align: justify; font-family: Calibri Light;">When more      than one layer are selected,&nbsp;the first valid SRID&nbsp;among the      selected layers is used to set the map display SRID and draw them. The Map      Display SRID can also be set to a desired one and in this case this one      will be used to draw the selected layer.</p>    <p style="text-align: justify; font-family: Calibri Light;">At the      interface it is shown a small list of the most recently used SRIDs, and      a complete list with all Geographic, Projected and User Defined SRS.</p>    <p style="text-align: justify; font-family: Calibri Light;">To choose a      SRID follow the stpes below:</p>    <ol style="font-family: Calibri Light;">      <li><span style="font-style: italic;">SRSs recently used </span>- select        the SRID from here or go to item 2. <span style="font-style: italic;"></span></li>      <li><span style="font-style: italic;">SRSs Available</span> -&nbsp; select        the SRS from one of the lists (Geographic, Projected, User Defined)</li>      <li><span style="font-style: italic;">Filter</span> -&nbsp; optionally, to        help&nbsp;finding&nbsp;a        SRS, &nbsp;enter a meaningful word (or a SRID) to see a subset        of&nbsp;SRSs        which        contain that word (or that SRID) at the list of <i>SRSs available</i>.</li>      <li><span style="font-style: italic;">Proj4 description</span> - &nbsp;it        is a informative field containing all parameters of the chosen SRID.</li>      <li>Click <span style="font-weight: bold;">OK</span> to set the SRID to        the layer or to the Map Display.</li>    </ol>    <span style="font-family: Calibri Light;">      Hints: </span><font style="font-family: Calibri Light;" face="Calibri Light">As      an example, fill the word UTM in <i>Filter</i>      field and see      all SRID that have this word in its definition. Try to fill <span style="font-style: italic;">Filter</span>      with the      following words, one at once and see the SRSs showed: Corrego Alegre,      Sirgas, 2916, 29168, etc.</font>    <h3 style="font-family: Calibri Light;">Usage tips</h3>    <p style="text-align: justify; font-family: Calibri Light;">The addition,      removing and edition      of SRSs using this interface are under development. However, you can edit      the configuration file      <i>srs.json</i> and update the definitions available there.</p>    <p style="text-align: justify; font-family: Calibri Light;">If you wish to      include a user defined      SRS you have to provide a not used before SRID greater than 100000, a      name, and a valid      PROJ.4 description for it. It will be listed under the "<span style="font-weight: bold;">User        defined SRS</span>" division of the      interface. Make sure you provide a valid PROJ.4 description. A good source      of information about the SRSs definition and representation can be found      in the <a target="_blank" title="Spatial Reference" href="http://http://spatialreference.org/">Spatial        Reference website.</a></p>  </body></html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+  
+  
+  
+  <title>Spatial Reference System</title>
+</head>
+
+
+<body>
+
+
+
+<div style="font-family: Calibri Light;" align="center">
+<h3><strong></strong>Spatial
+Reference System</h3>
+
+
+
+</div>
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">The Spatial
+Reference System interface
+is used to define or change the SRID of a layer,&nbsp; and also to
+set
+or change&nbsp;the map display SRID.</p>
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">It is
+accessible through:</p>
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+<b>Layer
+Explorer &gt; &nbsp;Right Click </b>over a
+Layer-name<b> &gt;
+Inform SRS...</b>&nbsp;</p>
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">&nbsp;
+&nbsp; <b>Map
+Display &nbsp;&gt;&nbsp; Right Click </b>inside
+the map display area<b>
+&nbsp;&gt; &nbsp;SRS...</b></p>
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">The icons related with SRS are <img style="width: 92px; height: 29px;" alt="srs icons" src="../../gen_icones/ic_srids.PNG"> &nbsp;and can be added to the <a href="../../apf/settings/toolbar/ToolbarConfig.html">tool bar</a>. The last icon, called
+UnknownSRID,&nbsp;
+is used to reset the Map Display SRID.&nbsp;</p>
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">When more
+than one layer are selected,&nbsp;the first valid SRID&nbsp;among the selected layers is used to set the map display SRID and draw them. The Map Display SRID can also be set to a desired one and in this case this one will be used to draw the selected layer.</p>
+
+
+<p style="text-align: justify; font-family: Calibri Light;">At the
+interface it is shown a small list of the most recently used SRIDs, and
+a complete list with all Geographic, Projected and User Defined SRS.</p>
+
+
+<p style="text-align: justify; font-family: Calibri Light;">To choose a
+SRID follow the stpes below:</p>
+
+
+<ol style="font-family: Calibri Light;">
+
+
+  <li><span style="font-style: italic;">SRSs recently used </span>- select the SRID from here or go to item 2. <span style="font-style: italic;"></span></li>
+
+
+  <li><span style="font-style: italic;">SRSs Available</span> -&nbsp; select the SRS from one of the lists (Geographic, Projected, User Defined)</li>
+
+
+  <li><span style="font-style: italic;">Filter</span> -&nbsp; optionally, to
+help&nbsp;finding&nbsp;a
+SRS, &nbsp;enter a meaningful word (or a SRID) to see a subset of&nbsp;SRSs
+which
+contain that word (or that SRID) at the list of <i>SRSs available</i>.</li>
+
+
+  <li><span style="font-style: italic;">Proj4 description</span> - &nbsp;it is a informative field containing all parameters of the chosen SRID.</li>
+
+
+  <li>Click <span style="font-weight: bold;">OK</span> to set the SRID to the layer or to the Map Display.</li>
+
+
+</ol>
+
+<span style="font-family: Calibri Light;">
+Hints: </span><font style="font-family: Calibri Light;" face="Calibri Light">As an example, fill the word UTM in <i>Filter</i>
+field and see
+all SRID that have this word in its definition. Try to fill <span style="font-style: italic;">Filter</span> with the
+following words, one at once and see the SRSs showed: Corrego Alegre,
+Sirgas, 2916, 29168, etc.</font>
+
+<h3 style="font-family: Calibri Light;">Usage tips</h3>
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">The addition, removing and edition
+of SRSs using this interface are under development. However, you can edit the configuration file
+<i>srs.json</i> and update the definitions available there.</p>
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">If you wish to include a user defined
+SRS you have to provide a not used before SRID greater than 100000, a name, and a valid
+PROJ.4 description for it. It will be listed under the "User defined SRS" division of the
+interface.</p>
+
+
+
+</body>
+</html>

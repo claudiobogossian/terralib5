@@ -29,17 +29,14 @@
 // TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
+#include "GeometriesUpdateTool.h"
 #include "../Config.h"
 
 // Qt
 #include <QPointF>
-#include <QUndoCommand>
 
 //STL
 #include <map>
-
-
 
 namespace te
 {
@@ -62,7 +59,7 @@ namespace te
 
       \brief This class implements a concrete tool to move geometries.
     */
-    class TEEDITQTEXPORT MoveGeometryTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT MoveGeometryTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -114,18 +111,19 @@ namespace te
 
         void storeEditedFeature();
 
+        void storeUndoCommand();
+
       private slots:
 
         void onExtentChanged();
 
       protected:
 
-        te::map::AbstractLayerPtr m_layer;
-        Feature* m_feature;
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
         QPointF m_deltaSum;                 //!< Sum of all delta
+        std::map<std::string, QList<QPointF> > m_moveWatches;
     };
 
   }   // end namespace edit

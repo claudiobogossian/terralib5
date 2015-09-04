@@ -30,8 +30,8 @@
 #include "widgets/Config.h"
 #include "widgets/canvas/Canvas.h"
 #include "widgets/canvas/MapDisplay.h"
-#include "widgets/layer/explorer/AbstractTreeItem.h"
-#include "widgets/layer/explorer/LayerExplorer.h"
+//#include "widgets/layer/explorer/AbstractTreeItem.h"
+//#include "widgets/layer/explorer/LayerExplorer.h"
 
 /*!
   \defgroup widgets Widgets

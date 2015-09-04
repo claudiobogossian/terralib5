@@ -268,6 +268,8 @@ namespace te
 
           void setPolygonFillColor(const te::color::RGBAColor& color);
 
+          void setPolygonFillColor(const QBrush& color);
+
           void setPolygonContourColor(const te::color::RGBAColor& color);
 
           void setPolygonFillPattern(te::color::RGBAColor** pattern, int ncols, int nrows);
@@ -409,6 +411,8 @@ namespace te
 
           //@}
 
+          QPainter* getPainter();
+
         private:
 
           /** @name Copy Constructor and Assignment Operator
@@ -501,6 +505,7 @@ namespace te
 
           QColor m_polyColor;                   //!< The color used to fill polygon (solid, marker or pattern). 
           QBrush m_polyBrush;                   //!< The brush used to fill polygon.
+          QBrush m_polyDefaultBrush;                   //!< The brush used to fill polygon.
           QImage* m_polyImage;                  //!< The pattern image used to fill polygon.
           QImage* m_polyRotatedImage;           //!< The pattern rotated image used to fill polygon.
           int m_polyPatternWidth;               //!< The width used to draw marker or pattern.

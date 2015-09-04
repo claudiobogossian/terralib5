@@ -28,84 +28,80 @@
 
 #include "Config.h"
 
+#include "../../maptools/AbstractLayer.h"
+
 //STL
+#include <list>
 #include <string>
 
-namespace te {
-
+namespace te 
+{
   //Forward declarations
-  namespace map { class AbstractLayer; }
-  namespace da { class DataSourceInfo; }
+  namespace da
+  {
+    class DataSourceInfo;
+  }
 
-  namespace qt {
-    namespace af {
-
-      // Forward declaration
-      class Project;
-      
+  namespace qt
+  {
+    namespace af
+    {
       /*!
-         \class XMLFormatter
+      \class XMLFormatter
 
-         \brief A class that formats strings.
+      \brief A class that formats strings.
 
-         Use this class for changing strings, contained in some TerraLib objects, to XML percentage encode format and/or to human readable format. Use XML formatting before serializing the object to a XML file, for example, and human readable format after read the object from a XML.
+      Use this class for changing strings, contained in some TerraLib objects, to XML percentage encode format and/or to human readable format. Use XML formatting before serializing the object to a XML file, for example, and human readable format after read the object from a XML.
 
-         \ingroup af
-       */
+      \ingroup af
+      */
       class TEQTAFEXPORT XMLFormatter
       {
-        public:
+      public:
 
-          /*!
-            \brief Formats the project informations.
+        /*!
+        \brief Formats the layer informations.
 
-            \param p The project.
+        \param l The layer.
 
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
-           */
-          static void format(Project* p, const bool& encode);
+        \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
 
-          /*!
-            \brief Formats the layer informations.
+        \note The sublayers will be formatted too, using the \a encode passed.
+        */
+        static void format(te::map::AbstractLayer* l, const bool& encode);
 
-            \param l The layer.
+        /*!
+        \brief Formats the data source informations.
 
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+        \param d The data source info.
 
-            \note The sublayers will be formatted too, using the \a encode passed.
-           */
-          static void format(te::map::AbstractLayer* l, const bool& encode);
+        \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+        */
+        static void format(te::da::DataSourceInfo* d, const bool& encode);
 
-          /*!
-            \brief Formats the data source informations.
+        /*!
+        \brief Formats all data source informations registered in the \a te::da::DataSourceInfoManager object.
 
-            \param d The data source info.
+        \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
 
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
-           */
-          static void format(te::da::DataSourceInfo* d, const bool& encode);
+        \sa te::da::DataSourceInfoManager
+        */
+        static void formatDataSourceInfos(const bool& encode);
 
-          /*!
-            \brief Formats all data source informations registered in the \a te::da::DataSourceInfoManager object.
+        /*!
+        \brief Formats the string.
 
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+        \param s The string.
 
-            \sa te::da::DataSourceInfoManager
-           */
-          static void formatDataSourceInfos(const bool& encode);
-
-          /*!
-            \brief Formats the string.
-
-            \param s The string.
-
-            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
-           */
-          static std::string format (const std::string& s, const bool& encode);
+        \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+        */
+        static std::string format(const std::string& s, const bool& encode);
       };
-      
-    } // namespace af
-  } // namespace qt
-} // namespace te
+    }
+  }
+}
+
+
+
 
 #endif // TE_QT_AF_XMLFORMATTER_H

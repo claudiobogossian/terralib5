@@ -140,20 +140,6 @@ namespace te
 
           \return
         */
-        const std::string& getDataSourceId() const;
-
-        /*!
-          \brief
-
-          \param id
-        */
-        void setDataSourceId(const std::string& id);
-
-        /*!
-          \brief
-
-          \return
-        */
         const std::string& getRendererType() const;
 
         /*!

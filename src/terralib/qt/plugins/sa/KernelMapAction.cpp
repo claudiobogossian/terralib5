@@ -41,7 +41,7 @@ te::qt::plugins::sa::KernelMapAction::~KernelMapAction()
 
 void te::qt::plugins::sa::KernelMapAction::onActionActivated(bool checked)
 {
-  te::sa::KernelMapDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::KernelMapDialog dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

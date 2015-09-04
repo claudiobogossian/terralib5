@@ -147,20 +147,6 @@ namespace te
 
           \return
         */
-        const std::string& getDataSourceId() const;
-
-        /*!
-          \brief
-
-          \param id
-        */
-        void setDataSourceId(const std::string& id);
-
-        /*!
-          \brief
-
-          \return
-        */
         const std::string& getRendererType() const;
 
         /*!
@@ -174,7 +160,7 @@ namespace te
 
         std::auto_ptr<te::da::DataSetTypeConverter> m_converter;         //!< The DataSetConverter that will be cused to configure the layer.
         std::string                                 m_datasetName;       //!< The dataset name where we will retrieve the layer objects.
-        std::string                                 m_datasourceId;      //!< The DataSource associated with this layer.
+
         std::string                                 m_rendererType;      //!< A pointer to the internal renderer used to paint this layer.
         static const std::string                    sm_type;             //!< A static data member used in the implementation of getType method.
 

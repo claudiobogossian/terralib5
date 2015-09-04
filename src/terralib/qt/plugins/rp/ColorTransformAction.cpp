@@ -47,7 +47,7 @@ te::qt::plugins::rp::ColorTransformAction::~ColorTransformAction()
 
 void te::qt::plugins::rp::ColorTransformAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ColorTransformWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::ColorTransformWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
