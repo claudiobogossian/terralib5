@@ -150,7 +150,7 @@ namespace te
         QVector<QPointF> m_animationRoute;            //!< It contains only the portions to be animated.
         QMatrix m_matrix;                             //!< The display transformation matrix.
         bool m_automaticPan;                          //!< True if automatic pan over this item.
-        double m_panFactor;                           //!< the range is between 0.05 and 0.5 
+        double m_panFactor;                           //!< the range is between 0.002 and 0.5 
         unsigned int m_curTimeDuration;               //!< Current time (ms). Its value is between 0 and the total duration.
         double m_norInitialTime;                      //!< Normalized initial time (between 0 and 1).
         double m_norFinalTime;                        //!< Normalized final time (between 0 and 1).

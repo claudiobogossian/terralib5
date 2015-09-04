@@ -46,7 +46,7 @@ te::da::DataSourceInfoPtr te::da::DataSourceInfoManager::get(const std::string& 
 
 bool te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
 {
-  if(ds.get() == 0)
+  if (ds.get() == 0)
     throw Exception(TE_TR("Can not insert a NULL data source into the manager!"));
 
   if (m_datasources.find(ds->getId()) == m_datasources.end())
@@ -57,7 +57,7 @@ bool te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
     while (dsInfoIt != m_datasources.end())
     {
       std::string dsConInfo = dsInfoIt->second->getConnInfoAsString();
-       
+
       if (conInfo == dsConInfo)
         return false;
 

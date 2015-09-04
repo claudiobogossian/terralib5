@@ -121,6 +121,8 @@ bool te::attributefill::RasterToVector::run()
   
   te::gm::Envelope* env = raster->getExtent();
 
+  te::gm::Envelope* env = raster->getExtent();
+
 // raster Attributes
   te::rp::RasterAttributes* rasterAtt = 0;
 

@@ -80,7 +80,7 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
   chartStyle->setTitle(QString::fromStdString("Histogram"));
 
   if(m_histogramDataWidget->getForm()->m_summaryComboBox->currentText() != "None")
-    chartStyle->setAxisX(m_histogramDataWidget->getForm()->m_summaryComboBox->currentText() + ": " + m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
+    chartStyle->setAxisX(QString::fromStdString(m_histogramDataWidget->getSummaryFunction()) + ": " + m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
   else
     chartStyle->setAxisX(m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
 

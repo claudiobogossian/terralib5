@@ -15,8 +15,8 @@ te::qt::widgets::GoesItem::GoesItem()
 {
 }
 
-te::qt::widgets::GoesItem::GoesItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
-  : te::qt::widgets::ImageItem(title, file, display)
+te::qt::widgets::GoesItem::GoesItem(const QString& title, const QString& folder, te::qt::widgets::MapDisplay* display)
+  : te::qt::widgets::ImageItem(title, folder, display)
 {
 }
 

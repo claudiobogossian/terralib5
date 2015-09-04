@@ -15,8 +15,8 @@ te::qt::widgets::Eta5kmItem::Eta5kmItem()
 {
 }
 
-te::qt::widgets::Eta5kmItem::Eta5kmItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
-  : te::qt::widgets::ImageItem(title, file, display)
+te::qt::widgets::Eta5kmItem::Eta5kmItem(const QString& title, const QString& folder, te::qt::widgets::MapDisplay* display)
+  : te::qt::widgets::ImageItem(title, folder, display)
 {
 }
 
@@ -214,6 +214,10 @@ void te::qt::widgets::Eta5kmItem::loadCurrentImage()
     fclose(fp);
     delete[]buf;
   }
+}
+
+void drawCurrentImage(QPainter* p)
+{
 }
 
 te::dt::TimeInstant te::qt::widgets::Eta5kmItem::getTime(QString fileName)

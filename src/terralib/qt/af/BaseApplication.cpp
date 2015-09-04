@@ -962,8 +962,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   
   te::qt::af::SaveDataSourcesFile();
 
-  XMLFormatter::format(m_project, true);
-  XMLFormatter::formatDataSourceInfos(true);
+  XMLFormatter::format(m_project, false);
+  XMLFormatter::formatDataSourceInfos(false);
 
   m_project->setProjectAsChanged(false);
 }
