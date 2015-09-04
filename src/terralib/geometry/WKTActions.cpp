@@ -255,6 +255,26 @@ void te::gm::WKTActions::createMultiPolygonZM()
   buildMultiPolygon(te::gm::MultiPolygonZMType);
 }
 
+void te::gm::WKTActions::createMultiSurface()
+{
+  buildMultiSurface(te::gm::MultiSurfaceType);
+}
+
+void te::gm::WKTActions::createMultiSurfaceZ()
+{
+  buildMultiSurface(te::gm::MultiSurfaceZType);
+}
+
+void te::gm::WKTActions::createMultiSurfaceM()
+{
+  buildMultiSurface(te::gm::MultiSurfaceMType);
+}
+
+void te::gm::WKTActions::createMultiSurfaceZM()
+{
+  buildMultiSurface(te::gm::MultiSurfaceZMType);
+}
+
 void te::gm::WKTActions::createPolyhedralSurface()
 {
   te::gm::PolyhedralSurface* ps = new te::gm::PolyhedralSurface(m_polygons.size(), te::gm::PolyhedralSurfaceType);
@@ -438,6 +458,18 @@ void te::gm::WKTActions::buildMultiPolygon(const te::gm::GeomType& t)
   m_polygons.clear();
 
   m_g = mp;
+}
+
+void te::gm::WKTActions::buildMultiSurface(const te::gm::GeomType& t)
+{
+  std::size_t size = m_geometries.size();
+  te::gm::MultiSurface* ms = new te::gm::MultiSurface(size, t);
+  for (std::size_t i = 0; i < size; ++i)
+    ms->setGeometryN(i, m_geometries[i]);
+
+  m_geometries.clear();
+
+  m_g = ms;
 }
 
 void te::gm::WKTActions::buildPolyhedralSurface(te::gm::PolyhedralSurface* ps)
