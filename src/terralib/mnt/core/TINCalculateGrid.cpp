@@ -37,7 +37,7 @@ bool te::mnt::TINCalculateGrid::run()
 
   std::vector<te::rst::BandProperty*> bands;
 
-  bands.push_back(new te::rst::BandProperty(0, te::dt::FLOAT_TYPE, "DTM GRID"));
+  bands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "DTM GRID"));
   bands[0]->m_nblocksx = 1;
   bands[0]->m_nblocksy = outputHeight;
   bands[0]->m_blkw = outputWidth;
