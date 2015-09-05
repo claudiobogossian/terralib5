@@ -84,8 +84,6 @@ QObject(parent),
   m_deleteGeometryToolAction(0),
   m_aggregateAreaToolAction(0),
   m_subtractAreaToolAction(0),
-  //m_mergeGeometriesToolAction(0),
-  //m_splitPolygonToolAction(0),
   m_featureAttributesAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
@@ -128,8 +126,14 @@ void te::qt::plugins::edit::ToolBar::updateLayer(te::map::AbstractLayer* layer, 
 
   if(layer == 0 || layer->getSRID() == 0)
   {
-    m_toolBar->setEnabled(false);
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Layer is not selected/SRID invalid"));
+    for (int i = 0; i < m_tools.size(); ++i)
+      m_tools[i]->setEnabled(false);
+
+    m_editAction->setChecked(false);
+
+    if (layer->getSRID() == 0)
+      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("SRID invalid."));
+
     return;
   }
   else
@@ -199,6 +203,20 @@ te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getLayer(const std::st
   throw te::common::Exception(TE_TR("Could not retrieve the layer."));
 }
 
+bool te::qt::plugins::edit::ToolBar::datasourceIsValid(const te::map::AbstractLayerPtr& layer)
+{
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.get()->getDataSourceId());
+
+  if (info->getType() != "POSTGIS" && info->getType() != "OGR")
+  {
+    m_toolBar->setEnabled(false);
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Under Development to this data source: ") + QString(info->getType().c_str()));
+    return false;
+  }
+
+  return true;
+}
+
 void te::qt::plugins::edit::ToolBar::initialize()
 {
   // Create the main toolbar
@@ -254,13 +272,11 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
 
   createAction(m_vertexToolAction, tr("Vertex Tool - Move, add and remove"), "edit-vertex-tool", true, false, "vertex_tool", SLOT(onVertexToolActivated(bool)));
   createAction(m_createPolygonToolAction, tr("Create Polygon"), "edit-create-polygon", true, false, "create_polygon", SLOT(onCreatePolygonToolActivated(bool)));
-  createAction(m_createLineToolAction, tr("Create Line"), "layout-drawline", true, false,"create_line", SLOT(onCreateLineToolActivated(bool))); //edit-create-line
+  createAction(m_createLineToolAction, tr("Create Line"), "layout-drawline", true, false,"create_line", SLOT(onCreateLineToolActivated(bool)));
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false, "move_geometry", SLOT(onMoveGeometryToolActivated(bool)));
   createAction(m_aggregateAreaToolAction, tr("Aggregate Area"), "vector-processing-aggregation", true, false, "aggregate_area", SLOT(onAggregateAreaToolActivated(bool)));
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "vector-processing-subtraction", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
-  //createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
-  //createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, false, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
   createAction(m_featureAttributesAction, tr("Feature Attributes"), "attributefill-icon", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
 
   // Get the action group of map tools.
@@ -275,8 +291,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_aggregateAreaToolAction);
   toolsGroup->addAction(m_subtractAreaToolAction);
   toolsGroup->addAction(m_deleteGeometryToolAction);
-  //toolsGroup->addAction(m_mergeGeometriesToolAction);
-  //toolsGroup->addAction(m_splitPolygonToolAction);
   toolsGroup->addAction(m_featureAttributesAction);
 
   // Grouping...
@@ -288,8 +302,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_aggregateAreaToolAction);
   m_tools.push_back(m_subtractAreaToolAction);
   m_tools.push_back(m_deleteGeometryToolAction);
-  //m_tools.push_back(m_mergeGeometriesToolAction);
- // m_tools.push_back(m_splitPolygonToolAction);
   m_tools.push_back(m_featureAttributesAction);
 
   // Adding tools to toolbar
@@ -403,6 +415,10 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       layer = getLayer(it->first);
       assert(layer.get());
 
+      // The data source is it prepared?
+      if (!datasourceIsValid(layer))
+        return;
+
       // For while, use DataSetLayer to get the DataSource
       te::map::DataSetLayer* dslayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
       assert(dslayer);
@@ -452,9 +468,12 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         te::gm::Geometry* geom = features[i]->getGeometry();
         assert(geom);
 
-        // Fill the new item
-        for (std::size_t j = 0; j < values.size(); ++j)
-          item->setValue(oidPropertyNames[j], values[j].clone());
+        if (features[i]->getOperationType() != te::edit::GEOMETRY_CREATE)
+        {
+          // Fill the new item
+          for (std::size_t j = 0; j < values.size(); ++j)
+            item->setValue(oidPropertyNames[j], values[j].clone());
+        }
 
         // Set the geometry type
         item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
@@ -750,7 +769,6 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool)
   }
 }
 
-
 void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
@@ -824,20 +842,7 @@ void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTo
 }
 
 void te::qt::plugins::edit::ToolBar::createUndoView(bool)
-{
-  /*
-
-  if (!checked)
-    return;
-
-  m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack());
-  m_undoView->setWindowTitle(tr("Edition List"));
-  m_undoView->setFixedSize(QSize(300, 300));
-  m_undoView->show();
-  m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
-
-  */
-}
+{}
 
 void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> acts, const bool& enable)
 {
@@ -851,15 +856,6 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> act
   {
     if (layer.get() == 0 || layer->getSRID() == 0)
       return;
-
-    te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
-
-    if (/*info->getType() != "POSTGIS" && */info->getType() != "OGR")
-    {
-      m_toolBar->setEnabled(false);
-      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The DataSource is incompatible!"));
-      return;
-    }
 
     // Get the geometry type of layer
     std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
@@ -885,8 +881,6 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> act
     m_aggregateAreaToolAction->setEnabled(geomType == 1 ? true : false);
     m_subtractAreaToolAction->setEnabled(geomType == 1 ? true : false);
     m_deleteGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
-    //m_mergeGeometriesToolAction->setEnabled(geomType == 1 ? true : false);
-    //m_splitPolygonToolAction->setEnabled(geomType == 1 ? true : false);
 
   }
 

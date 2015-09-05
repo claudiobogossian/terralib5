@@ -170,7 +170,7 @@ namespace te
           void initialize();
           void initializeActions();
           void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
-
+          bool datasourceIsValid(const te::map::AbstractLayerPtr& layer);
         };
 
       } // end namespace edit

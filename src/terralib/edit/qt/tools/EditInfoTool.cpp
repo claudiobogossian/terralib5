@@ -40,6 +40,7 @@ te::edit::EditInfoTool::EditInfoTool(te::qt::widgets::MapDisplay* display, const
   m_infoWidget(new QTreeWidget(display)),
   m_forceSearch(false)
 {
+  updateCursor();
 
   QGridLayout* layout = new QGridLayout(m_dialog);
 
@@ -47,7 +48,6 @@ te::edit::EditInfoTool::EditInfoTool(te::qt::widgets::MapDisplay* display, const
   m_dialog->setMinimumSize(300, 300);
 
   // Setup the widget that will be used to show the informations
-  m_infoWidget->setWindowTitle(tr("Information"));
   m_infoWidget->setWindowFlags(Qt::Tool);
   m_infoWidget->setAlternatingRowColors(true);
   m_infoWidget->setMinimumSize(250, 250);
@@ -56,17 +56,23 @@ te::edit::EditInfoTool::EditInfoTool(te::qt::widgets::MapDisplay* display, const
   QStringList labels;
   labels << tr("Property") << tr("Value");
   m_infoWidget->setHeaderLabels(labels);
-  
-  layout->addWidget(m_infoWidget);
 
-  QPushButton* okPushButton = new QPushButton("Save");
-  layout->addWidget(okPushButton, 1, 0);
+  m_infoWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  layout->addWidget(m_infoWidget,0,0,1,3);
+  
+  QLayoutItem* layoutItem = new QSpacerItem(40, 20, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+  layout->addItem(layoutItem, 1, 0);
+
+  QPushButton* okPushButton = new QPushButton(tr("Save"));
+  layout->addWidget(okPushButton, 1, 1);
+
+  QPushButton* cancelPushButton = new QPushButton(tr("Cancel"));
+  layout->addWidget(cancelPushButton, 1, 2);
 
   // Signals & slots
   connect(okPushButton, SIGNAL(pressed()), this, SLOT(onOkPushButtonPressed()));
+  connect(cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonPressed()));
   connect(m_infoWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onAttributesTreeWidgetItemDoubleClicked(QTreeWidgetItem*, int)));
-
-  updateCursor();
 
 }
 
@@ -380,6 +386,11 @@ void te::edit::EditInfoTool::onOkPushButtonPressed()
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 }
 
+void te::edit::EditInfoTool::onCancelPushButtonPressed()
+{
+  m_dialog->close();
+}
+
 void te::edit::EditInfoTool::draw()
 {
   const te::gm::Envelope& env = m_display->getExtent();
@@ -404,12 +415,9 @@ void te::edit::EditInfoTool::draw()
     return;
   }
 
-  //if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
-  //{
-    // Draw the current geometry
-    renderer.setPolygonStyle(QColor(0, 255, 0, 80), Qt::red, 3);
-    renderer.draw(m_feature->getGeometry(), false);
-  //}
+  // Draw the current geometry
+  renderer.setPolygonStyle(QColor(0, 255, 0, 80), Qt::red, 3);
+  renderer.draw(m_feature->getGeometry(), false);
 
   renderer.end();
 

@@ -77,6 +77,8 @@ namespace te
 
       void onOkPushButtonPressed();
 
+      void onCancelPushButtonPressed();
+
       void onAttributesTreeWidgetItemDoubleClicked(QTreeWidgetItem* item, int column);
 
     };
