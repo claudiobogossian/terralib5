@@ -72,11 +72,13 @@ namespace te
 
           std::vector<AbstractFormItem*>& getItems() { return m_items; }
 
+          AbstractFormItem* getItem(std::string itemName);
+
         protected:
 
           std::string m_name;
 
-          std::vector<te::qt::plugins::terramobile::AbstractFormItem*> m_items;
+          std::vector<AbstractFormItem*> m_items;
         };
 
       }   // end namespace thirdParty

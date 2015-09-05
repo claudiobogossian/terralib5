@@ -56,3 +56,14 @@ void te::qt::plugins::terramobile::Form::serialize(boost::property_tree::ptree& 
 
   pt.add_child("formitems", items);
 }
+
+te::qt::plugins::terramobile::AbstractFormItem* te::qt::plugins::terramobile::Form::getItem(std::string itemName)
+{
+  for (std::size_t t = 0; t < m_items.size(); ++t)
+  {
+    if (m_items[t]->getLabel() == itemName)
+      return m_items[t];
+  }
+
+  return 0;
+}

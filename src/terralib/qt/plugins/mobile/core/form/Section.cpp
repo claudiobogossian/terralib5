@@ -67,3 +67,14 @@ void te::qt::plugins::terramobile::Section::serialize(std::string fileName)
 
   boost::property_tree::json_parser::write_json(fileName, section);
 }
+
+te::qt::plugins::terramobile::Form* te::qt::plugins::terramobile::Section::getForm(std::string formName)
+{
+  for (std::size_t t = 0; t < m_forms.size(); ++t)
+  {
+    if (m_forms[t]->getName() == formName)
+      return m_forms[t];
+  }
+
+  return 0;
+}

@@ -54,7 +54,6 @@ namespace te
     {
       namespace terramobile
       {
-
         /*!
         \class AbstractFormItem
 
@@ -82,6 +81,8 @@ namespace te
           std::string getLabel() { return m_label; }
 
           void setLabel(std::string label) { m_label = label; }
+
+          std::string getType() { return m_type; }
 
         protected:
 

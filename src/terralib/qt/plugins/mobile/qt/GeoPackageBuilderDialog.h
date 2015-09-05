@@ -28,6 +28,8 @@
 
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
+#include "../../../../qt/widgets/utils/DoubleListWidget.h"
+#include "../core/form/Section.h"
 #include "../Config.h"
 
 // STL
@@ -35,6 +37,7 @@
 
 // Qt
 #include <QDialog>
+#include <QTreeWidgetItem>
 
 namespace Ui { class GeoPackageBuilderDialogForm; }
 
@@ -69,10 +72,29 @@ namespace te
 
             void onDirToolButtonPressed();
 
+            void onTabWidgetChanged(int index);
+
+            void onFormLayerActivated(int index);
+
+            void onAddFormToolButtonPressed();
+
+            void onTreeItemClicked(QTreeWidgetItem* item, int column);
+
+          protected:
+
+            std::list<te::map::AbstractLayerPtr> getGatheringLayers();
+
 
           private:
 
             std::auto_ptr<Ui::GeoPackageBuilderDialogForm> m_ui;
+
+            std::list<te::map::AbstractLayerPtr> m_list;
+
+            te::qt::widgets::DoubleListWidget* m_inputLayers;
+            te::qt::widgets::DoubleListWidget* m_gatheringLayers;
+
+            te::qt::plugins::terramobile::Section* m_section;
 
         }; 
       }   // end namespace thirdParty

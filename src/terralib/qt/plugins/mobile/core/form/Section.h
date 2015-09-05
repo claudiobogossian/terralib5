@@ -74,6 +74,8 @@ namespace te
 
             std::vector<Form*>& getForms() { return m_forms; }
 
+            Form* getForm(std::string formName);
+
           protected:
 
             std::string m_name;
