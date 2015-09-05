@@ -613,6 +613,7 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool)
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_vertexToolAction->setChecked(false);
     return;
   }
 
@@ -630,6 +631,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_createPolygonToolAction->setChecked(false);
     return;
   }
 
@@ -647,6 +649,7 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_createLineToolAction->setCheckable(false);
     return;
   }
 
@@ -664,6 +667,7 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_moveGeometryToolAction->setChecked(false);
     return;
   }
 
@@ -692,6 +696,7 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated(bool)
   if (layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_featureAttributesAction->setChecked(false);
     return;
   }
 
@@ -710,6 +715,7 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_aggregateAreaToolAction->setChecked(false);
     return;
   }
 
@@ -727,6 +733,7 @@ void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_subtractAreaToolAction->setChecked(false);
     return;
   }
 
@@ -745,15 +752,12 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool)
   {
     te::map::AbstractLayerPtr layer = getSelectedLayer();
 
-    m_deleteGeometryToolAction->setChecked(false);
-
     if(layer.get() == 0)
     {
       QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+      m_deleteGeometryToolAction->setChecked(false);
       return;
     }
-
-    m_deleteGeometryToolAction->setChecked(true);
 
     te::qt::af::evt::GetMapDisplay e;
     emit triggered(&e);

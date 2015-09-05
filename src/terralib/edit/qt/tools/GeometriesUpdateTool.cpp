@@ -13,14 +13,10 @@ te::edit::GeometriesUpdateTool::GeometriesUpdateTool(te::qt::widgets::MapDisplay
   m_isInUse(true),
   m_feature(0),
   m_layer(layer)
-{
-
-}
+{}
 
 te::edit::GeometriesUpdateTool::~GeometriesUpdateTool()
 {
-//  delete m_feature;
-
   emit toolDeleted();
 }
 

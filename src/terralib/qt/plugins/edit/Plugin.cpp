@@ -163,7 +163,7 @@ void te::qt::plugins::edit::Plugin::shutdown()
   te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
-void te::qt::plugins::edit::Plugin::onActionActivated(bool checked)
+void te::qt::plugins::edit::Plugin::onActionActivated(bool)
 {
   te::qt::af::evt::NewActionsAvailable e;
   e.m_toolbar = m_toolbar->get();
@@ -226,6 +226,9 @@ void te::qt::plugins::edit::Plugin::onStashedLayer(te::map::AbstractLayer* layer
 
 void te::qt::plugins::edit::Plugin::onGeometriesChanged()
 {
+  if (m_toolbar->getSelectedLayer() == 0)
+    return;
+
   m_delegate->addEdited(m_toolbar->getSelectedLayer()->getTitle());
 
   UpdateTreeView(getLayerExplorer());
