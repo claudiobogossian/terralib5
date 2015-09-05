@@ -97,6 +97,7 @@ te::qt::plugins::terramobile::GeoPackageBuilderDialog::GeoPackageBuilderDialog(Q
   connect(m_ui->m_formLayerComboBox, SIGNAL(activated(int)), this, SLOT(onFormLayerActivated(int)));
   connect(m_ui->m_addFormToolButton, SIGNAL(pressed()), this, SLOT(onAddFormToolButtonPressed()));
   connect(m_ui->m_treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));
+  connect(m_ui->m_stringComboAddToolButton, SIGNAL(pressed()), this, SLOT(onStringComboAddToolButtonPressed()));
 }
 
 te::qt::plugins::terramobile::GeoPackageBuilderDialog::~GeoPackageBuilderDialog()
@@ -213,6 +214,9 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTabWidgetChanged(i
         item->setExpanded(true);
       }
     }
+
+    m_ui->m_treeWidget->resizeColumnToContents(0);
+    m_ui->m_treeWidget->resizeColumnToContents(1);
   }
 }
 
@@ -227,6 +231,8 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onFormLayerActivated
   std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
 
   std::vector < te::dt::Property*> props = dsType->getProperties();
+
+  m_ui->m_formNameLineEdit->setText(layer->getTitle().c_str());
 
   //fill table
   m_ui->m_formTableWidget->setRowCount(0);
@@ -256,6 +262,20 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onFormLayerActivated
       m_ui->m_formTableWidget->setItem(newrow, 2, item);
     }
 
+    //key
+    {
+      QTableWidgetItem* item = new QTableWidgetItem(props[t]->getName().c_str());
+      item->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_formTableWidget->setItem(newrow, 3, item);
+    }
+
+    //label
+    {
+      QTableWidgetItem* item = new QTableWidgetItem(props[t]->getName().c_str());
+      item->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_formTableWidget->setItem(newrow, 4, item);
+    }
+
     //type combo
     {
       QComboBox* cmbProperty = new QComboBox(m_ui->m_formTableWidget);
@@ -269,6 +289,25 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onFormLayerActivated
       cmbProperty->addItem(STRINGCOMBOFORMITEMTYPE);
       cmbProperty->addItem(STRINGFORMITEMTYPE);
       cmbProperty->addItem(TIMEFORMITEMTYPE);
+
+      //suggest value
+
+      if (props[t]->getType() == te::dt::INT16_TYPE || props[t]->getType() == te::dt::INT32_TYPE || props[t]->getType() == te::dt::INT64_TYPE)
+      {
+        cmbProperty->setCurrentText(INTFORMITEMTYPE);
+      }
+      else if (props[t]->getType() == te::dt::DOUBLE_TYPE || props[t]->getType() == te::dt::FLOAT_TYPE)
+      {
+        cmbProperty->setCurrentText(DOUBLEFORMITEMTYPE);
+      }
+      else if (props[t]->getType() == te::dt::BOOLEAN_TYPE)
+      {
+        cmbProperty->setCurrentText(BOOLFORMITEMTYPE);
+      }
+      else if (props[t]->getType() == te::dt::STRING_TYPE)
+      {
+        cmbProperty->setCurrentText(STRINGFORMITEMTYPE);
+      }
       
       m_ui->m_formTableWidget->setCellWidget(newrow, 5, cmbProperty);
     }
@@ -305,13 +344,13 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onAddFormToolButtonP
   }
 
   //create form
-  if (m_ui->m_formNameComboBox->text().isEmpty())
+  if (m_ui->m_formNameLineEdit->text().isEmpty())
   {
     QMessageBox::warning(this, tr("Warning"), tr("Form name not defined."));
     return;
   }
 
-  std::string formName = m_ui->m_formNameComboBox->text().toStdString();
+  std::string formName = m_ui->m_formNameLineEdit->text().toStdString();
 
   te::qt::plugins::terramobile::Form* form = new te::qt::plugins::terramobile::Form();
 
@@ -472,6 +511,17 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTreeItemClicked(QT
 
     m_ui->m_formItemLineEdit->setText(formName.c_str());
   }
+}
+
+void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onStringComboAddToolButtonPressed()
+{
+  if (m_ui->m_stringComboValueLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Value not defined."));
+    return;
+  }
+
+  m_ui->m_listWidget->addItem(m_ui->m_stringComboValueLineEdit->text());
 }
 
 std::list<te::map::AbstractLayerPtr> te::qt::plugins::terramobile::GeoPackageBuilderDialog::getGatheringLayers()

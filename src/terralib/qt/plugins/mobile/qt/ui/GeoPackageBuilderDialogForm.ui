@@ -120,7 +120,7 @@
                    </widget>
                   </item>
                   <item row="1" column="1">
-                   <widget class="QLineEdit" name="m_formNameComboBox"/>
+                   <widget class="QLineEdit" name="m_formNameLineEdit"/>
                   </item>
                  </layout>
                 </item>
@@ -284,6 +284,9 @@
                           </item>
                           <item row="0" column="1">
                            <widget class="QComboBox" name="m_boolComboBox">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -352,7 +355,11 @@
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QDateEdit" name="m_dateEdit"/>
+                           <widget class="QDateEdit" name="m_dateEdit">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -404,7 +411,11 @@
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLineEdit" name="m_doubleLineEdit"/>
+                           <widget class="QLineEdit" name="m_doubleLineEdit">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -456,7 +467,11 @@
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLineEdit" name="m_intLineEdit"/>
+                           <widget class="QLineEdit" name="m_intLineEdit">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -508,7 +523,11 @@
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLineEdit" name="m_labelLineEdit"/>
+                           <widget class="QLineEdit" name="m_labelLineEdit">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -560,7 +579,11 @@
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLineEdit" name="m_stringComboLineEdit"/>
+                           <widget class="QLineEdit" name="m_stringComboLineEdit">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -601,7 +624,7 @@
                             </widget>
                            </item>
                            <item row="1" column="0" colspan="2">
-                            <widget class="QListWidget" name="listWidget">
+                            <widget class="QListWidget" name="m_listWidget">
                              <property name="dragDropMode">
                               <enum>QAbstractItemView::InternalMove</enum>
                              </property>
@@ -1003,6 +1026,102 @@
     <hint type="destinationlabel">
      <x>420</x>
      <y>408</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueBoolCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_boolComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>539</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>620</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueDateCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_dateEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>539</x>
+     <y>186</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>607</x>
+     <y>182</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueDoubleCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_doubleLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>537</x>
+     <y>174</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>606</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueIntCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_intLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>557</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>601</x>
+     <y>185</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueLabelCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_labelLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>568</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>604</x>
+     <y>182</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueStringComboCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_stringComboLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>564</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>609</x>
+     <y>187</y>
     </hint>
    </hints>
   </connection>

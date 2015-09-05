@@ -80,6 +80,8 @@ namespace te
 
             void onTreeItemClicked(QTreeWidgetItem* item, int column);
 
+            void onStringComboAddToolButtonPressed();
+
           protected:
 
             std::list<te::map::AbstractLayerPtr> getGatheringLayers();
