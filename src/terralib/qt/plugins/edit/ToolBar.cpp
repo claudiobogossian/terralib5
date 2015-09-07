@@ -231,8 +231,6 @@ void te::qt::plugins::edit::ToolBar::initialize()
 
   m_snapOptionsAction->setEnabled(true);
 
-  createUndoView(true);
-
   enableActionsByGeomType(m_tools, false);
 
 }
@@ -810,6 +808,41 @@ void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool)
 
 }
 
+void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool checked)
+{
+  try
+  {
+    te::map::AbstractLayerPtr layer = getSelectedLayer();
+
+    if (layer.get() == 0)
+    {
+      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+      return;
+    }
+
+    te::qt::af::evt::GetMapDisplay e;
+    emit triggered(&e);
+
+    assert(e.m_display);
+
+    if (m_undoView == 0)
+    {
+      m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack(),0);
+      m_undoView->setWindowTitle(tr("Edition List"));
+      m_undoView->setFixedSize(QSize(300, 300));
+      m_undoView->show();
+      m_undoView->setAttribute(Qt::WA_QuitOnClose, true);//false);
+
+    }
+
+  }
+  catch (te::common::Exception& e)
+  {
+    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), e.what());
+    return;
+  }
+}
+
 void te::qt::plugins::edit::ToolBar::onToolDeleted()
 {
   m_currentTool = 0;
@@ -844,9 +877,6 @@ void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTo
   connect(m_currentTool, SIGNAL(toolDeleted()), SLOT(onToolDeleted()));
 
 }
-
-void te::qt::plugins::edit::ToolBar::createUndoView(bool)
-{}
 
 void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> acts, const bool& enable)
 {

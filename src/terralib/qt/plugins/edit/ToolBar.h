@@ -82,10 +82,6 @@ namespace te
 
           void updateLayer(te::map::AbstractLayer* layer, const bool& stashed);
 
-        private:
-
-          void createUndoView(bool checked);
-
         public slots:
 
           void onEditActivated(bool checked);
@@ -111,6 +107,8 @@ namespace te
           void onDeleteGeometryToolActivated(bool checked);
 
           void onMergeGeometriesToolActivated(bool checked);
+
+          void onCreateUndoViewActivated(bool checked);
 
           void onToolDeleted();
 
