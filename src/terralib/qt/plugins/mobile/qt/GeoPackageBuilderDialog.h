@@ -40,6 +40,10 @@ namespace Ui { class GeoPackageBuilderDialogForm; }
 
 namespace te
 {
+
+  //Forward declaration
+  namespace da { class DataSource; }
+
   namespace qt
   {
     namespace plugins
@@ -63,12 +67,21 @@ namespace te
 
           public:
 
-            void setLayerList(std::list<te::map::AbstractLayerPtr> list);
+		        void exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG);
+					 
+            std::vector<te::map::AbstractLayerPtr> getGatheringLayers();
 
+            std::vector<te::map::AbstractLayerPtr> getOverlayLayers();
+
+            std::vector<te::map::AbstractLayerPtr> getRasterLayers();			
+
+            void setLayerList(std::list<te::map::AbstractLayerPtr> list);
+			
           protected slots:
 
             void onDirToolButtonPressed();
-
+			
+            void onOkPushButtonClicked();
 
           private:
 
