@@ -381,7 +381,7 @@ namespace te
      /*!
           \brief Issued after insertion of an item in the scene.
         */
-         void addItemFinalized();
+         void addItemFinalized(QGraphicsItem* item);
     
     /*!
           \brief Issued after deleting an item in the scene.
