@@ -48,22 +48,22 @@ int te::layout::ContextObject::getZoom() const
   return m_zoom;
 }
 
-int te::layout::ContextObject::getDpiX()
+int te::layout::ContextObject::getDpiX() const
 {
   return m_dpiX;
 }
 
-int te::layout::ContextObject::getDpiY()
+int te::layout::ContextObject::getDpiY() const
 {
   return m_dpiY;
 }
 
-te::layout::PaperConfig* te::layout::ContextObject::getPaperConfig()
+te::layout::PaperConfig* te::layout::ContextObject::getPaperConfig() const
 {
   return m_config;
 }
 
-te::layout::EnumType* te::layout::ContextObject::getCurrentMode()
+te::layout::EnumType* te::layout::ContextObject::getCurrentMode() const
 {
   return m_mode;
 }

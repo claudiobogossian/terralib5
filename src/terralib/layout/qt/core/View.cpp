@@ -862,6 +862,8 @@ void te::layout::View::setZoom(int newZoom)
       sce->onChangeZoom(newZoom);
     }
 
+    this->update();
+
     emit zoomChanged(newZoom);
   }
 }
