@@ -907,7 +907,6 @@ QGraphicsItem* te::layout::Scene::getPaperItem()
 {
   QGraphicsItem* paper = 0;
 
-  EnumObjectType* object = Enums::getInstance().getEnumObjectType();
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems)
   {

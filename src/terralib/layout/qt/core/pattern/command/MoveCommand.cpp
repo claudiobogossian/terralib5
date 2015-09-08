@@ -106,7 +106,9 @@ void te::layout::MoveCommand::redo()
   if(m_moveItems.empty())
     return;
 
-  if(m_moveItems.size() != m_itemsPoints.size())
+  int moveItensSize = m_moveItems.size();
+
+  if(moveItensSize != m_itemsPoints.size())
     return;
 
   Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());

@@ -55,8 +55,8 @@
 te::qt::plugins::layout::LayoutEditorAction::LayoutEditorAction(QMenu* menu)
   : te::qt::plugins::layout::AbstractAction(menu),
    m_dockLayoutDisplay(0),
-   m_groupBox(0),
    m_mainLayout(0),
+   m_groupBox(0),
    m_statusBar(0),
    m_verticalLayout(0)
 {
