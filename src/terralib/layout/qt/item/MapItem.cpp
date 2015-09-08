@@ -87,14 +87,14 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
   te::gm::Envelope box(0, 0, boxMM.width(), boxMM.height());
   box = utils->viewportBox(box);
 
-  QSizeF currentSize = m_mapDisplay->size();
-  QSizeF newSize(box.getWidth(), box.getHeight());
+  m_mapDisplay->setOverrideDPI(context.getDpiX(), context.getDpiY());
+
+  QSize currentSize = m_mapDisplay->size();
+  QSize newSize(qRound(box.getWidth()), qRound(box.getHeight()));
   if(currentSize != newSize)
   {
-    QPointF pt = this->pos();
-
     this->prepareGeometryChange();
-    m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
+    m_mapDisplay->resize(newSize);
     refresh();
   }
 }
