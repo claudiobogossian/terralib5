@@ -38,6 +38,10 @@ te::layout::MovingItemGroup::~MovingItemGroup()
 
 }
 
+void te::layout::MovingItemGroup::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0*/)
+{
+
+}
 
 
 

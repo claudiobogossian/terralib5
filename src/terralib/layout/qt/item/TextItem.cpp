@@ -49,6 +49,7 @@ te::layout::TextItem::TextItem(AbstractItemController* controller, bool inverted
 {  
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(false);
+  setCursor(Qt::ArrowCursor); // default cursor
 
   connect(document(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateGeometry(int, int, int)));
 }
@@ -86,27 +87,25 @@ QVariant te::layout::TextItem::itemChange ( QGraphicsItem::GraphicsItemChange ch
       }
     }
   }
-  else if(change == QGraphicsItem::ItemSelectedHasChanged)
-  {
-    if(m_isEditionMode && isSelected() == false)
-    {
-      leaveEditionMode();
-    }
-  }
   return AbstractItem<QGraphicsTextItem>::itemChange(change, value);
 }
 
-void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
+void te::layout::TextItem::mousePressEvent(QGraphicsSceneMouseEvent * event)
+{
+  QGraphicsTextItem::mousePressEvent(event);
+  if (m_isEditionMode)
+  {
+    setCursor(Qt::IBeamCursor);
+  }
+}
+
+void te::layout::TextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
 {
   if(event->button() == Qt::LeftButton)
   {
     if(m_isEditionMode == true)
     {
       enterEditionMode();
-    }
-    else
-    {
-      setCursor(Qt::ArrowCursor);
     }
   }
 }
@@ -144,6 +143,7 @@ void te::layout::TextItem::leaveEditionMode()
   setTextInteractionFlags(Qt::NoTextInteraction);
   unsetCursor();
   clearFocus();
+  setCursor(Qt::ArrowCursor);
 
   TextController* controller = dynamic_cast<TextController*>(m_controller);
   if(controller != 0)

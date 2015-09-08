@@ -36,17 +36,12 @@
 te::layout::ItemGroup::ItemGroup(AbstractItemController* controller, bool invertedMatrix)
   : AbstractItem<QGraphicsItemGroup>(controller, invertedMatrix)
 {
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges);
-
-  //If enabled is true, this item will accept hover events
-  setAcceptHoverEvents(true);
+  
 }
 
 te::layout::ItemGroup::~ItemGroup()
 {
-
+  
 }
 
 void te::layout::ItemGroup::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )

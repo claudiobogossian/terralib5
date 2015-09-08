@@ -35,6 +35,8 @@
 #include "ItemGroup.h"
 #include "../../core/Config.h"
 
+#include <QRectF>
+
 namespace te
 {
   namespace layout
@@ -57,6 +59,11 @@ namespace te
       MovingItemGroup(AbstractItemController* controller, bool invertedMatrix = false);
 
       virtual ~MovingItemGroup();
+      
+      /*!
+      \brief Reimplemented from AbstractItem
+      */
+      virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
     };
   }
 }

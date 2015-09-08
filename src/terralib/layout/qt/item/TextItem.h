@@ -93,6 +93,11 @@ namespace te
       protected:
 
         /*!
+        \brief Reimplemented from QGraphicsTextItem
+        */
+        virtual void	mousePressEvent(QGraphicsSceneMouseEvent * event);
+
+        /*!
           \brief Reimplemented from QGraphicsTextItem
          */
         virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );

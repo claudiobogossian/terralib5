@@ -451,6 +451,8 @@ namespace te
         virtual void enterEditionMode();
 
         virtual void leaveEditionMode();
+
+        virtual te::gm::Envelope switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper);
                 
     protected:
 

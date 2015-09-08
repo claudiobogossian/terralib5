@@ -27,22 +27,19 @@
 
 // TerraLib
 #include "ObjectInspectorOutside.h"
-
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
-
 #include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "../../core/pattern/mvc/AbstractOutsideModel.h"
+#include "../item/MovingItemGroup.h"
 
 //Qt
 #include <QGraphicsWidget>
 #include <QVBoxLayout>
 #include <QGroupBox>
-
 #include <QtPropertyBrowser/QtProperty>
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
-
 #include <QTreeWidget>
 
 te::layout::ObjectInspectorOutside::ObjectInspectorOutside(AbstractOutsideController* controller)
@@ -129,6 +126,12 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
       continue;
     }
 
+    MovingItemGroup* moving = dynamic_cast<MovingItemGroup*>(parentItem);
+    if (moving)
+    {
+      continue;
+    }
+
     AbstractItemView* absParentItem = dynamic_cast<AbstractItemView*>(parentItem);
     if(absParentItem == 0)
     {
@@ -154,6 +157,12 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
 
     foreach(QGraphicsItem *childItem, parentItem->childItems()) 
     {
+      MovingItemGroup* moving = dynamic_cast<MovingItemGroup*>(childItem);
+      if (moving)
+      {
+        continue;
+      }
+
       AbstractItemView* absChildItem = dynamic_cast<AbstractItemView*>(childItem);
       if(absChildItem == 0)
       {

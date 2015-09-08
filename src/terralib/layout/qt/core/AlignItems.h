@@ -20,7 +20,7 @@
 /*!
   \file AlignItems.h
    
-  \brief Class applying the alignment of one or more objects. Ex .: send to back, bring to front, align right, align bottom.
+  \brief Class applying the alignment in one or more components. Ex .: send to back, bring to front, align right, align bottom.
 
   \ingroup layout
 */
@@ -42,7 +42,7 @@ namespace te
   namespace layout
   {
     /*!
-    \brief Class applying the alignment of one or more objects. Ex .: send to back, bring to front, align right, align bottom.
+    \brief Class applying the alignment in one or more components. Ex .: send to back, bring to front, align right, align bottom.
     
     \ingroup layout
     */
@@ -50,32 +50,82 @@ namespace te
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         AlignItems( QGraphicsScene* scene, PaperConfig* config );
 
+        /*!
+          \brief Destructor
+        */
         virtual ~AlignItems();
 
+        /*!
+          \brief
+        */
         virtual void bringToFront();
 
+        /*!
+          \brief
+        */
         virtual void sendToBack();
 
+        /*!
+          \brief
+        */
         virtual void alignLeft();
 
+        /*!
+          \brief
+        */
         virtual void alignRight();
 
+        /*!
+          \brief
+        */
         virtual void alignTop();
 
+        /*!
+          \brief
+        */
         virtual void alignBottom();
 
+        /*!
+          \brief
+        */
         virtual void alignCenterHorizontal();
 
+        /*!
+          \brief
+        */
         virtual void alignCenterVertical();
 
+        /*!
+          \brief
+
+          \return
+        */
         virtual QRectF getSelectionItemsBoundingBox();
+
+        /*!
+          \brief
+
+          \return
+        */
+        int getMinimumZValue();
+
+        /*!
+          \brief  
+
+          \param
+        */
+        void setMinimumZValue(int minimum);
 
       protected:
 
         QGraphicsScene* m_scene;
         PaperConfig*    m_config;
+        int             m_minimunZValue;
     };
   }
 }

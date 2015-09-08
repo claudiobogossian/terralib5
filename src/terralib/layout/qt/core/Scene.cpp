@@ -53,6 +53,7 @@
 
 // STL
 #include <algorithm>
+#include <complex>
 
 // Qt
 #include <QUndoCommand>
@@ -371,7 +372,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
   }
 
   ItemGroup* group = dynamic_cast<ItemGroup*>(item);
-  group->setPos(QPointF(x, y));
+  group->setPos(QPointF(x, y)); // The group component must be initialized with a position (setPos).
 
   if(p)
   {
@@ -392,9 +393,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
       addUndoStack(command);
     }
   }
-
-  insertItem((QGraphicsItem*)group);
-
+  
   return group;
 }
 
@@ -418,6 +417,7 @@ te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QLi
 
   if (movingItem)
   {
+    movingItem->setPos(QPointF(0,0)); //The group component must be initialized with a position (setPos).
     foreach(QGraphicsItem* i, items)
     {
       movingItem->addToGroup(i);
@@ -945,10 +945,16 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
         if(it)
         {
           te::gm::Envelope box = it->getController()->getModel()->getBoundingRect();
+          
+          box = switchBox(box, oldPaper, newPaper);   
 
+          box.m_llx = ((box.m_llx * newPaper.width()) / oldPaper.width());
+          box.m_lly = ((box.m_lly * newPaper.height()) / oldPaper.height());
+          box.m_urx = ((box.m_urx * newPaper.width()) / oldPaper.width());
+          box.m_ury = ((box.m_ury * newPaper.height()) / oldPaper.height());
+          
           AbstractItemModel* model = it->getController()->getModel();
           updateBoxFromProperties(box, model);
-          item->setPos(box.m_llx, box.m_lly);
         }
       }
     }
@@ -991,6 +997,25 @@ void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractIt
   props.addProperty(pro_height);
 
   model->setProperties(props);
+}
+
+te::gm::Envelope te::layout::Scene::switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper)
+{
+  if (oldPaper.height() == newPaper.height()
+    && oldPaper.width() == newPaper.width())
+  {
+    return box;
+  }
+
+  double width = box.getWidth();
+  double height = box.getHeight();
+
+  box.m_llx = box.m_llx - height;
+  box.m_lly = box.m_ury;
+  box.m_urx = box.m_llx + width;
+  box.m_ury = box.m_lly + height;
+
+  return box;
 }
 
 te::layout::ContextObject te::layout::Scene::getContext()
@@ -1133,6 +1158,7 @@ void te::layout::Scene::leaveEditionMode()
   m_currentItemEdition->setEditionMode(false);
   update();
 }
+
 
 
 
