@@ -417,6 +417,10 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       if (!datasourceIsValid(layer))
         return;
 
+      // Get the data souce info
+      te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.get()->getDataSourceId());
+      assert(info.get());
+
       // For while, use DataSetLayer to get the DataSource
       te::map::DataSetLayer* dslayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
       assert(dslayer);
@@ -462,16 +466,45 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         const boost::ptr_vector<te::dt::AbstractData>& values = oid->getValue();
         assert(values.size() == oidPropertyNames.size());
 
+        switch (features[i]->getOperationType())
+        {
+          case te::edit::GEOMETRY_CREATE:
+          {
+            // case if postgis, take the max value of oid
+            if (info.get()->getType() == "POSTGIS")
+            {
+              //if case is a new feature and the oid is numeric
+              for (std::size_t j = 0; j < values.size(); ++j)
+              {
+                int pType = operationds[te::edit::GEOMETRY_CREATE]->getPropertyDataType(te::da::GetPropertyPos(operationds[te::edit::GEOMETRY_CREATE], oidPropertyNames[j]));
+
+                if (pType != te::dt::STRING_TYPE)
+                {
+                  std::string sql = "select max(" + oidPropertyNames[j] + ") + " + boost::lexical_cast<std::string>(i + 1) + " as " + oidPropertyNames[j] + " from " + schema.get()->getName();
+                  std::auto_ptr<te::da::DataSet> dsMax = dsource->query(sql);
+
+                  if (dsMax.get())
+                  {
+                    dsMax->moveFirst();
+                    item->setValue(oidPropertyNames[j], dsMax->getValue(oidPropertyNames[j]).release());
+                  }
+                }
+              }
+            }
+
+            break;
+          }
+          default:
+            // Fill the new item
+            for (std::size_t j = 0; j < values.size(); ++j)
+              item->setValue(oidPropertyNames[j], values[j].clone());
+
+            break;
+        }
+
         // Get the edited geometry
         te::gm::Geometry* geom = features[i]->getGeometry();
         assert(geom);
-
-        if (features[i]->getOperationType() != te::edit::GEOMETRY_CREATE)
-        {
-          // Fill the new item
-          for (std::size_t j = 0; j < values.size(); ++j)
-            item->setValue(oidPropertyNames[j], values[j].clone());
-        }
 
         // Set the geometry type
         item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
