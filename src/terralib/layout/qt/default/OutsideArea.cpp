@@ -445,7 +445,7 @@ void te::layout::OutsideArea::onSelectionChanged()
     m_dockInspector->getObjectInspectorOutside()->selectItems(graphicsItems);
 }
 
-void te::layout::OutsideArea::onAddItemFinalized()
+void te::layout::OutsideArea::onAddItemFinalized(QGraphicsItem* item)
 {
   QList<QGraphicsItem*> allItems = m_view->scene()->items();
   //Refresh Inspector Object window

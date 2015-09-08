@@ -77,7 +77,7 @@ namespace te
     public slots:
 
       virtual void onMainMenuTriggered(QAction* action);
-      virtual void onAddItemFinalized();
+      virtual void onAddItemFinalized(QGraphicsItem* item);
       virtual void onShowView();
       virtual void onHideView();
       virtual void onCloseView();

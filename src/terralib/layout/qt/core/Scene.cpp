@@ -191,7 +191,7 @@ void te::layout::Scene::insertItem(QGraphicsItem* item)
 
   removeItemStackWithoutScene(item);
 
-  emit addItemFinalized();
+  emit addItemFinalized(item);
 }
 
 void te::layout::Scene::init( double screenWMM, double screenHMM )
