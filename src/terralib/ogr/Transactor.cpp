@@ -99,7 +99,8 @@ void te::ogr::Transactor::commit()
     return;
 
   // we have to reopen datasource so pending data gets synched to disk!
-  if(m_ogrDs->getOGRDataSource()->SyncToDisk() != OGRERR_NONE)
+  //if(m_ogrDs->getOGRDataSource()->SyncToDisk() != OGRERR_NONE)
+  if(OGR_DS_SyncToDisk(m_ogrDs) != OGRERR_NONE)
     throw;
 }
 
