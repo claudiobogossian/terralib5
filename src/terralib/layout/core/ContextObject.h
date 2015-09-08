@@ -55,13 +55,13 @@ namespace te
 
         virtual int getZoom() const;
 
-        virtual int getDpiX();
+        virtual int getDpiX() const;
         
-        virtual int getDpiY();
+        virtual int getDpiY() const;
 
-        virtual PaperConfig* getPaperConfig();
+        virtual PaperConfig* getPaperConfig() const;
 
-        virtual EnumType* getCurrentMode();
+        virtual EnumType* getCurrentMode() const;
 
         virtual bool isValid();
 
