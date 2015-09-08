@@ -35,6 +35,16 @@ te::qt::plugins::terramobile::StringFormItem::~StringFormItem()
 {
 }
 
+void te::qt::plugins::terramobile::StringFormItem::setValue(std::string value) 
+{ 
+  m_value = value; 
+}
+
+std::string te::qt::plugins::terramobile::StringFormItem::getValue() 
+{ 
+  return m_value; 
+}
+
 void te::qt::plugins::terramobile::StringFormItem::toString()
 {
   m_defaultValue = m_value;

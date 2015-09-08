@@ -57,9 +57,9 @@ namespace te
 
         public:
 
-          void setValue(std::string value) { m_value = value; }
+          void setValue(std::string value);
 
-          std::string getValue() { return m_value; }
+          std::string getValue();
 
         protected:
 

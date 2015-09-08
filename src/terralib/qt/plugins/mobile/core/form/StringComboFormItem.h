@@ -57,13 +57,13 @@ namespace te
 
         public:
 
-          void setValue(std::string value) { m_value = value; }
+          void setValue(std::string value);
 
-          std::string getValue() { return m_value; }
+          std::string getValue();
 
-          void setValues(std::vector<std::string> values) { m_itemValues = values; }
+          void setValues(std::vector<std::string> values);
 
-          std::vector<std::string> getValues() { return m_itemValues; }
+          std::vector<std::string> getValues();
 
         protected:
 

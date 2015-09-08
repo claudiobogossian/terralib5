@@ -84,6 +84,10 @@ namespace te
 
           std::string getType() { return m_type; }
 
+          bool hasDefaultValue() { return m_hasDefaultValue; }
+
+          std::string getStrDefaultValue();
+
         protected:
 
           virtual void toString() = 0;
@@ -96,6 +100,8 @@ namespace te
 
           std::string m_defaultValue;
           std::vector<std::string> m_values;
+
+          bool m_hasDefaultValue;
           
         };
 

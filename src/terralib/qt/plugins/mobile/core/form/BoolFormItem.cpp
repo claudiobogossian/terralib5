@@ -35,6 +35,18 @@ te::qt::plugins::terramobile::BoolFormItem::~BoolFormItem()
 {
 }
 
+void te::qt::plugins::terramobile::BoolFormItem::setValue(bool value) 
+{ 
+  m_value = value;
+
+  m_hasDefaultValue = true;
+}
+
+bool te::qt::plugins::terramobile::BoolFormItem::getValue() 
+{ 
+  return m_value; 
+}
+
 void te::qt::plugins::terramobile::BoolFormItem::toString()
 {
   if (m_value)

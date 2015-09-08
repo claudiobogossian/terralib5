@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../../qt/widgets/utils/DoubleListWidget.h"
+#include "../core/form/AbstractFormItem.h"
 #include "../core/form/Section.h"
 #include "../Config.h"
 
@@ -82,6 +83,10 @@ namespace te
 
             void onStringComboAddToolButtonPressed();
 
+            void onSaveFormItemToolButton();
+
+            void onOkPushButtonClicked();
+
           protected:
 
             std::list<te::map::AbstractLayerPtr> getGatheringLayers();
@@ -97,6 +102,11 @@ namespace te
             te::qt::widgets::DoubleListWidget* m_gatheringLayers;
 
             te::qt::plugins::terramobile::Section* m_section;
+
+            te::qt::plugins::terramobile::Form* m_curForm;
+            te::qt::plugins::terramobile::AbstractFormItem* m_curFormItem;
+
+            int m_itemTreeType;
 
         }; 
       }   // end namespace thirdParty

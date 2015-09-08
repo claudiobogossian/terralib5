@@ -35,6 +35,28 @@ te::qt::plugins::terramobile::StringComboFormItem::~StringComboFormItem()
 {
 }
 
+void te::qt::plugins::terramobile::StringComboFormItem::setValue(std::string value) 
+{ 
+  m_value = value; 
+
+  m_hasDefaultValue = true;
+}
+
+std::string te::qt::plugins::terramobile::StringComboFormItem::getValue() 
+{ 
+  return m_value; 
+}
+
+void te::qt::plugins::terramobile::StringComboFormItem::setValues(std::vector<std::string> values) 
+{ 
+  m_itemValues = values; 
+}
+
+std::vector<std::string> te::qt::plugins::terramobile::StringComboFormItem::getValues() 
+{ 
+  return m_itemValues; 
+}
+
 void te::qt::plugins::terramobile::StringComboFormItem::toString()
 {
   m_defaultValue = m_value;

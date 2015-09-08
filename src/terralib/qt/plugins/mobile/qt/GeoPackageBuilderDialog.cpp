@@ -27,6 +27,7 @@
 #include "../../../../common/progress/ProgressManager.h"
 #include "../../../../common/progress/TaskProgress.h"
 #include "../../../../common/STLUtils.h"
+#include "../../../../common/StringUtils.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/Utils.h"
 #include "../../../../geometry/GeometryProperty.h"
@@ -56,7 +57,10 @@ Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 te::qt::plugins::terramobile::GeoPackageBuilderDialog::GeoPackageBuilderDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
   m_ui(new Ui::GeoPackageBuilderDialogForm),
-  m_section(0)
+  m_section(0),
+  m_curForm(0),
+  m_curFormItem(0),
+  m_itemTreeType(-1)
 {
   // add controls
   m_ui->setupUi(this);
@@ -98,6 +102,7 @@ te::qt::plugins::terramobile::GeoPackageBuilderDialog::GeoPackageBuilderDialog(Q
   connect(m_ui->m_addFormToolButton, SIGNAL(pressed()), this, SLOT(onAddFormToolButtonPressed()));
   connect(m_ui->m_treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));
   connect(m_ui->m_stringComboAddToolButton, SIGNAL(pressed()), this, SLOT(onStringComboAddToolButtonPressed()));
+  connect(m_ui->m_saveFormItemToolButton, SIGNAL(pressed()), this, SLOT(onSaveFormItemToolButton()));
 }
 
 te::qt::plugins::terramobile::GeoPackageBuilderDialog::~GeoPackageBuilderDialog()
@@ -157,7 +162,8 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::setLayerList(std::li
 
 void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onDirToolButtonPressed()
 {
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Geopackage (*.gpkg *.GPKG);;"), 0, QFileDialog::DontConfirmOverwrite);
+  //QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Geopackage (*.gpkg *.GPKG);;"), 0, QFileDialog::DontConfirmOverwrite);
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("JSON FILE (*.txt *.TXT);;"), 0, QFileDialog::DontConfirmOverwrite);
 
   if (fileName.isEmpty())
     return;
@@ -455,42 +461,111 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTreeItemClicked(QT
 
     if (propType == BOOLFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::BoolFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::BoolFormItem*>(formItem);
+
+      m_ui->m_defaultValueBoolCheckBox->setChecked(fi->hasDefaultValue());
+
+      if (fi->hasDefaultValue())
+      {
+        m_ui->m_boolComboBox->setCurrentText(te::common::Convert2UCase(fi->getStrDefaultValue()).c_str());
+      }
+
       m_ui->m_stackedWidget->setCurrentIndex(0);
     }
     else if (propType == DATEFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::DateFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::DateFormItem*>(formItem);
+
       m_ui->m_stackedWidget->setCurrentIndex(1);
     }
     else if (propType == DOUBLEFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::DoubleFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::DoubleFormItem*>(formItem);
+
+      m_ui->m_defaultValueDoubleCheckBox->setChecked(fi->hasDefaultValue());
+
+      if (fi->hasDefaultValue())
+      {
+        m_ui->m_doubleLineEdit->setText(fi->getStrDefaultValue().c_str());
+      }
+
       m_ui->m_stackedWidget->setCurrentIndex(2);
     }
     else if (propType == INTFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::IntFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::IntFormItem*>(formItem);
+
+      m_ui->m_defaultValueIntCheckBox->setChecked(fi->hasDefaultValue());
+
+      if (fi->hasDefaultValue())
+      {
+        m_ui->m_intLineEdit->setText(fi->getStrDefaultValue().c_str());
+      }
+
       m_ui->m_stackedWidget->setCurrentIndex(3);
     }
     else if (propType == LABELFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::LabelFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::LabelFormItem*>(formItem);
+
+      m_ui->m_defaultValueLabelCheckBox->setChecked(fi->hasDefaultValue());
+
+      if (fi->hasDefaultValue())
+      {
+        m_ui->m_labelLineEdit->setText(fi->getStrDefaultValue().c_str());
+      }
+
       m_ui->m_stackedWidget->setCurrentIndex(4);
     }
     else if (propType == PICTUREFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::PictureFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::PictureFormItem*>(formItem);
+
       m_ui->m_stackedWidget->setCurrentIndex(9);
     }
     else if (propType == STRINGCOMBOFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::StringComboFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::StringComboFormItem*>(formItem);
+
+      m_ui->m_defaultValueStringComboCheckBox->setChecked(fi->hasDefaultValue());
+
+      if (fi->hasDefaultValue())
+      {
+        m_ui->m_stringComboLineEdit->setText(fi->getStrDefaultValue().c_str());
+      }
+
+      m_ui->m_listWidget->clear();
+
+      for (std::size_t t = 0; t < fi->getValues().size(); ++t)
+      {
+        m_ui->m_listWidget->addItem(fi->getValues()[t].c_str());
+      }
+
       m_ui->m_stackedWidget->setCurrentIndex(5);
     }
     else if (propType == STRINGFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::StringFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::StringFormItem*>(formItem);
+
+      m_ui->m_defaultValueStringCheckBox->setChecked(fi->hasDefaultValue());
+
+      if (fi->hasDefaultValue())
+      {
+        m_ui->m_stringLineEdit->setText(fi->getStrDefaultValue().c_str());
+      }
+
       m_ui->m_stackedWidget->setCurrentIndex(6);
     }
     else if (propType == TIMEFORMITEMTYPE)
     {
+      te::qt::plugins::terramobile::TimeFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::TimeFormItem*>(formItem);
+
       m_ui->m_stackedWidget->setCurrentIndex(7);
     }
 
     m_ui->m_formItemLineEdit->setText(propertyName.c_str());
+
+    m_curFormItem = formItem;
   }
   else if (item->type() == FORM_TREE_ITEM)
   {
@@ -510,7 +585,11 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTreeItemClicked(QT
     }
 
     m_ui->m_formItemLineEdit->setText(formName.c_str());
+
+    m_curForm = form;
   }
+
+  m_itemTreeType = item->type();
 }
 
 void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onStringComboAddToolButtonPressed()
@@ -522,6 +601,137 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onStringComboAddTool
   }
 
   m_ui->m_listWidget->addItem(m_ui->m_stringComboValueLineEdit->text());
+}
+
+void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onSaveFormItemToolButton()
+{
+  if (m_itemTreeType == PROPERTY_TREE_ITEM)
+  {
+    std::string propType = m_curFormItem->getType();
+
+    if (propType == BOOLFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::BoolFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::BoolFormItem*>(m_curFormItem);
+
+      if (m_ui->m_defaultValueBoolCheckBox->isChecked())
+      {
+        std::string value = m_ui->m_boolComboBox->currentText().toStdString();
+
+        if (value == "TRUE")
+          fi->setValue(true);
+        else
+          fi->setValue(false);
+      }
+    }
+    else if (propType == DATEFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::DateFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::DateFormItem*>(m_curFormItem);
+    }
+    else if (propType == DOUBLEFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::DoubleFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::DoubleFormItem*>(m_curFormItem);
+
+      if (m_ui->m_defaultValueDoubleCheckBox->isChecked())
+      {
+        fi->setValue(m_ui->m_doubleLineEdit->text().toDouble());
+      }
+    }
+    else if (propType == INTFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::IntFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::IntFormItem*>(m_curFormItem);
+
+      if (m_ui->m_defaultValueIntCheckBox->isChecked())
+      {
+        fi->setValue(m_ui->m_intLineEdit->text().toInt());
+      }
+    }
+    else if (propType == LABELFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::LabelFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::LabelFormItem*>(m_curFormItem);
+
+      if (m_ui->m_defaultValueLabelCheckBox->isChecked())
+      {
+        fi->setValue(m_ui->m_labelLineEdit->text().toStdString());
+      }
+    }
+    else if (propType == PICTUREFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::PictureFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::PictureFormItem*>(m_curFormItem);
+    }
+    else if (propType == STRINGCOMBOFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::StringComboFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::StringComboFormItem*>(m_curFormItem);
+
+      if (m_ui->m_defaultValueStringComboCheckBox->isChecked())
+      {
+        fi->setValue(m_ui->m_stringComboLineEdit->text().toStdString());
+      }
+
+      std::vector<std::string> values;
+
+      for (int i = 0; i < m_ui->m_listWidget->count(); ++i)
+      {
+        values.push_back(m_ui->m_listWidget->item(i)->text().toStdString());
+      }
+
+      fi->setValues(values);
+    }
+    else if (propType == STRINGFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::StringFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::StringFormItem*>(m_curFormItem);
+
+      if (m_ui->m_defaultValueStringCheckBox->isChecked())
+      {
+        fi->setValue(m_ui->m_stringLineEdit->text().toStdString());
+      }
+    }
+    else if (propType == TIMEFORMITEMTYPE)
+    {
+      te::qt::plugins::terramobile::TimeFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::TimeFormItem*>(m_curFormItem);
+    }
+  }
+  else if (m_itemTreeType == FORM_TREE_ITEM)
+  {
+    std::vector<std::string> values;
+
+    for (int i = 0; i < m_ui->m_formItemsListWidget->count(); ++i)
+    {
+      values.push_back(m_ui->m_formItemsListWidget->item(i)->text().toStdString());
+    }
+
+    std::vector<AbstractFormItem*> backupItems;
+
+    for (std::size_t t = 0; t < m_curForm->getItems().size(); ++t)
+    {
+      backupItems.push_back(m_curForm->getItems()[t]);
+    }
+
+    m_curForm->getItems().clear();
+
+    for (std::size_t t = 0; t < values.size(); ++t)
+    {
+      for (std::size_t p = 0; p < backupItems.size(); ++p)
+      {
+        if (values[t] == backupItems[p]->getLabel())
+        {
+          m_curForm->getItems().push_back(backupItems[p]);
+        }
+      }
+    }
+
+    backupItems.clear();
+  }
+}
+
+void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onOkPushButtonClicked()
+{
+  if (m_ui->m_geopackageFileNameLineEdit->text().isEmpty())
+    return;
+
+  std::string fileName = m_ui->m_geopackageFileNameLineEdit->text().toStdString();
+
+  if (m_section)
+    m_section->serialize(fileName);
 }
 
 std::list<te::map::AbstractLayerPtr> te::qt::plugins::terramobile::GeoPackageBuilderDialog::getGatheringLayers()

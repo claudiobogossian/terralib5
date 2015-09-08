@@ -36,6 +36,18 @@ te::qt::plugins::terramobile::DateFormItem::~DateFormItem()
   delete m_value;
 }
 
+void te::qt::plugins::terramobile::DateFormItem::setValue(te::dt::DateTime* value) 
+{ 
+  m_value = value;
+
+  m_hasDefaultValue = true;
+}
+
+te::dt::DateTime* te::qt::plugins::terramobile::DateFormItem::getValue() 
+{ 
+  return m_value; 
+}
+
 void te::qt::plugins::terramobile::DateFormItem::toString()
 {
   m_defaultValue = m_value->toString();

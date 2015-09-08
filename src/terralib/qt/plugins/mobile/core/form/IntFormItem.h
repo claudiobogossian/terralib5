@@ -57,9 +57,9 @@ namespace te
 
         public:
 
-          void setValue(int value) { m_value = value; }
+          void setValue(int value);
 
-          int getValue() { return m_value; }
+          int getValue();
 
         protected:
 

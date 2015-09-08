@@ -36,6 +36,18 @@ te::qt::plugins::terramobile::DoubleFormItem::~DoubleFormItem()
 {
 }
 
+void te::qt::plugins::terramobile::DoubleFormItem::setValue(double value) 
+{ 
+  m_value = value;
+
+  m_hasDefaultValue = true;
+}
+
+double te::qt::plugins::terramobile::DoubleFormItem::getValue() 
+{ 
+  return m_value; 
+}
+
 void te::qt::plugins::terramobile::DoubleFormItem::toString()
 {
   m_defaultValue = te::common::Convert2String(m_value);

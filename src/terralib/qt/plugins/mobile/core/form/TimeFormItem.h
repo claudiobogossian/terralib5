@@ -58,9 +58,9 @@ namespace te
 
         public:
 
-          void setValue(te::dt::DateTime* value) { m_value = value; }
+          void setValue(te::dt::DateTime* value);
 
-          te::dt::DateTime* getValue() { return m_value; }
+          te::dt::DateTime* getValue();
 
         protected:
 

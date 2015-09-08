@@ -35,6 +35,18 @@ te::qt::plugins::terramobile::LabelFormItem::~LabelFormItem()
 {
 }
 
+void te::qt::plugins::terramobile::LabelFormItem::setValue(std::string value) 
+{ 
+  m_value = value; 
+
+  m_hasDefaultValue = true;
+}
+
+std::string te::qt::plugins::terramobile::LabelFormItem::getValue() 
+{ 
+  return m_value; 
+}
+
 void te::qt::plugins::terramobile::LabelFormItem::toString()
 {
   m_defaultValue = m_value;

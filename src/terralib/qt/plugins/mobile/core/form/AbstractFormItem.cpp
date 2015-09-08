@@ -30,7 +30,8 @@ te::qt::plugins::terramobile::AbstractFormItem::AbstractFormItem() :
   m_key(""),
   m_label(""),
   m_type(""),
-  m_defaultValue("")
+  m_defaultValue(""),
+  m_hasDefaultValue(false)
 {
 
 }
@@ -43,7 +44,8 @@ te::qt::plugins::terramobile::AbstractFormItem::~AbstractFormItem()
 void te::qt::plugins::terramobile::AbstractFormItem::serialize(boost::property_tree::ptree& pt)
 {
   //convert values to string
-  toString();
+  if (m_hasDefaultValue)
+    toString();
 
   pt.put("key", m_key);
   pt.put("label", m_label);
@@ -68,4 +70,13 @@ void te::qt::plugins::terramobile::AbstractFormItem::serialize(boost::property_t
 
   pt.put("value", m_defaultValue);
   pt.put("type", m_type);
+}
+
+std::string te::qt::plugins::terramobile::AbstractFormItem::getStrDefaultValue()
+{
+  //convert values to string
+  if (m_hasDefaultValue)
+    toString();
+
+  return m_defaultValue;
 }

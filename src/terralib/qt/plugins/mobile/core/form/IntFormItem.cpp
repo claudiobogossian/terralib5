@@ -36,6 +36,18 @@ te::qt::plugins::terramobile::IntFormItem::~IntFormItem()
 {
 }
 
+void te::qt::plugins::terramobile::IntFormItem::setValue(int value) 
+{ 
+  m_value = value;
+
+  m_hasDefaultValue = true;
+}
+
+int te::qt::plugins::terramobile::IntFormItem::getValue() 
+{
+  return m_value; 
+}
+
 void te::qt::plugins::terramobile::IntFormItem::toString()
 {
   m_defaultValue = te::common::Convert2String(m_value);
