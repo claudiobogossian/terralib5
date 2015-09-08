@@ -75,6 +75,8 @@ namespace te
 
     private slots:
 
+      void onCancelPushButtonPressed();
+
       void onOkPushButtonPressed();
 
       void onAttributesTreeWidgetItemDoubleClicked(QTreeWidgetItem* item, int column);

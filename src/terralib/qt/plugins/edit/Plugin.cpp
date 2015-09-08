@@ -109,8 +109,6 @@ void te::qt::plugins::edit::Plugin::startup()
   // Create the main toolbar
   m_toolbar = new ToolBar(this);
 
-  //m_toolbar->initialize();
-
   // Register the application framework listener
   te::qt::af::AppCtrlSingleton::getInstance().addListener(this);
 
@@ -120,9 +118,6 @@ void te::qt::plugins::edit::Plugin::startup()
   connect(m_toolbar, SIGNAL(stashed(te::map::AbstractLayer*)), SLOT(onStashedLayer(te::map::AbstractLayer*)));
 
   connect(m_toolbar, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
-
-  // Add plugin toolbar
-//  te::qt::af::AppCtrlSingleton::getInstance().addToolBar("PluginEditionToolBar", m_toolbar->get());
 
   // Get plugins menu
   QMenu* pluginsMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Plugins");
@@ -137,8 +132,7 @@ void te::qt::plugins::edit::Plugin::startup()
   pluginsMenu->insertMenu(lastAction, m_menu);
 
   m_action = new QAction(m_menu);
-  //m_action->setObjectName("Layer.Edit");
-  m_action->setText("Enable Edit Buttons");
+  m_action->setText(TE_TR("Enable Edit Tools"));
   m_menu->addAction(m_action);
 
   connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
@@ -146,12 +140,6 @@ void te::qt::plugins::edit::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Edit Qt Plugin startup!"));
 
   m_initialized = true;
-
-  te::qt::af::evt::NewActionsAvailable e;
-  e.m_toolbar = m_toolbar->get();
-  e.m_category = "Edition";
-
-  emit triggered(&e);
 
   std::set<std::string> sts = GetStashedLayers();
 
@@ -175,10 +163,13 @@ void te::qt::plugins::edit::Plugin::shutdown()
   te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
-void te::qt::plugins::edit::Plugin::onActionActivated(bool checked)
+void te::qt::plugins::edit::Plugin::onActionActivated(bool)
 {
-  if(checked != m_toolbar->get()->isEnabled())
-    m_toolbar->onEditActivated(checked);
+  te::qt::af::evt::NewActionsAvailable e;
+  e.m_toolbar = m_toolbar->get();
+  e.m_category = "Edition";
+
+  emit triggered(&e);
 }
 
 void te::qt::plugins::edit::Plugin::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -206,7 +197,6 @@ void te::qt::plugins::edit::Plugin::onApplicationTriggered(te::qt::af::evt::Even
       te::qt::af::evt::GetMapDisplay de;
       emit triggered(&de);
 
-      //m_toolbar->get()->setEnabled(evt->m_layer->getSRID() != 0);
       m_toolbar->updateLayer(evt->m_layer.get(), m_delegate->isStached(evt->m_layer->getTitle()));
     }
       break;
@@ -236,6 +226,9 @@ void te::qt::plugins::edit::Plugin::onStashedLayer(te::map::AbstractLayer* layer
 
 void te::qt::plugins::edit::Plugin::onGeometriesChanged()
 {
+  if (m_toolbar->getSelectedLayer() == 0)
+    return;
+
   m_delegate->addEdited(m_toolbar->getSelectedLayer()->getTitle());
 
   UpdateTreeView(getLayerExplorer());

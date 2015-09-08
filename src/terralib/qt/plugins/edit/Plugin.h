@@ -77,7 +77,7 @@ namespace te
 
             \param checked Flag used in case a toggle action.
             */
-          void onActionActivated(bool checked);
+          void onActionActivated(bool);
 
           void onApplicationTriggered(te::qt::af::evt::Event* e);
 

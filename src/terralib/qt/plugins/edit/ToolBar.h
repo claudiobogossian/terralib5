@@ -82,10 +82,6 @@ namespace te
 
           void updateLayer(te::map::AbstractLayer* layer, const bool& stashed);
 
-        private:
-
-          void createUndoView(bool checked);
-
         public slots:
 
           void onEditActivated(bool checked);
@@ -111,6 +107,8 @@ namespace te
           void onDeleteGeometryToolActivated(bool checked);
 
           void onMergeGeometriesToolActivated(bool checked);
+
+          void onCreateUndoViewActivated(bool checked);
 
           void onToolDeleted();
 
@@ -146,8 +144,6 @@ namespace te
           QAction* m_deleteGeometryToolAction;
           QAction* m_aggregateAreaToolAction;
           QAction* m_subtractAreaToolAction;
-          //QAction* m_mergeGeometriesToolAction;
-          //QAction* m_splitPolygonToolAction;
           QAction* m_featureAttributesAction;
           QAction* m_undoToolAction;
           QAction* m_redoToolAction;
@@ -170,7 +166,7 @@ namespace te
           void initialize();
           void initializeActions();
           void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
-
+          bool datasourceIsValid(const te::map::AbstractLayerPtr& layer);
         };
 
       } // end namespace edit
