@@ -33,8 +33,8 @@ te::layout::AbstractLayoutTool* te::layout::CreateItemToolFactory::build(ToolFac
 {
   View* view = params.getView();
   EnumType* itemType = params.getItemType();
-  
-  return new CreateItemTool(params.getView(), itemType, params.getView());
+
+  return new CreateItemTool(view, itemType, params.getView());
 }
 
 te::layout::CreateItemToolFactory::CreateItemToolFactory() :

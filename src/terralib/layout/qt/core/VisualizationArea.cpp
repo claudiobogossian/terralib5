@@ -35,8 +35,8 @@
 #include "../../core/enum/Enums.h"
 
 te::layout::VisualizationArea::VisualizationArea( Scene* scene, te::gm::Envelope boxArea ) :
-  m_scene(scene),
-  m_boxArea(boxArea)
+  m_boxArea(boxArea),
+  m_scene(scene)
 {
   build();
 }

@@ -53,6 +53,7 @@ te::layout::OutsideArea::OutsideArea( te::layout::View* view, QStatusBar* status
   m_view(view),
   m_toolbar(0),
   m_statusBar(status),
+  m_layoutMenu(0),
   m_optionNew("mnu_main_new"),
   m_optionUpdate("mnu_main_update"),
   m_optionImportJSON("mnu_main_import_json"),
@@ -63,8 +64,7 @@ te::layout::OutsideArea::OutsideArea( te::layout::View* view, QStatusBar* status
   m_optionDockInspector("mnu_dock_inspector"),
   m_optionDockProperties("mnu_dock_properties"),
   m_optionDockToolbar("mnu_dock_toolbar"),
-  m_optionDockEditTemplate("mnu_dock_edit_template"),
-  m_layoutMenu(0)
+  m_optionDockEditTemplate("mnu_dock_edit_template")
 {
   init();
 }
@@ -250,8 +250,6 @@ void te::layout::OutsideArea::createMainMenu()
 
 void te::layout::OutsideArea::onMainMenuTriggered( QAction* action )
 {
-  te::layout::EnumModeType* type = te::layout::Enums::getInstance().getEnumModeType();
-
   if(action->objectName().compare(m_optionNew.c_str()) == 0)
   {
     m_view->newTemplate();
@@ -395,7 +393,6 @@ void te::layout::OutsideArea::openMainMenu()
   if(!m_layoutMenu)
     return;
   
-  bool exist_menu = false;
   QList<QAction*> acts = m_layoutMenu->actions();
  
   foreach(QAction* act, acts)

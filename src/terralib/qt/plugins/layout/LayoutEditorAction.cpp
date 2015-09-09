@@ -55,8 +55,8 @@
 te::qt::plugins::layout::LayoutEditorAction::LayoutEditorAction(QMenu* menu)
   : te::qt::plugins::layout::AbstractAction(menu),
    m_dockLayoutDisplay(0),
-   m_groupBox(0),
    m_mainLayout(0),
+   m_groupBox(0),
    m_statusBar(0),
    m_verticalLayout(0)
 {
@@ -182,26 +182,44 @@ void te::qt::plugins::layout::LayoutEditorAction::onExit()
 
   QMainWindow* mw = dynamic_cast<QMainWindow*>(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-  mw->removeDockWidget(m_mainLayout->getProperties());
+  if(m_mainLayout)
+  {
+    if(m_mainLayout->getProperties())
+    {
+      mw->removeDockWidget(m_mainLayout->getProperties());
 
-  m_mainLayout->getProperties()->close();
+      m_mainLayout->getProperties()->close();
+    }
 
-  mw->removeDockWidget(m_mainLayout->getObjectInspector());
+    if(m_mainLayout->getObjectInspector())
+    {
+      mw->removeDockWidget(m_mainLayout->getObjectInspector());
 
-  m_mainLayout->getObjectInspector()->close();
+      m_mainLayout->getObjectInspector()->close();
+    }
 
-  mw->removeToolBar(m_mainLayout->getToolbar());
+    if(m_mainLayout->getToolbar())
+    {
+      mw->removeToolBar(m_mainLayout->getToolbar());
 
-  m_mainLayout->getToolbar()->close();
+      m_mainLayout->getToolbar()->close();
+    }
 
-  mw->removeDockWidget(m_mainLayout->getEditTemplate());
+    if(m_mainLayout->getEditTemplate())
+    {
+      mw->removeDockWidget(m_mainLayout->getEditTemplate());
 
-  m_mainLayout->getEditTemplate()->close();
+      m_mainLayout->getEditTemplate()->close();
 
-  mw->removeDockWidget(m_dockLayoutDisplay);
+    }
 
-  m_dockLayoutDisplay->close();
+    if(m_dockLayoutDisplay)
+    {
+      mw->removeDockWidget(m_dockLayoutDisplay);
 
+      m_dockLayoutDisplay->close();
+    }
+  }
 }
 
 void te::qt::plugins::layout::LayoutEditorAction::createMenu()

@@ -502,14 +502,11 @@ QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
 
   QPointF pt(x, y);
 
-  bool intersection = false;
-
   foreach (QGraphicsItem *item, items) 
   {
     if(item)
     {
-      bool intersection = item->contains(pt);
-      if(intersection)
+      if(item->contains(pt))
       {
         intersectionItem = item;
         break;

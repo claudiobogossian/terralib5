@@ -249,7 +249,6 @@ void te::layout::View::wheelEvent(QWheelEvent *event)
   if(event->modifiers() & Qt::AltModifier)
   {
     int zoom = 0;
-    int currentZoom = getCurrentZoom();
 
     // Zoom in / Zoom Out
     if(event->delta() > 0) 
@@ -795,17 +794,15 @@ void te::layout::View::arrowCursor()
   EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
 
-  EnumType* mode = enumMode->getModeArrowCursor();
-
   setCurrentMode(enumMode->getModeNone());
   resetDefaultConfig();
   std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
   if (!list.empty())
   {
-    foreach(MapItem* mit, list)
+    /*foreach(MapItem* mit, list)
     {
-      //mit->changeCurrentTool(mode);
-    }
+      mit->changeCurrentTool(mode);
+    }*/
   }
 }
 

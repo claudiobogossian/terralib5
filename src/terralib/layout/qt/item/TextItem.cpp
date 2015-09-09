@@ -119,7 +119,7 @@ QRectF te::layout::TextItem::boundingRect() const
 {
   //when we are editing the item, we let the item handle the changes in the bounding box
   QRectF rect = QGraphicsTextItem::boundingRect();
-  return QGraphicsTextItem::boundingRect();
+  return rect;
 }
 
 void te::layout::TextItem::enterEditionMode()
