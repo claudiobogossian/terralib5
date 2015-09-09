@@ -302,8 +302,11 @@ void te::layout::Scene::removeSelectedItems()
       AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
       if (abstractItem)
       {
-        if (abstractItem->getController()->getModel())
-          names.push_back(abstractItem->getController()->getModel()->getName());
+        if (abstractItem->getController())
+        {
+          const Property& pName = abstractItem->getController()->getProperty("name");
+          names.push_back(pName.getValue().toString());
+        }
       }
     }
   }
@@ -393,6 +396,8 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
       addUndoStack(command);
     }
   }
+
+  emit addItemFinalized(item);
   
   return group;
 }
@@ -500,10 +505,11 @@ std::vector<te::layout::Properties> te::layout::Scene::getItemsProperties()
       AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(!lItem->getController()->getModel()->isPrintable())
+        const Property& pIsPrintable = lItem->getController()->getProperty("printable");
+        if(pIsPrintable.getValue().toBool() == false)
           continue;
         
-        props.push_back(lItem->getController()->getModel()->getProperties());
+        props.push_back(lItem->getController()->getProperties());
       }
     }
   }
@@ -744,7 +750,9 @@ void te::layout::Scene::selectItem(std::string name)
           continue;
         }
 
-        if(it->getController()->getModel()->getName().compare(name) == 0)
+        const Property& pItemName = it->getController()->getProperty("name");
+        const std::string& itemName = pItemName.getValue().toString();
+        if(itemName.compare(name) == 0)
         {
           item->setSelected(true);
         }
@@ -791,7 +799,8 @@ void te::layout::Scene::redrawItems()
       AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        if(it->getController()->getModel()->isPrintable())
+        const Property& pIsPrintable = it->getController()->getProperty("printable");
+        if(pIsPrintable.getValue().toBool() == true)
         {
           it->refresh();
         }
@@ -812,7 +821,19 @@ void te::layout::Scene::updateSelectedItemsPositions()
       AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        QPointF posItem = item->scenePos();    
+        QPointF posItem = item->scenePos();
+
+        const Property& pX = it->getController()->getProperty("x");
+        const Property& pY = it->getController()->getProperty("y");
+
+        double x = pX.getValue().toDouble();
+        double y = pY.getValue().toDouble();
+
+        if(x == posItem.x() && y == posItem.y())
+        {
+          continue;
+        }
+
 
         Properties props;
         Property prop_x(0);
@@ -827,7 +848,7 @@ void te::layout::Scene::updateSelectedItemsPositions()
         prop_y.setValue(posItem.y(), dataType->getDataTypeDouble());
         props.addProperty(prop_y);
 
-        it->getController()->getModel()->setProperties(props);
+        it->getController()->setProperties(props);
       }
     }
   }
@@ -944,8 +965,22 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
         AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
         if(it)
         {
-          te::gm::Envelope box = it->getController()->getModel()->getBoundingRect();
-          
+          const Property& pX = it->getController()->getProperty("x");
+          const Property& pY = it->getController()->getProperty("y");
+          const Property& pWidth = it->getController()->getProperty("width");
+          const Property& pHeight = it->getController()->getProperty("height");
+
+          double x = pX.getValue().toDouble();
+          double y = pY.getValue().toDouble();
+          double width = pWidth.getValue().toDouble();
+          double height = pHeight.getValue().toDouble();
+
+          te::gm::Envelope box;
+          box.m_llx = x;
+          box.m_lly = y;
+          box.m_urx = box.m_llx + width;
+          box.m_ury = box.m_lly + height;
+
           box = switchBox(box, oldPaper, newPaper);   
 
           box.m_llx = ((box.m_llx * newPaper.width()) / oldPaper.width());
@@ -953,19 +988,18 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
           box.m_urx = ((box.m_urx * newPaper.width()) / oldPaper.width());
           box.m_ury = ((box.m_ury * newPaper.height()) / oldPaper.height());
           
-          AbstractItemModel* model = it->getController()->getModel();
-          updateBoxFromProperties(box, model);
+          updateBoxFromProperties(box, it->getController());
         }
       }
     }
   }
 }
 
-void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model)
+void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractItemController* controller)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  Properties props(model->getName(), model->getType());
+  Properties props;
   
   double x = box.m_llx;
   double y = box.m_lly;
@@ -996,7 +1030,7 @@ void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractIt
   pro_height.setEditable(false);
   props.addProperty(pro_height);
 
-  model->setProperties(props);
+  controller->setProperties(props);
 }
 
 te::gm::Envelope te::layout::Scene::switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper)

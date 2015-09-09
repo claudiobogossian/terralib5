@@ -72,7 +72,7 @@ namespace te
     class View;
     class AbstractItemView;
     class ItemObserver;
-    class AbstractItemModel;
+    class AbstractItemController;
 
   /*!
     \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
@@ -444,7 +444,7 @@ namespace te
 
         virtual void applyProportionAllItems(QSize oldPaper, QSize newPaper);
 
-        virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model);
+        virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemController* controller);
 
         virtual void changeViewMode(EnumType* mode);
 

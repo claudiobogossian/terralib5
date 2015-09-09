@@ -144,15 +144,15 @@ QString te::layout::ChangePropertyCommand::createCommandString( QGraphicsItem* i
     return QObject::tr("%1");
   }
     
-  AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
+  AbstractItemView* absView = dynamic_cast<AbstractItemView*>(item);
 
-  if(!obs)
+  if(!absView)
     return QObject::tr("%1");
 
   QPointF pos = m_item->scenePos();
 
   return QObject::tr("%1 at (%2, %3)")
-    .arg(obs->getController()->getModel()->getType()->getName().c_str())
+    .arg(absView->getController()->getProperties().getTypeObj()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
 }
 
@@ -197,16 +197,16 @@ bool te::layout::ChangePropertyCommand::checkItem( QGraphicsItem* item, Properti
   if(!obs)
     return false;
 
-  AbstractItemModel* model = dynamic_cast<AbstractItemModel*>(obs->getController()->getModel());
+  AbstractItemController* controller = obs->getController();
 
-  if(!model)
+  if(!controller)
     return false;
 
-  Properties propsModel = model->getProperties();  
+  const Properties& propsModel = controller->getProperties();  
   if(equals(props, propsModel))
     return false;
 
-  model->setProperties(props);
+  controller->setProperties(props);
   obs->refresh();
 
   return true;

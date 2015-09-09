@@ -149,6 +149,11 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   te::gm::Envelope newPlanarBox = getWorldBoxInPlanar(newWorldBox, newSrid);
   double newScale = pNewScale.getValue().toDouble();
 
+  if(newScale == 0)
+  {
+    newScale = 1000;
+  }
+
   //current values
   double currentWidth = pCurrentWidth.getValue().toDouble();
   double currentHeight = pCurrentHeight.getValue().toDouble();

@@ -159,6 +159,6 @@ QString te::layout::MoveCommand::createCommandString( QGraphicsItem* item, const
     return QObject::tr("%1");
 
   return QObject::tr("%1 at (%2, %3)")
-    .arg(obs->getController()->getModel()->getType()->getName().c_str())
+    .arg(obs->getController()->getProperties().getTypeObj()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
 }

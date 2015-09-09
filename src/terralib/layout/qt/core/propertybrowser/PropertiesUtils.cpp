@@ -70,9 +70,9 @@ te::layout::Properties te::layout::PropertiesUtils::intersection( QList<QGraphic
       AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(lItem->getController()->getModel())
+        if(lItem->getController())
         {
-          props = lItem->getController()->getModel()->getProperties();
+          props = lItem->getController()->getProperties();
           window = props.hasWindows();
         }
       }
@@ -81,7 +81,7 @@ te::layout::Properties te::layout::PropertiesUtils::intersection( QList<QGraphic
         AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
         if(absItem != 0)
         {
-          props = absItem->getController()->getModel()->getProperties();
+          props = absItem->getController()->getProperties();
         }
       }
     }
@@ -109,9 +109,9 @@ te::layout::Properties te::layout::PropertiesUtils::sameProperties( QList<QGraph
 
   Properties firstProps("");
 
-  if(lItem->getController()->getModel())
+  if(lItem->getController())
   {
-    firstProps = lItem->getController()->getModel()->getProperties();
+    firstProps = lItem->getController()->getProperties();
   }
 
   if(firstProps.getProperties().empty())
@@ -166,12 +166,12 @@ std::vector<te::layout::Properties> te::layout::PropertiesUtils::getAllPropertie
       AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(!lItem->getController()->getModel())
+        if(!lItem->getController())
         {
           continue;
         }
 
-        Properties propsItem = lItem->getController()->getModel()->getProperties();
+        Properties propsItem = lItem->getController()->getProperties();
         if(!propsItem.getProperties().empty())
         {
           propsVec.push_back(propsItem);

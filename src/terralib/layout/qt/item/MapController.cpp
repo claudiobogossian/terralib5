@@ -28,6 +28,8 @@
 
 te::layout::MapController::MapController(AbstractItemModel* model)
   : AbstractItemController(model)
+  , m_zoom(0)
+  , m_ignoreExtentChangedEvent(false)
 {
 
 }
@@ -49,7 +51,6 @@ void te::layout::MapController::update(const te::layout::Subject* subject)
   const Property& pLayers = getProperty("layers");
   const Property& pSrid = getProperty("srid");
   const Property& pWorldBox = getProperty("world_box");
-  const Property& pScale = getProperty("scale");
 
   const std::list<te::map::AbstractLayerPtr>& layerList = pLayers.getValue().toGenericVariant().toLayerList();
   int srid = pSrid.getValue().toInt();
@@ -59,6 +60,8 @@ void te::layout::MapController::update(const te::layout::Subject* subject)
 
   bool doRefresh = false;
   mapDisplay->setLayerList(layerList);
+  mapDisplay->refresh(); //this refresh need to be done in order to correctly initialize the mapDisplay. We should review this later
+
   if(mapDisplay->getSRID() != srid)
   {
     mapDisplay->setSRID(srid, false);
@@ -68,14 +71,6 @@ void te::layout::MapController::update(const te::layout::Subject* subject)
   if(mapDisplay->getExtent().equals(envelope) == false)
   {
     mapDisplay->setExtent(envelope, false);
-    doRefresh = true;
-  }
-
-  double scale = pScale.getValue().toDouble();
-  scale = scale / (m_zoom / 100.);
-  if (scale != 0 && mapDisplay->getScale() != scale)
-  {
-    mapDisplay->setScale(scale);
     doRefresh = true;
   }
 
@@ -104,30 +99,15 @@ void te::layout::MapController::addLayers(const std::list<te::map::AbstractLayer
 
 void te::layout::MapController::extentChanged(const te::gm::Envelope& envelope, double scale)
 {
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  const Property& pWorldBox = getProperty("world_box");
-  te::gm::Envelope currentEnvelope = pWorldBox.getValue().toEnvelope();
-
-  if(envelope.equals(currentEnvelope) == false)
+  if(m_ignoreExtentChangedEvent == true)
   {
-    Properties properties("");
+    return;
+  }
 
-    {
-      Property property;
-      property.setName("world_box");
-      property.setValue(envelope, dataType->getDataTypeEnvelope());
-      properties.addProperty(property);
-    }
-    {
-      Property property;
-      property.setName("scale");
-      scale = scale * (m_zoom / 100.);
-      property.setValue(scale, dataType->getDataTypeDouble());
-      properties.addProperty(property);
-    }
-    
-    m_model->setProperties(properties);
+  Properties properties = getExtentChangedProperties(envelope, scale);
+  if(properties.getProperties().empty() == false)
+  {
+    AbstractItemController::setProperties(properties);
   }
 }
 
@@ -135,3 +115,186 @@ void te::layout::MapController::setZoom( const int& zoom )
 {
   m_zoom = zoom;
 }
+
+void te::layout::MapController::setProperty(const te::layout::Property& property)
+{
+  MapItem* view = dynamic_cast<MapItem*>(m_view);
+  if(view == 0)
+  {
+    AbstractItemController::setProperty(property);
+    return;
+  }
+
+  te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
+  bool extentChanged = false;
+
+  if(property.getName() == "scale")
+  {
+    double newScale = property.getValue().toDouble();
+    if(syncScaleToItem(newScale) == false)
+    {
+      return;
+    }
+    extentChanged = true;
+  }
+  else if(property.getName() == "world_box")
+  {
+    te::gm::Envelope newExtent = property.getValue().toEnvelope();
+    if(syncExtentToItem(newExtent) == false)
+    {
+      return;
+    }
+    extentChanged = true;
+  }
+
+  if(extentChanged == true)
+  {
+    Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale());
+    AbstractItemController::setProperties(extentChangedProperties);
+
+    view->doRefresh();
+  }
+  else
+  {
+    AbstractItemController::setProperty(property);
+  }
+}
+
+void te::layout::MapController::setProperties(const te::layout::Properties& properties)
+{
+  MapItem* view = dynamic_cast<MapItem*>(m_view);
+  if(view == 0)
+  {
+    AbstractItemController::setProperties(properties);
+    return;
+  }
+
+  te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
+  bool extentChanged = false;
+
+  Properties propertiesCopy;
+  const std::vector<Property>& vecProperties = properties.getProperties();
+  for(size_t i = 0; i < vecProperties.size(); ++i)
+  {
+    const Property& property = vecProperties[i];
+    if(property.getName() == "scale")
+    {
+      double newScale = property.getValue().toDouble();
+      if(syncScaleToItem(newScale) == true)
+      {
+        extentChanged = true;
+      }
+    }
+    else if(property.getName() == "world_box")
+    {
+      te::gm::Envelope newExtent = property.getValue().toEnvelope();
+      if(syncExtentToItem(newExtent) == true)
+      {
+        extentChanged = true;
+      }
+    }
+    else
+    {
+      propertiesCopy.addProperty(property);
+    }
+  }
+
+  if(extentChanged == true)
+  {
+    Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale());
+    for(size_t j = 0; j < extentChangedProperties.getProperties().size(); ++j)
+    {
+      propertiesCopy.addProperty(extentChangedProperties.getProperties()[j]);
+    }
+  }
+
+  AbstractItemController::setProperties(propertiesCopy);
+
+  if(extentChanged == true)
+  {
+    view->doRefresh();
+  }
+}
+
+te::layout::Properties te::layout::MapController::getExtentChangedProperties(const te::gm::Envelope& envelope, double scale)
+{
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  const Property& pWorldBox = getProperty("world_box");
+  const Property& pScale = getProperty("scale");
+
+  te::gm::Envelope currentEnvelope = pWorldBox.getValue().toEnvelope();
+  double currentScale = pScale.getValue().toDouble();
+
+  Properties properties("");
+  if(envelope.equals(currentEnvelope) == false)
+  {
+    Property property;
+    property.setName("world_box");
+    property.setValue(envelope, dataType->getDataTypeEnvelope());
+    properties.addProperty(property);
+  }
+
+  if(scale != currentScale)
+  {
+    Property property;
+    property.setName("scale");
+    scale = scale * (m_zoom / 100.);
+    property.setValue(scale, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+
+  return properties;
+}
+
+bool te::layout::MapController::syncScaleToItem(double scale)
+{
+  MapItem* view = dynamic_cast<MapItem*>(m_view);
+  if(view == 0)
+  {
+    return false;
+  }
+  te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
+
+  scale = scale / (m_zoom / 100.); //adjusting scale to the zoom factor
+
+  double currentScale = mapDisplay->getScale();
+  if(currentScale != scale)
+  {
+    m_ignoreExtentChangedEvent = true;
+    mapDisplay->setScale(scale);
+    m_ignoreExtentChangedEvent = false;
+
+    return true;
+  }
+
+  return false;
+}
+
+bool te::layout::MapController::syncExtentToItem(const te::gm::Envelope& extent)
+{
+  MapItem* view = dynamic_cast<MapItem*>(m_view);
+  if(view == 0)
+  {
+    return false;
+  }
+
+  te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
+
+  const te::gm::Envelope& currentExtent = mapDisplay->getExtent();
+
+  if(extent.equals(currentExtent) == false)
+  {
+    te::gm::Envelope extentCopy = extent;
+
+    m_ignoreExtentChangedEvent = true;
+    mapDisplay->setExtent(extentCopy, false);
+    m_ignoreExtentChangedEvent = false;
+
+    return true;
+  }
+
+  return false;
+}
+
+

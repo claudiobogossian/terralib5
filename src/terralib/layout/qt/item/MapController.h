@@ -78,7 +78,26 @@ namespace te
 
         virtual void setZoom(const int& zoom);
 
+        virtual void setProperty(const Property& property);
+
+        virtual void setProperties(const Properties& properties);
+
+        virtual Properties getExtentChangedProperties(const te::gm::Envelope& envelope, double scale);
+
+        /*!
+          \brief Syncs the given scale to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncScaleToItem(double scale);
+
+        /*!
+          \brief Syncs the given extent to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncExtentToItem(const te::gm::Envelope& envelope);
+
+    protected:
+
         int m_zoom;
+        bool m_ignoreExtentChangedEvent;
     };
   }
 }

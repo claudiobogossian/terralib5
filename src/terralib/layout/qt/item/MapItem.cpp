@@ -95,6 +95,7 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
   {
     this->prepareGeometryChange();
     m_mapDisplay->resize(newSize);
+
     refresh();
   }
 }
