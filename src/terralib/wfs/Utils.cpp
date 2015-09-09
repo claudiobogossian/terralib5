@@ -38,9 +38,8 @@
 
 bool te::wfs::IsWFSLayer(const te::map::AbstractLayer& layer)
 {
-  return true;
-  //te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.getDataSourceId());
+ te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.getDataSourceId());
 
-  //return (info.get() != 0 && info->getType() == "WFS");
+ return (info.get() != 0 && info->getType() == "WFS");
 }
 
