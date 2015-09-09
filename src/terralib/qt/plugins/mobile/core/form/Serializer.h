@@ -42,9 +42,9 @@ namespace te
       {
         class Section;
 
-        void Write(te::qt::plugins::terramobile::Section* section, std::string filePath);
+        std::string Write(te::qt::plugins::terramobile::Section* section);
 
-        te::qt::plugins::terramobile::Section* Read(std::string filePath);
+        te::qt::plugins::terramobile::Section* Read(std::string ss);
 
       }   // end namespace thirdParty
     }     // end namespace plugins

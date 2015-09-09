@@ -35,7 +35,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <boost/property_tree/json_parser.hpp>
 
 
-void te::qt::plugins::terramobile::Write(te::qt::plugins::terramobile::Section* section, std::string filePath)
+std::string te::qt::plugins::terramobile::Write(te::qt::plugins::terramobile::Section* section)
 {
   boost::property_tree::ptree sec;
 
@@ -94,7 +94,11 @@ void te::qt::plugins::terramobile::Write(te::qt::plugins::terramobile::Section* 
 
   sec.add_child("forms", forms);
 
-  boost::property_tree::json_parser::write_json(filePath, sec);
+  std::stringstream ss;
+
+  boost::property_tree::json_parser::write_json(ss, sec);
+
+  return ss.str();
 }
 
 te::qt::plugins::terramobile::Section* te::qt::plugins::terramobile::Read(std::string filePath)

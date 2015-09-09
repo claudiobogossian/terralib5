@@ -285,8 +285,7 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::setLayerList(std::li
 
 void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onDirToolButtonPressed()
 {
-  //QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Geopackage (*.gpkg *.GPKG);;"), 0, QFileDialog::DontConfirmOverwrite);
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("JSON FILE (*.txt *.txt);;"), 0, QFileDialog::DontConfirmOverwrite);
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Geopackage (*.gpkg *.GPKG);;"), 0, QFileDialog::DontConfirmOverwrite);
 
   if (fileName.isEmpty())
     return;
@@ -346,6 +345,17 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTabWidgetChanged(i
 
     m_ui->m_treeWidget->resizeColumnToContents(0);
     m_ui->m_treeWidget->resizeColumnToContents(1);
+  }
+  else if (index == 4)
+  {
+    if (m_section)
+    {
+      m_ui->m_plainTextEdit->clear();
+
+      std::string jsonStr = te::qt::plugins::terramobile::Write(m_section);
+
+      m_ui->m_plainTextEdit->setPlainText(jsonStr.c_str());
+    }
   }
 }
 
@@ -932,10 +942,8 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onOkPushButtonClicke
 
   if (m_section)
   {
-    te::qt::plugins::terramobile::Write(m_section, gpkgName);
+    std::string jsonStr = te::qt::plugins::terramobile::Write(m_section);
   }
-
-  return;
 
   te::gdal::createGeopackage(gpkgName);
 
