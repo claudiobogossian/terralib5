@@ -28,10 +28,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "Form.h"
 #include "Section.h"
 
-// Boost
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
 te::qt::plugins::terramobile::Section::Section():
   m_name(""),
   m_description("")
@@ -43,29 +39,6 @@ te::qt::plugins::terramobile::Section::~Section()
 {
   te::common::FreeContents(m_forms);
   m_forms.clear();
-}
-
-void te::qt::plugins::terramobile::Section::serialize(std::string fileName)
-{
-  boost::property_tree::ptree section;
-
-  section.put("sectionname", m_name);
-  section.put("sectiondescription", m_description);
-
-  boost::property_tree::ptree forms;
-
-  for (std::size_t t = 0; t < m_forms.size(); ++t)
-  {
-    boost::property_tree::ptree form;
-
-    m_forms[t]->serialize(form);
-
-    forms.push_back(std::make_pair("", form));
-  }
-
-  section.add_child("forms", forms);
-
-  boost::property_tree::json_parser::write_json(fileName, section);
 }
 
 te::qt::plugins::terramobile::Form* te::qt::plugins::terramobile::Section::getForm(std::string formName)

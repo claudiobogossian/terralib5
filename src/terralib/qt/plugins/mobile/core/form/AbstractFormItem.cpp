@@ -41,37 +41,6 @@ te::qt::plugins::terramobile::AbstractFormItem::~AbstractFormItem()
   m_values.clear();
 }
 
-void te::qt::plugins::terramobile::AbstractFormItem::serialize(boost::property_tree::ptree& pt)
-{
-  //convert values to string
-  if (m_hasDefaultValue)
-    toString();
-
-  pt.put("key", m_key);
-  pt.put("label", m_label);
-
-  if (!m_values.empty())
-  {
-    boost::property_tree::ptree items;
-
-    boost::property_tree::ptree values;
-
-    for (std::size_t t = 0; t < m_values.size(); ++t)
-    {
-      boost::property_tree::ptree val;
-      val.put("item", m_values[t]);
-      values.push_back(std::make_pair("", val));
-    }
-
-    items.add_child("items", values);
-
-    pt.push_back(std::make_pair("values", items));
-  }
-
-  pt.put("value", m_defaultValue);
-  pt.put("type", m_type);
-}
-
 std::string te::qt::plugins::terramobile::AbstractFormItem::getStrDefaultValue()
 {
   //convert values to string
@@ -79,4 +48,11 @@ std::string te::qt::plugins::terramobile::AbstractFormItem::getStrDefaultValue()
     toString();
 
   return m_defaultValue;
+}
+
+std::vector<std::string> te::qt::plugins::terramobile::AbstractFormItem::getValues()
+{ 
+  toString();
+
+  return m_values; 
 }

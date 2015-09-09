@@ -72,8 +72,6 @@ namespace te
 
         public:
 
-          void serialize(boost::property_tree::ptree& pt);
-
           std::string getKey() { return m_key; }
 
           void setKey(std::string key) { m_key = key; }
@@ -87,6 +85,8 @@ namespace te
           bool hasDefaultValue() { return m_hasDefaultValue; }
 
           std::string getStrDefaultValue();
+
+          std::vector<std::string> getValues();
 
         protected:
 

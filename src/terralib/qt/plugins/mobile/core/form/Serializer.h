@@ -18,24 +18,19 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file src/terralib/qt/plugins/mobile/core/form/Form.h
+\file src/terralib/qt/plugins/mobile/core/form/Serializer.h
 
-\brief This file defines the form class.
+\brief This file defines the serializer for form classes.
 */
 
-#ifndef __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_FORM_H
-#define __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_FORM_H
+#ifndef __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_SERIALIZER_H
+#define __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_SERIALIZER_H
 
 // TerraLib
 #include "../../Config.h"
-#include "AbstractFormItem.h"
-
-// Boost
-#include <boost/property_tree/ptree.hpp>
 
 // STL
 #include <string>
-#include <vector>
 
 namespace te
 {
@@ -45,39 +40,11 @@ namespace te
     {
       namespace terramobile
       {
+        class Section;
 
-        /*!
-        \class Form
+        void Write(te::qt::plugins::terramobile::Section* section, std::string filePath);
 
-        \brief This class defines the Form object.
-        */
-
-        class Form
-        {
-        public:
-
-          /* \brief Default Constructor */
-          Form();
-
-          /* \brief Default Destructor*/
-          ~Form();
-
-        public:
-
-          std::string getName() { return m_name; }
-
-          void setName(std::string name) { m_name = name; }
-
-          std::vector<AbstractFormItem*>& getItems() { return m_items; }
-
-          AbstractFormItem* getItem(std::string itemName);
-
-        protected:
-
-          std::string m_name;
-
-          std::vector<AbstractFormItem*> m_items;
-        };
+        te::qt::plugins::terramobile::Section* Read(std::string filePath);
 
       }   // end namespace thirdParty
     }     // end namespace plugins
@@ -85,4 +52,4 @@ namespace te
 }         // end namespace te
 
 
-#endif  // __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_FORM_H
+#endif  // __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_SERIALIZER_H

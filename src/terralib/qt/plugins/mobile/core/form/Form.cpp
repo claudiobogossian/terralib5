@@ -39,24 +39,6 @@ te::qt::plugins::terramobile::Form::~Form()
   m_items.clear();
 }
 
-void te::qt::plugins::terramobile::Form::serialize(boost::property_tree::ptree& pt)
-{
-  pt.put("formname", m_name);
-
-  boost::property_tree::ptree items;
-
-  for (std::size_t t = 0; t < m_items.size(); ++t)
-  {
-    boost::property_tree::ptree item;
-
-    m_items[t]->serialize(item);
-
-    items.push_back(std::make_pair("", item));
-  }
-
-  pt.add_child("formitems", items);
-}
-
 te::qt::plugins::terramobile::AbstractFormItem* te::qt::plugins::terramobile::Form::getItem(std::string itemName)
 {
   for (std::size_t t = 0; t < m_items.size(); ++t)

@@ -47,6 +47,7 @@
 #include "../core/form/IntFormItem.h"
 #include "../core/form/LabelFormItem.h"
 #include "../core/form/PictureFormItem.h"
+#include "../core/form/Serializer.h"
 #include "../core/form/StringComboFormItem.h"
 #include "../core/form/StringFormItem.h"
 #include "../core/form/TimeFormItem.h"
@@ -58,6 +59,7 @@
 #include <QFileDialog>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QValidator>
 
 #define FORM_TREE_ITEM      0
 #define PROPERTY_TREE_ITEM  1
@@ -80,6 +82,9 @@ te::qt::plugins::terramobile::GeoPackageBuilderDialog::GeoPackageBuilderDialog(Q
 
   m_ui->m_saveFormItemToolButton->setIcon(QIcon::fromTheme("check"));
   m_ui->m_stringComboAddToolButton->setIcon(QIcon::fromTheme("list-add"));
+
+  m_ui->m_doubleLineEdit->setValidator(new QDoubleValidator(this));
+  m_ui->m_intLineEdit->setValidator(new QIntValidator(this));
   
 
   //build form
@@ -280,7 +285,8 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::setLayerList(std::li
 
 void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onDirToolButtonPressed()
 {
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Geopackage (*.gpkg *.GPKG);;"), 0, QFileDialog::DontConfirmOverwrite);
+  //QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Geopackage (*.gpkg *.GPKG);;"), 0, QFileDialog::DontConfirmOverwrite);
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("JSON FILE (*.txt *.txt);;"), 0, QFileDialog::DontConfirmOverwrite);
 
   if (fileName.isEmpty())
     return;
@@ -544,6 +550,8 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onAddFormToolButtonP
     }
   }
 
+  QMessageBox::information(this, tr("Information"), tr("Form created."));
+
   //add form to section
   m_section->getForms().push_back(form);
 }
@@ -605,6 +613,10 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTreeItemClicked(QT
       {
         m_ui->m_doubleLineEdit->setText(fi->getStrDefaultValue().c_str());
       }
+      else
+      {
+        m_ui->m_doubleLineEdit->clear();
+      }
 
       m_ui->m_stackedWidget->setCurrentIndex(2);
     }
@@ -618,6 +630,10 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTreeItemClicked(QT
       {
         m_ui->m_intLineEdit->setText(fi->getStrDefaultValue().c_str());
       }
+      else
+      {
+        m_ui->m_intLineEdit->clear();
+      }
 
       m_ui->m_stackedWidget->setCurrentIndex(3);
     }
@@ -630,6 +646,10 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTreeItemClicked(QT
       if (fi->hasDefaultValue())
       {
         m_ui->m_labelLineEdit->setText(fi->getStrDefaultValue().c_str());
+      }
+      else
+      {
+        m_ui->m_labelLineEdit->clear();
       }
 
       m_ui->m_stackedWidget->setCurrentIndex(4);
@@ -650,6 +670,10 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTreeItemClicked(QT
       {
         m_ui->m_stringComboLineEdit->setText(fi->getStrDefaultValue().c_str());
       }
+      else
+      {
+        m_ui->m_stringComboLineEdit->clear();
+      }
 
       m_ui->m_listWidget->clear();
 
@@ -669,6 +693,10 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTreeItemClicked(QT
       if (fi->hasDefaultValue())
       {
         m_ui->m_stringLineEdit->setText(fi->getStrDefaultValue().c_str());
+      }
+      else
+      {
+        m_ui->m_stringLineEdit->clear();
       }
 
       m_ui->m_stackedWidget->setCurrentIndex(6);
@@ -806,6 +834,8 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onSaveFormItemToolBu
     {
       te::qt::plugins::terramobile::TimeFormItem* fi = dynamic_cast<te::qt::plugins::terramobile::TimeFormItem*>(m_curFormItem);
     }
+
+    QMessageBox::information(this, tr("Information"), tr("Form Item updated."));
   }
   else if (m_itemTreeType == FORM_TREE_ITEM)
   {
@@ -837,6 +867,10 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onSaveFormItemToolBu
     }
 
     backupItems.clear();
+
+    onTabWidgetChanged(3);
+
+    QMessageBox::information(this, tr("Information"), tr("Form updated."));
   }
 }
 
@@ -895,6 +929,13 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onOkPushButtonClicke
     QMessageBox::warning(this, tr("GeoPackage Builder"), "The name for the output geopackage can not be empty.");
     return;
   }
+
+  if (m_section)
+  {
+    te::qt::plugins::terramobile::Write(m_section, gpkgName);
+  }
+
+  return;
 
   te::gdal::createGeopackage(gpkgName);
 

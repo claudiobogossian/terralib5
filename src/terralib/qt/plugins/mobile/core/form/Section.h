@@ -62,8 +62,6 @@ namespace te
 
           public:
 
-            void serialize(std::string fileName);
-
             std::string getName() { return m_name;  }
 
             void setName(std::string name) { m_name = name; }
