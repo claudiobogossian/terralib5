@@ -224,6 +224,8 @@ namespace te
           */
            te::dt::TimeInstant getFinalTime();
 
+           void showWidget(const bool& b);
+
         protected:
 
           /*!
