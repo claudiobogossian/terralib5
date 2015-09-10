@@ -30,9 +30,9 @@
 #endif
 
 
-#ifdef TEMNTCORESTATIC
+#ifdef TEMNTSTATIC
 #define TEMNTEXPORT                          // Don't need to export/import  . it is a static library
-#elif TEMNTCOREDLL
+#elif TEMNTDLL
 #define TEMNTEXPORT  __declspec(dllexport)   // export DLL information
 #else
 #define TEMNTEXPORT  __declspec(dllimport)   // import DLL information
