@@ -410,7 +410,7 @@ bool te::mnt::segInterPoint(te::gm::PointZ &pfr, te::gm::PointZ &pto, te::gm::Po
 */
 bool te::mnt::testVertexValues(double isolin, te::gm::PointZ *p3da)
 {
-  double  delta = (float).9999;
+  double  delta = .9999;
   size_t  i;
 
   for (i = 0; i < 3; i++)
@@ -539,36 +539,36 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
   std::vector<te::gm::PointZ>::iterator it, itf, itn;
   short borda; // borda = 1 no boundary reached, 2 one boundary reached.
 
-  //std::ofstream ofs("d:\\teste\\Extract.txt", std::ofstream::out | std::ofstream::app);
-  //ofs.precision(8);
+  std::ofstream ofs("d:\\teste\\Extract.txt", std::ofstream::out | std::ofstream::app);
+  ofs.precision(8);
 
   initLineVector(pline, velin);
   borda = 1;
- /* ofs << "velin.size " << velin.size() << std::endl;
+  ofs << "velin.size " << velin.size() << std::endl;
   for (size_t vv = 0; vv < velin.size(); vv++)
-    ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;*/
+    ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
 
   //index pindex to the current point of old line
   it = itf = pline.begin();
   itn = ++it;
   te::gm::PointZ ptf(*itf);
   te::gm::PointZ ptn(*itn);
-  //ofs << "pline.size " << pline.size() << std::endl;
+  ofs << "pline.size " << pline.size() << std::endl;
   while (it != pline.end())
   {
     ptf = *itf;
     ptn = *itn;
     pt = velin[velin.size()-1];
-    //ofs << "ptf " << ptf.getX() << " " << ptf.getY() << " ptn " << ptn.getX() << " " << ptn.getY() << " pt " << pt.getX() << " " << pt.getY() << std::endl;
+    ofs << "ptf " << ptf.getX() << " " << ptf.getY() << " ptn " << ptn.getX() << " " << ptn.getY() << " pt " << pt.getX() << " " << pt.getY() << std::endl;
     if (equalFptSpt(ptf, pt, scale))
     {// conection on ptf
       velin.push_back(ptn);
       --it;
       it = itf = pline.erase(it);
       itn = pline.erase(it);
-      //ofs << "velin.size " << velin.size() << std::endl;
-      //for (size_t vv = 0; vv < velin.size(); vv++)
-      //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+      ofs << "velin.size " << velin.size() << std::endl;
+      for (size_t vv = 0; vv < velin.size(); vv++)
+        ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
     }
     else if (equalFptSpt(ptn, pt, scale))
     {// conection on ptn
@@ -576,9 +576,9 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
       --it;
       it = itf = pline.erase(it);
       itn = pline.erase(it);
-      //ofs << "velin.size " << velin.size() << std::endl;
-      //for (size_t vv = 0; vv < velin.size(); vv++)
-      //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+      ofs << "velin.size " << velin.size() << std::endl;
+      for (size_t vv = 0; vv < velin.size(); vv++)
+        ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
     }
     else
     {
@@ -591,17 +591,17 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
         {// If first point is on boundary -> open contour
           assembLine(clinlist, velin);
           initLineVector(pline, velin); //SSL0296
-          //ofs << "velin.size " << velin.size() << std::endl;
-          //for (size_t vv = 0; vv < velin.size(); vv++)
-          //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+          ofs << "velin.size " << velin.size() << std::endl;
+          for (size_t vv = 0; vv < velin.size(); vv++)
+            ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
           borda = 1;
         }
         else
         {// If not on boundary, invert line points
           std::reverse(velin.begin(), velin.end());
-          //ofs << " Reverse velin.size " << velin.size() << std::endl;
-          //for (size_t vv = 0; vv < velin.size(); vv++)
-          //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+          ofs << " Reverse velin.size " << velin.size() << std::endl;
+          for (size_t vv = 0; vv < velin.size(); vv++)
+            ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
           borda = 2;
         }
         it = itf = pline.begin();
@@ -626,7 +626,7 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
   }
 
   assembLine(clinlist, velin);
-  //ofs.close();
+  ofs.close();
 
   return true;
 }
@@ -675,7 +675,7 @@ FALSE    failure
 *************************************************************/
 bool te::mnt::assembLine(std::vector<te::gm::LineString> &linlout, std::vector<te::gm::PointZ> &vect)
 {
-  if (vect.size() == 1)
+  if (vect.size() <= 1)
     return true;
 
   te::gm::LineString linout(vect.size(), te::gm::LineStringZType);
