@@ -25,12 +25,15 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 
 //terralib
+#include "../../common/UnitsOfMeasureManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../mnt/core/TINGeneration.h"
+#include "../../qt/plugins/cellspace/CreateCellularSpaceDialog.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
 
 #include "TINGenerationDialog.h"
 #include "ui_TINGenerationDialogForm.h"
@@ -278,9 +281,10 @@ void te::mnt::TINGenerationDialog::onHelpPushButtonClicked()
 
 void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 {
+  int srid;
+
   try
   {
-
     te::mnt::TINGeneration *Tin = new te::mnt::TINGeneration();
 
     // Checking consistency of the input layer where the buffer will executed
@@ -302,7 +306,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
       std::string inDsetNameiso = dsisoLayer->getDataSetName();
       Tin->setInput(inDataSource, inDsetNameiso, inDataSource->getDataSetType(inDsetNameiso), te::mnt::Isolines);
-      Tin->setSRID(dsisoLayer->getSRID());
+      srid = dsisoLayer->getSRID();
     }
     if (m_samplesLayer.get())
     {
@@ -322,7 +326,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
       std::string inDsetNamesample = dssampleLayer->getDataSetName();
       Tin->setInput(inDataSource, inDsetNamesample, inDataSource->getDataSetType(inDsetNamesample), te::mnt::Samples);
-      Tin->setSRID(dssampleLayer->getSRID());
+      srid = dssampleLayer->getSRID();
     }
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
@@ -360,16 +364,28 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
       if (!aux)
       {
-        QMessageBox::information(this, "Buffer", "The selected output datasource can not be accessed.");
+        QMessageBox::information(this, "TIN Generation", "The selected output datasource can not be accessed.");
         return;
       }
       if (aux->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "Buffer", "Dataset already exists. Remove it or select a new name and try again. ");
+        QMessageBox::information(this, "TIN Generation", "Dataset already exists. Remove it or select a new name and try again. ");
         return;
       }
     
       Tin->setOutput(aux, outputdataset);
+    }
+
+    Tin->setSRID(srid);
+
+    te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid);
+    te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+    if (unitin->getId() != te::common::UOM_Metre)
+    {
+      convertPlanarToAngle(m_tol, unitout);
+      convertPlanarToAngle(m_distance, unitout);
+      convertPlanarToAngle(m_edgeSize, unitout);
     }
 
     Tin->setParams(m_tol, m_distance, m_edgeSize, m_ui->m_isolinesZcomboBox->currentText().toStdString(), m_ui->m_samplesZcomboBox->currentText().toStdString());
@@ -377,7 +393,6 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     this->setCursor(Qt::WaitCursor);
 
     bool result = Tin->run();
-
 
   }
   catch (const std::exception& e)
@@ -395,3 +410,22 @@ void te::mnt::TINGenerationDialog::onCancelPushButtonClicked()
   reject();
 }
 
+
+bool te::mnt::TINGenerationDialog::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit)
+{
+  switch (unit->getId())
+  {
+  case te::common::UOM_Metre:
+    val /= 111000;            // 1 degree = 111.000 meters
+    break;
+  case te::common::UOM_Kilometre:
+    val /= 111;               // 1 degree = 111 kilometers
+    break;
+  case te::common::UOM_Foot:
+    val /= 364173.24;        //  1 feet  = 3.28084 meters
+    break;
+  default:
+    return false;
+  }
+  return true;
+}

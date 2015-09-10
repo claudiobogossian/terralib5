@@ -26,6 +26,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define __TERRALIB_MNT_INTERNAL_TINGENERATIONDIALOG_H
 
 // Terralib
+#include "../../common/UnitOfMeasure.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
@@ -71,6 +72,8 @@ namespace te
       void onHelpPushButtonClicked();
       void onOkPushButtonClicked();
       void onCancelPushButtonClicked();
+      bool convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit);
+
 
     private:
 

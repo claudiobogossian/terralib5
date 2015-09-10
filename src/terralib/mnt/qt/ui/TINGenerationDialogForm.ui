@@ -46,7 +46,7 @@
    <item>
     <widget class="QTabWidget" name="m_inputtabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="m_isolinestabWidget">
       <attribute name="title">
