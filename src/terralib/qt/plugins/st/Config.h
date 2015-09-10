@@ -31,7 +31,7 @@
 
   \brief It defines if the ST Qt Plugin has the slider operation.
 */
-//#define TE_QT_PLUGIN_ST_HAVE_SLIDER
+#define TE_QT_PLUGIN_ST_HAVE_SLIDER
 
 /*!
   \def TE_QT_PLUGIN_ST_HAVE_OBSERVATION
