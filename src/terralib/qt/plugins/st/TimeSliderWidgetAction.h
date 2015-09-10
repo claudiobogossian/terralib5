@@ -68,10 +68,6 @@ namespace te
 
             void onApplicationTriggered(te::qt::af::evt::Event* e);
 
-          Q_SIGNALS:
-
-            void triggered(te::qt::af::evt::Event* e);
-
           private:
             te::qt::widgets::TimeSliderWidget* m_timeSliderWidget;
         };
