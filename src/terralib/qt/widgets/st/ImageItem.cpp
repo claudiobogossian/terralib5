@@ -467,7 +467,7 @@ void te::qt::widgets::ImageItem::generateRoute()
   size_t count = m_files.count();
   m_route = new te::gm::LineString(count, te::gm::LineStringType, m_SRID);
 
-  // crie valores não repetitivos e nem muito grandes ou pequenos
+  // create non-repetitive values and not too large or small
   QPointF pos(m_animation->m_spatialExtent.m_llx, m_animation->m_spatialExtent.m_lly);
   double w = m_animation->m_spatialExtent.getWidth();
   double h = m_animation->m_spatialExtent.getHeight();

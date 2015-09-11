@@ -62,6 +62,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent) :
   m_styleExplorer = 0;
   m_app = 0;
   m_mapCursorSize = QSize(20, 20);
+
+  te::qt::af::AppCtrlSingleton::getInstance().setMsgBoxParentWidget(this);
 }
 
 
