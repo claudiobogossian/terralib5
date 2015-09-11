@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/layout/SliderAction.h
+  \file terralib/qt/plugins/st/TimeSliderWidgetAction.h
 
-  \brief This file defines the SliderAction class
+  \brief This file defines the TimeSliderWidgetAction class
 */
 
-#ifndef __TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H
-#define __TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H
+#ifndef __TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGETACTION_H
+#define __TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGETACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -47,7 +47,7 @@ namespace te
         /*!
           \class TimeSliderWidgetAction
 
-          \brief This class register the contrast action into TIMESLIDERWIDGET Plugin.
+          \brief This class register the time slider widget action into st Plugin.
 
         */
         class TimeSliderWidgetAction : public te::qt::plugins::st::AbstractAction
@@ -77,4 +77,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H
+#endif //__TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGETACTION_H
