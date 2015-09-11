@@ -41,50 +41,6 @@ te::layout::MapController::~MapController()
 
 }
 
-void te::layout::MapController::update(const te::layout::Subject* subject)
-{
-  MapItem* view = dynamic_cast<MapItem*>(m_view);
-  if(view == 0)
-  {
-    AbstractItemController::update(subject);
-    return;
-  }
-  /*
-  const Property& pLayers = getProperty("layers");
-  const Property& pSrid = getProperty("srid");
-  const Property& pWorldBox = getProperty("world_box");
-
-  const std::list<te::map::AbstractLayerPtr>& layerList = pLayers.getValue().toGenericVariant().toLayerList();
-  int srid = pSrid.getValue().toInt();
-  te::gm::Envelope envelope = pWorldBox.getValue().toEnvelope();
-
-  te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
-
-  bool doRefresh = false;
-  mapDisplay->setLayerList(layerList);
-  mapDisplay->refresh(); //this refresh need to be done in order to correctly initialize the mapDisplay. We should review this later
-
-  if(mapDisplay->getSRID() != srid)
-  {
-    mapDisplay->setSRID(srid, false);
-    doRefresh = true;
-  }
-
-  if(mapDisplay->getExtent().equals(envelope) == false)
-  {
-    mapDisplay->setExtent(envelope, false);
-    doRefresh = true;
-  }
-
-  if (doRefresh)
-  {
-    view->doRefresh();
-  }
-  */
-
-  AbstractItemController::update(subject);
-}
-
 void te::layout::MapController::addLayers(const std::list<te::map::AbstractLayerPtr>& layerList)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
