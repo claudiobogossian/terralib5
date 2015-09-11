@@ -52,6 +52,7 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
   algoInputParameters.m_inputRasterBands.push_back(0);
   algoInputParameters.m_inputRasterBands.push_back(1);
   algoInputParameters.m_inputRasterBands.push_back(2);
+  algoInputParameters.m_enableBlockProcessing = false;
 
 // link specific parameters with chosen implementation
   te::rp::SegmenterRegionGrowingMeanStrategy::Parameters segparameters;
@@ -78,7 +79,10 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
   std::vector<te::gm::Polygon*> polygons;
   for (unsigned i = 0; i < geometries.size(); i++)
+  {
     polygons.push_back(static_cast<te::gm::Polygon*> (geometries[i]));
+    polygons[ i ]->setSRID( rin->getGrid()->getSRID() );
+  }
 
   return polygons;
 }
