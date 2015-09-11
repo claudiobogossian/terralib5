@@ -81,5 +81,51 @@ void te::qt::plugins::st::TimeSliderWidgetAction::onDeleteTimeSliderWidget()
 
 void te::qt::plugins::st::TimeSliderWidgetAction::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
+  switch (e->m_id)
+  {
+  case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
+  {
+    int a = 0;
+  }
+  break;
+
+  case te::qt::af::evt::LAYER_ADDED:
+  {
+    te::qt::af::evt::LayerSelected* ev = static_cast<te::qt::af::evt::LayerSelected*>(e);
+    te::map::AbstractLayerPtr layer = static_cast<te::map::AbstractLayerPtr>(ev->m_layer);
+    if (layer->getType() == "TRAJECTORYDATASETLAYER")
+      m_timeSliderWidget->layerAdded(layer);
+  }
+  break;
+
+  case te::qt::af::evt::LAYER_REMOVED:
+  {
+    te::qt::af::evt::LayerRemoved* ev = static_cast<te::qt::af::evt::LayerRemoved*>(e);
+    std::list<te::map::AbstractLayerPtr> layers = ev->m_layers;
+    std::list<te::map::AbstractLayerPtr>::iterator it;
+
+    for (it = layers.begin(); it != layers.end(); ++it)
+    {
+      if ((*it)->getType() == "TRAJECTORYDATASETLAYER")
+        m_timeSliderWidget->layerRemoved(*it);
+    }
+  }
+  break;
+
+  case te::qt::af::evt::LAYER_SELECTED:
+  {
+    int a = 0;
+  }
+  break;
+
+  case te::qt::af::evt::LAYER_CHANGED:
+  {
+    int a = 0;
+  }
+  break;
+
+  default:
+    return;
+  }
 }
 
