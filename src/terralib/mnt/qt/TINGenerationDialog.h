@@ -60,6 +60,8 @@ namespace te
       */
       void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
+      te::map::AbstractLayerPtr getLayer();
+
       protected slots:
 
       void onIsolinesComboBoxChanged(int index);
@@ -74,16 +76,17 @@ namespace te
       void onCancelPushButtonClicked();
       bool convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit);
 
-
     private:
 
       std::auto_ptr<Ui::TINGenerationDialogForm> m_ui;
+
       te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
       std::string m_outputArchive;                                                      //!< Archive information.
       bool m_toFile;
       std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
       te::map::AbstractLayerPtr m_isolinesLayer;                                        //!< Isolines layer
       te::map::AbstractLayerPtr m_samplesLayer;                                        //!< Points layer
+      te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
       bool m_hasiso;
       bool m_hassample;
       double m_scale;

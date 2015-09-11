@@ -58,14 +58,14 @@ void te::qt::plugins::mnt::TINGenerationAction::onActionActivated(bool)
   if(dlg.exec() != QDialog::Accepted)
     return;
 
-  //te::map::AbstractLayerPtr layer = dlg.getLayer();
+  te::map::AbstractLayerPtr layer = dlg.getLayer();
 
-  //if(!layer)
-  //  return;
+  if(!layer)
+    return;
 
-  //int reply = QMessageBox::question(0, tr("TIN Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+  int reply = QMessageBox::question(0, tr("TIN Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
 
-  //if(reply == QMessageBox::Yes)
-  //  addNewLayer(layer);
+  if(reply == QMessageBox::Yes)
+    addNewLayer(layer);
 }
 

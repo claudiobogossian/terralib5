@@ -27,14 +27,15 @@ TerraLib Team at <terralib-team@terralib.org>.
 //terralib
 #include "../../common/UnitsOfMeasureManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../mnt/core/TINGeneration.h"
-#include "../../qt/plugins/cellspace/CreateCellularSpaceDialog.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
-
 #include "TINGenerationDialog.h"
 #include "ui_TINGenerationDialogForm.h"
 
@@ -45,6 +46,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 // BOOST
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 
 te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFlags f)
@@ -330,11 +334,11 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     }
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    std::map<std::string, std::string> dsinfo;
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
     if (m_toFile)
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
-
       if (boost::filesystem::exists(uri))
       {
         QMessageBox::information(this, "TIN Generation", "Output file already exists. Remove it or select a new name and try again.");
@@ -345,7 +349,6 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
 
       te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
@@ -394,6 +397,35 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
     bool result = Tin->run();
 
+    if (m_toFile)
+    {
+      // let's include the new datasource in the managers
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
+
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      ds->setConnInfo(dsinfo);
+      ds->setTitle(uri.stem().string());
+      ds->setAccessDriver("OGR");
+      ds->setType("OGR");
+      ds->setDescription(uri.string());
+      ds->setId(id);
+
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+      newds->open();
+      te::da::DataSourceInfoManager::getInstance().add(ds);
+      m_outputDatasource = ds;
+    }
+
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_outputLayer = converter(dt);
+
   }
   catch (const std::exception& e)
   {
@@ -410,6 +442,10 @@ void te::mnt::TINGenerationDialog::onCancelPushButtonClicked()
   reject();
 }
 
+te::map::AbstractLayerPtr te::mnt::TINGenerationDialog::getLayer()
+{
+  return m_outputLayer;
+}
 
 bool te::mnt::TINGenerationDialog::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit)
 {
