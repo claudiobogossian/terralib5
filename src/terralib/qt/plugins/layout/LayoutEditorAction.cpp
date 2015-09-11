@@ -35,6 +35,7 @@
 #include "../../../layout/qt/default/EditTemplateDock.h"
 #include "../../../layout/qt/default/ObjectInspectorDock.h"
 #include "../../../layout/qt/outside/ToolbarOutside.h"
+#include "../../../common/progress/ProgressManager.h"
 
 #include "ProxyProject.h"
 
@@ -89,92 +90,92 @@ te::qt::plugins::layout::LayoutEditorAction::~LayoutEditorAction()
 }
 
 void te::qt::plugins::layout::LayoutEditorAction::onActionActivated(bool checked)
-{  
-
+{
   ProxyProject* proxyProject = new ProxyProject;
 
-    QMainWindow* mw = dynamic_cast<QMainWindow*>(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  QMainWindow* mw = dynamic_cast<QMainWindow*>(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-    QSize size = mw->centralWidget()->size();
-    QRect screen = mw->centralWidget()->geometry();
+  QSize size = mw->centralWidget()->size();
+  QRect screen = mw->centralWidget()->geometry();
 
-    if(!m_mainLayout)
-    {
-      m_mainLayout = new te::layout::MainLayout(proxyProject);
-    }
-    m_mainLayout->init(size, screen);
+  if(!m_mainLayout)
+  {
+    m_mainLayout = new te::layout::MainLayout(proxyProject);
+  }
+  m_mainLayout->init(size, screen);
 
-    if(!m_dockLayoutDisplay)
-    {
-      m_dockLayoutDisplay = new te::layout::DisplayDock;
+  if(!m_dockLayoutDisplay)
+  {
+    m_dockLayoutDisplay = new te::layout::DisplayDock;
 
-      m_statusBar = m_mainLayout->getStatusBar();
+    m_statusBar = m_mainLayout->getStatusBar();
 
-      te::layout::View* view = m_mainLayout->getView();
+    te::layout::View* view = m_mainLayout->getView();
 
-      m_verticalLayout = new QVBoxLayout;
+    m_verticalLayout = new QVBoxLayout;
 
-      m_verticalLayout->addWidget(view);
+    m_verticalLayout->addWidget(view);
 
-      m_verticalLayout->addWidget(m_statusBar);
+    m_verticalLayout->addWidget(m_statusBar);
 
-      m_groupBox = new QGroupBox(m_dockLayoutDisplay);
+    m_groupBox = new QGroupBox(m_dockLayoutDisplay);
 
-      m_groupBox->setLayout(m_verticalLayout);
+    m_groupBox->setLayout(m_verticalLayout);
+  }
 
+  m_dockLayoutDisplay->setWidget(m_groupBox);
 
-    }
-    m_dockLayoutDisplay->setWidget(m_groupBox);
+  m_dockLayoutDisplay->setPreviousCentralWidget(mw->centralWidget());
 
-    m_dockLayoutDisplay->setPreviousCentralWidget(mw->centralWidget());
+  m_dockLayoutDisplay->setParent(mw);
 
-    m_dockLayoutDisplay->setParent(mw);
+  mw->setCentralWidget(m_dockLayoutDisplay);
 
-    mw->setCentralWidget(m_dockLayoutDisplay);
+  m_dockLayoutDisplay->setVisible(true);
 
-    m_dockLayoutDisplay->setVisible(true);
+  m_mainLayout->postInit();
 
-    m_mainLayout->postInit();
+  mw->connect(m_mainLayout, SIGNAL(exit()), this, SLOT(onExit()));
 
+  createMenu();
 
-    mw->connect(m_mainLayout, SIGNAL(exit()), this, SLOT(onExit()));
+  if(m_mainLayout->getProperties())
+  {
+    m_mainLayout->getProperties()->setParent(mw);
 
-    createMenu();
+    mw->addDockWidget(Qt::LeftDockWidgetArea, m_mainLayout->getProperties());
 
-    if(m_mainLayout->getProperties())
-     {
-      m_mainLayout->getProperties()->setParent(mw);
+    m_mainLayout->getProperties()->setVisible(true);
+  }
+  if(m_mainLayout->getObjectInspector())
+  {
+    m_mainLayout->getObjectInspector()->setParent(mw);
 
-      mw->addDockWidget(Qt::LeftDockWidgetArea, m_mainLayout->getProperties());
+    mw->addDockWidget(Qt::LeftDockWidgetArea, m_mainLayout->getObjectInspector());
 
-      m_mainLayout->getProperties()->setVisible(true);
-     }
-     if(m_mainLayout->getObjectInspector())
-     {
-       m_mainLayout->getObjectInspector()->setParent(mw);
+    m_mainLayout->getObjectInspector()->setVisible(true);
+  }
+  if(m_mainLayout->getToolbar())
+  {
+    m_mainLayout->getToolbar()->setParent(mw);
 
-       mw->addDockWidget(Qt::LeftDockWidgetArea, m_mainLayout->getObjectInspector());
+    mw->addToolBar(m_mainLayout->getToolbar());
 
-       m_mainLayout->getObjectInspector()->setVisible(true);
-     }
-     if(m_mainLayout->getToolbar())
-     {
-       m_mainLayout->getToolbar()->setParent(mw);
+    m_mainLayout->getToolbar()->setVisible(true);
+  }
+  if(m_mainLayout->getEditTemplate())
+  {
+    m_mainLayout->getEditTemplate()->setParent(mw);
 
-       mw->addToolBar(m_mainLayout->getToolbar());
+    mw->addDockWidget(Qt::RightDockWidgetArea, m_mainLayout->getEditTemplate());
 
-       m_mainLayout->getToolbar()->setVisible(true);
-     }
-     if(m_mainLayout->getEditTemplate())
-     {
-       m_mainLayout->getEditTemplate()->setParent(mw);
+    bool visible = m_mainLayout->getEditTemplate()->isVisible();
 
-       mw->addDockWidget(Qt::RightDockWidgetArea, m_mainLayout->getEditTemplate());
+    m_mainLayout->getEditTemplate()->setVisible(visible);
+  }
 
-       bool visible = m_mainLayout->getEditTemplate()->isVisible();
-
-       m_mainLayout->getEditTemplate()->setVisible(visible);
-     }
+  //disabling taskManager
+  te::common::ProgressManager::getInstance().setSuspendViewers(true);
 }
 
 void te::qt::plugins::layout::LayoutEditorAction::onExit()
@@ -220,6 +221,9 @@ void te::qt::plugins::layout::LayoutEditorAction::onExit()
       m_dockLayoutDisplay->close();
     }
   }
+
+  //enabling taskManager
+  te::common::ProgressManager::getInstance().setSuspendViewers(false);
 }
 
 void te::qt::plugins::layout::LayoutEditorAction::createMenu()
