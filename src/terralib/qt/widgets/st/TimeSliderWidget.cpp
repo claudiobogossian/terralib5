@@ -33,12 +33,13 @@
 #include "AnimationView.h"
 #include "Animation.h"
 #include "AnimationScene.h"
-#include "TrajectoryItem.h"
-#include "Eta5kmItem.h"
-#include "HidroItem.h"
-#include "GoesItem.h"
-#include "QtKnowItem.h"
-// include here your new temporal image type.
+#include "TrajectoryItem.h" // for animation of TRAJECTORIES
+#include "Eta5kmItem.h" // for animation of ETA forecast images
+#include "HidroItem.h" // for animation of HIDRO forecast images
+#include "GoesItem.h" // for animation of GOES images
+#include "QtKnowItem.h" // for animation of known images by QT, loadables by QT
+// include here your other temporal image animations.
+//#include ".....
 #include "TimeSliderWidget.h"
 #include "SliderPropertiesDialog.h"
 #include "ui_TimeSliderWidgetForm.h"
@@ -421,20 +422,24 @@ void te::qt::widgets::TimeSliderWidget::removeAnimation(const int& ind)
 void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEvent* e)
 {
   bool accept = false;
+
   const QMimeData* mdata = e->mimeData();
   QList<QUrl> urls = mdata->urls();
-  if(urls.empty())
+  if (urls.empty())
   {
     QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
-    if(ba.count() != 0)
+    if (ba.count() != 0)
     {
       QString s(ba);
-      unsigned long v = s.toULongLong();
-      std::vector<te::qt::widgets::TreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::TreeItem*>*>(v);
+      std::vector<te::qt::widgets::TreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::TreeItem*>*>(s.toULongLong());
 
       for (std::vector<te::qt::widgets::TreeItem*>::iterator it = draggedItems->begin(); it != draggedItems->end(); ++it)
       {
-        if ((*it)->getType() == "TRAJECTORYDATASETLAYER")
+        te::qt::widgets::LayerItem* lItem = (te::qt::widgets::LayerItem*)(*it);
+        te::map::AbstractLayer* layer = dynamic_cast<te::map::AbstractLayer*>(lItem->getLayer().get());
+        std::string ltype = layer->getType();
+
+        if (ltype == "TRAJECTORYDATASETLAYER")
           accept = true;
       }
     }
@@ -445,13 +450,13 @@ void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEven
 
     QString path = urls.begin()->path();
     size_t pos = path.indexOf("/");
-    if(pos == 0)
+    if (pos == 0)
       path.remove(0, 1);
     QDir dir(path);
     QStringList nameFilter;
     nameFilter.append("*.ctl");
     QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-    if(files.empty() == false)
+    if (files.empty() == false)
     {
       QString file(path + "/" + files.first());
       FILE* fp = fopen(file.toStdString().c_str(), "r");
@@ -460,7 +465,7 @@ void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEven
       fclose(fp);
       buf[c] = 0;
       QString s(buf);
-      if(s.contains("undef", Qt::CaseInsensitive))
+      if (s.contains("undef", Qt::CaseInsensitive))
         accept = true;
     }
     else
@@ -468,14 +473,14 @@ void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEven
       nameFilter.clear();
       nameFilter.append("S1123*.jpg");
       QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-      if(files.empty() == false && files.first().length() == 26)
+      if (files.empty() == false && files.first().length() == 26)
         accept = true;
       else
       {
         nameFilter.clear();
         nameFilter.append("S1118*.jpg");
         QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-        if(files.empty() == false && files.first().length() == 26)
+        if (files.empty() == false && files.first().length() == 26)
           accept = true;
       }
     }
@@ -538,19 +543,20 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
     if(m_dropBA.count() != 0)
     {
       QString s(m_dropBA);
-      unsigned long v = s.toULongLong();
-      std::vector<te::qt::widgets::TreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::TreeItem*>*>(v);
+      //unsigned long v = s.toULongLong();
+      std::vector<te::qt::widgets::TreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::TreeItem*>*>(s.toULongLong());
 
       for (std::vector<te::qt::widgets::TreeItem*>::iterator it = draggedItems->begin(); it != draggedItems->end(); ++it)
       {
         te::qt::widgets::LayerItem* lItem = (te::qt::widgets::LayerItem*)(*it);
-        te::st::TrajectoryDataSetLayer* tl = dynamic_cast<te::st::TrajectoryDataSetLayer*>(lItem->getLayer().get());
-        std::string ltype = tl->getType();
+        te::map::AbstractLayer* layer = dynamic_cast<te::map::AbstractLayer*>(lItem->getLayer().get());
+        std::string ltype = layer->getType();
         
         if (ltype == "TRAJECTORYDATASETLAYER")
         {
-          QString layerId(lItem->getLayer()->getId().c_str());
-          QString title(lItem->getLayer()->getTitle().c_str());
+          te::st::TrajectoryDataSetLayer* tl = dynamic_cast<te::st::TrajectoryDataSetLayer*>(lItem->getLayer().get());
+          QString layerId(tl->getId().c_str());
+          QString title(tl->getTitle().c_str());
           QPair<QString, QString> p(title, layerId);
           if (trajectoryAlreadyExists(p))
             QMessageBox::information(this, "animation already exists", title + " is already being animated!");
@@ -585,6 +591,8 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
     onPlayToolButtonnClicked();
     m_parallelAnimation->setCurrentTime(m_currentTime);
   }
+  if (isHidden())
+    show();
 }
 
 bool te::qt::widgets::TimeSliderWidget::trajectoryAlreadyExists(QPair<QString, QString>& item)
@@ -1040,11 +1048,6 @@ void te::qt::widgets::TimeSliderWidget::draw()
   m_animationScene->createNewPixmap();
   m_animationScene->draw(m_currentTime);
 }
-//
-//void te::qt::widgets::TimeSliderWidget::setAutomaticPan(const QString& title)
-//{
-//  m_animationScene->setAutomaticPan(title);
-//}
 
 void te::qt::widgets::TimeSliderWidget::onPanFactorValueChanged(double v)
 {
@@ -1188,7 +1191,7 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
       return true;
     }
   }
-  else if(obj == m_spd->m_ui->m_iconPushButton)
+  else if(ti != 0 && obj == m_spd->m_ui->m_iconPushButton)
   {
     if(e->type() == QEvent::Paint)
     {
@@ -1201,8 +1204,7 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
       painter.end();
       return true;
     }
-
-    else if(ti != 0 && e->type() == QEvent::MouseButtonPress)
+    else if(e->type() == QEvent::MouseButtonPress)
     {
       QString fileName = QFileDialog::getOpenFileName(this, tr("Select File"), "C:/", tr("Images (*.png *.xpm *.jpg *.gif)"));
       if(fileName.isNull())
@@ -1301,6 +1303,7 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
       return false;
     }
   }
+
   return QObject::eventFilter(obj, e);
 }
 
@@ -1748,72 +1751,53 @@ void te::qt::widgets::TimeSliderWidget::erase(const unsigned int& curTime)
 
 void te::qt::widgets::TimeSliderWidget::onDurationValueChanged(int val)
 {
-  if (val == m_duration)
-    return;
-
   m_currentTime = m_parallelAnimation->currentTime();
-  double f = double(m_currentTime) / (double)m_duration;
+  double relativeTimePos = double(m_currentTime) / (double)m_duration;
 
   int ss = m_ui->m_durationSpinBox->singleStep();
-
-  bool isRound = true;
-  double d = (double)m_duration / (double)ss;
-  double dd = (int)d;
-  if (d != dd)
-    isRound = false;
-
-  // set new single step
-  int ns = 10;
-  while ((m_duration / ns) > 10)
-    ns *= 10;
-
-  int nns = 10;
-  while ((val / nns) > 10)
-    nns *= 10;
-  if (nns > ns)
-    ns = nns;
-
-  if (ns < m_ui->m_durationSpinBox->minimum())
-    ns = m_ui->m_durationSpinBox->minimum();
-  m_ui->m_durationSpinBox->setSingleStep(ns);
-
-  // calcute new duration
-  if (val == 100 && ns != ss)
-    m_duration -= ns;
-  else if (val == (m_duration + ss) || val == (m_duration - ss)) // increment or decrement by mouse
+  int nss = ss;
+  if (m_duration == ss) // incremented or decremented by mouse (special cases)
   {
-    if (isRound == false)
+    if (val < m_duration)
     {
-      int nd = ((int)((double)m_duration / (double)ns)) * ns;
-      if (val < m_duration)
-        m_duration = nd;
-      else
-        m_duration = nd + ns;
+      nss = ss / 10;
+      m_duration -= nss;
     }
     else
+      m_duration += nss;
+  }
+  else if (val == m_duration + ss || val == m_duration - ss) // incremented or decremented by mouse
+  {
+    nss = (int)log10((double)val);
+    nss = (int)pow(10., (double)nss);
+    if ((val % nss) == 0)
+      m_duration = val;
+    else
     {
-      if (val < m_duration)
-        m_duration -= ns;
-      else
-        m_duration += ns;
+      m_duration = nss * (int)(m_duration / nss);
+      if (val > m_duration)
+        m_duration += nss;
     }
   }
-  else // manual edition
+  else // edited by keyboard
   {
+    nss = (int)log10((double)val);
+    nss = (int)pow(10., (double)nss);
     m_duration = val;
-    m_ui->m_durationSpinBox->setSingleStep(nns);
   }
 
   if (m_duration <= m_ui->m_durationSpinBox->minimum())
   {
     m_duration = m_ui->m_durationSpinBox->minimum();
-    m_ui->m_durationSpinBox->setSingleStep(m_duration);
+    nss = m_ui->m_durationSpinBox->minimum();
   }
   else if (m_duration >= m_ui->m_durationSpinBox->maximum())
   {
     m_duration = m_ui->m_durationSpinBox->maximum();
-    m_ui->m_durationSpinBox->setSingleStep(m_duration/10);
+    nss = m_ui->m_durationSpinBox->maximum() / 10;
   }
+
+  m_ui->m_durationSpinBox->setSingleStep(nss);
   m_ui->m_durationSpinBox->setValue(m_duration);
 
   bool running = false;
@@ -1823,7 +1807,7 @@ void te::qt::widgets::TimeSliderWidget::onDurationValueChanged(int val)
     onPlayToolButtonnClicked();
   }
 
-  m_currentTime = qRound(f * (double)m_duration);
+  m_currentTime = qRound(relativeTimePos * (double)m_duration);
   m_animationScene->m_mutex.lock();
   m_animationScene->m_trajectoryPixmap->fill(Qt::transparent);
   m_animationScene->m_mutex.unlock();
@@ -2448,6 +2432,20 @@ QString te::qt::widgets::TimeSliderWidget::getTemporalImageType(const QString& p
   // you must find a way to discover its kind and return your type.
 
   return "";
+}
+
+void te::qt::widgets::TimeSliderWidget::showWidget(const bool& b)
+{
+  if (b)
+  {
+    onPlayToolButtonnClicked();
+    show();
+  }
+  else
+  {
+    onStopToolButtonnClicked();
+    hide();
+  }
 }
 
 void te::qt::widgets::TimeSliderWidget::onHelpPushButtonClicked()

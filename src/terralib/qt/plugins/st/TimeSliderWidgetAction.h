@@ -66,6 +66,8 @@ namespace te
 
             virtual void onDeleteTimeSliderWidget();
 
+            void onApplicationTriggered(te::qt::af::evt::Event* e);
+
           private:
             te::qt::widgets::TimeSliderWidget* m_timeSliderWidget;
         };

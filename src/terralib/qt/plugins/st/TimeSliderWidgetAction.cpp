@@ -28,7 +28,9 @@
 #include "../../af/ApplicationController.h"
 #include "../../af/BaseApplication.h"
 #include "../../af/connectors/MapDisplay.h"
-#include "../../af/connectors/InterfaceController.h"
+//#include "../../af/connectors/InterfaceController.h"
+#include "../../af/ApplicationController.h"
+#include "../../../qt/af/events/LayerEvents.h"
 //#include "../../af/Project.h"
 #include "TimeSliderWidgetAction.h"
 
@@ -37,34 +39,13 @@ te::qt::plugins::st::TimeSliderWidgetAction::TimeSliderWidgetAction(QMenu* menu)
   m_timeSliderWidget(0)
 {
   createAction(tr("Time Slider...").toStdString());
-
-  //GEnerating the slider
-  QWidget* mainWindow = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
-//  te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
-//  te::qt::widgets::MapDisplay* display = ba->getMapDisplay()->getDisplay();
-//  //if(display->getExtent().isValid() == false)
-//  //{
-//  //  // WGS84
-//  //  te::gm::Envelope e(-180, -180, 360, 360);
-//  //  display->setExtent(e);
-//  //  display->setSRID(4326);
-//  //}
-//  m_timeSliderWidget = new te::qt::widgets::TimeSliderWidget(display, display);
-//  connect(m_timeSliderWidget, SIGNAL(deleteTimeSliderWidget()), this, SLOT(onDeleteTimeSliderWidget()));
-//  connect(ba, SIGNAL(applicationClose()), this, SLOT(onDeleteTimeSliderWidget()));
-
-//  ba->getInterfaceController()->addInterface(m_timeSliderWidget);
-//  m_timeSliderWidget->hide();
 }
 
 te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
 {
   if(m_timeSliderWidget)
   {
-    QWidget* mainWindow = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
-    te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
-
-//    ba->getInterfaceController()->removeInteface(m_timeSliderWidget);
+    te::qt::af::AppCtrlSingleton::getInstance().removeListener(m_timeSliderWidget);
     delete m_timeSliderWidget;
   }
   m_menu->removeAction(m_action);
@@ -73,14 +54,22 @@ te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
 
 void te::qt::plugins::st::TimeSliderWidgetAction::onActionActivated(bool checked)
 {
-  if(m_timeSliderWidget->isHidden())
+  if (m_timeSliderWidget == 0)
   {
-    m_timeSliderWidget->show();
+    //Create the time slider
+    QWidget* mainWindow = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
+    te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
+    te::qt::widgets::MapDisplay* display = ba->getMapDisplay();
+    m_timeSliderWidget = new te::qt::widgets::TimeSliderWidget(display, display);
+    connect(m_timeSliderWidget, SIGNAL(deleteTimeSliderWidget()), this, SLOT(onDeleteTimeSliderWidget()));
+//    connect(ba, SIGNAL(applicationClose()), this, SLOT(onDeleteTimeSliderWidget())); alguem já providencia isso mesmo sem ter este coonect
+    te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::BOTH);
   }
+
+  if (m_timeSliderWidget->isHidden())
+    m_timeSliderWidget->showWidget(true);
   else
-  {
-    m_timeSliderWidget->hide();
-  }
+    m_timeSliderWidget->showWidget(false);
 }
 
 void te::qt::plugins::st::TimeSliderWidgetAction::onDeleteTimeSliderWidget()
@@ -89,3 +78,8 @@ void te::qt::plugins::st::TimeSliderWidgetAction::onDeleteTimeSliderWidget()
     delete m_timeSliderWidget;
   m_timeSliderWidget = 0;
 }
+
+void te::qt::plugins::st::TimeSliderWidgetAction::onApplicationTriggered(te::qt::af::evt::Event* e)
+{
+}
+
