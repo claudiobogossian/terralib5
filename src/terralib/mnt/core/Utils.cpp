@@ -687,3 +687,92 @@ bool te::mnt::assembLine(std::vector<te::gm::LineString> &linlout, std::vector<t
 
   return true;
 }
+
+/*!
+\brief Function that defines the triangle normal vector
+\param p3da are pointers to objets Point3d representing the triangle vertices
+\param nvector are the coordinates of the normal vector
+\return TRUE always
+*/
+
+bool te::mnt::triangleNormalVector(te::gm::PointZ *p3da, double *nvector)
+{
+  double	ux, vx, uy, vy, uz, vz;
+
+  if ((p3da == NULL) || (nvector == NULL)){
+    return false;
+  }
+
+  nvector[0] = 0.;
+  nvector[1] = 0.;
+
+  // Define normal vector (uvx,uvy,uvz)
+  ux = p3da[1].getX() - p3da[0].getX();
+  vx = p3da[2].getX() - p3da[0].getX();
+  uy = p3da[1].getY() - p3da[0].getY();
+  vy = p3da[2].getY() - p3da[0].getY();
+  uz = p3da[1].getZ() - p3da[0].getZ();
+  vz = p3da[2].getZ() - p3da[0].getZ();
+
+  if ((ux == 0) && (vx == 0))
+  {
+    nvector[0] = 1.;
+    nvector[1] = 0.;
+    nvector[2] = 0.;
+    return true;
+  }
+  if ((uy == 0) && (vy == 0))
+  {
+    nvector[0] = 0.;
+    nvector[1] = 1.;
+    nvector[2] = 0.;
+    return true;
+  }
+  if ((uz == 0) && (vz == 0))
+  {
+    nvector[0] = 0.;
+    nvector[1] = 0.;
+    nvector[2] = 1.;
+    return true;
+  }
+
+  nvector[2] = ux * vy - vx * uy;
+  if (nvector[2] < 0.)
+  {
+    // Make sure that normal vector is always positive
+    nvector[2] = -nvector[2];
+    nvector[0] = vy * uz - uy * vz;
+    nvector[1] = ux * vz - vx * uz;
+  }
+  else
+  {
+    nvector[0] = uy * vz - vy * uz;
+    nvector[1] = vx * uz - ux * vz;
+  }
+  return true;
+}
+
+/*!
+\brief Function that normalize a vector by its size
+\param nvector is a pointer to the vector coordinates x, y and z
+\return TRUE always
+*/
+
+bool te::mnt::normalizeVector(double *nvector)
+{
+  double	vectorSize;
+
+  if (nvector == NULL){
+    return false;
+  }
+
+  vectorSize = sqrt(nvector[0] * nvector[0] + nvector[1] * nvector[1] + nvector[2] * nvector[2]);
+
+  if (vectorSize != 0.)
+  {
+    nvector[0] = nvector[0] / vectorSize;
+    nvector[1] = nvector[1] / vectorSize;
+    nvector[2] = nvector[2] / vectorSize;
+  }
+  return true;
+}

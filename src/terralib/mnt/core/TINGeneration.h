@@ -68,6 +68,8 @@ namespace te
       /*! Function used to set Triangulation edges minimum size */
       void setMinedgesize(double minedgesize) { m_minedgesize = minedgesize; };
 
+      void setMethod(int method) { m_method = method; }
+
     protected:
       size_t ReadPoints(te::gm::MultiPoint &mpt, std::string &geostype);
 
@@ -242,6 +244,21 @@ namespace te
       */
       bool te::mnt::TINGeneration::LoadTin();
 
+
+      /*!
+      \brief Method used to create a Triangulation using the Minimum Angle Method
+      \return TRUE if the triangulation is created with no errors or FALSE otherwise
+      */
+      bool te::mnt::TINGeneration::CreateMinAngleTriangulation();
+
+      /*!
+      \brief Method used to test the angle between two normals
+      \param triId is the triangle identification number
+      \param nviz  is the number of the neighbour triangle
+      \return TRUE if the angle is smaller than old triangles or FALSE otherwise
+      */
+      bool TestAngleBetweenNormals(int32_t triId, short nviz);
+
     protected:
 
       te::da::DataSourcePtr m_inDsrc_sample;
@@ -264,6 +281,8 @@ namespace te
       double m_tolerance; //!< Triangulation lines simplification tolerance.
       double m_maxdist; //!< Triangulation lines simplification maximum distance.
       double m_minedgesize; //!< Triangulation edges minimum size.
+
+      int m_method; //!< Triangulation method Delanay or Smaller Angle
     };
   } // end namespace mnt
 } // end namespace te

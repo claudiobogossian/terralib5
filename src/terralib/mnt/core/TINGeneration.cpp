@@ -99,10 +99,15 @@ bool te::mnt::TINGeneration::run()
     return false;
 
   //Test isolines
-  if (isolines_simp.getNumGeometries())
-    IsolinesConstrained();
+  if (m_method == 0) //Delanay
+  {
+    if (isolines_simp.getNumGeometries())
+      IsolinesConstrained();
+  }
+  else //Smaller Angle
+    CreateMinAngleTriangulation();
 
-  // Save triangulation to vector structure 
+  // Save triangulation to datasource 
   SaveTin();
 
   return true;
@@ -442,8 +447,7 @@ bool te::mnt::TINGeneration::InsertNode(int32_t nodeId, int type)
 
   int32_t triangid = FindTriangle(pt);
 
-  if (triangid == -1L)
-    //SMessageBox::Show(MBINFORMATION, NULL, QObject::tr("SPRING"), QObject::tr("Ponteiro de arquivo inválido!") + QString("Point is outside triangles"));
+  if (triangid == -1)
     return false;
 
   te::gm::PointZ vert[3];
@@ -503,13 +507,13 @@ bool te::mnt::TINGeneration::InsertNode(int32_t nodeId, int type)
     TwoNewTriangles(triangid, nodeId, testLines);  //If not, split triang
     for (int j = 0; j < 6; j++)
     {
-      if (testLines[j] == -1L)
+      if (testLines[j] == -1)
         break;
       if (TestDelaunay(testLines[j]))
         j = -1;
     }
-    ntri1 = m_ltriang - 1L;
-    ntri2 = m_ltriang - 2L;
+    ntri1 = m_ltriang - 1;
+    ntri2 = m_ltriang - 2;
     if (type == 0)
       TestDelaunay(triangid, ntri1, ntri2);
     else
@@ -542,7 +546,7 @@ bool te::mnt::TINGeneration::InsertNode(int32_t nodeId, int type)
 
     for (int j = 0; j < 3; j++)
     {
-      if (neighids[j] == -1L)
+      if (neighids[j] == -1)
         continue;
       int32_t oppNode = OppositeNode(neighids[j], linesid[j]);
       if ((fabs(px - m_node[oppNode].getX()) < tol) && (fabs(py - m_node[oppNode].getY()) < tol))
@@ -557,7 +561,7 @@ bool te::mnt::TINGeneration::InsertNode(int32_t nodeId, int type)
     //    Duplicate triangle and its neighbor on the same edge
     int32_t testLines[5];
     int32_t linid = DuplicateTriangle(triangid, nedge, nodeId, testLines);
-    if (neighids[nedge] != -1L)
+    if (neighids[nedge] != -1)
     {
       int32_t ngtriang = neighids[nedge];
       if (ngtriang > (int32_t)m_triangsize)
@@ -566,15 +570,15 @@ bool te::mnt::TINGeneration::InsertNode(int32_t nodeId, int type)
       DupNeighTriangle(ngtriang, linid, nedge, nodeId, testLines2);
       for (int j = 0; j < 2; j++)
       {
-        if (testLines2[j] == -1L)
+        if (testLines2[j] == -1)
           break;
         if (TestDelaunay(testLines2[j]))
           j = -1;
       }
 
       //      Test Delaunay restriction with neighbour 1
-      ntri1 = m_ltriang - 1L;
-      ntri2 = m_ltriang - 2L;
+      ntri1 = m_ltriang - 1;
+      ntri2 = m_ltriang - 2;
       if (type == 0)
         TestDelaunay(triangid, ngtriang, ntri1, ntri2);
       else
@@ -608,13 +612,13 @@ bool te::mnt::TINGeneration::InsertNode(int32_t nodeId, int type)
     {
       for (int j = 0; j < 5; j++)
       {
-        if (testLines[j] == -1L)
+        if (testLines[j] == -1)
           break;
         if (TestDelaunay(testLines[j]))
           j = -1;
       }
       NeighborsId(triangid, neighids);
-      ntri1 = m_ltriang - 1L;
+      ntri1 = m_ltriang - 1;
       TestDelaunay(triangid, 0);
       TestDelaunay(triangid, 1);
       TestDelaunay(triangid, 2);
@@ -673,7 +677,7 @@ bool te::mnt::TINGeneration::DeleteNode(int32_t node)
   {
     nidaux = NextNode(node);
 
-    if (nidaux == m_lnode - 1L)
+    if (nidaux == m_lnode - 1)
       break;
 
     if (m_node[nidaux].getType() == Breaklinenormal)
@@ -694,7 +698,7 @@ bool te::mnt::TINGeneration::DeleteNode(int32_t node)
   {
     nidaux = NextNode(node);
 
-    if (nidaux == m_lnode - 1L)
+    if (nidaux == m_lnode - 1)
     {
       m_node[nidaux].setType(Breaklinefirst);
       break;
@@ -947,8 +951,6 @@ bool te::mnt::TINGeneration::DupNeighTriangle(int32_t tv, int32_t an0, short, in
   return true;
 }
 
-
-
 bool te::mnt::TINGeneration::TestDelaunay(int32_t tri1Id, int32_t tri2Id, int32_t tri3Id)
 {
   int32_t  nids[3];
@@ -1030,11 +1032,10 @@ bool te::mnt::TINGeneration::TestDelaunay(int32_t tri1Id, int32_t tri2Id, int32_
 }
 
 
-
 bool te::mnt::TINGeneration::TestDelaunay(int32_t linId)
 {
   int32_t tv = m_line[linId].getLeftPolygon();
-  if (tv == -1L)
+  if (tv == -1)
     return false;
 
   int32_t  linids[3];
@@ -1061,12 +1062,12 @@ bool te::mnt::TINGeneration::TestDelaunay(int32_t triId, short nviz)
   double  minx = FLT_MAX,
     miny = FLT_MAX;
 
-  if (triId == -1L)
+  if (triId == -1)
     return false;
 
   //  Retrieve neighbour triangle (tviz) pointer
   NeighborsId(triId, neighids);
-  if (neighids[nviz] == -1L)
+  if (neighids[nviz] == -1)
     return false;
 
   //  Retrieve line of triangle common to neighbor triangle
@@ -1078,7 +1079,7 @@ bool te::mnt::TINGeneration::TestDelaunay(int32_t triId, short nviz)
 
   //  Find opposite point to base triangle (tri) inside neighbour (tviz)
   nodid = OppositeNode(neighids[nviz], linid);
-  if (nodid == -1L)
+  if (nodid == -1)
     return false;
   if (nodid > (int32_t) m_nodesize)
     return false;
@@ -1107,7 +1108,6 @@ bool te::mnt::TINGeneration::TestDelaunay(int32_t triId, short nviz)
 
   if (findCenter(vert, &xc, &yc) == false)
   {
-    //LMN1205    ModifyThinTriangle(triId);
     return false;
   }
 
@@ -1140,7 +1140,7 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
   //  aresta ak conecta os vértices vk e vi, sendo j o resto da divisão
   //  de i+1 por 3 e k o resto da divisão de i+2 por 3.
 
-  if (tv == -1L)
+  if (tv == -1)
     return false;
 
   int32_t tEdges[3];
@@ -1275,7 +1275,7 @@ int32_t te::mnt::TINGeneration::ExchangePolygon(int32_t triangId, int32_t newPol
   int32_t  linId;
 
   linId = m_triang[triangId].LineAtEdge(edge);
-  if (linId == -1L)
+  if (linId == -1)
     return false;
   if (linId > (int32_t)m_linesize)
     return false;
@@ -1417,7 +1417,7 @@ bool te::mnt::TINGeneration::GenerateDelaunay(int32_t nt, int32_t ntbase, int32_
       continue;
 
     // Test with each neighbor, if it exists
-    if (aux == -1L)
+    if (aux == -1)
       continue;
     if (TestDelaunay(nt, j))
     {
@@ -1470,7 +1470,7 @@ bool te::mnt::TINGeneration::ModifyBoundTriangles()
       {
         NeighborsId(rtri, tnids);
         for (j = 0; j < 3; j++)
-          if (tnids[j] == -1L)
+          if (tnids[j] == -1)
             break;
         if (j != 3)
           continue;
@@ -1488,7 +1488,7 @@ bool te::mnt::TINGeneration::ModifyBoundTriangles()
           (m_line[linid].getNodeFrom() == nids[(i + 2) % 4]) ||
           (m_line[linid].getNodeFrom() == nids[(i + 3) % 4]))))
         {
-          if (rtri == -1L)
+          if (rtri == -1)
             trids[i] = ltri;
           else
             trids[i] = rtri;
@@ -1607,7 +1607,7 @@ bool te::mnt::TINGeneration::TestIsolines()
         break;
       }
     }
-    if (lidaux == -1L)
+    if (lidaux == -1)
     {
       lids.clear();
       continue;
@@ -1742,8 +1742,8 @@ bool te::mnt::TINGeneration::TestIsolines()
     return modified;
   }
 
-  if ((npts + m_lnode + 6L) > m_nodesize)
-    ReallocateVectors(npts + m_lnode + 6L);
+  if ((npts + m_lnode + 6) > m_nodesize)
+    ReallocateVectors(npts + m_lnode + 6);
 
   for (size_t ii = 0; ii < p3dl.size(); ii++)
   {
@@ -1758,3 +1758,120 @@ bool te::mnt::TINGeneration::TestIsolines()
 
   return modified;
 }
+
+bool te::mnt::TINGeneration::CreateMinAngleTriangulation()
+{
+  int32_t triangid, neighids[3];
+  short j;
+
+  for (triangid = 0; triangid < m_ltriang; triangid++)
+  {
+    NeighborsId(triangid, neighids);
+    for (j = 0; j < 3; j++)
+    {
+      if (TestAngleBetweenNormals(triangid, j))
+        if (neighids[j] < triangid)
+        {
+          triangid = neighids[j] - 1;
+          j = 3;
+        }
+        else
+          j = -1;
+    }
+  }
+
+  return true;
+}
+
+bool te::mnt::TINGeneration::TestAngleBetweenNormals(int32_t triId, short nviz)
+{
+  double nvector1[3], nvector2[3], cos1, cos2;
+  int32_t nodid1, nodid2, linid, neighids[3], i;
+  te::gm::PointZ vert1[3], vert2[3];
+
+  if (triId == -1)
+    return false;
+
+  // Retrieve neighbour triangle (tviz) pointer
+  NeighborsId(triId, neighids);
+  if (neighids[nviz] == -1)
+    return false;
+
+  // Retrieve line of triangle common to neighbor triangle
+  linid = m_triang[triId].LineAtEdge(nviz);
+  if (linid > m_linesize)
+    return false;
+  nodid1 = m_line[linid].getNodeTo();
+  if (nodid1 > m_line[linid].getNodeFrom())
+  {
+    nodid1 = m_line[linid].getNodeFrom();
+    nodid2 = m_line[linid].getNodeTo();
+  }
+  else
+    nodid2 = m_line[linid].getNodeFrom();
+  if ((m_node[nodid1].getZ() >= m_nodatavalue) || (m_node[nodid2].getZ() >= m_nodatavalue))
+    return false;
+
+  TrianglePoints(triId, vert1);
+  TrianglePoints(neighids[nviz], vert2);
+  for (i = 0; i < 3; i++)
+    if ((vert1[i].getZ() >= m_nodatavalue) || (vert2[i].getZ() >= m_nodatavalue))
+      return false;
+
+  // Define base triangle (tri) normal vector
+  triangleNormalVector(vert1, nvector1);
+  normalizeVector(nvector1);
+
+  // Define opposite triangle (nviz) normal vector
+  triangleNormalVector(vert2, nvector2);
+  normalizeVector(nvector2);
+
+  // Calculate cosine between triangles
+  cos1 = nvector1[0] * nvector2[0] + nvector1[1] * nvector2[1] + nvector1[2] * nvector2[2];
+
+  // Find opposite point to common edge on base triangle
+  nodid1 = OppositeNode(triId, linid);
+
+  // Find opposite point to common edge on neighbor triangle
+  nodid2 = OppositeNode(neighids[nviz], linid);
+
+  // Fill in first possible triangle points
+  vert1[0].setX(m_node[nodid1].getX());
+  vert1[0].setY(m_node[nodid1].getY());
+  vert1[0].setZ(m_node[nodid1].getZ());
+  vert1[1].setX(m_node[nodid2].getX());
+  vert1[1].setY(m_node[nodid2].getY());
+  vert1[1].setZ(m_node[nodid2].getZ());
+  vert1[2].setX(m_node[m_line[linid].getNodeFrom()].getX());
+  vert1[2].setY(m_node[m_line[linid].getNodeFrom()].getY());
+  vert1[2].setZ(m_node[m_line[linid].getNodeFrom()].getZ());
+
+  // Fill in second possible triangle points
+  vert2[0].setX(m_node[nodid1].getX());
+  vert2[0].setY(m_node[nodid1].getY());
+  vert2[0].setZ(m_node[nodid1].getZ());
+  vert2[1].setX(m_node[nodid2].getX());
+  vert2[1].setY(m_node[nodid2].getY());
+  vert2[1].setZ(m_node[nodid2].getZ());
+  vert2[2].setX(m_node[m_line[linid].getNodeTo()].getX());
+  vert2[2].setY(m_node[m_line[linid].getNodeTo()].getY());
+  vert2[2].setZ(m_node[m_line[linid].getNodeTo()].getZ());
+
+  // Define first possible triangle normal vector
+  triangleNormalVector(vert1, nvector1);
+  normalizeVector(nvector1);
+
+  // Define second possible triangle normal vector
+  triangleNormalVector(vert2, nvector2);
+  normalizeVector(nvector2);
+
+  //	Calculate cosine between triangles
+  cos2 = nvector1[0] * nvector2[0] + nvector1[1] * nvector2[1] + nvector1[2] * nvector2[2];
+
+  // If new triangles normal vector angle difference smaller than old triangle's
+  if (cos2 > cos1)
+    return UpdateTriangles(triId, neighids[nviz], linid);
+
+  return false;
+}
+

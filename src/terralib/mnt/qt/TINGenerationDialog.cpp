@@ -334,6 +334,12 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     }
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    if (outputdataset.empty())
+    {
+      QMessageBox::information(this, "TIN Generation", "The selected output datasource is empty.");
+      return;
+    }
+
     std::map<std::string, std::string> dsinfo;
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
@@ -392,6 +398,9 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     }
 
     Tin->setParams(m_tol, m_distance, m_edgeSize, m_ui->m_isolinesZcomboBox->currentText().toStdString(), m_ui->m_samplesZcomboBox->currentText().toStdString());
+
+    int method =  m_ui->m_typecomboBox->currentIndex();
+    Tin->setMethod(method);
 
     this->setCursor(Qt::WaitCursor);
 

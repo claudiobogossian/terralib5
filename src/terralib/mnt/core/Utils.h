@@ -46,9 +46,16 @@ namespace te
 
     bool initLineVector(std::vector<te::gm::PointZ> &pline, std::vector<te::gm::PointZ> &vect);
     bool assembLine(std::vector<te::gm::LineString> &linlout, std::vector<te::gm::PointZ> &vect);
+
     bool equalFptSpt(te::gm::PointZ & fpt, te::gm::PointZ &spt, double scale);
+
     te::gm::Point Max(te::gm::Point& p1, te::gm::Point& p2);
     te::gm::Point Min(te::gm::Point& p1, te::gm::Point& p2);
+
+    // Calculate Normal vector of Triangle
+    bool triangleNormalVector(te::gm::PointZ*, double*);
+
+    bool normalizeVector(double*);
 
   }
 }
