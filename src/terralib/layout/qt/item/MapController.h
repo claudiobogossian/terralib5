@@ -85,6 +85,16 @@ namespace te
         virtual Properties getExtentChangedProperties(const te::gm::Envelope& envelope, double scale);
 
         /*!
+          \brief Checks if the given property is a property to be sync with the map display
+        */
+        virtual bool isMapDisplayProperty(const Property& property);
+
+        /*!
+          \brief Syncs the given property. If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncMapDisplayProperty(const Property& property);
+
+        /*!
           \brief Syncs the given scale to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
         */
         virtual bool syncScaleToItem(double scale);
@@ -93,6 +103,16 @@ namespace te
           \brief Syncs the given extent to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
         */
         virtual bool syncExtentToItem(const te::gm::Envelope& envelope);
+
+        /*!
+          \brief Syncs the given SRID to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncSridToItem(int srid);
+
+        /*!
+          \brief Syncs the given layers to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncLayersToItem(const std::list<te::map::AbstractLayerPtr>& layerList);
 
     protected:
 

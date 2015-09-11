@@ -20,6 +20,8 @@
 // TerraLib
 #include "MapController.h"
 
+#include <set>
+
 #include "MapItem.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
@@ -47,7 +49,7 @@ void te::layout::MapController::update(const te::layout::Subject* subject)
     AbstractItemController::update(subject);
     return;
   }
-
+  /*
   const Property& pLayers = getProperty("layers");
   const Property& pSrid = getProperty("srid");
   const Property& pWorldBox = getProperty("world_box");
@@ -78,7 +80,7 @@ void te::layout::MapController::update(const te::layout::Subject* subject)
   {
     view->doRefresh();
   }
-  
+  */
 
   AbstractItemController::update(subject);
 }
@@ -94,7 +96,7 @@ void te::layout::MapController::addLayers(const std::list<te::map::AbstractLayer
   property.setName("layers");
   property.setValue(gv, dataType->getDataTypeGenericVariant());
 
-  m_model->setProperty(property);
+  setProperty(property);
 }
 
 void te::layout::MapController::extentChanged(const te::gm::Envelope& envelope, double scale)
@@ -126,28 +128,17 @@ void te::layout::MapController::setProperty(const te::layout::Property& property
   }
 
   te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
-  bool extentChanged = false;
+  bool wasSync = false;
 
-  if(property.getName() == "scale")
+  if(isMapDisplayProperty(property) == true)
   {
-    double newScale = property.getValue().toDouble();
-    if(syncScaleToItem(newScale) == false)
+    if(syncMapDisplayProperty(property) == true)
     {
-      return;
+      wasSync = true;
     }
-    extentChanged = true;
-  }
-  else if(property.getName() == "world_box")
-  {
-    te::gm::Envelope newExtent = property.getValue().toEnvelope();
-    if(syncExtentToItem(newExtent) == false)
-    {
-      return;
-    }
-    extentChanged = true;
   }
 
-  if(extentChanged == true)
+  if(wasSync == true)
   {
     Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale());
     AbstractItemController::setProperties(extentChangedProperties);
@@ -170,27 +161,18 @@ void te::layout::MapController::setProperties(const te::layout::Properties& prop
   }
 
   te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
-  bool extentChanged = false;
+  bool wasSync = false;
 
   Properties propertiesCopy;
   const std::vector<Property>& vecProperties = properties.getProperties();
   for(size_t i = 0; i < vecProperties.size(); ++i)
   {
     const Property& property = vecProperties[i];
-    if(property.getName() == "scale")
+    if(isMapDisplayProperty(property) == true)
     {
-      double newScale = property.getValue().toDouble();
-      if(syncScaleToItem(newScale) == true)
+      if(syncMapDisplayProperty(property) == true)
       {
-        extentChanged = true;
-      }
-    }
-    else if(property.getName() == "world_box")
-    {
-      te::gm::Envelope newExtent = property.getValue().toEnvelope();
-      if(syncExtentToItem(newExtent) == true)
-      {
-        extentChanged = true;
+        wasSync = true;
       }
     }
     else
@@ -199,7 +181,7 @@ void te::layout::MapController::setProperties(const te::layout::Properties& prop
     }
   }
 
-  if(extentChanged == true)
+  if(wasSync == true)
   {
     Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale());
     for(size_t j = 0; j < extentChangedProperties.getProperties().size(); ++j)
@@ -210,10 +192,66 @@ void te::layout::MapController::setProperties(const te::layout::Properties& prop
 
   AbstractItemController::setProperties(propertiesCopy);
 
-  if(extentChanged == true)
+  if(wasSync == true)
   {
     view->doRefresh();
   }
+}
+
+bool te::layout::MapController::isMapDisplayProperty(const te::layout::Property& property)
+{
+  std::set<std::string> setMapDisplayProperty;
+  setMapDisplayProperty.insert("world_box");
+  setMapDisplayProperty.insert("scale");
+  setMapDisplayProperty.insert("srid");
+  setMapDisplayProperty.insert("layers");
+
+  if(setMapDisplayProperty.find(property.getName()) != setMapDisplayProperty.end())
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool te::layout::MapController::syncMapDisplayProperty(const te::layout::Property& property)
+{
+  if(property.getName() == "scale")
+  {
+    double newScale = property.getValue().toDouble();
+    if(syncScaleToItem(newScale) == true)
+    {
+      return true;
+    }
+  }
+  else if(property.getName() == "world_box")
+  {
+    te::gm::Envelope newExtent = property.getValue().toEnvelope();
+    if(syncExtentToItem(newExtent) == true)
+    {
+      return true;
+    }
+  }
+  else if(property.getName() == "srid")
+  {
+    int newSRID = property.getValue().toInt();
+    if(syncSridToItem(newSRID) == true)
+    {
+      return true;
+    }
+  }
+  else if(property.getName() == "layers")
+  {
+    const GenericVariant& gv = property.getValue().toGenericVariant();
+    const std::list<te::map::AbstractLayerPtr>& newLayerList = gv.toLayerList();
+
+    if(syncLayersToItem(newLayerList) == true)
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 te::layout::Properties te::layout::MapController::getExtentChangedProperties(const te::gm::Envelope& envelope, double scale)
@@ -290,6 +328,86 @@ bool te::layout::MapController::syncExtentToItem(const te::gm::Envelope& extent)
     m_ignoreExtentChangedEvent = true;
     mapDisplay->setExtent(extentCopy, false);
     m_ignoreExtentChangedEvent = false;
+
+    return true;
+  }
+
+  return false;
+}
+
+bool te::layout::MapController::syncSridToItem(int srid)
+{
+  MapItem* view = dynamic_cast<MapItem*>(m_view);
+  if(view == 0)
+  {
+    return false;
+  }
+
+  te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
+
+  int currentSrid = mapDisplay->getSRID();
+
+  if(srid != currentSrid)
+  {
+    m_ignoreExtentChangedEvent = true;
+    mapDisplay->setSRID(srid, false);
+    m_ignoreExtentChangedEvent = false;
+
+    return true;
+  }
+
+  return false;
+}
+
+bool te::layout::MapController::syncLayersToItem(const std::list<te::map::AbstractLayerPtr>& layerList)
+{
+  MapItem* view = dynamic_cast<MapItem*>(m_view);
+  if(view == 0)
+  {
+    return false;
+  }
+
+  //we read the current layer list from the model because mapDisplay does not have the getLayers function
+  const Property& property = this->getProperty("layers");
+  const GenericVariant& gv = property.getValue().toGenericVariant();
+  const std::list<te::map::AbstractLayerPtr>& currentLayerList = gv.toLayerList();
+
+  if(currentLayerList != layerList)
+  {
+    te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
+
+    //if the current layer list was empty, we need to also define the srid e the envelope
+    if(currentLayerList.empty() == true)
+    {
+      te::gm::Envelope envelope;
+      int srid = -1;
+
+      std::list<te::map::AbstractLayerPtr>::const_iterator it = layerList.begin();
+      while(it != layerList.end())
+      {
+        te::map::AbstractLayerPtr layer = (*it);
+
+        te::gm::Envelope currentEnvelope = layer->getExtent();
+
+        int currentSrid = layer->getSRID();
+        if(srid <= 0)
+          srid = currentSrid;
+        if(currentSrid != srid)
+          currentEnvelope.transform(currentSrid, srid);
+
+        envelope.Union(currentEnvelope);
+
+        ++it;
+      }
+
+      //this refresh need to be done in order to correctly initialize the mapDisplay. We should review this later
+      m_ignoreExtentChangedEvent = true;
+      mapDisplay->setLayerList(layerList);
+      mapDisplay->setSRID(srid, false);
+      mapDisplay->refresh();
+      mapDisplay->setExtent(envelope, false);
+      m_ignoreExtentChangedEvent = false;
+    }
 
     return true;
   }
