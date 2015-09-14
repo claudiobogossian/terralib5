@@ -116,18 +116,34 @@ void te::layout::AbstractItemController::resized(const double& width, const doub
   {
     Property property(0);
     property.setName("width");
-    property.setLabel("Width");
     property.setValue(width, dataType->getDataTypeDouble());
-    property.setEditable(false);
     properties.addProperty(property);
   }
 
   {
     Property property(0);
     property.setName("height");
-    property.setLabel("Height");
     property.setValue(height, dataType->getDataTypeDouble());
-    property.setEditable(false);
+    properties.addProperty(property);
+  }
+  m_model->setProperties(properties);
+}
+
+void te::layout::AbstractItemController::itemPositionChanged(double x, double y)
+{
+  Properties properties;
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  {
+    Property property(0);
+    property.setName("x");
+    property.setValue(x, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("y");
+    property.setValue(y, dataType->getDataTypeDouble());
     properties.addProperty(property);
   }
   m_model->setProperties(properties);

@@ -113,6 +113,8 @@ namespace te
 
         virtual void resized(const double& width, const double& height);
 
+        virtual void itemPositionChanged(double x, double y);
+
       protected:
 
         /*!

@@ -62,11 +62,6 @@ namespace te
         virtual ~MapController();
 
         /*!
-          \brief Method called by the subject to inform changes in the model
-        */
-        virtual void update(const Subject* subject);
-
-        /*!
           \brief Method called by the view to inform that new layers have been added
         */
         virtual void addLayers(const std::list<te::map::AbstractLayerPtr>& layerList);

@@ -219,7 +219,6 @@ void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 
   if(m_updateItemPos)
   {
-    sc->updateSelectedItemsPositions();
   }
 
   if (!sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
