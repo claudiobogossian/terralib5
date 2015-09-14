@@ -49,17 +49,15 @@ namespace te
     {
       public:
 
-        ContextObject( int zoom, int dpiX, int dpiY, PaperConfig* config, EnumType* mode);
+        ContextObject( int zoom, int dpiX, int dpiY, EnumType* mode);
 
         virtual ~ContextObject();
 
         virtual int getZoom() const;
 
         virtual int getDpiX() const;
-        
-        virtual int getDpiY() const;
 
-        virtual PaperConfig* getPaperConfig() const;
+        virtual int getDpiY() const;
 
         virtual EnumType* getCurrentMode() const;
 
@@ -70,7 +68,6 @@ namespace te
         int           m_zoom;
         int           m_dpiX;
         int           m_dpiY;
-        PaperConfig*  m_config;
         EnumType*     m_mode;
     };
   }

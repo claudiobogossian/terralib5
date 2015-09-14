@@ -60,7 +60,7 @@ te::layout::MapItem::MapItem(AbstractItemController* controller, bool invertedMa
   m_mapDisplay->setMouseTracking(true);
 
   this->prepareGeometryChange();
-  m_mapDisplay->setGeometry(0, 0, 10, 10);
+  m_mapDisplay->resize(10, 10);
 
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(extentChanged()));
 }
@@ -77,7 +77,7 @@ te::qt::widgets::MapDisplay* te::layout::MapItem::getMapDisplay()
 
 void te::layout::MapItem::contextUpdated(const ContextObject& context)
 {
-  const int zoom = (const int) context.getZoom();
+  int zoom = context.getZoom();
   ((MapController *) m_controller)->setZoom(zoom);
 
   Utils* utils = Context::getInstance().getUtils();
@@ -95,8 +95,6 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
   {
     this->prepareGeometryChange();
     m_mapDisplay->resize(newSize);
-
-    refresh();
   }
 }
 
@@ -114,10 +112,10 @@ void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphi
   pixmap = QPixmap::fromImage(image);
 
   painter->save();
-  
+
   painter->setClipRect(boundingRect());
   painter->drawPixmap(boundingRect(), pixmap, pixmap.rect());
-  
+
   painter->restore();
 }
 

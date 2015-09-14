@@ -88,7 +88,7 @@ namespace te
       \param screenWMM width of physical screen in millimeters
       \param screenHMM height of physical screen in millimeters
         */
-        virtual void init(double screenWMM, double screenHMM) = 0;
+        virtual void init(double screenWMM, double screenHMM, ContextObject context) = 0;
 
         /*!
           \brief The most important common data.

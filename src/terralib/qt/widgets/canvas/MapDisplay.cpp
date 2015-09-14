@@ -464,7 +464,7 @@ double te::qt::widgets::MapDisplay::getScale() const
     else if (unit == "FOOT")
       wT = wMM / (12. * 25.4);
     else if (unit == "DEGREE")
-      wT = wMM / 110000000.;
+      wT = wMM / 111000000.;
 
     double wp = wT / wPixels;
     m_scale = (1. / f) / wp;

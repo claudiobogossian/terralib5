@@ -79,6 +79,7 @@ void te::layout::MapController::update(const te::layout::Subject* subject)
   if (doRefresh)
   {
     view->doRefresh();
+    doRefresh = false;
   }
   */
 
