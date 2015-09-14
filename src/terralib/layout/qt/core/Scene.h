@@ -300,8 +300,6 @@ namespace te
 
         virtual void redrawItems();
 
-        virtual void updateSelectedItemsPositions();
-
         /*
           \brief Add to stack that stores the items that are not entered into the scene.
           To undo/redo operations, where the item is removed from the scene, 

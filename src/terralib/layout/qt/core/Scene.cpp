@@ -809,51 +809,6 @@ void te::layout::Scene::redrawItems()
   }
 }
 
-void te::layout::Scene::updateSelectedItemsPositions()
-{
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  QList<QGraphicsItem*> allItems = selectedItems();
-  foreach(QGraphicsItem *item, allItems) 
-  {
-    if(item)
-    {
-      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
-      if(it)
-      {
-        QPointF posItem = item->scenePos();
-
-        const Property& pX = it->getController()->getProperty("x");
-        const Property& pY = it->getController()->getProperty("y");
-
-        double x = pX.getValue().toDouble();
-        double y = pY.getValue().toDouble();
-
-        if(x == posItem.x() && y == posItem.y())
-        {
-          continue;
-        }
-
-
-        Properties props;
-        Property prop_x(0);
-        prop_x.setName("x");
-        prop_x.setLabel("x");
-        prop_x.setValue(posItem.x(), dataType->getDataTypeDouble());
-        props.addProperty(prop_x);
-
-        Property prop_y(0);
-        prop_y.setName("y");
-        prop_y.setLabel("y");
-        prop_y.setValue(posItem.y(), dataType->getDataTypeDouble());
-        props.addProperty(prop_y);
-
-        it->getController()->setProperties(props);
-      }
-    }
-  }
-}
-
 void te::layout::Scene::onChangeZoom( int zoom )
 {
   contextUpdated();

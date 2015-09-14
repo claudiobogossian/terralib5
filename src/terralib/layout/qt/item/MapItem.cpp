@@ -286,7 +286,7 @@ void te::layout::MapItem::enterEditionMode()
   }
   if(m_zoomWheel == 0)
   {
-    m_zoomWheel = new te::qt::widgets::ZoomWheel(m_mapDisplay);
+    m_zoomWheel = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.5);
   }
 
   m_mapDisplay->installEventFilter(m_pan);

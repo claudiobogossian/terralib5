@@ -76,6 +76,11 @@ namespace te
     {
       public:
 
+        enum Action
+        {
+          NO_ACTION, RESIZE_ACTION, MOVE_ACTION
+        };
+
         /*!
           \brief Constructor
 
@@ -119,11 +124,6 @@ namespace te
         virtual bool  contains(const QPointF & point) const;
 
       protected:
-
-        /*!
-        \brief Reimplemented from QGraphicsItem
-        */
-        virtual bool sceneEvent(QEvent * event);
 
         /*!
           \brief  Gets the adjusted boundigned rectangle which considers the current state of the QPen that will be used to draw it. 
@@ -193,24 +193,21 @@ namespace te
 
       protected:
 
-        bool              m_move;
-
         //resize
         QRectF            m_rect;
         QPixmap           m_clonePixmap;
-        bool              m_is_resizing;
         QPointF           m_initialCoord;
         QPointF           m_finalCoord;
         LayoutAlign       m_enumSides;
+        Action            m_currentAction;
     };
 
     template <class T>
     inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, bool invertedMatrix)
       : T()
       , AbstractItemView(controller, invertedMatrix)
-      , m_move(false)
-      , m_is_resizing(false),
-        m_enumSides(TPNoneSide)
+      , m_enumSides(TPNoneSide)
+      , m_currentAction(NO_ACTION)
     {
       T::setFlags(QGraphicsItem::ItemIsMovable
         | QGraphicsItem::ItemIsSelectable
@@ -231,7 +228,7 @@ namespace te
     template <class T>
     inline QRectF te::layout::AbstractItem<T>::boundingRect() const
     {
-      if (m_is_resizing)
+      if (m_currentAction == RESIZE_ACTION)
       {
         return m_rect;
       }
@@ -298,7 +295,7 @@ namespace te
         return;
       }
 
-      if (m_is_resizing)
+      if (m_currentAction == RESIZE_ACTION)
       {
         drawItemResized(painter, option, widget);
         return;
@@ -482,7 +479,7 @@ namespace te
     template <class T>
     inline QVariant te::layout::AbstractItem<T>::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
     {
-      if (change == QGraphicsItem::ItemPositionChange && !m_move)
+      if (change == QGraphicsItem::ItemPositionChange && m_currentAction != MOVE_ACTION)
       {
         if (this->isInverted())
         {
@@ -499,22 +496,12 @@ namespace te
       }
       else if (change == QGraphicsItem::ItemPositionHasChanged)
       {
-        m_move = false;
-      }
-      return T::itemChange(change, value);
-    }
-    
-    template <class T>
-    inline bool te::layout::AbstractItem<T>::sceneEvent(QEvent * event)
-    {
-      if (event->type() == QEvent::GraphicsSceneMouseMove)
-      {
-        if (this->isInverted())
+        if(m_currentAction == NO_ACTION)
         {
-          m_move = true;
+          m_controller->itemPositionChanged(T::pos().x(), T::pos().y());
         }
       }
-      return T::sceneEvent(event);
+      return T::itemChange(change, value);
     }
 
     template <class T>
@@ -580,9 +567,10 @@ inline void te::layout::AbstractItem<T>::mousePressEvent( QGraphicsSceneMouseEve
 {  
   T::mousePressEvent(event);
 
-  m_is_resizing = checkTouchesCorner(event->pos().x(), event->pos().y());
-  if (m_is_resizing)
+  bool startResizing = checkTouchesCorner(event->pos().x(), event->pos().y());
+  if (startResizing == true)
   {
+    m_currentAction = RESIZE_ACTION;
     setPixmap();
     m_initialCoord = event->pos();
   }
@@ -591,17 +579,19 @@ inline void te::layout::AbstractItem<T>::mousePressEvent( QGraphicsSceneMouseEve
 template <class T>
 inline void te::layout::AbstractItem<T>::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
-  if (event->buttons() == Qt::LeftButton && m_is_resizing)
+  if(m_currentAction == RESIZE_ACTION)
   {
     T::setOpacity(0.5);
     m_finalCoord = event->pos();
-    calculateResize();
     T::prepareGeometryChange();
+    calculateResize();
   }
   else
   {
-    if(m_is_resizing == false)
-      T::setOpacity(1.);
+    if(event->buttons() == Qt::LeftButton)
+    {
+      m_currentAction = MOVE_ACTION;
+    }
 
     T::mouseMoveEvent(event);
   }
@@ -609,9 +599,8 @@ inline void te::layout::AbstractItem<T>::mouseMoveEvent( QGraphicsSceneMouseEven
 
 template <class T>
 inline void te::layout::AbstractItem<T>::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
-{  
- T::mouseReleaseEvent(event);
-  if(m_is_resizing)
+{
+  if(m_currentAction == RESIZE_ACTION)
   {
     m_finalCoord = event->pos();
     calculateResize();
@@ -619,11 +608,18 @@ inline void te::layout::AbstractItem<T>::mouseReleaseEvent( QGraphicsSceneMouseE
     newPos = T::mapToScene(newPos);
     T::setPos(newPos);
     m_rect.moveTo(0, 0);
-    m_is_resizing = false;
     T::setOpacity(1.);
     m_controller->resized(m_rect.width(), m_rect.height());
     resized();
   }
+  else if(m_currentAction == MOVE_ACTION)
+  {
+    m_controller->itemPositionChanged(T::pos().x(), T::pos().y());
+  }
+
+  m_currentAction = NO_ACTION;
+
+  T::mouseReleaseEvent(event);
 }
 
 template <class T>
@@ -632,7 +628,7 @@ inline void te::layout::AbstractItem<T>::calculateResize()
   double dx = 0;
   double dy = 0;
 
-  if(m_is_resizing)
+  if(m_currentAction == RESIZE_ACTION)
   {
     dx = m_finalCoord.x() - m_initialCoord.x();
     dy = m_finalCoord.y() - m_initialCoord.y();
