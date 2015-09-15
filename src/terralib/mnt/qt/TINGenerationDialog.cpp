@@ -67,6 +67,7 @@ te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFla
 
   connect(m_ui->m_yesradioButton, SIGNAL(toggled(bool)), this, SLOT(onYesToggled()));
   connect(m_ui->m_noradioButton, SIGNAL(toggled(bool)), this, SLOT(onNoToggled()));
+  connect(m_ui->m_breaklinecomboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onBreakLinesComboBoxChanged(int)));
 
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
@@ -75,11 +76,9 @@ te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFla
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
   m_ui->m_noradioButton->setChecked(true);
-  m_hasiso = false;
-  m_hassample = false;
   m_ui->m_isolinescomboBox->addItem(QString(""), QVariant(""));
   m_ui->m_samplescomboBox->addItem(QString(""), QVariant(""));
-
+  m_ui->m_breaklinecomboBox->addItem(QString(""), QVariant(""));
 }
 
 te::mnt::TINGenerationDialog::~TINGenerationDialog()
@@ -137,6 +136,7 @@ void te::mnt::TINGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
 void te::mnt::TINGenerationDialog::onIsolinesComboBoxChanged(int index)
 {
   m_ui->m_isolinesZcomboBox->clear();
+  m_isolinesLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_isolinescomboBox->itemData(index, Qt::UserRole).toString().toStdString();
   while (it != m_layers.end())
@@ -145,7 +145,6 @@ void te::mnt::TINGenerationDialog::onIsolinesComboBoxChanged(int index)
     {
       te::map::AbstractLayerPtr selectedLayer = it->get();
       m_isolinesLayer = selectedLayer;
-      m_hasiso = true;
       std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
       std::vector<te::dt::Property*> props = dsType->getProperties();
       for (std::size_t i = 0; i < props.size(); ++i)
@@ -174,6 +173,7 @@ void te::mnt::TINGenerationDialog::onIsolinesComboBoxChanged(int index)
 void te::mnt::TINGenerationDialog::onSamplesComboBoxChanged(int index)
 {
   m_ui->m_samplesZcomboBox->clear();
+  m_samplesLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_samplescomboBox->itemData(index, Qt::UserRole).toString().toStdString();
   while (it != m_layers.end())
@@ -182,7 +182,6 @@ void te::mnt::TINGenerationDialog::onSamplesComboBoxChanged(int index)
     {
       te::map::AbstractLayerPtr selectedLayer = it->get();
       m_samplesLayer = selectedLayer;
-      m_hassample = true;
       std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
       std::vector<te::dt::Property*> props = dsType->getProperties();
       for (std::size_t i = 0; i < props.size(); ++i)
@@ -231,10 +230,27 @@ void te::mnt::TINGenerationDialog::onYesToggled()
 
 void te::mnt::TINGenerationDialog::onNoToggled()
 {
+  m_ui->m_breaklinecomboBox->setCurrentIndex(0);
   m_ui->m_breaklinelabel->setDisabled(true);
   m_ui->m_breaklinecomboBox->setDisabled(true);
   m_ui->m_breaktollabel->setDisabled(true);
   m_ui->m_breaktollineEdit->setDisabled(true);
+}
+
+void te::mnt::TINGenerationDialog::onBreakLinesComboBoxChanged(int index)
+{
+  m_breaklinesLayer = 0;
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  std::string layerID = m_ui->m_breaklinecomboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  while (it != m_layers.end())
+  {
+    if (layerID == it->get()->getId().c_str())
+    {
+      m_breaklinesLayer = it->get();
+      break;
+    }
+    it++;
+  }
 }
 
 void te::mnt::TINGenerationDialog::onTargetDatasourceToolButtonPressed()
@@ -331,6 +347,26 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       std::string inDsetNamesample = dssampleLayer->getDataSetName();
       Tin->setInput(inDataSource, inDsetNamesample, inDataSource->getDataSetType(inDsetNamesample), te::mnt::Samples);
       srid = dssampleLayer->getSRID();
+    }
+
+    if (m_breaklinesLayer.get())
+    {
+      te::map::DataSetLayer* dsbreaklineLayer = dynamic_cast<te::map::DataSetLayer*>(m_breaklinesLayer.get());
+      if (!dsbreaklineLayer)
+      {
+        QMessageBox::information(this, "TIN Generation", "Can not execute this operation on this type of layer.");
+        return;
+      }
+
+      te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsbreaklineLayer->getDataSourceId(), true);
+      if (!inDataSource.get())
+      {
+        QMessageBox::information(this, "TIN Generation", "The selected input data source can not be accessed.");
+        return;
+      }
+
+      std::string inDsetNamebreakline = dsbreaklineLayer->getDataSetName();
+      Tin->setBreakLine(inDataSource, inDsetNamebreakline, inDataSource->getDataSetType(inDsetNamebreakline), m_breaktol);
     }
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();

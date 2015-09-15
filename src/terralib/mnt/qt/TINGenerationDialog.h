@@ -69,6 +69,7 @@ namespace te
       void onScalePushButtonClicked();
       void onYesToggled();
       void onNoToggled();
+      void onBreakLinesComboBoxChanged(int index);
       void onTargetDatasourceToolButtonPressed();
       void onTargetFileToolButtonPressed();
       void onHelpPushButtonClicked();
@@ -86,14 +87,13 @@ namespace te
       std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
       te::map::AbstractLayerPtr m_isolinesLayer;                                        //!< Isolines layer
       te::map::AbstractLayerPtr m_samplesLayer;                                        //!< Points layer
+      te::map::AbstractLayerPtr m_breaklinesLayer;                                        //!< BreakLines layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
-      bool m_hasiso;
-      bool m_hassample;
-      double m_scale;
-      double m_tol;
-      double m_breaktol;
-      double m_distance;
-      double m_edgeSize;
+      double m_scale;         //!<Triangulation scale.
+      double m_tol;           //!<Triangulation lines simplification tolerance.
+      double m_breaktol;      //!<Triangulation breaklines simplification tolerance.
+      double m_distance;      //!<Triangulation lines simplification maximum distance.
+      double m_edgeSize;      //!<Triangulation edges minimum size.
     };
   }
 }

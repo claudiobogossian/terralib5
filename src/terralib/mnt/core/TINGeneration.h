@@ -52,6 +52,8 @@ namespace te
         std::auto_ptr<te::da::DataSetType> inDsetType,
         InputType type);
 
+      void setBreakLine(te::da::DataSourcePtr inDsrc, std::string inDsetName, std::auto_ptr<te::da::DataSetType> inDsetType, double tol);
+
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
       void setParams(const double& tolerance,
@@ -74,6 +76,8 @@ namespace te
       size_t ReadPoints(te::gm::MultiPoint &mpt, std::string &geostype);
 
       size_t ReadSamples(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
+
+      size_t ReadBreakLines(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
 
       /*! Create the two initial triangles, based on box.*/
       bool CreateInitialTriangles(size_t nsamples);
@@ -258,6 +262,75 @@ namespace te
       \return TRUE if the angle is smaller than old triangles or FALSE otherwise
       */
       bool TestAngleBetweenNormals(int32_t triId, short nviz);
+      bool InsertBreakNodes(te::gm::MultiLineString &breaklines);
+      bool InsertBreakLines();
+
+
+      /*!
+      \brief Method fint the point that intersects two triangles containing points pf and pn
+      \param pf is a pointer to the first point
+      \param pn is a pointer to the last point
+      \param p3d is a pointer to a list of Point3d objects
+      \return TRUE if the point is found with no errors or FALSE otherwise
+      */
+      bool FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ &pn, std::vector<te::gm::PointZ> &p3d, std::vector<bool> &fixed);
+
+      /*!
+      \brief Method that checks if a point 3D is on the isoline segment
+      \param linid is the line identification number
+      \param pt3d is a pointer to a list of Point3D objects
+      \return TRUE if the point is on the isoline segment or FALSE otherwise
+      */
+      bool OnIsolineSegment(int32_t linid, te::gm::PointZ &pt3d, bool &fixed);
+
+      /*!
+      \brief Method that evaluates Z values for pt1 and pt2 using the Akima polynomium fitted in a triangle
+      \param triid is the triangle identificator number
+      \param pt1 is a pointer to a Point3d object
+      \param pt2 is a pointer to a Point3d object
+      \return TRUE always
+      */
+      bool CalcZvalueAkima(int32_t triid, te::gm::PointZ &pt1, te::gm::PointZ &pt2);
+
+      /*!
+      \brief Method that defines the coefficients of the Akima polynomium fitted in a given triangle
+      \param triid is the triangle identification number
+      \param coef is a pointer to a double vector containing the polynomium coefficients
+      \return TRUE if the coefficients are determined with no errors or FALSE otherwise
+      */
+      bool DefineAkimaCoeficients(int32_t triid, double *coef);
+
+      /*!
+      \brief Method that defines the coefficients of the Akima polynomium fitted in a given triangle
+      \param triid is the triangle identification number
+      \param nodesid is the list of triangle nodes identification
+      \param p3d is a pointer to a Point3d object
+      \param coef is a pointer to a double vector containing the polynomium coefficients
+      \return TRUE if the coefficients are determined with no errors or FALSE otherwise
+      */
+      bool DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef);
+
+      /*!
+      \brief Method that order lines
+      \return TRUE if the lines were ordered with no errors or FALSE otherwise
+      */
+      bool OrderLines();
+
+      /*!
+      \brief Method that recreates a Delaunay triangulation
+      \return TRUE if the triangulation is recreated with no errors or False otherwise
+      */
+      bool ReCreateDelaunay();
+
+
+      /*!
+      \brief Method that regenerates a Delaunay triangulation
+      \param nt is the triangle number
+      \param ntbase is the base triangle number
+      \param contr is a counter
+      \return TRUE if the triangulation is regenerated with no errors or False otherwise
+      */
+      bool ReGenerateDelaunay(int32_t nt, int32_t ntbase, int32_t contr);
 
     protected:
 
@@ -268,6 +341,10 @@ namespace te
       te::da::DataSourcePtr m_inDsrc_point;
       std::string m_inDsetName_point;
       std::auto_ptr<te::da::DataSetType> m_inDsetType_point;
+
+      te::da::DataSourcePtr m_inDsrc_break;
+      std::string m_inDsetName_break;
+      std::auto_ptr<te::da::DataSetType> m_inDsetType_break;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDsetName;
@@ -281,6 +358,8 @@ namespace te
       double m_tolerance; //!< Triangulation lines simplification tolerance.
       double m_maxdist; //!< Triangulation lines simplification maximum distance.
       double m_minedgesize; //!< Triangulation edges minimum size.
+   
+      double m_tolerance_break; //!< Triangulation breaklines simplification tolerance.
 
       int m_method; //!< Triangulation method Delanay or Smaller Angle
     };
