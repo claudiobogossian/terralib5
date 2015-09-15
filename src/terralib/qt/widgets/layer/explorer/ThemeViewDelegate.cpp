@@ -29,12 +29,21 @@ void te::qt::widgets::ThemeViewDelegate::paint(QPainter * painter, const QStyleO
   {
     QStyleOptionViewItem opt = option;
     opt.decorationSize = QSize(20, 20);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+
     opt.features |= QStyleOptionViewItem::HasDecoration;
+
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 
     if(item->getType() == "LAYER")
       opt.icon = m_theme;
     else
       opt.icon = m_view;
+
+#endif
 
     QStyledItemDelegate::paint(painter, opt, index);
 
