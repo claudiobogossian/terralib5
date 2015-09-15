@@ -59,7 +59,7 @@ bool te::qt::widgets::ZoomWheel::eventFilter(QObject* watched, QEvent* e)
       QPointF qPos;
       if(m_centralize == false)
       {
-        qPos = m_display->transform(wheelEvent->posF());
+        qPos = m_display->transform(wheelEvent->pos());
       }
 
       applyZoom(qPos);

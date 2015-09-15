@@ -43,13 +43,6 @@ namespace te
 {
   namespace qt
   {
-    namespace af
-    {
-      namespace evt
-      {
-        struct Event;
-      }
-    }
     namespace plugins
     {
       namespace layout
@@ -87,16 +80,12 @@ namespace te
             /*!
               \brief Reimplemented from AbstractProxyProject
             */
-            const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) ;
+            const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) const;
 
             /*!
               \brief Reimplemented from AbstractProxyProject
             */
             te::map::AbstractLayerPtr contains(std::string name);
-
-          Q_SIGNALS:
-
-            void triggered(te::qt::af::evt::Event* e);
          };
        }
     }
