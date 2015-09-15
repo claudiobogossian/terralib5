@@ -22,7 +22,7 @@
    
    \brief Class that represents a graphic Arrow. 
       Its coordinate system is the same of scene (millimeters). 
-      This class is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+      This class is also son of AbstractItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
@@ -31,25 +31,26 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ARROW_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
+
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic Arrow. 
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
-	  
-	    \ingroup layout
+        He is also the son of AbstractItem, so it can become observer of a model (Observable). 
+    
+      \ingroup layout
 
-	    \sa te::layout::ObjectItem
-	  */
-    class TELAYOUTEXPORT ArrowItem : public ObjectItem
+      \sa te::layout::ObjectItem
+    */
+    class TELAYOUTEXPORT ArrowItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -59,7 +60,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        ArrowItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        ArrowItem(AbstractItemController* controller, bool invertedMatrix = false);
         
         /*!
           \brief Destructor
@@ -68,7 +69,7 @@ namespace te
 
        protected:
          
-         virtual void drawItem ( QPainter * painter );
+         virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
           \brief Drawing method of a Right Arrow
@@ -79,7 +80,7 @@ namespace te
          */
         virtual void drawRightArrow(QPainter * painter);
 
-				/*!
+        /*!
           \brief Drawing method of a Right Arrow
 
           \param canvas
@@ -87,7 +88,7 @@ namespace te
           \param box
          */
         virtual void drawLeftArrow(QPainter * painter);
-				/*!
+        /*!
           \brief Drawing method of a Double Arrow
 
           \param canvas

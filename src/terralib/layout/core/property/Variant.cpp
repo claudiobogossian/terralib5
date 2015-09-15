@@ -74,7 +74,7 @@ te::layout::Variant::~Variant()
   
 }
 
-te::layout::EnumType* te::layout::Variant::getType()
+te::layout::EnumType* te::layout::Variant::getType() const
 {
   return m_type;
 }
@@ -93,8 +93,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   bool* bValue = 0;
   te::color::RGBAColor* colorValue = 0;
   Font* fontValue = 0;
+  te::gm::Envelope* envelopeValue = 0;
   GenericVariant* generic = 0;
-
+  te::gm::GeometryShrPtr geometryPtr;
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   if(!m_type || !dataType)
@@ -192,6 +193,17 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_complex = true;
       }
    }
+   else if(m_type == dataType->getDataTypeEnvelope())
+   {
+      // Cast it back to a string pointer.
+      envelopeValue = static_cast<te::gm::Envelope*>(value);
+      if(envelopeValue)
+      {
+        null = false;
+        m_envelopeValue = *envelopeValue;
+        m_complex = true;
+      }
+   }
    else if(m_type == dataType->getDataTypeGenericVariant())
    {
      // Cast it back to a string pointer.
@@ -200,6 +212,17 @@ void te::layout::Variant::convertValue( const void* valueCopy )
      {
        null = false;
        m_generic = *generic;
+       m_complex = true;
+     }
+   }
+   else if(m_type == dataType->getDataTypeGeometry())
+   {
+     // Cast it back to a shared pointer of a te::gm::Geometry.
+     te::gm::GeometryShrPtr* geoPtrRef = static_cast<te::gm::GeometryShrPtr*>(value);
+     if(geoPtrRef)
+     {
+       null = false;
+       m_geometryPtr = *geoPtrRef;
        m_complex = true;
      }
    }
@@ -305,6 +328,31 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
       m_complex = true;
       null = false;
     }
+    else if(type == dataType->getDataTypeEnvelope())
+    {
+      std::string color = tree.data();
+
+      std::vector<std::string> strings;
+      std::istringstream f(color);
+      std::string s;    
+      while (std::getline(f, s, ',')) 
+      {
+        strings.push_back(s);
+      }
+
+      if(strings.empty() || strings.size() > 4)
+        return;
+
+      int x1 = std::atoi(strings[0].c_str());
+      int y1 = std::atoi(strings[1].c_str());
+      int x2 = std::atoi(strings[2].c_str());
+      int y2 = std::atoi(strings[3].c_str());
+
+      m_envelopeValue.init(x1, y1, x2, y2);
+
+      m_complex = true;
+      null = false;
+    }
     else if(type == dataType->getDataTypeGenericVariant())
     {
       m_generic.fromPtree(tree);
@@ -324,47 +372,52 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
   m_null = null;
 }
 
-std::string te::layout::Variant::toString()
+const std::string& te::layout::Variant::toString() const
 {
   return m_sValue;
 }
 
-double te::layout::Variant::toDouble()
+double te::layout::Variant::toDouble() const
 {
   return m_dValue;
 }
 
-int te::layout::Variant::toInt()
+int te::layout::Variant::toInt() const
 {
   return m_iValue;
 }
 
-long te::layout::Variant::toLong()
+long te::layout::Variant::toLong() const
 {
   return m_lValue;
 }
 
-float te::layout::Variant::toFloat()
+float te::layout::Variant::toFloat() const
 {
   return m_fValue;
 }
 
-bool te::layout::Variant::toBool()
+bool te::layout::Variant::toBool() const
 {
   return m_bValue;
 }
 
-te::color::RGBAColor te::layout::Variant::toColor()
+const te::color::RGBAColor& te::layout::Variant::toColor() const
 {
   return m_colorValue;
 }
 
-te::layout::Font te::layout::Variant::toFont()
+const te::layout::Font& te::layout::Variant::toFont() const
 {
   return m_fontValue;
 }
 
-bool te::layout::Variant::isNull()
+const te::gm::Envelope& te::layout::Variant::toEnvelope() const
+{
+  return m_envelopeValue;
+}
+
+bool te::layout::Variant::isNull() const
 {
   return m_null;
 }
@@ -382,7 +435,7 @@ void te::layout::Variant::clear()
   m_generic.clear();
 }
 
-std::string te::layout::Variant::convertToString()
+std::string te::layout::Variant::convertToString() const
 {
   std::stringstream ss;//create a stringstream
   std::string s_convert;
@@ -429,6 +482,13 @@ std::string te::layout::Variant::convertToString()
   else if(m_type == dataType->getDataTypeFont())
   {
     s_convert = m_fontValue.toString();
+  }
+  else if(m_type == dataType->getDataTypeEnvelope())
+  {
+    s_convert = toString(m_envelopeValue.getLowerLeftX());
+    s_convert += "," + toString(m_envelopeValue.getLowerLeftY());
+    s_convert += "," + toString(m_envelopeValue.getUpperRightX());
+    s_convert += "," + toString(m_envelopeValue.getUpperRightY());
   }
   else if(m_type == dataType->getDataTypeBool()) 
   {
@@ -526,16 +586,24 @@ long te::layout::Variant::string2Long( std::string str )
   return result;
 }
 
-bool te::layout::Variant::isComplex()
+bool te::layout::Variant::isComplex() const
 {
   return m_complex;
 }
 
-std::string te::layout::Variant::toString( int value )
+std::string te::layout::Variant::toString( int value ) const
 {
   std::stringstream ss;//create a stringstream
   ss << value;//add number to the stream
   
+  return ss.str();
+}
+
+std::string te::layout::Variant::toString(double value) const
+{
+  std::stringstream ss;//create a stringstream
+  ss << value;//add number to the stream
+
   return ss.str();
 }
 
@@ -551,9 +619,14 @@ bool te::layout::Variant::toBool( std::string str )
   }
 }
 
-te::layout::GenericVariant te::layout::Variant::toGenericVariant()
+const te::layout::GenericVariant& te::layout::Variant::toGenericVariant() const
 {
   return m_generic;
+}
+
+const te::gm::GeometryShrPtr te::layout::Variant::toGeometry() const
+{
+  return m_geometryPtr;
 }
 
 

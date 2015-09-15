@@ -31,7 +31,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ELLIPSE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/ContextItem.h"
 #include "../core/Config.h"
 
@@ -42,13 +42,13 @@ namespace te
     /*!
       \brief Class that represents a "Model" part of Ellipse MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          This is also son of AbstractItemModel, so it can become observable.
 
-      \sa te::layout::ItemModelObservable
-	  */
-    class TELAYOUTEXPORT EllipseModel : public ItemModelObservable
+      \ingroup layout
+
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT EllipseModel : public AbstractItemModel
     {
       public:
 
@@ -61,35 +61,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~EllipseModel();
-
-        virtual Properties* getProperties() const;
-
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-
-        /*!
-          \brief Gets the fill color of the shape
-        */
-        virtual const te::color::RGBAColor& getFillColor() const;
-
-        /*!
-          \brief Sets the fill color of the shape
-        */
-        virtual void setFillColor(const te::color::RGBAColor& color);
-
-        /*!
-          \brief Gets the contour color of the shape
-        */
-        virtual const te::color::RGBAColor& getContourColor() const;
-
-        /*!
-          \brief Sets the contour color of the shape
-        */
-        virtual void setContourColor(const te::color::RGBAColor& color);
-
-    protected:
-
-      te::color::RGBAColor m_fillColor; //!< The fill color of the shape
-      te::color::RGBAColor m_contourColor; //!< The contour color of the shape
     };
   }
 }

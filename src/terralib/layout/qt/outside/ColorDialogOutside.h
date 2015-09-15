@@ -32,7 +32,7 @@
 #include <QColorDialog>
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
 
@@ -48,31 +48,29 @@ namespace te
 {
   namespace layout
   {
-    
+    class AbstractOutsideController;
     /*!
     \brief 
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::OutsideObserver
-	  */
-    class TELAYOUTEXPORT ColorDialogOutside : public QColorDialog, public OutsideObserver
+      \sa te::layout::OutsideObserver
+    */
+    class TELAYOUTEXPORT ColorDialogOutside : public QColorDialog, public AbstractOutsideView
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 
-	      ColorDialogOutside(OutsideController* controller, Observable* o);
+        ColorDialogOutside(AbstractOutsideController* controller);
 
-	      virtual ~ColorDialogOutside();
+        virtual ~ColorDialogOutside();
 
         virtual void init();
+        
+        virtual void setPosition(const double& x, const double& y);
 
-	      virtual void updateObserver(ContextItem context);
-
-	      virtual void setPosition(const double& x, const double& y);
-
-	      virtual te::gm::Coord2D getPosition();
+        virtual te::gm::Coord2D getPosition();
 
       signals:
 
@@ -80,15 +78,15 @@ namespace te
 
       public slots:
 
-        virtual void	accept();
+        virtual void  accept();
 
       protected slots:
 
-        void	onCurrentColorChanged( const QColor & color );
+        void  onCurrentColorChanged( const QColor & color );
 
       protected:
 
-        virtual void	closeEvent ( QCloseEvent * event );
+        virtual void  closeEvent ( QCloseEvent * event );
 
         virtual bool event(QEvent * e);
 

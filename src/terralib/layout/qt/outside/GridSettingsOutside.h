@@ -28,16 +28,18 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_OUTSIDE_H
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_OUTSIDE_H
 
-// Qt
-#include <QDialog>
-
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../core/property/GridSettingsConfigProperties.h"
 #include "../../core/Config.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
 #include "../../core/property/Property.h"
+
+// Qt
+#include <QDialog>
+
+class QLineEdit;
 
 namespace Ui { class GridSettings; }
 
@@ -45,30 +47,27 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
     class PlanarGridSettingsConfigProperties;
     class GeodesicGridSettingsConfigProperties;
+    class AbstractOutsideController;
 
     /*!
     \brief Window (QDialog) map grid setting (MapItem).
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::OutsideObserver
-	  */
-    class TELAYOUTEXPORT GridSettingsOutside : public QDialog, public OutsideObserver 
+      \sa te::layout::OutsideObserver
+    */
+    class TELAYOUTEXPORT GridSettingsOutside : public QDialog, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-        GridSettingsOutside(OutsideController* controller, Observable* o);
+        GridSettingsOutside(AbstractOutsideController* controller);
 
-		    virtual ~GridSettingsOutside();
-
-        virtual void updateObserver(ContextItem context);
-
+        virtual ~GridSettingsOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();
@@ -263,13 +262,20 @@ namespace te
         virtual void initColor( QWidget* widget, std::string nameComponent, EnumType* gridType );
 
         virtual void initCombo(QWidget* widget, std::string nameComponent, EnumType* gridType);
-                
+
       protected:
 
         PlanarGridSettingsConfigProperties* m_planarGridSettings;
         GeodesicGridSettingsConfigProperties* m_geodesicGridSettings;
         EnumType* m_planarType;
         EnumType* m_geodesicType;
+
+        void setGeodesicValues();
+        void setGeodesicValues2GMS();
+        void setGeodesicValues2Degrees();
+        void setMask(QLineEdit *lat, QLineEdit *lon);
+        QString DD2DMS(QString dd);
+        QString DMS2DD(const QString dms);
 
       private:
 

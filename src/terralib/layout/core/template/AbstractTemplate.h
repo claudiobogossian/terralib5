@@ -44,9 +44,9 @@ namespace te
 
     /*!
       \brief Abstract class that represents a Template.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT AbstractTemplate
     {
       public:
@@ -55,9 +55,9 @@ namespace te
 
         virtual ~AbstractTemplate();
 
-        virtual bool exportTemplate(std::vector<te::layout::Properties*> properties) = 0;
+        virtual bool exportTemplate(std::vector<te::layout::Properties> properties) = 0;
 
-        virtual std::vector<te::layout::Properties*> importTemplate() = 0;
+        virtual std::vector<te::layout::Properties> importTemplate() = 0;
 
         virtual bool deleteTemplate() = 0;
 

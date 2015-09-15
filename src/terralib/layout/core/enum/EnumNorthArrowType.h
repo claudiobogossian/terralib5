@@ -41,11 +41,11 @@ namespace te
 
     /*!
       \brief Class to represent a scale star enumeration.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumNorthArrowType : public AbstractEnum
     {
       public:
@@ -62,33 +62,33 @@ namespace te
 
         /*!
           \brief Returns value that represents none type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNoneType() const;
         
         /*!
           \brief Returns value that represents north arrow type 1 belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNorthArrowType1() const;
 
         /*!
           \brief Returns value that represents north arrow type 2 belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNorthArrowType2() const;
 
-				/*!
+        /*!
           \brief Returns value that represents north arrow type 3 belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNorthArrowType3() const;
-		
-			protected:
+    
+      protected:
 
         /*!
           \brief Reimplemented from AbstractEnum
@@ -99,8 +99,8 @@ namespace te
 
         EnumType* m_noneType; //!< value that represents none type belonging to enumeration
         EnumType* m_northArrow1; //!< value that represents north arrow type 1 belonging to enumeration
-				EnumType* m_northArrow2; //!< value that represents north arrow type 2 belonging to enumeration
-				EnumType* m_northArrow3; //!< value that represents north arrow type 3 belonging to enumeration
+        EnumType* m_northArrow2; //!< value that represents north arrow type 2 belonging to enumeration
+        EnumType* m_northArrow3; //!< value that represents north arrow type 3 belonging to enumeration
  
     };
   }

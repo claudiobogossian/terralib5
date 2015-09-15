@@ -36,11 +36,12 @@ namespace te
 {
   namespace layout
   {
+    class Scene;
     /*!
-	  \brief Class that represents a vertical ruler with the coordinate system in mm.
-	  
-	  \ingroup layout
-	  */
+    \brief Class that represents a vertical ruler with the coordinate system in mm.
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT VerticalRuler : public AbstractRuler
     {
       public:
@@ -54,6 +55,8 @@ namespace te
       protected:
 
         virtual void drawMarks( QGraphicsView* view, QPainter* painter, QRectF rect, double zoomFactor );
+
+        Scene* searchScene(QGraphicsView* view);
     };
   }
 }

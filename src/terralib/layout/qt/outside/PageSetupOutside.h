@@ -32,7 +32,7 @@
 #include <QDialog>
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../core/Config.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
@@ -44,21 +44,19 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
+    class Scene;
+    class AbstractOutsideController;
 
-    class TELAYOUTEXPORT PageSetupOutside : public QDialog, public OutsideObserver 
+    class TELAYOUTEXPORT PageSetupOutside : public QDialog, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-        PageSetupOutside(OutsideController* controller, Observable* o);
+        PageSetupOutside(AbstractOutsideController* controller);
 
-		    virtual ~PageSetupOutside();
-
-        virtual void updateObserver(ContextItem context);
-
+        virtual ~PageSetupOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();
@@ -85,13 +83,15 @@ namespace te
 
         /** \brief Configures the orientation page getting from layout 
         */
-	      virtual void configureOrientationPage();
+        virtual void configureOrientationPage();
 
-	      /** \brief Configures the page size getting from layout
-	      */
-	      virtual void configurePageSize();
+        /** \brief Configures the page size getting from layout
+        */
+        virtual void configurePageSize();
 
         virtual void switchSize();
+
+        Scene* getScene();
 
         te::layout::LayoutOrientationType m_orientation;
         te::layout::LayoutAbstractPaperType m_paperType;

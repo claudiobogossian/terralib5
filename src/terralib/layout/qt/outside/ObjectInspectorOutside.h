@@ -29,10 +29,9 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_OUTSIDE_H
 
 // TerraLib
-#include "../core/propertybrowser/PropertyBrowser.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
+
 
 // STL
 #include <string>
@@ -42,59 +41,57 @@
 
 class QtProperty;
 class QGraphicsItem;
+class QTreeWidget;
 
 namespace te
 {
   namespace layout
   {
-    class ItemObserver;
+    class AbstractOutsideController;
+
     /*!
     \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::OutsideObserver
-	  */
-    class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public OutsideObserver
+      \sa te::layout::OutsideObserver
+    */
+    class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public AbstractOutsideView
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
     public:
 
-	    ObjectInspectorOutside(OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser = 0);
-	    
+      ObjectInspectorOutside(AbstractOutsideController* controller);
+      
       virtual ~ObjectInspectorOutside();
-
-	    virtual void updateObserver(ContextItem context);
-	    
+            
       virtual void setPosition(const double& x, const double& y);
-	    
+      
       virtual te::gm::Coord2D getPosition();
 
       virtual void itemsInspector(QList<QGraphicsItem*> graphicsItems);
 
       virtual void selectItems(QList<QGraphicsItem*> graphicsItems);
 
-      virtual PropertyBrowser* getObjectInspector();
-            
     protected slots:
       
       virtual void onRemoveProperties(std::vector<std::string> names);
 
-      virtual bool hasMoveItemGroup(QList<QGraphicsItem*> graphicsItems);
+      virtual void itemSelectionChanged();
+
+    signals:
+
+      void currentItemChanged(QGraphicsItem* item);
+
+      void selectionChanged(QList<QGraphicsItem*> graphicsItems);
+
 
     protected:
-      
-      virtual QtProperty* addProperty(QGraphicsItem* item);
 
-      virtual Property createProperty(ItemObserver* item);
-
-      virtual void createSubProperty(QGraphicsItem* item, QtProperty* prop);
-
-      virtual bool hasProperty(Property property);
-      
-      PropertyBrowser* m_layoutPropertyBrowser;
-      QList<QGraphicsItem*> m_graphicsItems;
+      QTreeWidget*            m_treeWidget;
+      bool                    m_isChangingSelection;
+      QList<QGraphicsItem*>   m_graphicsItems;
     };
   }
 }

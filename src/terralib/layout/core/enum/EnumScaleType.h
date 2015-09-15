@@ -40,11 +40,11 @@ namespace te
 
     /*!
       \brief Class to represent a scale type enumeration. Ex.: hollow scale bar, etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumScaleType : public AbstractEnum
     {
       public:
@@ -61,29 +61,29 @@ namespace te
 
         /*!
           \brief Returns value that represents none type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNoneType() const;
         
         /*!
           \brief Returns value that represents alternating scale bar type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getAlternatingScaleBarType() const;
 
         /*!
           \brief Returns value that represents double alternating scale bar type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDoubleAlternatingScaleBarType() const;
 
         /*!
           \brief Returns value that represents hollow scale bar type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getHollowScaleBarType() const;
 

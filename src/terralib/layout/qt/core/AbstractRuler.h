@@ -42,10 +42,10 @@ namespace te
   namespace layout
   {
     /*!
-	  \brief Abstract class representing a ruler.
-	  
-	  \ingroup layout
-	  */
+    \brief Abstract class representing a ruler.
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT AbstractRuler
     {
       public:
@@ -104,11 +104,11 @@ namespace te
 
         bool                m_visible;
 
-        double	            m_longLine;
-        double	            m_mediumLine;
+        double              m_longLine;
+        double              m_mediumLine;
         double              m_smallLine;
-        int		              m_blockSize;
-        int		              m_middleBlockSize;
+        int                  m_blockSize;
+        int                  m_middleBlockSize;
         int                 m_smallBlockSize;
         double              m_height;
         double              m_cornerSize;

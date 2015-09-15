@@ -31,9 +31,9 @@
 te::layout::EnumPointType::EnumPointType() :
   m_noneType(0),
   m_star1(0),
-	m_star2(0),
-	m_star3(0),
-	m_star4(0),
+  m_star2(0),
+  m_star3(0),
+  m_star4(0),
   m_circle(0),
   m_x(0),
   m_square(0),
@@ -54,11 +54,11 @@ void te::layout::EnumPointType::init()
 
   m_star1 = createEnum("Star 5 points", this);
 
-	m_star2 = createEnum("Star 6 points", this);
+  m_star2 = createEnum("Star 6 points", this);
 
-	m_star3 = createEnum("Star 7 points", this);
+  m_star3 = createEnum("Star 7 points", this);
 
-	m_star4 = createEnum("Star 8 points", this);
+  m_star4 = createEnum("Star 8 points", this);
 
   m_circle = createEnum("Circle", this);
 
@@ -83,17 +83,17 @@ te::layout::EnumType* te::layout::EnumPointType::getStar1Type() const
 
 te::layout::EnumType* te::layout::EnumPointType::getStar2Type() const
 {
-	return m_star2;
+  return m_star2;
 }
 
 te::layout::EnumType* te::layout::EnumPointType::getStar3Type() const
 {
-	return m_star3;
+  return m_star3;
 }
 
 te::layout::EnumType* te::layout::EnumPointType::getStar4Type() const
 {
-	return m_star4;
+  return m_star4;
 }
 
 te::layout::EnumType* te::layout::EnumPointType::getCircleType() const

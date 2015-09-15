@@ -91,10 +91,11 @@ namespace te
             \brief Performs the zoom operation on map display, considering the zoom factor, zoom type and the given point.
 
             \param point A point in world coordinates.
+            \param centralize If the reference point is given, its possible to choose between centering this reference point or keeping it in the same position that it was.
 
             \note If the given point is not null, the new extent will be centered on this point. Otherwise, the current center will be kepped.
           */
-          void applyZoom(const QPointF& point = QPointF());
+          void applyZoom(const QPointF& point = QPointF(), bool centralize = true);
 
         protected:
 

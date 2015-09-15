@@ -28,8 +28,8 @@
 // TerraLib
 #include "LegendChoiceController.h"
 
-te::layout::LegendChoiceController::LegendChoiceController( Observable* o ) :
-	OutsideController(o)
+te::layout::LegendChoiceController::LegendChoiceController(AbstractOutsideModel* o) :
+  AbstractOutsideController(o)
 {
   
 }

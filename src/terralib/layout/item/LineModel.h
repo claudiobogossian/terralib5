@@ -29,17 +29,20 @@
 #define __TERRALIB_LAYOUT_INTERNAL_LINE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 
 // STL
 #include <vector>
+
+class Property;
+class Properties;
 
 namespace te
 {
   namespace layout
   {
     class Utils;
-    class LineModel : public ItemModelObservable
+    class LineModel : public AbstractItemModel
     {
       public:
 
@@ -47,37 +50,13 @@ namespace te
 
         virtual ~LineModel();
 
-        virtual void setCoords(std::vector<te::gm::Point*> coords);
+        virtual void setProperty(const Property& property);
 
-        virtual std::vector<te::gm::Point*> getCoords();
+        virtual void setProperties(const Properties& properties);
 
-        virtual te::layout::Properties* getProperties() const;
-
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-
-        virtual EnumLineStyleType* getEnumLineStyleType();
-
-        virtual EnumType* getCurrentLineStyleType();
-
-        /*!
-          \brief Gets the color of the shape
-        */
-        virtual const te::color::RGBAColor& getColor() const;
-
-        /*!
-          \brief Sets the color of the shape
-        */
-        virtual void setColor(const te::color::RGBAColor& color);
-       
       protected:
 
-        virtual Property lineProperty() const;
-
-        std::vector<te::gm::Point*> m_coords;
-        EnumType*                   m_currentLineStyleType; //!< store current line style type
-        EnumLineStyleType*          m_enumLineStyleType; //!< line style type
-
-        te::color::RGBAColor        m_color; //!< The color of the shape
+        virtual void updateProperties( const Property &property, Properties &properties );
     };
   }
 }

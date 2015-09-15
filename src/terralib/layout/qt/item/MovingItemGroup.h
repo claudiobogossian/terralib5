@@ -28,18 +28,20 @@
   \ingroup layout
 */
 
-#ifndef	__TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H
+#ifndef  __TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H
 #define __TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H
 
 //TerraLib
-#include "../../core/Config.h"
 #include "ItemGroup.h"
+#include "../../core/Config.h"
+
+#include <QRectF>
 
 namespace te
 {
   namespace layout
   {
-
+    class AbstractItemController;
     /*!
       \file MovingItemGroup.h
    
@@ -54,14 +56,16 @@ namespace te
     {
     public:
 
-      MovingItemGroup(te::layout::ItemController* controller, te::layout::Observable* o);
+      MovingItemGroup(AbstractItemController* controller, bool invertedMatrix = false);
 
       virtual ~MovingItemGroup();
-
-      virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+      
+      /*!
+      \brief Reimplemented from AbstractItem
+      */
+      virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
     };
   }
 }
 
-#endif
-
+#endif //__TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H

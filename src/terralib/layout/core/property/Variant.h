@@ -47,6 +47,7 @@
 #include "../enum/EnumType.h"
 #include "../Config.h"
 #include "GenericVariant.h"
+#include "../../../geometry/Geometry.h"
 
 // STL
 #include <string>
@@ -64,7 +65,7 @@ namespace te
   namespace layout
   {
     /*!
-	    \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
+      \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
        Any data type, not included in the convertValue method in this class, it will be by default "std::string".
        Storing value types:
 
@@ -77,9 +78,9 @@ namespace te
         - te::color::RGBAColor 
         - te::layout::Font 
         - te::layout::GenericVariant
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT Variant
     {
       public:
@@ -119,99 +120,113 @@ namespace te
         /*!
           \brief Returns data type of this object.
         */ 
-        EnumType* getType();
+        EnumType* getType() const;
 
         /*!
           \brief Return true if value is not of common C++ data type, false otherwise.
 
           \param true if value is not of common C++ data type, false otherwise
         */ 
-        virtual bool isComplex();
+        virtual bool isComplex() const;
         
         /*!
           \brief Returns the value of string type. (The setValue method received a string)
 
           \return value of string type
         */
-        std::string toString();
+        const std::string& toString() const;
 
         /*!
           \brief Returns the value of double type. (The setValue method received a double)
 
           \return value of double type
         */
-        double toDouble();
+        double toDouble() const;
 
         /*!
           \brief Returns the value of int type. (The setValue method received a int)
 
           \return value of int type
         */
-        int toInt();
+        int toInt() const;
 
         /*!
           \brief Returns the value of long type. (The setValue method received a long)
 
           \return value of long type
         */
-        long toLong();
+        long toLong() const;
 
         /*!
           \brief Returns the value of float type. (The setValue method received a float)
 
           \return value of float type
         */
-        float toFloat();
+        float toFloat() const;
 
         /*!
           \brief Returns the value of boolean type. (The setValue method received a boolean)
 
           \return value of boolean type
         */
-        bool toBool();
+        bool toBool() const;
 
         /*!
           \brief Returns the value of te::color::RGBAColor type. (The setValue method received a te::color::RGBAColor). Complex type.
 
           \return value of te::color::RGBAColor type
         */
-        te::color::RGBAColor toColor(); 
+        const te::color::RGBAColor& toColor() const;
 
         /*!
           \brief Returns the value of te::layout::Font type. (The setValue method received a te::layout::Font). Complex type.
 
           \return value of te::layout::Font type
         */
-        Font toFont();
+        const Font& toFont() const;
+
+        /*!
+          \brief Returns the value of te::layout::Font type. (The setValue method received a te::layout::Font). Complex type.
+
+          \return value of te::layout::Font type
+        */
+        const te::gm::Envelope& toEnvelope() const;
 
         /*!
           \brief Returns the value of te::layout::GenericVariant type. (The setValue method received a te::layout::GenericVariant). Complex type.
 
           \return value of te::layout::Font type
         */
-        GenericVariant toGenericVariant();
+        const GenericVariant& toGenericVariant() const;
+
+        /*!
+          \brief Returns the shared pointer of te::gm::Geometry type. (The setValue method received a shared pointer of te::gm::Geometry).
+
+          \return shared poiniter of te::gm::Geometry type
+        */
+        const te::gm::GeometryShrPtr toGeometry() const;
 
         /*!
           \brief Converts the value to a string.
 
           \return Value as a string
         */
-        virtual std::string convertToString();
+        virtual std::string convertToString() const;
 
         /*!
           \brief Returns true if no value has been set, false otherwise.
 
           \return true if no value has been set, false otherwise
         */
-        bool isNull();
+        bool isNull() const;
 
         /*!
           \brief Reset state of object. Null state.
         */
         virtual void clear();
                 
-        bool operator ==(const Variant& other); 
-        bool operator !=(const Variant& other); 
+        bool operator ==(const Variant& other) const;
+        bool operator !=(const Variant& other) const;
 
     protected:
 
@@ -271,7 +286,15 @@ namespace te
           \param value int value
           \return string representation of a number
        */
-      virtual std::string toString(int value);
+      virtual std::string toString(int value) const;
+
+      /*!
+      \brief Convert a double value into a string representation of a number.
+
+      \param value int value
+      \return string representation of a number
+      */
+      virtual std::string toString(double value) const;
 
       /*!
           \brief Convert a string value into a boolean representation of a string. Ex.: true, false.
@@ -289,10 +312,12 @@ namespace te
       bool m_bValue; //!< value of boolean type 
       te::color::RGBAColor m_colorValue; //!< value of te::color::RGBAColor type
       Font m_fontValue; //!< value of te::layout::Font type
+      te::gm::Envelope m_envelopeValue; //!< value of the envelope type
       EnumType* m_type; //!< data type of this object
       bool m_null; //!< true if no value has been set, false otherwise
       bool m_complex; //!< true if value is not of common C++ data type, false otherwise
       GenericVariant m_generic; //!< value of te::layout::GenericVariant type
+      te::gm::GeometryShrPtr m_geometryPtr; //!< shared pointer of te::gm::Geometry type
     };
 
     template<typename ValueType>
@@ -310,7 +335,7 @@ namespace te
       v = Variant(type, &value);      
     }
     
-    inline bool te::layout::Variant::operator ==(const Variant& other) 
+    inline bool te::layout::Variant::operator ==(const Variant& other) const
     { 
       Variant& otherProp = const_cast<Variant&>(other);
 
@@ -322,7 +347,7 @@ namespace te
           m_lValue == otherProp.toLong() &&
           m_fValue == otherProp.toFloat() &&
           m_bValue == otherProp.toBool() &&
-          m_colorValue == otherProp.toColor() /*&&
+          m_colorValue == otherProp.toColor()/*&&
           m_fontValue == otherProp.toFont()*/)
         {
           return true;
@@ -331,7 +356,7 @@ namespace te
       return false;
     }
 
-    inline bool te::layout::Variant::operator !=(const Variant& other) 
+    inline bool te::layout::Variant::operator !=(const Variant& other) const
     { 
       Variant& otherProp = const_cast<Variant&>(other);
 

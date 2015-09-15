@@ -27,12 +27,14 @@
 
 // TerraLib
 #include "ProxyProject.h"
+
+#include "../../af/Project.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/events/LayerEvents.h"
+
 
 te::qt::plugins::layout::ProxyProject::ProxyProject()
 {
-  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
+
 }
 
 te::qt::plugins::layout::ProxyProject::~ProxyProject()
@@ -42,22 +44,13 @@ te::qt::plugins::layout::ProxyProject::~ProxyProject()
 
 std::list<te::map::AbstractLayerPtr> te::qt::plugins::layout::ProxyProject::getAllLayers( bool invalid /*= true*/ )
 {
-  te::qt::af::evt::GetAvailableLayers e;
-
-  emit triggered(&e);
-
-  return e.m_layers;
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
+  return layers;
 }
 
-const std::list<te::map::AbstractLayerPtr> te::qt::plugins::layout::ProxyProject::getSelectedLayers( bool invalid /*= true*/ ) 
+const std::list<te::map::AbstractLayerPtr> te::qt::plugins::layout::ProxyProject::getSelectedLayers( bool invalid /*= true*/ ) const
 {
-  te::qt::af::evt::GetLayerSelected e;
-
-  emit triggered(&e);
-
-  std::list<te::map::AbstractLayerPtr> layers;
-  layers.push_back(e.m_layer);
-
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers(false);
   return layers;
 }
 
@@ -65,7 +58,7 @@ te::map::AbstractLayerPtr te::qt::plugins::layout::ProxyProject::contains( std::
 {
   te::map::AbstractLayerPtr layer;
 
-  std::list<te::map::AbstractLayerPtr> layers = getAllLayers();
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
 

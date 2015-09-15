@@ -30,15 +30,10 @@
 
 // TerraLib
 #include "../../geometry/Envelope.h"
-#include "../../geometry/LinearRing.h"
 #include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
 #include "../../maptools/WorldDeviceTransformer.h"
-#include "WorldTransformer.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../maptools/Enums.h"
-#include "../../geometry/Point.h"
-#include "../../geometry/Polygon.h"
 #include "Config.h"
 
 // STL
@@ -47,22 +42,34 @@
 #include <fstream>
 
 #ifndef TeCDR
-#define TeCDR 0.01745329251994329576		//!< Conversion factor: degrees to radians
+#define TeCDR 0.01745329251994329576    //!< Conversion factor: degrees to radians
 #endif
 
 #ifndef TeCRD
-#define TeCRD 57.29577951308232087679	//!< Conversion factor: radians to degrees
+#define TeCRD 57.29577951308232087679  //!< Conversion factor: radians to degrees
 #endif
 
 namespace te
 {
+  namespace gm
+  {
+    class Envelope;
+    class LinearRing;
+    class Point;
+    class Polygon;
+  }
+
   namespace layout
   {
+    class PaperConfig;
+    class Properties;
+    class WorldTransformer;
+
     /*!
-	    \brief Utility class with functions to manipulate the canvas and conversion between projections.
-	  
-	    \ingroup layout
-	  */
+      \brief Utility class with functions to manipulate the canvas and conversion between projections.
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT Utils
     {
       public:
@@ -79,38 +86,38 @@ namespace te
 
         /*!
           \brief Draw a rectangle in world coordinates (mm).
-		  
-		      \param box in mm
+      
+          \param box in mm
         */ 
         virtual void drawRectW(te::gm::Envelope box);
 
         /*!
           \brief Draw a line in world coordinates (mm).
-		  
-		      \param LinearRing pointer with coordinates in millimeters	  
+      
+          \param LinearRing pointer with coordinates in millimeters    
         */ 
         virtual void drawLineW(te::gm::LinearRing* line);
         
         /*!
           \brief Returns a pointer RGBA colors that representing an image.
-		  
-		      \param box in mm	  
+      
+          \param box in mm    
           \return The Pointer RGBA colors
         */ 
         virtual te::color::RGBAColor** getImageW(te::gm::Envelope boxmm);
 
         /*!
           \brief Millimeter to pixel
-		  
-		      \param millimeter value
+      
+          \param millimeter value
           \return pixel value
         */ 
         virtual int mm2pixel(double mm);
 
         /*!
           \brief Creates a LinearRing (line) pointer from a box in world coordinates (mm) 
-		  
-		      \param box in mm
+      
+          \param box in mm
           \return new line
         */ 
         virtual te::gm::LinearRing* createSimpleLine(te::gm::Envelope box);
@@ -118,8 +125,8 @@ namespace te
         /*!
           \brief Creates a line with n points in x axis. Method used to create the grid lines on a map. Horizontal line.
             
-		  
-		      \param box in mm
+      
+          \param box in mm
           \param axisCoord axis y value
           \param gap distance between the points on the x axis
           \return
@@ -128,7 +135,7 @@ namespace te
 
         /*!
           \brief Creates a line with n points in y axis. Method used to create the grid lines on a map. Vertical line.
-		  
+      
           \param box in mm
           \param axisCoord axis x value
           \param gap distance between the points on the y axis
@@ -138,23 +145,23 @@ namespace te
 
         /*!
           \brief Sets the viewport and window of the canvas. The viewport is only changed if the resize parameter is true.
-		  
-		      \param box window coordinate (mm)	  
+      
+          \param box window coordinate (mm)    
         */ 
         virtual void configCanvas(te::gm::Envelope box, bool resize = true, bool applyZoom = true);
                      
         /*!
           \brief Converts the box world (mm) to screen coordinates (pixel).
-		  
-		      \param box in mm	  
+      
+          \param box in mm    
           \return box in pixel
         */ 
         virtual te::gm::Envelope viewportBox(te::gm::Envelope box);
 
         /*!
           \brief A method that calculates the height and width of a text.
-		  
-		      \param w returns the width	  
+      
+          \param w returns the width    
           \param h returns the height
           \param text 
         */ 
@@ -162,16 +169,16 @@ namespace te
         
         /*!
           \brief Returns a WorldTransformer object to transformations between geo coordinates and millimeter coordinates.
-          		  
-		      \param box in geo coordinates 	  
+                
+          \param box in geo coordinates     
           \return box in mm
         */ 
         te::layout::WorldTransformer getTransformGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm);
 
         /*!
           \brief Converts decimal geo coordinates to degrees.
-		  
-		      \param value in decimal
+      
+          \param value in decimal
           \param bDegrees true if should appear in the return string, false otherwise
           \param bMinutes true if should appear in the return string, false otherwise
           \param bSeconds true if should appear in the return string, false otherwise
@@ -181,15 +188,15 @@ namespace te
 
         /*!
           \brief Converts degree geo coordinates to decimal.
-		  	  
+          
           \return double value in decimal
         */ 
         virtual double convertDegreeToDecimal();
 
         /*!
           \brief Number to string.
-		  
-		      \param value 
+      
+          \param value 
           \param precision decimal places
           \return number as string
         */ 
@@ -197,109 +204,109 @@ namespace te
 
         /*!
           \brief Rounds double to int.
-		  
-		      \param value	 
+      
+          \param value   
           \return number rounded
         */ 
         virtual int roundNumber(const double& value);
 
         /*!
           \brief Returns string wkt with UTM projection in the specified zone.
-		  
-		      \param zone UTM	
+      
+          \param zone UTM  
           \return string wkt
         */
         std::string proj4DescToPlanar(int zone);
 
         /*!
           \brief Returns string wkt with non-planar projection.
-		 
+     
           \return wkt
         */
         std::string proj4DescToGeodesic();
 
         /*!
           \brief Calculates the area from a box in coordinated latlong
-		  
-		      \param latLongBox box in latlong
+      
+          \param latLongBox box in latlong
           \return UTM zone
         */
         int calculatePlanarZone(te::gm::Envelope latLongBox);
 
         /*!
           \brief Returns a UnitOfMeasurePtr pointer.
-		  
-		      \param srid projection number	
+      
+          \param srid projection number  
           \return A UnitOfMeasurePtr pointer
         */
         te::common::UnitOfMeasurePtr unitMeasure(int srid);
 
         /*!
           \brief Map latlong to UTM zone.
-		  
-		      \param box in latlong
+      
+          \param box in latlong
           \param zone returns UTM zone
         */
         virtual void remapToPlanar(te::gm::Envelope* latLongBox, int zone);
 
         /*!
           \brief Map latlong LinearRing (line) to UTM zone.
-		  
-		      \param line line in latlong
+      
+          \param line line in latlong
           \param zone returns UTM zone
         */
         virtual void remapToPlanar(te::gm::LinearRing* line, int zone);
 
         /*!
           \brief Map latlong Point (point) to UTM zone.
-		  
-		      \param zone returns UTM zone	  
+      
+          \param zone returns UTM zone    
         */
         virtual void remapToPlanar(te::gm::Point* point, int zone);
 
         /*!
           \brief Convert LinearRing from one coordinate system to mm
-		  
-		      \param Object with logic for transforming
+      
+          \param Object with logic for transforming
           \param line LinearRing pointer in one coordinate system
         */
         virtual void convertToMillimeter(WorldTransformer transf, te::gm::LinearRing* line); 
 
         /*!
           \brief Convert Polygon from one coordinate system to mm
-		  
-		      \param Object with logic for transforming
+      
+          \param Object with logic for transforming
           \param line LinearRing pointer in one coordinate system
         */
         virtual void convertToMillimeter(WorldTransformer transf, te::gm::Polygon* poly); 
         
         /*!
           \brief Opens the file and loads the image into memory and converts to char*.
-		  
-		      \param fileName full path to image 	  
+      
+          \param fileName full path to image     
           \return size length of file
         */
         virtual char* imageToChar(std::string fileName, std::ifstream::pos_type &size);
 
         /*!
           \brief Returns the file extension.
-		  
-		      \param fileName full path to image	
+      
+          \param fileName full path to image  
           \return file extension
         */
         virtual std::string getFileExtension(std::string fileName);
         
         /*!
           \brief 
-		  
-		      \param 	  
+      
+          \param     
         */
         virtual void setApplyZoom(bool apply);
 
         /*!
           \brief 
-		  
-		      \param 	 
+      
+          \param    
           \return
         */
         virtual bool getApplyZoom();
@@ -308,13 +315,23 @@ namespace te
           \brief Clears the canvas content and fills with the background color. Sets all width with 1. 
         */
         virtual void resetCanvas();
-                
+
+        /*!
+          \brief Converts from PaperConfig to Properties
+        */
+        static Properties convertToProperties(const PaperConfig& paperConfig);
+
+        /*!
+          \brief Converts from Properties to Paper Config
+        */
+        static PaperConfig convertToPaperConfig(const Properties& properties);
+
       protected:
         
         /*!
           \brief Sets the viewport and window of the canvas. The viewport is only changed if the resize parameter is true. 
-		  
-		      \param viewport viewport box(pixel)
+      
+          \param viewport viewport box(pixel)
           \param world world box(mm)
           \param resize true if to resize, false otherwise
         */
@@ -322,16 +339,16 @@ namespace te
 
         /*!
           \brief Transforms the box (mm) to screen coordinates (pixel).
-		  
-		      \param transf logic for transforming from device coordinate to world coordinate and vice-versa. 	  
+      
+          \param transf logic for transforming from device coordinate to world coordinate and vice-versa.     
           \return box in screen coordinates (pixel)
         */
         virtual te::gm::Envelope transformToViewport(te::map::WorldDeviceTransformer transf, te::gm::Envelope box);
         
         /*!
           \brief Converts the box world (mm) to screen coordinates (pixel).
-		  
-		      \param box in mm	 
+      
+          \param box in mm   
         */ 
         virtual te::gm::Envelope viewportBoxFromMM(te::gm::Envelope box);
         

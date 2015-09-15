@@ -26,134 +26,74 @@
 */
 
 // TerraLib
+
 #include "PointModel.h"
-#include "../core/ContextItem.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
 #include "../core/enum/Enums.h"
+#include "../core/enum/EnumPointType.h"
+#include "../core/property/Properties.h"
+#include "../core/property/Property.h"
 
-te::layout::PointModel::PointModel():
-  m_enumPointType(0),
-  m_currentPointType(0),
-  m_shapeSize(4)
+te::layout::PointModel::PointModel()
+  : AbstractItemModel()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getPointItem();
-  
-  m_pointColor = te::color::RGBAColor(0, 255, 0, 255);
+  te::color::RGBAColor fillColor(0, 0, 0, 255);
+  te::color::RGBAColor contourColor(0, 0, 0, 255);
+  te::color::RGBAColor backgroundColor(255, 0, 0, 255);
 
-  m_box = te::gm::Envelope(0., 0., 10., 10.);
+  this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getPointItem());
 
-  m_enumPointType = new EnumPointType();
-  m_currentPointType = m_enumPointType->getCircleType();
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  //adding properties
+  {
+    EnumPointType pointType;
+    EnumType* currentType = pointType.getCircleType();
+
+    Property property(0);
+    property.setName("point_type");
+    property.setLabel("graphic type");
+    property.setValue(currentType->getLabel(), dataType->getDataTypeStringList());
+
+    Variant v;
+    v.setValue(currentType->getLabel(), dataType->getDataTypeString());
+    property.addOption(v);
+    property.setOptionChoice(v);
+
+    for(int i = 0 ; i < pointType.size() ; ++i)
+    {
+      EnumType* enumType = pointType.getEnum(i);
+
+      if(enumType == pointType.getNoneType() || enumType == currentType)
+        continue;
+
+      Variant v;
+      v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+      property.addOption(v);
+    }
+
+    this->m_properties.addProperty(property);
+  }
+
+
+  {
+    Property property(0);
+    property.setName("fill_color");
+    property.setLabel("Fill Color");
+    property.setValue(fillColor, dataType->getDataTypeColor());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("contour_color");
+    property.setLabel("Contour Color");
+    property.setValue(contourColor, dataType->getDataTypeColor());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
 }
 
 te::layout::PointModel::~PointModel()
 {
-  if(m_enumPointType)
-  {
-    delete m_enumPointType;
-    m_enumPointType = 0;
-  }
 }
-
-te::layout::Properties* te::layout::PointModel::getProperties() const
-{
-  ItemModelObservable::getProperties();
-
-  Property pro_pointName = pointProperty();
-  if(!pro_pointName.isNull())
-  {
-    m_properties->addProperty(pro_pointName);
-  }
-
-  return m_properties;
-}
-
-void te::layout::PointModel::updateProperties( te::layout::Properties* properties, bool notify )
-{
-  ItemModelObservable::updateProperties(properties, false);
-
-  Properties* vectorProps = const_cast<Properties*>(properties);
-
-  Property pro_pointName = vectorProps->contains("point_type");
-
-  if(!pro_pointName.isNull())
-  {
-    std::string label = pro_pointName.getOptionByCurrentChoice().toString();
-    EnumType* enumType = m_enumPointType->searchLabel(label);
-    if(enumType)
-    {
-      m_currentPointType = enumType;
-    }
-  }
-
-  if(notify)
-  {
-    ContextItem context;
-    notifyAll(context);
-  }
-}
-
-te::layout::EnumPointType* te::layout::PointModel::getEnumPointType()
-{
-  return m_enumPointType;
-}
-
-te::layout::EnumType* te::layout::PointModel::getCurrentPointType()
-{
-  return m_currentPointType;
-}
-
-te::layout::Property te::layout::PointModel::pointProperty() const
-{
-  Property pro_pointName(m_hashCode);
-
-  if(!m_currentPointType)
-    return pro_pointName;
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  if(!dataType)
-    return pro_pointName;
-
-  pro_pointName.setName("point_type");
-  pro_pointName.setLabel("graphic type");
-  pro_pointName.setValue(m_currentPointType->getLabel(), dataType->getDataTypeStringList());
-
-  Variant v;
-  v.setValue(m_currentPointType->getLabel(), dataType->getDataTypeString());
-  pro_pointName.addOption(v);
-  pro_pointName.setOptionChoice(v);
-
-  for(int i = 0 ; i < m_enumPointType->size() ; ++i)
-  {
-    EnumType* enumType = m_enumPointType->getEnum(i);
-
-    if(enumType == m_enumPointType->getNoneType() || enumType == m_currentPointType)
-      continue;
-
-    Variant v;
-    v.setValue(enumType->getLabel(), dataType->getDataTypeString());
-    pro_pointName.addOption(v);
-  }
-
-  return pro_pointName;
-}
-
-double te::layout::PointModel::getShapeSize()
-{
-  return m_shapeSize;
-}
-
-te::color::RGBAColor te::layout::PointModel::getPointColor()
-{
-  return m_pointColor;
-}
-
-void te::layout::PointModel::setPointColor( te::color::RGBAColor color )
-{
-  m_pointColor = color;
-}
-
-

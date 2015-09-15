@@ -43,9 +43,9 @@ namespace te
     /*!
       \brief Class responsible for maintaining the drawing context of a MVC component.
        It is always used by the "Model" part of the MVC in draw method, as well as the part "View" in updateObserver method.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT ContextItem 
     {
       public:

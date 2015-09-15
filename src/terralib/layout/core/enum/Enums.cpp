@@ -29,23 +29,33 @@
 #include "Enums.h"
 
 te::layout::Enums::Enums() :
-  m_dataType(0),
-  m_objType(0),
-  m_gridStyleType(0),
-  m_lineStyleType(0),
-  m_modeType(0),
-  m_templateType(0)
+  m_dataType(new EnumDataType()),
+  m_objType(new EnumObjectType()),
+  m_gridStyleType(new EnumGridStyleType()),
+  m_lineStyleType(new EnumLineStyleType()),
+  m_modeType(new EnumModeType()),
+  m_templateType(new EnumTemplateType()),
+  m_toolType(new EnumToolType())
 {
 
 }
 
 te::layout::Enums::~Enums()
 {
-  
+  if (m_toolType)
+  {
+    delete m_toolType;
+    m_toolType = 0;
+  }
 }
 
 void te::layout::Enums::setEnumDataType( EnumDataType* type )
 {
+  if (m_dataType)
+  {
+    delete type;
+    type = 0;
+  }
   m_dataType = type;
 }
 
@@ -56,6 +66,11 @@ te::layout::EnumDataType* te::layout::Enums::getEnumDataType()
 
 void te::layout::Enums::setEnumObjectType( EnumObjectType* type )
 {
+  if (m_objType)
+  {
+    delete m_objType;
+    m_objType = 0;
+  }
   m_objType = type;
 }
 
@@ -66,6 +81,11 @@ te::layout::EnumObjectType* te::layout::Enums::getEnumObjectType()
 
 void te::layout::Enums::setEnumGridStyleType( EnumGridStyleType* type )
 {
+  if (m_gridStyleType)
+  {
+    delete m_gridStyleType;
+    m_gridStyleType = 0;
+  }
   m_gridStyleType = type;
 }
 
@@ -76,6 +96,11 @@ te::layout::EnumGridStyleType* te::layout::Enums::getEnumGridStyleType()
 
 void te::layout::Enums::setEnumLineStyleType( EnumLineStyleType* type )
 {
+  if (m_lineStyleType)
+  {
+    delete m_lineStyleType;
+    m_lineStyleType = 0;
+  }
   m_lineStyleType = type;
 }
 
@@ -86,6 +111,11 @@ te::layout::EnumLineStyleType* te::layout::Enums::getEnumLineStyleType()
 
 void te::layout::Enums::setEnumModeType( EnumModeType* type )
 {
+  if (m_modeType)
+  {
+    delete m_modeType;
+    m_modeType = 0;
+  }
   m_modeType = type;
 }
 
@@ -96,6 +126,11 @@ te::layout::EnumModeType* te::layout::Enums::getEnumModeType()
 
 void te::layout::Enums::setEnumTemplateType( EnumTemplateType* type )
 {
+  if (m_templateType)
+  {
+    delete m_templateType;
+    m_templateType = 0;
+  }
   m_templateType = type;
 }
 
@@ -103,3 +138,10 @@ te::layout::EnumTemplateType* te::layout::Enums::getEnumTemplateType()
 {
   return m_templateType;
 }
+
+te::layout::EnumToolType* te::layout::Enums::getEnumToolType()
+{
+  return m_toolType;
+}
+
+

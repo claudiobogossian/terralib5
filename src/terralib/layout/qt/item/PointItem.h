@@ -31,25 +31,26 @@
 #define __TERRALIB_LAYOUT_INTERNAL_POINT_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
+
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
+    class AbstractItemController;
     /*!
-    \brief Class that represents a graphic Point. 
+    \brief Class that represents a graphic Arrow. 
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+        He is also the son of AbstractItem, so it can become observer of a model (Observable). 
     
       \ingroup layout
 
       \sa te::layout::ObjectItem
     */
-    class TELAYOUTEXPORT PointItem : public ObjectItem
+    class TELAYOUTEXPORT PointItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -59,8 +60,8 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        PointItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
-
+        PointItem(AbstractItemController* controller, bool invertedMatrix = false);
+        
         /*!
           \brief Destructor
          */
@@ -76,7 +77,7 @@ namespace te
 
         virtual void drawStar4(QPainter * painter);
 
-        virtual void drawItem ( QPainter * painter );
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         virtual void drawCircle(QPainter * painter);
 

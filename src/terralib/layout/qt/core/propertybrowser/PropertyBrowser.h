@@ -32,6 +32,7 @@
 // TerraLib
 #include "../../../core/property/Property.h"
 #include "../../../core/Config.h"
+#include "../../../core/property/Properties.h"
 
 //STL
 #include <vector>
@@ -53,7 +54,6 @@ namespace te
 {
   namespace layout
   {
-    class Properties;
     class EnumType;
     class VariantPropertiesBrowser;
     class DialogPropertiesBrowser;
@@ -61,18 +61,18 @@ namespace te
     /*!
     \brief Manage properties variants values. Maps the QProperty properties (Qt) and Property (Layout) and add to a tree (QtTreePropertyBrowser) for presentation to the user, 
     allowing the modification and interactive update. 
-	  
-	  \ingroup layout
-	  */
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT PropertyBrowser : public QObject
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 
-	      PropertyBrowser(QObject *parent = 0);
+        PropertyBrowser(QObject *parent = 0);
 
-	      virtual ~PropertyBrowser();
+        virtual ~PropertyBrowser();
 
         QtTreePropertyBrowser* getPropertyEditor();
 
@@ -90,9 +90,9 @@ namespace te
 
         virtual bool updateProperty(Property property);
 
-        virtual void updateProperties(Properties* props);
+        virtual void updateProperties(Properties props);
 
-        virtual Properties* getProperties();
+        virtual Properties getProperties();
       
         virtual void setHasWindows(bool hasWindows = false);
 
@@ -107,7 +107,7 @@ namespace te
         /*
           \brief Verify if have some different property between te::layout::Properties and QtTreePropertyBrowser.
         */
-        virtual bool equalsProperties(Properties* props);
+        virtual bool equalsProperties(Properties props);
                     
       protected slots:
 
@@ -118,7 +118,9 @@ namespace te
         virtual void onChangeDlgProperty(Property property);
 
         virtual void onChangeDlgProperty(std::vector<Property> props);
-        
+
+        virtual void onCurrentItemChanged(QtBrowserItem* item);
+
       signals:
 
         void changePropertyValue(QtProperty *property, QList<QtBrowserItem*> items);
@@ -126,6 +128,8 @@ namespace te
         void changePropertyValue(Property property);
 
         void changePropertyValue(std::vector<Property> props);
+
+        void currentItemChanged(QtBrowserItem* item);
 
       protected:
       

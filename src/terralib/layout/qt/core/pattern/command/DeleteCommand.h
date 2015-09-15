@@ -45,9 +45,9 @@ namespace te
   {
     /*!
       \brief Undo/Redo for delete one or more components.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT DeleteCommand : public QUndoCommand
     {
       public:

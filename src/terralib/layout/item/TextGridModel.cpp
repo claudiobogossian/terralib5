@@ -35,7 +35,7 @@
 
 te::layout::TextGridModel::TextGridModel() 
 {
-
+  /*
   m_type = Enums::getInstance().getEnumObjectType()->getTextGridItem();
 
   m_spacing = 1;
@@ -49,6 +49,7 @@ te::layout::TextGridModel::TextGridModel()
   m_borderGridColor.setColor(0,0,0,255);
   m_headerHorizontalColor.setColor(192,192,192,255);
   m_headerVerticalColor.setColor(192,192,192,255);
+  */
 }
 
 te::layout::TextGridModel::~TextGridModel()
