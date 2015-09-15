@@ -31,8 +31,9 @@
 #include <QPixmap>
 #include <QWheelEvent>
 
-te::qt::widgets::ZoomWheel::ZoomWheel(te::qt::widgets::MapDisplay* display, const double& zoomFactor, QObject* parent) 
+te::qt::widgets::ZoomWheel::ZoomWheel(te::qt::widgets::MapDisplay* display, const double& zoomFactor, const bool& centralize, QObject* parent) 
   : Zoom(display, zoomFactor, In, parent)
+  , m_centralize(centralize)
 {
 }
 
@@ -55,7 +56,13 @@ bool te::qt::widgets::ZoomWheel::eventFilter(QObject* watched, QEvent* e)
       QPixmap* draft = m_display->getDraftPixmap();
       draft->fill(Qt::transparent);
 
-      applyZoom();
+      QPointF qPos;
+      if(m_centralize == false)
+      {
+        qPos = m_display->transform(wheelEvent->posF());
+      }
+
+      applyZoom(qPos);
 
       return true;
     }
