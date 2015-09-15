@@ -31,16 +31,14 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SVG_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
 #include "../../core/Config.h"
 #include "AbstractItem.h"
-#include "../../core/pattern/mvc/AbstractItemController.h"
-#include "../../core/pattern/mvc/AbstractItemModel.h"
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic SVG. 
         Its coordinate system is the same of scene (millimeters). 
@@ -60,7 +58,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        SVGItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        SVGItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

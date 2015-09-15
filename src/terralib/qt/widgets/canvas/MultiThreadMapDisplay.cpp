@@ -94,7 +94,7 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
   int n = m_visibleLayers.size() - m_threads.size();
   for(int i = 0; i < n; ++i)
   {
-    DrawLayerThread* thread = new DrawLayerThread;
+    DrawLayerThread* thread = new DrawLayerThread(this);
 
     if(m_showFeedback) // Do you want show feedbacks?
       connect(thread, SIGNAL(feedback(QImage)), this, SLOT(showFeedback(QImage)));

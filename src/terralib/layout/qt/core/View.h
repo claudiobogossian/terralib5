@@ -73,6 +73,7 @@ namespace te
     class VerticalRuler;
     class EnumType;
     class WaitView;
+    class ContextObject;
 
   /*!
     \brief Class representing the view. This view is child of QGraphicsView, part of Graphics View Framework. 
@@ -219,6 +220,8 @@ namespace te
 
         virtual void createItem(EnumType* itemType);
 
+        virtual ContextObject getContext();
+
       public slots:
     
     /*!
@@ -316,6 +319,11 @@ namespace te
         */
         virtual void  mouseReleaseEvent ( QMouseEvent * event );
 
+        /*!
+        \brief Reimplemented from QGraphicsView
+        */
+        virtual void	mouseDoubleClickEvent(QMouseEvent * event);
+
     /*!
           \brief Reimplemented from QGraphicsView
         */
@@ -359,6 +367,11 @@ namespace te
         virtual void showSystematicScale();
         
         virtual QCursor createCursor(std::string pathIcon);
+
+        /*!
+          \brief Reload properties because selection change
+        */
+        virtual void reload();
 
       protected:
 

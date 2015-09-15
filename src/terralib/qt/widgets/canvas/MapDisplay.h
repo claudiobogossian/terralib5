@@ -193,8 +193,23 @@ namespace te
             \brief Defines the scale and calculates envelope based on the requested scale
            */
           virtual bool setScale(const double& scale);
-          
-          
+
+          /*!
+            \brief Returns the current values of the DPI in X-axis and in Y-axis
+           */
+          virtual void getDPI(int& dpiX, int& dpiY) const;
+
+          /*!
+            \brief Overrides the values of the DPI that had been acquired from the device.
+                   This is done in order to make the scale be correctly computed and allows the correct computation of sizes in millimeters.
+           */
+          virtual void setOverrideDPI(int dpiX, int dpiY);
+
+          /*!
+            \brief Returns the default value of the DPI. In this case, the values from the device will be acquired.
+           */
+          virtual void restoreDPI();
+
         protected:
 
           /*!
@@ -304,6 +319,8 @@ namespace te
           bool m_isDrawing;            //!< A flag that indicates if the map display is drawing.
           std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*> m_layerCanvasMap; //!< A map that associates a layer to a canvas.
           mutable double m_scale;      //!< Current calculated scale
+          int m_overridedDpiX;          //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
+          int m_overridedDpiY;          //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
       };
 
     } // end namespace widgets

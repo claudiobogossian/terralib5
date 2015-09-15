@@ -27,33 +27,29 @@
 
 // TerraLib
 #include "ObjectInspectorOutside.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "../../core/AbstractScene.h"
-#include "../core/Scene.h"
-#include "../../core/pattern/mvc/AbstractItemView.h"
-#include "../../core/pattern/mvc/AbstractOutsideModel.h"
-#include "../../core/pattern/mvc/AbstractOutsideController.h"
-#include "../../../geometry/Envelope.h"
-#include "../../core/enum/Enums.h"
-#include "../core/propertybrowser/VariantPropertiesBrowser.h"
-#include "../core/propertybrowser/DialogPropertiesBrowser.h"
-#include "../item/MovingItemGroup.h"
-#include "../core/propertybrowser/PropertyBrowser.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractOutsideController.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
+#include "../item/MovingItemGroup.h"
 
 //Qt
 #include <QGraphicsWidget>
 #include <QVBoxLayout>
 #include <QGroupBox>
-
 #include <QtPropertyBrowser/QtProperty>
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QTreeWidget>
 
-te::layout::ObjectInspectorOutside::ObjectInspectorOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser) :
-  QWidget(0),
-  AbstractOutsideView(controller)
+te::layout::ObjectInspectorOutside::ObjectInspectorOutside(AbstractOutsideController* controller)
+  : QWidget(0)
+  , AbstractOutsideView(controller)
+  , m_treeWidget(0)
+  , m_isChangingSelection(false)
 {
+  m_treeWidget = new QTreeWidget(this);
+
   AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
   te::gm::Envelope box = abstractModel->getBox();
   setBaseSize(box.getWidth(), box.getHeight());
@@ -61,14 +57,10 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside(AbstractOutsideContro
   setWindowTitle("Object Inspector");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
-  if(!propertyBrowser)
-    m_layoutPropertyBrowser = new PropertyBrowser;
-  else
-    m_layoutPropertyBrowser = propertyBrowser;
-
+  
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setMargin(0);
-  layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
+  layout->addWidget(m_treeWidget);
   
   QGroupBox* groupBox = new QGroupBox;
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -81,7 +73,15 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside(AbstractOutsideContro
 
   setLayout(layoutAll);
 
-  m_layoutPropertyBrowser->getPropertyEditor()->setAlternatingRowColors(false);
+  QStringList headerLabels;
+  headerLabels.append(tr("Name"));
+  headerLabels.append(tr("Type"));
+
+  m_treeWidget->setColumnCount(2);
+  m_treeWidget->setHeaderLabels(headerLabels);
+  m_treeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+  connect(m_treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelectionChanged()));
 }
 
 te::layout::ObjectInspectorOutside::~ObjectInspectorOutside()
@@ -110,12 +110,7 @@ te::gm::Coord2D te::layout::ObjectInspectorOutside::getPosition()
 
 void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> graphicsItems)
 {
-  if(hasMoveItemGroup(graphicsItems))
-  {
-    return;
-  }
-
-  m_layoutPropertyBrowser->clearAll();
+  m_treeWidget->clear();
 
   m_graphicsItems = graphicsItems;
 
@@ -124,233 +119,159 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
   
-  foreach(QGraphicsItem *item, graphicsItems) 
+  foreach(QGraphicsItem* parentItem, graphicsItems) 
   {
-    if (item)
+    if(parentItem->parentItem() != 0)
     {
-      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
-      if(lItem)
-      {        
-        if(!lItem->getController()->getModel())
-        {
-          continue;
-        }
-
-        if(lItem->getController()->getModel()->getType() == enumObj->getPaperItem())
-        {
-          continue;
-        }
-
-        // No add MoveItemGroup, because is alive just for mouse move
-        MovingItemGroup* moving =  dynamic_cast<MovingItemGroup*>(item);
-        if(moving)
-        {
-          continue;
-        }
-
-        addProperty(item);    
-      }
+      continue;
     }
+
+    MovingItemGroup* moving = dynamic_cast<MovingItemGroup*>(parentItem);
+    if (moving)
+    {
+      continue;
+    }
+
+    AbstractItemView* absParentItem = dynamic_cast<AbstractItemView*>(parentItem);
+    if(absParentItem == 0)
+    {
+      continue;
+    }
+    if(absParentItem->getController() == 0)
+    {
+      continue;
+    }
+
+    if(absParentItem->getController()->getProperties().getTypeObj() == enumObj->getPaperItem())
+    {
+      continue;
+    }
+
+    const Property& pParentName = absParentItem->getController()->getProperty("name");
+    const std::string& parentName = pParentName.getValue().toString();
+    std::string parentTypeName = absParentItem->getController()->getProperties().getTypeObj()->getName();
+
+    QStringList parentList;
+    parentList.append(parentName.c_str());
+    parentList.append(parentTypeName.c_str());
+
+    QTreeWidgetItem* parentTreeItem = new QTreeWidgetItem(parentList);
+
+    foreach(QGraphicsItem *childItem, parentItem->childItems()) 
+    {
+      MovingItemGroup* moving = dynamic_cast<MovingItemGroup*>(childItem);
+      if (moving)
+      {
+        continue;
+      }
+
+      AbstractItemView* absChildItem = dynamic_cast<AbstractItemView*>(childItem);
+      if(absChildItem == 0)
+      {
+        continue;
+      }
+      if(absChildItem->getController() == 0)
+      {
+        continue;
+      }
+
+      if(absChildItem->getController()->getProperties().getTypeObj() == enumObj->getPaperItem())
+      {
+        continue;
+      }
+
+      const Property& pChildName = absChildItem->getController()->getProperty("name");
+      const std::string& childName = pChildName.getValue().toString();
+      std::string childTypeName = absChildItem->getController()->getProperties().getTypeObj()->getName();
+
+      QStringList childList;
+      childList.append(childName.c_str());
+      childList.append(childTypeName.c_str());
+
+      QTreeWidgetItem* childTreeItem = new QTreeWidgetItem(childList);
+      parentTreeItem->addChild(childTreeItem);
+    }
+    m_treeWidget->addTopLevelItem(parentTreeItem);
   }
 
-  update();
+  m_treeWidget->sortItems(0, Qt::AscendingOrder);
 }
 
 void te::layout::ObjectInspectorOutside::onRemoveProperties( std::vector<std::string> names )
 {
-  std::vector<std::string>::iterator it;
-
-  for(it = names.begin() ; it != names.end() ; ++it)
+  for(size_t i = 0; i < names.size(); ++i)
   {
-    Property prop = m_layoutPropertyBrowser->getVariantPropertiesBrowser()->getProperty(*it);
-
-    if(prop.isNull())
+    QString qName(names[i].c_str());
+    QList<QTreeWidgetItem*> listItems = m_treeWidget->findItems(qName, Qt::MatchExactly, 0);
+    for(int  j = 0; j < listItems.size(); ++j)
     {
-      prop = m_layoutPropertyBrowser->getDialogPropertiesBrowser()->getProperty(*it);
+      m_treeWidget->removeItemWidget(listItems[j], 0);
     }
-
-    m_layoutPropertyBrowser->removeProperty(prop);
   }
 }
 
 void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> graphicsItems )
 {
+  m_isChangingSelection = true;
+
+  m_treeWidget->clearSelection();
   foreach(QGraphicsItem *item, graphicsItems) 
   {
-    if (item)
+    AbstractItemView* parentItem = dynamic_cast<AbstractItemView*>(item);
+    if(parentItem == 0)
     {
-      AbstractItemView* iOb = dynamic_cast<AbstractItemView*>(item);
-      if(iOb)
-      {
-        if(iOb->getController()->getModel())
-        {
-          m_layoutPropertyBrowser->selectProperty(iOb->getController()->getModel()->getName());
-        }
-      }
+      continue;
+    }
+
+    const Property& pName = parentItem->getController()->getProperty("name");
+    std::string name = pName.getValue().toString();
+
+    QString qName(name.c_str()); 
+
+    QList<QTreeWidgetItem*> treeItems = m_treeWidget->findItems(qName, Qt::MatchExactly, 0);
+    foreach(QTreeWidgetItem* treeItem, treeItems) 
+    {
+      treeItem->setSelected(true);
     }
   }
+
+  m_isChangingSelection = false;
 }
 
-te::layout::PropertyBrowser* te::layout::ObjectInspectorOutside::getObjectInspector()
+void te::layout::ObjectInspectorOutside::itemSelectionChanged()
 {
-  return m_layoutPropertyBrowser;
-}
-
-bool te::layout::ObjectInspectorOutside::hasMoveItemGroup( QList<QGraphicsItem*> graphicsItems )
-{
-  bool result = false;
-
-  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-
-  if(!enumObj)
+  if(m_isChangingSelection == true)
   {
-    return result;
+    return;
   }
 
-  foreach(QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
-    {
-      AbstractItemView* movingItem = dynamic_cast<AbstractItemView*>(item);
-      if(!movingItem)
-        continue;
+  QList<QTreeWidgetItem*> selectedTreeItems = m_treeWidget->selectedItems();
 
-      if(movingItem->getController()->getModel()->getType() == enumObj->getMovingItemGroup())
+  QList<QGraphicsItem*> selectedGraphicsItem;
+
+  foreach(QTreeWidgetItem* treeItem, selectedTreeItems) 
+  {
+    QString qTreeItemName = treeItem->text(0);
+    std::string treeItemName = qTreeItemName.toStdString();
+
+    foreach(QGraphicsItem* graphicsItem, m_graphicsItems) 
+    {
+      AbstractItemView* absItemView = dynamic_cast<AbstractItemView*>(graphicsItem);
+      if(absItemView == 0)
       {
-        result = true;
+        continue;
+      }
+
+      const Property& pName = absItemView->getController()->getProperty("name");
+      std::string name = pName.getValue().toString();
+
+      if(name == treeItemName)
+      {
+        selectedGraphicsItem.append(graphicsItem);
         break;
       }
     }
   }
 
-  return result;
+  emit selectionChanged(selectedGraphicsItem);
 }
-
-QtProperty* te::layout::ObjectInspectorOutside::addProperty( QGraphicsItem* item )
-{
-  QtProperty* prop = 0;
-
-  if(!item)
-  {
-    return prop;
-  }
-
-  AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
-  if(!lItem)
-  {
-    return prop;
-  }
-  
-  Property pro_class = createProperty(lItem);
-
-  if(hasProperty(pro_class))
-  {
-    return prop;
-  }
-
-  if(item->parentItem())
-  {
-    return prop;
-  }
-
-  prop = m_layoutPropertyBrowser->addProperty(pro_class); 
-
-  if(!item->childItems().isEmpty())
-  {
-     createSubProperty(item, prop);
-  }
-
-  return prop;
-}
-
-void te::layout::ObjectInspectorOutside::createSubProperty( QGraphicsItem* item, QtProperty* prop )
-{
-  if(!item || !prop)
-  {
-    return;
-  }
-
-  foreach(QGraphicsItem *item, item->childItems()) 
-  {
-    if(!item)
-    {
-      continue;
-    }
-
-    AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
-    if(!lItem)
-    {
-      continue;
-    }
-
-    Property pro_class = createProperty(lItem);
-    if(hasProperty(pro_class))
-    {
-      continue;
-    }
-
-    QtProperty* subProp = m_layoutPropertyBrowser->addProperty(pro_class); 
-    if(!subProp)
-    {
-      continue;
-    }
-
-    m_layoutPropertyBrowser->addSubProperty(prop, subProp);
-  }  
-}
-
-te::layout::Property te::layout::ObjectInspectorOutside::createProperty(AbstractItemView* item)
-{
-  Property pro_class;
-  if(!item)
-  {
-    return pro_class;
-  }
-
-  if(!item->getController()->getModel())
-  {
-    return pro_class;
-  }
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-  if(!dataType)
-  {
-    return pro_class;
-  }
-
-  std::string name = item->getController()->getModel()->getName();
-  std::string typeName = item->getController()->getModel()->getType()->getName();
-
-  pro_class.setName(name);
-  pro_class.setValue(typeName, dataType->getDataTypeString());
-  pro_class.setEditable(false);
-
-  return pro_class;
-}
-
-bool te::layout::ObjectInspectorOutside::hasProperty( Property property )
-{
-  std::string name = property.getName();
-  std::string label = property.getLabel();
-
-  QtProperty* prop = m_layoutPropertyBrowser->findProperty(name);
-  if(!prop)
-  {
-    prop = m_layoutPropertyBrowser->findProperty(label);
-  }
-
-  if(!prop)
-  {
-    return false;
-  }
-
-  return true;
-}
-
-
-
-
-
-
-
-

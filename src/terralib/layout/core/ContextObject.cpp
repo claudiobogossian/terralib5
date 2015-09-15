@@ -28,11 +28,10 @@
 // TerraLib
 #include "ContextObject.h"
 
-te::layout::ContextObject::ContextObject( int zoom, int dpiX, int dpiY, PaperConfig* config, EnumType* mode ):
+te::layout::ContextObject::ContextObject( int zoom, int dpiX, int dpiY, EnumType* mode ):
   m_zoom(zoom),
   m_dpiX(dpiX),
   m_dpiY(dpiY),
-  m_config(config),
   m_mode(mode)
 {
  
@@ -43,27 +42,22 @@ te::layout::ContextObject::~ContextObject()
 
 }
 
-int te::layout::ContextObject::getZoom()
+int te::layout::ContextObject::getZoom() const
 {
   return m_zoom;
 }
 
-int te::layout::ContextObject::getDpiX()
+int te::layout::ContextObject::getDpiX() const
 {
   return m_dpiX;
 }
 
-int te::layout::ContextObject::getDpiY()
+int te::layout::ContextObject::getDpiY() const
 {
   return m_dpiY;
 }
 
-te::layout::PaperConfig* te::layout::ContextObject::getPaperConfig()
-{
-  return m_config;
-}
-
-te::layout::EnumType* te::layout::ContextObject::getCurrentMode()
+te::layout::EnumType* te::layout::ContextObject::getCurrentMode() const
 {
   return m_mode;
 }
@@ -72,7 +66,7 @@ bool te::layout::ContextObject::isValid()
 {
   bool result = true;
   if(m_zoom <= 0 || m_dpiX <= 0 || 
-    m_dpiY <= 0 || m_config == 0 || m_mode == 0)
+    m_dpiY <= 0 || m_mode == 0)
   {
     result = false;
   }

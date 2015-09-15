@@ -30,6 +30,7 @@
 #include "../sam/rtree/Index.h"
 #include "../srs/Config.h"
 #include "Config.h"
+#include "Utils.h"
 
 // STL
 #include <vector>
@@ -63,17 +64,17 @@ namespace te
     {
       public:
 
-        Repository(const std::string& source, int srid = TE_UNKNOWN_SRS);
+        Repository(const std::string& source);
 
         ~Repository();
 
-        void add(te::gm::Geometry* geom);
+        void add(te::gm::Geometry* geom, OperationType = GEOMETRY_CREATE);
 
-        void add(te::da::ObjectId* id, te::gm::Geometry* geom);
+        void add(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
 
         void add(Feature* f);
 
-        void set(te::da::ObjectId* id, te::gm::Geometry* geom);
+        void set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
 
         void set(Feature* f);
 
@@ -108,9 +109,9 @@ namespace te
       private:
 
         std::string m_source;                          //!< The source of the features.
-        int m_srid;                                    //!< The SRS of the features.
         std::vector<Feature*> m_features;              //!< The repository features.
         te::sam::rtree::Index<std::size_t, 8> m_rtree; //!< Internal index used to retrieve geometries spatially.
+
     };
 
   } // end namespace edit

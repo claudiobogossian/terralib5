@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>486</width>
-    <height>108</height>
+    <width>611</width>
+    <height>125</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Classification</string>
+   <string>Edit Legend</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_5">
    <property name="sizeConstraint">
@@ -41,7 +41,7 @@
            </font>
           </property>
           <property name="text">
-           <string>This operation creates a classification by group in a selected layer</string>
+           <string>This operation creates a legend in a selected layer</string>
           </property>
          </widget>
         </item>

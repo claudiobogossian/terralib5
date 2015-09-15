@@ -38,6 +38,7 @@
 #include "CreateLineTool.h"
 
 // Qt
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
@@ -46,11 +47,10 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent) 
-  : AbstractTool(display, parent),
-    m_layer(layer),
-    m_continuousMode(false),
-    m_isFinished(false)
+te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+  : GeometriesUpdateTool(display, layer.get(), parent),
+  m_continuousMode(false),
+  m_isFinished(false)
 {
   setCursor(cursor);
 
@@ -64,6 +64,8 @@ te::edit::CreateLineTool::~CreateLineTool()
 {
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
+
+  //delete _line;
 }
 
 bool te::edit::CreateLineTool::mousePressEvent(QMouseEvent* e)
@@ -105,20 +107,13 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
 
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
-  Qt::KeyboardModifiers keys = e->modifiers();
-
-  if(keys == Qt::NoModifier)
-    m_continuousMode = false;
-  else if(keys == Qt::ShiftModifier)
+  if (e->buttons() & Qt::LeftButton)
     m_continuousMode = true;
+  else
+    m_continuousMode = false;
 
   draw();
 
-  return false;
-}
-
-bool te::edit::CreateLineTool::mouseReleaseEvent(QMouseEvent* e)
-{
   return false;
 }
 
@@ -136,6 +131,7 @@ bool te::edit::CreateLineTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 void te::edit::CreateLineTool::draw()
 {
+  
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -159,11 +155,13 @@ void te::edit::CreateLineTool::draw()
 
     if(m_continuousMode == false)
       m_coords.pop_back();
+
   }
 
   renderer.end();
 
   m_display->repaint();
+  
 }
 
 void te::edit::CreateLineTool::clear()
@@ -190,7 +188,8 @@ te::gm::Geometry* te::edit::CreateLineTool::buildLine()
 
 void te::edit::CreateLineTool::storeNewGeometry()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine());
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine(), te::edit::GEOMETRY_CREATE);
+  emit geometriesEdited();
 }
 
 void te::edit::CreateLineTool::onExtentChanged()

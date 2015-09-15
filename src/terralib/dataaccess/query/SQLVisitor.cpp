@@ -395,8 +395,11 @@ void te::da::SQLVisitor::visit(const te::da::Fields& visited)
 
     visited[i].getExpression()->accept(*this);
 
-    if(visited[i].getAlias())
+    if (visited[i].getAlias())
+    {
+      m_sql += " AS ";
       m_sql += *(visited[i].getAlias());
+    }
   }
 }
 

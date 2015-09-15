@@ -38,6 +38,14 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
+
     namespace plugins
     {
       namespace sa
@@ -52,8 +60,10 @@ namespace te
         class SkaterAction;
         class SpatialStatisticsAction;
 
-        class Plugin : public te::plugin::Plugin
+        class Plugin : public QObject, public te::plugin::Plugin
         {
+          Q_OBJECT
+
           public:
 
             Plugin(const te::plugin::PluginInfo& pluginInfo);
@@ -78,6 +88,10 @@ namespace te
             */
             void unRegisterActions();
 
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
+
           protected:
 
             QMenu* m_saMenu;                                         //!< SA Main Menu registered.
@@ -99,6 +113,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINSAEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINSAEXPORT)
 
 #endif //__TE_QT_PLUGINS_SA_INTERNAL_PLUGIN_H

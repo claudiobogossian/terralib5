@@ -37,6 +37,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic GridMap. 
         Its coordinate system is the same of scene (millimeters). 
@@ -56,7 +57,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridGeodesicItem( AbstractItemController* controller, AbstractItemModel* model );
+        GridGeodesicItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -67,9 +68,9 @@ namespace te
         
         virtual void drawGrid(QPainter* painter);
 
-        virtual void calculateVertical(const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM);
+        virtual void calculateVertical(const te::gm::Envelope& geoBox, const te::gm::Envelope& planarBox, const te::gm::Envelope& boxMM);
 
-        virtual void calculateHorizontal(const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM);
+        virtual void calculateHorizontal(const te::gm::Envelope& geoBox, const te::gm::Envelope& planarBox, const te::gm::Envelope& boxMM);
 
         virtual double initVerticalLines(const te::gm::Envelope& geoBox);
 

@@ -26,394 +26,211 @@
 #ifndef __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATION_H
 #define __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATION_H
 
-// TerraLib
-#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 
-// STL
-#include <map>
+// TerraLib
+#include "../../maptools/AbstractLayer.h"
 
-// Boost
-#include <boost/noncopyable.hpp>
 
-// Qt
-#include <QColor>
+#include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
-#include <QMessageBox>
+#include <QStatusBar>
 
-class QLabel;
+
+//#include <ui_BaseApplicationForm.h>
+
+namespace Ui {
+  class BaseApplicationForm;
+}
 
 namespace te
 {
-// Forward declaration
-  namespace da
-  {
-    class DataSet;
-  }
-
   namespace qt
   {
     namespace widgets
     {
       class ChartDisplayWidget;
-      class CompositionModeMenuWidget;
-      class QueryDialog;
+      class LayerItemView;
+      class MapDisplay;
     }
 
     namespace af
-    {
-// Forward declarations
-      class InterfaceController;
-      class LayerExplorer;
-      class MapDisplay;
-      class Project;
-      class DataSetTableDockWidget;
-      class StyleExplorer;
-
+    {      
       namespace evt
       {
+        // Forward declaration
         struct Event;
       }
 
-      /*!
-        \class BaseApplication
+      class ApplicationController;
+      class DataSetTableDockWidget;
+      class MapDisplay;
+      class LayerExplorer;
+      class StyleExplorer;
 
-        \brief A QMainWindow to be used as the basis for TerraLib applications.
-
-        \ingroup af
-      */
-      class TEQTAFEXPORT BaseApplication : public QMainWindow, public boost::noncopyable
+      class TEQTAFEXPORT BaseApplication : public QMainWindow
       {
         Q_OBJECT
 
-        public:
+      public:
 
-          BaseApplication(QWidget* parent = 0);
+        BaseApplication(QWidget* parent = 0);
 
-          virtual ~BaseApplication();
+        virtual ~BaseApplication();
 
-          virtual void init();
+        virtual void init(const QString& cfgFile);
 
-          virtual void init(const std::string& configFile);
+        te::qt::widgets::LayerItemView* getLayerExplorer();
 
-          MapDisplay* getDisplay();
+        te::qt::widgets::MapDisplay* getMapDisplay();
 
-          InterfaceController* getInterfaceController();
+        te::qt::af::DataSetTableDockWidget* getLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs);
 
-          virtual void resetState();
+      public slots:
 
-          void resetTerraLib(const bool& status);
+        virtual void onApplicationTriggered(te::qt::af::evt::Event* e);
 
-        protected slots:
+        void onDrawTriggered();
 
-          void onApplicationTriggered(te::qt::af::evt::Event* evt);
+        void onZoomInToggled(bool checked);
 
-          void onAddDataSetLayerTriggered();
+        void onZoomOutToggled(bool checked);
 
-          void onAddQueryLayerTriggered();
+        void onPreviousExtentTriggered();
 
-          void onAddTabularLayerTriggered();
+        void onNextExtentTriggered();
 
-          void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
+        void onPanToggled(bool checked);
 
-          void onRemoveLayerTriggered();
+        void onZoomExtentTriggered();
 
-          void onChangeLayerDataSourceTriggered();
+        void onInfoToggled(bool checked);
 
-          void onUpdateLayerDataSourceTriggered();
+        void onMapRemoveSelectionTriggered();
 
-          void onLayerRemoveItemTriggered();
+        void onSelectionToggled(bool checked);
 
-          void onRenameLayerTriggered();
+        void onMapSRIDTriggered();
 
-          void onPluginsManagerTriggered();
+        void onMapSetUnknwonSRIDTriggered();
 
-          void onRecentProjectsTriggered(QAction* proj);
+        void onStopDrawTriggered();
 
-          void onNewProjectTriggered();
+        void onLayerRemoveTriggered();
 
-          void onOpenProjectTriggered();
+        void onLayerRenameTriggered();
 
-          void onSaveProjectTriggered();
+        void onLayerPropertiesTriggered();
 
-          void onSaveProjectAsTriggered();
+        void onLayerRemoveSelectionTriggered();
 
-          void onRestartSystemTriggered();
+        void onLayerSRSTriggered();
 
-          void onToolsCustomizeTriggered();
+        void onLayerRemoveItemTriggered();
 
-          void onToolsDataExchangerTriggered();
+        void onLayerFitOnMapDisplayTriggered();
 
-          void onToolsDataExchangerDirectTriggered();
+        void onLayerFitSelectedOnMapDisplayTriggered();
 
-          void onToolsDataExchangerDirectPopUpTriggered();
+        void onLayerPanToSelectedOnMapDisplayTriggered();
 
-          void onToolsQueryDataSourceTriggered();
+        void onFullScreenToggled(bool checked);
 
-          void onToolsRasterMultiResolutionTriggered();
+        void onLayerExplorerVisibilityChanged(bool visible);
 
-          void onToolsFixGeometryTriggered();
+        void onStyleExplorerVisibilityChanged(bool visible);
 
-          void onProjectPropertiesTriggered();
+        void onDisplayDataTableChanged(bool visible);
 
-          void onAddFolderLayerTriggered();
+        void onLayerShowTableTriggered();
 
-          void onLayerPropertiesTriggered();
+        void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
 
-          void onLayerRemoveSelectionTriggered();
+        void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
 
-          void onLayerSRSTriggered();
+      protected slots:
 
-          void onLayerShowTableTriggered();
+        void onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer);
 
-          void onLayerHistogramTriggered();
+        void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
 
-          void onLinkTriggered(); 
+      signals:
 
-          void onLayerScatterTriggered();
+        void triggered(te::qt::af::evt::Event* e);
 
-          void onLayerTimeSeriesTriggered();
+      protected:
 
-          void onLayerChartTriggered();
+        virtual void makeDialog();
 
-          void onLayerGroupingTriggered();
+        virtual void initFramework(const QString& cfgFile);
 
-          void onLayerFitOnMapDisplayTriggered();
+        virtual void initStatusBar();
 
-          void onLayerFitSelectedOnMapDisplayTriggered();
+        virtual void initActions();
 
-          void onLayerPanToSelectedOnMapDisplayTriggered();
+        virtual void initMenus();
 
-          void onLayerCompositionModeTriggered();
+        virtual void initSlotsConnections();
 
-          void onQueryLayerTriggered();
-
-          void onMapSRIDTriggered();
-
-          void onMapSetUnknwonSRIDTriggered();
-
-          void onDrawTriggered();
-
-          void onZoomInToggled(bool checked);
-
-          void onZoomOutToggled(bool checked);
-
-          void onPreviousExtentTriggered();
-
-          void onNextExtentTriggered();
-
-          void onPanToggled(bool checked);
-
-          void onZoomExtentTriggered();
-
-          void onInfoToggled(bool checked);
-
-          void onMapRemoveSelectionTriggered();
-
-          void onSelectionToggled(bool checked);
-
-          void onMeasureDistanceToggled(bool checked);
-
-          void onMeasureAreaToggled(bool checked);
-
-          void onMeasureAngleToggled(bool checked);
-
-          void onStopDrawTriggered();
-
-          void showProgressDockWidget();
-
-          void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
-
-          void onFullScreenToggled(bool checked);
-
-          void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
-
-          void onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
-
-          void onLayerExplorerVisibilityChanged(bool visible);
-
-          void onDisplayDataTableChanged(bool visible);
-
-          void onStyleExplorerVisibilityChanged(bool visible);
-
-          void onDataSourceExplorerTriggered();
-
-          void onCreateNewLayer(te::map::AbstractLayerPtr layer);
-
-          //void onTrajectoryAnimationTriggered(); // Lauro
-
-        protected:
-
-          virtual void openProject(const QString& projectFileName);
-
-          virtual QMessageBox::StandardButton checkProjectSave();
-
-          virtual void newProject();
-
-          virtual void makeDialog();
-
-          virtual void closeEvent(QCloseEvent* e);
-
-          virtual void initAction(QAction*& act, const QString& icon, const QString& name,
-                                  const QString& text, const QString& tooltip,
-                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QObject* parent);
-
-          virtual void initActions();
-
-          virtual void initMenus();
-
-          virtual void initToolbars();
-
-          virtual void initStatusBar();
-
-          virtual void initSlotsConnections();
-
-        signals:
-          void applicationClose();
-
-        protected:
-
-          //! Qt components
-          QAction* m_viewLayerExplorer;
-          QAction* m_viewDataTable;
-          QAction* m_viewStyleExplorer;
-          //QAction* m_editUndo;
-          //QAction* m_editRedo;
-          //QAction* m_editCut;
-          //QAction* m_editCopy;
-          //QAction* m_editPaste;
-          //QAction* m_editSelectAll;
-          //QAction* m_editClear;
-          //QAction* m_editFind;
-          //QAction* m_editReplace;
-          QAction* m_viewFullScreen;
-          QAction* m_viewRefresh;
-          QAction* m_toolsCustomize;
-          QAction* m_toolsDataExchanger;
-          QAction* m_toolsDataExchangerDirect;
-          QAction* m_toolsDataExchangerDirectPopUp;
-          QAction* m_toolsDataSourceExplorer;
-          QAction* m_toolsQueryDataSource;
-          QAction* m_toolsRasterMultiResolution;
-          QAction* m_toolsFixGeometry;
-          QAction* m_pluginsManager;
-          QAction* m_helpContents;
-          QAction* m_helpUpdate;
-          QAction* m_viewGrid;
-          QAction* m_projectAddLayerDataset;
-          QAction *m_projectAddLayerQueryDataSet;
-          QAction *m_projectAddLayerTabularDataSet;
-          QAction* m_projectAddLayerGraph;
-          QAction* m_projectAddFolderLayer;
-          QAction* m_projectChangeLayerDataSource;
-          QAction* m_projectUpdateLayerDataSource;
-          QAction* m_projectRemoveLayer;
-          QAction* m_projectRenameLayer;
-          QAction* m_projectProperties;
-          QAction* m_layerEdit;
-          QAction* m_layerRemoveItem;
-          QAction* m_layerExport;
-          QAction* m_layerProperties;
-          QAction* m_layerSRS;
-          QAction* m_layerShowTable;
-          QAction* m_layerRaise;
-          QAction* m_layerLower;
-          QAction* m_layerToTop;
-          QAction* m_layerToBottom;
-          QAction* m_layerChartsHistogram;
-          QAction* m_layerChartsScatter;
-          QAction* m_layerChartsTimeSeries;
-          QAction* m_layerChart;
-          QAction* m_layerLinkTable;
-          QAction* m_layerObjectGrouping;
-          QAction* m_layerFitOnMapDisplay;
-          QAction* m_layerRemoveObjectSelection;
-          QAction* m_layerFitSelectedOnMapDisplay;
-          QAction* m_layerPanToSelectedOnMapDisplay;
-          QAction* m_layerCompositionMode;
-          QAction* m_queryLayer;
-          QAction* m_toolsDataSourceManagement;
-          QAction* m_helpAbout;
-          QAction* m_fileNewProject;
-          QAction* m_fileSaveProject;
-          QAction* m_fileSaveProjectAs;
-          QAction* m_fileOpenProject;
-          QAction* m_fileExit;
-          QAction* m_filePrint;
-          QAction* m_filePrintPreview;
-          QAction* m_fileRestartSystem;
-          QAction* m_mapSRID;
-          QAction* m_mapUnknownSRID;
-          QAction* m_mapDraw;
-          QAction* m_mapZoomIn;
-          QAction* m_mapZoomOut;
-          QAction* m_mapZoomArea;
-          QAction* m_mapPan;
-          QAction* m_mapZoomExtent;
-          QAction* m_mapPreviousExtent;
-          QAction* m_mapNextExtent;
-          QAction* m_mapInfo;
-          QAction* m_mapRemoveSelection;
-          QAction* m_mapSelection;
-          QAction* m_mapMeasureDistance;
-          QAction* m_mapMeasureArea;
-          QAction* m_mapMeasureAngle;
-          QAction* m_mapStopDrawing;
-          QSize m_mapCursorSize;
-
-          QWidget* m_centralwidget;
-
-          QLineEdit* m_mapSRIDLineEdit;
-          QLineEdit* m_coordinateLineEdit;
-
-          QMenuBar* m_menubar;
-          //QMenu* m_editMenu;
-          QMenu* m_viewMenu;
-          QMenu* m_viewToolBarsMenu;
-          QMenu* m_toolsMenu;
-          QMenu* m_toolsExchangerMenu;
-          QMenu* m_pluginsMenu;
-          QMenu* m_helpMenu;
-          QMenu* m_projectMenu;
-          QMenu* m_projectAddLayerMenu;
-          QMenu* m_layerMenu;
-          QMenu* m_fileMenu;
-          QMenu* m_recentProjectsMenu;
-          QMenu* m_mapMenu;
-
-          QLabel* m_selected;
-
-          QStatusBar* m_statusbar;
-          QToolBar* m_fileToolBar;
-          //QToolBar* m_editToolBar;
-          QToolBar* m_mapToolBar;
-
-          // Well known Widgets
-          InterfaceController* m_iController;
-          LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
-          MapDisplay* m_display;
-          StyleExplorer* m_styleExplorer;
-
-          std::vector<DataSetTableDockWidget*> m_tableDocks;
-
-          //non modal intefaces
-          te::qt::widgets::QueryDialog* m_queryDlg;
-
-          //popup menus
-          te::qt::widgets::CompositionModeMenuWidget* m_compModeMenu;
-
-          // Project
-          Project* m_project;
-
-          QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
-          QDockWidget* m_zoomInDisplaysDockWidget; //!< Dock widget used to show zoom in display
-          QDockWidget* m_eyeBirdDisplaysDockWidget; //!< Dock widget used to show eye bird display
-
-          bool m_restartTerraLib;
+        virtual void initAction(QAction*& act, const QString& icon, const QString& name,
+          const QString& text, const QString& tooltip,
+          bool iconVisibleInMenu, bool isCheckable, bool enabled, QObject* parent);
+
+        QMenuBar* m_menubar;
+
+        QSize m_mapCursorSize;
+
+        //default actions
+        QAction* m_mapDraw;
+        QAction* m_mapZoomIn;
+        QAction* m_mapZoomOut;
+        QAction* m_mapZoomArea;
+        QAction* m_mapPan;
+        QAction* m_mapZoomExtent;
+        QAction* m_mapPreviousExtent;
+        QAction* m_mapNextExtent;
+        QAction* m_mapInfo;
+        QAction* m_mapRemoveSelection;
+        QAction* m_mapSelection;
+
+        QAction* m_layerShowTable;
+        QAction* m_layerRemove;
+        QAction* m_layerRename;
+        QAction* m_layerRemoveItem;
+        QAction* m_layerRemoveObjectSelection;
+        QAction* m_layerProperties;
+        QAction* m_layerSRS;
+        QAction* m_layerFitOnMapDisplay;
+        QAction* m_layerFitSelectedOnMapDisplay;
+        QAction* m_layerPanToSelectedOnMapDisplay;
+
+        QAction* m_viewDataTable;
+        QAction* m_viewLayerExplorer;
+        QAction* m_viewStyleExplorer;
+        QAction* m_viewFullScreen;
+
+        //main widgets
+        ApplicationController* m_app;
+        LayerExplorer* m_layerExplorer;
+        MapDisplay* m_display;
+        StyleExplorer* m_styleExplorer;
+        std::vector<te::qt::af::DataSetTableDockWidget*> m_tables;
+
+        //status bar widgets
+        QStatusBar* m_statusbar;
+        QLabel* m_selected;
+        QAction* m_mapSRID;
+        QAction* m_mapUnknownSRID;
+        QAction* m_mapStopDrawing;
+        QLineEdit* m_mapSRIDLineEdit;
+        QLineEdit* m_coordinateLineEdit;
+
+      private:
+        Ui::BaseApplicationForm* m_ui;
       };
-    } // end namespace af
-  }   // end namespace qt
-}     // end namespace te
+    }
+  }
+}
 
 #endif // __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATION_H

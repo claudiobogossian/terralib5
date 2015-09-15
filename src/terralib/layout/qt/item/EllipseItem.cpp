@@ -28,10 +28,9 @@
 // TerraLib
 #include "EllipseItem.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
 
-te::layout::EllipseItem::EllipseItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix )
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::EllipseItem::EllipseItem(AbstractItemController* controller, bool invertedMatrix)
+: AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {
 }
 
@@ -58,9 +57,6 @@ void te::layout::EllipseItem::drawItem( QPainter * painter, const QStyleOptionGr
 
   painter->setPen(pen);
   painter->setBrush(brush);
-
-  //gets the adjusted boundigng rectangle based of the painter settings
-  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
   QPainterPath circle_path;
   circle_path.addEllipse(boundingRect());

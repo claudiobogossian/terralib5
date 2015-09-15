@@ -106,9 +106,9 @@ int main(int argc, char** argv)
 
     //Buffer examples
 
-    /*std::cout << std::endl << "Buffer OGR to OGR: " << std::endl;
+    std::cout << std::endl << "Buffer OGR to OGR: " << std::endl;
     if (BufferOGRToOGR())
-      std::cout << "\tOK!" << std::endl;*/
+      std::cout << "\tOK!" << std::endl;
 
     //std::cout << std::endl << "Buffer OGR to PostGIS: " << std::endl;
     //if (BufferOGRToPGIS())
@@ -118,9 +118,9 @@ int main(int argc, char** argv)
     //if (BufferPGISToPGIS())
     //  std::cout << "\tOK!" << std::endl;
 
-    std::cout << std::endl << "Buffer PostGIS to OGR: " << std::endl;
+ /*   std::cout << std::endl << "Buffer PostGIS to OGR: " << std::endl;
     if (BufferPGISToOGR())
-      std::cout << "\tOK!" << std::endl;
+      std::cout << "\tOK!" << std::endl;*/
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

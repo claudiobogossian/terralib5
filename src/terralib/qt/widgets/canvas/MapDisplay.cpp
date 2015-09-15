@@ -29,7 +29,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/Utils.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+//#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../utils/ScopedCursor.h"
 #include "Canvas.h"
 #include "MapDisplay.h"
@@ -51,7 +51,9 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_timer(new QTimer(this)),
     m_interval(200),
     m_isDrawing(false),
-    m_scale(0)
+    m_scale(0),
+    m_overridedDpiX(-1),
+    m_overridedDpiY(-1)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -72,7 +74,10 @@ m_backgroundColor(Qt::white),
 m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
 m_timer(new QTimer(this)),
 m_interval(200),
-m_isDrawing(false)
+m_isDrawing(false),
+m_scale(0),
+m_overridedDpiX(-1),
+m_overridedDpiY(-1)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -201,11 +206,29 @@ unsigned int te::qt::widgets::MapDisplay::getHeight() const
 
 double te::qt::widgets::MapDisplay::getWidthMM() const
 {
+  if(m_overridedDpiX > 0 && m_overridedDpiY > 0)
+  {
+    unsigned int widthPixels = getWidth();
+    double widthInches = (double) widthPixels / (double)m_overridedDpiX;
+    double widthMM = widthInches * 25.4;
+
+    return widthMM;
+  }
+
   return static_cast<double>(widthMM());
 }
 
 double te::qt::widgets::MapDisplay::getHeightMM() const
 {
+  if(m_overridedDpiX> 0 && m_overridedDpiY > 0)
+  {
+    unsigned int heightPixels = getHeight();
+    double heightInches = (double) heightPixels / (double)m_overridedDpiY;
+    double heightMM = heightInches * 25.4;
+
+    return heightMM;
+  }
+
   return static_cast<double>(heightMM());
 }
 
@@ -441,7 +464,7 @@ double te::qt::widgets::MapDisplay::getScale() const
     else if (unit == "FOOT")
       wT = wMM / (12. * 25.4);
     else if (unit == "DEGREE")
-      wT = wMM / 110000000.;
+      wT = wMM / 111000000.;
 
     double wp = wT / wPixels;
     m_scale = (1. / f) / wp;
@@ -451,7 +474,6 @@ double te::qt::widgets::MapDisplay::getScale() const
 }
 bool te::qt::widgets::MapDisplay::setScale(const double& scale)
 {
-
   double oldScale = this->getScale();
 
   double ff = scale / oldScale;
@@ -483,4 +505,30 @@ bool te::qt::widgets::MapDisplay::setScale(const double& scale)
 
   this->setExtent(newEnvelope, false);
   return true;
+}
+
+void te::qt::widgets::MapDisplay::getDPI(int& dpiX, int& dpiY) const
+{
+  if(m_overridedDpiX > 0 && m_overridedDpiY > 0)
+  {
+    dpiX = m_overridedDpiX;
+    dpiY = m_overridedDpiY;
+  }
+  else
+  {
+    dpiX = this->logicalDpiX();
+    dpiY = this->logicalDpiY();
+  }
+}
+
+void te::qt::widgets::MapDisplay::setOverrideDPI(int dpiX, int dpiY)
+{
+  m_overridedDpiX = dpiX;
+  m_overridedDpiY = dpiY;
+}
+
+void te::qt::widgets::MapDisplay::restoreDPI()
+{
+  m_overridedDpiX = -1;
+  m_overridedDpiY = -1;
 }

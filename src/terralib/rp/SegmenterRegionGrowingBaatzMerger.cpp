@@ -77,7 +77,7 @@ namespace te
     {
     }    
     
-    SegmenterRegionGrowingSegment< rg::BaatzFeatureType >::FeatureType
+    DissimilarityTypeT
     SegmenterRegionGrowingBaatzMerger::getDissimilarity( SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment1Ptr, 
       SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment2Ptr, 
       SegmenterRegionGrowingSegment< rg::BaatzFeatureType > * const mergePreviewSegPtr ) const
@@ -364,7 +364,7 @@ namespace te
           )
         );       
         
-      return std::max( m_getDissimilarity_hColor, ((rg::BaatzFeatureType)0) );
+      return std::max( (DissimilarityTypeT)m_getDissimilarity_hColor, (DissimilarityTypeT)0 );
     }
     
     void SegmenterRegionGrowingBaatzMerger::mergeFeatures( 

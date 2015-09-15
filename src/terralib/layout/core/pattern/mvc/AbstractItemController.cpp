@@ -27,17 +27,10 @@
 #include "../factory/AbstractItemFactory.h"
 
 te::layout::AbstractItemController::AbstractItemController(AbstractItemModel* model)
-  : NewObserver()
+  : Observer()
   , m_model(model)
   , m_view(0)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(0, 0);
-  params.m_newController = this;
-  params.m_newModel = m_model;
-
-  m_view = factory->makeNew(m_model->getProperties().getTypeObj(), params);
-
   if(m_model != 0)
   {
     m_model->attach(this);
@@ -58,22 +51,51 @@ te::layout::AbstractItemView* te::layout::AbstractItemController::getView() cons
   return m_view;
 }
 
-te::layout::AbstractItemModel* te::layout::AbstractItemController::getModel() const
-{
-  return m_model;
-}
-
 const te::layout::Property& te::layout::AbstractItemController::getProperty(const std::string& propertyName) const
 {
   return m_model->getProperty(propertyName);
 }
 
+void te::layout::AbstractItemController::setProperty(const te::layout::Property& property)
+{
+  m_model->setProperty(property);
+}
+
+const te::layout::Properties& te::layout::AbstractItemController::getProperties() const
+{
+  return m_model->getProperties();
+}
+
+void te::layout::AbstractItemController::setProperties(const te::layout::Properties& properties)
+{
+  m_model->setProperties(properties);
+}
+
+void te::layout::AbstractItemController::attach(te::layout::AbstractItemController* controller)
+{
+  Observer* observer = dynamic_cast<Observer*>(controller->getModel());
+  if(observer == 0)
+  {
+    return;
+  }
+
+  this->getModel()->attach(observer);
+}
+
 void te::layout::AbstractItemController::update(const te::layout::Subject* subject)
 {
+  if (!m_view)
+  {
+    return;
+  }
+
   const Property& property = m_model->getProperty("rotation");
-  if(property.getValue().toDouble() != m_view->getItemRotation()){
+  if(property.getValue().toDouble() != m_view->getItemRotation())
+  {
     m_view->setItemRotation(property.getValue().toDouble());
   }
+
+  m_view->refresh();
 }
 
 bool te::layout::AbstractItemController::contains(const te::gm::Coord2D &coord) const
@@ -81,4 +103,59 @@ bool te::layout::AbstractItemController::contains(const te::gm::Coord2D &coord) 
   return m_model->contains(coord);
 }
 
+void te::layout::AbstractItemController::setView(AbstractItemView* view)
+{
+  m_view = view;
+  refresh(); // controller could be refresh your view
+}
+
+void te::layout::AbstractItemController::resized(const double& width, const double& height)
+{
+  Properties properties;
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  {
+    Property property(0);
+    property.setName("width");
+    property.setValue(width, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("height");
+    property.setValue(height, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+  m_model->setProperties(properties);
+}
+
+void te::layout::AbstractItemController::itemPositionChanged(double x, double y)
+{
+  Properties properties;
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  {
+    Property property(0);
+    property.setName("x");
+    property.setValue(x, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("y");
+    property.setValue(y, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+  m_model->setProperties(properties);
+}
+
+te::layout::AbstractItemModel* te::layout::AbstractItemController::getModel() const
+{
+  return m_model;
+}
+
+void te::layout::AbstractItemController::refresh()
+{
+  // do nothing
+}
 

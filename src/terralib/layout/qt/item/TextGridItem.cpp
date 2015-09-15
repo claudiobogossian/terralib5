@@ -27,9 +27,7 @@
 
 // TerraLib
 #include "TextGridItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
@@ -42,8 +40,8 @@
 #include <QTextCursor>
 #include <QTextTableCell>
 
-te::layout::TextGridItem::TextGridItem(  AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) :
-  TitleItem(controller, model)
+te::layout::TextGridItem::TextGridItem(AbstractItemController* controller, bool invertedMatrix) :
+  TitleItem(controller, invertedMatrix)
 {
   init();
 }

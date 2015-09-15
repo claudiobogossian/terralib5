@@ -53,6 +53,20 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "pattern/factory/item/TitleItemFactory.h"
 #include "pattern/factory/item/PolygonItemFactory.h"
 #include "pattern/factory/item/LineItemFactory.h"
+#include "pattern/factory/item/PaperItemFactory.h"
+#include "pattern/factory/outside/ColorDialogOutsideFactory.h"
+#include "pattern/factory/outside/EditTemplateOutsideFactory.h"
+#include "pattern/factory/outside/FontDialogOutsideFactory.h"
+#include "pattern/factory/outside/GridSettingsOutsideFactory.h"
+#include "pattern/factory/outside/LegendChoiceOutsideFactory.h"
+#include "pattern/factory/outside/MapLayerChoiceOutsideFactory.h"
+#include "pattern/factory/outside/ObjectInspectorOutsideFactory.h"
+#include "pattern/factory/outside/PageSetupOutsideFactory.h"
+#include "pattern/factory/outside/PropertiesOutsideFactory.h"
+#include "pattern/factory/outside/SVGDialogOutsideFactory.h"
+#include "pattern/factory/outside/SystematicScaleOutsideFactory.h"
+#include "pattern/factory/outside/TextGridSettingsOutsideFactory.h"
+#include "pattern/factory/outside/ToolbarOutsideFactory.h"
 
 namespace te
 {
@@ -69,6 +83,26 @@ namespace te
         static CreateLineItemToolFactory CreateLineItemToolFactory_instance;
         static CreatePolygonItemToolFactory CreatePolygonItemToolFactory_instance;
         static CreateItemToolFactory CreateItemToolFactory_instance;
+      }
+
+      // Temporary
+      static bool OutsideFactoryInitalized = false;
+      if (!OutsideFactoryInitalized)
+      {
+        OutsideFactoryInitalized = true;
+        static ColorDialogOutsideFactory ColorDialogOutsideFactory_instance;
+        static EditTemplateOutsideFactory EditTemplateOutsideFactory_instance;
+        static FontDialogOutsideFactory FontDialogOutsideFactory_instance;
+        static GridSettingsOutsideFactory GridSettingsOutsideFactory_instance;
+        static LegendChoiceOutsideFactory LegendChoiceOutsideFactory_instance;
+        static MapLayerChoiceOutsideFactory MapLayerChoiceOutsideFactory_instance;
+        static ObjectInspectorOutsideFactory ObjectInspectorOutsideFactory_instance;
+        static PageSetupOutsideFactory PageSetupOutsideFactory_instance;
+        static PropertiesOutsideFactory PropertiesOutsideFactory_instance;
+        static SVGDialogOutsideFactory SVGDialogOutsideFactory_instance;
+        static SystematicScaleOutsideFactory SystematicScaleOutsideFactory_instance;
+        static TextGridSettingsOutsideFactory TextGridSettingsOutsideFactory_instance;
+        static ToolbarOutsideFactory ToolbarOutsideFactory_instance;
       }
     }
 
@@ -103,6 +137,7 @@ namespace te
         static TitleItemFactory TitleItemFactory_instance;
         static PolygonItemFactory PolygonItemFactory_instance;
         static LineItemFactory LineItemFactory_instance;
+        static PaperItemFactory PaperItemFactory_instance;
       }
     }
   }

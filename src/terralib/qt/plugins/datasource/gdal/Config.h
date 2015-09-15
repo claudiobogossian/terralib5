@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_CONFIG_H
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../../../Config.h"
-
 #define TE_TR_PLUGIN_NAME "te.qt.datasource.gdal"
 
 /*!

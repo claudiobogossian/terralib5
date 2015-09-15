@@ -31,14 +31,21 @@
 #include "Config.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QMenu>
 #include <QAction>
+#include <QMenu>
+#include <QObject>
 
 namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
     namespace plugins
     {
       namespace cellspace
@@ -110,6 +117,10 @@ namespace te
 
             */
             std::list<te::map::AbstractLayerPtr> getLayers();
+
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
 
           protected:
 

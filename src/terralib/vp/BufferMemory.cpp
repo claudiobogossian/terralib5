@@ -25,12 +25,13 @@
 
 //Terralib
 
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleProperty.h"
@@ -75,13 +76,15 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
   int type;
   int pk = 0;
 
-  std::auto_ptr<te::da::DataSet> inDset;
+  std::auto_ptr<te::da::DataSet> inDsetSrc;
   
   if(m_oidSet == 0)
-    inDset = m_inDsrc->getDataSet(m_inDsetName);
+    inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
   else
-    inDset = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
+    inDsetSrc = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
   
+  std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
+
   inDset->moveBeforeFirst();
 
   while(inDset->moveNext())

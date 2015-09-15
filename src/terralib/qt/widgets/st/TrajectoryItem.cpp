@@ -13,14 +13,16 @@
 #include <QtCore/QMutex>
 
 
-te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size)
+te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, const QString& id, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size)
   : te::qt::widgets::AnimationItem(title, display),
     m_iconFile(file),
     m_iconSize(size),
+    m_doIconRotate(true),
     m_drawTrail(true),
     m_forwardColor(Qt::blue),
     m_backwardColor(Qt::magenta),
-    m_lineWidth(2)
+    m_lineWidth(2),
+    m_layerId(id)
 {
   if(m_iconSize.isValid() == false)
     m_iconSize = QSize(20, 20);
@@ -52,16 +54,10 @@ te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, te::qt::wi
     painter.end();
     setPixmap(pix);
   }
-  setMatrix();
 }
 
 te::qt::widgets::TrajectoryItem::~TrajectoryItem()
 {
-}
-
-void te::qt::widgets::TrajectoryItem::createAnimationDataInDisplayProjection()
-{
-  te::qt::widgets::AnimationItem::createAnimationDataInDisplayProjection();
 }
 
 void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) 
@@ -153,16 +149,32 @@ void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphic
   m_display->update();
 }
 
+void te::qt::widgets::TrajectoryItem::transformToDisplayProjection(QVector<QPointF>& vec)
+{
+  if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
+  {
+    size_t size = vec.count();
+    te::gm::LineString line(size, te::gm::LineStringType, m_SRID);
+    for (size_t i = 0; i < size; ++i)
+      line.setPoint(i, vec[(int)i].x(), vec[(int)i].y());
+    line.transform(m_display->getSRID());
+
+    vec.clear();
+    for (size_t i = 0; i < size; ++i)
+      vec.push_back(QPointF(line.getPointN(i)->getX(), line.getPointN(i)->getY()));
+  }
+}
+
 void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
 {
   if(m_animationRoute.empty())
     return;
 
-  setMatrix();
-
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
+  if (ind == -1 || indold == -1)
+    return;
 
   QVector<QPointF> vec;
 
@@ -186,8 +198,11 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
       vec.push_back(m_pos);
   }
 
-  if(vec.count() > 1)
+  size_t size = vec.count();
+  if (size > 1)
   {
+    transformToDisplayProjection(vec);
+
     QPolygonF polf(vec);
     QPolygon pol = m_matrix.map(polf).toPolygon();
 
@@ -216,11 +231,11 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
   if(m_animationRoute.empty())
     return;
 
-  setMatrix();
-
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
+  if (ind == -1 || indold == -1)
+    return;
 
   QVector<QPointF> vec;
   if(indold == ind)
@@ -243,70 +258,85 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
     vec.push_back(m_pos);
   }
 
-  if(vec.count() > 1)
-  {
-    QPolygonF polf(vec);
-    QPolygon pol = m_matrix.map(polf).toPolygon();
+  size_t size = vec.count();
+if (size > 1)
+{
+  transformToDisplayProjection(vec);
 
-    QPen pen(Qt::NoBrush, 2);
-    QColor trailColor(Qt::white);
-    pen.setColor(trailColor);
+  QPolygonF polf(vec);
+  QPolygon pol = m_matrix.map(polf).toPolygon();
 
-    AnimationScene* as = (AnimationScene*)scene();
-    as->m_mutex.lock();
-    QPixmap* scenePixmap = as->m_trajectoryPixmap;
-    QPainter painter(scenePixmap);
-    painter.setPen(pen);
-    painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
-    painter.setBrush(Qt::NoBrush);
-    painter.drawPolyline(pol);
-    painter.end();
-    as->m_mutex.unlock();
-  }
+  QPen pen(Qt::NoBrush, 2);
+  QColor trailColor(Qt::white);
+  pen.setColor(trailColor);
+
+  AnimationScene* as = (AnimationScene*)scene();
+  as->m_mutex.lock();
+  QPixmap* scenePixmap = as->m_trajectoryPixmap;
+  QPainter painter(scenePixmap);
+  painter.setPen(pen);
+  painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+  painter.setBrush(Qt::NoBrush);
+  painter.drawPolyline(pol);
+  painter.end();
+  as->m_mutex.unlock();
+}
 }
 
 void te::qt::widgets::TrajectoryItem::draw()
 {
-  if(m_animationRoute.empty())
+  if (m_animationRoute.empty())
     return;
 
-  //setMatrix();
+  int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+  if (ind == -1)
+    return;
+
+  int w = m_display->getDisplayPixmap()->width();
+  int h = m_display->getDisplayPixmap()->height();
+  te::qt::widgets::Canvas canvas(w, h);
+  te::gm::Envelope e = m_display->getExtent();
+  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  m_matrix = canvas.getMatrix();
 
   int count = m_animationRoute.size();
-  int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
 
   QVector<QPointF> vec;
-  if(m_animation->direction() == QAbstractAnimation::Forward)
+  if (m_animation->direction() == QAbstractAnimation::Forward)
   {
-    if(ind > 0)
+    if (ind > 0)
     {
       int i = 0;
-      while(i <= ind)
+      while (i <= ind)
         vec.push_back(m_animationRoute[i++]);
-      if(vec.isEmpty() == false && vec.last() != m_pos)
+      if (vec.isEmpty() == false && vec.last() != m_pos)
         vec.push_back(m_pos);
     }
   }
   else
   {
     int i = count - 1;
-    while(i >= ind)
+    while (i >= ind)
       vec.push_back(m_animationRoute[i--]);
-    if(m_curTimeDuration != m_duration)
+    if (m_curTimeDuration != m_duration)
     {
-      if(vec.isEmpty() == false && vec.last() != m_pos)
+      if (vec.isEmpty() == false && vec.last() != m_pos)
         vec.push_back(m_pos);
     }
   }
 
-  if(vec.count() > 1)
+  size_t size = vec.count();
+  if (size > 1)
   {
+    transformToDisplayProjection(vec);
+
     QPolygonF polf(vec);
     QPolygon pol = m_matrix.map(polf).toPolygon();
 
     QPen pen(Qt::NoBrush, 2);
     QColor trailColor;
-    if(m_animation->direction() == QAbstractAnimation::Forward)
+    if (m_animation->direction() == QAbstractAnimation::Forward)
       trailColor = m_forwardColor;
     else
       trailColor = m_backwardColor;
@@ -324,4 +354,138 @@ void te::qt::widgets::TrajectoryItem::draw()
     as->m_mutex.unlock();
   }
   m_display->update();
+}
+
+void te::qt::widgets::TrajectoryItem::drawIcon(QPainter* painter)
+{
+  QPoint pos = getPosInDeviceCoordinate();
+
+  if (m_doIconRotate)
+  {
+    double xScale = -1.;
+    double yScale = -1.;
+    double angle = 0.;
+    int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+
+    if (ind == -1)
+      return;
+
+    QVector<QPointF> vec;
+    if (m_animation->direction() == QAbstractAnimation::Forward)
+    {
+      if (ind > 0)
+      {
+        vec.push_back(m_animationRoute[ind - 1]); // begin
+        vec.push_back(m_animationRoute[ind]); // end
+        transformToDisplayProjection(vec);
+      }
+    }
+    else
+    {
+      if (ind < (m_animationRoute.count() - 1))
+      {
+        vec.push_back(m_animationRoute[ind]); // begin
+        vec.push_back(m_animationRoute[ind + 1]); // end
+        transformToDisplayProjection(vec);
+      }
+    }
+    if (vec.isEmpty() == false)
+    {
+      double PI = 3.14159265;
+      QPointF p = vec[1] - vec[0]; // end - begin
+      if (p.x() > 0)
+        yScale = 1.;
+
+      if (p.x() == 0)
+      {
+        if (p.y() >= 0)
+          angle = PI / 2;
+        else
+          angle = -PI / 2;
+      }
+      else if (p.y() == 0)
+      {
+        if (p.x() >= 0)
+          angle = 0;
+        else
+          angle = -PI;
+      }
+      else
+      {
+        angle = atan(p.y() / p.x());
+        if (p.x() < 0)
+        {
+          if (p.y() < 0)
+            angle -= PI;
+          else
+            angle += PI;
+        }
+      }
+      angle *= 180. / PI;
+    }
+
+    painter->save();
+    painter->translate(pos);
+    painter->scale(xScale, yScale);
+    if (yScale == 1.)
+      angle = -angle;
+    painter->rotate(-angle);
+    painter->translate(-pos);
+  }
+
+  QRect r = pixmap().rect();
+  r.moveCenter(pos);
+  QRect dr = m_display->rect();
+  if (dr.intersects(r))
+  {
+    if (m_opacity == 255)
+      painter->drawPixmap(r, pixmap());
+    else
+    {
+      QSize size = pixmap().size();
+      int width = size.width();
+      int height = size.height();
+      QImage ima = pixmap().toImage();
+
+      if (ima.format() == QImage::Format_ARGB32)
+      {
+        for (int i = 0; i < height; ++i)
+        {
+          unsigned char* u = ima.scanLine(i);
+          for (int j = 0; j < width; ++j)
+          {
+            QRgb* v = (QRgb*)(u + (j << 2));
+            if (qAlpha(*v) < 50)
+              *v = qRgba(255, 255, 255, 0);
+            else
+              *v = qRgba(qRed(*v), qGreen(*v), qBlue(*v), m_opacity);
+          }
+        }
+        painter->drawImage(r, ima);
+      }
+      else
+      {
+        QImage img(size, QImage::Format_ARGB32);
+        for (int i = 0; i < height; ++i)
+        {
+          unsigned char* u = ima.scanLine(i);
+          unsigned char* uu = img.scanLine(i);
+
+          for (int j = 0; j < width; ++j)
+          {
+            QRgb* v = (QRgb*)(u + (j << 2));
+            QRgb* uv = (QRgb*)(uu + (j << 2));
+            if (qAlpha(*v) < 50)
+              *uv = qRgba(255, 255, 255, 0);
+            else
+              *uv = qRgba(qRed(*v), qGreen(*v), qBlue(*v), m_opacity);
+          }
+        }
+        painter->drawImage(r, img);
+      }
+    }
+  }
+
+  if (m_doIconRotate)
+    painter->restore();
 }

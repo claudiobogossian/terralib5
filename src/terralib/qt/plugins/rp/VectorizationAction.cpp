@@ -37,7 +37,7 @@ te::qt::plugins::rp::VectorizationAction::~VectorizationAction()
 
 void te::qt::plugins::rp::VectorizationAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::VectorizationWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::VectorizationWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

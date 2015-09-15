@@ -584,7 +584,7 @@ void te::vp::AggregationDialog::onTargetDatasourceToolButtonPressed()
 
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
@@ -709,6 +709,10 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+      
       this->setCursor(Qt::WaitCursor);
 
       te::vp::AggregationOp* aggregOp = 0;
@@ -725,7 +729,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         aggregOp = new te::vp::AggregationMemory();
       }
 
-      aggregOp->setInput(inDataSource, dsLayer->getDataSetName(),dsLayer->getSchema(), oidSet);
+      aggregOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       aggregOp->setOutput(dsOGR, outputdataset);
       aggregOp->setParams(selProperties, outputStatisticalSummary);
 
@@ -779,6 +783,10 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       }
       this->setCursor(Qt::WaitCursor);
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
       te::vp::AggregationOp* aggregOp = 0;
 
       // select a strategy based on the capabilities of the input datasource
@@ -793,7 +801,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         aggregOp = new te::vp::AggregationMemory();
       }
 
-      aggregOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
+      aggregOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       aggregOp->setOutput(aux, outputdataset);
       aggregOp->setParams(selProperties, outputStatisticalSummary);
 

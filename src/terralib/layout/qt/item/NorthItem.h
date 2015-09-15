@@ -40,6 +40,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic North. 
         Its coordinate system is the same of scene (millimeters). 
@@ -59,7 +60,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        NorthItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        NorthItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -77,7 +78,7 @@ namespace te
         virtual void drawNorthArrow2(QPainter * painter);
         virtual void drawNorthArrow3(QPainter * painter);
 
-        void setBrush(QPainter* painter);
+        QColor setBrush(QPainter* painter);
     };
   }
 }

@@ -100,7 +100,7 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
 
     case te::dt::STRING_TYPE:
     {
-      newProperty = new te::dt::StringProperty(name, te::dt::STRING, isRequired, new std::string(defaultValue));
+      newProperty = new te::dt::StringProperty(name, te::dt::STRING, 0, isRequired, new std::string(defaultValue));
       break;
     }
 
@@ -238,11 +238,6 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
   return m_dsConverter;
 }
 
-te::da::DataSet* te::qt::widgets::DatapPropertiesWidget::getDataSet()
-{
-  return m_dataSet.get();
-}
-
 te::da::DataSetType* te::qt::widgets::DatapPropertiesWidget::getDataSetType()
 {
   return m_dataType.get();
@@ -296,7 +291,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     m_dataSource->open();
 
     //Creating the DataSet and DataType
-    m_dataSet = m_dataSource->getDataSet(file);
+    std::auto_ptr<te::da::DataSet> dataset = m_dataSource->getDataSet(file);
     std::vector<std::string> datasetNames = m_dataSource->getDataSetNames();
 
     if(!datasetNames.empty())
@@ -314,11 +309,11 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
     //Filling the data preview table
     std::vector<std::size_t> properties;
-    for(std::size_t i = 0; i < m_dataSet->getNumProperties(); ++i)
+    for (std::size_t i = 0; i < dataset->getNumProperties(); ++i)
       properties.push_back(i);
 
     //The table will display 5 rows of the data for previewing purposes
-    std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*m_dataSet.get(), properties, 5)));
+    std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*dataset.get(), properties, 5)));
 
     m_tblView->setDataSet(memFeature.release(), m_dataSource->getEncoding());
     m_tblView->resizeColumnsToContents();

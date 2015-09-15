@@ -40,7 +40,6 @@
 #include "../../../../qt/widgets/rp/Utils.h"
 #include "../../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../../qt/af/ApplicationController.h"
-#include "../../../../qt/af/Project.h"
 #include "../../../../qt/af/events/LayerEvents.h"
 #include "../../../../raster/Utils.h"
 #include "../../../../terralib4/DataSource.h"
@@ -246,7 +245,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
       std::vector<QListWidgetItem*> selectedLayerItems = m_layerSelectionPage->getCheckedItems();
 
       m_resolveNameTableWidget->clearContents();
-      m_resolveNameTableWidget->setRowCount(selectedLayerItems.size());
+      m_resolveNameTableWidget->setRowCount((int)selectedLayerItems.size());
 
       te::da::DataSourcePtr tl5ds;
 
@@ -278,7 +277,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
           }
 
           conflictItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-          m_resolveNameTableWidget->setItem(i, 0, conflictItem);
+          m_resolveNameTableWidget->setItem((int)i, 0, conflictItem);
         }
         else
         {
@@ -304,15 +303,15 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
           }
 
           conflictItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-          m_resolveNameTableWidget->setItem(i, 0, conflictItem);
+          m_resolveNameTableWidget->setItem((int)i, 0, conflictItem);
         }
 
         QTableWidgetItem *oldNameItem = new QTableWidgetItem(selectedLayerItems[i]->text(), selectedLayerItems[i]->type());
         oldNameItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-        m_resolveNameTableWidget->setItem(i, 1, oldNameItem);
+        m_resolveNameTableWidget->setItem((int)i, 1, oldNameItem);
 
         QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str(), selectedLayerItems[i]->type());
-        m_resolveNameTableWidget->setItem(i, 2, newNameItem);
+        m_resolveNameTableWidget->setItem((int)i, 2, newNameItem);
       }
 
       m_resolveNameTableWidget->resizeColumnsToContents();
@@ -475,7 +474,6 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
         if(boost::filesystem::exists(m_rasterFolderPath + "/" + targetName + ".tif"))
         {
           hasConflict = true;
-          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
         }
         else
         {
@@ -497,7 +495,6 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
         if(tl5ds->dataSetExists(targetDatasetNameAux))
         {
           hasConflict = true;
-          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
         }
         else
         {
@@ -706,7 +703,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         int finalSrid = tl4Ds->getLayerSRID(sourceName);
 
-        ds_adapter->setSRID(finalSrid);
+        te::da::AssociateDataSetTypeConverterSRID(dt_adapter.get(), finalSrid);
 
         std::map<std::string, std::string> opt;
 
@@ -851,7 +848,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       te::qt::af::evt::LayerAdded evt(layer);
 
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      emit triggered(&evt);
     }
 
     std::vector<::terralib4::ThemeInfo> themes = m_themeSelection->getThemes();
@@ -937,7 +934,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       te::qt::af::evt::LayerAdded evt(layer);
 
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      emit triggered(&evt);
     }
   }
   catch(const te::da::Exception& e)

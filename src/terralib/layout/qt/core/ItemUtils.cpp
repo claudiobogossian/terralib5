@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "ItemUtils.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
@@ -41,7 +40,6 @@
 #include "../../item/TextModel.h"
 #include "../item/LegendChildItem.h"
 #include "../../item/LegendChildModel.h"
-#include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridPlanarModel.h"
 #include "Scene.h"
@@ -74,17 +72,13 @@ std::vector<te::layout::MapItem*> te::layout::ItemUtils::getMapItemList(bool sel
   std::vector<te::layout::MapItem*> list;
 
   QList<QGraphicsItem*> graphicsItems = getItems(selected);
-  foreach( QGraphicsItem *item, graphicsItems) 
+  foreach(QGraphicsItem *item, graphicsItems)
   {
-    if(!item)
+    if (!item)
       continue;
 
-    te::layout::ItemObserver* lItem = dynamic_cast<te::layout::ItemObserver*>(item);
-    if(!lItem)
-      continue;
-
-    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(lItem);
-    if(!mit)
+    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(item);
+    if (!mit)
       continue;
 
     list.push_back(mit);
@@ -111,17 +105,17 @@ te::layout::MapItem* te::layout::ItemUtils::getMapItem( std::string name )
     if(itemView == 0)
       continue;
 
-    te::layout::AbstractItemModel* model = itemView->getController()->getModel();
+    te::layout::AbstractItemController* controller = itemView->getController();
 
-    if(model == 0)
+    if(controller == 0)
       continue;
 
-    if(model->getProperties().getTypeObj() != objectType->getMapItem())
+    if(controller->getProperties().getTypeObj() != objectType->getMapItem())
     {
       continue;
     }
 
-    const Property& pName = model->getProperty("name");
+    const Property& pName = controller->getProperty("name");
     if(pName.getValue().toString().compare(name) != 0)
       continue;
 
@@ -148,17 +142,17 @@ std::vector<std::string> te::layout::ItemUtils::mapNameList(bool selected)
     if(itemView == 0)
       continue;
 
-    te::layout::AbstractItemModel* model = itemView->getController()->getModel();
+    te::layout::AbstractItemController* controller = itemView->getController();
 
-    if(model == 0)
+    if(controller == 0)
       continue;
 
-    if(model->getProperties().getTypeObj() != objectType->getMapItem())
+    if(controller->getProperties().getTypeObj() != objectType->getMapItem())
     {
       continue;
     }
 
-    const Property& pName = model->getProperty("name");
+    const Property& pName = controller->getProperty("name");
     strList.push_back(pName.getValue().toString());
   }
 
@@ -179,11 +173,11 @@ int te::layout::ItemUtils::countType( te::layout::EnumType* type )
     if(absItem == 0)
       continue;
 
-    te::layout::AbstractItemModel* model = absItem->getController()->getModel();
-    if(model == 0)
+    te::layout::AbstractItemController* controller = absItem->getController();
+    if(controller == 0)
       continue;
 
-    if(model->getProperties().getTypeObj() == type)
+    if(controller->getProperties().getTypeObj() == type)
     {
       count+=1;
     }
@@ -206,13 +200,13 @@ int te::layout::ItemUtils::maxTypeId( te::layout::EnumType* type )
     if(absItem == 0)
       continue;
 
-    te::layout::AbstractItemModel* model = absItem->getController()->getModel();
-    if(model == 0)
+    te::layout::AbstractItemController* controller = absItem->getController();
+    if(controller == 0)
       continue;
 
-    int currentId = model->getProperty("id").getValue().toInt();
+    int currentId = controller->getProperty("id").getValue().toInt();
 
-    if(model->getProperties().getTypeObj() == type)
+    if(controller->getProperties().getTypeObj() == type)
     {
       if(id == -1)
       {
@@ -508,14 +502,11 @@ QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
 
   QPointF pt(x, y);
 
-  bool intersection = false;
-
   foreach (QGraphicsItem *item, items) 
   {
     if(item)
     {
-      bool intersection = item->contains(pt);
-      if(intersection)
+      if(item->contains(pt))
       {
         intersectionItem = item;
         break;

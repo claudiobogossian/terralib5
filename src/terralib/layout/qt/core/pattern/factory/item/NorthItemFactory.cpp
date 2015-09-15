@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/NorthModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/NorthItem.h"
 
 te::layout::AbstractItemView* te::layout::NorthItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::NorthItemFactory::build(ItemFactoryPar
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  NorthItem* view = new NorthItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::NorthItemFactory::NorthItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getNorthItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getNorthItem()->getName())
 {
 
 }

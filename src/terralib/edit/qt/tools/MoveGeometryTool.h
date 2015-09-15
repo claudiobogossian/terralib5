@@ -29,11 +29,14 @@
 // TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
+#include "GeometriesUpdateTool.h"
 #include "../Config.h"
 
 // Qt
 #include <QPointF>
+
+//STL
+#include <map>
 
 namespace te
 {
@@ -56,7 +59,7 @@ namespace te
 
       \brief This class implements a concrete tool to move geometries.
     */
-    class TEEDITQTEXPORT MoveGeometryTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT MoveGeometryTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -75,8 +78,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
-
+        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject *parent = 0);
         /*! \brief Destructor. */
         ~MoveGeometryTool();
 
@@ -92,8 +94,6 @@ namespace te
         bool mouseMoveEvent(QMouseEvent* e);
 
         bool mouseReleaseEvent(QMouseEvent* e);
-
-        bool mouseDoubleClickEvent(QMouseEvent* e);
 
         //@}
 
@@ -111,17 +111,19 @@ namespace te
 
         void storeEditedFeature();
 
+        void storeUndoCommand();
+
       private slots:
 
         void onExtentChanged();
 
       protected:
 
-        te::map::AbstractLayerPtr m_layer;
-        Feature* m_feature;
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
+        QPointF m_deltaSum;                 //!< Sum of all delta
+        std::map<std::string, QList<QPointF> > m_moveWatches;
     };
 
   }   // end namespace edit

@@ -31,34 +31,13 @@
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/property/GridSettingsConfigProperties.h"
-
-
-/*
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/GridPlanarModel.h"
-#include "MapItem.h"
 #include "../../core/WorldTransformer.h"
-#include "../../item/MapModel.h"
-#include "../../../maptools/AbstractLayer.h"
-#include "../../core/pattern/singleton/Context.h"
 #include "../../core/Utils.h"
 
-//Qt
-#include <QStyleOptionGraphicsItem>
-#include <QPointF>
-#include <QLineF>
-*/
-
-te::layout::GridPlanarItem::GridPlanarItem( AbstractItemController* controller, AbstractItemModel* model )
-  : GridMapItem(controller, model)
+te::layout::GridPlanarItem::GridPlanarItem(AbstractItemController* controller, bool invertedMatrix)
+  : GridMapItem(controller, invertedMatrix)
 {  
-  //m_nameClass = std::string(this->metaObject()->className());
+  
 }
 
 te::layout::GridPlanarItem::~GridPlanarItem()

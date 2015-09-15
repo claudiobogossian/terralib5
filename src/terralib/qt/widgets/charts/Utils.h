@@ -159,7 +159,7 @@ namespace te
 
         \return A pointer to a new ChartDisplayWidget that contains the generated chart
     */
-    TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, Histogram* histogram);
+    TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, std::string summary, Histogram* histogram);
 
     /*!
       \function Terralib2Qwt

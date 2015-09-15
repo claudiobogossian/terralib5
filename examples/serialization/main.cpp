@@ -66,6 +66,7 @@ int main(int /*argc*/, char** /*argv*/)
     EncodeStyle(path); // Creates a Style and encodes it to XML format.
 
     te::se::Style* style = DecodeStyle(path); // Decodes the created XML file.
+    delete style;
 
     /* XSD Schema */
 

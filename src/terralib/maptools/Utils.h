@@ -144,6 +144,8 @@ namespace te
     */
     TEMAPEXPORT void GetVisibleLayers(const std::list<te::map::AbstractLayerPtr>& layers, std::list<te::map::AbstractLayerPtr>& visibleLayers);
 
+    TEMAPEXPORT void GetVisibleLayers(const std::list<te::map::AbstractLayer*>& layers, std::list<te::map::AbstractLayer*>& visibleLayers);
+
     /*!
       \brief It gets the visible layers of the given layer.
 

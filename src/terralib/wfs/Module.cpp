@@ -83,7 +83,7 @@ void te::wfs::Module::shutdown()
 
   te::da::DataSourceManager::getInstance().detachAll(TE_WFS_DRIVER_IDENTIFIER);
 
-  OGRCleanupAll();
+//  OGRCleanupAll();
 
   TE_LOG_TRACE(TE_TR("TerraLib WFS driver shutdown!"));
 

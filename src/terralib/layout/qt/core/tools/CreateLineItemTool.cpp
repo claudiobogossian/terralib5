@@ -22,11 +22,9 @@
 #include "../View.h"
 #include "../Scene.h"
 #include "../BuildGraphicsItem.h"
-#include "terralib/common/Singleton.h"
 #include "../../item/LineItem.h"
-#include "../../../core/pattern/singleton/Context.h"
 #include "../../../core/pattern/mvc/AbstractItemView.h"
-#include "../../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../core/enum/Enums.h"
 #include "../../../../geometry/Point.h"
 
@@ -37,7 +35,7 @@
 
 te::layout::CreateLineItemTool::CreateLineItemTool(View* view, EnumType* itemType, QObject* parent)
   : AbstractLayoutTool(view, parent),
-  m_model(NULL),
+  m_controller(NULL),
   m_itemType(itemType)
 {
   setCursor(Qt::ArrowCursor);
@@ -125,18 +123,25 @@ void te::layout::CreateLineItemTool::setGeometry()
   property.setLabel("geometry");
   property.setVisible(false);
   property.setValue(line, dataType->getDataTypeGeometry());
-  m_model->setProperty(property);
+  m_controller->setProperty(property);
 }
 
 void te::layout::CreateLineItemTool::createItem()
 {
+  Scene* sc = dynamic_cast<Scene*>(m_view->scene());
+  if (!sc)
+  {
+    return;
+  }
+
   if (m_coords.empty())
   {
-    AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-    BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-    m_item = build->createItem(m_itemType);
+    // create a new item
+    BuildGraphicsItem buildItem(sc);
+    m_item = buildItem.createItem(m_itemType);
+
     AbstractItem<QGraphicsItem> * itemView = dynamic_cast<AbstractItem<QGraphicsItem> *> (m_item);
-    m_model = itemView->getController()->getModel();
+    m_controller = itemView->getController();
   }
 }
 

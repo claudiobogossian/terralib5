@@ -28,7 +28,6 @@
 // TerraLib
 #include "LineItem.h"
 #include "../../core/property/Property.h"
-
 // STL
 #include <vector>
 
@@ -37,12 +36,11 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
-#include "..\..\core\property\Property.h"
 
-te::layout::LineItem::LineItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
-  : AbstractItem<QGraphicsItem>(controller, model)
+te::layout::LineItem::LineItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {  
-  //m_nameClass = std::string(this->metaObject()->className());
+
 }
 
 te::layout::LineItem::~LineItem()
@@ -128,7 +126,6 @@ QPolygonF te::layout::LineItem::getQPolygon()
   for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
   {
     QPointF pt(coordsPtr[pIdx].getX(), coordsPtr[pIdx].getY());
-    //QPointF mlocal = mapFromScene(pt);
     poly.push_back(pt);
   }
   return poly;

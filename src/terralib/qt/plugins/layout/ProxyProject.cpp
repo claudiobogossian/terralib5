@@ -27,8 +27,10 @@
 
 // TerraLib
 #include "ProxyProject.h"
+
 #include "../../af/Project.h"
 #include "../../af/ApplicationController.h"
+
 
 te::qt::plugins::layout::ProxyProject::ProxyProject()
 {

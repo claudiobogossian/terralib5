@@ -34,32 +34,12 @@
 #include "AbstractItem.h"
 #include "../../core/Config.h"
 
-/*
-#include "ObjectItem.h"
-#include "../../core/Config.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../geometry/Envelope.h"
-
-// STL
-#include <map>
-#include <string>
-
-// Qt
-#include <QColor>
-#include <QList>
-#include <QLineF>
-#include <QPointF>
-#include <QString>
-#include <QPainter>
-#include <QFont>
-*/
-
 namespace te
 {
   namespace layout
   {
     class Observable;
-
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic GridMap. 
         Its coordinate system is the same of scene (millimeters). 
@@ -79,7 +59,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridMapItem( AbstractItemController* controller, AbstractItemModel* model );
+        GridMapItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

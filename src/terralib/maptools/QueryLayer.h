@@ -122,25 +122,18 @@ namespace te
         te::da::Select* getQuery() const;
 
         /*!
+        \brief
+
+        \return
+        */
+      std::string getQueryAsString() const;
+
+        /*!
           \brief
 
           \param name
         */
         void setQuery(te::da::Select* s);
-
-        /*!
-          \brief
-
-          \return
-        */
-        const std::string& getDataSourceId() const;
-
-        /*!
-          \brief
-
-          \param id
-        */
-        void setDataSourceId(const std::string& id);
 
         /*!
           \brief
@@ -166,7 +159,7 @@ namespace te
 
       private:
 
-        std::string m_datasourceId;        //!< The DataSource associated to this Layer2.
+        std::string m_datasourceId;        //!< The DataSource associated to this Layer.
         std::string m_rendererType;        //!< A pointer to the internal renderer used to paint this layer.
         te::da::Select* m_query;           //!< The dataset name where we will retrieve the layer objects.
 

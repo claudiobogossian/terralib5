@@ -38,16 +38,18 @@
 #include "../../widgets/canvas/EyeBirdMapDisplayWidget.h"
 #include "../../widgets/canvas/MapDisplay.h"
 #include "../../widgets/canvas/ZoomInMapDisplayWidget.h"
+#include "../../widgets/layer/explorer/LayerItemView.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../widgets/Utils.h"
+#include "../events/ApplicationEvents.h"
 #include "../events/LayerEvents.h"
 #include "../events/MapEvents.h"
-#include "../events/ProjectEvents.h"
+//#include "../events/ProjectEvents.h"
 #include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
-#include "../Project.h"
+//#include "../Project.h"
 #include "../Utils.h"
 #include "MapDisplay.h"
 
@@ -61,8 +63,9 @@
 #include <memory>
 #include <utility>
 
-te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
-  : QObject(display),
+te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::ApplicationController* app)
+  : QObject(),
+    m_app(app),
     m_display(display),
     m_tool(0),
     m_menu(0),
@@ -84,13 +87,13 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
   // Gets the popup menu
-  m_menu = ApplicationController::getInstance().findMenu("Map");
+  m_menu = m_app->findMenu("Map");
 
   // To show popup menu
   m_display->installEventFilter(this);
 
   // Config the default SRS
-  m_display->setSRID(ApplicationController::getInstance().getDefaultSRID(), false);
+  m_display->setSRID(m_app->getDefaultSRID(), false);
   
   // Getting default display color
   m_display->setBackgroundColor(te::qt::af::GetDefaultDisplayColorFromSettings());
@@ -111,6 +114,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 te::qt::af::MapDisplay::~MapDisplay()
 {
   delete m_tool;
+  delete m_display;
 }
 
 te::qt::widgets::MapDisplay* te::qt::af::MapDisplay::getDisplay()
@@ -182,12 +186,18 @@ void te::qt::af::MapDisplay::clear()
   m_display->refresh();
 }
 
-void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
+void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious)
 {
-  delete m_tool;
+  if(m_tool != 0)
+    m_display->removeEventFilter(m_tool);
+
+  if(delPrevious)
+    delete m_tool;
+
   m_tool = tool;
 
-  m_display->installEventFilter(m_tool);
+  if(m_tool != 0)
+    m_display->installEventFilter(m_tool);
 }
 
 void te::qt::af::MapDisplay::nextExtent()
@@ -245,7 +255,7 @@ void te::qt::af::MapDisplay::fit(const std::list<te::map::AbstractLayerPtr>& lay
 void te::qt::af::MapDisplay::onCoordTracked(QPointF& coordinate)
 {
   te::qt::af::evt::CoordinateTracked e(coordinate.x(), coordinate.y());
-  ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   if(m_zoomInDisplay)
     m_zoomInDisplay->drawCursorPosition(static_cast<double>(coordinate.x()), static_cast<double>(coordinate.ry()));
@@ -257,11 +267,14 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
   // Draw the layers selection
-  drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers(false));
+  std::list<te::map::AbstractLayerPtr> ls = getSelectedLayer();
+
+  if(!ls.empty())
+    drawLayersSelection(ls);
 
   // Informs the end of drawing
   te::qt::af::evt::DrawingFinished drawingFinished(this);
-  ApplicationController::getInstance().broadcast(&drawingFinished);
+  emit triggered(&drawingFinished);
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -302,7 +315,8 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.drawPixmap(0, 0, m_lastDisplayContent);
       painter.end();
 
-      drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers());
+      // Fred: revisar
+      drawLayersSelection(getSelectedLayer());
     }
     break;
 
@@ -321,9 +335,13 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     break;
 
     case te::qt::af::evt::ITEM_OF_LAYER_REMOVED:
+//      draw(getSelectedLayer());
+    break;
+
     case te::qt::af::evt::LAYER_REMOVED:
     {
-      draw(ApplicationController::getInstance().getProject()->getVisibleSingleLayers());
+      m_display->setLayerList(getVisibleLayers());
+      m_display->refresh();
     }
     break;
 
@@ -368,7 +386,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 {
   assert(layer.get());
 
-  if(layer->getVisibility() != te::map::VISIBLE)
+  if(layer.get() == 0 || layer->getVisibility() != te::map::VISIBLE)
     return;
 
   std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
@@ -409,7 +427,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
           // Try to retrieve the layer selection batch
           std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
 
-          drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
+          drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), m_app->getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
 
           // Prepares to next batch
           oidsBatch->clear();
@@ -421,7 +439,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     {
       std::auto_ptr<te::da::DataSet> selected(layer->getData(oids->getExpression()));
 
-      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), m_app->getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
     }
   }
   catch(std::exception& e)
@@ -522,7 +540,7 @@ void te::qt::af::MapDisplay::configSRS(const std::list<te::map::AbstractLayerPtr
 
     std::pair<int, std::string> srid(layer->getSRID(), "EPSG");
     te::qt::af::evt::MapSRIDChanged mapSRIDChanged(srid);
-    ApplicationController::getInstance().broadcast(&mapSRIDChanged);
+    emit triggered(&mapSRIDChanged);
   }
   else if(m_display->getSRID() == TE_UNKNOWN_SRS)
   {
@@ -538,10 +556,41 @@ void te::qt::af::MapDisplay::configSRS(const std::list<te::map::AbstractLayerPtr
       m_display->setSRID(layer->getSRID(), false);
 
       std::pair<int, std::string> srid(layer->getSRID(), "EPSG");
+
       te::qt::af::evt::MapSRIDChanged mapSRIDChanged(srid);
-      ApplicationController::getInstance().broadcast(&mapSRIDChanged);
+      emit triggered(&mapSRIDChanged);
 
       break;
     }
   }
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::af::MapDisplay::getSelectedLayer()
+{
+  te::qt::af::evt::GetLayerSelected evt;
+  emit triggered(&evt);
+
+  std::list<te::map::AbstractLayerPtr> lst;
+
+  if(evt.m_layer != 0)
+    lst.push_back(evt.m_layer);
+
+  return lst;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::af::MapDisplay::getVisibleLayers()
+{
+  std::list<te::map::AbstractLayerPtr> layers;
+
+  te::qt::af::evt::GetLayerExplorer evt;
+  emit triggered(&evt);
+
+  if(evt.m_layerExplorer == 0)
+    return layers;
+
+  te::qt::widgets::LayerItemView* view = evt.m_layerExplorer;
+
+  te::qt::widgets::GetValidLayers(view->model(), QModelIndex(), layers);
+
+  return layers;
 }

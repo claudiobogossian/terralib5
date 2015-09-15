@@ -25,6 +25,7 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${QTPROPERTYBROWSER_INCLUDE_DIR})
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTELAYOUTDLL)
@@ -50,8 +51,6 @@ file(GLOB TERRALIB_LAYOUT_CORE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terra
 file(GLOB TERRALIB_LAYOUT_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/core/*.h)
 file(GLOB TERRALIB_LAYOUT_CORE_ENUM_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/core/enum/*.cpp)
 file(GLOB TERRALIB_LAYOUT_CORE_ENUM_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/core/enum/*.h)
-file(GLOB TERRALIB_LAYOUT_CORE_VISITOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/core/pattern/derivativevisitor/*.cpp)
-file(GLOB TERRALIB_LAYOUT_CORE_VISITOR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/core/pattern/derivativevisitor/*.h)
 file(GLOB TERRALIB_LAYOUT_CORE_FACTORY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/core/pattern/factory/*.cpp)
 file(GLOB TERRALIB_LAYOUT_CORE_FACTORY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/core/pattern/factory/*.h)
 file(GLOB TERRALIB_LAYOUT_CORE_MVC_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/core/pattern/mvc/*.cpp)
@@ -74,6 +73,8 @@ file(GLOB TERRALIB_LAYOUT_OUTSIDE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/te
 file(GLOB TERRALIB_LAYOUT_OUTSIDE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/outside/*.h)
 file(GLOB TERRALIB_LAYOUT_QT_CORE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/*.cpp)
 file(GLOB TERRALIB_LAYOUT_QT_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/*.h)
+file(GLOB TERRALIB_LAYOUT_QT_DEFAULT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/default/*.cpp)
+file(GLOB TERRALIB_LAYOUT_QT_DEFAULT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/default/*.h)
 file(GLOB TERRALIB_LAYOUT_QT_FACTORY_ITEM_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/pattern/factory/item/*.cpp)
 file(GLOB TERRALIB_LAYOUT_QT_FACTORY_ITEM_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/pattern/factory/item/*.h)
 file(GLOB TERRALIB_LAYOUT_QT_FACTORY_OUTSIDE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/pattern/factory/outside/*.cpp)
@@ -97,8 +98,6 @@ source_group("Source Files\\core" FILES ${TERRALIB_LAYOUT_CORE_SRC_FILES})
 source_group("Header Files\\core" FILES ${TERRALIB_LAYOUT_CORE_HDR_FILES})
 source_group("Source Files\\core\\enum" FILES ${TERRALIB_LAYOUT_CORE_ENUM_SRC_FILES})
 source_group("Header Files\\core\\enum" FILES ${TERRALIB_LAYOUT_CORE_ENUM_HDR_FILES})
-source_group("Source Files\\core\\pattern\\visitor" FILES ${TERRALIB_LAYOUT_CORE_VISITOR_SRC_FILES})
-source_group("Header Files\\core\\pattern\\visitor" FILES ${TERRALIB_LAYOUT_CORE_VISITOR_HDR_FILES})
 source_group("Source Files\\core\\pattern\\factory" FILES ${TERRALIB_LAYOUT_CORE_FACTORY_SRC_FILES})
 source_group("Header Files\\core\\pattern\\factory" FILES ${TERRALIB_LAYOUT_CORE_FACTORY_HDR_FILES})
 source_group("Source Files\\core\\pattern\\mvc" FILES ${TERRALIB_LAYOUT_CORE_MVC_SRC_FILES})
@@ -121,6 +120,8 @@ source_group("Source Files\\outside"  FILES ${TERRALIB_LAYOUT_OUTSIDE_SRC_FILES}
 source_group("Header Files\\outside"  FILES ${TERRALIB_LAYOUT_OUTSIDE_HDR_FILES})
 source_group("Source Files\\qt\\core"  FILES ${TERRALIB_LAYOUT_QT_CORE_SRC_FILES})
 source_group("Header Files\\qt\\core"  FILES ${TERRALIB_LAYOUT_QT_CORE_HDR_FILES})
+source_group("Source Files\\qt\\default"  FILES ${TERRALIB_LAYOUT_QT_DEFAULT_SRC_FILES})
+source_group("Header Files\\qt\\default"  FILES ${TERRALIB_LAYOUT_QT_DEFAULT_HDR_FILES})
 source_group("Source Files\\qt\\core\\pattern\\factory\\item"  FILES ${TERRALIB_LAYOUT_QT_FACTORY_ITEM_SRC_FILES})
 source_group("Header Files\\qt\\core\\pattern\\factory\\item"  FILES ${TERRALIB_LAYOUT_QT_FACTORY_ITEM_HDR_FILES})
 source_group("Source Files\\qt\\core\\pattern\\factory\\outside"  FILES ${TERRALIB_LAYOUT_QT_FACTORY_OUTSIDE_SRC_FILES})
@@ -143,8 +144,6 @@ set(TERRALIB_FILES ${TERRALIB_LAYOUT_CORE_SRC_FILES}
            ${TERRALIB_LAYOUT_CORE_HDR_FILES} 
            ${TERRALIB_LAYOUT_CORE_ENUM_SRC_FILES} 
            ${TERRALIB_LAYOUT_CORE_ENUM_HDR_FILES} 
-           ${TERRALIB_LAYOUT_CORE_VISITOR_SRC_FILES} 
-           ${TERRALIB_LAYOUT_CORE_VISITOR_HDR_FILES} 
            ${TERRALIB_LAYOUT_CORE_FACTORY_SRC_FILES} 
            ${TERRALIB_LAYOUT_CORE_FACTORY_HDR_FILES} 
            ${TERRALIB_LAYOUT_CORE_MVC_SRC_FILES} 
@@ -166,7 +165,9 @@ set(TERRALIB_FILES ${TERRALIB_LAYOUT_CORE_SRC_FILES}
            ${TERRALIB_LAYOUT_OUTSIDE_SRC_FILES} 
            ${TERRALIB_LAYOUT_OUTSIDE_HDR_FILES} 
            ${TERRALIB_LAYOUT_QT_CORE_SRC_FILES} 
-           ${TERRALIB_LAYOUT_QT_CORE_HDR_FILES} 
+           ${TERRALIB_LAYOUT_QT_CORE_HDR_FILES}
+           ${TERRALIB_LAYOUT_QT_DEFAULT_SRC_FILES} 
+           ${TERRALIB_LAYOUT_QT_DEFAULT_HDR_FILES}  
            ${TERRALIB_LAYOUT_QT_FACTORY_SRC_FILES} 
            ${TERRALIB_LAYOUT_QT_FACTORY_HDR_FILES} 
            ${TERRALIB_LAYOUT_QT_COMMAND_SRC_FILES} 
@@ -209,7 +210,6 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/ToolbarOutside.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/ToolbarController.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/View.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/item/ObjectItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/item/MapItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/item/MapLocationItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/propertybrowser/PropertyBrowser.h
@@ -227,10 +227,17 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/SVGDialogOutside.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/propertybrowser/DialogPropertiesBrowser.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/propertybrowser/VariantPropertiesBrowser.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/BuildGraphicsItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/ColorDialogOutside.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/LegendChoiceOutside.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/FontDialogOutside.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/FontDialogOutside.h
+                                 #Base Layout
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/default/MainLayout.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/default/OutsideArea.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/default/DisplayDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/default/ObjectInspectorDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/default/PropertiesDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/default/EditTemplateDock.h
+                                 )
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
@@ -272,9 +279,6 @@ install(FILES ${TERRALIB_LAYOUT_CORE_HDR_FILES}
 install(FILES ${TERRALIB_LAYOUT_CORE_ENUM_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/layout/core/enum COMPONENT devel)
 
-install(FILES ${TERRALIB_LAYOUT_CORE_VISITOR_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/layout/core/pattern/derivativevisitor COMPONENT devel)
-
 install(FILES ${TERRALIB_LAYOUT_CORE_FACTORY_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/layout/core/pattern/factory COMPONENT devel)
 
@@ -307,6 +311,9 @@ install(FILES ${TERRALIB_LAYOUT_OUTSIDE_HDR_FILES}
 
 install(FILES ${TERRALIB_LAYOUT_QT_CORE_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/layout/qt/core COMPONENT devel)
+        
+install(FILES ${TERRALIB_LAYOUT_QT_DEFAULT_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/layout/qt/default COMPONENT devel)
 
 install(FILES ${TERRALIB_LAYOUT_QT_FACTORY_ITEM_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/layout/qt/core/pattern/factory/item COMPONENT devel)

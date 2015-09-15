@@ -366,11 +366,12 @@ void buildSummarizedScatter(int stat, std::map<std::string, std::vector<te::da::
   //Containers used to hold informations temporarily, used to organize them prior to inserting them on the histogram.
   std::map<std::string, std::vector<te::da::ObjectId*> >::iterator oidsIt;
   std::map<std::string, std::vector<std::pair<double, double> > > ::iterator valuesIt;
-  te::stat::NumericStatisticalSummary ss;
 
   //Acquiring the summarized values
   for(valuesIt = valuesToSummarize.begin(); valuesIt !=  valuesToSummarize.end(); ++valuesIt)
   {
+    te::stat::NumericStatisticalSummary ssx;
+    te::stat::NumericStatisticalSummary ssy;
     if((*valuesIt).second.size() > 1 && (stat != -1))
     {
       std::vector<double> xValues;
@@ -386,11 +387,11 @@ void buildSummarizedScatter(int stat, std::map<std::string, std::vector<te::da::
 
       double summarizedXValue, summarizedYValue;
 
-      te::stat::GetNumericStatisticalSummary(xValues, ss);
-      summarizedXValue = getStatisticalValue(stat, ss);
+      te::stat::GetNumericStatisticalSummary(xValues, ssx);
+      summarizedXValue = getStatisticalValue(stat, ssx);
 
-      te::stat::GetNumericStatisticalSummary(yValues, ss);
-      summarizedYValue = getStatisticalValue(stat, ss);
+      te::stat::GetNumericStatisticalSummary(yValues, ssy);
+      summarizedYValue = getStatisticalValue(stat, ssy);
 
       for(size_t j = 0; j < oids.size(); ++j)
         scatter->addData(summarizedXValue, summarizedYValue, oids[j]);
@@ -430,11 +431,11 @@ void buildNumericFrequencies(int slices, int stat, std::map<std::string, std::ve
   //Containers used to hold informations temporarily, used to organize them prior to inserting them on the histogram.
   std::map<std::string, std::vector<std::pair<double, te::da::ObjectId*> > >::iterator valuesIt;
   std::vector<std::pair<double, std::vector<te::da::ObjectId*> > > summarizedValuesToOId;
-  te::stat::NumericStatisticalSummary ss;
 
   //Acquiring the summarized values
   for(valuesIt = valuestoSummarize.begin(); valuesIt !=  valuestoSummarize.end(); ++valuesIt)
   {
+    te::stat::NumericStatisticalSummary ss;
     if((*valuesIt).second.size() > 1 && stat != -1)
     {
       std::vector<double> values;
@@ -498,7 +499,7 @@ void buildNumericFrequencies(int slices, int stat, std::map<std::string, std::ve
         for(size_t k= 0; k < summarizedValuesToOId[i].second.size(); ++k)
           intervalToOIds.at(intervals[j]).push_back(summarizedValuesToOId[i].second[k]);
 
-        frequencies[j] =  frequencies[j]++;
+        ++frequencies[j];
         break;
       }
     }
@@ -523,11 +524,11 @@ void buildStringFrequencies(int stat, std::map<std::string, std::vector<std::pai
   std::map<std::string, std::vector<std::pair<std::string, te::da::ObjectId*> > >::iterator valuesIt;
   std::map<std::string, std::vector<te::da::ObjectId*> >::iterator intervalsIt;
   std::vector<std::pair<std::string, std::vector<te::da::ObjectId*> > > summarizedValuesToOId;
-  te::stat::StringStatisticalSummary ss;
 
   //Acquiring the summarized values
   for(valuesIt = valuestoSummarize.begin(); valuesIt !=  valuestoSummarize.end(); ++valuesIt)
   {
+    te::stat::StringStatisticalSummary ss;
     if((*valuesIt).second.size() > 1 && (stat != -1))
     {
       std::vector<std::string> values;
@@ -566,7 +567,7 @@ void buildStringFrequencies(int stat, std::map<std::string, std::vector<std::pai
         for(size_t k= 0; k < summarizedValuesToOId[i].second.size(); ++k)
           intervalToOIds.at(currentValue).push_back(summarizedValuesToOId[i].second[k]);
 
-        frequencies[j] =  frequencies[j]++;
+        ++frequencies[j];
         break;
       }
     }
@@ -1035,7 +1036,7 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te:
   return displayWidget;
 }
 
-te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, Histogram* histogram)
+te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, std::string summary, Histogram* histogram)
 {
   te::qt::widgets::HistogramChart* chart;
   chart =  new te::qt::widgets::HistogramChart(histogram);
@@ -1043,7 +1044,7 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te:
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
   chartStyle->setTitle(QString::fromStdString("Histogram"));
-  chartStyle->setAxisX(QString::fromStdString(dataset->getPropertyName(propId)));
+  chartStyle->setAxisX(QString::fromStdString(summary + ": " + dataset->getPropertyName(propId)));
   chartStyle->setAxisY(QString::fromStdString("Frequency"));
 
   //Creating and adjusting the chart Display

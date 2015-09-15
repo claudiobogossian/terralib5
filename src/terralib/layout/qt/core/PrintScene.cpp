@@ -95,7 +95,6 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
 
   //Impressão de parte da Cena
   //Não é necessário mudar a escala do View
-
   QPainter newPainter(printer);
   newPainter.setRenderHint(QPainter::Antialiasing);
 
@@ -107,11 +106,11 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
   
   ContextObject context = createNewContext(printer);
 
-  sc->contextUpdated(context);
+  sc->setContext(context);
 
   renderScene(&newPainter, printer);
 
-  sc->contextUpdated(oldContext);
+  sc->setContext(oldContext);
 }
 
 QPrinter* te::layout::PrintScene::createPrinter()
@@ -186,19 +185,25 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
   //Box Paper in the Scene (Source)
   QRectF mmSourceRect(0, 0, w, h);
   
-  //Paper size using the printer dpi (Target)
-  QRect pxTargetRect(0, 0, newPainter->device()->width(), newPainter->device()->height());
+  /* Gets the margins */
+  qreal top = 0;
+  qreal bottom = 0;
+  qreal left = 0;
+  qreal right = 0;
+  QRect pageRect = printer->pageRect();
 
-  /* Print Paper (Scene to Printer)
-  draw items with printer painter */
-  
+  //Paper size using the printer dpi (Target)
   //Convert Paper Size world to screen coordinate. Uses dpi printer.
+  //Adjusts the destination box to use 100% of the paper, including the unprintable area.
+  //In this case, items that are at the edge of the paper mu be cut off.
+  QPointF origin(-pageRect.left(), pageRect.top());
   QSizeF paperPixelBox = printer->paperSize(QPrinter::DevicePixel);
+  QRectF pxTargetRect(origin, paperPixelBox);
 
   //Mirroring Y-Axis
-  newPainter->translate( paperPixelBox.width() / 2, paperPixelBox.height() / 2 );
+  newPainter->translate( paperPixelBox.width() / 2., paperPixelBox.height() / 2. );
   newPainter->scale( 1, -1 );
-  newPainter->translate( -(paperPixelBox.width() / 2), -(paperPixelBox.height() / 2) );
+  newPainter->translate( -(paperPixelBox.width() / 2.), -(paperPixelBox.height() / 2.) );
 
   sc->deselectAllItems();
 
@@ -269,21 +274,9 @@ bool te::layout::PrintScene::exportToPDF()
   return true;
 }
 
-void te::layout::PrintScene::contextUpdated()
-{
-  if(!m_scene)
-    return;
-
-  Scene* sc = dynamic_cast<Scene*>(m_scene);
-  if(!sc)
-    return;
-
-  sc->contextUpdated();
-}
-
 te::layout::ContextObject te::layout::PrintScene::createNewContext( QPrinter* printer )
 {
-  ContextObject invalidContext(0,0,0,0,0);
+  ContextObject invalidContext(0,0,0,0);
 
   if(!m_scene)
     return invalidContext;
@@ -295,11 +288,10 @@ te::layout::ContextObject te::layout::PrintScene::createNewContext( QPrinter* pr
   double dpiX = printer->logicalDpiX();
   double dpiY = printer->logicalDpiY();
   int zoom = 100;
-  PaperConfig* config = sc->getPaperConfig();
   EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
   EnumType* mode = enumMode->getModePrinter();
 
-  ContextObject context(zoom, dpiX, dpiY, config, mode);
+  ContextObject context(zoom, dpiX, dpiY, mode);
   return context;
 }
 

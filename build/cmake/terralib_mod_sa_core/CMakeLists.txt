@@ -46,7 +46,8 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
 
 add_library(terralib_mod_sa_core SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_sa_core terralib_mod_dataaccess
+target_link_libraries(terralib_mod_sa_core terralib_mod_plugin
+                                           terralib_mod_dataaccess
                                            terralib_mod_geometry
                                            terralib_mod_datatype
                                            terralib_mod_common

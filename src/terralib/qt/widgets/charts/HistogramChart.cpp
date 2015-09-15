@@ -348,8 +348,12 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids,
     //Acquiring the slected intervals
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
-      std::string interval = m_histogram->find((*itObjSet))->toString();
-      highlightedIntervals.insert(std::make_pair(interval,0));
+      const te::dt::String* data = static_cast<const te::dt::String*>(m_histogram->find((*itObjSet)));
+      if (data)
+      {
+        std::string interval = data->getValue();
+        highlightedIntervals.insert(std::make_pair(interval, 0));
+      }
     }
 
     //Acquiring the selected values' frequency

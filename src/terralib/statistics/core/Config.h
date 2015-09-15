@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_STATISTICS_CORE_INTERNAL_CONFIG_H
 #define __TERRALIB_STATISTICS_CORE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../Config.h"
-
 #define TE_STATISTICS_MODULE_NAME "te.stat"
 
 /** @name DLL/LIB Module

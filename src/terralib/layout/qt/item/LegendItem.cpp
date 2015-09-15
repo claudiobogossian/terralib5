@@ -27,20 +27,8 @@
 
 // TerraLib
 #include "LegendItem.h"
-#include "..\..\core\pattern\mvc\AbstractItemController.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/singleton/Context.h"
-//#include "../../core/pattern/mvc/ItemController.h"
-//#include "../core/Scene.h"
-//#include "../../core/pattern/mvc/Observable.h"
-//#include "../../../color/RGBAColor.h"
-//#include "../../../qt/widgets/Utils.h"
-//#include "../../../geometry/Envelope.h"
-//#include "../../../geometry/Geometry.h"
-//#include "../../../geometry/Polygon.h"
-//#include "../../../geometry/LinearRing.h"
-//#include "../../../common/STLUtils.h"
-//#include "../../item/LegendModel.h"
-//#include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/GroupingItem.h"
 #include "../../../maptools/Grouping.h"
 #include "../../../maptools/Canvas.h"
@@ -49,9 +37,6 @@
 #include "../../../se/Symbolizer.h"
 #include "../../../se/PolygonSymbolizer.h"
 #include "../../../se/Fill.h"
-//#include "../../../se/Utils.h"
-//#include "../../../color/RGBAColor.h"
-
 
 // Qt
 #include <QPixmap>
@@ -62,17 +47,14 @@
 #include <QColor>
 #include <QMatrix>
 
-te::layout::LegendItem::LegendItem(AbstractItemController* controller, AbstractItemModel* model )
-  : AbstractItem<QGraphicsItem>(controller, model, true)
-  //m_move(false)
+te::layout::LegendItem::LegendItem(AbstractItemController* controller)
+  : AbstractItem<QGraphicsItem>(controller, true)
 {  
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
-
-  //m_nameClass = std::string(this->metaObject()->className());
-
+  
   //The text size or length that exceeds the sides will be cut
   setFlag(QGraphicsItem::ItemClipsToShape);
 }
@@ -81,31 +63,6 @@ te::layout::LegendItem::~LegendItem()
 {
 
 }
-
-//void te::layout::LegendItem::updateObserver( ContextItem context )
-//{
-//  if(!m_model)
-//    return;
-//
-//  Utils* utils = Context::getInstance().getUtils();
-//
-//  if(!utils)
-//    return;
-//
-//  te::gm::Envelope box = m_model->getBox();
-//
-//  if(!box.isValid())
-//    return;
-//  
-//  double widthInPixels = utils->mm2pixel(box.getWidth());
-//  double heightInPixels = utils->mm2pixel(box.getHeight());
-//
-//  this->setRect(QRectF(0, 0, widthInPixels, heightInPixels));
-//
-//  refresh();
-//
-//  update();
-//}
 
 void te::layout::LegendItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
@@ -131,14 +88,7 @@ void te::layout::LegendItem::drawItem( QPainter * painter, const QStyleOptionGra
   int dispBetweenSymbolsInPixels = utils->mm2pixel(displacementBetweenSymbols);
   int dispBetweenTitleAndSymbolsInPixels = utils->mm2pixel(displacementBetweenTitleAndSymbols);
   int symbolSizeInPixels = utils->mm2pixel(symbolsize);
-
-  //int borderDisplacementInPixels = utils->mm2pixel(legendModel->getBorderDisplacement());
-  //int dispBetweenSymbolAndTextInPixels = utils->mm2pixel(legendModel->getDisplacementBetweenSymbolAndText());
-  //int dispBetweenSymbolsInPixels = utils->mm2pixel(legendModel->getDisplacementBetweenSymbols());
-  //int dispBetweenTitleAndSymbolsInPixels = utils->mm2pixel(legendModel->getDisplacementBetweenTitleAndSymbols());
-  //int symbolSizeInPixels = utils->mm2pixel(legendModel->getSymbolSize());
-
-
+  
   if(layerList.empty() == true)
   {
     return;
@@ -278,34 +228,6 @@ void te::layout::LegendItem::drawItem( QPainter * painter, const QStyleOptionGra
       y1 += dispBetweenSymbolsInPixels;
     }
   }
-
-  //this->setRect(QRectF(0, 0, widthBox, heightBox));
 }
 
-//QVariant te::layout::LegendItem::itemChange( GraphicsItemChange change, const QVariant & value )
-//{
-//  if(change == QGraphicsItem::ItemPositionChange && !m_move)
-//  {
-//    // value is the new position.
-//    QPointF newPos = value.toPointF();
-//    double h = 0;
-//
-//    newPos.setX(newPos.x() - transform().dx());
-//    newPos.setY(newPos.y() - transform().dy() + h);
-//    return newPos;
-//  }
-//  else if(change == QGraphicsItem::ItemPositionHasChanged)
-//  {
-//    refresh();
-//    m_move = false;
-//  }
-//
-//  return QGraphicsItem::itemChange(change, value);
-//}
-//
-//void te::layout::LegendItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
-//{
-//  m_move = true;
-//
-//  QGraphicsItem::mouseMoveEvent(event);
-//}
+

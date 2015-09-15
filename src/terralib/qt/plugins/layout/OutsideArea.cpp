@@ -34,9 +34,9 @@
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 #include "../../../layout/core/enum/Enums.h"
+#include "../../../layout/core/pattern/mvc/OutsideObserver.h"
 #include "../../../layout/qt/core/BuildGraphicsItem.h"
 #include "../../../layout/qt/core/BuildGraphicsOutside.h"
-#include "terralib/layout/qt/outside/ToolbarController.h"
 
 // STL
 #include <string>
@@ -124,7 +124,7 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_view, SIGNAL(hideView()), this, SLOT(onHideView()));
     connect(m_view, SIGNAL(closeView()), this, SLOT(onCloseView()));
     connect(m_view, SIGNAL(showView()), this, SLOT(onShowView()));
-    connect(this, SIGNAL(changeMenuMode(te::layout::EnumType*)), m_view, SLOT(onMainMenuChangeMode(te::layout::EnumType*)));
+    connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
     connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
   }
 
@@ -150,11 +150,9 @@ void te::qt::plugins::layout::OutsideArea::init()
 
   if(m_toolbar)
   {
-    connect(m_toolbar, SIGNAL(changeMode(te::layout::EnumType*)), m_view, SLOT(onToolbarChangeMode(te::layout::EnumType*)));
+    connect(m_toolbar, SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
     connect(m_toolbar, SIGNAL(zoomChangedInComboBox(int)), m_view, SLOT(setZoom(int)));
-
-    te::layout::ToolbarController* controller = dynamic_cast<te::layout::ToolbarController*>(m_toolbar->getController());
-    connect(m_view, SIGNAL(zoomChanged(int)), controller, SLOT(onZoomChanged(int)));
+    connect(m_view, SIGNAL(zoomChanged(int)), m_toolbar, SLOT(onZoomChanged(int)));
   }
 
   if(m_dockInspector)
@@ -173,14 +171,14 @@ void te::qt::plugins::layout::OutsideArea::init()
 void te::qt::plugins::layout::OutsideArea::createPropertiesDock()
 {
   m_dockProperties = new PropertiesDock;  
-  m_dockProperties->setFeatures(QDockWidget::DockWidgetMovable |  
+  m_dockProperties->setFeatures(QDockWidget::DockWidgetMovable |	
     QDockWidget::DockWidgetFloatable);
 }
 
 void te::qt::plugins::layout::OutsideArea::createInspectorDock()
 {
   m_dockInspector = new ObjectInspectorDock;
-  m_dockInspector->setFeatures(QDockWidget::DockWidgetMovable |  
+  m_dockInspector->setFeatures(QDockWidget::DockWidgetMovable |	
     QDockWidget::DockWidgetFloatable);
 }
 
@@ -279,33 +277,31 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
 
   if(action->objectName().compare(m_optionNew.c_str()) == 0)
   {
-    m_view->newTemplate();
+    changeAction(type->getModeNewTemplate());
   }
   else if(action->objectName().compare(m_optionUpdate.c_str()) == 0)
   {
-    //changeAction wiil be TypeSaveCurrentTemplate
+    //changeAction(TypeSaveCurrentTemplate);
   }
   else if(action->objectName().compare(m_optionImportJSON.c_str()) == 0)
   {
-    te::layout::EnumTemplateType* enumTemplate = te::layout::Enums::getInstance().getEnumTemplateType();
-    m_view->importTemplate(enumTemplate->getJsonType());
+    changeAction(type->getModeImportJSONProps());
   }
   else if(action->objectName().compare(m_optionExportJSON.c_str()) == 0)
   {
-    te::layout::EnumTemplateType* enumTemplate = te::layout::Enums::getInstance().getEnumTemplateType();
-    m_view->exportProperties(enumTemplate->getJsonType());
+    changeAction(type->getModeExportPropsJSON());
   }
   else if(action->objectName().compare(m_optionPageConfig.c_str()) == 0)
-  {    
-    m_view->showPageSetup();
+  {
+    changeAction(type->getModePageConfig());
   }
   else if(action->objectName().compare(m_optionPrint.c_str()) == 0)
   {
-    m_view->print();
+    changeAction(type->getModePrinter());
   }
   else if(action->objectName().compare(m_optionExit.c_str()) == 0)
   {
-    m_view->close();
+    changeAction(type->getModeExit());
     emit exit();
   }
   else if(action->objectName().compare(m_optionDockInspector.c_str()) == 0)
@@ -352,6 +348,23 @@ QAction* te::qt::plugins::layout::OutsideArea::createAction( std::string text, s
   actionMenu->setToolTip(tooltip.c_str());
 
   return actionMenu;
+}
+
+void te::qt::plugins::layout::OutsideArea::changeAction( te::layout::EnumType* mode )
+{
+  bool result = true;
+  te::layout::EnumType* layoutMode = te::layout::Context::getInstance().getMode();
+
+  if(mode != layoutMode)
+  {
+    te::layout::Context::getInstance().setMode(mode);
+  }
+  else
+  {
+    result = false;
+  }
+
+  emit changeMenuContext(result);
 }
 
 te::qt::plugins::layout::PropertiesDock* te::qt::plugins::layout::OutsideArea::getPropertiesDock()
@@ -436,8 +449,7 @@ void te::qt::plugins::layout::OutsideArea::openMainMenu()
 {
   if(!m_parentMenu)
     return;
-  
-  bool exist_menu = false;
+
   QList<QAction*> acts = m_parentMenu->actions();
  
   foreach(QAction* act, acts)
@@ -523,7 +535,7 @@ void te::qt::plugins::layout::OutsideArea::onRefreshStatusBar()
     return;
   }
 
-  te::layout::EnumType* mode = m_view->getCurrentMode();
+  te::layout::EnumType* mode = te::layout::Context::getInstance().getMode();
 
   std::string msg;
 

@@ -166,7 +166,11 @@ void te::mem::DataSetItem::setInt16(const std::string& name, boost::int16_t valu
 
 boost::int32_t te::mem::DataSetItem::getInt32(std::size_t i) const
 {
-  return static_cast<const te::dt::Int32*>(&m_data[i])->getValue();
+  const te::dt::AbstractData* d = &m_data.at(i);
+
+  const te::dt::Int32* data = dynamic_cast<const te::dt::Int32*>(&m_data.at(i));
+
+  return data->getValue();
 }
 
 void te::mem::DataSetItem::setInt32(std::size_t i, boost::int32_t value)

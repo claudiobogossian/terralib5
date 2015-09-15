@@ -161,7 +161,7 @@ bool te::attributefill::VectorToRaster::run()
   }
 
   te::common::TaskProgress task("Rasterizing...");
-  task.setTotalSteps(m_selectedAttVec.size() * vectorMap.size());
+  task.setTotalSteps((int)(m_selectedAttVec.size() * vectorMap.size()));
   task.useTimer(true);
 
   for(std::size_t i = 0; i < m_selectedAttVec.size(); ++i)
@@ -171,6 +171,7 @@ bool te::attributefill::VectorToRaster::run()
     while(vectorIt != vectorMap.end())
     {
       te::gm::Polygon* polygon = static_cast<te::gm::Polygon*>(vectorIt->first);
+      polygon->setSRID(geomProp->getSRID());
 
       if(!polygon)
         continue;

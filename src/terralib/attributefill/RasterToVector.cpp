@@ -118,6 +118,8 @@ bool te::attributefill::RasterToVector::run()
   std::auto_ptr<te::rst::Raster> raster = dsRaster->getRaster(rasterProp->getName());
   double resX = raster->getResolutionX();
   double resY = raster->getResolutionY();
+  
+  te::gm::Envelope* env = raster->getExtent();
 
 // raster Attributes
   te::rp::RasterAttributes* rasterAtt = 0;
@@ -169,10 +171,14 @@ bool te::attributefill::RasterToVector::run()
     std::vector<std::vector<double> > valuesFromRaster;
     valuesFromRaster.resize(m_bands.size());
 
+// Contains
+    bool contains = true;
+
     if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
     {
       te::gm::MultiPolygon* mPolygon = dynamic_cast< te::gm::MultiPolygon* >(geom.get());
-      
+      contains = env->contains(*mPolygon->getMBR());
+
       if (percentByArea)
         area = mPolygon->getArea();
 
@@ -182,6 +188,7 @@ bool te::attributefill::RasterToVector::run()
       {
         te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(mPolygon->getGeometryN(n));
         std::vector<std::vector<double> > tempValues = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
+        
 
         for(std::size_t band = 0; band < tempValues.size(); ++band)
         {
@@ -197,6 +204,7 @@ bool te::attributefill::RasterToVector::run()
     else if(geom->getGeomTypeId() == te::gm::PolygonType)
     {
       te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(geom.get());
+      contains = env->contains(*polygon->getMBR());
 
       if (percentByArea)
         area = polygon->getArea();
@@ -217,8 +225,7 @@ bool te::attributefill::RasterToVector::run()
       te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
       
       if (percentByArea)
-        te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary);
-
+        te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary, contains);
 
       std::size_t current_index = init_index + m_statSum.size();
 

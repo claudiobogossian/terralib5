@@ -40,7 +40,7 @@ namespace te
 {
   namespace layout
   {
-
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic scale of a map.
         Its coordinate system is the same of scene (millimeters). 
@@ -60,7 +60,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        ScaleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        ScaleItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

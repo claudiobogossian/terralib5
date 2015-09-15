@@ -27,9 +27,7 @@
 
 // TerraLib
 #include "SVGItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
@@ -46,15 +44,13 @@
 #include <QPen>
 #include <QPolygonF>
 #include <QPainterPath>
-#include "../../core/pattern/mvc/AbstractItemController.h"
-#include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "AbstractItem.h"
 
-te::layout::SVGItem::SVGItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
-    : AbstractItem<QGraphicsItem>(controller, model)
-  {
-    //m_nameClass = std::string(this->metaObject()->className());
-  }
+te::layout::SVGItem::SVGItem(AbstractItemController* controller, bool invertedMatrix)
+    : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
+{
+    
+}
 
 te::layout::SVGItem::~SVGItem()
 {
@@ -65,41 +61,4 @@ void te::layout::SVGItem::drawItem( QPainter * painter, const QStyleOptionGraphi
 {
 
 }
-
-//void te::layout::SVGItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-//{
-//  Q_UNUSED( option );
-//  Q_UNUSED( widget );
-//  if ( !painter )
-//  {
-//    return;
-//  }
-//
-//  drawBackground(painter);
-//
-//  drawSVG(painter);
-//  
-//  //Draw Selection
-//  if (option->state & QStyle::State_Selected)
-//  {
-//    drawSelection(painter);
-//  }
-//}
-//
-//void te::layout::SVGItem::drawSVG( QPainter * painter )
-//{
-//  SVGModel* model = dynamic_cast<SVGModel*>(m_model);
-//  if(!model)
-//  {
-//    return;
-//  }
-//
-//  painter->save();
-//
-//  painter->drawRect(boundingRect());
-//  painter->drawText(QPointF(boundingRect().center().x(), boundingRect().center().y()), "SVG Item");
-//  
-//  painter->restore();
-//}
-
 

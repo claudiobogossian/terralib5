@@ -30,10 +30,10 @@
 #include "../../item/NorthModel.h"
 #include "../../core/enum/EnumNorthArrowType.h"
 
-te::layout::NorthItem::NorthItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) :
-  AbstractItem<QGraphicsItem>(controller, model)
+te::layout::NorthItem::NorthItem(AbstractItemController* controller, bool invertedMatrix) :
+  AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {  
-  //m_nameClass = std::string(this->metaObject()->className());
+
 }
 
 te::layout::NorthItem::~NorthItem()
@@ -69,7 +69,7 @@ void te::layout::NorthItem::drawItem( QPainter * painter, const QStyleOptionGrap
 void te::layout::NorthItem::drawNorthArrow1(QPainter * painter)
 {
   painter->save();
-  QColor cpen(0,0,0);
+  QColor cpen = setBrush(painter);
   QPen pn(cpen, 0, Qt::SolidLine);
   painter->setPen(pn);
   QPointF p1 = QPointF(boundingRect().width() / 2.,boundingRect().center().y()+boundingRect().height()/4.);
@@ -92,14 +92,13 @@ void te::layout::NorthItem::drawNorthArrow1(QPainter * painter)
   painter->drawLine(p8,p7);
 
   painter->setPen(pn);
-  setBrush(painter);
   painter->drawPolygon(north);
   painter->restore();
 }
 void te::layout::NorthItem::drawNorthArrow2(QPainter * painter)
 {
   painter->save();
-  QColor cpen(0,0,0);
+  QColor cpen = setBrush(painter);
   QPen pn(cpen, 0, Qt::SolidLine);
   
   QColor secondPolygon(255, 255, 255, 255);
@@ -128,7 +127,6 @@ void te::layout::NorthItem::drawNorthArrow2(QPainter * painter)
   north3<<p1<<p4<<p3;
 
   painter->setPen(pn);
-  setBrush(painter);
   painter->drawPolygon(north2);
   painter->setBrush(QBrush(secondPolygon));
   painter->drawPolygon(north3);
@@ -139,7 +137,7 @@ void te::layout::NorthItem::drawNorthArrow2(QPainter * painter)
 void te::layout::NorthItem::drawNorthArrow3(QPainter * painter)
 {
   painter->save();
-  QColor cpen(0,0,0);
+  QColor cpen = setBrush(painter);
   QPen pn(cpen, 0, Qt::SolidLine);
   painter->setPen(pn);
 
@@ -173,16 +171,16 @@ void te::layout::NorthItem::drawNorthArrow3(QPainter * painter)
   north5<<p7<<p11<<p12;
 
   painter->setPen(pn);
-  setBrush(painter);
   painter->drawPolygon(north4);
   painter->drawPolygon(north5);
   painter->restore();
 }
 
-void te::layout::NorthItem::setBrush(QPainter* painter)
+QColor te::layout::NorthItem::setBrush(QPainter* painter)
 {
   const Property& colorProperty = m_controller->getProperty("color");
   const te::color::RGBAColor& color = colorProperty.getValue().toColor();
   QColor brushColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
   painter->setBrush(QBrush(brushColor));
+  return brushColor;
 }

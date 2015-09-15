@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../vp/qt/TransformationDialog.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "TransformationAction.h"
 
 // Qt
@@ -46,17 +45,11 @@ te::qt::plugins::vp::TransformationAction::~TransformationAction()
 {
 }
 
-void te::qt::plugins::vp::TransformationAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::TransformationAction::onActionActivated(bool)
 {
   te::vp::TransformationDialog dlg(0);
 
-  // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-  if(prj)
-  {
-    dlg.setLayers(prj->getSingleLayers(false));
-  }
+  dlg.setLayers(getLayers());
 
   dlg.exec();
 }

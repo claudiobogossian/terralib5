@@ -31,7 +31,6 @@
 #include "../../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../../../core/enum/EnumType.h"
-#include "../../../../core/pattern/mvc/Observable.h"
 #include "../../Scene.h"
 
 // Qt
@@ -100,7 +99,7 @@ QString te::layout::AddCommand::createCommandString( QGraphicsItem* item, const 
     return QObject::tr("%1");
   
   return QObject::tr("%1 at (%2, %3)")
-    .arg(obs->getController()->getModel()->getType()->getName().c_str())
+    .arg(obs->getController()->getProperties().getTypeObj()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
 }
 

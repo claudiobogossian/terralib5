@@ -15,7 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
- */
+*/
 
 /*!
   \file terralib/edit/qt/Renderer.cpp
@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../dataaccess/dataset/ObjectId.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/LineString.h"
@@ -40,9 +41,9 @@
 #include <map>
 
 te::edit::Renderer::Renderer()
-  : m_canvas(0),
-    m_srid(TE_UNKNOWN_SRS),
-    m_currentGeomType(te::gm::UnknownGeometryType)
+: m_canvas(0),
+m_srid(TE_UNKNOWN_SRS),
+m_currentGeomType(te::gm::UnknownGeometryType)
 {
   setupDefaultStyle();
 }
@@ -79,15 +80,26 @@ void te::edit::Renderer::drawRepository(const std::string& source, const te::gm:
 
   std::vector<Feature*> features = repository->getFeatures(e, srid);
 
-  for(std::size_t i = 0; i < features.size(); ++i)
-    draw(features[i]->getGeometry());
+  //need to reconfigure the canvas when there geometries, create a function on repository that count features by operation
+  for (std::size_t i = 0; i < features.size(); ++i)
+  {
+    if (features[i]->getOperationType() == GEOMETRY_DELETE)
+    {
+      m_styleChanged = true;
+      break;
+    }
+  }
+
+  for (std::size_t i = 0; i < features.size(); ++i) 
+    draw(features[i]->getGeometry(), false, features[i]->getOperationType() == GEOMETRY_DELETE);
+
 }
 
-void te::edit::Renderer::prepare(te::gm::GeomType type)
+void te::edit::Renderer::prepare(te::gm::GeomType type, const bool& removed)
 {
   assert(m_canvas);
 
-  if(m_currentGeomType == type && m_styleChanged == false)
+  if (m_currentGeomType == type && m_styleChanged == false)
     return; // No need reconfigure the canvas
 
   m_currentGeomType = type;
@@ -104,6 +116,13 @@ void te::edit::Renderer::prepare(te::gm::GeomType type)
     case te::gm::MultiPolygonZMType:
     {
       te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
+
+      QBrush b;
+
+      b.setColor((removed) ? Qt::black : m_polygonFillColor);
+      b.setStyle((removed) ? Qt::DiagCrossPattern : Qt::SolidPattern);
+
+      m_canvas->setPolygonFillColor(b);
     }
     break;
 
@@ -138,7 +157,7 @@ void te::edit::Renderer::prepare(te::gm::GeomType type)
   }
 }
 
-void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes)
+void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes, const bool& removed)
 {
   assert(m_canvas);
   assert(geom);
@@ -146,7 +165,7 @@ void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes)
   if((geom->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (geom->getSRID() != m_srid))
     geom->transform(m_srid);
 
-  prepare(geom->getGeomTypeId());
+  prepare(geom->getGeomTypeId(), removed);
 
   m_canvas->draw(geom);
 
@@ -206,6 +225,7 @@ void te::edit::Renderer::setPolygonStyle(const QColor& fillColor, const QColor& 
   m_polygonContourWidth = contourWidth;
 
   m_styleChanged = true;
+
 }
 
 void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillColor, const QColor& contourColor,

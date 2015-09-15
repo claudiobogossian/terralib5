@@ -176,6 +176,9 @@ te::dt::AbstractData* te::da::CharEncodingConverter::operator()(DataSet* dataset
   assert(dataset->getPropertyDataType(pos) == te::dt::STRING_TYPE);
   assert(dstType == te::dt::STRING_TYPE);
 
+  if (dataset->isNull(pos))
+    return 0;
+
   std::string value = dataset->getString(pos);
   te::common::CharEncoding fromCode = dataset->getPropertyCharEncoding(pos);
 
@@ -198,4 +201,26 @@ te::dt::AbstractData* te::da::CharEncodingConverter::operator()(DataSet* dataset
 #else
     return new te::dt::String(value);
 #endif
+}
+
+te::dt::AbstractData* te::da::SRIDAssociation::operator()(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType)
+{
+  assert(indexes.size() == 1);
+
+  if (dataset->isNull(indexes[0]))
+    return 0;
+
+  // Gets the data from input data set
+  std::auto_ptr<te::gm::Geometry> geom(dataset->getGeometry(indexes[0]));
+  assert(geom.get());
+
+  //set input srid
+  if (m_inputSRID != TE_UNKNOWN_SRS)
+    geom->setSRID(m_inputSRID);
+
+  //convert if necessary
+  if (m_outputSRID != TE_UNKNOWN_SRS && m_inputSRID != TE_UNKNOWN_SRS && m_inputSRID != m_outputSRID)
+    geom->transform(m_outputSRID);
+
+  return geom.release();
 }

@@ -27,23 +27,18 @@
 
 // TerraLib
 #include "ImageModel.h"
-#include "../core/ContextItem.h"
+
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
 #include "../core/property/Property.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
-#include "../core/pattern/singleton/Context.h"
 
 te::layout::ImageModel::ImageModel()
   : AbstractItemModel()
 {
-  /*std::string fileName("");
-  te::color::RGBAColor backgroundColor(0, 0, 255, 0);
+  std::string fileName("");
   te::gm::Envelope box(0., 0., 90., 90.);
-  te::color::RGBAColor contourColor(0, 0, 0, 255);
 
   this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getImageItem());
 
@@ -52,16 +47,8 @@ te::layout::ImageModel::ImageModel()
   //adding properties
   {
     Property property(0);
-    property.setName("contour_color");
-    property.setLabel("Contour Color");
-    property.setValue(contourColor, dataType->getDataTypeColor());
-    property.setMenu(true);
-    m_properties.addProperty(property);
-  }
-
-  {
-    Property property(0);
-    property.setName("fileName");
+    property.setName("file_name");
+    property.setLabel("File Name");
     property.setValue(fileName, dataType->getDataTypeImage());
     property.setMenu(true);
     m_properties.addProperty(property);
@@ -73,8 +60,7 @@ te::layout::ImageModel::ImageModel()
     property.setName("show_frame");
     property.setValue(false, dataType->getDataTypeBool());
     this->m_properties.updateProperty(property);
-  }*/
-
+  }
 }
 
 te::layout::ImageModel::~ImageModel()

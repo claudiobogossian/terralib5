@@ -159,7 +159,7 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
     reprojectedEnvelope.transform(m_display->getSRID(), layer->getSRID());
   }
 
-  if(!reprojectedEnvelope.within(layer->getExtent()))
+  if(!reprojectedEnvelope.intersects(layer->getExtent()))
     return;
 
   // The Layer item

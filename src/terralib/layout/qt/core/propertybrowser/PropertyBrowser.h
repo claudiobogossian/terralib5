@@ -118,7 +118,9 @@ namespace te
         virtual void onChangeDlgProperty(Property property);
 
         virtual void onChangeDlgProperty(std::vector<Property> props);
-        
+
+        virtual void onCurrentItemChanged(QtBrowserItem* item);
+
       signals:
 
         void changePropertyValue(QtProperty *property, QList<QtBrowserItem*> items);
@@ -126,6 +128,8 @@ namespace te
         void changePropertyValue(Property property);
 
         void changePropertyValue(std::vector<Property> props);
+
+        void currentItemChanged(QtBrowserItem* item);
 
       protected:
       

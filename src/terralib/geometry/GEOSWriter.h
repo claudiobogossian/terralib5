@@ -27,9 +27,9 @@
 #define __TERRALIB_GEOMETRY_INTERNAL_GEOSWRITER_H
 
 // TerraLib
+#include "../BuildConfig.h"
 #include "../common/Static.h"
 #include "Config.h"
-#include "terralib_config.h"
 
 #ifdef TERRALIB_GEOS_ENABLED
 
@@ -42,9 +42,11 @@ namespace geos
   namespace geom
   {
     class CoordinateSequence;
+	class Envelope;
     class Geometry;
     class GeometryCollection;
     class LinearRing;
+	class LineSegment;
     class LineString;
     class MultiLineString;
     class MultiPoint;
@@ -61,6 +63,7 @@ namespace te
 // Forward declaration
     class Geometry;
     class GeometryCollection;
+	class Line;
     class LinearRing;
     class LineString;
     class MultiLineString;
@@ -71,6 +74,7 @@ namespace te
     class PointZ;
     class PointZM;
     class Polygon;
+	class Envelope;
 
     /*!
       \class GEOSWriter
@@ -204,7 +208,19 @@ namespace te
         */
         static geos::geom::MultiPoint* write(const MultiPoint* teMPt);
 
-        /*!
+		/*!
+		\brief It converts the TerraLib Geometry Envelope to a GEOS Envelope.
+
+		\param teEnv The TerraLib Envelope to be used to create the GEOS Envelope.
+
+		\return A GEOS Envelope geometry. The client will take its ownership.
+
+		\exception It throws an exception if a conversion is not possible.
+		*/
+		static geos::geom::Envelope* write(const Envelope* teEnv);
+		static geos::geom::LineSegment* write(const Line* teLine);
+
+		/*!
           \brief It converts the TerraLib geometry collection to a GEOS geometry collection.
 
           \param teGeomColl The TerraLib geometry collection to be used to create the GEOS geometry collection.

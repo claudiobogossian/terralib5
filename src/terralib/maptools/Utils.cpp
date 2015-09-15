@@ -542,7 +542,7 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
     double min = cmin->real();
     double max = cmax->real();
 
-    // *** aqui temos a questão da variável global que diz se é para normalizar ou não os valores do raster ***
+    // *** aqui temos a questï¿½o da variï¿½vel global que diz se ï¿½ para normalizar ou nï¿½o os valores do raster ***
     rasterTransform.setLinearTransfParameters(min, max, 0, 255);
   }
   else

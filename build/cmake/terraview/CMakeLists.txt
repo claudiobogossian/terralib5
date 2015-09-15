@@ -28,11 +28,32 @@
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/Config.h.in
                ${CMAKE_BINARY_DIR}/terraview_config.h @ONLY)
 
-include_directories(${Boost_INCLUDE_DIR})
+
+include_directories(${Boost_INCLUDE_DIR} ${LOG4CXX_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.h)
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ui/*.ui)
+
+source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
+source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
+
+#events
+file(GLOB TERRALIB_EVENTS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/events/*.h)
+
+source_group("Header Files\\events"  FILES ${TERRALIB_EVENTS_HDR_FILES})
+
+#settings
+file(GLOB TERRALIB_SETTINGS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/*.cpp)
+file(GLOB TERRALIB_SETTINGS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/*.h)
+file(GLOB TERRALIB_SETTINGS_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/ui/*.ui)
+
+source_group("Source Files\\settings"  FILES ${TERRALIB_SETTINGS_SRC_FILES})
+source_group("Header Files\\settings"  FILES ${TERRALIB_SETTINGS_HDR_FILES})
+source_group("UI Files\\settings"  FILES ${TERRALIB_SETTINGS_UI_FILES})
+
+
 
 if(APPLE)
 
@@ -42,7 +63,7 @@ if(APPLE)
 
   if(TERRALIB_BUILD_AS_BUNDLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "TerraView")
-    set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2014")
+    set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2015")
     set(MACOSX_BUNDLE_SIGNATURE "TerraView")
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "http://www.terraview.org")
     set(MACOSX_BUNDLE_EXECUTABLE_NAME "TerraView")
@@ -69,8 +90,11 @@ if(Qt5_FOUND)
 
 # uic'ing
   QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
+  QT5_WRAP_UI(TERRALIB_SETTINGS_GEN_HDR_FILES ${TERRALIB_SETTINGS_UI_FILES})
 
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
+                     ${TERRALIB_EVENTS_HDR_FILES}
+                     ${TERRALIB_SETTINGS_SRC_FILES} ${TERRALIB_SETTINGS_HDR_FILES} ${TERRALIB_SETTINGS_GEN_HDR_FILES})
 
   add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
   
@@ -163,8 +187,8 @@ if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
   if(APPLE)
 
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-         "[Paths]\nBinaries = .\nPlugins = qtplugins\nTranslations = share/terralib/translations")
-         
+         "[Paths]\nBinaries = MacOS\nPlugins = qtplugins\nTranslations = share/terralib/translations")
+
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
             DESTINATION terraview.app/Contents/Resources COMPONENT runtime)
 

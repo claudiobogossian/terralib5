@@ -96,12 +96,12 @@ std::string terralib4::RasterDataSet::getPropertyName(std::size_t /*i*/) const
   return "raster";
 }
 
-te::common::CharEncoding terralib4::RasterDataSet::getPropertyCharEncoding(std::size_t i) const
+te::common::CharEncoding terralib4::RasterDataSet::getPropertyCharEncoding(std::size_t) const
 {
   return te::common::UNKNOWN_CHAR_ENCODING;
 }
 
-std::string terralib4::RasterDataSet::getDatasetNameOfProperty(std::size_t /*i*/) const
+std::string terralib4::RasterDataSet::getDatasetNameOfProperty(std::size_t) const
 {
   return "raster";
 }
@@ -189,12 +189,12 @@ boost::int16_t terralib4::RasterDataSet::getInt16(std::size_t /*i*/) const
   throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
-boost::int32_t terralib4::RasterDataSet::getInt32(std::size_t i) const
+boost::int32_t terralib4::RasterDataSet::getInt32(std::size_t) const
 {
   throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
-boost::int64_t terralib4::RasterDataSet::getInt64(std::size_t i) const
+boost::int64_t terralib4::RasterDataSet::getInt64(std::size_t) const
 {
   throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
@@ -234,7 +234,7 @@ std::auto_ptr<te::gm::Geometry> terralib4::RasterDataSet::getGeometry(std::size_
   throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
-std::auto_ptr<te::rst::Raster> terralib4::RasterDataSet::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> terralib4::RasterDataSet::getRaster(std::size_t) const
 {
   return std::auto_ptr<te::rst::Raster>(new Raster(m_raster));
 }
@@ -244,7 +244,7 @@ std::auto_ptr<te::dt::DateTime> terralib4::RasterDataSet::getDateTime(std::size_
   throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
-std::auto_ptr<te::dt::Array> terralib4::RasterDataSet::getArray(std::size_t i) const
+std::auto_ptr<te::dt::Array> terralib4::RasterDataSet::getArray(std::size_t) const
 {
   throw Exception(TE_TR("Not supported by this type of dataset!"));
 }

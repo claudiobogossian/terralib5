@@ -31,35 +31,79 @@
 #include "Config.h"
 
 // Qt
+#include <QAction>
 #include <QMenu>
+
+class EditDelegate;
 
 namespace te
 {
+  namespace map
+  {
+    class AbstractLayer;
+  }
+
   namespace qt
   {
+    namespace widgets
+    {
+      class LayerItemView;
+    }
+
     namespace plugins
     {
       namespace edit
       {
-// Forward declaration
+        // Forward declaration
         class ToolBar;
 
-        class Plugin : public te::plugin::Plugin
+        class Plugin : public QObject, public te::plugin::Plugin
         {
-          public:
+          Q_OBJECT
 
-            Plugin(const te::plugin::PluginInfo& pluginInfo);
+        public:
 
-            ~Plugin();
+          Plugin(const te::plugin::PluginInfo& pluginInfo);
 
-            void startup();
+          ~Plugin();
 
-            void shutdown();
+          void startup();
 
-          protected:
+          void shutdown();
 
-            ToolBar* m_toolbar; //!< Main toolbar of TerraLib Edit Qt Plugin.
-            QMenu* m_menu;      //!< Main menu of TerraLib Edit Qt Plugin.
+        protected slots:
+          /*!
+            \brief Slot function used when a action was selected.
+
+            \param checked Flag used in case a toggle action.
+            */
+          void onActionActivated(bool);
+
+          void onApplicationTriggered(te::qt::af::evt::Event* e);
+
+          void onStashedLayer(te::map::AbstractLayer* layer);
+
+          void onGeometriesChanged();
+
+        Q_SIGNALS:
+
+          void triggered(te::qt::af::evt::Event* e);
+
+        protected:
+
+          void drawStashed();
+
+          void updateDelegate(const bool& add);
+
+          te::qt::widgets::LayerItemView* getLayerExplorer();
+
+          ToolBar* m_toolbar; //!< Main toolbar of TerraLib Edit Qt Plugin.
+          QMenu* m_menu;      //!< Main menu of TerraLib Edit Qt Plugin.
+          QAction* m_action;    //!< Action used to call the process
+
+          EditDelegate* m_delegate;
+
+          //void createAction(std::string name, std::string pixmap = "");
         };
 
       } // end namespace edit
@@ -67,6 +111,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINEDITEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINEDITEXPORT)
 
 #endif //__TE_QT_PLUGINS_EDIT_INTERNAL_PLUGIN_H

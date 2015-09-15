@@ -47,7 +47,7 @@ te::qt::plugins::rp::ArithmeticOpAction::~ArithmeticOpAction()
 
 void te::qt::plugins::rp::ArithmeticOpAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ArithmeticOpWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::ArithmeticOpWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

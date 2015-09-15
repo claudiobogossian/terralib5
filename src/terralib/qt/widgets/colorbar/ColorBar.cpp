@@ -332,7 +332,7 @@ void te::qt::widgets::colorbar::ColorBar::wheelEvent(QWheelEvent* e)
   if(pin != -1)
   {
     int hh, ss, ll, a;
-    int h, s, l, d = 1;
+    int h, s, l, d;
 
     te::color::RGBAColor color1 = m_colorBar->getColorMap().at(pin);
     te::color::RGBAColor color2 = m_colorBar->getColorMap().at(pin);

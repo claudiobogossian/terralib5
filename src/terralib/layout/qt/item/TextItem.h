@@ -38,10 +38,13 @@
 // Qt
 #include <QGraphicsTextItem>
 
+class QKeyEvent;
+
 namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents text. This object is of type QGraphicsTextItem. He is directly editable via user interaction. 
     His transformation matrix is inverted, that is, the inverse of the matrix of the scene, so its coordinate system is screen (pixel), 
@@ -65,7 +68,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        TextItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        TextItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -90,9 +93,19 @@ namespace te
       protected:
 
         /*!
+        \brief Reimplemented from QGraphicsTextItem
+        */
+        virtual void	mousePressEvent(QGraphicsSceneMouseEvent * event);
+
+        /*!
           \brief Reimplemented from QGraphicsTextItem
          */
         virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
+
+        /*!
+        \brief Reimplemented from QGraphicsTextItem
+        */
+        virtual void keyPressEvent(QKeyEvent * event);
 
         /*!
           \brief Enters the edition mode
@@ -104,13 +117,9 @@ namespace te
          */
         void leaveEditionMode();
 
-protected slots:
+      protected slots:
 
         virtual void updateGeometry( int position, int charsRemoved, int charsAdded );
-
-protected:
-
-        bool           m_isInEdition;
     };
   }
 }

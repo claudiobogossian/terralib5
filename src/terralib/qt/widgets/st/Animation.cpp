@@ -12,7 +12,7 @@ te::qt::widgets::Animation::~Animation()
 {
 }
 
-void te::qt::widgets::Animation::createAnimationDataInDisplayProjection(const te::dt::TimePeriod& period)
+void te::qt::widgets::Animation::adjustDataToAnimationTemporalExtent(const te::dt::TimePeriod& period)
 {
   if(m_temporalAnimationExtent != period)
     m_temporalAnimationExtent = te::dt::TimePeriod(period.getInitialTimeInstant(), period.getFinalTimeInstant());
@@ -20,7 +20,7 @@ void te::qt::widgets::Animation::createAnimationDataInDisplayProjection(const te
   AnimationItem* ai = (AnimationItem*)targetObject();
 
   // create route points in display projection
-  ai->createAnimationDataInDisplayProjection();
+  ai->adjustDataToAnimationTemporalExtent();
 
   setDataKeyValues();
 }
@@ -41,7 +41,7 @@ void te::qt::widgets::Animation::setDataKeyValues()
   setStartValue(ai->m_animationRoute[0]);
 
   boost::posix_time::ptime itime = ai->m_animationTime[0].getTimeInstant();
-  boost::posix_time::ptime ftime = ai->m_animationTime[size-1].getTimeInstant();
+  boost::posix_time::ptime ftime = ai->m_animationTime[(int)size-1].getTimeInstant();
 
   // if the initial time is greater than the total initial time,
   // be stopped until the time be equal to the initial time this animation.
@@ -62,14 +62,14 @@ void te::qt::widgets::Animation::setDataKeyValues()
 
   for(size_t i = 1; i < size-1; ++i)
   {
-    te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+    te::dt::TimeInstant tinstant = ai->m_animationTime[(int)i]; // animation time instant
     boost::posix_time::ptime time = tinstant.getTimeInstant();
     diff = time - iTime;
     double seconds = diff.total_seconds();
 
     // normalizing the time
     double t = seconds / totalSeconds;
-    setKeyValueAt(t, ai->m_animationRoute[i]);
+    setKeyValueAt(t, ai->m_animationRoute[(int)i]);
   }
 
   // if the final time is shorter than the total final time,
@@ -85,11 +85,11 @@ void te::qt::widgets::Animation::setDataKeyValues()
     // normalizing the time
     double t = seconds / totalSeconds;
     ai->m_norFinalTime = t;
-    setKeyValueAt(t, ai->m_animationRoute[size-1]);  // add a new key value
+    setKeyValueAt(t, ai->m_animationRoute[(int)size-1]);  // add a new key value
   }
 
   // set last animation point
-  setEndValue(ai->m_animationRoute[size-1]);
+  setEndValue(ai->m_animationRoute[(int)size-1]);
 }
 
 int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
@@ -110,35 +110,47 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
   diff = aiTime - iTime;
   double aiSeconds = diff.total_seconds();
   double itrel = aiSeconds / totalSeconds;
-  if(itrel > trel)
-    return 0;
+  if (trel < itrel) // time is before start of this animation
+    return -1;
 
   diff = afTime - iTime;
   double afSeconds = diff.total_seconds();
   double ftrel = afSeconds / totalSeconds;
-  if(trel > ftrel)
-    return count-1;
+  if (trel > ftrel)// time is after the end of this animation
+    return -1;
 
-  size_t i;
-  for(i = 0; i < count; ++i)
+  int i;
+  if (direction() == QAbstractAnimation::Forward)
   {
-    te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
-    boost::posix_time::ptime time = tinstant.getTimeInstant();
-    diff = time - iTime;
-    double seconds = diff.total_seconds();
-
-    // normalizing the time
-    double t = seconds / totalSeconds;
-
-    if(t >= trel)
+    for (i = 0; i < count; ++i)
     {
-      if(direction() == QAbstractAnimation::Forward && i != 0)
-        return i - 1;
-      else
+      te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+      boost::posix_time::ptime time = tinstant.getTimeInstant();
+      diff = time - iTime;
+      double seconds = diff.total_seconds();
+
+      // normalizing the time
+      double t = seconds / totalSeconds;
+
+      if (t >= trel)
         return i;
     }
   }
-  if(i == count)
-    return count - 1;
-  return 0;
+  else
+  {
+    for (i = (int)count-1; i >= 0; --i)
+    {
+      te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+      boost::posix_time::ptime time = tinstant.getTimeInstant();
+      diff = time - iTime;
+      double seconds = diff.total_seconds();
+
+      // normalizing the time
+      double t = seconds / totalSeconds;
+
+      if (t <= trel)
+        return i;
+    }
+  }
+  return -1;
 }

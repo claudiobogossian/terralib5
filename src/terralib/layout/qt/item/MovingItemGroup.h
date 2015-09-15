@@ -35,11 +35,13 @@
 #include "ItemGroup.h"
 #include "../../core/Config.h"
 
+#include <QRectF>
+
 namespace te
 {
   namespace layout
   {
-
+    class AbstractItemController;
     /*!
       \file MovingItemGroup.h
    
@@ -54,11 +56,14 @@ namespace te
     {
     public:
 
-      MovingItemGroup( AbstractItemController* controller, AbstractItemModel* model );
+      MovingItemGroup(AbstractItemController* controller, bool invertedMatrix = false);
 
       virtual ~MovingItemGroup();
-
-      //virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+      
+      /*!
+      \brief Reimplemented from AbstractItem
+      */
+      virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
     };
   }
 }

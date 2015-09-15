@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../../../core/Config.h"
-#include "NewItemFactory.h"
+#include "ItemFactory.h"
 #include "ItemFactoryParamsCreate.h"
 
 namespace te
@@ -43,7 +43,7 @@ namespace te
 
       \sa NewItemFactory, ParameterizedAbstractFactory, AbstractItemView
     */
-    class TELAYOUTEXPORT MovingItemGroupItemFactory : public NewItemFactory
+    class TELAYOUTEXPORT MovingItemGroupItemFactory : public ItemFactory
     {
       public:
 

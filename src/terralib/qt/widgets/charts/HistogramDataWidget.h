@@ -102,6 +102,13 @@ namespace te
           */
           void setHistogramProperty(int propId);
 
+          /*!
+          \brief Returns the name of the chosen summary function. Default is None
+
+          \return The name of the chosen summary function.
+          */
+          std::string getSummaryFunction();
+
         protected slots:
 
           void onPropertyComboBoxIndexChanged(QString text);

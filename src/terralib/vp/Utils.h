@@ -55,12 +55,6 @@ namespace te
 
     std::string GetSimpleTableName(std::string fullName);
 
-    te::gm::GeometryProperty* SetOutputGeometryType(const te::gm::GeometryProperty* firstGeom, const te::gm::GeometryProperty* secondGeom);
-    
-    te::gm::GeomType GeomOpResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
-    
-    te::gm::GeomType GeomOpResultType(te::gm::GeomType firstGeom);
-
     void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
     void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);

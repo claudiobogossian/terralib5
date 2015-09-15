@@ -294,8 +294,6 @@ void te::layout::ToolbarController::onSendToBackClicked(bool checked)
 
 void te::layout::ToolbarController::onRecomposeClicked(bool checked)
 {
-  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
   Scene* sc = getScene();
   if (!sc)
   {

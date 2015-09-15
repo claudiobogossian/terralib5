@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/LineModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/LineItem.h"
 
 te::layout::AbstractItemView* te::layout::LineItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::LineItemFactory::build(ItemFactoryPara
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  LineItem* view = new LineItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::LineItemFactory::LineItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getLineItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getLineItem()->getName())
 {
 
 }

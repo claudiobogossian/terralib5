@@ -35,22 +35,12 @@
 #include "../singleton/Context.h"
 
 te::layout::AbstractOutsideController::AbstractOutsideController(AbstractOutsideModel* o) :
-  m_model(o)
+  m_model(o),
+  m_view(0)
 {
-  create();
-
   if (m_model != 0)
   {
     m_model->attach(this);
-  }
-}
-
-te::layout::AbstractOutsideController::AbstractOutsideController(AbstractOutsideModel* o, EnumType* type) :
-  m_model(o)
-{
-  if(m_model)
-  {
-    m_model->setType(type);
   }
 }
 
@@ -64,22 +54,19 @@ te::layout::AbstractOutsideController::~AbstractOutsideController()
   }
 }
 
-const te::layout::AbstractOutsideModel* te::layout::AbstractOutsideController::getModel()
+te::layout::AbstractOutsideModel* te::layout::AbstractOutsideController::getModel() const
 {
   return m_model;
 }
 
-const te::layout::AbstractOutsideView* te::layout::AbstractOutsideController::getView()
+te::layout::AbstractOutsideView* te::layout::AbstractOutsideController::getView() const
 {
   return m_view;
 }
 
-void te::layout::AbstractOutsideController::create()
+void te::layout::AbstractOutsideController::setView(AbstractOutsideView* view)
 {
-  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory();
-  OutsideParamsCreate params(this);
-
-  m_view = factory->make(m_model->getType(), params);
+  m_view = view;
 }
 
 void te::layout::AbstractOutsideController::update(const Subject* subject)

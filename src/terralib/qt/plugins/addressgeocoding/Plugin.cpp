@@ -24,14 +24,13 @@
 */
 
 // TerraLib
-#include "terralib_config.h"
+#include "../../../BuildConfig.h"
 #include "../../../addressgeocoding/qt/MainWindowDialog.h"
 #include "../../../common/Config.h"
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
-#include "../../af/Project.h"
 #include "../../af/Utils.h"
 #include "Plugin.h"
 
@@ -52,13 +51,13 @@
 
 // QT
 #include <QAction>
-#include <QtCore/QObject>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 
 te::qt::plugins::addressgeocoding::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+  : QObject(),
+  te::plugin::Plugin(pluginInfo)
 {
 }
 
@@ -74,7 +73,7 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Address Geocoding Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
+  QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Processing");
 
   m_action = new QAction(pluginMenu);
   m_action->setText("Address Geocoding...");
@@ -84,11 +83,11 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
 // Insert action before plugin manager action
-  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  QAction* pluginsSeparator = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
   pluginMenu->insertAction(pluginsSeparator, m_action);
 
 // address geocoding log startup
-  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
   path += "/log/terralib_addressgeocoding.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
@@ -109,7 +108,9 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   logger->addAppender(fileAppender);
 #endif
 
-  te::qt::af::AddActionToCustomToolbars(m_action);
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_action);
+
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 
   m_initialized = true;
 }
@@ -129,49 +130,47 @@ void te::qt::plugins::addressgeocoding::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Address Geocoding Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::addressgeocoding::Plugin::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::addressgeocoding::MainWindowDialog dlg(parent);
 
   // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  te::qt::af::evt::GetAvailableLayers e;
 
-  if(prj)
-  {
-    dlg.setLayers(prj->getSingleLayers(false));
-  }
+  emit triggered(&e);
+
+  dlg.setLayers(e.m_layers);
 
   if(dlg.exec() != QDialog::Accepted)
     return;
 
   te::map::AbstractLayerPtr layer = dlg.getLayer();
 
-  if(!layer)
+  if(layer.get() == 0)
     return;
 
   int reply = QMessageBox::question(0, tr("Address Geocoding Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
 
-  if(prj && reply == QMessageBox::Yes)
+  if(reply == QMessageBox::Yes)
   {
     te::qt::af::evt::LayerAdded evt(layer);
 
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    emit triggered(&evt);
   }
 }
 
 std::list<te::map::AbstractLayerPtr> te::qt::plugins::addressgeocoding::Plugin::getLayers()
 {
-  std::list<te::map::AbstractLayerPtr> list;
+  te::qt::af::evt::GetAvailableLayers e;
 
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  emit triggered(&e);
 
-  if(prj)
-    list = prj->getAllLayers(false);
-
-  return list;
+  return e.m_layers;
 }
 
 

@@ -36,6 +36,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
       \brief Class daughter of te::layout::TextItem representing a grid with two cells which can be inserted texts.
       \ingroup layout
@@ -51,7 +52,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        TitleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        TitleItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

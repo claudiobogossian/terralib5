@@ -83,7 +83,7 @@ namespace te
       
           \param paper type enum     
         */
-        virtual LayoutAbstractPaperType getPaperType();
+        virtual LayoutAbstractPaperType getPaperType() const;
 
         /*!
           \brief Returns paper size. Height and Width.
@@ -91,7 +91,7 @@ namespace te
           \param w returns width
           \param h returns height
         */
-        virtual void getPaperSize(double &w, double &h);
+        virtual void getPaperSize(double &w, double &h) const;
 
         /*!
           \brief Sets paper orientation type enum. Ex.: Portrait.
@@ -105,7 +105,7 @@ namespace te
       
           \param paper orientation type enum
         */
-        virtual LayoutOrientationType getPaperOrientantion();
+        virtual LayoutOrientationType getPaperOrientantion() const;
         
       protected:
 

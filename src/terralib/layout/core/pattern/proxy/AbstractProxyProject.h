@@ -77,7 +77,7 @@ namespace te
 
           \return The list of all the layers that are selected.
         */
-        virtual const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) const = 0;
+        virtual const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) = 0;
 
         /*!
             \brief Checks whether the layer is in the project.

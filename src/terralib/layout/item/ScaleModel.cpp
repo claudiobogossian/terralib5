@@ -34,7 +34,7 @@
 
 te::layout::ScaleModel::ScaleModel()
   : AbstractItemModel()
-  , NewObserver()
+  , Observer()
 {
   this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getScaleItem());
 

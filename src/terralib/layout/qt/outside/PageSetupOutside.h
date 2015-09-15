@@ -44,8 +44,8 @@ namespace te
 {
   namespace layout
   {
-    class AbstractOutsideController;
     class Scene;
+    class AbstractOutsideController;
 
     class TELAYOUTEXPORT PageSetupOutside : public QDialog, public AbstractOutsideView
     {

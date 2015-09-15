@@ -32,7 +32,6 @@
 #include "../../../outside/GridSettingsController.h"
 #include "../../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../outside/GridSettingsOutside.h"
-#include "../../../core/pattern/mvc/ItemController.h"
 #include "../../../core/enum/Enums.h"
 #include "../../../outside/TextGridSettingsModel.h"
 #include "../../../outside/TextGridSettingsController.h"
@@ -231,12 +230,12 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
       AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(!lItem->getController()->getModel())
+        if(!lItem->getController())
         {
           continue;
         }
 
-        Properties beforeProps = lItem->getController()->getModel()->getProperties();
+        Properties beforeProps = lItem->getController()->getProperties();
         
         Properties props("");
         props.setObjectName(beforeProps.getObjectName());
@@ -244,9 +243,9 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
         props.setHashCode(beforeProps.getHashCode());
         props.addProperty(property);
 
-        lItem->getController()->getModel()->setProperties(props);
+        lItem->getController()->setProperties(props);
 
-        Properties afterProps = lItem->getController()->getModel()->getProperties();
+        Properties afterProps = lItem->getController()->getProperties();
         commandItems.push_back(item);
         commandOld.push_back(beforeProps);
         commandNew.push_back(afterProps);

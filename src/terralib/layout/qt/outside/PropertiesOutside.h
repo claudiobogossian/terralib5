@@ -109,8 +109,6 @@ namespace te
 
         virtual void changeMapVisitable(Property property);
 
-        virtual MapModel* getMapModel(std::string nameMap);
-
         virtual bool sendPropertyToSelectedItems(Property property);
 
         virtual bool updateTree(QList<QGraphicsItem*> graphicsItems, Properties props );

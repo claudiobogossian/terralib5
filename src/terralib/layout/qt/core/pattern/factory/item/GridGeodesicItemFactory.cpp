@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/GridGeodesicModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/GridGeodesicItem.h"
 
 te::layout::AbstractItemView* te::layout::GridGeodesicItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::GridGeodesicItemFactory::build(ItemFac
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  GridGeodesicItem* view = new GridGeodesicItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::GridGeodesicItemFactory::GridGeodesicItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getGridGeodesicItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getGridGeodesicItem()->getName())
 {
 
 }

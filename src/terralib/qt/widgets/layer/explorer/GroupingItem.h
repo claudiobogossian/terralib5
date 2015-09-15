@@ -1,91 +1,97 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+TerraLib is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+TerraLib is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
- */
-
-/*!
-  \file terralib/qt/widgets/layer/explorer/GroupingItem.h
-
-  \brief A class that represents a grouping of a layer in a LayerTreeModel.
+You should have received a copy of the GNU Lesser General Public License
+along with TerraLib. See COPYING. If not, write to
+TerraLib Team at <terralib-team@terralib.org>.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGITEM_H
+/*!
+ * \file layer/explorer/GroupingItem.h
+ *
+ * \brief A class that represents a grouping of a layer in a LayerTreeModel.
+ */
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_GROUPINGITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_GROUPINGITEM_H
 
-// TerraLib
-#include "AbstractTreeItem.h"
+#include "TreeItem.h"
 
 namespace te
 {
-// Forward declaration
-  namespace map { class Grouping; }
+  namespace map
+  {
+    class Grouping;
+  }
 
   namespace qt
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT GroupingItem : public AbstractTreeItem
+      /*!
+      * \class GroupingItem
+      *
+      * \brief A class that represents a grouping of a layer in a LayerTreeModel.
+      *
+      * \note The type of the item is "GROUPING".
+      *
+      * \ingroup widgets
+      */
+      class TEQTWIDGETSEXPORT GroupingItem: public TreeItem
       {
-        Q_OBJECT
-
-        public:
-
-          GroupingItem(te::map::Grouping* grouping, QObject* parent = 0);
-
-          ~GroupingItem();
-
-          int columnCount() const;
-
-          QVariant data(int column, int role) const;
-
-          QMenu* getMenu(QWidget* parent = 0) const;
-
-          bool canFetchMore() const;
-
-          Qt::ItemFlags flags() const;
-
-          void fetchMore();
-
-          bool hasChildren() const;
-
-          bool setData(int column, const QVariant& value, int role = Qt::EditRole);
-
-          te::map::AbstractLayerPtr getLayer() const;
+      public:
+        /*!
+        * \name Instantiation Methods
+        *
+        * Methods related to creation and destruction of the object.
+        */
+        //@{
 
         /*!
-          \brief It returns the item type: "GROUPING_ITEM".
-
-          \return The item type: "GROUPING_ITEM".
+        * \brief Constructor.
+        *
+        * \param g The grouping to be used.
         */
-          const std::string getItemType() const;
+        GroupingItem(te::map::Grouping* g);
 
-          void setCheckable(bool checkable);
+        /*!
+        * \brief Destructor.
+        */
+        ~GroupingItem();
+        //@}
 
-          bool getCheckable();
+        /*!
+        * \name Reimplementation of TreeItem
+        *
+        * Methods reimplemented of the TreeItem class.
+        */
+        //@{
+        std::string getAsString() const;
 
-        private:
+        VISIBLE isVisible() const;
 
-          te::map::Grouping* m_grouping;
-          bool m_isCheckable;
-          bool m_isChecked;
+        void setVisible(const VISIBLE& visible, const bool& updateAncestors = false, const bool& updateDescendents = false);
 
-      }; 
-    } // end namespace widgets
-  }   // end namespace qt
-}     // end namespace te
+        Qt::ItemFlags flags();
+        //@}
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGITEM_H
+      protected:
+
+        std::string m_label;            //!< Label to be presented on the Qt view.
+        te::map::Grouping* m_grouping;  //!< Grouping being used.
+      };
+    }
+  }
+}
+
+#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_GROUPINGITEM_H

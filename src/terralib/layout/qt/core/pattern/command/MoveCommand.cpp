@@ -106,7 +106,9 @@ void te::layout::MoveCommand::redo()
   if(m_moveItems.empty())
     return;
 
-  if(m_moveItems.size() != m_itemsPoints.size())
+  int moveItensSize = m_moveItems.size();
+
+  if(moveItensSize != m_itemsPoints.size())
     return;
 
   Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
@@ -159,6 +161,6 @@ QString te::layout::MoveCommand::createCommandString( QGraphicsItem* item, const
     return QObject::tr("%1");
 
   return QObject::tr("%1 at (%2, %3)")
-    .arg(obs->getController()->getModel()->getType()->getName().c_str())
+    .arg(obs->getController()->getProperties().getTypeObj()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
 }

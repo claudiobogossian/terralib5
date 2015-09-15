@@ -667,6 +667,44 @@ te::da::DataSetAdapter* te::da::CreateAdapter(DataSet* ds, DataSetTypeConverter*
   return adapter;
 }
 
+void te::da::AssociateDataSetTypeConverterSRID(DataSetTypeConverter* converter, const int& inputSRID, const int& outputSRID)
+{
+  te::da::DataSetType* dsType = converter->getConvertee();
+
+  te::gm::GeometryProperty* gmProp = GetFirstGeomProperty(dsType);
+
+  if (gmProp)
+  {
+    //remove default converter property for geometry property
+    converter->remove(gmProp->getName());
+
+    std::size_t pos = dsType->getPropertyPosition(gmProp->getName());
+
+    //add geometry property converter
+    SRIDAssociation sridConverter(inputSRID, outputSRID);
+    converter->add(pos, gmProp->clone(), sridConverter);
+
+    gmProp->setSRID(inputSRID);
+
+    //fix output geometry property srid
+    te::da::DataSetType* dsTypeResult = converter->getResult();
+
+    te::gm::GeometryProperty* gmPropResult = GetFirstGeomProperty(dsTypeResult);
+
+    if (gmPropResult)
+    {
+      if (outputSRID != TE_UNKNOWN_SRS)
+      {
+        gmPropResult->setSRID(outputSRID);
+      }
+      else
+      {
+        gmPropResult->setSRID(inputSRID);
+      }
+    }
+  }
+}
+
 std::string te::da::GetSQLValueNames(const te::da::DataSetType* dt)
 {
   std::string valueNames("(");

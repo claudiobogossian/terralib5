@@ -21,10 +21,11 @@
  \file GeneralOp.cpp
  */
 
+#include "../common/StringUtils.h"
+
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/utils/Utils.h"
@@ -40,18 +41,18 @@
 
 #include <sstream>
 
-te::vp::GeometricOp::GeometricOp():
-  m_outDsetName("")
+te::vp::GeometricOp::GeometricOp()
+  : m_outputLayer(false)
 {
 }
 
 void te::vp::GeometricOp::setInput(te::da::DataSourcePtr inDsrc,
                                   std::string inDsetName,
-                                  std::auto_ptr<te::da::DataSetType> inDsetType)
+                                  std::auto_ptr<te::da::DataSetTypeConverter> converter)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
-  m_inDsetType = inDsetType;
+  m_converter = converter;
 }
 
 void te::vp::GeometricOp::setParams(std::vector<std::string> selectedProps, 
@@ -75,10 +76,10 @@ void te::vp::GeometricOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, s
 
 bool te::vp::GeometricOp::paramsAreValid()
 {
-  if (!m_inDsetType.get())
+  if (!m_converter.get())
     return false;
   
-  if (!m_inDsetType->hasGeom())
+  if (!m_converter->getResult()->hasGeom())
     return false;
 
   if (m_outDsetName.empty() || !m_outDsrc.get())
@@ -172,7 +173,7 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
   {
       for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
       {
-        te::dt::Property* prop = m_inDsetType->getProperty(m_selectedProps[i])->clone();
+        te::dt::Property* prop = m_converter->getResult()->getProperty(m_selectedProps[i])->clone();
         prop->setParent(0);
         dsType->add(prop);
       }
@@ -180,7 +181,7 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
 
   if(geomOpStrategy == te::vp::AGGREG_BY_ATTRIBUTE)
   {
-    te::dt::Property* prop = m_inDsetType->getProperty(m_attribute)->clone();
+    te::dt::Property* prop = m_converter->getResult()->getProperty(m_attribute)->clone();
     prop->setParent(0);
     dsType->add(prop);
   }
@@ -214,7 +215,7 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
   }
   
 //  Geometry property.
-  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_inDsetType.get());
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_converter->getResult());
 
   if(multiGeomColumns)
   {

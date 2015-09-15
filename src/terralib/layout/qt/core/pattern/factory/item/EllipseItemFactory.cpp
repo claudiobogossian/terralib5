@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/EllipseModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/EllipseItem.h"
 
 te::layout::AbstractItemView* te::layout::EllipseItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::EllipseItemFactory::build(ItemFactoryP
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  EllipseItem* view = new EllipseItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::EllipseItemFactory::EllipseItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getEllipseItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getEllipseItem()->getName())
 {
 
 }

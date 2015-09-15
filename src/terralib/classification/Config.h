@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "../common/Translator.h"
-#include "../Config.h"
 
 #define TE_CL_MODULE_NAME "te.classification"
 

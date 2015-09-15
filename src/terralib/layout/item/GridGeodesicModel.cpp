@@ -29,6 +29,7 @@
 #include "GridGeodesicModel.h"
 
 #include "../core/pattern/singleton/Context.h"
+#include "../core/property/GridSettingsConfigProperties.h"
 #include "../../common/StringUtils.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
@@ -50,7 +51,7 @@
 
 te::layout::GridGeodesicModel::GridGeodesicModel() 
   : GridMapModel()
-  , NewObserver()
+  , Observer()
   /*: GridMapModel(new GeodesicGridSettingsConfigProperties),
   m_pointTextSizeCorner(12),
   m_degreesText(true),
@@ -205,15 +206,49 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
   if(doUpdate == true)
   {
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-    Property property(0);
-    property.setName("geographic_box");
-    property.setValue(newGeographicBox, dataType->getDataTypeEnvelope());
+    GridSettingsConfigProperties settingsConfig;
 
     Properties properties("");
     properties.addProperty(pNewWidth);
     properties.addProperty(pNewHeight);
-    properties.addProperty(property);
+
+    {
+      Property property(0);
+      property.setName("geographic_box");
+      property.setValue(newGeographicBox, dataType->getDataTypeEnvelope());
+      properties.addProperty(property);
+    }
+
+    te::gm::Envelope defaultGeographicBox(0, 0, 10000, 10000);
+    if(newGeographicBox.equals(defaultGeographicBox) == false)
+    {
+      {
+        Property property(0);
+        property.setName(settingsConfig.getInitialGridPointX());
+        property.setValue(newGeographicBox.getLowerLeftX(), dataType->getDataTypeDouble());
+        properties.addProperty(property);
+      }
+      {
+        Property property(0);
+        property.setName(settingsConfig.getInitialGridPointY());
+        property.setValue(newGeographicBox.getLowerLeftY(), dataType->getDataTypeDouble());
+        properties.addProperty(property);
+      }
+      {
+        double horizontalGap = newGeographicBox.getWidth() / 4.;
+        Property property(0);
+        property.setName(settingsConfig.getLneHrzGap());
+        property.setValue(horizontalGap, dataType->getDataTypeDouble());
+        properties.addProperty(property);
+      }
+      {
+        double verticalGap = newGeographicBox.getHeight() / 4.;
+        Property property(0);
+        property.setName(settingsConfig.getLneVrtGap());
+        property.setValue(verticalGap, dataType->getDataTypeDouble());
+        properties.addProperty(property);
+      }
+    }
 
     setProperties(properties);
   }

@@ -25,9 +25,10 @@
 
 // TerraLib
 #include "TextItemFactory.h"
+#include "../../../../item/TextController.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/TextModel.h"
-#include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/TextItem.h"
 
 te::layout::AbstractItemView* te::layout::TextItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -39,18 +40,19 @@ te::layout::AbstractItemView* te::layout::TextItemFactory::build(ItemFactoryPara
     setProperties(model, params);
   }
 
-  AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  TextController* controller = new TextController(model);
+  TextItem* view = new TextItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::TextItemFactory::TextItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getTextItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getTextItem()->getName())
 {
 
 }

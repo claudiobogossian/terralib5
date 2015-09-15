@@ -28,6 +28,7 @@
 #include "../../../../../item/RectangleModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../../../core/property/Properties.h"
+#include "../../../../item/RectangleItem.h"
 
 te::layout::AbstractItemView* te::layout::RectangleItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::RectangleItemFactory::build(ItemFactor
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  RectangleItem* view = new RectangleItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::RectangleItemFactory::RectangleItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getRectangleItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getRectangleItem()->getName())
 {
 
 }

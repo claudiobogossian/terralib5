@@ -26,16 +26,6 @@
 #ifndef __TERRALIB_QT_AF_INTERNAL_CONFIG_H
 #define __TERRALIB_QT_AF_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../Config.h"
-
-/*!
-  \def TERRALIB_APPLICATION_CONFIG_FILE
-
-  \brief The file that contains the application plugins.
-*/
-#define TERRALIB_APPLICATION_CONFIG_FILE   "share/terraview/config/config.xml"
-
 /*!
  \def TERRALIB_APPLICATION_DATASOURCE_FILE_NAME
  

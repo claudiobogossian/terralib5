@@ -95,8 +95,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   Font* fontValue = 0;
   te::gm::Envelope* envelopeValue = 0;
   GenericVariant* generic = 0;
-  te::gm::GeometryShrPtr geometryPtr();
-
+  te::gm::GeometryShrPtr geometryPtr;
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   if(!m_type || !dataType)

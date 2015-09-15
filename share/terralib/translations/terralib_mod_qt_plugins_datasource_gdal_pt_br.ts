@@ -140,12 +140,12 @@ We will provide it soon!</source>
 <context>
     <name>te::qt::plugins::gdal::Plugin</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="116"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="112"/>
         <source>Raster File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="146"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="164"/>
         <source>Open Raster File</source>
         <translation type="unfinished"></translation>
     </message>

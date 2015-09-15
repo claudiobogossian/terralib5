@@ -28,6 +28,7 @@
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/GridMapModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../item/GridMapItem.h"
 
 te::layout::AbstractItemView* te::layout::GridMapItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,17 +41,18 @@ te::layout::AbstractItemView* te::layout::GridMapItemFactory::build(ItemFactoryP
   }
 
   AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+  GridMapItem* view = new GridMapItem(controller);
+  controller->setView(view);
 
   if (!props.getProperties().empty())
   {
     model->setProperties(props);
   }
-  return dynamic_cast<AbstractItemView*>(view);
+  return view;
 }
 
 te::layout::GridMapItemFactory::GridMapItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getGridMapItem()->getName())
+  ItemFactory(Enums::getInstance().getEnumObjectType()->getGridMapItem()->getName())
 {
 
 }

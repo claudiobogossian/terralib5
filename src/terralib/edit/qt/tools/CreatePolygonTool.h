@@ -29,8 +29,8 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../Config.h"
+#include "GeometriesUpdateTool.h"
 
 // STL
 #include <vector>
@@ -57,7 +57,7 @@ namespace te
 
       \brief This class implements a concrete tool to create polygons.
     */
-    class TEEDITQTEXPORT CreatePolygonTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT CreatePolygonTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -92,8 +92,6 @@ namespace te
 
         bool mouseMoveEvent(QMouseEvent* e);
 
-        bool mouseReleaseEvent(QMouseEvent* e);
-
         bool mouseDoubleClickEvent(QMouseEvent* e);
 
         //@}
@@ -114,17 +112,21 @@ namespace te
 
         void storeNewGeometry();
 
+        void storeUndoCommand();
+
       private slots:
 
         void onExtentChanged();
 
       protected:
 
-        te::map::AbstractLayerPtr m_layer;      //!< The layer used by this tool.
         std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
         te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
+        std::vector<Feature*> m_addWatches;
+        std::vector<te::gm::Geometry*> m_geometries;
+
     };
 
   }   // end namespace edit

@@ -26,10 +26,11 @@ void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& 
     CreateDataSourceAndUpdateManager(dsinfo);
 
     //Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
-    int phTimeIdx = 3;  /* property name: timestamp */
+    //int phTimeIdx = 3;  /* property name: timestamp */
     std::string phTimeName = "timestamp";
-    int geomIdx = 12;    /* property name: OGR_GEOMETRY */
-    std::string geomName = "OGR_GEOMETRY";
+
+    //int geomIdx = 12;    /* property name: geom */
+    std::string geomName = "geom";
 
     //Use the STDataLoader to create a TrajectoryDataSet with all observations
     te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeName, geomName, "", "40");

@@ -38,21 +38,18 @@
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/AbstractScene.h"
-#include "../../core/ContextObject.h"
 #include "../../core/property/Property.h"
-#include "../../core/property/Properties.h"
 
 //Qt
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QRectF>
+#include <QPoint>
 #include <QVariant>
 #include <QEvent>
 #include <QGraphicsScene>
 #include <QColor>
 #include <QGraphicsSceneHoverEvent>
-
-class AbstractItemModel;
 
 class QWidget;
 
@@ -60,6 +57,8 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
+    class AbstractItemModel;
     /*!
     \brief Abstract class that represents a graphic item.  
       Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
@@ -77,13 +76,18 @@ namespace te
     {
       public:
 
+        enum Action
+        {
+          NO_ACTION, RESIZE_ACTION, MOVE_ACTION
+        };
+
         /*!
           \brief Constructor
 
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false);
+        AbstractItem(AbstractItemController* controller,  bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -122,11 +126,6 @@ namespace te
       protected:
 
         /*!
-        \brief Reimplemented from QGraphicsItem
-        */
-        virtual bool sceneEvent(QEvent * event);
-
-        /*!
           \brief  Gets the adjusted boundigned rectangle which considers the current state of the QPen that will be used to draw it. 
                   The returned rect will be in the item coordinate system.
          */
@@ -162,21 +161,53 @@ namespace te
          */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
-        virtual void te::layout::AbstractItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event );
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void hoverMoveEvent( QGraphicsSceneHoverEvent * event );
 
         virtual bool checkTouchesCorner( const double& x, const double& y );
 
-        bool          m_toResizeItem;
-        LayoutAlign   m_enumSides;
-        bool          m_move;
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void calculateResize();
+
+        virtual void setPixmap();
+
+        virtual void drawItemResized( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+        virtual void resized();
+
+      protected:
+
+        //resize
+        QRectF            m_rect;
+        QPixmap           m_clonePixmap;
+        QPointF           m_initialCoord;
+        QPointF           m_finalCoord;
+        LayoutAlign       m_enumSides;
+        Action            m_currentAction;
     };
 
     template <class T>
-    inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
+    inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, bool invertedMatrix)
       : T()
-      , AbstractItemView(controller, model, invertedMatrix)
-      , m_move(false)
-      , m_toResizeItem(false)
+      , AbstractItemView(controller, invertedMatrix)
+      , m_enumSides(TPNoneSide)
+      , m_currentAction(NO_ACTION)
     {
       T::setFlags(QGraphicsItem::ItemIsMovable
         | QGraphicsItem::ItemIsSelectable
@@ -184,7 +215,9 @@ namespace te
         | QGraphicsItem::ItemIsFocusable);
 
       //If enabled is true, this item will accept hover events
-      QGraphicsItem::setAcceptHoverEvents(true);
+      T::setAcceptHoverEvents(true);
+
+      m_rect = boundingRect();
     }
 
     template <class T>
@@ -192,25 +225,14 @@ namespace te
     {
     }
 
-    /*
-    template <class T>
-    inline void te::layout::AbstractItem<T>::update(const Subject* subject)
-    {
-      double x = m_model->getProperty("x").getValue().toDouble();
-      double y = m_model->getProperty("y").getValue().toDouble();
-
-      if(x != this->x() || y != this->y())
-      {
-        this->prepareGeometryChange();
-        this->setPos(x, y);
-      }
-
-      T::update();
-    }*/
-
     template <class T>
     inline QRectF te::layout::AbstractItem<T>::boundingRect() const
     {
+      if (m_currentAction == RESIZE_ACTION)
+      {
+        return m_rect;
+      }
+
       //models stores information in scene CS.
       //To ensure that everything works fine, we must convert the coordinates from scene CS to item CS
       double x = 0.;
@@ -272,7 +294,13 @@ namespace te
       {
         return;
       }
-      
+
+      if (m_currentAction == RESIZE_ACTION)
+      {
+        drawItemResized(painter, option, widget);
+        return;
+      }
+
       //Draws the background
       drawBackground( painter );
 
@@ -306,8 +334,6 @@ namespace te
       }
 
       QRectF bRect = boundingRect();
-      bRect.setX(0.);
-      bRect.setY(0.);
 
       const qreal adj = penWidth / 2.;
       QRectF rectAdjusted = bRect.adjusted(adj, adj, -adj, -adj);
@@ -453,15 +479,15 @@ namespace te
     template <class T>
     inline QVariant te::layout::AbstractItem<T>::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
     {
-      if (change == QGraphicsItem::ItemPositionChange && !m_move)
+      if (change == QGraphicsItem::ItemPositionChange && m_currentAction != MOVE_ACTION)
       {
         if (this->isInverted())
         {
           // value is the new position.
           QPointF newPos = value.toPointF();
 
-          double tx = transform().dx();
-          double ty = transform().dy();
+          double tx = T::transform().dx();
+          double ty = T::transform().dy();
 
           newPos.setX(newPos.x() - tx);
           newPos.setY(newPos.y() - ty);
@@ -470,22 +496,12 @@ namespace te
       }
       else if (change == QGraphicsItem::ItemPositionHasChanged)
       {
-        m_move = false;
-      }
-      return T::itemChange(change, value);
-    }
-    
-    template <class T>
-    inline bool te::layout::AbstractItem<T>::sceneEvent(QEvent * event)
-    {
-      if (event->type() == QEvent::GraphicsSceneMouseMove)
-      {
-        if (this->isInverted())
+        if(m_currentAction == NO_ACTION)
         {
-          m_move = true;
+          m_controller->itemPositionChanged(T::pos().x(), T::pos().y());
         }
       }
-      return T::sceneEvent(event);
+      return T::itemChange(change, value);
     }
 
     template <class T>
@@ -493,9 +509,9 @@ namespace te
     {
       if(m_controller->getProperty("resizable").getValue().toBool())
       {
-        m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
+        checkTouchesCorner(event->pos().x(), event->pos().y());
       }
-      QGraphicsItem::hoverMoveEvent(event);
+      T::hoverMoveEvent(event);
     }
   }
 }
@@ -512,29 +528,29 @@ inline bool te::layout::AbstractItem<T>::checkTouchesCorner( const double& x, co
   QPointF tl = bRect.topLeft();
   QPointF tr = bRect.topRight();
 
-  if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
+  if ((x >= (ll.x() - margin) && x <= (ll.x() + margin))
     && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
   {
     T::setCursor(Qt::SizeFDiagCursor);
-    m_enumSides = TPLowerLeft;
+    m_enumSides = TPTopLeft;
   }
-  else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
+  else if ((x >= (lr.x() - margin) && x <= (lr.x() + margin))
     && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
   {
     T::setCursor(Qt::SizeBDiagCursor);
-    m_enumSides = TPLowerRight;
+    m_enumSides = TPTopRight;
   }
-  else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
+  else if ((x >= (tl.x() - margin) && x <= (tl.x() + margin))
     && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
   {
     T::setCursor(Qt::SizeBDiagCursor);
-    m_enumSides = TPTopLeft;
+    m_enumSides = TPLowerLeft;
   }
-  else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
+  else if ((x >= (tr.x() - margin) && x <= (tr.x() + margin))
     && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
   {
     T::setCursor(Qt::SizeFDiagCursor);
-    m_enumSides = TPTopRight;
+    m_enumSides = TPLowerRight;
   }
   else
   {
@@ -546,6 +562,137 @@ inline bool te::layout::AbstractItem<T>::checkTouchesCorner( const double& x, co
   return result;
 }
 
+template <class T>
+inline void te::layout::AbstractItem<T>::mousePressEvent( QGraphicsSceneMouseEvent * event )
+{  
+  T::mousePressEvent(event);
 
+  bool startResizing = checkTouchesCorner(event->pos().x(), event->pos().y());
+  if (startResizing == true)
+  {
+    m_currentAction = RESIZE_ACTION;
+    setPixmap();
+    m_initialCoord = event->pos();
+  }
+}
+
+template <class T>
+inline void te::layout::AbstractItem<T>::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
+{
+  if(m_currentAction == RESIZE_ACTION)
+  {
+    T::setOpacity(0.5);
+    m_finalCoord = event->pos();
+    T::prepareGeometryChange();
+    calculateResize();
+  }
+  else
+  {
+    if(event->buttons() == Qt::LeftButton)
+    {
+      m_currentAction = MOVE_ACTION;
+    }
+
+    T::mouseMoveEvent(event);
+  }
+}
+
+template <class T>
+inline void te::layout::AbstractItem<T>::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
+{
+  if(m_currentAction == RESIZE_ACTION)
+  {
+    m_finalCoord = event->pos();
+    calculateResize();
+    QPointF newPos(m_rect.x(), m_rect.y());
+    newPos = T::mapToScene(newPos);
+    T::setPos(newPos);
+    m_rect.moveTo(0, 0);
+    T::setOpacity(1.);
+    m_controller->resized(m_rect.width(), m_rect.height());
+    resized();
+  }
+  else if(m_currentAction == MOVE_ACTION)
+  {
+    m_controller->itemPositionChanged(T::pos().x(), T::pos().y());
+  }
+
+  m_currentAction = NO_ACTION;
+
+  T::mouseReleaseEvent(event);
+}
+
+template <class T>
+inline void te::layout::AbstractItem<T>::calculateResize()
+{
+  double dx = 0;
+  double dy = 0;
+
+  if(m_currentAction == RESIZE_ACTION)
+  {
+    dx = m_finalCoord.x() - m_initialCoord.x();
+    dy = m_finalCoord.y() - m_initialCoord.y();
+
+    switch(m_enumSides)
+    {
+    case TPTopRight:
+      {
+        m_rect.setWidth(m_rect.width() + dx);
+        m_rect.setHeight(m_rect.height() + dy);
+        break;
+      }
+    case TPTopLeft:
+      {
+        m_rect.setX(m_rect.x() + dx);
+        m_rect.setHeight(m_rect.height() + dy);
+        break;
+      }
+    case TPLowerRight:
+      {
+        m_rect.setY(m_rect.y() + dy);
+        m_rect.setWidth(m_rect.width() + dx);
+        break;
+      }
+    case TPLowerLeft:
+      {
+        m_rect.setX(m_rect.x() + dx);
+        m_rect.setY(m_rect.y() + dy);
+        break;
+      }
+    default :
+      {
+        break;
+      }
+    }
+    m_initialCoord = m_finalCoord;
+  }
+}
+
+template <class T>
+inline void te::layout::AbstractItem<T>::drawItemResized( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+  painter->save();
+  painter->setClipRect(boundingRect());
+  painter->drawPixmap(boundingRect(), m_clonePixmap, m_clonePixmap.rect());
+  painter->restore();
+}
+
+template <class T>
+inline void te::layout::AbstractItem<T>::setPixmap()
+{
+  //Utils* utils = Context::getInstance().getUtils();
+  //te::gm::Envelope box(0, 0, boundingRect().width(), boundingRect().height());
+  //box = utils->viewportBox(box);
+  m_clonePixmap = QPixmap(/*box.getWidth(), box.getHeight()*/boundingRect().width(), boundingRect().height());
+  QPainter p(&m_clonePixmap);
+  QStyleOptionGraphicsItem opt;
+  this->drawItem(&p, &opt, 0);
+}
+
+template <class T>
+inline void te::layout::AbstractItem<T>::resized()
+{
+
+}
 
 #endif //__TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H

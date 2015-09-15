@@ -30,7 +30,6 @@
 #include "../../../core/property/Properties.h"
 #include "../../../core/enum/Enums.h"
 #include "../../../core/Font.h"
-#include "../../../core/AbstractBuildGraphicsOutside.h"
 #include "../../../core/pattern/singleton/Context.h"
 #include "../../outside/GridSettingsOutside.h"
 #include "../../../outside/GridSettingsModel.h"
@@ -531,8 +530,7 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
   for (; it != mapList.end(); ++it)
   {
     MapItem* mIt = (*it);
-    MapModel* mapModel = dynamic_cast<MapModel*>(mIt->getController()->getModel());
-    props.push_back(mapModel->getProperties());
+    props.push_back(mIt->getController()->getProperties());
   }
 
   model->setPropertiesMaps(props);
@@ -763,20 +761,9 @@ QWidget* te::layout::DialogPropertiesBrowser::createOutside( EnumType* enumType 
   {
     return widget;
   }
-
-  AbstractBuildGraphicsOutside* abstractBuild = Context::getInstance().getAbstractBuildGraphicsOutside();
-  if(!abstractBuild)
-  {
-    return widget;
-  }
-
-  BuildGraphicsOutside* build = dynamic_cast<BuildGraphicsOutside*>(abstractBuild);
-  if(!build)
-  {
-    return widget;
-  }
-
-  widget = build->createOuside(enumType);
+  
+  BuildGraphicsOutside build;
+  widget = build.createOuside(enumType);
   return widget;
 }
 

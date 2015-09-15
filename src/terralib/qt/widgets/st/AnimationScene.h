@@ -45,7 +45,7 @@ namespace te
       /*!
         \class AnimationScene
 
-        \brief This class is a dialog for the Trajectory Scene.
+        \brief This class allows to add multiple trajectories and temporal image.
       */
       class TEQTWIDGETSEXPORT AnimationScene : public QGraphicsScene
       {
@@ -53,13 +53,13 @@ namespace te
 
         /*!
           \brief Constructor
-          It constructs a Trajectory Scene
+          It constructs a animation Scene
         */
         AnimationScene(te::qt::widgets::MapDisplay* display, QObject* parent=0);
 
         /*!
           \brief Destructor
-          It destructs a Trajectory Scene
+          It destructs a animation Scene
         */
         virtual ~AnimationScene();
 
@@ -70,7 +70,7 @@ namespace te
 
         /*!
           \brief Add item.
-          \param item The graphics item.
+          \param item The graphics item. It can be trajectory item or pixmap item.
         */
         void addItem(AnimationItem* item);
 
@@ -81,14 +81,9 @@ namespace te
         void removeItem(AnimationItem* item);
 
         /*!
-          \brief Clear scene.
+          \brief Clear scene. Remove all items.
         */
         void clear();
-
-        /*!
-          \brief It sets the transformation matrix.
-        */
-        void setMatrix();
 
         /*!
           \brief It sets the trajectory duration.
@@ -102,18 +97,18 @@ namespace te
         */
         void draw(const int& curTime);
 
-        /*!
-          \brief It configures automatic pan over a trajectory.
-          \param title The trajectory title.
-        */
-        void setAutomaticPan(const QString& title);
+        ///*!
+        //  \brief It configures automatic pan over a trajectory.
+        //  \param title The trajectory title.
+        //*/
+        //void setAutomaticPan(const QString& title);
 
       public:
         te::qt::widgets::MapDisplay* m_display; //!< Indicates where the scene is displayed.
         QPixmap* m_trajectoryPixmap;            //!< QPixmap where all the trajectory item are drawn.
-        QMutex m_mutex;                         //!< To not use the scene pixmap simultaneously
+        QMutex m_mutex;                         //!< To not use m_trajectoryPixmap simultaneously
         int m_numberOfTrajectories;             //!< Number of trajectory items.
-        int m_numberOfCoverages;                  //!< Number of coverage items.
+        int m_numberOfCoverages;                //!< Number of coverage items.
       };
     } // end namespace widgets
   }   // end namespace qt

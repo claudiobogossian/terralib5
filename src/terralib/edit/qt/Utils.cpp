@@ -24,9 +24,11 @@
 */
 
 // TerraLib
-#include "../../geometry/Geometry.h"
-#include "../../geometry/LineString.h"
-#include "../../geometry/Point.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/ObjectId.h"
+#include "../../dataaccess/utils/Utils.h"
+#include "../../datatype/SimpleData.h"
+#include "../../geometry.h"
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../srs/Config.h"
@@ -46,4 +48,54 @@ QPointF te::edit::GetPosition(QMouseEvent* e)
 #else
   return e->posF();
 #endif
+}
+
+te::gm::Geometry* te::edit::convertGeomType(const te::map::AbstractLayerPtr& layer, te::gm::Geometry* geom)
+{
+  te::gm::Geometry* geomConvert = 0;
+
+  // Get the geometry type of layer
+  std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+  switch (geomProp->getGeometryType())
+  {
+    case te::gm::MultiPolygonType:
+    {
+      te::gm::MultiPolygon* mp = 0;
+
+      if (geom->getGeomTypeId() == te::gm::MultiPolygonType)
+        mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
+      else
+      {
+        mp = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
+        mp->add(geom);
+      }
+
+      geomConvert = mp;
+
+      break;
+    }
+    case te::gm::PolygonType:
+    {
+      te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
+
+      geomConvert = p;
+
+      break;
+    }
+    //others type
+    //MultiLine
+    //...
+  }
+
+  //projection
+  if (geomConvert->getSRID() == layer->getSRID())
+    return geomConvert;
+
+  //else, need conversion...
+  geomConvert->transform(layer->getSRID());
+
+  return geomConvert;
+
 }

@@ -59,6 +59,7 @@ class QPainter;
 class QWidget;
 class QStyleOptionGraphicsItem;
 class QGraphicsSceneMouseEvent;
+class QKeyEvent;
 
 namespace te
 {
@@ -71,7 +72,8 @@ namespace te
     class View;
     class AbstractItemView;
     class ItemObserver;
-    class AbstractItemModel;
+    class AbstractItemController;
+    class ContextObject;
 
   /*!
     \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
@@ -134,7 +136,7 @@ namespace te
       \param screenWMM width of physical screen in millimeters
       \param screenHMM height of physical screen in millimeters
         */
-        virtual void init(double screenWMM, double screenHMM);
+        virtual void init(double screenWMM, double screenHMM, ContextObject context);
 
     /*!
           \brief Method that returns the matrix transformation scene.
@@ -176,21 +178,7 @@ namespace te
       \param group list of objects
         */
         virtual void destroyItemGroup( QGraphicsItemGroup *group );
-
-    /*!
-          \brief Method that create a graphic object and place it in the scene. A name and a position is added. A command Undo/Redo of type AddCommand is created.
-      
-      \param coord Coordinated where the item is located. The coordinate should be the same scene coordinates system
-        */
-        virtual QGraphicsItem* createItem(EnumType* itemType, const te::gm::Coord2D& coord, double width = 0, double height = 0);
-
-        /*!
-        \brief Method that create a graphic object and place it in the scene. A name and a position is added. A command Undo/Redo of type AddCommand is created.
-
-        \param coord Coordinated where the item is located. The coordinate should be the same scene coordinates system
-        */
-        virtual QGraphicsItem* createItem(EnumType* itemType);
-
+        
     /*!
           \brief Method that insert command Undo/Redo of type AddCommand in the Undo/Redo stack.
       
@@ -313,8 +301,6 @@ namespace te
 
         virtual void redrawItems();
 
-        virtual void updateSelectedItemsPositions();
-
         /*
           \brief Add to stack that stores the items that are not entered into the scene.
           To undo/redo operations, where the item is removed from the scene, 
@@ -338,11 +324,6 @@ namespace te
           \brief This function is called every time the context is updated. It will sign to all items that a change in the context had ocurred.
         */
         virtual void contextUpdated();
-
-        /*!
-          \brief It will sign to all items that a change in the context had ocurred.
-        */
-        virtual void contextUpdated(ContextObject context);
 
         virtual void applyPaperProportion(QSize oldPaper, QSize newPaper);
 
@@ -374,23 +355,18 @@ namespace te
         */
         PaperConfig* getPaperConfig();
 
-      public slots:
+        virtual void setEditionMode(bool editionMode);
 
-        /*!
-          \brief It is called immediately when the zoom factor is changed in the Context.
+        bool isEditionMode();
 
-          \param zoom current zoom factor of the layout module
-         */
-        virtual void onChangeZoom(int zoom);
+        void setContext(ContextObject context = ContextObject(0,0,0,0));
 
-        virtual void onChangeMode(EnumType* mode);
-        
       signals:
 
      /*!
           \brief Issued after insertion of an item in the scene.
         */
-         void addItemFinalized();
+         void addItemFinalized(QGraphicsItem* item);
     
     /*!
           \brief Issued after deleting an item in the scene.
@@ -416,6 +392,21 @@ namespace te
         */
         virtual void  mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent);
 
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void	mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent);
+
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void	keyPressEvent(QKeyEvent * keyEvent);
+
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void drawForeground(QPainter * painter, const QRectF & rect);
+
     /*!
           \brief Method that calculates the transformation matrix of the scene. This matrix will be set in each QGraphicsView class that watches this scene.
         */
@@ -438,10 +429,16 @@ namespace te
 
         virtual void applyProportionAllItems(QSize oldPaper, QSize newPaper);
 
-        virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model);
+        virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemController* controller);
 
         virtual void changeViewMode(EnumType* mode);
-                
+
+        virtual void enterEditionMode();
+
+        virtual void leaveEditionMode();
+
+        virtual te::gm::Envelope switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper);
+
     protected:
 
         QTransform                         m_matrix; //!< transformation matrix of the scene.
@@ -453,6 +450,9 @@ namespace te
         std::map<QGraphicsItem*, QPointF>  m_moveWatches;
         QList<QGraphicsItem*>              m_itemStackWithoutScene; //!< Items that are not included in any scene 
         PaperConfig*                       m_paperConfig; //!< paper settings
+        AbstractItemView*                  m_currentItemEdition;
+        bool                               m_isEditionMode;
+        ContextObject                      m_context;
     };
   }
 }

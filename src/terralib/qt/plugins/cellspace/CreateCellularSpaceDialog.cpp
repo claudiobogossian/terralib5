@@ -183,7 +183,7 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog:
 }
 
 // whenever the reference layer changes the parameters of the new cellular space will bem modified accordingly
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChanged(int index)
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChanged(int)
 {
   te::map::AbstractLayerPtr layer = getReferenceLayer();
   if(!layer)
@@ -213,7 +213,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
 }
 
 
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onEnvelopeChanged(const QString & text)
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onEnvelopeChanged(const QString &)
 {
   clearResolution();
 }
@@ -351,7 +351,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetDatasourceTo
   
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
   
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
   
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();

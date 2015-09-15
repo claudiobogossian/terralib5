@@ -24,18 +24,17 @@
 */
 
 // TerraLib
-#include "../../../geometry/Envelope.h"
-#include "../../../geometry/Geometry.h"
-#include "../../../geometry/LinearRing.h"
-#include "../../../geometry/LineString.h"
-#include "../../../geometry/Point.h"
-#include "../../../geometry/Polygon.h"
+#include "../../../geometry.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../RepositoryManager.h"
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/AddCommand.h"
+#include "../core/UndoStackManager.h"
 #include "CreatePolygonTool.h"
 
 // Qt
@@ -47,11 +46,12 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent) 
-  : AbstractTool(display, parent),
-    m_layer(layer),
+te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+  : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
-    m_isFinished(false)
+    m_isFinished(false),
+    m_addWatches(0),
+    m_geometries(0)
 {
   setCursor(cursor);
 
@@ -65,6 +65,9 @@ te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
+
+  m_addWatches.clear();
+  m_geometries.clear();
 }
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
@@ -85,6 +88,9 @@ bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
   TrySnap(coord, m_display->getSRID());
 
   m_coords.push_back(coord);
+
+  if (m_coords.size() > 2)
+    m_geometries.push_back(convertGeomType(m_layer,buildPolygon()));
 
   return true;
 }
@@ -107,20 +113,13 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
-  Qt::KeyboardModifiers keys = e->modifiers();
-
-  if(keys == Qt::NoModifier)
-    m_continuousMode = false;
-  else if(keys == Qt::ShiftModifier)
+  if (e->buttons() & Qt::LeftButton)
     m_continuousMode = true;
+  else
+    m_continuousMode = false;
 
   draw();
 
-  return false;
-}
-
-bool te::edit::CreatePolygonTool::mouseReleaseEvent(QMouseEvent* e)
-{
   return false;
 }
 
@@ -136,11 +135,14 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   storeNewGeometry();
 
+  storeUndoCommand();
+
   return true;
 }
 
 void te::edit::CreatePolygonTool::draw()
 {
+
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -171,6 +173,7 @@ void te::edit::CreatePolygonTool::draw()
   renderer.end();
 
   m_display->repaint();
+
 }
 
 void te::edit::CreatePolygonTool::drawPolygon()
@@ -199,6 +202,7 @@ void te::edit::CreatePolygonTool::drawLine()
 
 void te::edit::CreatePolygonTool::clear()
 {
+  m_geometries.clear();
   m_coords.clear();
 }
 
@@ -243,7 +247,8 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 
 void te::edit::CreatePolygonTool::storeNewGeometry()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPolygon());
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), convertGeomType(m_layer, buildPolygon()), te::edit::GEOMETRY_CREATE);
+  emit geometriesEdited();
 }
 
 void te::edit::CreatePolygonTool::onExtentChanged()
@@ -254,4 +259,20 @@ void te::edit::CreatePolygonTool::onExtentChanged()
   m_coords.push_back(m_lastPos);
 
   draw();
+}
+
+void te::edit::CreatePolygonTool::storeUndoCommand()
+{
+
+  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
+
+  for (std::size_t i = 0; i < m_geometries.size(); i++)
+  {
+    m_feature->setGeometry(m_geometries[i]);
+    m_addWatches.push_back(m_feature->clone());
+
+    QUndoCommand* command = new AddCommand(m_addWatches, m_display, m_layer);
+    UndoStackManager::getInstance().addUndoStack(command);
+  }
+
 }

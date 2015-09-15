@@ -253,3 +253,8 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
     m_ui->m_summaryLabel->hide();
   }
 }
+
+std::string te::qt::widgets::HistogramDataWidget::getSummaryFunction()
+{
+  return m_ui->m_summaryComboBox->currentText().toStdString();
+}

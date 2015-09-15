@@ -37,7 +37,10 @@
 #include <QMenuBar>
 
 te::qt::plugins::cellspace::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_cellSpaceMenu(0)
+  : te::plugin::Plugin(pluginInfo),
+    m_cellSpaceMenu(0),
+    m_popupAction(0),
+    m_createCellLayer(0)
 {
 }
 
@@ -53,11 +56,12 @@ void te::qt::plugins::cellspace::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Cellular Spaces Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
+  // Fred: revisar
+  QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Processing");
   m_cellSpaceMenu = new QMenu(pluginMenu);
 
   // Insert action before plugin manager action
-  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  QAction* pluginsSeparator = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
 
   pluginMenu->insertMenu(pluginsSeparator, m_cellSpaceMenu);
 
@@ -72,6 +76,8 @@ void te::qt::plugins::cellspace::Plugin::startup()
   m_popupAction->setText(TE_TR("Cellular Spaces"));
 
   m_initialized = true;
+
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
 
 void te::qt::plugins::cellspace::Plugin::shutdown()
@@ -88,11 +94,14 @@ void te::qt::plugins::cellspace::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Cellular Spaces Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::cellspace::Plugin::registerActions()
 {
   m_createCellLayer = new te::qt::plugins::cellspace::CreateCellLayerAction(m_cellSpaceMenu);
+  connect(m_createCellLayer, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 }
 
 void te::qt::plugins::cellspace::Plugin::unRegisterActions()
