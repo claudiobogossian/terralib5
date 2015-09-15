@@ -53,7 +53,8 @@ te::layout::GridSettingsConfigProperties::GridSettingsConfigProperties():
   m_bottomRotateText("grid_bottomRotateText"),
   m_leftRotateText("grid_leftRotateText"),
   m_rightRotateText("grid_rightRotateText"),
-  m_topRotateText("grid_topRotateText")
+  m_topRotateText("grid_topRotateText"),
+  m_crossOffset("grid_crossOffset")
 {
 
 }
@@ -188,5 +189,8 @@ std::string te::layout::GridSettingsConfigProperties::getTopRotateText()
   return m_topRotateText;
 }
 
-
+std::string te::layout::GridSettingsConfigProperties::getCrossOffset()
+{
+  return m_crossOffset;
+}
 

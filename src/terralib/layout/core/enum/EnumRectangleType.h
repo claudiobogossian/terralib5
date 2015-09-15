@@ -52,34 +52,34 @@ namespace te
 
         /*!
           \brief Returns value that represents none type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNoneType() const;
         
         /*!
           \brief Returns value that represents simple rectangle type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getSimpleRectangleType() const;
 
         /*!
           \brief Returns value that represents rounded retangle type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getRoundedRetangleType() const;
 
-				 /*!
+         /*!
           \brief Returns value that represents single corner trimmed rectangle type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getSingleCornerTrimmedRectangleType() const;
-				
-		
-			protected:
+        
+    
+      protected:
 
         /*!
           \brief Reimplemented from AbstractEnum
@@ -90,8 +90,8 @@ namespace te
 
         EnumType* m_noneType; //!< value that represents none type belonging to enumeration
         EnumType* m_simpleRect; //!< value that represents simple retangle type belonging to enumeration
-				EnumType* m_roundedRect; //!< value that represents rounded retangle type belonging to enumeration
-				EnumType* m_singleCornerTrimmedRect; //!< value that represents single corner trimmed rectangle type belonging to enumeration
+        EnumType* m_roundedRect; //!< value that represents rounded retangle type belonging to enumeration
+        EnumType* m_singleCornerTrimmedRect; //!< value that represents single corner trimmed rectangle type belonging to enumeration
  
     };
   }

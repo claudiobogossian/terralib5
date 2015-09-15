@@ -57,16 +57,16 @@ namespace te
 
     /*!
     \brief Manage properties variants values.  
-	  
-	  \ingroup layout
-	  */
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT AbstractPropertiesBrowser : public QObject
     {
       public:
 
-	      AbstractPropertiesBrowser(QObject *parent = 0);
+        AbstractPropertiesBrowser(QObject *parent = 0);
 
-	      virtual ~AbstractPropertiesBrowser();
+        virtual ~AbstractPropertiesBrowser();
 
         virtual QtProperty* addProperty(Property property) = 0;
 

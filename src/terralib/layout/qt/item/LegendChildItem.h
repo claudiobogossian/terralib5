@@ -31,24 +31,25 @@
 // TerraLib
 #include "LegendItem.h"
 #include "../../core/Config.h"
+#include "AbstractItem.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
+    class AbstractItemController;
 
-    class TELAYOUTEXPORT LegendChildItem : public LegendItem
+    class TELAYOUTEXPORT LegendChildItem : public AbstractItem<QGraphicsItem>
     {
-      public:
+    public:
 
-        LegendChildItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+      LegendChildItem(AbstractItemController* controller, bool invertedMatrix = false);
 
-        virtual ~LegendChildItem();
+      virtual ~LegendChildItem();
 
-      protected:
+    protected:
 
-        virtual void drawItem ( QPainter * painter );
+      virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }

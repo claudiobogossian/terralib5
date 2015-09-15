@@ -54,7 +54,7 @@ te::layout::Property::~Property()
 
 }
 
-std::string te::layout::Property::getName()
+const std::string& te::layout::Property::getName() const
 {
   return m_name;
 }
@@ -64,12 +64,12 @@ void te::layout::Property::setName( std::string name )
   m_name = name;
 }
 
-te::layout::EnumType* te::layout::Property::getType()
+te::layout::EnumType* te::layout::Property::getType() const
 {
   return m_type;
 }
 
-te::layout::Variant te::layout::Property::getValue()
+const te::layout::Variant& te::layout::Property::getValue() const
 {
   return m_value;
 }
@@ -101,14 +101,14 @@ void te::layout::Property::setOptionChoice(Variant variant)
   m_currentChoice = variant; 
 }
 
-te::layout::Variant te::layout::Property::getOptionByCurrentChoice()
+const te::layout::Variant& te::layout::Property::getOptionByCurrentChoice() const
 {
   return m_currentChoice;
 }
 
-std::vector<te::layout::Variant> te::layout::Property::getOptionChoices()
+const std::vector<te::layout::Variant>& te::layout::Property::getOptionChoices() const
 {
-  return m_options;;
+  return m_options;
 }
 
 bool te::layout::Property::isEditable()
@@ -143,7 +143,7 @@ std::vector<te::layout::Property> te::layout::Property::getSubProperty()
   return m_subProperty;
 }
 
-bool te::layout::Property::isNull()
+bool te::layout::Property::isNull() const
 {
   bool result = true;
 
@@ -209,7 +209,7 @@ void te::layout::Property::clear()
   m_label = "";
 }
 
-void te::layout::Property::setValue( Variant variant )
+void te::layout::Property::setValue( const Variant& variant )
 {
   m_value = variant;
   m_type = variant.getType();
@@ -290,7 +290,7 @@ void te::layout::Property::setComposeWidget( bool compose )
   m_composeWidget = compose;
 }
 
-bool te::layout::Property::isPublic()
+bool te::layout::Property::isPublic() const
 {
   return m_public;
 }

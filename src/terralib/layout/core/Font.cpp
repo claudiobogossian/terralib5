@@ -58,7 +58,7 @@ void te::layout::Font::setFamily( std::string family )
   m_family = family;
 }
 
-std::string te::layout::Font::getFamily()
+std::string te::layout::Font::getFamily() const 
 {
   return m_family;
 }
@@ -68,7 +68,7 @@ void te::layout::Font::setPointSize( int point )
   m_pointSize = point;
 }
 
-int te::layout::Font::getPointSize()
+int te::layout::Font::getPointSize() const
 {
   return m_pointSize;
 }
@@ -78,7 +78,7 @@ void te::layout::Font::setBold( bool bold )
   m_bold = bold;
 }
 
-bool te::layout::Font::isBold()
+bool te::layout::Font::isBold() const
 {
   return m_bold;
 }
@@ -88,7 +88,7 @@ void te::layout::Font::setItalic( bool italic )
   m_italic = italic;
 }
 
-bool te::layout::Font::isItalic()
+bool te::layout::Font::isItalic() const
 {
   return m_italic;
 }
@@ -98,7 +98,7 @@ void te::layout::Font::setUnderline( bool underline )
   m_underline = underline;
 }
 
-bool te::layout::Font::isUnderline()
+bool te::layout::Font::isUnderline() const
 {
   return m_underline;
 }
@@ -108,7 +108,7 @@ void te::layout::Font::setStrikeout( bool strikeout )
   m_strikeout = strikeout;
 }
 
-bool te::layout::Font::isStrikeout()
+bool te::layout::Font::isStrikeout() const
 {
   return m_strikeout;
 }
@@ -118,12 +118,12 @@ void te::layout::Font::setKerning( bool kerning )
   m_kerning = kerning;
 }
 
-bool te::layout::Font::isKerning()
+bool te::layout::Font::isKerning() const
 {
   return m_kerning;
 }
 
-std::string te::layout::Font::toString()
+std::string te::layout::Font::toString() const
 {
   std::string s_convert;
   std::stringstream ss;//create a stringstream
@@ -169,7 +169,7 @@ void te::layout::Font::fromString( std::string font )
   m_kerning = toBool(strings[6]);;  
 }
 
-std::string te::layout::Font::toString( bool flag )
+std::string te::layout::Font::toString( bool flag ) const
 {
   return flag ? "true" : "false"; 
 }

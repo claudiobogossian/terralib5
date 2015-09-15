@@ -69,7 +69,8 @@ int te::common::ProgressManager::addTask(TaskProgress* tp)
 
   while(itV != m_viewers.end())
   {
-    itV->second->addTask(tp, id);
+    if(!m_suspendViewers)
+      itV->second->addTask(tp, id);
 
     ++itV;
   }
@@ -90,7 +91,8 @@ void te::common::ProgressManager::removeTask(int taskId)
 
     while(itV != m_viewers.end())
     {
-      itV->second->removeTask(taskId);
+      if(!m_suspendViewers)
+        itV->second->removeTask(taskId);
 
       ++itV;
     }
@@ -101,6 +103,9 @@ void te::common::ProgressManager::removeTask(int taskId)
 
 void te::common::ProgressManager::cancelTask(int taskId)
 {
+  if(m_suspendViewers)
+    return;
+
   std::map<int, TaskProgress*>::iterator it = m_tasks.find(taskId);
 
   if(it != m_tasks.end())
@@ -119,6 +124,9 @@ void te::common::ProgressManager::cancelTask(int taskId)
 
 void te::common::ProgressManager::cancelTasks(unsigned int type)
 {
+  if(m_suspendViewers)
+    return;
+
   LockWrite l(this);
 
   std::vector<TaskProgress*> cancelled;
@@ -138,6 +146,9 @@ void te::common::ProgressManager::cancelTasks(unsigned int type)
 
 void te::common::ProgressManager::setTotalValues(int taskId)
 {
+  if(m_suspendViewers)
+    return;
+
   std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
   while(itV != m_viewers.end())
@@ -150,6 +161,9 @@ void te::common::ProgressManager::setTotalValues(int taskId)
 
 void te::common::ProgressManager::updateValue(int taskId)
 {
+  if(m_suspendViewers)
+    return;
+
   std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
   while(itV != m_viewers.end())
@@ -162,6 +176,9 @@ void te::common::ProgressManager::updateValue(int taskId)
 
 void te::common::ProgressManager::updateMessage(int taskId)
 {
+  if(m_suspendViewers)
+    return;
+
   std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
   while(itV != m_viewers.end())
@@ -180,7 +197,8 @@ void te::common::ProgressManager::clearAll()
 
 te::common::ProgressManager::ProgressManager()
   : m_taskCounter(0),
-    m_viewerCounter(0)
+    m_viewerCounter(0),
+    m_suspendViewers(false)
 {
 }
 

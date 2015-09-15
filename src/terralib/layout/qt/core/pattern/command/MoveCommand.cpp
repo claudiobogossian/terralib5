@@ -27,9 +27,10 @@
 
 // TerraLib
 #include "MoveCommand.h"
-#include "../../../../core/pattern/mvc/ItemObserver.h"
+#include "../../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../../../core/enum/EnumType.h"
-#include "../../../../core/pattern/mvc/Observable.h"
 #include "../../Scene.h"
 #include "../../../../core/pattern/singleton/Context.h"
 
@@ -105,7 +106,9 @@ void te::layout::MoveCommand::redo()
   if(m_moveItems.empty())
     return;
 
-  if(m_moveItems.size() != m_itemsPoints.size())
+  int moveItensSize = m_moveItems.size();
+
+  if(moveItensSize != m_itemsPoints.size())
     return;
 
   Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
@@ -152,12 +155,12 @@ QString te::layout::MoveCommand::createCommandString( QGraphicsItem* item, const
   if(!m_item)
     return QObject::tr("%1");
 
-  ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+  AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
 
   if(!obs)
     return QObject::tr("%1");
 
   return QObject::tr("%1 at (%2, %3)")
-    .arg(obs->getModel()->getType()->getName().c_str())
+    .arg(obs->getController()->getProperties().getTypeObj()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
 }

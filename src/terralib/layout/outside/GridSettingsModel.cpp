@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "GridSettingsModel.h"
-#include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../core/enum/Enums.h"
 
-te::layout::GridSettingsModel::GridSettingsModel() 
+te::layout::GridSettingsModel::GridSettingsModel() :
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getGridSettings();
 
@@ -60,7 +60,7 @@ te::layout::Property te::layout::GridSettingsModel::containsProperty( std::strin
     return prop;
   }
 
-  prop = props->contains(name);
+  prop = props->getProperty(name);
   return prop;
 }
 

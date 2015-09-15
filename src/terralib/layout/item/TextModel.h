@@ -31,21 +31,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEXT_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/derivativevisitor/AbstractVisitor.h"
-#include "../../maptools/Canvas.h"
-#include "../core/Utils.h"
-#include "../core/Font.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/Config.h"
-#include "../core/enum/EnumAlignmentType.h"
-#include "../core/property/Property.h"
-#include "../core/property/Properties.h"
-
-
-// STL
-#include <string>
-#include "QtPropertyBrowser/qtpropertybrowser.h"
 
 namespace te
 {
@@ -54,13 +41,13 @@ namespace te
     /*!
     \brief Class that represents a "Model" part of Text MVC component.  
     Its coordinate system is the same of scene (millimeters). 
-    This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+    This is also son of AbstractItemModel, so it can become observable.
+          
+      \ingroup layout
 
-      \sa te::layout::ItemModelObservable
-	  */
-    class TELAYOUTEXPORT TextModel : public ItemModelObservable
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT TextModel : public AbstractItemModel
     {
       public:
 
@@ -73,39 +60,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~TextModel();
-        
-        virtual te::layout::Properties* getProperties() const;
-        
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);     
-
-        virtual void setText(std::string txt);
-
-        virtual std::string getText();
-
-        virtual Font getFont();
-
-        virtual void setFont(Font ft);
-
-        virtual void setFontColor(te::color::RGBAColor clft);
-
-        virtual te::color::RGBAColor getFontColor();
-
-        virtual EnumAlignmentType* getEnumAlignmentType();
-
-        virtual EnumType* getCurrentAlignmentType();
-
-        virtual double getShapeSize();
-
-       protected:
-         
-        virtual Property alignmentProperty() const;
-
-         std::string m_text;
-         Font m_font;
-         te::color::RGBAColor m_fontColor;
-         EnumAlignmentType* m_enumAlignmentType;
-         EnumType*      m_currentAlignmentType;
-         double         m_shapeSize;
     };
   }
 }

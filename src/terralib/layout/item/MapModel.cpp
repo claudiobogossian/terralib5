@@ -27,6 +27,13 @@
 
 // TerraLib
 #include "MapModel.h"
+#include "../core/enum/Enums.h"
+#include "../core/enum/EnumScaleType.h"
+#include "../core/property/Properties.h"
+#include "../core/property/Property.h"
+
+/*
+#include "MapModel.h"
 #include "../core/ContextItem.h"
 #include "../../maptools/Canvas.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
@@ -41,44 +48,244 @@
 #include "../../geometry/LinearRing.h"
 #include "../core/enum/Enums.h"
 #include "../core/property/SharedProperties.h"
+*/
 
 // STL
+/*
 #include <vector>
 #include <string>
 #include <sstream> 
 #include <algorithm>
+*/
 
-te::layout::MapModel::MapModel() :
-  m_mapDisplacementX(0),
-  m_mapDisplacementY(0),
-  m_mapScale(0),
-  m_systematic(0),
-  m_fixedScale(false),
-  m_loadedLayer(false)
+te::layout::MapModel::MapModel()
+  : AbstractItemModel()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getMapItem();
+  this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getMapItem());
 
-  m_box = te::gm::Envelope(0., 0., 150., 120.);
-  m_mapBoxMM = m_box;
+  te::color::RGBAColor backgroundColor(255, 255, 255, 0);
+  bool enableChildren = true;
+  te::gm::Envelope worldBox;
+  int srid = -1;
+  bool fixedScale = false;
+  double scale = 0;
+  std::list<te::map::AbstractLayerPtr> layerList;
+  double width = 120.;
+  double height = 120.;
+  //double mapDisplacementX = 0.;
+  //double mapDisplacementY = 0.;
 
-  //will calculated map box with displacement
-  setBox(m_box);
 
-  m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  m_enableChildren = true;
+//adding properties
+  {
+    std::string value = "Choice";
+    Property property(0);
+    property.setName("mapChoice");
+    property.setValue(value, dataType->getDataTypeMapChoice());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+  {
+    GenericVariant gv;
+    gv.setList(layerList, dataType->getDataTypeLayerList());
+
+    Property property;
+    property.setName("layers");
+    property.setValue(gv, dataType->getDataTypeGenericVariant());
+    property.setEditable(false);
+    property.setVisible(false);
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("fixedScale");
+    property.setValue(fixedScale, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("world_box");
+    property.setValue(worldBox, dataType->getDataTypeEnvelope());
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("srid");
+    property.setValue(srid, dataType->getDataTypeInt());
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("scale");
+    property.setValue(scale, dataType->getDataTypeDouble());
+    m_properties.addProperty(property);
+  }
+
+//updating properties
+  {
+    Property property(0);
+    property.setName("background_color");
+    property.setValue(backgroundColor, dataType->getDataTypeColor());
+    this->m_properties.updateProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("show_frame");
+    property.setValue(true, dataType->getDataTypeBool());
+    this->m_properties.updateProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("width");
+    property.setValue(width, dataType->getDataTypeDouble());
+    this->m_properties.updateProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("height");
+    property.setValue(height, dataType->getDataTypeDouble());
+    this->m_properties.updateProperty(property);
+  }
+  /* what is displacement? Mário
+  {
+    Property property(0);
+    property.setName("map_displacementX");
+    property.setValue(m_mapDisplacementX, dataType->getDataTypeDouble());  
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("map_displacementY");
+    property.setValue(m_mapDisplacementY, dataType->getDataTypeDouble());  
+    m_properties.addProperty(property);
+  }
+  */
+
+
+  //Property pro_layersNames = getLayerNamesProperty();
+  //m_properties->addProperty(pro_layersNames);
+
+  /*
+  std::list<te::map::AbstractLayerPtr>    m_layers;
+  te::gm::Envelope                        m_mapBoxMM;
+  double                                  m_mapDisplacementX;
+  double                                  m_mapDisplacementY;
+  int                                     m_mapScale;
+  Systematic*                             m_systematic;
+  bool                                    m_fixedScale;
+  te::gm::Envelope                        m_worldBox;
+  bool                                    m_loadedLayer;
+  std::vector<std::string>                m_layerNames;
+  */
+
 }
 
 te::layout::MapModel::~MapModel()
 {
+  /*
   m_layers.clear();
 
   if(m_systematic)
   {
     delete m_systematic;
     m_systematic = 0;
-  }
+  }*/
 }
+
+
+void te::layout::MapModel::setProperty(const Property& property)
+{
+  if(property.getName() == "layers")
+  {
+    te::layout::Properties properties = handleNewLayerList(property);
+    properties.addProperty(property);
+
+    AbstractItemModel::setProperties(properties);
+    return;
+  }
+
+  AbstractItemModel::setProperty(property);
+}
+
+void te::layout::MapModel::setProperties(const Properties& properties)
+{
+  const std::vector<Property>& vecProperties = properties.getProperties();
+  for(size_t i = 0; i < vecProperties.size(); ++i)
+  {
+    if(vecProperties[i].getName() == "layers")
+    {
+      te::layout::Properties fullProperties = handleNewLayerList(vecProperties[i]);
+
+      for(size_t j = 0; j < properties.getProperties().size(); ++j)
+      {
+        fullProperties.addProperty(properties.getProperties()[j]);
+      }
+
+      AbstractItemModel::setProperties(fullProperties);
+      return;
+    }
+  }
+
+  AbstractItemModel::setProperties(properties);
+}
+
+te::layout::Properties te::layout::MapModel::handleNewLayerList(const Property& property)
+{
+  te::layout::Properties properties("");
+  if(property.getName() != "layers")
+  {
+    return properties;
+  }
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  te::gm::Envelope envelope;
+  int srid = -1;
+
+  const GenericVariant& gv = property.getValue().toGenericVariant();
+  const std::list<te::map::AbstractLayerPtr>& newLayerList = gv.toLayerList();
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator it = newLayerList.begin();
+  if(it != newLayerList.end())
+  {
+    te::map::AbstractLayerPtr layer = (*it);
+
+    te::gm::Envelope currentEnvelope = layer->getExtent();
+
+    int currentSrid = layer->getSRID();
+    if(srid <= 0)
+      srid = currentSrid;
+    if(currentSrid != srid)
+      currentEnvelope.transform(currentSrid, srid);
+
+    envelope.Union(currentEnvelope);
+  }
+
+  {
+    Property property(0);
+    property.setName("srid");
+    property.setValue(srid, dataType->getDataTypeInt());
+    properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("world_box");
+    property.setValue(envelope, dataType->getDataTypeEnvelope());
+    properties.addProperty(property);
+  }
+
+  return properties;
+}
+
+
+/*
 
 te::layout::Properties* te::layout::MapModel::getProperties() const
 {
@@ -132,7 +339,7 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
 
   Properties* vectorProps = const_cast<Properties*>(properties);  
   
-  Property pro_layerNames = vectorProps->contains("layerNames");
+  Property pro_layerNames = vectorProps->getProperty("layerNames");
   if(!pro_layerNames.isNull())
   {
     m_layerNames.clear();
@@ -146,7 +353,7 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
     }
   }
 
-  Property pro_layers = vectorProps->contains("layers");
+  Property pro_layers = vectorProps->getProperty("layers");
   if(!pro_layers.isNull())
   {
     GenericVariant v = pro_layers.getValue().toGenericVariant();
@@ -161,25 +368,25 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
     }
   }
 
-  Property pro_fixed = vectorProps->contains("fixedScale");
+  Property pro_fixed = vectorProps->getProperty("fixedScale");
   if(!pro_fixed.isNull())
   {
     m_fixedScale = pro_fixed.getValue().toBool();
   }
 
-  Property pro_mapDisplacementX = vectorProps->contains("map_displacementX");
+  Property pro_mapDisplacementX = vectorProps->getProperty("map_displacementX");
   if(!pro_mapDisplacementX.isNull())
   {
     updateMapDisplacementX(pro_mapDisplacementX.getValue().toDouble());
   }
 
-  Property pro_mapDisplacementY = vectorProps->contains("map_displacementY");
+  Property pro_mapDisplacementY = vectorProps->getProperty("map_displacementY");
   if(!pro_mapDisplacementY.isNull())
   {
     updateMapDisplacementY(pro_mapDisplacementY.getValue().toDouble());
   }
 
-  Property pro_mapScale = vectorProps->contains("map_scale");
+  Property pro_mapScale = vectorProps->getProperty("map_scale");
    if(!pro_mapScale.isNull())
    {
      m_mapScale = pro_mapScale.getValue().toInt();
@@ -784,3 +991,4 @@ void te::layout::MapModel::setWorldBox(te::gm::Envelope env)
   m_worldBox = env;
 }
 
+*/

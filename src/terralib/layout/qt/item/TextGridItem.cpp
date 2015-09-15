@@ -27,9 +27,7 @@
 
 // TerraLib
 #include "TextGridItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
@@ -42,8 +40,8 @@
 #include <QTextCursor>
 #include <QTextTableCell>
 
-te::layout::TextGridItem::TextGridItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  TitleItem(controller, o, true)
+te::layout::TextGridItem::TextGridItem(AbstractItemController* controller, bool invertedMatrix) :
+  TitleItem(controller, invertedMatrix)
 {
   init();
 }
@@ -55,18 +53,14 @@ te::layout::TextGridItem::~TextGridItem()
 
 void te::layout::TextGridItem::init()
 {
-  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
-
-  if(!model)
-    return;
-
   updateDocument();
 
-  resetEdit();
+  //resetEdit();
 }
 
 void te::layout::TextGridItem::refreshDocument()
 {
+  /*
   if(!m_model)
     return;
 
@@ -114,15 +108,12 @@ void te::layout::TextGridItem::refreshDocument()
       //model->setText(txtThree);
     }
   }
+  */
 }
 
 void te::layout::TextGridItem::updateDocument()
 {
-  TextGridModel* model = dynamic_cast<TextGridModel*>(m_model);
-
-  if(!model)
-    return;
-
+  /*
   document()->clear();
 
   QTextDocument* doc = document();
@@ -167,5 +158,7 @@ void te::layout::TextGridItem::updateDocument()
     fmtTwo.setBackground(Qt::gray); 
     fmtTwo.setFontWeight(QFont::Bold);
     cellTwo.setFormat(fmtTwo);
+    
   }
+  */
 }

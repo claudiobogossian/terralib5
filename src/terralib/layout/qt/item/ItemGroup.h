@@ -22,90 +22,58 @@
    
    \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
    Its coordinate system is the same of scene (millimeters). 
-   He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+   It is also the son of AbstractItem, so it can become observer of a model (Observable). 
+   The group component must be initialized with a position (setPos).
 
   \ingroup layout
 */
 
-#ifndef	__TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_H
 #define __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_H
 
-// Qt
-#include <QGraphicsItemGroup>
-#include <QPainter>
-#include <QPixmap>
-
-// TerraLib
-#include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../core/enum/AbstractType.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../color/RGBAColor.h"
+//TerraLib
 #include "../../core/Config.h"
+#include "AbstractItem.h"
 
-class QMouseEvent;
-class QWheelEvent;
-class QKeyEvent;
-class QString;
+// Qt
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
-	  
-	    \ingroup layout
+        It is also the son of AbstractItem, so it can become observer of a model (Observable).  
+        The group component must be initialized with a position (setPos).
 
-	    \sa te::layout::ItemObserver
-	  */
-    class TELAYOUTEXPORT ItemGroup : public QGraphicsItemGroup, public ItemObserver
+      \ingroup layout
+
+      \sa te::layout::ItemObserver
+    */
+    class TELAYOUTEXPORT ItemGroup : public AbstractItem<QGraphicsItemGroup>
     {
       public:
 
-        ItemGroup( ItemController* controller, Observable* o );
+        ItemGroup(AbstractItemController* controller, bool invertedMatrix = false);
 
         virtual ~ItemGroup();
 
-        virtual void updateObserver(ContextItem context);
+        /*!
+          \brief For any specific drawing, the item must reimplement this function
+        */
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-        virtual te::gm::Coord2D getPosition();
+        //virtual void  addToGroup ( QGraphicsItem * item );
 
-        void setPixmap( const QPixmap& pixmap );
-
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
-        virtual void	addToGroup ( QGraphicsItem * item );
-
-        virtual bool contains(const QPointF &point) const;
-
-        void	setZValue ( qreal z );
-
-        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
-
-      protected:
-
-        virtual void setPosition(const double& x, const double& y);
-
-        void drawBackground( QPainter * painter );
-
-        void drawSelection( QPainter* painter );
-
-        virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent* event );
-
-        virtual void mousePressEvent ( QGraphicsSceneMouseEvent* event );
-
-        virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent* event );
-        
-        virtual int getZValueItem();
-
-        virtual void applyRotation();
-        
-      protected:
-
-        QPixmap m_pixmap;
+        /*!
+          \brief Reimplemented from QGraphicsItem to capture changes in the item
+         */
+        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
     };
   }
 }
-#endif
+
+#endif //__TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_H

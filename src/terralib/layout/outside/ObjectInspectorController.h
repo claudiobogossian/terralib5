@@ -29,20 +29,22 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT ObjectInspectorController : public OutsideController
+    class AbstractOutsideModel;
+
+    class TELAYOUTEXPORT ObjectInspectorController : public AbstractOutsideController
     {
       public:
 
-	      ObjectInspectorController( Observable* o );
+        ObjectInspectorController(AbstractOutsideModel* o);
 
-	      virtual ~ObjectInspectorController();
+        virtual ~ObjectInspectorController();
     };
   }
 }

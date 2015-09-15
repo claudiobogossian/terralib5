@@ -36,15 +36,12 @@ namespace te
 {
   namespace layout
   {
-    class Observable;
-
+    class AbstractItemController;
     /*!
       \brief Class daughter of te::layout::TextItem representing a grid with two cells which can be inserted texts.
-	  
-	    \ingroup layout
-
-	    \sa te::layout::TextItem
-	  */
+      \ingroup layout
+      \sa te::layout::TextItem
+    */
     class TELAYOUTEXPORT TitleItem : public TextItem
     {
       public:
@@ -55,25 +52,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        TitleItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        TitleItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
          */
         virtual ~TitleItem();
 
-        /*!
-          \brief Reimplemented from TextItem
-         */
-        virtual void updateObserver( ContextItem context );
+      protected slots:
 
-        virtual void refreshDocument();
-        
-      protected:
-
-        virtual void init();
-
-        virtual void updateDocument();
+        virtual void updateGeometry( int position, int charsRemoved, int charsAdded );
     };
   }
 }

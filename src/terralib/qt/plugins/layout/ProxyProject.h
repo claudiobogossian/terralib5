@@ -27,7 +27,7 @@
   \ingroup layout
 */
 
-#ifndef	__TE_QT_PLUGINS_LAYOUT_INTERNAL_PROXY_PROJECT_H 
+#ifndef  __TE_QT_PLUGINS_LAYOUT_INTERNAL_PROXY_PROJECT_H 
 #define __TE_QT_PLUGINS_LAYOUT_INTERNAL_PROXY_PROJECT_H
 
 // TerraLib
@@ -55,14 +55,14 @@ namespace te
       namespace layout
       {
         /*!
-        \brief Provide a surrogate or placeholder for te::qt::af::Project to control access to it. 
+        \brief Provide a surrogate or placeholder for te::qt::af::Project to control access to it.
           A wrapper to access without complexity. This proxy is required because module not must have dependence te::qt::af.
           Useful to access the Layers belonging to the project.
-	  
-	      \ingroup layout
+
+        \ingroup layout
 
         \sa te::layout::AbstractProxyProject
-	      */
+        */
         class ProxyProject : public QObject, public te::layout::AbstractProxyProject
         {
           Q_OBJECT //for slots/signals

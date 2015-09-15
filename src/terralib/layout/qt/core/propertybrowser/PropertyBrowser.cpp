@@ -100,11 +100,14 @@ void te::layout::PropertyBrowser::createManager()
 
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(Property)), this, SLOT(onChangeDlgProperty(Property)));
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(std::vector<Property>)), this, SLOT(onChangeDlgProperty(std::vector<Property>)));
+  
 
   m_propertyEditor->setFactoryForManager(m_dialogPropertiesBrowser->getStringPropertyManager(), m_dialogPropertiesBrowser->getDlgEditorFactory());
   m_propertyEditor->setFactoryForManager(m_variantPropertiesBrowser->getVariantPropertyManager(), m_variantPropertiesBrowser->getVariantEditorFactory());
   m_propertyEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   m_propertyEditor->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
+
+  connect(m_propertyEditor, SIGNAL(currentItemChanged(QtBrowserItem*)), this, SLOT(onCurrentItemChanged(QtBrowserItem*)));
 }
 
 void te::layout::PropertyBrowser::propertyEditorValueChanged( QtProperty *property, const QVariant &value )
@@ -139,6 +142,15 @@ void te::layout::PropertyBrowser::onChangeDlgProperty( Property property )
 void te::layout::PropertyBrowser::onChangeDlgProperty( std::vector<Property> props )
 {
   emit changePropertyValue(props);
+}
+
+void te::layout::PropertyBrowser::onCurrentItemChanged(QtBrowserItem* item)
+{
+  if(item == 0)
+  {
+    return;
+  }
+  emit currentItemChanged(item);
 }
 
 void te::layout::PropertyBrowser::updateExpandState()
@@ -335,9 +347,9 @@ bool te::layout::PropertyBrowser::updateProperty( Property property )
   return result;
 }
 
-void te::layout::PropertyBrowser::updateProperties( Properties* props )
+void te::layout::PropertyBrowser::updateProperties( Properties props )
 {
-  foreach( Property prop, props->getProperties()) 
+  foreach( Property prop, props.getProperties()) 
   {
     updateProperty(prop);
   }
@@ -358,9 +370,9 @@ void te::layout::PropertyBrowser::closeAllWindows()
   m_dialogPropertiesBrowser->closeAllWindows();
 }
 
-te::layout::Properties* te::layout::PropertyBrowser::getProperties()
+te::layout::Properties te::layout::PropertyBrowser::getProperties()
 {
-  Properties* properties = new Properties("");
+  Properties properties("");
 
   QList<QtProperty*> props = m_propertyEditor->properties();
   foreach( QtProperty* prop, props) 
@@ -372,7 +384,7 @@ te::layout::Properties* te::layout::PropertyBrowser::getProperties()
       property = m_dialogPropertiesBrowser->getProperty(prop->propertyName().toStdString());
     }
 
-    properties->addProperty(property);
+    properties.addProperty(property);
   }
 
   return properties;
@@ -415,11 +427,11 @@ bool te::layout::PropertyBrowser::addSubProperty( Property prop, Property subPro
   return addSubProperty(addProp, addSubProp);
 }
 
-bool te::layout::PropertyBrowser::equalsProperties( Properties* props )
+bool te::layout::PropertyBrowser::equalsProperties( Properties props )
 {
   bool result = true;
 
-  foreach( Property prop, props->getProperties()) 
+  foreach( Property prop, props.getProperties()) 
   {
     if(prop.isVisible())
     {

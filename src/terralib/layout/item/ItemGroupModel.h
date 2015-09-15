@@ -31,8 +31,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/Config.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 
 namespace te
 {
@@ -42,12 +42,12 @@ namespace te
     \brief Class that represents a "Model" part of ItemGroup MVC component.  
     Its coordinate system is the same of scene (millimeters). 
     This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::ItemModelObservable
-	  */
-    class TELAYOUTEXPORT ItemGroupModel : public ItemModelObservable
+    */
+    class TELAYOUTEXPORT ItemGroupModel : public AbstractItemModel
     {
       public:
 

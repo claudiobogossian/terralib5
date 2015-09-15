@@ -29,23 +29,33 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
 
 // TerraLib
+#include "GridMapModel.h"
+#include "../core/Config.h"
+#include "../core/pattern/observer/Observer.h"
+
+/*
 #include "../core/enum/AbstractType.h"
 #include "../core/Config.h"
-#include "GridMapModel.h"
+
+*/
 
 namespace te
 {
   namespace layout
   {
-    class PlanarGridSettingsConfigProperties;
-
-    class TELAYOUTEXPORT GridPlanarModel: public GridMapModel 
+    class TELAYOUTEXPORT GridPlanarModel: public GridMapModel, public Observer
     {
       public:
 
         GridPlanarModel();
 
         virtual ~GridPlanarModel();
+
+        virtual void update(const Subject* subject);
+
+        virtual te::gm::Envelope getWorldBoxInPlanar(const te::gm::Envelope& worldBox, int srid);
+
+        /*
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
 
@@ -62,6 +72,7 @@ namespace te
        protected:
 
          LayoutUnit m_unit;
+         */
     };
   }
 }

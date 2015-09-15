@@ -27,14 +27,7 @@
 
 // TerraLib
 #include "RectangleItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/RectangleModel.h"
 #include "../../core/enum/EnumRectangleType.h"
 
 // Qt
@@ -42,10 +35,10 @@
 #include <QPen>
 #include <QRectF>
 
-te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
-{  
-  m_nameClass = std::string(this->metaObject()->className());
+te::layout::RectangleItem::RectangleItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
+{
+
 }
 
 te::layout::RectangleItem::~RectangleItem()
@@ -53,24 +46,26 @@ te::layout::RectangleItem::~RectangleItem()
 
 }
 
-void te::layout::RectangleItem::drawItem( QPainter * painter )
+void te::layout::RectangleItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-
-  if(model)
+  const Property& property = m_controller->getProperty("rectangle_type");
+  if(property.isNull() == false)
   {
-    EnumRectangleType* enumScale = model->getEnumRectangleType();
+    EnumRectangleType enumRectangleType;
 
-    if(model->getCurrentRectangleType() == enumScale->getSimpleRectangleType())
+    const std::string& label = property.getOptionByCurrentChoice().toString();
+    EnumType* currentRectangleType = enumRectangleType.searchLabel(label);
+
+    if(currentRectangleType == enumRectangleType.getSimpleRectangleType())
     {
       drawRectangle(painter);
     }
-    if(model->getCurrentRectangleType() == enumScale->getRoundedRetangleType())
+    if(currentRectangleType == enumRectangleType.getRoundedRetangleType())
     {
       drawRoundedRectangle(painter);
     }
 
-    if(model->getCurrentRectangleType() == enumScale->getSingleCornerTrimmedRectangleType())
+    if(currentRectangleType == enumRectangleType.getSingleCornerTrimmedRectangleType())
     {
       drawSingleCornerTrimmedRectangle(painter);
     }
@@ -79,16 +74,13 @@ void te::layout::RectangleItem::drawItem( QPainter * painter )
 
 void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
 
-  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
-  const te::color::RGBAColor& contourColor = model->getFrameColor();
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
@@ -113,15 +105,13 @@ void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 
 void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
   painter->save();
 
-  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
-  const te::color::RGBAColor& contourColor = model->getFrameColor();
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
@@ -131,6 +121,7 @@ void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 
   painter->setPen(pen);
   painter->setBrush(brush);
+
 
   //gets the adjusted boundigng rectangle based of the painter settings
   QRectF rectAdjusted = getAdjustedBoundingRect(painter);
@@ -146,15 +137,13 @@ void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 
 void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * painter)
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
   painter->save();
 
-  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
-  const te::color::RGBAColor& contourColor = model->getFrameColor();
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
@@ -169,7 +158,7 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
   QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
   QPointF p1 = QPointF(rectAdjusted.width() - rectAdjusted.width() / 4., rectAdjusted.center().y()+ rectAdjusted.height() / 2.);
-  QPointF p2 = QPointF(rectAdjusted.bottomRight().x() - rectAdjusted.bottomRight().x()/100.,rectAdjusted.height() - rectAdjusted.height() / 4.);
+  QPointF p2 = QPointF(rectAdjusted.bottomRight().x() - rectAdjusted.bottomRight().x()/250.,rectAdjusted.height() - rectAdjusted.height() / 4.);
   QPointF p3 = QPointF(rectAdjusted.bottomRight().x(),rectAdjusted.top());
   QPointF p4 = QPointF(rectAdjusted.bottomLeft().x(),rectAdjusted.top());
   QPointF p5 = QPointF(rectAdjusted.bottomLeft().x(),rectAdjusted.bottom());
@@ -180,5 +169,4 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
   painter->drawPolygon(rect);
 
   painter->restore();
-
 }

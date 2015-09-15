@@ -29,24 +29,45 @@
 #define __TERRALIB_LAYOUT_INTERNAL_BALLOON_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
+
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
+    class AbstractItemController;
+    /*!
+    \brief Class that represents a graphic Balloon. 
+        Its coordinate system is the same of scene (millimeters). 
+        He is also the son of AbstractItem, so it can become observer of a model (Observable). 
 
-    class TELAYOUTEXPORT BalloonItem : public ObjectItem
+      \ingroup layout
+
+      \sa te::layout::AbstractItem
+    */
+    class TELAYOUTEXPORT BalloonItem : public AbstractItem<QGraphicsItem>
     {
-    public:
+      public:
 
-      BalloonItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        /*!
+          \brief Constructor
 
-      virtual ~BalloonItem();
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
+        BalloonItem(AbstractItemController* controller, bool invertedMatrix = false);
 
-      virtual void drawItem ( QPainter * painter );
+        /*!
+          \brief Destructor
+         */
+        virtual ~BalloonItem();
+
+      protected:
+
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }

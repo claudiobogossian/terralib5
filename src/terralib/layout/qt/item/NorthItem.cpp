@@ -30,10 +30,10 @@
 #include "../../item/NorthModel.h"
 #include "../../core/enum/EnumNorthArrowType.h"
 
-te::layout::NorthItem::NorthItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
+te::layout::NorthItem::NorthItem(AbstractItemController* controller, bool invertedMatrix) :
+  AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {  
-  m_nameClass = std::string(this->metaObject()->className());
+
 }
 
 te::layout::NorthItem::~NorthItem()
@@ -41,24 +41,25 @@ te::layout::NorthItem::~NorthItem()
 
 }
 
-void te::layout::NorthItem::drawItem( QPainter * painter )
+void te::layout::NorthItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  NorthModel* model = dynamic_cast<NorthModel*>(m_model);
-
-  if(model)
+  const Property& property = m_controller->getProperty("northArrow_type");
+  if(property.isNull() == false)
   {
-    EnumNorthArrowType* enumScale = model->getEnumNorthArrowType();
+    EnumNorthArrowType enumNorthArrowType;
 
-    if(model->getCurrentNorthArrowType() == enumScale->getNorthArrowType1())
+    const std::string& label = property.getOptionByCurrentChoice().toString();
+    EnumType* currentNorthArrowType = enumNorthArrowType.searchLabel(label);
+
+    if(currentNorthArrowType == enumNorthArrowType.getNorthArrowType1())
     {
       drawNorthArrow1(painter);
     }
-    if(model->getCurrentNorthArrowType() == enumScale->getNorthArrowType2())
+    else if (currentNorthArrowType == enumNorthArrowType.getNorthArrowType2())
     {
       drawNorthArrow2(painter);
     }
-
-    if(model->getCurrentNorthArrowType() == enumScale->getNorthArrowType3())
+    else if(currentNorthArrowType == enumNorthArrowType.getNorthArrowType3())
     {
       drawNorthArrow3(painter);
     }
@@ -67,16 +68,10 @@ void te::layout::NorthItem::drawItem( QPainter * painter )
 
 void te::layout::NorthItem::drawNorthArrow1(QPainter * painter)
 {
-  NorthModel* model = dynamic_cast<NorthModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
   painter->save();
-  QColor cpen(0,0,0);
+  QColor cpen = setBrush(painter);
   QPen pn(cpen, 0, Qt::SolidLine);
   painter->setPen(pn);
-  QColor black(0, 0, 0, 255);
   QPointF p1 = QPointF(boundingRect().width() / 2.,boundingRect().center().y()+boundingRect().height()/4.);
   QPointF p2 = QPointF(boundingRect().bottomRight().x()-boundingRect().bottomRight().x()/4,boundingRect().top());
   QPointF p3 = QPointF(boundingRect().width() / 2.,boundingRect().center().y()-boundingRect().height()/4.);
@@ -97,25 +92,17 @@ void te::layout::NorthItem::drawNorthArrow1(QPainter * painter)
   painter->drawLine(p8,p7);
 
   painter->setPen(pn);
-  painter->setBrush(QBrush(black));
   painter->drawPolygon(north);
   painter->restore();
 }
 void te::layout::NorthItem::drawNorthArrow2(QPainter * painter)
 {
-  NorthModel* model = dynamic_cast<NorthModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
   painter->save();
-  QColor cpen(0,0,0);
+  QColor cpen = setBrush(painter);
   QPen pn(cpen, 0, Qt::SolidLine);
   
-  QColor black(0, 0, 0, 255);
-  QColor white(255, 255, 255, 255);
-  QColor firstPolygon = black;
-  QColor secondPolygon = white;
+  QColor secondPolygon(255, 255, 255, 255);
+
   QPointF p1 = QPointF(boundingRect().width() / 2.,boundingRect().center().y()+boundingRect().height()/4.);
   QPointF p2 = QPointF(boundingRect().bottomRight().x()-boundingRect().bottomRight().x()/4,boundingRect().top());
   QPointF p3 = QPointF(boundingRect().width() / 2.,boundingRect().center().y()-boundingRect().height()/4.);
@@ -140,7 +127,6 @@ void te::layout::NorthItem::drawNorthArrow2(QPainter * painter)
   north3<<p1<<p4<<p3;
 
   painter->setPen(pn);
-  painter->setBrush(QBrush(firstPolygon));
   painter->drawPolygon(north2);
   painter->setBrush(QBrush(secondPolygon));
   painter->drawPolygon(north3);
@@ -150,18 +136,10 @@ void te::layout::NorthItem::drawNorthArrow2(QPainter * painter)
 
 void te::layout::NorthItem::drawNorthArrow3(QPainter * painter)
 {
-  NorthModel* model = dynamic_cast<NorthModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
   painter->save();
-  QColor cpen(0,0,0);
+  QColor cpen = setBrush(painter);
   QPen pn(cpen, 0, Qt::SolidLine);
   painter->setPen(pn);
-  QColor black(0, 0, 0, 255);
-
-
 
   QPen pen(cpen, 0, Qt::SolidLine);
   pen.setWidth(1);
@@ -193,8 +171,16 @@ void te::layout::NorthItem::drawNorthArrow3(QPainter * painter)
   north5<<p7<<p11<<p12;
 
   painter->setPen(pn);
-  painter->setBrush(QBrush(black));
   painter->drawPolygon(north4);
   painter->drawPolygon(north5);
   painter->restore();
+}
+
+QColor te::layout::NorthItem::setBrush(QPainter* painter)
+{
+  const Property& colorProperty = m_controller->getProperty("color");
+  const te::color::RGBAColor& color = colorProperty.getValue().toColor();
+  QColor brushColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+  painter->setBrush(QBrush(brushColor));
+  return brushColor;
 }

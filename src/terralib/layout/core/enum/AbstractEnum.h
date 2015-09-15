@@ -42,9 +42,9 @@ namespace te
   {
     /*!
       \brief Abstract class to represent an enumeration.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT AbstractEnum
     {
       public:

@@ -27,6 +27,12 @@
 
 // TerraLib
 #include "GridMapModel.h"
+
+#include "../core/property/GridSettingsConfigProperties.h"
+#include "../core/property/SharedProperties.h"
+
+
+/*
 #include "../core/ContextItem.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Coord2D.h"
@@ -38,10 +44,13 @@
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/property/SharedProperties.h"
-#include "../core/property/GridSettingsConfigProperties.h"
 
-te::layout::GridMapModel::GridMapModel() :
-  m_mapName(""),
+
+*/
+
+te::layout::GridMapModel::GridMapModel() 
+  : AbstractItemModel()
+  /*m_mapName(""),
   m_settingsConfig(0),
   m_srid(TE_UNKNOWN_SRS),
   m_systematic(0),
@@ -70,11 +79,282 @@ te::layout::GridMapModel::GridMapModel() :
   m_leftRotateText(false),
   m_rightRotateText(false),
   m_topRotateText(false),
-  m_crossOffSet(4.)
+  m_crossOffSet(4.)*/
 {
-  init();
+  //init();
+  std::string name;
+  std::string mapName;
+
+  //Reference Settings
+  double scale = 0.;
+
+  // Grid 
+  bool visible = true;
+  double lneHrzGap = 1000.; // 0.
+  double lneVrtGap = 1000.; // 0.
+  double m_initialGridPointX = 0.; 
+  double m_initialGridPointY = 0.;
+
+  //Just one is visible
+  EnumType* gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleContinuous();
+
+  // Line
+  EnumType* lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleSolid();
+  te::color::RGBAColor lineColor(0, 0, 0, 255);
+  int lineWidth = 1;
+
+  // Text: Basic Configuration
+  int pointTextSize = 6;
+  std::string fontFamily("Arial");
+  te::color::RGBAColor textColor(0, 0, 0, 255);
+
+  // Text: Advanced configuration
+  bool visibleAllTexts = true;
+  bool superscriptText = false;
+  double lneVrtDisplacement = 1;
+  double lneHrzDisplacement = 1;
+  bool bottomText = true;
+  bool leftText = true;
+  bool rightText = true;
+  bool topText = true;
+  bool bottomRotateText = false;
+  bool leftRotateText = false;
+  bool rightRotateText = false;
+  bool topRotateText = false;
+
+  double crossOffSet = 4.;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  GridSettingsConfigProperties settingsConfig;
+  SharedProperties sharedProps;
+
+  m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getGridMapItem());
+
+  // Grid settings
+  {
+    std::string name;
+    Property property(0);
+    property.setName("GridSettings");
+    property.setMenu(true);
+    property.setPublic(true);
+    property.setValue(name, dataType->getDataTypeGridSettings());  
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(sharedProps.getMapName());
+    property.setComposeWidget(true);
+    property.setValue(mapName, dataType->getDataTypeStringList());
+  
+    Variant v;
+    v.setValue(mapName, dataType->getDataTypeString());
+    property.addOption(v);
+    m_properties.addProperty(property);
+  }
+
+  // Grid 
+  {
+    Property property(0);
+    property.setName(settingsConfig.getVisible());
+    property.setComposeWidget(true);
+    property.setValue(visible, dataType->getDataTypeBool());  
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLneHrzGap());
+    property.setComposeWidget(true);
+    property.setValue(lneHrzGap, dataType->getDataTypeDouble());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLneVrtGap());
+    property.setComposeWidget(true);
+    property.setValue(lneVrtGap, dataType->getDataTypeDouble());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getInitialGridPointX());
+    property.setComposeWidget(true);
+    property.setValue(m_initialGridPointX, dataType->getDataTypeDouble());  
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getInitialGridPointY());
+    property.setComposeWidget(true);
+    property.setValue(m_initialGridPointY, dataType->getDataTypeDouble());  
+    m_properties.addProperty(property);
+  }
+
+  //Just one is visible
+  {
+    Property property(0);
+    property.setName(settingsConfig.getStyle());
+    property.setComposeWidget(true);
+    property.setValue(gridStyle->getLabel(), dataType->getDataTypeString());
+    m_properties.addProperty(property);
+  }
+
+  // Line
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLineStyle());
+    property.setComposeWidget(true);
+    property.setValue(lineStyle->getName(), dataType->getDataTypeString());
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLineColor());
+    property.setComposeWidget(true);
+    property.setValue(lineColor, dataType->getDataTypeColor());
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLineWidth());
+    property.setComposeWidget(true);
+    property.setValue(lineWidth, dataType->getDataTypeInt());
+    m_properties.addProperty(property);
+  }
+
+  // Text: Basic Configuration
+  {
+    Property property(0);
+    property.setName(settingsConfig.getPointTextSize());
+    property.setComposeWidget(true);
+    property.setValue(pointTextSize, dataType->getDataTypeInt());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getFontText());
+    property.setComposeWidget(true);
+    property.setValue(fontFamily, dataType->getDataTypeString());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getTextColor());
+    property.setComposeWidget(true);
+    property.setValue(textColor, dataType->getDataTypeColor());
+    m_properties.addProperty(property);
+  }
+
+  // Text: Advanced configuration
+  {
+    Property property(0);
+    property.setName(settingsConfig.getVisibleAllTexts());
+    property.setComposeWidget(true);
+    property.setValue(visibleAllTexts, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getSuperscriptText());
+    property.setComposeWidget(true);
+    property.setValue(superscriptText, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLneVrtDisplacement());
+    property.setComposeWidget(true);
+    property.setValue(lneVrtDisplacement, dataType->getDataTypeDouble());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLneHrzDisplacement());
+    property.setComposeWidget(true);
+    property.setValue(lneHrzDisplacement, dataType->getDataTypeDouble());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getBottomText());
+    property.setComposeWidget(true);
+    property.setValue(bottomText, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLeftText());
+    property.setComposeWidget(true);
+    property.setValue(leftText, dataType->getDataTypeBool());  
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getRightText());
+    property.setComposeWidget(true);
+    property.setValue(rightText, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getTopText());
+    property.setComposeWidget(true);
+    property.setValue(topText, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getBottomRotateText());
+    property.setComposeWidget(true);
+    property.setValue(bottomRotateText, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getLeftRotateText());
+    property.setComposeWidget(true);
+    property.setValue(leftRotateText, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getRightRotateText());
+    property.setComposeWidget(true);
+    property.setValue(rightRotateText, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName(settingsConfig.getTopRotateText());
+    property.setComposeWidget(true);
+    property.setValue(topRotateText, dataType->getDataTypeBool());
+    m_properties.addProperty(property);
+  }
+    {
+    Property property(0);
+    property.setName(settingsConfig.getCrossOffset());
+    property.setComposeWidget(true);
+    property.setValue(crossOffSet, dataType->getDataTypeDouble());
+    m_properties.addProperty(property);
+  }
+
+//updating properties
+  {
+    Property property(0);
+    property.setName("connect_item_position");
+    property.setValue(true, dataType->getDataTypeBool());
+    m_properties.updateProperty(property);
+  }
 }
 
+te::layout::GridMapModel::~GridMapModel()
+{
+
+}
+
+/*
  te::layout::GridMapModel::GridMapModel( GridSettingsConfigProperties* settingsConfig ) :
   m_mapName(""),
   m_settingsConfig(settingsConfig),
@@ -127,11 +407,6 @@ void te::layout::GridMapModel::init()
   {
     m_settingsConfig = new GridSettingsConfigProperties;
   }
-}
-
-te::layout::GridMapModel::~GridMapModel()
-{
-
 }
 
 bool te::layout::GridMapModel::isVisible()
@@ -233,8 +508,9 @@ void te::layout::GridMapModel::visitDependent( ContextItem context )
     m_mapDisplacementX = map->getDisplacementX();
     m_mapDisplacementY = map->getDisplacementY();
     m_mapName = map->getName();
-  }	
+  }  
 }
+
 
 te::layout::Properties* te::layout::GridMapModel::getProperties() const
 {
@@ -259,7 +535,7 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
   pro_mapName.addOption(v);
   m_properties->addProperty(pro_mapName);
 
-  /* Grid */
+  // Grid 
 
   Property pro_visible(m_hashCode);
   pro_visible.setName(m_settingsConfig->getVisible());
@@ -291,14 +567,14 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
   pro_initialGridPointY.setValue(m_initialGridPointY, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_initialGridPointY);
 
-  /* Just one is visible */
+  //Just one is visible
   Property pro_gridStyle(m_hashCode);
   pro_gridStyle.setName(m_settingsConfig->getStyle());
   pro_gridStyle.setComposeWidget(true);
   pro_gridStyle.setValue(m_gridStyle->getLabel(), dataType->getDataTypeString());  
   m_properties->addProperty(pro_gridStyle);
 
-  /* Line */
+  // Line
   Property pro_lineStyle(m_hashCode);
   pro_lineStyle.setName(m_settingsConfig->getLineStyle());
   pro_lineStyle.setComposeWidget(true);
@@ -317,7 +593,7 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
   pro_lineWidth.setValue(m_lineWidth, dataType->getDataTypeInt());  
   m_properties->addProperty(pro_lineWidth);
 
-  /* Text: Basic Configuration */
+  // Text: Basic Configuration
   Property pro_pointTextSize(m_hashCode);
   pro_pointTextSize.setName(m_settingsConfig->getPointTextSize());
   pro_pointTextSize.setComposeWidget(true);
@@ -336,7 +612,7 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
   pro_textColor.setValue(m_textColor, dataType->getDataTypeColor());  
   m_properties->addProperty(pro_textColor);
 
-  /* Text: Advanced configuration */
+  // Text: Advanced configuration
   Property pro_visibleAllTexts(m_hashCode);
   pro_visibleAllTexts.setName(m_settingsConfig->getVisibleAllTexts());
   pro_visibleAllTexts.setComposeWidget(true);
@@ -423,45 +699,45 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
     return;
   }
 
-  Property pro_mapName = vectorProps->contains(m_sharedProps->getMapName());
+  Property pro_mapName = vectorProps->getProperty(m_sharedProps->getMapName());
 
   if(!pro_mapName.isNull())
   {
     m_mapName = pro_mapName.getOptionByCurrentChoice().toString();
   }
 
-  Property pro_visible = vectorProps->contains(m_settingsConfig->getVisible());
+  Property pro_visible = vectorProps->getProperty(m_settingsConfig->getVisible());
 
   if(!pro_visible.isNull())
   {
     m_visible = pro_visible.getValue().toBool();
   }
 
-  Property pro_lneHrzGap = vectorProps->contains(m_settingsConfig->getLneHrzGap());
+  Property pro_lneHrzGap = vectorProps->getProperty(m_settingsConfig->getLneHrzGap());
   if(!pro_lneHrzGap.isNull())
   {
     m_lneHrzGap = pro_lneHrzGap.getValue().toDouble();
   }
 
-  Property pro_lneVrtGap = vectorProps->contains(m_settingsConfig->getLneVrtGap());
+  Property pro_lneVrtGap = vectorProps->getProperty(m_settingsConfig->getLneVrtGap());
   if(!pro_lneVrtGap.isNull())
   {
     m_lneVrtGap = pro_lneVrtGap.getValue().toDouble();
   }
 
-  Property pro_initialGridPointX = vectorProps->contains(m_settingsConfig->getInitialGridPointX());
+  Property pro_initialGridPointX = vectorProps->getProperty(m_settingsConfig->getInitialGridPointX());
   if(!pro_initialGridPointX.isNull())
   {
     m_initialGridPointX = pro_initialGridPointX.getValue().toDouble();
   }
 
-  Property pro_initialGridPointY = vectorProps->contains(m_settingsConfig->getInitialGridPointY());
+  Property pro_initialGridPointY = vectorProps->getProperty(m_settingsConfig->getInitialGridPointY());
   if(!pro_initialGridPointY.isNull())
   {
     m_initialGridPointY = pro_initialGridPointY.getValue().toDouble();
   }
 
-  Property pro_gridStyle = vectorProps->contains(m_settingsConfig->getStyle());
+  Property pro_gridStyle = vectorProps->getProperty(m_settingsConfig->getStyle());
   if(!pro_gridStyle.isNull())
   {
     std::string style = pro_gridStyle.getValue().toString();
@@ -474,7 +750,7 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
       m_gridStyle = styleType;
   }
 
-  Property pro_lineStyle = vectorProps->contains(m_settingsConfig->getLineStyle());
+  Property pro_lineStyle = vectorProps->getProperty(m_settingsConfig->getLineStyle());
   if(!pro_lineStyle.isNull())
   {
     std::string style = pro_lineStyle.getValue().toString();
@@ -487,103 +763,103 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
       m_lineStyle = lineStyle;
   }
 
-  Property pro_lineColor = vectorProps->contains(m_settingsConfig->getLineColor());
+  Property pro_lineColor = vectorProps->getProperty(m_settingsConfig->getLineColor());
   if(!pro_lineColor.isNull())
   {
     m_lineColor = pro_lineColor.getValue().toColor();
   }
 
-  Property pro_lineWidth = vectorProps->contains(m_settingsConfig->getLineWidth());
+  Property pro_lineWidth = vectorProps->getProperty(m_settingsConfig->getLineWidth());
   if(!pro_lineWidth.isNull())
   {
     m_lineWidth = pro_lineWidth.getValue().toInt();
   }
 
-  Property pro_pointTextSize = vectorProps->contains(m_settingsConfig->getPointTextSize());
+  Property pro_pointTextSize = vectorProps->getProperty(m_settingsConfig->getPointTextSize());
   if(!pro_pointTextSize.isNull())
   {
     m_pointTextSize = pro_pointTextSize.getValue().toInt();
   }
 
-  Property pro_fontText = vectorProps->contains(m_settingsConfig->getFontText());
+  Property pro_fontText = vectorProps->getProperty(m_settingsConfig->getFontText());
   if(!pro_fontText.isNull())
   {
     m_fontText= pro_fontText.getValue().toString();
   }
 
-  Property pro_textColor = vectorProps->contains(m_settingsConfig->getTextColor());
+  Property pro_textColor = vectorProps->getProperty(m_settingsConfig->getTextColor());
   if(!pro_textColor.isNull())
   {
     m_textColor = pro_textColor.getValue().toColor();
   }
 
-  Property pro_visibleAllTexts = vectorProps->contains(m_settingsConfig->getVisibleAllTexts());
+  Property pro_visibleAllTexts = vectorProps->getProperty(m_settingsConfig->getVisibleAllTexts());
   if(!pro_visibleAllTexts.isNull())
   {
     m_visibleAllTexts = pro_visibleAllTexts.getValue().toBool();
   }
 
-  Property pro_superscriptText = vectorProps->contains(m_settingsConfig->getSuperscriptText());
+  Property pro_superscriptText = vectorProps->getProperty(m_settingsConfig->getSuperscriptText());
   if(!pro_superscriptText.isNull())
   {
     m_superscriptText = pro_superscriptText.getValue().toBool();
   }
 
-  Property pro_lneVrtDisplacement = vectorProps->contains(m_settingsConfig->getLneVrtDisplacement());
+  Property pro_lneVrtDisplacement = vectorProps->getProperty(m_settingsConfig->getLneVrtDisplacement());
   if(!pro_lneVrtDisplacement.isNull())
   {
     m_lneVrtDisplacement = pro_lneVrtDisplacement.getValue().toInt();
   }
 
-  Property pro_lneHrzDisplacement = vectorProps->contains(m_settingsConfig->getLneHrzDisplacement());
+  Property pro_lneHrzDisplacement = vectorProps->getProperty(m_settingsConfig->getLneHrzDisplacement());
   if(!pro_lneHrzDisplacement.isNull())
   {
     m_lneHrzDisplacement = pro_lneHrzDisplacement.getValue().toInt();
   }
 
-  Property pro_bottomText = vectorProps->contains(m_settingsConfig->getBottomText());
+  Property pro_bottomText = vectorProps->getProperty(m_settingsConfig->getBottomText());
   if(!pro_bottomText.isNull())
   {
     m_bottomText = pro_bottomText.getValue().toBool();
   }
 
-  Property pro_leftText = vectorProps->contains(m_settingsConfig->getLeftText());
+  Property pro_leftText = vectorProps->getProperty(m_settingsConfig->getLeftText());
   if(!pro_leftText.isNull())
   {
     m_leftText = pro_leftText.getValue().toBool();
   }
 
-  Property pro_rightText = vectorProps->contains(m_settingsConfig->getRightText());
+  Property pro_rightText = vectorProps->getProperty(m_settingsConfig->getRightText());
   if(!pro_rightText.isNull())
   {
     m_rightText = pro_rightText.getValue().toBool();
   }
 
-  Property pro_topText = vectorProps->contains(m_settingsConfig->getTopText());
+  Property pro_topText = vectorProps->getProperty(m_settingsConfig->getTopText());
   if(!pro_topText.isNull())
   {
     m_topText = pro_topText.getValue().toBool();
   }
 
-  Property pro_bottomRotateText = vectorProps->contains(m_settingsConfig->getBottomRotateText());
+  Property pro_bottomRotateText = vectorProps->getProperty(m_settingsConfig->getBottomRotateText());
   if(!pro_bottomRotateText.isNull())
   {
     m_bottomRotateText = pro_bottomRotateText.getValue().toBool();
   }
 
-  Property pro_leftRotateText = vectorProps->contains(m_settingsConfig->getLeftRotateText());
+  Property pro_leftRotateText = vectorProps->getProperty(m_settingsConfig->getLeftRotateText());
   if(!pro_leftRotateText.isNull())
   {
     m_leftRotateText = pro_leftRotateText.getValue().toBool();
   }
 
-  Property pro_rightRotateText = vectorProps->contains(m_settingsConfig->getRightRotateText());
+  Property pro_rightRotateText = vectorProps->getProperty(m_settingsConfig->getRightRotateText());
   if(!pro_rightRotateText.isNull())
   {
     m_rightRotateText = pro_rightRotateText.getValue().toBool();
   }
 
-  Property pro_topRotateText = vectorProps->contains(m_settingsConfig->getTopRotateText());
+  Property pro_topRotateText = vectorProps->getProperty(m_settingsConfig->getTopRotateText());
   if(!pro_topRotateText.isNull())
   {
     m_topRotateText = pro_topRotateText.getValue().toBool();
@@ -761,6 +1037,4 @@ double te::layout::GridMapModel::getCrossOffSet()
   return m_crossOffSet;
 }
 
-
-
-
+*/

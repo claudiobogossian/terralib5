@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LineItemItem.cpp
+  \file LineItem.cpp
    
   \brief 
 
@@ -27,15 +27,7 @@
 
 // TerraLib
 #include "LineItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/LineModel.h"
-
+#include "../../core/property/Property.h"
 // STL
 #include <vector>
 
@@ -45,10 +37,10 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::LineItem::LineItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
+te::layout::LineItem::LineItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {  
-  m_nameClass = std::string(this->metaObject()->className());
+
 }
 
 te::layout::LineItem::~LineItem()
@@ -56,106 +48,86 @@ te::layout::LineItem::~LineItem()
 
 }
 
-void te::layout::LineItem::updateObserver( ContextItem context )
+void te::layout::LineItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  ObjectItem::updateObserver(context);
-
-  LineModel* model = dynamic_cast<LineModel*>(m_model);
-  if(!model)
+  QPolygonF poly = getQPolygon();
+  if (poly.empty())
   {
     return;
   }
 
-  if(!m_poly.empty())
-    return;
-
-  std::vector<te::gm::Point*> coords = model->getCoords();
-
-  if (coords.empty())
-    return;
-
-  for (unsigned int i = 0; i < coords.size(); ++i)
-  {
-    QPointF pt(coords[i]->getX(), coords[i]->getY());
-
-    QPointF mlocal = mapFromScene(pt);
-    m_poly.push_back(mlocal);   
-  }
-
-  setRect(m_poly.boundingRect());
-}
-
-void te::layout::LineItem::drawItem( QPainter * painter )
-{
-  LineModel* model = dynamic_cast<LineModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  if(m_poly.empty())
-    return;
-
-  QPainterPath path (m_poly[0]);
-  for(int i = 0; i < m_poly.size() ; ++i)
-  {
-    path.lineTo(m_poly[i]);
-  }
-
-  const te::color::RGBAColor& color = model->getColor();
+  const Property& pColor = m_controller->getProperty("color");
+  const te::color::RGBAColor& color = pColor.getValue().toColor();
   QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
   painter->save();
-
-  searchStyle();
-
-  QPen pn(qColor, 0, m_penStyle.style());
+  QPen penStyle = searchStyle();
+  QPen pn(qColor, 0, penStyle.style());
   painter->setPen(pn);
+
+  QPainterPath path;
+  path.addPolygon(poly);
 
   //draws the item
   painter->drawPath(path);
-
   painter->restore();
 }
 
-void te::layout::LineItem::searchStyle()
+QPen te::layout::LineItem::searchStyle()
 {
-  LineModel* model = dynamic_cast<LineModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
+  const Property& pLineStyle = m_controller->getProperty("line_style_type");
+  QPen penStyle;
 
-  EnumLineStyleType* enumScale = model->getEnumLineStyleType();
+  if(pLineStyle.isNull() == false)
+  {
+    EnumLineStyleType lineStyle;
 
-  if(!enumScale)
-  {
-    return;
-  }
+    const std::string& label = pLineStyle.getOptionByCurrentChoice().toString();
+    EnumType* currentLineStyle = lineStyle.searchLabel(label);
 
-  if(model->getCurrentLineStyleType() == enumScale->getStyleSolid())
-  {
-    m_penStyle.setStyle(Qt::SolidLine);
+    if(currentLineStyle == lineStyle.getStyleSolid())
+    {
+      penStyle.setStyle(Qt::SolidLine);
+    }
+    if(currentLineStyle == lineStyle.getStyleDash())
+    {
+      penStyle.setStyle(Qt::DashLine);
+    }
+    if(currentLineStyle == lineStyle.getStyleDot())
+    {
+      penStyle.setStyle(Qt::DotLine);
+    }
+    if(currentLineStyle == lineStyle.getStyleDashDot())
+    {
+      penStyle.setStyle(Qt::DashDotLine);
+    }
+    if(currentLineStyle == lineStyle.getStyleDashDotDot())
+    {
+      penStyle.setStyle(Qt::DashDotDotLine);
+    }
+    if(currentLineStyle == lineStyle.getStyleCustomDash())
+    {
+      penStyle.setStyle(Qt::CustomDashLine);
+    }
   }
-  if(model->getCurrentLineStyleType() == enumScale->getStyleDash())
+  return penStyle;
+}
+
+QPolygonF te::layout::LineItem::getQPolygon()
+{
+  const Property& pLine = m_controller->getProperty("geometry");
+
+  const te::gm::GeometryShrPtr geometryPtr = pLine.getValue().toGeometry();
+
+  te::gm::LineString const* lineString = dynamic_cast< te::gm::LineString const * > (geometryPtr.get());
+  std::size_t nPoints = lineString->size();
+  te::gm::Coord2D const* coordsPtr = lineString->getCoordinates();
+  QPolygonF poly;
+  for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
   {
-    m_penStyle.setStyle(Qt::DashLine);
+    QPointF pt(coordsPtr[pIdx].getX(), coordsPtr[pIdx].getY());
+    poly.push_back(pt);
   }
-  if(model->getCurrentLineStyleType() == enumScale->getStyleDot())
-  {
-    m_penStyle.setStyle(Qt::DotLine);
-  }
-  if(model->getCurrentLineStyleType() == enumScale->getStyleDashDot())
-  {
-    m_penStyle.setStyle(Qt::DashDotLine);
-  }
-  if(model->getCurrentLineStyleType() == enumScale->getStyleDashDotDot())
-  {
-    m_penStyle.setStyle(Qt::DashDotDotLine);
-  }
-  if(model->getCurrentLineStyleType() == enumScale->getStyleCustomDash())
-  {
-    m_penStyle.setStyle(Qt::CustomDashLine);
-  }
+  return poly;
 }
 

@@ -28,9 +28,6 @@
 // TerraLib
 #include "SystematicScaleOutside.h"
 #include "ui_SystematicScale.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
-#include "../../core/pattern/singleton/Context.h"
 
 // STL
 #include <string>
@@ -46,9 +43,9 @@
 #include <QMessageBox>
 #include <QObjectList>
 
-te::layout::SystematicScaleOutside::SystematicScaleOutside( OutsideController* controller, Observable* o ) :
+te::layout::SystematicScaleOutside::SystematicScaleOutside(AbstractOutsideController* controller) :
   QDialog(0),
-  OutsideObserver(controller, o),
+  AbstractOutsideView(controller),
   m_ui(new Ui::SystematicScale)
 {
   m_ui->setupUi(this);
@@ -61,15 +58,6 @@ te::layout::SystematicScaleOutside::SystematicScaleOutside( OutsideController* c
 te::layout::SystematicScaleOutside::~SystematicScaleOutside()
 {
 
-}
-
-void te::layout::SystematicScaleOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::SystematicScaleOutside::setPosition( const double& x, const double& y )

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LineItem.h
+  \file PolygonItem.h
    
   \brief 
 
@@ -29,12 +29,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H
 
 // TerraLib
-//#include "Observable.h"
-#include "../../../geometry/Point.h"
+#include "AbstractItem.h"
 #include "LineItem.h"
-
-// Qt 
-#include <QVector>
 
 class QGraphicsSceneMouseEvent;
 
@@ -42,19 +38,19 @@ namespace te
 {
   namespace layout
   {
-    class Observable;
+    class AbstractItemController;
 
     class PolygonItem : public LineItem
     {
       public:
 
-        PolygonItem ( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        PolygonItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         virtual ~PolygonItem ();
 
       protected:
 
-        virtual void drawItem(QPainter * painter);
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }

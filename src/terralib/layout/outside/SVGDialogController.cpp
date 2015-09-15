@@ -28,8 +28,8 @@
 // TerraLib
 #include "SVGDialogController.h"
 
-te::layout::SVGDialogController::SVGDialogController( Observable* o ) :
-	OutsideController(o)
+te::layout::SVGDialogController::SVGDialogController(AbstractOutsideModel* o) :
+  AbstractOutsideController(o)
 {
   
 }

@@ -27,22 +27,15 @@
 
 // TerraLib
 #include "BalloonItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
 
 // STL
 #include <algorithm>    // std::max and std::min
 #include <cmath>
 
-te::layout::BalloonItem::BalloonItem( ItemController* controller, Observable* o, bool invertedMatrix ):
-  ObjectItem(controller, o, invertedMatrix)  
+te::layout::BalloonItem::BalloonItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {      
-  m_nameClass = std::string(this->metaObject()->className());
+  
 }
 
 te::layout::BalloonItem::~BalloonItem()
@@ -50,7 +43,7 @@ te::layout::BalloonItem::~BalloonItem()
 
 }
 
-void te::layout::BalloonItem::drawItem( QPainter * painter )
+void te::layout::BalloonItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
 
 }

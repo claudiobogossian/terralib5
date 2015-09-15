@@ -40,11 +40,11 @@ namespace te
 
     /*!
       \brief Class to represent a data type enumeration. Ex.: int, double, bool, te::color::RGBAColor (color), etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumDataType : public AbstractEnum
     {
       public:
@@ -61,143 +61,157 @@ namespace te
         
         /*!
           \brief Returns value that represents type none belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDataTypeNone() const;
 
         /*!
           \brief Returns value that represents type integer belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeInt() const;
 
         /*!
           \brief Returns value that represents type double belonging to enumeration. 
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDataTypeDouble() const;
 
         /*!
           \brief Returns value that represents type long belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDataTypeLong() const;
 
         /*!
           \brief Returns value that represents type float belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeFloat() const;
 
         /*!
           \brief Returns value that represents type string belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDataTypeString() const;
 
         /*!
           \brief Returns value that represents type bool belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDataTypeBool() const;
 
         /*!
           \brief Returns value that represents type te::color::RGBAColor** (color) belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDataTypeColor() const;
 
         /*!
           \brief Returns value that represents type GridSettings (string) belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDataTypeGridSettings() const;
 
         /*!
           \brief Returns value that represents type StringList (string) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeStringList() const;
 
         /*!
           \brief Returns value that represents type Font belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeFont() const;
 
         /*!
+          \brief Returns value that represents type Envelope belonging to enumeration.
+      
+          \return enum value       
+        */
+        virtual EnumType* getDataTypeEnvelope() const;
+
+        /*!
           \brief Returns value that represents type image (string) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeImage() const;
 
         /*!
           \brief Returns value that represents type TextGridSettings (string) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeTextGridSettings() const;
 
         /*!
           \brief Returns value that represents type Group (string) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeGroup() const;
 
         /*!
           \brief Returns value that represents type Map Choice (string) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeMapChoice() const;
 
         /*!
           \brief Returns value that represents type Legend Choice (string) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeLegendChoice() const;
 
         /*!
           \brief Returns value that represents type Generic Vector (T) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeGenericVariant() const;
 
         /*!
           \brief Returns value that represents type Layer (te::map::AbstractLayerPtr) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeLayerList() const;
 
         /*!
           \brief Returns value that represents type string vector (std::vector<std::string>) belonging to enumeration
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeStringVector() const;
 
         /*!
           \brief Returns value that represents type SVGView(string) belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeSVGView() const;
+
+        /*!
+          \brief Returns shared pointer of the type te::gm::Geometry belonging to enumeration.
+      
+          \return enum value       
+        */
+        virtual EnumType* getDataTypeGeometry() const;
 
       protected:
 
@@ -205,7 +219,7 @@ namespace te
           \brief Reimplemented from AbstractEnum
         */
         virtual void init();
-
+        
       protected:
 
         EnumType* m_dataTypeNone; //!< value that represents type none belonging to enumeration
@@ -219,6 +233,7 @@ namespace te
         EnumType* m_dataTypeGridSettings; //!< value that represents type GridSettings (string) belonging to enumeration
         EnumType* m_dataTypeStringList; //!< value that represents type StringList (string) belonging to enumeration.
         EnumType* m_dataTypeFont; //!< value that represents type Font belonging to enumeration
+        EnumType* m_dataTypeEnvelope; //!< value that represents type Envelope belonging to enumeration
         EnumType* m_dataTypeImage; //!< value that represents type image (string) belonging to enumeration
         EnumType* m_dataTypeTextGridSettings; //!< value that represents type TextGridSettings (string) belonging to enumeration
         EnumType* m_dataTypeGroup; //!< value that represents type Group (string) belonging to enumeration
@@ -228,6 +243,7 @@ namespace te
         EnumType* m_dataTypeLayerList; //!< value that represents type Layer List (te::map::AbstractLayerPtr) belonging to enumeration
         EnumType* m_dataTypeStringVector; //!< value that represents type string vector (std::vector<std::string>) belonging to enumeration
         EnumType* m_dataTypeSVGView; //!< value that represents type SVGView (string) belonging to enumeration
+        EnumType* m_dataTypeGeometry; //!< shared pointer to te::gm::Geometry belonging to enumeration
     };
   }
 }

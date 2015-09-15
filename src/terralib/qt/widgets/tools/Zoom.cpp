@@ -45,7 +45,7 @@ void te::qt::widgets::Zoom::setZoomType(const ZoomType& type)
   m_zoomType = type;
 }
 
-void te::qt::widgets::Zoom::applyZoom(const QPointF& point)
+void te::qt::widgets::Zoom::applyZoom(const QPointF& point, bool centralize)
 {
   // Gets the current display extent
   const te::gm::Envelope& currentExtent = m_display->getExtent();
@@ -58,15 +58,38 @@ void te::qt::widgets::Zoom::applyZoom(const QPointF& point)
     factor = 1 / factor;
 
   // If point is not null, the zoom extent will be centered on this point. Otherwise, keep the current center.
-  te::gm::Coord2D center;
-  point.isNull() ? center = currentExtent.getCenter() : center = te::gm::Coord2D(point.x(), point.y());
+  te::gm::Envelope extent;
+  if(point.isNull() == true)
+  {
+    te::gm::Coord2D center;
+    point.isNull() ? center = currentExtent.getCenter() : center = te::gm::Coord2D(point.x(), point.y());
+  
+    // Bulding the zoom extent based on zoom factor value and the given point
+    double w = currentExtent.getWidth() * factor * 0.5;
+    double h = currentExtent.getHeight() * factor * 0.5;
 
-  // Bulding the zoom extent based on zoom factor value and the given point
-  double w = currentExtent.getWidth() * factor * 0.5;
-  double h = currentExtent.getHeight() * factor * 0.5;
+    extent.init(center.x - w, center.y - h, center.x + w, center.y + h);
+  }
+  else
+  {
+    te::gm::Coord2D reference = te::gm::Coord2D(point.x(), point.y());
+    
+    double dxPercentage = (point.x() - currentExtent.getLowerLeftX()) / currentExtent.getWidth();
+    double dyPercentage = (point.y() - currentExtent.getLowerLeftY()) / currentExtent.getHeight();
 
-  te::gm::Envelope e(center.x - w, center.y - h, center.x + w, center.y + h);
+    // Bulding the zoom extent based on zoom factor value and the given point
+    double w = currentExtent.getWidth() * factor;
+    double h = currentExtent.getHeight() * factor;
+
+    double leftWidth = w * dxPercentage;
+    double rightWidth = w * (1. - dxPercentage);
+
+    double lowerHeight = h * dyPercentage;
+    double upperHeight = h * (1. - dyPercentage);
+
+    extent.init(reference.x - leftWidth, reference.y - lowerHeight, reference.x + rightWidth, reference.y + upperHeight);
+  }
 
   // Updates the map display with the new extent
-  m_display->setExtent(e);
+  m_display->setExtent(extent);
 }
