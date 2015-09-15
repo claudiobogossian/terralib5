@@ -28,14 +28,14 @@
 // TerraLib
 #include "GridSettingsOutside.h"
 #include "ui_GridSettings.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
 #include "../../outside/GridSettingsController.h"
 #include "../../core/property/Variant.h"
 #include "../../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../../core/enum/Enums.h"
 #include "../../outside/GridSettingsModel.h"
+#include "../../../common/StringUtils.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
 
 // STL
 #include <string>
@@ -51,9 +51,9 @@
 #include <QMessageBox>
 #include <QObjectList>
 
-te::layout::GridSettingsOutside::GridSettingsOutside( OutsideController* controller, Observable* o ) :
+te::layout::GridSettingsOutside::GridSettingsOutside(AbstractOutsideController* controller) :
   QDialog(0),
-  OutsideObserver(controller, o),
+  AbstractOutsideView(controller),
   m_ui(new Ui::GridSettings)
 {
   m_planarGridSettings = new PlanarGridSettingsConfigProperties;
@@ -121,19 +121,6 @@ void te::layout::GridSettingsOutside::init()
   m_ui->fraPlanarLineColor->setAutoFillBackground(true);  
 }
 
-void te::layout::GridSettingsOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
-
-  GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
-  if(!controller)
-    return;
-}
-
 void te::layout::GridSettingsOutside::setPosition( const double& x, const double& y )
 {
   move(x,y);
@@ -193,14 +180,14 @@ void te::layout::GridSettingsOutside::unblockComponents()
 
 bool te::layout::GridSettingsOutside::checkValidDegreeValue(const QString &value)
 {
-  int									degree = 0, minute = 0;
-  float								second = 0;
-  int									status = 0;
-  std::basic_string <char>::size_type		index;
-  std::string							strDegree = "";
+  int                  degree = 0, minute = 0;
+  float                second = 0;
+  int                  status = 0;
+  std::basic_string <char>::size_type    index;
+  std::string              strDegree = "";
 
   strDegree = std::string(value.toLatin1());
-  if((index=strDegree.find("º")) !=std::string::npos)	
+  if((index=strDegree.find("º")) !=std::string::npos)  
   {
     strDegree.replace(index,1,"");
   }
@@ -209,17 +196,17 @@ bool te::layout::GridSettingsOutside::checkValidDegreeValue(const QString &value
     strDegree.replace(index,1,"");
   }
 
-  if((index=strDegree.find("'")) !=std::string::npos)	
+  if((index=strDegree.find("'")) !=std::string::npos)  
   {
     strDegree.replace(index,1,"");
   }
-  if((index=strDegree.find("'")) !=std::string::npos)	
+  if((index=strDegree.find("'")) !=std::string::npos)  
   {
     strDegree.replace(index,1,"");
   }
 
   status=sscanf(strDegree.c_str(),"%d %d %f",&degree,&minute,&second);
-  if(status!=3)	return false;
+  if(status!=3)  return false;
 
   return true;
 
@@ -237,7 +224,7 @@ te::color::RGBAColor te::layout::GridSettingsOutside::configColor( QWidget* widg
 
   QColor color = QColorDialog::getColor(brush.color(),this, "Color" );
 
-  if(!color.isValid())	
+  if(!color.isValid())  
     return rgbaColor;
 
   QPalette paltt(widget->palette());
@@ -252,7 +239,8 @@ te::color::RGBAColor te::layout::GridSettingsOutside::configColor( QWidget* widg
 
 void te::layout::GridSettingsOutside::load()
 {
-  GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(m_model);
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(abstractModel);
   if(!model)
     return;
 
@@ -423,6 +411,121 @@ void te::layout::GridSettingsOutside::load()
   initDouble(m_ui->lneY3, m_geodesicGridSettings->getLneY3(), m_geodesicType);
 
   initDouble(m_ui->lneY4, m_geodesicGridSettings->getLneY4(), m_geodesicType);
+
+  m_ui->chkDegreesGeoText->setChecked(true);
+  setGeodesicValues();
+}
+
+void te::layout::GridSettingsOutside::setGeodesicValues()
+{
+  if (m_ui->chkDegreesGeoText->isChecked())
+  {
+    setGeodesicValues2GMS();
+  }
+  else
+  {
+    setGeodesicValues2Degrees();
+  }
+}
+
+void te::layout::GridSettingsOutside::setGeodesicValues2GMS()
+{
+  QString y = m_ui->yGridInitialPoint_geo_textField->text();
+  QString x = m_ui->xGridInitialPoint_geo_textField->text();
+  setMask(m_ui->yGridInitialPoint_geo_textField, m_ui->xGridInitialPoint_geo_textField);
+  m_ui->yGridInitialPoint_geo_textField->setText(DD2DMS(y));
+  m_ui->xGridInitialPoint_geo_textField->setText(DD2DMS(x));
+
+  y = m_ui->lneVerticalGap->text();
+  x = m_ui->lneHorizontalGap->text();
+  setMask(m_ui->lneVerticalGap, m_ui->lneHorizontalGap);
+  m_ui->lneVerticalGap->setText(DD2DMS(y));
+  m_ui->lneHorizontalGap->setText(DD2DMS(x));
+}
+
+void te::layout::GridSettingsOutside::setGeodesicValues2Degrees()
+{
+  QString y = m_ui->yGridInitialPoint_geo_textField->text();
+  QString x = m_ui->xGridInitialPoint_geo_textField->text();
+  setMask(m_ui->yGridInitialPoint_geo_textField, m_ui->xGridInitialPoint_geo_textField);
+  m_ui->yGridInitialPoint_geo_textField->setText(DMS2DD(y));
+  m_ui->xGridInitialPoint_geo_textField->setText(DMS2DD(x));
+
+  y = m_ui->lneVerticalGap->text();
+  x = m_ui->lneHorizontalGap->text();
+  setMask(m_ui->lneVerticalGap, m_ui->lneHorizontalGap);
+  m_ui->lneVerticalGap->setText(DMS2DD(y));
+  m_ui->lneHorizontalGap->setText(DMS2DD(x));
+}
+
+QString te::layout::GridSettingsOutside::DD2DMS(QString dd)
+{
+  int degree;
+  int minute;
+  double second;
+  double ll;
+
+  double value = dd.replace(QString(" "), QString("")).toDouble();
+
+  degree = (int) value;
+  ll = value - degree;
+  minute = (int) (ll * 60.);
+  ll = (ll * 60.) - minute;
+  second = ll * 60.;
+
+  QString output;
+  if(degree < 0)
+  {
+    output = ("-" + te::common::Convert2String(abs(degree)) + "°" + te::common::Convert2String(abs(minute))+ "'" + te::common::Convert2String(fabs(second), 2) + "''").c_str();
+  }
+  else
+  {
+    output = (te::common::Convert2String(abs(degree)) + "°" + te::common::Convert2String(abs(minute))+ "'" + te::common::Convert2String(fabs(second), 2) + "''").c_str();
+  }
+  return output;
+}
+
+QString te::layout::GridSettingsOutside::DMS2DD(const QString dms)
+{
+  int pos = 0;
+  if (dms.startsWith('+') || dms.startsWith('-'))
+  {
+    pos = 1;
+  }
+  int a = dms.indexOf('°');
+  int b = dms.indexOf('\'');
+  int c = dms.indexOf('\'', b + 1);
+  double deg = dms.mid(pos, a - pos).replace(QString(" "), QString("")).toDouble();
+  double min = dms.mid(a + 1, b - a - 1).replace(QString(" "), QString("")).toDouble();
+  double sec = dms.mid(b + 1, c - b - 1).replace(QString(" "), QString("")).toDouble();
+  double coord = deg + (min / 60.0) + (sec / 3600.0);
+  if (dms.mid(0, a).toDouble() < 0)
+  {
+    coord *= -1;
+  }
+
+  std::string output = te::common::Convert2String(coord, 4);
+  return QString(output.c_str());
+}
+
+
+void te::layout::GridSettingsOutside::setMask(QLineEdit *lat, QLineEdit *lon)
+{
+  if(m_ui->chkDegreesGeoText->isChecked() == false)
+  {
+    lat->setValidator(new QDoubleValidator(this));
+    lon->setValidator(new QDoubleValidator(this));
+  }
+  else
+  {
+    QRegExp regExpLat("[\\+\\-]?[\\d]{1,2}°[\\d]{1,2}'[\\d]{1,2}.[\\d]{1,2}''");
+    QValidator* validatorLat = new QRegExpValidator(regExpLat, 0);
+    lat->setValidator(validatorLat);
+
+    QRegExp regExpLong("[\\+\\-]?[\\d]{1,3}°[\\d]{1,2}'[ \\d]{1,2}.[ \\d]{1,2}''");
+    QValidator* validatorLong = new QRegExpValidator(regExpLong, 0);
+    lon->setValidator(validatorLong);
+  }
 }
 
 void te::layout::GridSettingsOutside::on_pbClose_clicked()
@@ -530,7 +633,7 @@ void te::layout::GridSettingsOutside::on_lneHorizontalGap_editingFinished()
 {
   /*if(checkValidDegreeValue(m_ui->lneHorizontalGap->text()) == false)
   {
-    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));  
     m_ui->lneHorizontalGap->setFocus();
     return;
   }*/
@@ -540,7 +643,12 @@ void te::layout::GridSettingsOutside::on_lneHorizontalGap_editingFinished()
   {
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
     Variant variant;
-    variant.setValue(m_ui->lneHorizontalGap->text().toDouble(), dataType->getDataTypeDouble());
+    QString lneHorizontalGap = m_ui->lneHorizontalGap->text();
+    if (m_ui->chkDegreesGeoText->isChecked())
+    {
+      lneHorizontalGap = DMS2DD(lneHorizontalGap);
+    }
+    variant.setValue(lneHorizontalGap.toDouble(), dataType->getDataTypeDouble());
     Property prop = controller->updateProperty(m_geodesicGridSettings->getLneHrzGap(), variant, m_geodesicType);
     emit updateProperty(prop);
   }
@@ -550,7 +658,7 @@ void te::layout::GridSettingsOutside::on_lneVerticalGap_editingFinished()
 {
   /*if(checkValidDegreeValue(m_ui->lneVerticalGap->text()) == false)
   {
-    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));  
     m_ui->lneVerticalGap->setFocus();
     return;
   }*/
@@ -560,7 +668,12 @@ void te::layout::GridSettingsOutside::on_lneVerticalGap_editingFinished()
   {
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
     Variant variant;
-    variant.setValue(m_ui->lneVerticalGap->text().toDouble(), dataType->getDataTypeDouble());
+    QString lneVerticalGap = m_ui->lneVerticalGap->text();
+    if (m_ui->chkDegreesGeoText->isChecked())
+    {
+      lneVerticalGap = DMS2DD(lneVerticalGap);
+    }
+    variant.setValue(lneVerticalGap.toDouble(), dataType->getDataTypeDouble());
     Property prop = controller->updateProperty(m_geodesicGridSettings->getLneVrtGap(), variant, m_geodesicType);
     emit updateProperty(prop);
   }
@@ -770,7 +883,7 @@ void te::layout::GridSettingsOutside::on_yGridInitialPoint_planar_textField_edit
   /*  
   if(checkValidDegreeValue(m_ui->yGridInitialPoint_geo_textField->text()) == false)
   {
-    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));  
     m_ui->lneVerticalGap->setFocus();
     return;
   }*/
@@ -790,7 +903,7 @@ void te::layout::GridSettingsOutside::on_xGridInitialPoint_geo_textField_editing
 {
   /*if(checkValidDegreeValue(m_ui->xGridInitialPoint_geo_textField->text()) == false)
   {
-    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));  
     m_ui->lneVerticalGap->setFocus();
     return;
   }*/
@@ -800,7 +913,12 @@ void te::layout::GridSettingsOutside::on_xGridInitialPoint_geo_textField_editing
   {
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
     Variant variant;
-    variant.setValue(m_ui->xGridInitialPoint_geo_textField->text().toDouble(), dataType->getDataTypeDouble());
+    QString xGridInitialPoint_geo_textField = m_ui->xGridInitialPoint_geo_textField->text();
+    if (m_ui->chkDegreesGeoText->isChecked())
+    {
+      xGridInitialPoint_geo_textField = DMS2DD(xGridInitialPoint_geo_textField);
+    }
+    variant.setValue(xGridInitialPoint_geo_textField.toDouble(), dataType->getDataTypeDouble());
     Property prop = controller->updateProperty(m_geodesicGridSettings->getInitialGridPointX(), variant, m_geodesicType);
     emit updateProperty(prop);
   }
@@ -813,7 +931,12 @@ void te::layout::GridSettingsOutside::on_yGridInitialPoint_geo_textField_editing
   {
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
     Variant variant;
-    variant.setValue(m_ui->yGridInitialPoint_geo_textField->text().toDouble(), dataType->getDataTypeDouble());
+    QString yGridInitialPoint_geo_textField = m_ui->yGridInitialPoint_geo_textField->text();
+    if (m_ui->chkDegreesGeoText->isChecked())
+    {
+      yGridInitialPoint_geo_textField = DMS2DD(yGridInitialPoint_geo_textField);
+    }
+    variant.setValue(yGridInitialPoint_geo_textField.toDouble(), dataType->getDataTypeDouble());
     Property prop = controller->updateProperty(m_geodesicGridSettings->getInitialGridPointY(), variant, m_geodesicType);
     emit updateProperty(prop);
   }
@@ -1109,6 +1232,7 @@ void te::layout::GridSettingsOutside::on_chkDegreesGeoText_clicked()
     variant.setValue(m_ui->chkDegreesGeoText->isChecked(), dataType->getDataTypeBool());
     Property prop = controller->updateProperty(m_geodesicGridSettings->getDegreesText(), variant, m_geodesicType);
     emit updateProperty(prop);
+    setGeodesicValues();
   }
 }
 
@@ -1511,7 +1635,7 @@ void te::layout::GridSettingsOutside::initColor( QWidget* widget, std::string na
   te::color::RGBAColor color = prop.getValue().toColor();
   QColor qcolor(color.getRed(), color.getGreen(), color.getBlue());
 
-  if(!qcolor.isValid())	
+  if(!qcolor.isValid())  
     return;
 
   if(!widget)
@@ -1576,6 +1700,4 @@ void te::layout::GridSettingsOutside::initCombo( QWidget* widget, std::string na
     combo->setCurrentIndex(index);
   }
 }
-
-
 

@@ -27,24 +27,12 @@
 
 // TerraLib
 #include "PaperItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../core/Scene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/PaperModel.h"
 
-te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
+te::layout::PaperItem::PaperItem(AbstractItemController* controller, bool invertedMatrix)
+  : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {  
-
   this->setFlags(QGraphicsItem::ItemSendsGeometryChanges);
-
-  m_canChangeGraphicOrder = false;
-
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::PaperItem::~PaperItem()
@@ -52,62 +40,43 @@ te::layout::PaperItem::~PaperItem()
 
 }
 
-void te::layout::PaperItem::drawItem( QPainter * painter )
+void te::layout::PaperItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  PaperModel* model = dynamic_cast<PaperModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
+  const Property& pPaperColor = m_controller->getProperty("paper_color");
+  const Property& pShadowColor = m_controller->getProperty("shadow_color");
+  const Property& pFrameColor = m_controller->getProperty("frame_color");
+  const Property& pPaperWidth = m_controller->getProperty("paper_width");
+  const Property& pPaperHeight = m_controller->getProperty("paper_height");
+  const Property& pShadowPadding = m_controller->getProperty("shadow_padding");
+
+  const te::color::RGBAColor& paperColor = pPaperColor.getValue().toColor();
+  const te::color::RGBAColor& shadowColor = pShadowColor.getValue().toColor();
+  const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+  double paperWidth = pPaperWidth.getValue().toDouble();
+  double paperHeight = pPaperHeight.getValue().toDouble();
+  double shadowPadding = pShadowPadding.getValue().toDouble();
+
+  QColor qPaperColor(paperColor.getRed(), paperColor.getGreen(), paperColor.getBlue(), paperColor.getAlpha());
+  QColor qShadowColor(shadowColor.getRed(), shadowColor.getGreen(), shadowColor.getBlue(), shadowColor.getAlpha());
+  QColor qFrameColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
 
   QRectF boundRect;
   boundRect = boundingRect();
 
   painter->save();
 
-  te::color::RGBAColor clrPaper = model->getPaperColor();
-  QColor cback;
-  cback.setRed(clrPaper.getRed());
-  cback.setGreen(clrPaper.getGreen());
-  cback.setBlue(clrPaper.getBlue());
-  cback.setAlpha(clrPaper.getAlpha());
-
-  te::color::RGBAColor clrShadow = model->getShadowColor();
-  QColor cShadow;
-  cShadow.setRed(clrShadow.getRed());
-  cShadow.setGreen(clrShadow.getGreen());
-  cShadow.setBlue(clrShadow.getBlue());
-  cShadow.setAlpha(clrShadow.getAlpha());
-
-  te::color::RGBAColor clrBorder = model->getFrameColor();
-  QColor cBorder;
-  cBorder.setRed(clrBorder.getRed());
-  cBorder.setGreen(clrBorder.getGreen());
-  cBorder.setBlue(clrBorder.getBlue());
-  cBorder.setAlpha(clrBorder.getAlpha());
-
-  QBrush bsh(cShadow);
+  QBrush bsh(qShadowColor);
   painter->setBrush(bsh);
-  QPen pen(cBorder);
+  QPen pen(qFrameColor);
   painter->setPen(pen);
-  
-  if(!model->getPaperConfig())
-    return;
 
-  double pw = 0.;
-  double ph = 0.;
-
-  model->getPaperConfig()->getPaperSize(pw, ph);
-
-  double shadowPadding = model->getShadowPadding();
-
-  QRectF boxShadow(boundRect.x() + shadowPadding, boundRect.y(), boundRect.width() - shadowPadding, boundRect.height() - shadowPadding);
+  QRectF boxShadow(boundRect.x() + shadowPadding, boundRect.y() - shadowPadding, boundRect.width() - shadowPadding, boundRect.height() - shadowPadding);
   painter->drawRect(boxShadow);
   
-  bsh.setColor(cback);
+  bsh.setColor(qPaperColor);
   painter->setBrush(bsh);
 
-  QRectF boxPaper = QRectF(boundRect.x(), boundRect.y() + shadowPadding, boundRect.width() - shadowPadding, boundRect.height() - shadowPadding);
+  QRectF boxPaper = QRectF(boundRect.x(), boundRect.y(), boundRect.width() - shadowPadding, boundRect.height() - shadowPadding);
   painter->drawRect(boxPaper);
 
   painter->restore();

@@ -45,11 +45,11 @@ namespace te
       \brief Class to represent a graphic object (MVC component) and widget object (MVC widget) type enumeration. 
         Ex. component: map, legend, scale, rectangle, text, etc.
         Ex. widget: object inspector, toolbar, etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumTextType : public AbstractEnum
     {
       public:
@@ -64,10 +64,10 @@ namespace te
         */ 
         virtual ~EnumTextType();
 
-				 /*!
+         /*!
           \brief Returns font type
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
       
         virtual EnumType* getFontItem() const;

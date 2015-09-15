@@ -27,7 +27,9 @@
 
 // TerraLib
 #include "AlignItems.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "terralib/geometry/Envelope.h"
+#include "terralib/geometry/Coord2D.h"
 
 // STL
 #include <sstream>
@@ -38,7 +40,8 @@
 
 te::layout::AlignItems::AlignItems( QGraphicsScene* scene, PaperConfig* config ):
   m_scene(scene),
-  m_config(config)
+  m_config(config),
+  m_minimunZValue(0)
 {
  
 }
@@ -64,10 +67,10 @@ void te::layout::AlignItems::bringToFront()
   {
     if(item)
     {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {        
-        if((item->zValue() >= zValue) && (it->isCanChangeGraphicOrder()))
+        if((item->zValue() >= zValue))
         {
           maxZValue = item->zValue();
           itemMaxZValue = item;     
@@ -98,13 +101,16 @@ void te::layout::AlignItems::sendToBack()
   {
     if(item)
     {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        if (item->zValue() <= zValue && (it->isCanChangeGraphicOrder()))
+        if (item->zValue() <= zValue)
         {
-          minimumZValue = item->zValue();
-          itemMinimumZValue = item;
+          if (item->zValue() > m_minimunZValue) 
+          {
+            minimumZValue = item->zValue();
+            itemMinimumZValue = item;
+          }
         }
       }
     }
@@ -359,3 +365,14 @@ QRectF te::layout::AlignItems::getSelectionItemsBoundingBox()
 
   return sourceRect;
 }
+
+int te::layout::AlignItems::getMinimumZValue()
+{
+  return m_minimunZValue;
+}
+
+void te::layout::AlignItems::setMinimumZValue(int minimum)
+{
+  m_minimunZValue = minimum;
+}
+

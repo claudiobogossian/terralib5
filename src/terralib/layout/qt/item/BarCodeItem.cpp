@@ -27,37 +27,14 @@
 
 // TerraLib
 #include "BarCodeItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/BarCodeModel.h"
-#include "../../core/Font.h"
 
 // Qt
-#include <QTextDocument>
 #include <QStyleOptionGraphicsItem>
-#include <QTextCursor>
-#include <QAbstractTextDocumentLayout>
-#include <QGraphicsSceneMouseEvent>
 
-te::layout::BarCodeItem::BarCodeItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  TextItem(controller, o, invertedMatrix)
+te::layout::BarCodeItem::BarCodeItem(AbstractItemController* controller, bool invertedMatrix) :
+  TextItem(controller, invertedMatrix)
 {
-  m_invertedMatrix = true;
-  m_nameClass = std::string(this->metaObject()->className());
-
-  BarCodeModel* model = dynamic_cast<BarCodeModel*>(m_model);
-  if(model)
-  {
-    Font font = model->getFont();
-    QFont ft(font.getFamily().c_str(), font.getPointSize());
-    document()->setDefaultFont(ft);
-    document()->setPlainText("Teste BarCode");
-  }  
+ 
 }
 
 te::layout::BarCodeItem::~BarCodeItem()

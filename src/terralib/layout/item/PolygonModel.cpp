@@ -27,72 +27,55 @@
 
 // TerraLib
 #include "PolygonModel.h"
-#include "../core/ContextItem.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
 #include "../core/enum/Enums.h"
-#include "../../geometry/Point.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/Utils.h"
-#include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/property/Properties.h"
+#include "../core/enum/EnumDataType.h"
+#include "../core/property/Property.h"
+#include "../../color/RGBAColor.h"
 
 te::layout::PolygonModel::PolygonModel()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getPolygonItem();
+  te::color::RGBAColor fillColor = te::color::RGBAColor(255, 255, 255, 255);
+  te::color::RGBAColor contourColor = te::color::RGBAColor(0, 0, 0, 255);
+  te::gm::LineString* lineString = new te::gm::LineString(0, te::gm::LineStringType);
+  te::gm::GeometryShrPtr polygon(lineString);
 
-  m_fillColor = te::color::RGBAColor(255, 255, 255, 255);
+  this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getPolygonItem());
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  //adding properties
+  {
+    Property property(0);
+    property.setName("fill_color");
+    property.setLabel("fill_color");
+    property.setValue(fillColor, dataType->getDataTypeColor());
+    this->m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("contour_color");
+    property.setLabel("contour_color");
+    property.setValue(contourColor, dataType->getDataTypeColor());
+    this->m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("geometry");
+    property.setLabel("geometry");
+    property.setVisible(false);
+    property.setValue(polygon, dataType->getDataTypeGeometry());
+    this->m_properties.updateProperty(property);
+  }
+
+  this->m_properties.removeProperty("line_style_type");
+  this->m_properties.removeProperty("color");
 }
 
 te::layout::PolygonModel::~PolygonModel()
 {
 
-}
-
-te::layout::Properties* te::layout::PolygonModel::getProperties() const
-{
-  LineModel::getProperties();
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property pro_fillColor(m_hashCode);
-  pro_fillColor.setName("fill_color");
-  pro_fillColor.setValue(m_fillColor, dataType->getDataTypeColor());
-  pro_fillColor.setMenu(true);
-  m_properties->addProperty(pro_fillColor);
-
-  return m_properties;
-}
-
-void te::layout::PolygonModel::updateProperties( te::layout::Properties* properties, bool notify )
-{
-  LineModel::updateProperties(properties, false);
-
-  Properties* vectorProps = const_cast<Properties*>(properties);
-
-  {
-    Property prop = vectorProps->contains("fill_color");
-    if(prop.isNull() == false)
-    {
-      m_fillColor = prop.getValue().toColor();
-    }
-  }
-
-  if(notify)
-  {
-    ContextItem context;
-    notifyAll(context);
-  }
-}
-
-const te::color::RGBAColor& te::layout::PolygonModel::getFillColor() const
-{
-  return m_fillColor;
-}
-
-void te::layout::PolygonModel::setFillColor( const te::color::RGBAColor& color )
-{
-  m_fillColor = color;
 }
 

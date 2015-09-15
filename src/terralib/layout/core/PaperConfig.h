@@ -39,9 +39,9 @@ namespace te
   {
     /*!
       \brief Class responsible for paper setting. Size, orientation, custom size, etc.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT PaperConfig
     {
       public:
@@ -65,47 +65,47 @@ namespace te
 
         /*!
           \brief Custom paper size.
-		  
-		      \param w width
+      
+          \param w width
           \param h height
         */
         virtual void setPaperSizeCustom(double w, double h);
 
         /*!
           \brief Sets paper type enum. Ex.: A4.
-		  
-		      \param paperType paper type enum
+      
+          \param paperType paper type enum
         */
         virtual void setPaperType(LayoutAbstractPaperType paperType);
 
         /*!
           \brief Returns paper type.
-		  
-		      \param paper type enum 	  
+      
+          \param paper type enum     
         */
-        virtual LayoutAbstractPaperType getPaperType();
+        virtual LayoutAbstractPaperType getPaperType() const;
 
         /*!
           \brief Returns paper size. Height and Width.
-		  
-		      \param w returns width
+      
+          \param w returns width
           \param h returns height
         */
-        virtual void getPaperSize(double &w, double &h);
+        virtual void getPaperSize(double &w, double &h) const;
 
         /*!
           \brief Sets paper orientation type enum. Ex.: Portrait.
-		  
-		      \param paper orientation type enum
+      
+          \param paper orientation type enum
         */
         virtual void setPaperOrientation(LayoutOrientationType orientation);
 
         /*!
           \brief Returns paper orientation type enum.
-		  
-		      \param paper orientation type enum
+      
+          \param paper orientation type enum
         */
-        virtual LayoutOrientationType getPaperOrientantion();
+        virtual LayoutOrientationType getPaperOrientantion() const;
         
       protected:
 

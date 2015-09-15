@@ -30,20 +30,19 @@
 
 // TerraLib
 #include "OutsideParamsCreate.h"
-#include "../../enum/AbstractType.h"
 #include "../../enum/EnumType.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observer;
+    class AbstractOutsideView;
 
     /*!
-	  \brief Abstract Factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets) without specifying their concrete classes.
-	  
-	  \ingroup layout
-	  */
+    \brief Abstract Factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets) without specifying their concrete classes.
+    
+    \ingroup layout
+    */
     class AbstractOutsideFactory 
     {
     public:
@@ -59,7 +58,7 @@ namespace te
           \param type type of the new object
           \param params parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC widget).
        */
-      virtual Observer* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate()) = 0;
+      virtual AbstractOutsideView* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate()) = 0;
     };
   }
 }

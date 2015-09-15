@@ -68,11 +68,12 @@ namespace te
   namespace layout
   {
     class VisualizationArea;
-    class AbstractViewTool;
+    class AbstractLayoutTool;
     class HorizontalRuler;
     class VerticalRuler;
     class EnumType;
     class WaitView;
+    class ContextObject;
 
   /*!
     \brief Class representing the view. This view is child of QGraphicsView, part of Graphics View Framework. 
@@ -159,17 +160,79 @@ namespace te
     */
         virtual void refreshAllProperties();
 
+        /*!
+          \brief Responsible method for verifying changes made in Context outside the View object and call corresponding actions. 
+          Ex.: Action Pan called in toolbar changed Context to Pan mode, then View object call method to do it.
+        */
+        virtual void changeMode(EnumType* newMode);
+
+        /*!
+          \brief Reset the view interaction with the default settings, cursor, viewport update and no current tools.
+        */
+        virtual void resetDefaultConfig();
+
+        virtual void disableUpdate();
+
+        virtual void enableUpdate();
+
+        virtual void arrowCursor();
+
+        /*!
+        \brief Groups selected objects
+        */
+        virtual void createItemGroup();
+
+        /*!
+        \brief Method that delete Grouping object selected, but the individual objects continue to exist.
+        */
+        virtual void destroyItemGroup();
+
+        /*!
+        \brief Saves each item in the scene as image. Ex .: .png
+        */
+        virtual void exportItemsToImage();
+
+        virtual void newTemplate();
+
+        /*!
+        \brief Method that exports all the objects in the scene to a template. Ex.: JSON.
+
+        \param type type of template. Ex .: JSON type
+        \return true if exported, false otherwise
+        */
+        virtual bool exportProperties(EnumType* type);
+
+        /*!
+        \brief Method that import a template and build all objects. Ex.: JSON.
+
+        \return true if exported, false otherwise
+        */
+        virtual bool importTemplate(EnumType* type);
+
+        /*!
+        \brief Method that instantiates and shows the Page Setup window.
+        */
+        virtual void showPageSetup();
+
+        virtual void createLineItem();
+
+        virtual void createPolygonItem();
+
+        virtual void createItem(EnumType* itemType);
+
+        virtual ContextObject getContext();
+
       public slots:
     
     /*!
           \brief Notifies View object that some action on the toolbar has been thrown. 
         */
-        virtual void onToolbarChangeContext(bool change);
+        virtual void onToolbarChangeMode(te::layout::EnumType* newMode);
 
     /*!
           \brief Notifies View object that some action on the Menu has been thrown. 
         */
-        virtual void onMainMenuChangeContext(bool change);
+        virtual void onMainMenuChangeMode(te::layout::EnumType* newMode);
 
     /*!
           \brief Notifies View object that some configuration was modified in the Page Settings Window.
@@ -185,16 +248,15 @@ namespace te
         
         virtual void onSelectionItem(std::string name);
 
-        /*!
-          \brief Sets the zoom of the view to the given value
-        */
-        virtual void setZoom(int zoomFactor);
-
-
-        /*!
-          \brief Sets the zoom of the view to fit the given rect
+         /*!
+          \brief Sets the zoom of the QGraphicsView to fit the given rect
         */
         virtual void fitZoom(const QRectF& rect);
+
+        /*!
+          \brief Sets the zoom of the View to the given value
+        */
+        virtual void setZoom(int zoom);
 
       signals:
 
@@ -227,13 +289,18 @@ namespace te
 
     /*!
           \brief This signal is emitted when View object changes the zoom factor internally.
-        */
+          */
         void zoomChanged(int zoom);
 
         /*!
           \brief This signal is emitted when context change.
         */
         void changeContext();
+
+        /*!
+          \brief This signal is emitted when View object changes the mode type internally.
+          */
+        void modeChanged(int mode);
 
       protected:
 
@@ -251,6 +318,11 @@ namespace te
           \brief Reimplemented from QGraphicsView
         */
         virtual void  mouseReleaseEvent ( QMouseEvent * event );
+
+        /*!
+        \brief Reimplemented from QGraphicsView
+        */
+        virtual void	mouseDoubleClickEvent(QMouseEvent * event);
 
     /*!
           \brief Reimplemented from QGraphicsView
@@ -291,61 +363,27 @@ namespace te
           \brief Reimplemented from QGraphicsView
         */
         virtual void drawForeground ( QPainter * painter, const QRectF & rect );
-            
-    /*!
-          \brief Groups selected objects
-        */
-        virtual void createItemGroup();
-
-    /*!
-          \brief Method that delete Grouping object selected, but the individual objects continue to exist.
-        */
-        virtual void destroyItemGroup();
-                
-        virtual void resetDefaultConfig();
-
-    /*!
-          \brief Responsible method for verifying changes made in Context outside the View object and call corresponding actions. 
-          Ex.: Action Pan called in toolbar changed Context to Pan mode, then View object call method to do it.
-        */
-        virtual void outsideAreaChangeContext(bool change);
-        
-    /*!
-          \brief Method that instantiates and shows the Page Setup window.
-        */
-        virtual void showPageSetup();
 
         virtual void showSystematicScale();
         
         virtual QCursor createCursor(std::string pathIcon);
-        
-    /*!
-          \brief Method that exports all the objects in the scene to a template. Ex.: JSON.
-      
-      \param type type of template. Ex .: JSON type
-      
-      \return true if exported, false otherwise
-        */
-        virtual bool exportProperties(EnumType* type);
 
-    /*!
-          \brief Method that import a template and build all objects. Ex.: JSON.
-            
-      \return true if exported, false otherwise
+        /*!
+          \brief Reload properties because selection change
         */
-        virtual bool importTemplate(EnumType* type);
+        virtual void reload();
 
-    /*!
-          \brief Saves each item in the scene as image. Ex .: .png
-        */
-        virtual void exportItemsToImage();
+      protected:
 
-        virtual bool isLimitExceeded(double scale);
+        /*!
+          \brief Apply the zoom in the QGraphicsView to the given value
+          */
+        virtual void applyScale(double newScale);
 
       protected:
 
         VisualizationArea*            m_visualizationArea;
-        AbstractViewTool*             m_currentTool;
+        AbstractLayoutTool*           m_currentTool;
         PageSetupOutside*             m_pageSetupOutside;
         SystematicScaleOutside*       m_systematicOutside;
         te::gm::Coord2D               m_coordSystematic;
@@ -353,14 +391,11 @@ namespace te
         MenuBuilder*                  m_menuBuilder;
         HorizontalRuler*              m_horizontalRuler;
         VerticalRuler*                m_verticalRuler;
-        double                        m_maxZoomLimit;
-        double                        m_minZoomLimit;
         double                        m_width;
         double                        m_height;
         bool                          m_isMoving;
         te::layout::MovingItemGroup*  m_movingItemGroup;
         bool                          m_updateItemPos;
-        EnumType*                     m_oldMode;
         WaitView*                     m_wait;
         bool                          m_flag;
     };

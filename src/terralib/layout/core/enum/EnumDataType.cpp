@@ -40,6 +40,7 @@ te::layout::EnumDataType::EnumDataType() :
   m_dataTypeGridSettings(0),
   m_dataTypeStringList(0),
   m_dataTypeFont(0),
+  m_dataTypeEnvelope(0),
   m_dataTypeImage(0),
   m_dataTypeTextGridSettings(0),
   m_dataTypeGroup(0),
@@ -48,7 +49,8 @@ te::layout::EnumDataType::EnumDataType() :
   m_dataTypeGenericVariant(0),
   m_dataTypeLayerList(0),
   m_dataTypeStringVector(0),
-  m_dataTypeSVGView(0)
+  m_dataTypeSVGView(0),
+  m_dataTypeGeometry(0)
 {
   init();
 }
@@ -105,6 +107,11 @@ te::layout::EnumDataType::~EnumDataType()
     delete m_dataTypeFont;
     m_dataTypeFont = 0;
   }
+  if(m_dataTypeEnvelope)
+  {
+    delete m_dataTypeEnvelope;
+    m_dataTypeEnvelope = 0;
+  }
   if(m_dataTypeImage)
   {
     delete m_dataTypeImage;
@@ -150,6 +157,11 @@ te::layout::EnumDataType::~EnumDataType()
     delete m_dataTypeSVGView;
     m_dataTypeSVGView = 0;
   }
+  if(m_dataTypeGeometry)
+  {
+    delete m_dataTypeGeometry;
+    m_dataTypeGeometry = 0;
+  }
 }
 
 void te::layout::EnumDataType::init()
@@ -176,6 +188,8 @@ void te::layout::EnumDataType::init()
 
   m_dataTypeFont = createEnum("Font", this);
 
+  m_dataTypeEnvelope = createEnum("Envelope", this);
+
   m_dataTypeImage = createEnum("Image", this);
 
   m_dataTypeTextGridSettings = createEnum("TextGridSettings", this);
@@ -193,6 +207,8 @@ void te::layout::EnumDataType::init()
   m_dataTypeStringVector = createEnum("StringVector", this, "String Vector");
 
   m_dataTypeSVGView = createEnum("SVGView", this, "SVG View");
+
+  m_dataTypeGeometry = createEnum("Geometry", this, "Geometry");
 }
 
 te::layout::EnumType* te::layout::EnumDataType::getDataTypeNone() const
@@ -250,6 +266,11 @@ te::layout::EnumType* te::layout::EnumDataType::getDataTypeFont() const
   return m_dataTypeFont;
 }
 
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeEnvelope() const
+{
+  return m_dataTypeEnvelope;
+}
+
 te::layout::EnumType* te::layout::EnumDataType::getDataTypeImage() const
 {
   return m_dataTypeImage;
@@ -295,11 +316,8 @@ te::layout::EnumType* te::layout::EnumDataType::getDataTypeSVGView() const
   return m_dataTypeSVGView;
 }
 
-
-
-
-
-
-
-
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeGeometry() const
+{
+  return m_dataTypeGeometry;
+}
 

@@ -27,7 +27,9 @@
 
 // TerraLib
 #include "ItemUtils.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/enum/Enums.h"
 #include "../item/MapItem.h"
@@ -38,11 +40,11 @@
 #include "../../item/TextModel.h"
 #include "../item/LegendChildItem.h"
 #include "../../item/LegendChildModel.h"
-#include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridPlanarModel.h"
 #include "Scene.h"
 #include "../item/GridMapItem.h"
+#include "View.h"
 
 // STL
 #include <stddef.h>  // defines NULL
@@ -70,17 +72,13 @@ std::vector<te::layout::MapItem*> te::layout::ItemUtils::getMapItemList(bool sel
   std::vector<te::layout::MapItem*> list;
 
   QList<QGraphicsItem*> graphicsItems = getItems(selected);
-  foreach( QGraphicsItem *item, graphicsItems) 
+  foreach(QGraphicsItem *item, graphicsItems)
   {
-    if(!item)
+    if (!item)
       continue;
 
-    te::layout::ItemObserver* lItem = dynamic_cast<te::layout::ItemObserver*>(item);
-    if(!lItem)
-      continue;
-
-    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(lItem);
-    if(!mit)
+    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(item);
+    if (!mit)
       continue;
 
     list.push_back(mit);
@@ -93,27 +91,36 @@ te::layout::MapItem* te::layout::ItemUtils::getMapItem( std::string name )
 {
   te::layout::MapItem* map = 0;
 
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+
+  std::vector<std::string> strList;
+
   QList<QGraphicsItem*> graphicsItems = getItems(false);
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if(!item)
       continue;
 
-    te::layout::ItemObserver* lItem = dynamic_cast<te::layout::ItemObserver*>(item);
-    if(!lItem)
+    te::layout::AbstractItemView* itemView = dynamic_cast<te::layout::AbstractItemView*>(item);
+    if(itemView == 0)
       continue;
 
-    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(lItem);
-    if(!mit)
+    te::layout::AbstractItemController* controller = itemView->getController();
+
+    if(controller == 0)
       continue;
 
-    if(!mit->getModel())
+    if(controller->getProperties().getTypeObj() != objectType->getMapItem())
+    {
+      continue;
+    }
+
+    const Property& pName = controller->getProperty("name");
+    if(pName.getValue().toString().compare(name) != 0)
       continue;
 
-    if(mit->getModel()->getName().compare(name) != 0)
-      continue;
-
-    map = mit;
+    map = dynamic_cast<te::layout::MapItem*>(itemView);
+    break;
   }
 
   return map;
@@ -121,6 +128,8 @@ te::layout::MapItem* te::layout::ItemUtils::getMapItem( std::string name )
 
 std::vector<std::string> te::layout::ItemUtils::mapNameList(bool selected)
 {
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+
   std::vector<std::string> strList;
 
   QList<QGraphicsItem*> graphicsItems = getItems(selected);
@@ -129,19 +138,22 @@ std::vector<std::string> te::layout::ItemUtils::mapNameList(bool selected)
     if(!item)
       continue;
 
-    te::layout::ItemObserver* lItem = dynamic_cast<te::layout::ItemObserver*>(item);
-    if(!lItem)
+    te::layout::AbstractItemView* itemView = dynamic_cast<te::layout::AbstractItemView*>(item);
+    if(itemView == 0)
       continue;
 
-    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(lItem);
-    if(!mit)
+    te::layout::AbstractItemController* controller = itemView->getController();
+
+    if(controller == 0)
       continue;
 
-    if(!mit->getModel())
+    if(controller->getProperties().getTypeObj() != objectType->getMapItem())
+    {
       continue;
+    }
 
-    std::string name = mit->getModel()->getName();
-    strList.push_back(name);
+    const Property& pName = controller->getProperty("name");
+    strList.push_back(pName.getValue().toString());
   }
 
   return strList;
@@ -157,11 +169,15 @@ int te::layout::ItemUtils::countType( te::layout::EnumType* type )
     if(!item)
       continue;
 
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-    if(!obs)
+    te::layout::AbstractItemView* absItem = dynamic_cast<te::layout::AbstractItemView*>(item);
+    if(absItem == 0)
       continue;
 
-    if(obs->getModel()->getType() == type)
+    te::layout::AbstractItemController* controller = absItem->getController();
+    if(controller == 0)
+      continue;
+
+    if(controller->getProperties().getTypeObj() == type)
     {
       count+=1;
     }
@@ -180,25 +196,27 @@ int te::layout::ItemUtils::maxTypeId( te::layout::EnumType* type )
     if(!item)
       continue;
 
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-    if(!obs)
+    te::layout::AbstractItemView* absItem = dynamic_cast<te::layout::AbstractItemView*>(item);
+    if(absItem == 0)
       continue;
 
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(obs->getModel());
-    if(!model)
+    te::layout::AbstractItemController* controller = absItem->getController();
+    if(controller == 0)
       continue;
 
-    if(obs->getModel()->getType() == type)
+    int currentId = controller->getProperty("id").getValue().toInt();
+
+    if(controller->getProperties().getTypeObj() == type)
     {
       if(id == -1)
       {
-        id = model->getId();
+        id = currentId;
       }
       else
       {
-        if(model->getId() > id)
+        if(currentId > id)
         {
-          id = model->getId();
+          id = currentId;
         }
       }
     }
@@ -211,7 +229,21 @@ bool te::layout::ItemUtils::isCurrentMapTools()
 {
   bool result = false;
 
-  te::layout::EnumType* mode = te::layout::Context::getInstance().getMode();
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if(!abScene)
+  {
+    return result;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(abScene);
+  if(!sc)
+  {
+    return result;
+  }
+
+  ContextObject context = sc->getContext();
+
+  te::layout::EnumType* mode = context.getCurrentMode();
   te::layout::EnumModeType* type = te::layout::Enums::getInstance().getEnumModeType();
 
   if(mode == type->getModeMapPan())
@@ -247,6 +279,7 @@ QList<QGraphicsItem*> te::layout::ItemUtils::getItems( bool selected )
 
 void te::layout::ItemUtils::setCurrentToolInSelectedMapItems( EnumType* mode )
 {
+  /*
   if(!mode)
     return;
 
@@ -274,6 +307,7 @@ void te::layout::ItemUtils::setCurrentToolInSelectedMapItems( EnumType* mode )
 
     mit->changeCurrentTool(mode);
   }
+  */
 }
 
 void te::layout::ItemUtils::createTextGridAsObject()
@@ -283,6 +317,7 @@ void te::layout::ItemUtils::createTextGridAsObject()
 
 void te::layout::ItemUtils::createTextMapAsObject()
 {
+  /*
   QGraphicsItem *item = m_scene->selectedItems().first();
   if(item)
   {
@@ -298,10 +333,12 @@ void te::layout::ItemUtils::createTextMapAsObject()
       }
     }
   }
+  */
 }
 
 void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, std::string> map, QFont* ft )
 {
+  /*
   Scene* scne = dynamic_cast<Scene*>(m_scene);
 
   if(!scne)
@@ -315,8 +352,6 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
   {
     te::gm::Point* pt = it->first;
     std::string text = it->second;
-
-    Context::getInstance().setMode(mode->getModeCreateText());
 
     QGraphicsItem* item = 0;
     
@@ -344,12 +379,12 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
       }
     }
   }
-
-  Context::getInstance().setMode(mode->getModeNone());
+  */
 }
 
 void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable )
 {
+  /*
   Scene* scne = dynamic_cast<Scene*>(m_scene);
 
   if(!scne)
@@ -366,9 +401,7 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
   {
     te::gm::Point* pt = it->first;
     std::string text = it->second;
-
-    Context::getInstance().setMode(mode->getModeCreateLegendChild());
-
+    
     QGraphicsItem* item = 0;
     te::gm::Coord2D coord(pt->getX(), pt->getY());
     item = scne->createItem(coord);
@@ -383,14 +416,14 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
       te::layout::VisitorUtils::getInstance().changeMapVisitable(legends, visitable);
     }
   }
-
-  Context::getInstance().setMode(mode->getModeNone());
+  */
 }
 
 std::vector<te::layout::Properties*> te::layout::ItemUtils::getGridMapProperties()
 {
   std::vector<te::layout::Properties*> props;
 
+  /*
   std::vector<te::layout::GridMapItem*> gridMapItems = getMapChildren();
 
   std::vector<te::layout::GridMapItem*>::iterator it = gridMapItems.begin();
@@ -409,6 +442,7 @@ std::vector<te::layout::Properties*> te::layout::ItemUtils::getGridMapProperties
     Properties* prop = (*it)->getModel()->getProperties();
     props.push_back(prop);
   }
+  */
 
   return props;
 }
@@ -472,8 +506,7 @@ QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
   {
     if(item)
     {
-      bool intersection = item->contains(pt);
-      if(intersection)
+      if(item->contains(pt))
       {
         intersectionItem = item;
         break;
@@ -518,6 +551,30 @@ void te::layout::ItemUtils::getTextBoundary( QFont ft, double& w, double& h, std
   
   w = wrec.width();
   h = wrec.height();
+}
+
+void te::layout::ItemUtils::changeViewMode( EnumType* mode )
+{
+  AbstractScene* abScene = Context::getInstance().getScene();
+
+  if(!abScene)
+  {
+    return;
+  }
+
+  Scene* scene = dynamic_cast<Scene*>(abScene);
+  if(!scene)
+  {
+    return;
+  }
+
+  View* view = scene->getView();
+  if(!view)
+  {
+    return;
+  }
+
+  view->changeMode(mode);
 }
 
 

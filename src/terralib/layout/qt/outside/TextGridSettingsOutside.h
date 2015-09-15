@@ -32,7 +32,7 @@
 #include <QDialog>
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../core/Config.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
@@ -44,22 +44,19 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
     class TextGridSettingsConfigProperties;
+    class AbstractOutsideController;
 
-    class TELAYOUTEXPORT TextGridSettingsOutside : public QDialog, public OutsideObserver 
+    class TELAYOUTEXPORT TextGridSettingsOutside : public QDialog, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-        TextGridSettingsOutside(OutsideController* controller, Observable* o);
+        TextGridSettingsOutside(AbstractOutsideController* controller);
 
-		    virtual ~TextGridSettingsOutside();
-
-        virtual void updateObserver(ContextItem context);
-
+        virtual ~TextGridSettingsOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();
@@ -70,7 +67,7 @@ namespace te
        
         virtual void load();
 
-        virtual bool	eventFilter ( QObject * watched, QEvent * event );
+        virtual bool  eventFilter ( QObject * watched, QEvent * event );
 
       signals:
 

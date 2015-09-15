@@ -32,11 +32,9 @@
 #include <QWidget>
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../core/Config.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../color/RGBAColor.h"
-#include "../../core/enum/AbstractType.h"
+#include "terralib/geometry/Coord2D.h"
 
 namespace Ui { class EditTemplate; }
 
@@ -44,21 +42,18 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
+    class AbstractOutsideController;
 
-    class TELAYOUTEXPORT EditTemplateOutside : public QWidget, public OutsideObserver 
+    class TELAYOUTEXPORT EditTemplateOutside : public QWidget, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-        EditTemplateOutside(OutsideController* controller, Observable* o);
+        EditTemplateOutside(AbstractOutsideController* controller);
 
-		    virtual ~EditTemplateOutside();
-
-        virtual void updateObserver(ContextItem context);
-
+        virtual ~EditTemplateOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();

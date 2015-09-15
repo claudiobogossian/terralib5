@@ -28,9 +28,8 @@
 // TerraLib
 #include "PageSetupOutside.h"
 #include "ui_PageSetup.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
 #include "../../core/pattern/singleton/Context.h"
+#include "../core/Scene.h"
 
 // STL
 #include <string>
@@ -46,9 +45,9 @@
 #include <QMessageBox>
 #include <QObjectList>
 
-te::layout::PageSetupOutside::PageSetupOutside( OutsideController* controller, Observable* o ) :
+te::layout::PageSetupOutside::PageSetupOutside(AbstractOutsideController* controller) :
   QDialog(0),
-  OutsideObserver(controller, o),
+  AbstractOutsideView(controller),
   m_orientation(te::layout::Portrait),
   m_paperType(te::layout::A4),
   m_ui(new Ui::PageSetup)
@@ -77,15 +76,6 @@ void te::layout::PageSetupOutside::init()
   m_ui->lneCustomHeight->setValidator(new  QDoubleValidator(this));
 }
 
-void te::layout::PageSetupOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
-}
-
 void te::layout::PageSetupOutside::setPosition( const double& x, const double& y )
 {
   move(x,y);
@@ -107,7 +97,13 @@ te::gm::Coord2D te::layout::PageSetupOutside::getPosition()
 
 void te::layout::PageSetupOutside::load()
 {
-  PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
+  Scene* sc = getScene();
+  if(!sc)
+  {
+    return;
+  }
+
+  PaperConfig* pConfig = sc->getPaperConfig();
 
   double w = 0;
   double h = 0;
@@ -119,7 +115,14 @@ void te::layout::PageSetupOutside::load()
 
 void te::layout::PageSetupOutside::configureOrientationPage()
 {
-  PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
+  Scene* sc = getScene();
+  if(!sc)
+  {
+    return;
+  }
+
+  PaperConfig* pConfig = sc->getPaperConfig();
+
   m_orientation = pConfig->getPaperOrientantion();
 
   if (m_orientation == te::layout::Landscape)
@@ -134,6 +137,14 @@ void te::layout::PageSetupOutside::configureOrientationPage()
 
 void te::layout::PageSetupOutside::configurePageSize()
 {
+  Scene* sc = getScene();
+  if(!sc)
+  {
+    return;
+  }
+
+  PaperConfig* pConfig = sc->getPaperConfig();
+
   m_ui->cmbPageSize->clear();
   int index = 0;
   index = m_ui->cmbPageSize->findData("ISO A0 - 841 x 1189 mm");
@@ -153,8 +164,6 @@ void te::layout::PageSetupOutside::configurePageSize()
 
   index = m_ui->cmbPageSize->findData("ISO A5 - 148 x 210 mm");
   m_ui->cmbPageSize->insertItem(index,"ISO A5 - 148 x 210 mm");
-
-  PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
 
   QString curItem;
   if (pConfig->getPaperType() == te::layout::A0)
@@ -185,7 +194,13 @@ void te::layout::PageSetupOutside::configurePageSize()
 
 void te::layout::PageSetupOutside::switchSize()
 {
-  PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
+  Scene* sc = getScene();
+  if(!sc)
+  {
+    return;
+  }
+
+  PaperConfig* pConfig = sc->getPaperConfig();
 
   double w = 0;
   double h = 0;
@@ -218,7 +233,13 @@ void te::layout::PageSetupOutside::on_cmbPageSize_currentIndexChanged( const QSt
 
 void te::layout::PageSetupOutside::on_pbApply_clicked()
 {
-  PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
+  Scene* sc = getScene();
+  if(!sc)
+  {
+    return;
+  }
+
+  PaperConfig* pConfig = sc->getPaperConfig();
   
   if(m_orientation != pConfig->getPaperOrientantion() 
     || m_paperType != pConfig->getPaperType())
@@ -244,3 +265,17 @@ void te::layout::PageSetupOutside::on_rdbPortrait_clicked()
     m_orientation = te::layout::Portrait;
   }
 }
+
+te::layout::Scene* te::layout::PageSetupOutside::getScene()
+{
+  Scene* sc = 0;
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if(!abScene)
+  {
+    return sc;
+  }
+  sc = dynamic_cast<Scene*>(abScene);
+  return sc;
+}
+
+

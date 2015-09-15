@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/property/Property.h"
 #include "../core/Config.h"
 
@@ -37,13 +37,15 @@ namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT EditTemplateController : public OutsideController
+    class AbstractOutsideModel;
+
+    class TELAYOUTEXPORT EditTemplateController : public AbstractOutsideController
     {
       public:
 
-	      EditTemplateController( Observable* o );
+        EditTemplateController(AbstractOutsideModel* o);
 
-	      virtual ~EditTemplateController();
+        virtual ~EditTemplateController();
     };
   }
 }

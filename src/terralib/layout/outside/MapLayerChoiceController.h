@@ -29,21 +29,22 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOISE_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
-#include "../core/property/Property.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT MapLayerChoiceController : public OutsideController
+    class AbstractOutsideModel;
+
+    class TELAYOUTEXPORT MapLayerChoiceController : public AbstractOutsideController
     {
       public:
 
-	      MapLayerChoiceController( Observable* o );
+        MapLayerChoiceController(AbstractOutsideModel* o);
 
-	      virtual ~MapLayerChoiceController();
+        virtual ~MapLayerChoiceController();
     };
   }
 }

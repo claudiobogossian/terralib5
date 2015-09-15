@@ -40,22 +40,22 @@ namespace te
 {
   namespace layout
   {
-	/*!
+  /*!
   \brief Class responsible for creating or building widgets. All objects are children of Qwidget and OutsideObserver.
     Only place where the model and the controller is instantiated and the MVC outside is created.
-	  
-	  \ingroup layout
-	*/
+    
+    \ingroup layout
+  */
     class TELAYOUTEXPORT BuildGraphicsOutside : public AbstractBuildGraphicsOutside
     {
       public:
 
-		/*!
+    /*!
           \brief Constructor
         */
         BuildGraphicsOutside();
 
-		/*!
+    /*!
           \brief Destructor
         */
         virtual ~BuildGraphicsOutside();
@@ -63,105 +63,12 @@ namespace te
 
         /*!
           \brief Method to create a widget from the type.
-		  
-		      \param mode type of the object will created
-		  
-		      \return item value
+      
+          \param mode type of the object will created
+      
+          \return item value
         */
         QWidget* createOuside(te::layout::EnumType* type);
-
-      protected:
-	  
-		    /*!
-          \brief Create a widget of GridSettings type 
-
-		      \return new object 
-        */
-        QWidget* createGridSettings();
-
-        /*!
-          \brief Create a widget of Toolbar type 
-
-		      \return new object 
-        */
-        QWidget* createToolbar();
-
-        /*!
-          \brief Create a widget of Properties Browser type 
-
-		      \return new object 
-        */
-        QWidget* createProperties();
-
-        /*!
-          \brief Create a widget of Object Inspector type 
-
-		      \return new object 
-        */
-        QWidget* createObjectInspector();
-
-        /*!
-          \brief Create a widget of Page Setup type 
-
-		      \return new object 
-        */
-        QWidget* createPageSetup();
-
-        /*!
-          \brief Create a widget of Systematic Scale type 
-
-		      \return new object 
-        */
-        QWidget* createSystematicScale();
-
-        /*!
-          \brief Create a widget of EditTemplate type 
-
-		      \return new object 
-        */
-        QWidget* createEditTemplate();
-
-        /*!
-          \brief Create a widget of Text Grid Settings type 
-
-		      \return new object 
-        */
-        QWidget* createTextGridSettingss();
-
-        /*!
-          \brief Create a widget of Map Layer Choice type 
-
-		      \return new object 
-        */
-        QWidget* createMapLayerChoice();
-
-        /*!
-          \brief Create a widget of SVG View type 
-
-		      \return new object 
-        */
-        QWidget* createSVGDialog();
-
-        /*!
-          \brief Create a widget of Color Dialog type 
-
-		      \return new object 
-        */
-        QWidget* createColorDialog();
-
-        /*!
-          \brief Create a widget of Font Dialog type 
-
-		      \return new object 
-        */
-        QWidget* createFontDialog();
-
-        /*!
-          \brief Create a widget of Legend Choice type 
-
-		      \return new object 
-        */
-        QWidget* createLegendChoice();
     };
   }
 }

@@ -52,35 +52,35 @@ namespace te
 
         /*!
           \brief Returns value that represents none type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNoneType() const;
         
         /*!
           \brief Returns value that represents alignment center type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getAlignmentCenterType() const;
 
 
         /*!
           \brief Returns value that represents alignment right type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getAlignmentLeftType() const;
 
-				 /*!
+         /*!
           \brief Returns value that represents alignment right type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getAlignmentRightType() const;
-				
-		
-			protected:
+        
+    
+      protected:
 
         /*!
           \brief Reimplemented from AbstractEnum
@@ -91,8 +91,8 @@ namespace te
 
         EnumType* m_noneType; //!< value that represents none type belonging to enumeration
         EnumType* m_alignmentCenter; //!< value that represents alignment center type belonging to enumeration
-				EnumType* m_alignmentLeft; //!< value that represents alignment left type belonging to enumeration
-				EnumType* m_alignmentRight; //!< value that represents alignment right type belonging to enumeration
+        EnumType* m_alignmentLeft; //!< value that represents alignment left type belonging to enumeration
+        EnumType* m_alignmentRight; //!< value that represents alignment right type belonging to enumeration
  
     };
   }

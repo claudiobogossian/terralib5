@@ -31,8 +31,8 @@
 te::layout::EnumAlignmentType::EnumAlignmentType() :
   m_noneType(0),
   m_alignmentCenter(0),
-	m_alignmentLeft(0),
-	m_alignmentRight(0)
+  m_alignmentLeft(0),
+  m_alignmentRight(0)
 {
   init();
 }
@@ -50,7 +50,7 @@ void te::layout::EnumAlignmentType::init()
 
   m_alignmentLeft = createEnum("Left", this, "Left");
 
-	m_alignmentRight = createEnum("Right", this, "Right");
+  m_alignmentRight = createEnum("Right", this, "Right");
 }
 
 te::layout::EnumType* te::layout::EnumAlignmentType::getNoneType() const
@@ -70,5 +70,5 @@ te::layout::EnumType* te::layout::EnumAlignmentType::getAlignmentLeftType() cons
 
 te::layout::EnumType* te::layout::EnumAlignmentType::getAlignmentRightType() const
 {
-	return m_alignmentRight;
+  return m_alignmentRight;
 }

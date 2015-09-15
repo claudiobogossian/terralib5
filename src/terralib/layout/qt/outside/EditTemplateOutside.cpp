@@ -28,17 +28,14 @@
 // TerraLib
 #include "EditTemplateOutside.h"
 #include "ui_EditTemplate.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
-#include "../../core/pattern/singleton/Context.h"
 
 // STL
 #include <string>
 #include <sstream> 
 
-te::layout::EditTemplateOutside::EditTemplateOutside( OutsideController* controller, Observable* o ) :
+te::layout::EditTemplateOutside::EditTemplateOutside(AbstractOutsideController* controller) :
   QWidget(0),
-  OutsideObserver(controller, o),
+  AbstractOutsideView(controller),
   m_ui(new Ui::EditTemplate)
 {
   m_ui->setupUi(this);
@@ -54,15 +51,6 @@ te::layout::EditTemplateOutside::~EditTemplateOutside()
 void te::layout::EditTemplateOutside::init()
 {
 
-}
-
-void te::layout::EditTemplateOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::EditTemplateOutside::setPosition( const double& x, const double& y )

@@ -40,11 +40,11 @@ namespace te
 
     /*!
       \brief Class to represent a grid style type enumeration. Ex.: continuous, cross, etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumGridStyleType : public AbstractEnum
     {
       public:
@@ -61,22 +61,22 @@ namespace te
         
         /*!
           \brief Returns value that represents none style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleNone() const;
 
         /*!
           \brief Returns value that represents continuous style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleContinuous() const;
 
         /*!
           \brief Returns value that represents cross style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleCross() const;
 

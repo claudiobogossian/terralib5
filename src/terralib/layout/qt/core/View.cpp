@@ -32,20 +32,16 @@
 #include "../../../geometry/Envelope.h"
 #include "VisualizationArea.h"
 #include "../item/ItemGroup.h"
-#include "tools/ViewZoomClick.h"
-#include "tools/ViewZoomArea.h"
-#include "../../outside/PageSetupController.h"
-#include "../../outside/PageSetupModel.h"
-#include "../../outside/SystematicScaleController.h"
-#include "../../outside/SystematicScaleModel.h"
+#include "tools/ZoomClickTool.h"
 #include "HorizontalRuler.h"
 #include "VerticalRuler.h"
 #include "PrintScene.h"
 #include "../../core/enum/EnumTemplateType.h"
 #include "ItemUtils.h"
-#include "../../item/LineModel.h"
-#include "WaitView.h"
-#include "../item/MapItem.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "pattern/factory/tool/ToolFactoryParamsCreate.h"
+#include "pattern/factory/tool/ToolFactory.h"
+#include "../../core/ContextObject.h"
 
 // Qt
 #include <QMouseEvent>
@@ -58,6 +54,7 @@
 #include <QFileDialog>
 #include <QPainterPath>
 #include <QEvent>
+#include "BuildGraphicsOutside.h"
 
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
@@ -67,36 +64,27 @@ te::layout::View::View( QWidget* widget) :
   m_systematicOutside(0),
   m_selectionChange(false),
   m_menuBuilder(0),
-  m_maxZoomLimit(29.),
-  m_minZoomLimit(0.9),
   m_width(-1),
   m_height(-1),
   m_isMoving(false),
   m_movingItemGroup(0),
-  m_updateItemPos(false),
-  m_oldMode(0),
-  m_wait(0),
-  m_flag(false)
+  m_updateItemPos(false)
 {
   setDragMode(RubberBandDrag);
 
   m_horizontalRuler = new HorizontalRuler;
   m_verticalRuler = new VerticalRuler;
-  m_wait = new WaitView(this);
-
-  if(Enums::getInstance().getEnumModeType())
-  {
-    m_oldMode = Enums::getInstance().getEnumModeType()->getModeNone();
-  }
 }
 
 te::layout::View::~View()
 {
-  if(m_wait)
+  if (m_currentTool)
   {
-    delete m_wait;
-    m_wait = 0;
+    viewport()->removeEventFilter(m_currentTool);
+    delete m_currentTool;
+    m_currentTool = 0;
   }
+
   if(m_visualizationArea)
   {
     delete m_visualizationArea;
@@ -148,10 +136,10 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       bool isInvertedMatrix = false;
       foreach(QGraphicsItem* item, selectedItems)
       {
-        ItemObserver* observer = dynamic_cast<ItemObserver*> (item);
+        AbstractItemView* observer = dynamic_cast<AbstractItemView*> (item);
         if (observer)
         {
-          if (observer->isInvertedMatrix() == true)
+          if (observer->isInverted() == true)
           {
             isInvertedMatrix = true;
           }
@@ -165,52 +153,6 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       }
     }
   }
-
-  EnumModeType* mode = Enums::getInstance().getEnumModeType();
-
-  if(m_flag && Context::getInstance().getWait() == mode->getModeCoordWait())
-  {
-    QPointF posPixel = event->pos();
-    m_wait->addCoord(posPixel);
-  } 
-  else
-  {
-    if(Context::getInstance().getWait() == mode->getModeCoordWait())
-    {
-      ItemObserver* oItem = Context::getInstance().getItem();
-
-      if (oItem)
-      {
-        LineModel* lm = dynamic_cast<LineModel*>(oItem->getModel());
-        lm->setCoords(m_wait->getCoordsW());
-        m_wait->clear();
-        Context::getInstance().setItem(0);
-        Context::getInstance().setWait(mode->getModeNone());
-        m_flag = false;
-      }      
-    }
-  }
-  
-  if(Context::getInstance().getMode() == mode->getModeNone())
-    return;
-
-  QGraphicsItem* it = 0;
-
-  if(Context::getInstance().getMode()->getType() == te::layout::EnumCreate)
-  {
-    it = sc->createItem(coord);
-  }
-
-  if(Context::getInstance().getWait() == mode->getModeCoordWait())
-  {
-    ItemObserver* iob = dynamic_cast<ItemObserver*>(it);
-
-    if (!iob)
-      return;
-
-    Context::getInstance().setItem(iob);
-    m_flag = true;
-  } 
 }
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
@@ -239,12 +181,6 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
   QPointF pt = mapToScene(event->pos());
    
   emit changeSceneCoordMouse(pt);
-
-  if(m_oldMode != Context::getInstance().getMode())
-  {
-    m_oldMode = Context::getInstance().getMode();
-    emit changeContext();
-  }
 }
 
 void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
@@ -283,45 +219,49 @@ void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 
   if(m_updateItemPos)
   {
-    sc->updateSelectedItemsPositions();
   }
 
-  emit reloadProperties();
-  m_selectionChange = false;
+  if (!sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
 }
 
-void te::layout::View::wheelEvent( QWheelEvent *event )
+void te::layout::View::mouseDoubleClickEvent(QMouseEvent * event)
+{
+  QGraphicsView::mouseDoubleClickEvent(event);
+
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if (!sc)
+    return;
+
+  if (sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
+}
+
+void te::layout::View::wheelEvent(QWheelEvent *event)
 {
   ViewportUpdateMode mode = viewportUpdateMode();
   setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
   
   if(event->modifiers() & Qt::AltModifier)
   {
-    double zoomFactor = 1.;
-    int currentZoom = Context::getInstance().getZoom();
+    int zoom = 0;
 
     // Zoom in / Zoom Out
     if(event->delta() > 0) 
     {
       //Zooming In
-      zoomFactor = nextFactor(currentZoom);
+      zoom = nextZoom();
     }
     else
     {
-      zoomFactor = previousFactor(currentZoom);
+      zoom = previousZoom();
     }
 
-    if(zoomFactor > 0)
-    {
-      Context::getInstance().setOldZoom(currentZoom);
-      Context::getInstance().setZoom(zoomFactor);
-      //zoomPercentage();
-    }
-    else
-    {
-      zoomFactor = currentZoom;
-    }
-    emit zoomChanged(zoomFactor);
+    setZoom(zoom);
   }
   
   QGraphicsView::wheelEvent(event);
@@ -333,14 +273,11 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
 {
   Scene* scne = dynamic_cast<Scene*>(scene());
 
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
+
   if((keyEvent->modifiers() & Qt::ControlModifier) && (keyEvent->key() == Qt::Key_P))
   {
-    EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
-    Context::getInstance().setMode(enumMode->getModePrinter());
-    
     print();
-
-    Context::getInstance().setMode(enumMode->getModeNone());
   }
   else if((keyEvent->modifiers() & Qt::AltModifier) && (keyEvent->key() == Qt::Key_0))
   {
@@ -368,17 +305,18 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_Delete)
   {
-    EnumModeType* mode = Enums::getInstance().getEnumModeType();
-    if(Context::getInstance().getMode() != mode->getModeTextEditorInteraction())
+    if(getCurrentMode() != mode->getModeTextEditorInteraction())
     {
       scne->removeSelectedItems();
     }
   }
   else if(keyEvent->key() == Qt::Key_Escape)
   {
-    m_flag = false;
+    if (m_currentTool != NULL)
+    {
+      m_currentTool->keyPressEvent(keyEvent);
+    }
   }
-
   QGraphicsView::keyPressEvent(keyEvent);
 }
 
@@ -390,11 +328,7 @@ void te::layout::View::config()
 
   if(!nscene)
     return;
-
-  //Initializing the context with the device physical DPI.
-  Context::getInstance().setDpiX(this->physicalDpiX());
-  Context::getInstance().setDpiY(this->physicalDpiY());
-  
+    
   double sw = viewport()->widthMM();
   double sh = viewport()->heightMM();
 
@@ -403,8 +337,8 @@ void te::layout::View::config()
     m_width = sw;
     m_height = sh;
   }
-      
-  nscene->init(m_width, m_height);
+
+  nscene->init(m_width, m_height, getContext());
 
   QTransform mtrx = nscene->sceneTransform();
 
@@ -413,17 +347,24 @@ void te::layout::View::config()
   te::gm::Envelope box = nscene->getSceneBox();
   centerOn(QPointF(box.m_llx, box.m_ury));
       
-  int zoom = Context::getInstance().getDefaultZoom();
+  int zoom = getDefaultZoom();
   double newScale = zoom / 100.;
   scale(newScale, newScale); //Initial zoom out
 
   //----------------------------------------------------------------------------------------------
   if(!m_visualizationArea)
   {
-    m_visualizationArea = new VisualizationArea(box);
-    m_visualizationArea->build();
+    m_visualizationArea = new VisualizationArea(nscene, box);
   }
-          
+
+  if(!getCurrentMode())
+  {
+    if(Enums::getInstance().getEnumModeType())
+    {
+      setCurrentMode(Enums::getInstance().getEnumModeType()->getModeNone());
+    }
+  }
+
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -435,9 +376,9 @@ void te::layout::View::resizeEvent(QResizeEvent * event)
   QGraphicsView::resizeEvent(event);
 }
 
-void te::layout::View::onToolbarChangeContext( bool change )
+void te::layout::View::onToolbarChangeMode( te::layout::EnumType* newMode )
 {
-  outsideAreaChangeContext(change);
+  changeMode(newMode);
 }
 
 void te::layout::View::createItemGroup()
@@ -457,7 +398,7 @@ void te::layout::View::createItemGroup()
     if(!layoutGroup)
       return;
 
-    layoutGroup->redraw();
+    //layoutGroup->redraw();
 
     /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
     the event of mouse click on the child item won't be handled by child item.
@@ -507,13 +448,20 @@ void te::layout::View::resetDefaultConfig()
   }
 }
 
-void te::layout::View::onMainMenuChangeContext( bool change )
+void te::layout::View::onMainMenuChangeMode( te::layout::EnumType* newMode )
 {
-  outsideAreaChangeContext(change);
+  changeMode(newMode);
 }
 
-void te::layout::View::outsideAreaChangeContext( bool change )
+void te::layout::View::changeMode( EnumType* newMode )
 {
+  if(newMode == getCurrentMode())
+  {
+    return;
+  }
+
+  setCurrentMode(newMode);
+
   resetDefaultConfig();
 
   Scene* sc = dynamic_cast<Scene*>(scene());
@@ -522,73 +470,11 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     return;
 
   EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
-  EnumType* mode = Context::getInstance().getMode();
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
-    
-  if(mode == enumMode->getModeUnitsMetricsChange())
-  {
-    
-  }
-  else if(mode == enumMode->getModePan()) 
-  {
-    pan();
-  }
-  else if(mode == enumMode->getModeGroup())
-  {
-    createItemGroup();
-  }
-  else if(mode == enumMode->getModeUngroup()) 
-  {
-    destroyItemGroup();
-  }
-  else if(mode == enumMode->getModePrinter()) 
-  {
-    print();
-  }
-  else if(mode == enumMode->getModeZoomIn()) 
-  {
-    zoomArea();
-  }
-  else if(mode == enumMode->getModeZoomOut()) 
-  {
-    zoomOut();
-  }
-  else if(mode == enumMode->getModeRecompose()) 
-  {
-    recompose();
-  }
-  else if(mode == enumMode->getModePageConfig()) 
-  {
-    showPageSetup();
-  }
-  else if(mode == enumMode->getModeArrowCursor())
-  {
-    resetDefaultConfig();
-    std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
-    if (!list.empty())
-    {
-      foreach(MapItem* mit, list)
-      {
-        mit->changeCurrentTool(mode);
-      }
-    }
-  }
-  else if(mode == enumMode->getModeNewTemplate())
-  {
-    sc->reset();
-    m_visualizationArea->build();
-  }
-  else if(mode == enumMode->getModeExportPropsJSON())
-  {
-    EnumTemplateType* enumTemplate = Enums::getInstance().getEnumTemplateType();
-    exportProperties(enumTemplate->getJsonType());
-  }
-  else if(mode == enumMode->getModeImportJSONProps())
-  {
-    EnumTemplateType* enumTemplate = Enums::getInstance().getEnumTemplateType();
-    importTemplate(enumTemplate->getJsonType());
-  }
-  else if(mode == enumMode->getModeMapPan())
+
+  EnumType* mode = getCurrentMode();
+  
+  if(mode == enumMode->getModeMapPan())
   {
     iUtils->setCurrentToolInSelectedMapItems(enumMode->getModeMapPan());
   }
@@ -600,70 +486,14 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   {
     iUtils->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomOut());
   }
-  else if(mode == enumMode->getModeBringToFront()) 
-  {
-    sc->getAlignItems()->bringToFront();
-  }
-  else if(mode == enumMode->getModeSendToBack()) 
-  {
-    sc->getAlignItems()->sendToBack();
-  }
-  else if(mode == enumMode->getModeMapCreateTextGrid()) 
-  {
-    iUtils->createTextGridAsObject();
-  }
-  else if(mode == enumMode->getModeMapCreateTextMap()) 
-  {
-    iUtils->createTextMapAsObject();
-  }
-  else if(mode == enumMode->getModeAlignLeft()) 
-  {
-    sc->getAlignItems()->alignLeft();
-  }
-  else if(mode == enumMode->getModeAlignRight()) 
-  {
-    sc->getAlignItems()->alignRight();
-  }
-  else if(mode == enumMode->getModeAlignTop()) 
-  {
-    sc->getAlignItems()->alignTop();
-  }
-  else if(mode == enumMode->getModeAlignBottom()) 
-  {
-    sc->getAlignItems()->alignBottom();
-  }
-  else if(mode == enumMode->getModeAlignCenterHorizontal()) 
-  {
-    sc->getAlignItems()->alignCenterHorizontal();
-  }
-  else if(mode == enumMode->getModeAlignCenterVertical()) 
-  {
-    sc->getAlignItems()->alignCenterVertical();
-  }
-  else if(mode == enumMode->getModeRemoveObject()) 
-  {
-    sc->removeSelectedItems();
-  }
-  else if(mode == enumMode->getModeDrawSelectionMap()) 
-  {
-    sc->redrawSelectionMap();
-  }
-  else if(mode == enumMode->getModeLegendChildAsObject()) 
-  {
 
-  }
-  else if(mode == enumMode->getModeObjectToImage())
+  Scene* sce = dynamic_cast<Scene*>(scene());
+  if(sce)
   {
-    exportItemsToImage();
+    sce->setContext(getContext());
   }
-  else if(mode == enumMode->getModeExit())
-  {
-    close();
-  }
-  else if(mode == enumMode->getModeExportToPDF())
-  {
-    exportToPDF();
-  }
+
+  emit changeContext();
 }
 
 void te::layout::View::hideEvent( QHideEvent * event )
@@ -698,10 +528,10 @@ void te::layout::View::showPageSetup()
 {
   if(!m_pageSetupOutside)
   {
-    PageSetupModel* model = new PageSetupModel;
-    PageSetupController* controller = new PageSetupController(model);
-    OutsideObserver* obsever = (OutsideObserver*)(controller->getView());
-    m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(obsever);
+    BuildGraphicsOutside build;
+    EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+    QWidget* outside = build.createOuside(type->getPageSetup());
+    m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(outside);
     connect(m_pageSetupOutside, SIGNAL(changeConfig()), this, SLOT(onChangeConfig()));
   }
 
@@ -743,10 +573,10 @@ void te::layout::View::showSystematicScale()
 {
   if(!m_systematicOutside)
   {
-    SystematicScaleModel* model = new SystematicScaleModel;
-    SystematicScaleController* controller = new SystematicScaleController(model);
-    OutsideObserver* obsever = (OutsideObserver*)(controller->getView());
-    m_systematicOutside = dynamic_cast<SystematicScaleOutside*>(obsever);
+    BuildGraphicsOutside build;
+    EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+    QWidget* outside = build.createOuside(type->getSystematicScale());
+    m_systematicOutside = dynamic_cast<SystematicScaleOutside*>(outside);
     connect(m_systematicOutside, SIGNAL(systematicApply(double,SystematicScaleType)), this, SLOT(onSystematicApply(double,SystematicScaleType)));
   }
 
@@ -826,13 +656,28 @@ QImage te::layout::View::createImage()
 
 QCursor te::layout::View::createCursor( std::string pathIcon )
 {
-  QSize sz;
   QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
-  ico.actualSize(sz);
-  QPixmap pix = ico.pixmap(sz);
-  QCursor cur(pix);
+
+  //search icon size
+  QList<QSize> sizes = ico.availableSizes();
+  int maximum = sizes[0].width();
+  for (int i = 1; i < sizes.size(); ++i)
+  {
+    maximum = qMax(maximum, sizes[i].width());
+  }
+
+  QSize sz(maximum, maximum);
+  QPixmap pixmap = ico.pixmap(sz);
+
+  QCursor cur(pixmap);
 
   return cur;
+}
+
+void te::layout::View::reload()
+{
+  m_selectionChange = false;
+  emit reloadProperties();
 }
 
 void te::layout::View::resetView()
@@ -849,7 +694,7 @@ void te::layout::View::resetView()
   QPointF pt(box.m_llx, box.m_ury);
   centerOn(pt);
 
-  int zoom = Context::getInstance().getDefaultZoom();
+  int zoom = getDefaultZoom();
   double zoomFactor = zoom / 100.;
   scale(zoomFactor, zoomFactor); //Initial zoom out
 }
@@ -869,11 +714,13 @@ void te::layout::View::pan()
 void te::layout::View::zoomArea()
 {
   resetDefaultConfig();
-
-  // Active ZoomArea Tool
-  QCursor curIn = createCursor("layout-paper-zoom-in");
    
-  m_currentTool = new ViewZoomArea(this, curIn);
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
+
+  std::string toolName = tools->getZoomAreaTool()->getName();
+  ToolFactoryParamsCreate params(this);
+
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
 
   setInteractive(false);
   viewport()->installEventFilter(m_currentTool);
@@ -886,7 +733,7 @@ void te::layout::View::zoomOut()
   // #Active ZoomClick (Out) Tool
 
   QCursor curOut = createCursor("layout-paper-zoom-out");
-  m_currentTool = new ViewZoomClick(this, curOut);
+  m_currentTool = new ZoomClickTool(this, curOut);
 
   setInteractive(false);
   viewport()->installEventFilter(m_currentTool);
@@ -894,27 +741,28 @@ void te::layout::View::zoomOut()
 
 void te::layout::View::print()
 {
+  EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+
   Scene* scne = dynamic_cast<Scene*>(scene());
+  if(!scne)
+  {
+    return;
+  }
+
+  setCurrentMode(enumMode->getModePrinter());
 
   resetDefaultConfig();
   
   // No update Widget while print is running
-  setUpdatesEnabled(false);
-
   // Rulers aren't print
-  m_visibleRulers = false;
-  scne->getPrintScene()->printPreview();
-  m_visibleRulers = true;
+  disableUpdate();
+  
+  PrintScene printer(scne);
+  printer.printPreview();
 
-  setUpdatesEnabled(true);
-}
+  enableUpdate();
 
-void te::layout::View::recompose()
-{
-  resetDefaultConfig();
-
-  int defaultZoomFactor = Context::getInstance().getDefaultZoom();
-  setZoom(defaultZoomFactor);
+  setCurrentMode(enumMode->getModeNone());
 }
 
 void te::layout::View::exportToPDF()
@@ -924,19 +772,75 @@ void te::layout::View::exportToPDF()
   resetDefaultConfig();
 
   // No update Widget while print is running
-  setUpdatesEnabled(false);
-
   // Rulers aren't print
-  m_visibleRulers = false;
-  scne->getPrintScene()->exportToPDF();
-  m_visibleRulers = true;
+  disableUpdate();
 
-  setUpdatesEnabled(true);
+  PrintScene printer(scne);
+  printer.exportToPDF();
+
+  enableUpdate();
+}
+
+void te::layout::View::recompose()
+{
+  resetDefaultConfig();
+
+  int zoom = getDefaultZoom();
+  setZoom(zoom);
+}
+
+void te::layout::View::arrowCursor()
+{
+  EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+
+  setCurrentMode(enumMode->getModeNone());
+  resetDefaultConfig();
+  std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
+  if (!list.empty())
+  {
+    /*foreach(MapItem* mit, list)
+    {
+      mit->changeCurrentTool(mode);
+    }*/
+  }
+}
+
+void te::layout::View::newTemplate()
+{
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  sc->reset();
+  m_visualizationArea->build();
+}
+
+void te::layout::View::fitZoom(const QRectF& rect)
+{
+  double scaleOld = this->transform().m11();
+  this->fitInView(rect, Qt::KeepAspectRatio);
+  double scaleNew = this->transform().m11();
+
+  double scaleFactor = scaleNew / scaleOld;
+
+  int currentZoom = getCurrentZoom();
+  int newZoom = (int)(currentZoom * scaleFactor);
+
+  if(newZoom > 0)
+  {
+    setCurrentZoom(newZoom);
+
+    Scene* sce = dynamic_cast<Scene*>(scene());
+    if(sce)
+    {
+      sce->setContext(getContext());
+    }
+
+    emit zoomChanged(newZoom);
+  }
 }
 
 void te::layout::View::setZoom(int newZoom)
 {
-  int currentZoom = Context::getInstance().getZoom();
+  int currentZoom = getCurrentZoom();
 
   if(newZoom == currentZoom)
     return;
@@ -948,58 +852,75 @@ void te::layout::View::setZoom(int newZoom)
 
   if(rescale > 0)
   {
-    Context::getInstance().setOldZoom(currentZoom);
-    Context::getInstance().setZoom(newZoom);
-    scale(rescale, rescale);
+    setCurrentZoom(newZoom);
+
+    applyScale(rescale);
 
     Scene* sce = dynamic_cast<Scene*>(scene());
     if(sce)
     {
-      sce->onChangeZoomFactor(newZoom);
+      sce->setContext(getContext());
     }
+
+    this->update();
 
     emit zoomChanged(newZoom);
   }
 }
 
-void te::layout::View::fitZoom(const QRectF& rect)
+void te::layout::View::createLineItem()
 {
-  double scaleOld = this->transform().m11();
-  this->fitInView(rect, Qt::KeepAspectRatio);
-  double scaleNew = this->transform().m11();
+  resetDefaultConfig();
 
-  double scaleFactor = scaleNew / scaleOld;
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
 
-  int currentZoom = Context::getInstance().getZoom();
-  int newZoom = (int)(currentZoom * scaleFactor);
+  std::string toolName = tools->getCreateLineItemTool()->getName();
+  ToolFactoryParamsCreate params(this);
 
-  if(newZoom > 0)
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
+
+  setInteractive(false);
+  viewport()->installEventFilter(m_currentTool);
+}
+
+void te::layout::View::createPolygonItem()
+{
+  resetDefaultConfig();
+
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
+
+  std::string toolName = tools->getCreatePolygonItemTool()->getName();
+  ToolFactoryParamsCreate params(this);
+
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
+
+  setInteractive(false);
+  viewport()->installEventFilter(m_currentTool);
+}
+
+void te::layout::View::createItem(EnumType* itemType)
+{
+  resetDefaultConfig();
+
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
+
+  std::string toolName = tools->getCreateItemTool()->getName();
+  ToolFactoryParamsCreate params(this, itemType);
+
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
+
+  setInteractive(false);
+  viewport()->installEventFilter(m_currentTool);
+}
+
+void te::layout::View::applyScale(double newScale)
+{
+  if(newScale <= 0)
   {
-    Context::getInstance().setOldZoom(currentZoom);
-    Context::getInstance().setZoom(newZoom);
-
-    Scene* sce = dynamic_cast<Scene*>(scene());
-    if(sce)
-    {
-      sce->onChangeZoomFactor(newZoom);
-    }
-
-    emit zoomChanged(newZoom);
+    return;
   }
-}
 
-
-bool te::layout::View::isLimitExceeded(double scale)
-{
-  //Zooming In
-  if(scale < m_maxZoomLimit)
-    return false;
-
-  //Zooming Out
-  if(scale > m_minZoomLimit)
-    return false;
-
-  return true;
+  scale(newScale, newScale);
 }
 
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
@@ -1008,31 +929,9 @@ void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
     return;
 
   QGraphicsView::drawForeground(painter, rect);
-  
-  painter->save();
-  painter->setMatrixEnabled(false);
-  painter->setPen(Qt::SolidLine);
-
-  QPainterPath path;
-
-  if(!m_wait->getCoords().empty())
-  {
-    QPainterPath pathZero (m_wait->getCoords()[0]);
-    path = pathZero;
-  }
-
-  for(int i = 0; i < m_wait->getCoords().size() ; ++i)
-  {
-    path.lineTo(m_wait->getCoords()[i]);
-  }
-
-  painter->drawPath(path);
-  painter->setMatrixEnabled(true);
-  painter->restore();
-
   if(!m_visibleRulers)
     return;
-    
+
   double scale = transform().m11();
 
   m_horizontalRuler->drawRuler(this, painter, scale);
@@ -1135,7 +1034,7 @@ void te::layout::View::exportItemsToImage()
   msgBox.exec();
 }
 
-void te::layout::View::onSelectionItem( std::string name )
+void te::layout::View::onSelectionItem(std::string name)
 {
   Scene* scne = dynamic_cast<Scene*>(scene());
   if(!scne)
@@ -1143,11 +1042,37 @@ void te::layout::View::onSelectionItem( std::string name )
 
   scne->selectItem(name);
 
-  emit reloadProperties();
-  m_selectionChange = false;
+  if (!scne->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
 }
 
 void te::layout::View::refreshAllProperties()
 {
-  emit reloadProperties();
+  reload();
 }
+
+void te::layout::View::disableUpdate()
+{
+  // No update Widget while print is running
+  setUpdatesEnabled(false);
+  // Rulers aren't print
+  m_visibleRulers = false;
+}
+
+void te::layout::View::enableUpdate()
+{
+  m_visibleRulers = true;
+  setUpdatesEnabled(true);
+}
+
+te::layout::ContextObject te::layout::View::getContext()
+{
+  double dpiX = logicalDpiX();
+  double dpiY = logicalDpiY();
+  int zoom = getCurrentZoom();
+  EnumType* mode = getCurrentMode();
+  return ContextObject(zoom, dpiX, dpiY, mode);
+}
+

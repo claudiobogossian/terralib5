@@ -29,16 +29,16 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_SETTINGS_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
+#include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT TextGridSettingsModel : public OutsideModelObservable
+    class Properties;
+
+    class TELAYOUTEXPORT TextGridSettingsModel : public AbstractOutsideModel
     {
       public:
 

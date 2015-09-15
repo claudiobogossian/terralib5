@@ -82,8 +82,8 @@ namespace te
 
     enum LayoutOrientationType
     {
-      Portrait,	//!< portrait orientation
-      Landscape	//!< landScape orientation
+      Portrait,  //!< portrait orientation
+      Landscape  //!< landScape orientation
     };
 
     /*!
@@ -118,7 +118,7 @@ namespace te
 
     enum TELAYOUTEXPORT SystematicScaleType
     {
-      S250000,		
+      S250000,    
       S100000,
       S50000,
       S25000,

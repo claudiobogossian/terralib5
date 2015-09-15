@@ -27,16 +27,24 @@
 
 // TerraLib
 #include "Utils.h"
-#include "pattern/singleton/Context.h"
+
+#include "WorldTransformer.h"
 #include "../../color/RGBAColor.h"
 #include "../../geometry/Polygon.h"
 #include "../../geometry/Enums.h"
 #include "../../geometry/LinearRing.h"
 #include "../../geometry/Point.h"
 #include "../../qt/widgets/canvas/Canvas.h"
-#include "enum/AbstractType.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../common/Translator.h"
+#include "../core/ContextObject.h"
+#include "enum/AbstractType.h"
+#include "pattern/singleton/Context.h"
+#include "AbstractScene.h"
+#include "PaperConfig.h"
+#include "property/Properties.h"
+#include "property/Property.h"
+
 
 // STL
 #include <math.h> 
@@ -130,7 +138,14 @@ te::color::RGBAColor** te::layout::Utils::getImageW( te::gm::Envelope boxmm )
 
 int te::layout::Utils::mm2pixel( double mm )
 {
-  int devDpi = Context::getInstance().getDpiX();
+  AbstractScene* scene = Context::getInstance().getScene();
+  if(!scene)
+  {
+    return -1;
+  }
+  ContextObject context = scene->getContext();
+
+  int devDpi = context.getDpiX();
   int px = (mm * devDpi) / 25.4 ;
   return px;
 }
@@ -182,7 +197,14 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   int zoom = 100;
   if(m_applyZoom)
   {
-    zoom = Context::getInstance().getZoom();
+    AbstractScene* scene = Context::getInstance().getScene();
+    if(!scene)
+    {
+      te::gm::Envelope env;
+      return env;
+    }
+    ContextObject context = scene->getContext();
+    zoom = context.getZoom();
   }
 
   double zoomFactor = (double)zoom / 100.;
@@ -314,10 +336,10 @@ te::layout::WorldTransformer te::layout::Utils::getTransformGeo(te::gm::Envelope
 
 std::string te::layout::Utils::convertDecimalToDegree( const double& value, bool bDegrees, bool bMinutes, bool bSeconds )
 {
-  std::string		degreeValue;
-  double			dbValue;
-  double			sec;
-  double			min;
+  std::string    degreeValue;
+  double      dbValue;
+  double      sec;
+  double      min;
 
   dbValue = std::fabs(180.* value/(4.*atan(1.)));
   min = std::fabs((dbValue-(int)dbValue)*60.);
@@ -450,19 +472,26 @@ void te::layout::Utils::remapToPlanar( te::gm::Envelope* latLongBox, int zone )
   if(!latLongBox->isValid())
     return;
   
-  std::string proj4 = proj4DescToPlanar(zone);
+  try
+  {
+    std::string proj4 = proj4DescToPlanar(zone);
 
-  // Get the id of the projection of destination 
-  std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
+    // Get the id of the projection of destination 
+    std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
 
-  std::string proj4geo = proj4DescToGeodesic();
+    std::string proj4geo = proj4DescToGeodesic();
 
-  // Get the id of the projection source 
-  std::pair<std::string, unsigned int> currentBoxProj = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4geo); 
+    // Get the id of the projection source 
+    std::pair<std::string, unsigned int> currentBoxProj = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4geo); 
 
-  // Remapping 
-  int srid = currentBoxProj.second;
-  latLongBox->transform(srid, projMeters.second); 
+    // Remapping 
+    int srid = currentBoxProj.second;
+    latLongBox->transform(srid, projMeters.second); 
+  }
+  catch(const te::common::Exception&)
+  {
+    zone = -1;
+  }
 }
 
 void te::layout::Utils::remapToPlanar( te::gm::LinearRing* line, int zone )
@@ -600,4 +629,64 @@ void te::layout::Utils::resetCanvas()
   canvas->setPolygonContourWidth(size);
   canvas->setPolygonPatternWidth(size);
   canvas->setTextContourWidth(size);
+}
+
+te::layout::Properties te::layout::Utils::convertToProperties(const te::layout::PaperConfig& paperConfig)
+{
+  double paperWidth = 0.;
+  double paperHeight = 0.;
+  LayoutAbstractPaperType paperType = paperConfig.getPaperType();
+  LayoutOrientationType paperOrientation = paperConfig.getPaperOrientantion();
+  paperConfig.getPaperSize(paperWidth, paperHeight);
+
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Properties properties;
+  {
+    Property property(0);
+    property.setName("paper_width");
+    property.setValue(paperWidth, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("paper_height");
+    property.setValue(paperHeight, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("paper_type");
+    property.setValue((int)paperType, dataType->getDataTypeInt());
+    properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("paper_orientation");
+    property.setValue((int)paperOrientation, dataType->getDataTypeInt());
+    properties.addProperty(property);
+  }
+
+  return properties;
+}
+
+te::layout::PaperConfig te::layout::Utils::convertToPaperConfig(const te::layout::Properties& properties)
+{
+  const Property& pPaperHeight = properties.getProperty("paper_height");
+  const Property& pPaperWidth = properties.getProperty("paper_width");
+  const Property& pPaperType = properties.getProperty("paper_type");
+  const Property& pPaperOrientation = properties.getProperty("paper_orientation");
+
+  double paperWidth = pPaperWidth.getValue().toDouble();
+  double paperHeight = pPaperHeight.getValue().toDouble();
+  LayoutAbstractPaperType paperType = (LayoutAbstractPaperType)pPaperType.getValue().toInt();
+  LayoutOrientationType paperOrientation = (LayoutOrientationType)pPaperOrientation.getValue().toInt();
+
+  PaperConfig paperConfig;
+  paperConfig.setPaperSizeCustom(paperWidth, paperHeight);
+  paperConfig.setPaperType(paperType);
+  paperConfig.setPaperOrientation(paperOrientation);
+
+  return paperConfig;
 }

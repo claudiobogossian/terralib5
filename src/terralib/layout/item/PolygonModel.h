@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LineModel.h
+  \file PolygonModel.h
    
   \brief 
 
@@ -29,8 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_POLYGON_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "LineModel.h"
 
 namespace te
@@ -46,24 +45,6 @@ namespace te
         PolygonModel();
 
         virtual ~PolygonModel();
-
-        virtual te::layout::Properties* getProperties() const;
-
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-
-        /*!
-          \brief Gets the fill color of the shape
-        */
-        virtual const te::color::RGBAColor& getFillColor() const;
-
-        /*!
-          \brief Sets the fill color of the shape
-        */
-        virtual void setFillColor(const te::color::RGBAColor& color);
-
-      protected:
-
-        te::color::RGBAColor m_fillColor; //!< The fill color of the shape
     };
   }
 }

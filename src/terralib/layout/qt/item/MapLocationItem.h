@@ -40,6 +40,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractItemController;
     /*!
     \brief This class is a proxy MapDisplay. This makes it possible to add a MapDisplay as item of a scene. 
     This object is of type QGraphicsProxyWidget. He have a directly interaction by user. 
@@ -47,11 +48,11 @@ namespace te
     but its position in the scene remains in millimeters.
     Drawing starting point is llx, lly.
     He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
-	  
-	  \ingroup layout
+    
+    \ingroup layout
 
-	  \sa te::layout::ItemObserver
-	*/
+    \sa te::layout::ItemObserver
+  */
     class TELAYOUTEXPORT MapLocationItem : public MapItem
     {
       Q_OBJECT //for slots/signals
@@ -64,7 +65,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        MapLocationItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        MapLocationItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
