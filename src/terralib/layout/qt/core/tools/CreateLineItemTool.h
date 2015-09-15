@@ -42,7 +42,7 @@ namespace te
   {
 // Forward declarations
     class View;
-    class AbstractItemModel;
+    class AbstractItemController;
     class EnumType;
 
       /*!
@@ -93,7 +93,7 @@ namespace te
           virtual void setGeometry();
 
           std::vector<te::gm::Point>  m_coords;
-          AbstractItemModel*          m_model;
+          AbstractItemController*     m_controller;
           QGraphicsItem*              m_item;
           EnumType*                   m_itemType;
           EnumType* m_type;

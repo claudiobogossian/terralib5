@@ -50,6 +50,7 @@
 #include "../../core/property/SharedProperties.h"
 #include "../../core/PaperConfig.h"
 #include "View.h"
+#include "../../core/ContextObject.h"
 
 // STL
 #include <algorithm>
@@ -76,7 +77,8 @@ te::layout::Scene::Scene( QObject* object):
   m_moveWatched(false),
   m_paperConfig(0),
   m_currentItemEdition(0),
-  m_isEditionMode(false)
+  m_isEditionMode(false),
+  m_context(0,0,0,0)
 {
   m_backgroundColor = QColor(109,109,109);
   setBackgroundBrush(QBrush(m_backgroundColor));
@@ -92,9 +94,9 @@ te::layout::Scene::Scene( AlignItems* align, PaperConfig* paperConfig, QObject* 
   m_undoStack(0),
   m_align(align),
   m_moveWatched(false),
-  m_paperConfig(paperConfig)
+  m_paperConfig(paperConfig),
+  m_context(0,0,0,0)
 {
-
 }
 
 te::layout::Scene::~Scene()
@@ -194,8 +196,9 @@ void te::layout::Scene::insertItem(QGraphicsItem* item)
   emit addItemFinalized(item);
 }
 
-void te::layout::Scene::init( double screenWMM, double screenHMM )
+void te::layout::Scene::init( double screenWMM, double screenHMM, ContextObject context)
 {
+  m_context = context;
   calculateSceneMeasures(screenWMM, screenHMM);
   
   if(!m_paperConfig)
@@ -302,8 +305,11 @@ void te::layout::Scene::removeSelectedItems()
       AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
       if (abstractItem)
       {
-        if (abstractItem->getController()->getModel())
-          names.push_back(abstractItem->getController()->getModel()->getName());
+        if (abstractItem->getController())
+        {
+          const Property& pName = abstractItem->getController()->getProperty("name");
+          names.push_back(pName.getValue().toString());
+        }
       }
     }
   }
@@ -393,6 +399,8 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
       addUndoStack(command);
     }
   }
+
+  emit addItemFinalized(item);
   
   return group;
 }
@@ -500,10 +508,11 @@ std::vector<te::layout::Properties> te::layout::Scene::getItemsProperties()
       AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(!lItem->getController()->getModel()->isPrintable())
+        const Property& pIsPrintable = lItem->getController()->getProperty("printable");
+        if(pIsPrintable.getValue().toBool() == false)
           continue;
         
-        props.push_back(lItem->getController()->getModel()->getProperties());
+        props.push_back(lItem->getController()->getProperties());
       }
     }
   }
@@ -744,7 +753,9 @@ void te::layout::Scene::selectItem(std::string name)
           continue;
         }
 
-        if(it->getController()->getModel()->getName().compare(name) == 0)
+        const Property& pItemName = it->getController()->getProperty("name");
+        const std::string& itemName = pItemName.getValue().toString();
+        if(itemName.compare(name) == 0)
         {
           item->setSelected(true);
         }
@@ -791,56 +802,14 @@ void te::layout::Scene::redrawItems()
       AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        if(it->getController()->getModel()->isPrintable())
+        const Property& pIsPrintable = it->getController()->getProperty("printable");
+        if(pIsPrintable.getValue().toBool() == true)
         {
           it->refresh();
         }
       }
     }
   }
-}
-
-void te::layout::Scene::updateSelectedItemsPositions()
-{
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  QList<QGraphicsItem*> allItems = selectedItems();
-  foreach(QGraphicsItem *item, allItems) 
-  {
-    if(item)
-    {
-      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
-      if(it)
-      {
-        QPointF posItem = item->scenePos();    
-
-        Properties props;
-        Property prop_x(0);
-        prop_x.setName("x");
-        prop_x.setLabel("x");
-        prop_x.setValue(posItem.x(), dataType->getDataTypeDouble());
-        props.addProperty(prop_x);
-
-        Property prop_y(0);
-        prop_y.setName("y");
-        prop_y.setLabel("y");
-        prop_y.setValue(posItem.y(), dataType->getDataTypeDouble());
-        props.addProperty(prop_y);
-
-        it->getController()->getModel()->setProperties(props);
-      }
-    }
-  }
-}
-
-void te::layout::Scene::onChangeZoom( int zoom )
-{
-  contextUpdated();
-}
-
-void te::layout::Scene::onChangeMode( EnumType* mode )
-{
-  contextUpdated();
 }
 
 bool te::layout::Scene::addItemStackWithoutScene( QGraphicsItem* item )
@@ -943,8 +912,22 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
         AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
         if(it)
         {
-          te::gm::Envelope box = it->getController()->getModel()->getBoundingRect();
-          
+          const Property& pX = it->getController()->getProperty("x");
+          const Property& pY = it->getController()->getProperty("y");
+          const Property& pWidth = it->getController()->getProperty("width");
+          const Property& pHeight = it->getController()->getProperty("height");
+
+          double x = pX.getValue().toDouble();
+          double y = pY.getValue().toDouble();
+          double width = pWidth.getValue().toDouble();
+          double height = pHeight.getValue().toDouble();
+
+          te::gm::Envelope box;
+          box.m_llx = x;
+          box.m_lly = y;
+          box.m_urx = box.m_llx + width;
+          box.m_ury = box.m_lly + height;
+
           box = switchBox(box, oldPaper, newPaper);   
 
           box.m_llx = ((box.m_llx * newPaper.width()) / oldPaper.width());
@@ -952,19 +935,18 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
           box.m_urx = ((box.m_urx * newPaper.width()) / oldPaper.width());
           box.m_ury = ((box.m_ury * newPaper.height()) / oldPaper.height());
           
-          AbstractItemModel* model = it->getController()->getModel();
-          updateBoxFromProperties(box, model);
+          updateBoxFromProperties(box, it->getController());
         }
       }
     }
   }
 }
 
-void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model)
+void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractItemController* controller)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  Properties props(model->getName(), model->getType());
+  Properties props;
   
   double x = box.m_llx;
   double y = box.m_lly;
@@ -995,7 +977,7 @@ void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractIt
   pro_height.setEditable(false);
   props.addProperty(pro_height);
 
-  model->setProperties(props);
+  controller->setProperties(props);
 }
 
 te::gm::Envelope te::layout::Scene::switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper)
@@ -1019,30 +1001,10 @@ te::gm::Envelope te::layout::Scene::switchBox(te::gm::Envelope box, QSize oldPap
 
 te::layout::ContextObject te::layout::Scene::getContext()
 {
-  View* view = getView();
-  if(!view)
-  {
-    ContextObject nullContext(0,0,0,0,0);
-    return nullContext;
-  }
-
-  double dpiX = view->logicalDpiX();
-  double dpiY = view->logicalDpiY();
-  int zoom = view->getCurrentZoom();
-  EnumType* mode = view->getCurrentMode();
-
-  ContextObject context(zoom, dpiX, dpiY, m_paperConfig, mode);
-  return context;
+  return m_context;
 }
 
 void te::layout::Scene::contextUpdated()
-{
-  ContextObject context = getContext();
-
-  contextUpdated(context);
-}
-
-void te::layout::Scene::contextUpdated( ContextObject context )
 {
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems)
@@ -1052,7 +1014,7 @@ void te::layout::Scene::contextUpdated( ContextObject context )
       AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        it->contextUpdated(context);
+        it->contextUpdated(m_context);
       }
     }
   }
@@ -1158,6 +1120,12 @@ void te::layout::Scene::leaveEditionMode()
   update();
 }
 
-
-
+void te::layout::Scene::setContext(ContextObject context)
+{
+  if (context.isValid())
+  {
+    m_context = context;
+    contextUpdated();
+  }
+}
 

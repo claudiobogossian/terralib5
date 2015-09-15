@@ -49,6 +49,7 @@ namespace te
     class AbstractItemModel;
     class AbstractItemView;
     class Property;
+    class Properties;
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
@@ -73,14 +74,29 @@ namespace te
         virtual void setView(AbstractItemView* view);
 
         /*!
-          \brief Gets the model
-        */ 
-        virtual AbstractItemModel* getModel() const;
+          \brief Gets the given property
+        */
+        virtual const Property& getProperty(const std::string& propertyName) const;
+
+        /*!
+          \brief Sets the new value of the given property
+        */
+        virtual void setProperty(const Property& property);
 
         /*!
           \brief Gets the given property
         */
-        virtual const Property& getProperty(const std::string& propertyName) const;
+        virtual const Properties& getProperties() const;
+
+        /*!
+          \brief Sets the new values of the given properties
+        */
+        virtual void setProperties(const Properties& properties);
+
+        /*!
+          \brief Attaches the model of the given controller to the model of this instance
+        */
+        virtual void attach(AbstractItemController* controller);
 
         /*!
           \brief Method called by the subject to inform changes in the model
@@ -97,7 +113,14 @@ namespace te
 
         virtual void resized(const double& width, const double& height);
 
+        virtual void itemPositionChanged(double x, double y);
+
       protected:
+
+        /*!
+          \brief Gets the model
+        */ 
+        virtual AbstractItemModel* getModel() const;
 
         virtual void refresh();
 

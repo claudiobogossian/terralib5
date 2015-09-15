@@ -530,8 +530,7 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
   for (; it != mapList.end(); ++it)
   {
     MapItem* mIt = (*it);
-    MapModel* mapModel = dynamic_cast<MapModel*>(mIt->getController()->getModel());
-    props.push_back(mapModel->getProperties());
+    props.push_back(mIt->getController()->getProperties());
   }
 
   model->setPropertiesMaps(props);

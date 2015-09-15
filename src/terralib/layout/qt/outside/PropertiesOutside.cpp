@@ -253,12 +253,12 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
       AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if (lItem)
       {
-        if (!lItem->getController()->getModel())
+        if (!lItem->getController())
         {
           continue;
         }
 
-        Properties beforeProps = lItem->getController()->getModel()->getProperties();
+        Properties beforeProps = lItem->getController()->getProperties();
 
         Properties props("");
         props.setObjectName(beforeProps.getObjectName());
@@ -266,9 +266,9 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
         props.setHashCode(beforeProps.getHashCode());
         props.addProperty(property);
 
-        lItem->getController()->getModel()->setProperties(props);
+        lItem->getController()->setProperty(property);
 
-        Properties afterProps = lItem->getController()->getModel()->getProperties();
+        Properties afterProps = lItem->getController()->getProperties();
         commandItems.push_back(item);
         commandOld.push_back(beforeProps);
         commandNew.push_back(afterProps);
@@ -324,18 +324,14 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
       AbstractItemView* selectedAbsView = dynamic_cast<AbstractItemView*>(selectedItem);
       if(selectedAbsView != 0)
       {
-        Observer* selectedObserver = dynamic_cast<Observer*>(selectedAbsView->getController()->getModel());
-        if(selectedObserver != 0)
-        {
-          mapItem->getController()->getModel()->attach(selectedObserver);
+        mapItem->getController()->attach(selectedAbsView->getController());
 
-          const Property& pConnectItemPos = selectedAbsView->getController()->getProperty("connect_item_position");
-          connectItem = pConnectItemPos.getValue().toBool();
-          if(connectItem == true)
-          {
-            selectedItem->setPos(mapItem->pos());
-            listItemsToConnect.push_back(selectedItem);
-          }
+        const Property& pConnectItemPos = selectedAbsView->getController()->getProperty("connect_item_position");
+        connectItem = pConnectItemPos.getValue().toBool();
+        if(connectItem == true)
+        {
+          selectedItem->setPos(mapItem->pos());
+          listItemsToConnect.push_back(selectedItem);
         }
       }
     }
@@ -350,30 +346,6 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
       lScene->createItemGroup(listItemsToConnect);
     }
   }
-}
-
-te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )
-{
-  MapModel* map = 0;
-
-  /*
-  ItemUtils* iUtils = Context::getInstance().getItemUtils();
-  if(!iUtils)
-    return map;
-
-  MapItem* item = iUtils->getMapItem(nameMap);
-  if(!item)
-    return map;
-
-  ItemModelObservable* obsMdl = dynamic_cast<ItemModelObservable*>(item->getModel());
-  if(!obsMdl)
-    return map;
-
-  MapModel* model = dynamic_cast<MapModel*>(obsMdl);
-  map = model;
-  */
-
-  return map;
 }
 
 void te::layout::PropertiesOutside::refreshOutside()

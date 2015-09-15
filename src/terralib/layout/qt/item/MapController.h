@@ -62,11 +62,6 @@ namespace te
         virtual ~MapController();
 
         /*!
-          \brief Method called by the subject to inform changes in the model
-        */
-        virtual void update(const Subject* subject);
-
-        /*!
           \brief Method called by the view to inform that new layers have been added
         */
         virtual void addLayers(const std::list<te::map::AbstractLayerPtr>& layerList);
@@ -78,7 +73,46 @@ namespace te
 
         virtual void setZoom(const int& zoom);
 
+        virtual void setProperty(const Property& property);
+
+        virtual void setProperties(const Properties& properties);
+
+        virtual Properties getExtentChangedProperties(const te::gm::Envelope& envelope, double scale);
+
+        /*!
+          \brief Checks if the given property is a property to be sync with the map display
+        */
+        virtual bool isMapDisplayProperty(const Property& property);
+
+        /*!
+          \brief Syncs the given property. If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncMapDisplayProperty(const Property& property);
+
+        /*!
+          \brief Syncs the given scale to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncScaleToItem(double scale);
+
+        /*!
+          \brief Syncs the given extent to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncExtentToItem(const te::gm::Envelope& envelope);
+
+        /*!
+          \brief Syncs the given SRID to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncSridToItem(int srid);
+
+        /*!
+          \brief Syncs the given layers to the item (view). If the values are the same, returns FALSE. If the values had to be sync, return TRUE.
+        */
+        virtual bool syncLayersToItem(const std::list<te::map::AbstractLayerPtr>& layerList);
+
+    protected:
+
         int m_zoom;
+        bool m_ignoreExtentChangedEvent;
     };
   }
 }

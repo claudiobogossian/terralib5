@@ -51,14 +51,35 @@ te::layout::AbstractItemView* te::layout::AbstractItemController::getView() cons
   return m_view;
 }
 
-te::layout::AbstractItemModel* te::layout::AbstractItemController::getModel() const
-{
-  return m_model;
-}
-
 const te::layout::Property& te::layout::AbstractItemController::getProperty(const std::string& propertyName) const
 {
   return m_model->getProperty(propertyName);
+}
+
+void te::layout::AbstractItemController::setProperty(const te::layout::Property& property)
+{
+  m_model->setProperty(property);
+}
+
+const te::layout::Properties& te::layout::AbstractItemController::getProperties() const
+{
+  return m_model->getProperties();
+}
+
+void te::layout::AbstractItemController::setProperties(const te::layout::Properties& properties)
+{
+  m_model->setProperties(properties);
+}
+
+void te::layout::AbstractItemController::attach(te::layout::AbstractItemController* controller)
+{
+  Observer* observer = dynamic_cast<Observer*>(controller->getModel());
+  if(observer == 0)
+  {
+    return;
+  }
+
+  this->getModel()->attach(observer);
 }
 
 void te::layout::AbstractItemController::update(const te::layout::Subject* subject)
@@ -95,21 +116,42 @@ void te::layout::AbstractItemController::resized(const double& width, const doub
   {
     Property property(0);
     property.setName("width");
-    property.setLabel("Width");
     property.setValue(width, dataType->getDataTypeDouble());
-    property.setEditable(false);
     properties.addProperty(property);
   }
 
   {
     Property property(0);
     property.setName("height");
-    property.setLabel("Height");
     property.setValue(height, dataType->getDataTypeDouble());
-    property.setEditable(false);
     properties.addProperty(property);
   }
   m_model->setProperties(properties);
+}
+
+void te::layout::AbstractItemController::itemPositionChanged(double x, double y)
+{
+  Properties properties;
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  {
+    Property property(0);
+    property.setName("x");
+    property.setValue(x, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("y");
+    property.setValue(y, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+  m_model->setProperties(properties);
+}
+
+te::layout::AbstractItemModel* te::layout::AbstractItemController::getModel() const
+{
+  return m_model;
 }
 
 void te::layout::AbstractItemController::refresh()

@@ -73,6 +73,7 @@ namespace te
     class VerticalRuler;
     class EnumType;
     class WaitView;
+    class ContextObject;
 
   /*!
     \brief Class representing the view. This view is child of QGraphicsView, part of Graphics View Framework. 
@@ -218,6 +219,8 @@ namespace te
         virtual void createPolygonItem();
 
         virtual void createItem(EnumType* itemType);
+
+        virtual ContextObject getContext();
 
       public slots:
     

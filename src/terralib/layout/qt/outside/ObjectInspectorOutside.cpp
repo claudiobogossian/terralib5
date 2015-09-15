@@ -137,21 +137,23 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
     {
       continue;
     }
-    if(absParentItem->getController()->getModel() == 0)
+    if(absParentItem->getController() == 0)
     {
       continue;
     }
 
-    if(absParentItem->getController()->getModel()->getType() == enumObj->getPaperItem())
+    if(absParentItem->getController()->getProperties().getTypeObj() == enumObj->getPaperItem())
     {
       continue;
     }
 
-    std::string name = absParentItem->getController()->getModel()->getName();
-    std::string typeName = absParentItem->getController()->getModel()->getType()->getName();
+    const Property& pParentName = absParentItem->getController()->getProperty("name");
+    const std::string& parentName = pParentName.getValue().toString();
+    std::string parentTypeName = absParentItem->getController()->getProperties().getTypeObj()->getName();
+
     QStringList parentList;
-    parentList.append(name.c_str());
-    parentList.append(typeName.c_str());
+    parentList.append(parentName.c_str());
+    parentList.append(parentTypeName.c_str());
 
     QTreeWidgetItem* parentTreeItem = new QTreeWidgetItem(parentList);
 
@@ -168,21 +170,23 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
       {
         continue;
       }
-      if(absChildItem->getController()->getModel() == 0)
+      if(absChildItem->getController() == 0)
       {
         continue;
       }
 
-      if(absChildItem->getController()->getModel()->getType() == enumObj->getPaperItem())
+      if(absChildItem->getController()->getProperties().getTypeObj() == enumObj->getPaperItem())
       {
         continue;
       }
 
-      std::string name = absChildItem->getController()->getModel()->getName();
-      std::string typeName = absChildItem->getController()->getModel()->getType()->getName();
+      const Property& pChildName = absChildItem->getController()->getProperty("name");
+      const std::string& childName = pChildName.getValue().toString();
+      std::string childTypeName = absChildItem->getController()->getProperties().getTypeObj()->getName();
+
       QStringList childList;
-      childList.append(name.c_str());
-      childList.append(typeName.c_str());
+      childList.append(childName.c_str());
+      childList.append(childTypeName.c_str());
 
       QTreeWidgetItem* childTreeItem = new QTreeWidgetItem(childList);
       parentTreeItem->addChild(childTreeItem);
@@ -219,7 +223,9 @@ void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> grap
       continue;
     }
 
-    std::string name = parentItem->getController()->getModel()->getName();
+    const Property& pName = parentItem->getController()->getProperty("name");
+    std::string name = pName.getValue().toString();
+
     QString qName(name.c_str()); 
 
     QList<QTreeWidgetItem*> treeItems = m_treeWidget->findItems(qName, Qt::MatchExactly, 0);
@@ -256,7 +262,9 @@ void te::layout::ObjectInspectorOutside::itemSelectionChanged()
         continue;
       }
 
-      std::string name = absItemView->getController()->getModel()->getName();
+      const Property& pName = absItemView->getController()->getProperty("name");
+      std::string name = pName.getValue().toString();
+
       if(name == treeItemName)
       {
         selectedGraphicsItem.append(graphicsItem);

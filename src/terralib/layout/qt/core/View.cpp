@@ -41,6 +41,7 @@
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "pattern/factory/tool/ToolFactoryParamsCreate.h"
 #include "pattern/factory/tool/ToolFactory.h"
+#include "../../core/ContextObject.h"
 
 // Qt
 #include <QMouseEvent>
@@ -218,7 +219,6 @@ void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 
   if(m_updateItemPos)
   {
-    sc->updateSelectedItemsPositions();
   }
 
   if (!sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
@@ -337,8 +337,8 @@ void te::layout::View::config()
     m_width = sw;
     m_height = sh;
   }
-      
-  nscene->init(m_width, m_height);
+
+  nscene->init(m_width, m_height, getContext());
 
   QTransform mtrx = nscene->sceneTransform();
 
@@ -364,7 +364,7 @@ void te::layout::View::config()
       setCurrentMode(Enums::getInstance().getEnumModeType()->getModeNone());
     }
   }
-          
+
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -490,7 +490,7 @@ void te::layout::View::changeMode( EnumType* newMode )
   Scene* sce = dynamic_cast<Scene*>(scene());
   if(sce)
   {
-    sce->onChangeMode(mode);
+    sce->setContext(getContext());
   }
 
   emit changeContext();
@@ -831,7 +831,7 @@ void te::layout::View::fitZoom(const QRectF& rect)
     Scene* sce = dynamic_cast<Scene*>(scene());
     if(sce)
     {
-      sce->onChangeZoom(newZoom);
+      sce->setContext(getContext());
     }
 
     emit zoomChanged(newZoom);
@@ -859,7 +859,7 @@ void te::layout::View::setZoom(int newZoom)
     Scene* sce = dynamic_cast<Scene*>(scene());
     if(sce)
     {
-      sce->onChangeZoom(newZoom);
+      sce->setContext(getContext());
     }
 
     this->update();
@@ -931,7 +931,7 @@ void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
   QGraphicsView::drawForeground(painter, rect);
   if(!m_visibleRulers)
     return;
-    
+
   double scale = transform().m11();
 
   m_horizontalRuler->drawRuler(this, painter, scale);
@@ -1058,7 +1058,7 @@ void te::layout::View::disableUpdate()
   // No update Widget while print is running
   setUpdatesEnabled(false);
   // Rulers aren't print
-  m_visibleRulers = false;  
+  m_visibleRulers = false;
 }
 
 void te::layout::View::enableUpdate()
@@ -1066,3 +1066,13 @@ void te::layout::View::enableUpdate()
   m_visibleRulers = true;
   setUpdatesEnabled(true);
 }
+
+te::layout::ContextObject te::layout::View::getContext()
+{
+  double dpiX = logicalDpiX();
+  double dpiY = logicalDpiY();
+  int zoom = getCurrentZoom();
+  EnumType* mode = getCurrentMode();
+  return ContextObject(zoom, dpiX, dpiY, mode);
+}
+
