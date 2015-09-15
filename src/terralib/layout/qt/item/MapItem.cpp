@@ -33,7 +33,7 @@
 #include "../../core/pattern/singleton/Context.h"
 #include "../../qt/core/Scene.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h" //rever esta dependencia
+//#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h" //rever esta dependencia
 #include "../../../qt/widgets/tools/Pan.h"
 #include "../../../qt/widgets/tools/ZoomWheel.h"
 
@@ -228,6 +228,7 @@ void te::layout::MapItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 
 void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 {
+  /*
   event->setDropAction(Qt::CopyAction);
 
   QString s = event->mimeData()->data("application/x-terralib;value=\"DraggedItems\"").constData();
@@ -250,6 +251,7 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
   {
     mapController->addLayers(listLayers);
   }
+  */
 }
 
 void te::layout::MapItem::wheelEvent ( QGraphicsSceneWheelEvent * event )

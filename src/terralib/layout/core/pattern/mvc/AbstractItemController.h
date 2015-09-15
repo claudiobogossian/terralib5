@@ -31,7 +31,7 @@
 // TerraLib
 #include "../../Config.h"
 #include "../observer/Observer.h"
-#include "terralib/geometry/Coord2D.h"
+#include "../../../../geometry/Coord2D.h"
 
 // STL
 #include <string>
