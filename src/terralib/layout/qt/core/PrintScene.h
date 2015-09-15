@@ -93,8 +93,6 @@ namespace te
 
         virtual void renderScene( QPainter* newPainter, QPrinter* printer );
 
-        virtual void contextUpdated();
-
         virtual ContextObject createNewContext(QPrinter* printer);
 
         QGraphicsScene* m_scene;

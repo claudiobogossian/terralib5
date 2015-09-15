@@ -73,6 +73,7 @@ namespace te
     class AbstractItemView;
     class ItemObserver;
     class AbstractItemController;
+    class ContextObject;
 
   /*!
     \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
@@ -135,7 +136,7 @@ namespace te
       \param screenWMM width of physical screen in millimeters
       \param screenHMM height of physical screen in millimeters
         */
-        virtual void init(double screenWMM, double screenHMM);
+        virtual void init(double screenWMM, double screenHMM, ContextObject context);
 
     /*!
           \brief Method that returns the matrix transformation scene.
@@ -324,11 +325,6 @@ namespace te
         */
         virtual void contextUpdated();
 
-        /*!
-          \brief It will sign to all items that a change in the context had ocurred.
-        */
-        virtual void contextUpdated(ContextObject context);
-
         virtual void applyPaperProportion(QSize oldPaper, QSize newPaper);
 
         /*!
@@ -362,18 +358,9 @@ namespace te
         virtual void setEditionMode(bool editionMode);
 
         bool isEditionMode();
-        
-      public slots:
 
-        /*!
-          \brief It is called immediately when the zoom factor is changed in the Context.
+        void setContext(ContextObject context = ContextObject(0,0,0,0));
 
-          \param zoom current zoom factor of the layout module
-         */
-        virtual void onChangeZoom(int zoom);
-
-        virtual void onChangeMode(EnumType* mode);
-        
       signals:
 
      /*!
@@ -451,7 +438,7 @@ namespace te
         virtual void leaveEditionMode();
 
         virtual te::gm::Envelope switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper);
-                
+
     protected:
 
         QTransform                         m_matrix; //!< transformation matrix of the scene.
@@ -465,6 +452,7 @@ namespace te
         PaperConfig*                       m_paperConfig; //!< paper settings
         AbstractItemView*                  m_currentItemEdition;
         bool                               m_isEditionMode;
+        ContextObject                      m_context;
     };
   }
 }

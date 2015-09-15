@@ -50,6 +50,7 @@
 #include "../../core/property/SharedProperties.h"
 #include "../../core/PaperConfig.h"
 #include "View.h"
+#include "../../core/ContextObject.h"
 
 // STL
 #include <algorithm>
@@ -76,7 +77,8 @@ te::layout::Scene::Scene( QObject* object):
   m_moveWatched(false),
   m_paperConfig(0),
   m_currentItemEdition(0),
-  m_isEditionMode(false)
+  m_isEditionMode(false),
+  m_context(0,0,0,0)
 {
   m_backgroundColor = QColor(109,109,109);
   setBackgroundBrush(QBrush(m_backgroundColor));
@@ -92,9 +94,9 @@ te::layout::Scene::Scene( AlignItems* align, PaperConfig* paperConfig, QObject* 
   m_undoStack(0),
   m_align(align),
   m_moveWatched(false),
-  m_paperConfig(paperConfig)
+  m_paperConfig(paperConfig),
+  m_context(0,0,0,0)
 {
-
 }
 
 te::layout::Scene::~Scene()
@@ -194,8 +196,9 @@ void te::layout::Scene::insertItem(QGraphicsItem* item)
   emit addItemFinalized(item);
 }
 
-void te::layout::Scene::init( double screenWMM, double screenHMM )
+void te::layout::Scene::init( double screenWMM, double screenHMM, ContextObject context)
 {
+  m_context = context;
   calculateSceneMeasures(screenWMM, screenHMM);
   
   if(!m_paperConfig)
@@ -809,16 +812,6 @@ void te::layout::Scene::redrawItems()
   }
 }
 
-void te::layout::Scene::onChangeZoom( int zoom )
-{
-  contextUpdated();
-}
-
-void te::layout::Scene::onChangeMode( EnumType* mode )
-{
-  contextUpdated();
-}
-
 bool te::layout::Scene::addItemStackWithoutScene( QGraphicsItem* item )
 {
   if(!item)
@@ -1008,30 +1001,10 @@ te::gm::Envelope te::layout::Scene::switchBox(te::gm::Envelope box, QSize oldPap
 
 te::layout::ContextObject te::layout::Scene::getContext()
 {
-  View* view = getView();
-  if(!view)
-  {
-    ContextObject nullContext(0,0,0,0,0);
-    return nullContext;
-  }
-
-  double dpiX = view->logicalDpiX();
-  double dpiY = view->logicalDpiY();
-  int zoom = view->getCurrentZoom();
-  EnumType* mode = view->getCurrentMode();
-
-  ContextObject context(zoom, dpiX, dpiY, m_paperConfig, mode);
-  return context;
+  return m_context;
 }
 
 void te::layout::Scene::contextUpdated()
-{
-  ContextObject context = getContext();
-
-  contextUpdated(context);
-}
-
-void te::layout::Scene::contextUpdated( ContextObject context )
 {
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems)
@@ -1041,7 +1014,7 @@ void te::layout::Scene::contextUpdated( ContextObject context )
       AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        it->contextUpdated(context);
+        it->contextUpdated(m_context);
       }
     }
   }
@@ -1147,6 +1120,12 @@ void te::layout::Scene::leaveEditionMode()
   update();
 }
 
-
-
+void te::layout::Scene::setContext(ContextObject context)
+{
+  if (context.isValid())
+  {
+    m_context = context;
+    contextUpdated();
+  }
+}
 
