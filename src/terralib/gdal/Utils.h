@@ -409,9 +409,6 @@ namespace te
     TEGDALEXPORT void createGeopackage(std::string outFileName);
 
     TEGDALEXPORT void copyToGeopackage(std::string inFileName, std::string outFileName);
-    
-    TEGDALEXPORT void queryGeopackage(std::string gpkgFileName, std::string query);
-
   } // end namespace gdal
 } // end namespace te
 #endif

@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS tm_style (
+layer_name TEXT PRIMARY KEY NOT NULL,
+sld_xml TEXT);
+

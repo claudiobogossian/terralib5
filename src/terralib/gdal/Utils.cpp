@@ -1026,17 +1026,3 @@ void te::gdal::copyToGeopackage(std::string inFileName, std::string outFileName)
   GDALClose((GDALDatasetH)poSrcDS);
   GDALClose((GDALDatasetH)poDstDS);
 }
-
-void te::gdal::queryGeopackage(std::string gpkgFileName, std::string query)
-{
-  const char *gpkgFormat = "GPKG";
-  GDALDriver *gpkgDriver;
-
-  gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
-
-  char **papszOptions = NULL;
-  GDALDataset *gpkgDS = (GDALDataset *)GDALOpen(gpkgFileName.c_str(), GA_Update);
-
-  gpkgDS->ExecuteSQL(query.c_str(), NULL, "SQLITE");
-  GDALClose((GDALDatasetH)gpkgDS);
-}

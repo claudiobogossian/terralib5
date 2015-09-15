@@ -29,6 +29,7 @@
 #include "../../../../common/STLUtils.h"
 #include "../../../../common/StringUtils.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
@@ -60,6 +61,10 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QValidator>
+
+// STL
+#include <fstream>
+#include <memory>
 
 #define FORM_TREE_ITEM      0
 #define PROPERTY_TREE_ITEM  1
@@ -940,11 +945,6 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onOkPushButtonClicke
     return;
   }
 
-  if (m_section)
-  {
-    std::string jsonStr = te::qt::plugins::terramobile::Write(m_section);
-  }
-
   te::gdal::createGeopackage(gpkgName);
 
   //create data source
@@ -954,6 +954,35 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onOkPushButtonClicke
   std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("OGR");
   dsGPKG->setConnectionInfo(connInfo);
   dsGPKG->open();
+
+  std::string sqlFile1 = TERRALIB_CODEBASE_PATH"/share/terralib/sql/createGPKGLayerStyle.sql";
+  std::string sqlFile2 = TERRALIB_CODEBASE_PATH"/share/terralib/sql/createGPKGLayerTable.sql";
+  std::string jsonStr = m_ui->m_plainTextEdit->toPlainText().toStdString();
+
+  std::ifstream t1(sqlFile1);
+  std::ifstream t2(sqlFile2);
+
+  std::stringstream buffer1, buffer2, buffer3;
+
+  buffer1 << t1.rdbuf();
+  buffer2 << t2.rdbuf();
+
+  std::string strScript1 = buffer1.str();
+  std::string strScript2 = buffer2.str();
+
+  std::auto_ptr<te::da::DataSourceTransactor> transactor = dsGPKG->getTransactor();
+
+  try
+  {
+    transactor->execute(strScript1);
+    transactor->execute(strScript2);
+    transactor->commit();
+  }
+  catch (...)
+  {
+    transactor->rollBack();
+    throw;
+  }
 
   std::list<te::map::AbstractLayerPtr> inputLayers = getInputLayers();
   std::list<te::map::AbstractLayerPtr> gatheringLayers = getGatheringLayers();
@@ -968,16 +997,21 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onOkPushButtonClicke
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
     exportToGPKG(*it, dsGPKG.get());
-  }
+    std::string name = (*it)->getSchema()->getName();
+    std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form' )  values('" + name + "', '" + jsonStr + "');";
 
-  if (m_ui->m_visibleAreaCheckBox->isChecked())
-  {
-    std::string query = "create table if not exists VISIBLE_AREA (LLX real not null, LLY real not null, URX real not null, URY real not null);";
-    te::gdal::queryGeopackage(gpkgName, query);
-  }
+    try
+    {
+      transactor->execute(insert);
+      transactor->commit();
+    }
+    catch (...)
+    {
+      transactor->rollBack();
+      throw;
+    }
 
-  std::string query = "create table if not exists TM_STYLE (LAYER_NAME text primary key not null, SLD_XML text);";
-  te::gdal::queryGeopackage(gpkgName, query);
+  }
 
   this->accept();
 }
