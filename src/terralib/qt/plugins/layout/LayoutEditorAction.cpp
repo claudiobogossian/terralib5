@@ -92,7 +92,7 @@ void te::qt::plugins::layout::LayoutEditorAction::onActionActivated(bool checked
 {
   ProxyProject* proxyProject = new ProxyProject;
 
-  QMainWindow* mw = dynamic_cast<QMainWindow*>(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  QMainWindow* mw = dynamic_cast<QMainWindow*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   QSize size = mw->centralWidget()->size();
   QRect screen = mw->centralWidget()->geometry();
@@ -180,7 +180,7 @@ void te::qt::plugins::layout::LayoutEditorAction::onActionActivated(bool checked
 void te::qt::plugins::layout::LayoutEditorAction::onExit()
 {
 
-  QMainWindow* mw = dynamic_cast<QMainWindow*>(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  QMainWindow* mw = dynamic_cast<QMainWindow*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   if(m_mainLayout)
   {
