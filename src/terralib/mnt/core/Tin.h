@@ -288,6 +288,8 @@ namespace te
 
     \brief Class to define TIN strutures.
 
+    \ingroup mnt
+
     */
     class TEMNTEXPORT Tin
     {
