@@ -19,8 +19,11 @@ te::qt::widgets::AnimationView::AnimationView(te::qt::widgets::MapDisplay* paren
   setAcceptDrops(true);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing);
   setResizeAnchor(QGraphicsView::NoAnchor);
+  setCacheMode(QGraphicsView::CacheBackground);
+  setUpdatesEnabled(true);
 }
 
 te::qt::widgets::AnimationView::~AnimationView()
@@ -130,16 +133,5 @@ void te::qt::widgets::AnimationView::setMatrix()
   QRectF sceneRec = scene()->sceneRect(); // The scene rect is already on display projection
   if (sceneRec != sceneRect())
     updateSceneRect(sceneRec);
-
-  //// ensure the paint event
-  //// set bigger box to ensure paint event
-  //QRectF newRec(sceneRec.x() - 10 * sceneRec.width(), sceneRec.y() - 10 * sceneRec.height(), 30 * sceneRec.width(), 30 * sceneRec.height());
-  //QRectF dispExt(e.m_llx, e.m_lly, e.getWidth(), e.getHeight());
-  //QRectF srec(e.m_llx - 10 * e.getWidth(), e.m_lly - 10 * e.getHeight(), 30 * e.getWidth(), 30 * e.getHeight());
-  //if (dispExt.contains(sceneRec))
-  //  fitInView(srec);
-  //else
-  //  fitInView(newRec);
-  QRectF dispExt(e.m_llx, e.m_lly, e.getWidth(), e.getHeight());
-  fitInView(dispExt);
+  fitInView(sceneRec);
 }

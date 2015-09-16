@@ -21,7 +21,6 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 
-
 bool te::mnt::TinLine::operator== (const TinLine &rhs) const
 {
   if ((this->m_nodefrom != rhs.m_nodefrom) ||
@@ -81,6 +80,38 @@ bool te::mnt::TinLine::ExchangeNode(int32_t oldNodeId, int32_t newNodeId)
 
   return true;
 }
+
+
+bool te::mnt::TinLine::SwapPolygon()
+{
+  int32_t aux;
+
+  aux = m_rightpoly;
+  m_rightpoly = m_leftpoly;
+  m_leftpoly = aux;
+  return true;
+}
+
+
+bool te::mnt::TinLine::SwapNode()
+{
+  int32_t aux;
+
+  aux = m_nodefrom;
+  m_nodefrom = m_nodeto;
+  m_nodeto = aux;
+
+  return true;
+}
+
+bool te::mnt::TinLine::SwapNodePolygon()
+{
+  SwapNode();
+  SwapPolygon();
+  return true;
+}
+
+
 
 bool te::mnt::TinNode::operator== (const TinNode &rhs) const
 {
@@ -1406,3 +1437,1222 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   return true;
 }
 
+bool te::mnt::Tin::NodeDerivatives()
+{
+  // Calculate first derivatives on triangles
+  if (!TriangleFirstDeriv())
+    return false;
+
+  //Calculate first derivatives on nodes
+  if (!NodeFirstDeriv())
+    return false;
+
+  // Calculate second derivatives on triangles
+  if (!TriangleSecondDeriv())
+    return false;
+
+  // Calculate second derivatives on nodes
+  if (!NodeSecondDeriv())
+    return false;
+
+  if (m_fbnode > 0)
+  {
+    // If there are breaklines
+    // Calculate first derivatives on breaklines nodes
+    if (!BreakNodeFirstDeriv())
+      return false;
+
+    // Calculate second derivatives on triangles that touch breaklines
+    if (!BreakTriangleSecondDeriv())
+      return false;
+
+    // Calculate second derivatives on breaklines nodes
+    if (!BreakNodeSecondDeriv())
+      return false;
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::TriangleFirstDeriv()
+{
+  te::gm::PointZ p3da[3];
+  double nvector[3];
+  double m1, m2;
+  int32_t nodesid[3];
+  short j;
+  size_t i;
+  double tol = .01;
+
+  // Create and Initialize first derivatives vector
+  if (m_tfderiv.size())
+  {
+    m_tfderiv.clear();
+  }
+
+  for (i = 0; i < m_triangsize + 1; i++)
+  {
+    m_tfderiv.push_back(te::gm::PointZ(m_nodatavalue, 0., 0.));
+  }
+
+  for (i = 0; i < m_ltriang; i++)
+  {
+    NodesId((int32_t)i, nodesid);
+    for (j = 0; j < 3; j++)
+    {
+      p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
+      p3da[j].setY(m_node[nodesid[j]].getNPoint().getY());
+      p3da[j].setZ(m_node[nodesid[j]].getZ());
+    }
+
+    // Special cases
+    if ((p3da[0].getZ() >= m_nodatavalue) || (p3da[1].getZ() >= m_nodatavalue) ||
+      (p3da[2].getZ() >= m_nodatavalue))
+    {
+      // Triangle with DUMMY Value
+      m_tfderiv[i].setY(m_nodatavalue);
+      continue;
+    }
+
+    m1 = m2 = m_nodatavalue;
+
+    if ((p3da[1].getY() - p3da[0].getY()) != 0.0)
+      m1 = (p3da[1].getX() - p3da[0].getX()) / (p3da[1].getY() - p3da[0].getY());
+
+    if ((p3da[2].getY() - p3da[0].getY()) != 0.0)
+      m2 = (p3da[2].getX() - p3da[0].getX()) / (p3da[2].getY() - p3da[0].getY());
+
+    if (fabs(m1 - m2) < tol)
+    {
+      // Triangle with DUMMY Value
+      m_tfderiv[i].setY(m_nodatavalue);
+      continue;
+    }
+
+    if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
+    {
+      // Triangle parallel to XY plane
+      m_tfderiv[i].setX(0.);
+      continue;
+    }
+
+    // Calculate vector normal to triangle
+    triangleNormalVector(p3da, nvector);
+    m_tfderiv[i].setX(-nvector[0] / nvector[2]);
+    m_tfderiv[i].setY(-nvector[1] / nvector[2]);
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::TriangleSecondDeriv()
+{
+  te::gm::PointZ p3da[3];
+  double nvector[3];
+  te::gm::PointZ pt;
+  double dxy, dyx;
+  double m1, m2;
+  double tol = (double).01;
+  int32_t nodesid[3];
+
+  // Create and Initialize second derivatives vector
+  if (!m_nfderiv.size())
+    return false;
+  if (m_tsderiv.size())
+  {
+    m_tsderiv.clear();
+  }
+
+  size_t i;
+  for (i = 0; i < m_triangsize + 1; i++)
+  {
+    m_tsderiv.push_back(TinNode());
+    m_tsderiv[i].setNPoint(te::gm::PointZ(m_nodatavalue, m_nodatavalue, 0.));
+  }
+
+  for (i = 0; i < m_ltriang; i++)
+  {
+    NodesId((int32_t)i, nodesid);
+
+    // Special case
+    if ((m_nfderiv[nodesid[0]].getX() >= m_nodatavalue) ||
+      (m_nfderiv[nodesid[1]].getX() >= m_nodatavalue) ||
+      (m_nfderiv[nodesid[2]].getX() >= m_nodatavalue) ||
+      (m_node[nodesid[0]].getZ() >= m_nodatavalue) ||
+      (m_node[nodesid[1]].getZ() >= m_nodatavalue) ||
+      (m_node[nodesid[2]].getZ() >= m_nodatavalue))
+    {
+      // Triangle with DUMMY Value
+      m_tsderiv[i].setZ(m_nodatavalue);
+      continue;
+    }
+
+    m1 = m2 = m_nodatavalue;
+
+    if ((m_nfderiv[nodesid[1]].getY() - m_nfderiv[nodesid[0]].getY()) != 0.0)
+      m1 = (m_nfderiv[nodesid[1]].getX() - m_nfderiv[nodesid[0]].getX()) /
+      (m_nfderiv[nodesid[1]].getY() - m_nfderiv[nodesid[0]].getY());
+
+    if ((m_nfderiv[nodesid[2]].getY() - m_nfderiv[nodesid[0]].getY()) != 0.0)
+      m2 = (m_nfderiv[nodesid[2]].getX() - m_nfderiv[nodesid[0]].getX()) /
+      (m_nfderiv[nodesid[2]].getY() - m_nfderiv[nodesid[0]].getY());
+
+    if (fabs(m1 - m2) < tol)
+    {
+      // Triangle with DUMMY Value
+      m_tsderiv[i].setZ(m_nodatavalue);
+      continue;
+    }
+
+    //		Calculate using dx
+    for (short j = 0; j < 3; j++)
+    {
+      p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
+      p3da[j].setY(m_node[nodesid[j]].getNPoint().getY());
+      p3da[j].setZ(m_nfderiv[nodesid[j]].getX());
+    }
+
+    if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
+    {
+      m_tsderiv[i].setX(0.);
+      dxy = 0.;
+    }
+    else
+    {
+      triangleNormalVector(p3da, nvector);
+      m_tsderiv[i].setX(-nvector[0] / nvector[2]);
+      dxy = (-nvector[1] / nvector[2]);
+    }
+
+    // Calculate using dy
+    for (short j = 0; j < 3; j++)
+      p3da[j].setZ(m_nfderiv[nodesid[j]].getY());
+
+    if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
+    {
+      m_tsderiv[i].setY(0.);
+      dyx = 0.;
+    }
+    else
+    {
+      triangleNormalVector(p3da, nvector);
+      m_tsderiv[i].setY(-nvector[1] / nvector[2]);
+      dyx = (-nvector[0] / nvector[2]);
+    }
+    m_tsderiv[i].setZ((dxy + dyx) / 2.);
+  }
+
+  return true;
+}
+
+
+bool te::mnt::Tin::NodeFirstDeriv()
+{
+  int32_t clstnids[CLNODES];
+  size_t i;
+
+  // Create and Initialize first derivatives vector
+  if (m_nfderiv.size())
+  {
+    m_nfderiv.clear();
+  }
+  for (i = 0; i < m_nodesize + 1; i++)
+  {
+    m_nfderiv.push_back(te::gm::PointZ(0., 0., 0.));
+  }
+
+  // To each node
+  for (i = 1; i < m_lnode; i++)
+  {
+    // Special cases
+    if (m_node[i].getZ() >= m_nodatavalue)
+      continue;
+    if (m_node[i].getType() == Deletednode)
+      // If deleted node
+      continue;
+
+    // Look for closest points of the node
+    NodeClosestPoints((int32_t)i, clstnids);
+    m_nfderiv[i] = CalcNodeFirstDeriv((int32_t)i, clstnids);
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::NodeSecondDeriv()
+{
+  size_t i;
+  int32_t clstnids[CLNODES];
+  TinNode sderiv;
+
+  if (!m_tsderiv.size())
+    return false;
+  // Create and Initialize second derivatives vector
+  if (m_nsderiv.size())
+  {
+    m_nsderiv.clear();
+  }
+
+  for (i = 0; i < m_nodesize + 1; i++)
+  {
+    m_nsderiv.push_back(TinNode());
+    m_nsderiv[i].Init(0., 0., 0.);
+  }
+
+  for (i = 1; i < m_lnode; i++)
+  {
+    // Special cases
+    if (m_node[i].getZ() >= m_nodatavalue)
+      // Node with DUMMY value
+      continue;
+    if (m_node[i].getType() == Deletednode)
+      // Deleted node 
+      continue;
+
+    // Look for closest point of the node
+    NodeClosestPoints((int32_t)i, clstnids);
+    sderiv = CalcNodeSecondDeriv((int32_t)i, clstnids);
+    m_nsderiv[i].setX(sderiv.getX());
+    m_nsderiv[i].setY(sderiv.getY());
+    m_nsderiv[i].setZ(sderiv.getZ());
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::NodeClosestPoints(int32_t nid, int32_t *clstNids, bool useBrNode)
+{
+  int32_t ltri, rtri,
+    flin,
+    lineid, lids[3];
+  size_t j, k;
+  double dist, distv[CLNODES];
+  int32_t nodeid;
+
+  // Find one line that contains node
+  lineid = FindLine(nid);
+  if (lineid == -1)
+    return false;
+  flin = lineid;
+
+  for (j = 0; j < CLNODES; j++)
+  {
+    distv[j] = m_nodatavalue;
+    clstNids[j] = -1;
+  }
+
+  // Find right and left triangle
+  rtri = m_line[lineid].getRightPolygon();
+  ltri = m_line[lineid].getLeftPolygon();
+  if (rtri == -1L)
+  {
+    rtri = ltri;
+    ltri = -1L;
+  }
+  while (rtri != ltri)
+  {
+    m_triang[rtri].LinesId(lids);
+    for (j = 0; j < 3; j++)
+    {
+      // Find line that contains node
+      if (lids[j] == lineid)
+        continue;
+      if ((m_line[lids[j]].getNodeFrom() == nid) ||
+        (m_line[lids[j]].getNodeTo() == nid))
+        break;
+    }
+    if (j == 3){
+      return false;
+    }
+
+    lineid = lids[j];
+    if (m_line[lineid].getNodeFrom() == nid)
+      nodeid = m_line[lineid].getNodeTo();
+    else
+      nodeid = m_line[lineid].getNodeFrom();
+
+    if ((m_node[nodeid].getZ() < m_nodatavalue) && ((useBrNode) ||
+      ((useBrNode) && (nodeid < m_fbnode))))
+    {
+      dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
+        (m_node[nid].getX() - m_node[nodeid].getX()) +
+        (m_node[nid].getY() - m_node[nodeid].getY()) *
+        (m_node[nid].getY() - m_node[nodeid].getY());
+      for (j = 0; j < CLNODES; j++)
+      {
+        if (dist < distv[j])
+        {
+          for (k = CLNODES - 1; k > j; k--)
+          {
+            distv[k] = distv[k - 1];
+            clstNids[k] = clstNids[k - 1];
+          }
+          distv[j] = dist;
+          clstNids[j] = nodeid;
+          break;
+        }
+      }
+    }
+
+    // Find new right triangle
+    if (m_line[lineid].getRightPolygon() == rtri)
+      rtri = m_line[lineid].getLeftPolygon();
+    else if (m_line[lineid].getLeftPolygon() == rtri)
+      rtri = m_line[lineid].getRightPolygon();
+    else
+      return false;
+
+    if ((rtri == -1) && (ltri != -1))
+    {
+      rtri = ltri;
+      ltri = -1L;
+      lineid = flin;
+    }
+  }
+
+  return true;
+}
+
+te::gm::PointZ te::mnt::Tin::CalcNodeFirstDeriv(int32_t nodeId, int32_t clstNodes[CLNODES])
+{
+  size_t j, k;
+  te::gm::PointZ deriv;
+  te::gm::PointZ p3da[3];
+  double	nvector[3], tnx, tny, tnz;
+  double	m1, m2;
+  double tol = (double).01;
+
+  p3da[0].setX(m_node[nodeId].getNPoint().getX());
+  p3da[0].setY(m_node[nodeId].getNPoint().getY());
+  p3da[0].setZ(m_node[nodeId].getZ());
+
+  tnx = 0.;
+  tny = 0.;
+  tnz = 0.;
+  for (j = 0; j < CLNODES; j++)
+  {
+    if (clstNodes[j] == -1L)
+      break;
+    p3da[1].setX(m_node[clstNodes[j]].getNPoint().getX());
+    p3da[1].setY(m_node[clstNodes[j]].getNPoint().getY());
+    p3da[1].setZ(m_node[clstNodes[j]].getZ());
+    for (k = j + 1; k < CLNODES; k++)
+    {
+      if (clstNodes[k] == -1)
+        break;
+      p3da[2].setX(m_node[clstNodes[k]].getNPoint().getX());
+      p3da[2].setY(m_node[clstNodes[k]].getNPoint().getY());
+      p3da[2].setZ(m_node[clstNodes[k]].getZ());
+
+      // Special cases
+      m1 = m2 = m_nodatavalue;
+
+      if ((p3da[1].getY() - p3da[0].getY()) != 0.0)
+        m1 = (p3da[1].getX() - p3da[0].getX()) / (p3da[1].getY() - p3da[0].getY());
+
+      if ((p3da[2].getY() - p3da[0].getY()) != 0.0)
+        m2 = (p3da[2].getX() - p3da[0].getX()) / (p3da[2].getY() - p3da[0].getY());
+
+      if (fabs(m1 - m2) < tol)
+        continue;
+
+      if ((p3da[0].getZ() >= m_nodatavalue) || (p3da[1].getZ() >= m_nodatavalue) ||
+        (p3da[2].getZ() >= m_nodatavalue))
+        continue;
+
+      if ((p3da[0].getZ() == p3da[1].getZ()) &&
+        (p3da[0].getZ() == p3da[2].getZ()))
+        continue;
+
+      triangleNormalVector(p3da, nvector);
+      tnx += nvector[0];
+      tny += nvector[1];
+      tnz += nvector[2];
+    }
+
+  }
+  // Calculate node first derivatives
+  if (tnz != 0.)
+  {
+    deriv.setX(-tnx / tnz);
+    deriv.setY(-tny / tnz);
+  }
+  else
+  {
+    deriv.setX(0.);
+    deriv.setY(0.);
+  }
+  return deriv;
+}
+
+te::mnt::TinNode te::mnt::Tin::CalcNodeSecondDeriv(int32_t nodeId, int32_t clstNIds[CLNODES])
+{
+  te::gm::PointZ p3da[3];
+  double tnxx, tnxy, tnxz, tnyx, tnyy, tnyz,
+    nvector[3], m1, m2;
+  double tol = .01;
+  short	j, k;
+  TinNode	sderiv;
+
+  p3da[0].setX(m_node[nodeId].getNPoint().getX());
+  p3da[0].setY(m_node[nodeId].getNPoint().getY());
+  p3da[0].setZ(m_nfderiv[nodeId].getX());
+
+  tnxx = 0.;
+  tnxy = 0.;
+  tnxz = 0.;
+  tnyx = 0.;
+  tnyy = 0.;
+  tnyz = 0.;
+
+  for (j = 0; j < CLNODES; j++)
+  {
+    if (clstNIds[j] == -1L)
+      break;
+    p3da[1].setX(m_node[clstNIds[j]].getNPoint().getX());
+    p3da[1].setY(m_node[clstNIds[j]].getNPoint().getY());
+    p3da[1].setZ(m_nfderiv[clstNIds[j]].getX());
+    for (k = j + 1; k < CLNODES; k++)
+    {
+      if (clstNIds[k] == -1L)
+        break;
+      p3da[2].setX(m_node[clstNIds[k]].getNPoint().getX());
+      p3da[2].setY(m_node[clstNIds[k]].getNPoint().getY());
+      p3da[2].setZ(m_nfderiv[clstNIds[k]].getX());
+
+      m1 = m2 = m_nodatavalue;
+
+      if ((p3da[1].getY() - p3da[0].getY()) != 0.0)
+        m1 = (p3da[1].getX() - p3da[0].getX()) / (p3da[1].getY() - p3da[0].getY());
+
+      if ((p3da[2].getY() - p3da[0].getY()) != 0.0)
+        m2 = (p3da[2].getX() - p3da[0].getX()) / (p3da[2].getY() - p3da[0].getY());
+
+      if (fabs(m1 - m2) < tol)         continue;
+
+      if ((p3da[0].getZ() >= m_nodatavalue) ||
+        (p3da[1].getZ() >= m_nodatavalue) ||
+        (p3da[2].getZ() >= m_nodatavalue))
+        // Triangle with DUMMY Value
+        continue;
+      if ((p3da[0].getZ() == p3da[1].getZ()) &&
+        (p3da[0].getZ() == p3da[2].getZ()))
+        // Triangle parallel to XY plane
+        continue;
+
+      triangleNormalVector(p3da, nvector);
+      tnxx += nvector[0];
+      tnxy += nvector[1];
+      tnxz += nvector[2];
+    }
+  }
+  p3da[0].setZ(m_nfderiv[nodeId].getY());
+  for (j = 0; j < CLNODES; j++)
+  {
+    if (clstNIds[j] == -1L)
+      break;
+    p3da[1].setX(m_node[clstNIds[j]].getNPoint().getX());
+    p3da[1].setY(m_node[clstNIds[j]].getNPoint().getY());
+    p3da[1].setZ(m_nfderiv[clstNIds[j]].getY());
+    for (k = j + 1; k < CLNODES; k++)
+    {
+      if (clstNIds[k] == -1L)
+        break;
+      p3da[2].setX(m_node[clstNIds[k]].getNPoint().getX());
+      p3da[2].setY(m_node[clstNIds[k]].getNPoint().getY());
+      p3da[2].setZ(m_nfderiv[clstNIds[k]].getY());
+
+      m1 = m2 = m_nodatavalue;
+
+      if ((p3da[1].getY() - p3da[0].getY()) != 0.0)
+        m1 = (p3da[1].getX() - p3da[0].getX()) / (p3da[1].getY() - p3da[0].getY());
+
+      if ((p3da[2].getY() - p3da[0].getY()) != 0.0)
+        m2 = (p3da[2].getX() - p3da[0].getX()) / (p3da[2].getY() - p3da[0].getY());
+
+      if (fabs(m1 - m2) < tol)
+        continue;
+
+      if ((p3da[0].getZ() >= m_nodatavalue) ||
+        (p3da[1].getZ() >= m_nodatavalue) ||
+        (p3da[2].getZ() >= m_nodatavalue))
+        continue;
+      if ((p3da[0].getZ() == p3da[1].getZ()) &&
+        (p3da[0].getZ() == p3da[2].getZ()))
+        continue;
+
+      triangleNormalVector(p3da, nvector);
+      tnyx += nvector[0];
+      tnyy += nvector[1];
+      tnyz += nvector[2];
+    }
+  }
+  //	Calculate node second derivatives
+  if (tnxz != 0.)
+  {
+    sderiv.setX(-tnxx / tnxz);
+    tnxy = -tnxy / tnxz;
+  }
+  else
+    tnxy = 0.;
+  if (tnyz != 0.)
+  {
+    sderiv.setY(-tnyy / tnyz);
+    tnyx = -tnyx / tnyz;
+  }
+  else
+    tnyx = 0.;
+
+  sderiv.setZ((tnxy + tnyx) / 2.);
+
+  return sderiv;
+}
+
+
+bool ::te::mnt::Tin::BreakNodeFirstDeriv()
+{
+  size_t i, bnodesize,
+    node1, node2;
+  int32_t rclstnids[CLNODES], lclstnids[CLNODES];
+  double deltax, deltay,
+    sintheta, costheta, modxy,
+    dzds, dzdt, dzdx, dzdy;
+  te::gm::PointZ rderiv, lderiv;
+
+  if (!m_tfderiv.size())
+    return false;
+  // Create and Initialize first derivatives vector
+  bnodesize = m_lnode - m_fbnode;
+  if (m_nbrfderiv.size())
+  {
+    m_nbrfderiv.clear();
+  }
+
+  for (i = 0; i < bnodesize + 1; i++)
+  {
+    m_nbrfderiv.push_back(m_nfderiv[i + m_fbnode]);
+    m_nblfderiv.push_back(m_nfderiv[i + m_fbnode]);
+  }
+
+  // To each break node
+  for (i = m_fbnode + 1; i < m_lnode - 1; i++)
+  {
+    // Special cases
+    if ((m_node[i].getZ() >= m_nodatavalue) ||
+      (m_node[i].getType() == Deletednode) ||
+      (m_node[i].getType() > Breaklinenormal))
+      continue;
+
+    // Look for triangles that share the node
+    BreakNodeClosestPoints((int32_t)i, rclstnids, lclstnids);
+    rderiv = CalcNodeFirstDeriv((int32_t)i, rclstnids);
+    lderiv = CalcNodeFirstDeriv((int32_t)i, lclstnids);
+
+    node1 = NextNode((int32_t)i);
+    node2 = PreviousNode((int32_t)i);
+
+    deltax = m_node[node1].getX() - m_node[node2].getX();
+    deltay = m_node[node1].getY() - m_node[node2].getY();
+    modxy = sqrt(deltax*deltax + deltay*deltay);
+    costheta = deltax / modxy;
+    sintheta = deltay / modxy;
+
+    if (m_nfderiv[i].getX() >= m_nodatavalue)
+      dzds = 0.;
+    else
+      dzds = costheta*m_nfderiv[i].getX() -
+      sintheta*m_nfderiv[i].getY();
+
+    if (rderiv.getX() >= m_nodatavalue)
+      dzdt = 0.;
+    else
+      dzdt = sintheta*rderiv.getX() +
+      costheta*rderiv.getY();
+    dzdx = costheta*dzds + sintheta*dzdt;
+    dzdy = -sintheta*dzds + costheta*dzdt;
+    m_nbrfderiv[i - m_fbnode].setX(dzdx);
+    m_nbrfderiv[i - m_fbnode].setY(dzdy);
+
+    if (lderiv.getX() >= m_nodatavalue)
+      dzdt = 0.;
+    else
+      dzdt = sintheta*lderiv.getX() +
+      costheta*lderiv.getY();
+    dzdx = costheta*dzds + sintheta*dzdt;
+    dzdy = -sintheta*dzds + costheta*dzdt;
+    m_nblfderiv[i - m_fbnode].setX(dzdx);
+    m_nblfderiv[i - m_fbnode].setY(dzdy);
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::BreakTriangleSecondDeriv()
+{
+  size_t i;
+  std::vector<int32_t> rightri, leftri;
+
+  // Create and Initialize second derivatives vector
+  if ((!m_nbrfderiv.size()) || (!m_nblfderiv.size()))
+    return false;
+  if (!m_tsderiv.size())
+    return false;
+
+  // To each break node except first and last
+  for (i = m_fbnode + 1; i < m_lnode - 1; i++)
+  {
+    if (m_node[i].getZ() >- m_nodatavalue)
+      continue;
+
+    // If first or last point of a breakline
+    if ((m_node[i].getType() == Breaklinefirst) ||
+      (m_node[i].getType() == Breaklinelast) ||
+      (m_node[i].getType() == Deletednode))
+      continue;
+
+    // Look for triangles that share the node
+    NodeTriangles((int32_t)i, rightri, leftri);
+
+    // Calculate second derivative of node using right side triangles
+    CalcTriangleSecondDeriv((int32_t)i, rightri, m_nbrfderiv);
+
+    // Calculate second derivative of node using left side triangles
+    CalcTriangleSecondDeriv((int32_t)i, leftri, m_nblfderiv);
+
+    rightri.clear();
+    leftri.clear();
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, std::vector<int32_t> &leftri)
+{
+  int32_t fline, linid, lids[3], rtri, ltri;
+  short k;
+
+  // Find one line that contains node
+  fline = FindLine(nodeid);
+  if (fline == -1)
+    return false;
+  linid = fline;
+
+  ltri = m_line[linid].getLeftPolygon();
+  rtri = m_line[linid].getRightPolygon();
+  if (rtri == -1)
+  {
+    rtri = ltri;
+    ltri = -1;
+  }
+
+  // While right side triangle different from left side<br>
+  while (rtri != ltri)
+  {
+    if (m_line[linid].getNodeTo() == nodeid)
+    {
+      rightri.push_back(m_line[linid].getRightPolygon());
+    }
+    else if (m_line[linid].getNodeFrom() == nodeid)
+    {
+      leftri.push_back(m_line[linid].getLeftPolygon());
+    }
+
+    // Find line that contains node in the right triangle
+    m_triang[rtri].LinesId(lids);
+    for (k = 0; k < 3; k++)
+    {
+      if (lids[k] == linid)
+        continue;
+      if ((m_line[lids[k]].getNodeFrom() == nodeid) ||
+        (m_line[lids[k]].getNodeTo() == nodeid))
+        break;
+    }
+    if (k == 3){
+      return false;
+    }
+
+    // Make right triangle equal to the triangle at the
+    // other side
+    linid = lids[k];
+    if (m_line[linid].getRightPolygon() == rtri)
+      rtri = m_line[linid].getLeftPolygon();
+    else if (m_line[linid].getLeftPolygon() == rtri)
+      rtri = m_line[linid].getRightPolygon();
+    else
+      return false;
+    if (rtri == -1)
+    {
+      rtri = ltri;
+      ltri = -1;
+      linid = fline;
+    }
+  }
+  //	Insert left side triangle in triangle list
+  if (ltri != -1)
+  {
+    if (m_line[linid].getNodeTo() == nodeid)
+    {
+      rightri.push_back(m_line[linid].getRightPolygon());
+    }
+    if (m_line[linid].getNodeFrom() == nodeid)
+    {
+      leftri.push_back(m_line[linid].getLeftPolygon());
+    }
+  }
+
+  return true;
+}
+
+
+
+bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32_t *lClstNids)
+{
+  int32_t ltri, rtri,
+    flin,
+    lineid, lids[3];
+  short j, k;
+  double dist, rdistv[CLNODES], ldistv[CLNODES];
+  int32_t nodeid;
+
+  // Find one line that contains node
+  lineid = FindLine(nid);
+  if (lineid == -1)
+    return false;
+  flin = lineid;
+
+  for (j = 0; j < CLNODES; j++)
+  {
+    rdistv[j] = m_nodatavalue;
+    rClstNids[j] = -1;
+
+    ldistv[j] = m_nodatavalue;
+    lClstNids[j] = -1;
+  }
+
+  // Find right and left triangle
+  rtri = m_line[lineid].getRightPolygon();
+  ltri = m_line[lineid].getLeftPolygon();
+  if (rtri == -1L)
+  {
+    rtri = ltri;
+    ltri = -1L;
+  }
+  while (rtri != ltri)
+  {
+    m_triang[rtri].LinesId(lids);
+    for (j = 0; j < 3; j++)
+    {
+      // Find line that contains node
+      if (lids[j] == lineid)
+        continue;
+      if ((m_line[lids[j]].getNodeFrom() == nid) ||
+        (m_line[lids[j]].getNodeTo() == nid))
+        break;
+    }
+    if (j == 3){
+      return false;
+    }
+
+    lineid = lids[j];
+    if (m_line[lineid].getNodeFrom() == nid)
+    {
+      nodeid = m_line[lineid].getNodeTo();
+      if (nodeid < m_fbnode)
+      { //Node is a breakline node at right side of it
+        dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
+          (m_node[nid].getX() - m_node[nodeid].getX()) +
+          (m_node[nid].getY() - m_node[nodeid].getY()) *
+          (m_node[nid].getY() - m_node[nodeid].getY());
+        for (j = 0; j < CLNODES; j++)
+        {
+          if (dist < rdistv[j])
+          {
+            for (k = CLNODES - 1; k > j; k--)
+            {
+              rdistv[k] = rdistv[k - 1];
+              rClstNids[k] = rClstNids[k - 1];
+            }
+            rdistv[j] = dist;
+            rClstNids[j] = nodeid;
+            break;
+          }
+        }
+      }
+    }
+    else
+    {
+      nodeid = m_line[lineid].getNodeFrom();
+      if (nodeid < m_fbnode)
+      { //Node is a breakline node at left side of it
+        dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
+          (m_node[nid].getX() - m_node[nodeid].getX()) +
+          (m_node[nid].getY() - m_node[nodeid].getY()) *
+          (m_node[nid].getY() - m_node[nodeid].getY());
+        for (j = 0; j < CLNODES; j++)
+        {
+          if (dist < ldistv[j])
+          {
+            for (k = CLNODES - 1; k > j; k--)
+            {
+              ldistv[k] = ldistv[k - 1];
+              lClstNids[k] = lClstNids[k - 1];
+            }
+            ldistv[j] = dist;
+            lClstNids[j] = nodeid;
+            break;
+          }
+        }
+      }
+    }
+
+    // Find new right triangle
+    if (m_line[lineid].getRightPolygon() == rtri)
+      rtri = m_line[lineid].getLeftPolygon();
+    else if (m_line[lineid].getLeftPolygon() == rtri)
+      rtri = m_line[lineid].getRightPolygon();
+    else
+      return false;
+    if ((rtri == -1) && (ltri != -1))
+    {
+      rtri = ltri;
+      ltri = -1L;
+      lineid = flin;
+    }
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::CalcTriangleSecondDeriv(int32_t nodeid, std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv)
+{
+  short j;
+  int32_t triid, nodesid[3];
+  te::gm::PointZ p3da[3];
+  double nvector[3];
+  double dxy, dyx;
+  double m1, m2;
+  double tol = (double).01;
+
+  for (size_t i = 0; i < triangles.size(); i++)
+  {
+    triid = triangles[i];
+    NodesId(triid, nodesid);
+
+    // Special case
+    if ((m_node[nodesid[0]].getZ() >= m_nodatavalue) ||
+      (m_node[nodesid[1]].getZ() >= m_nodatavalue) ||
+      (m_node[nodesid[2]].getZ() >= m_nodatavalue))
+    {
+      //			Triangle with DUMMY Value
+      m_tsderiv[triid].setX(m_nodatavalue);
+      m_tsderiv[triid].setY(m_nodatavalue);
+      m_tsderiv[triid].setZ(m_nodatavalue);
+      continue;
+    }
+    m1 = m2 = m_nodatavalue;
+    if ((m_node[nodesid[1]].getY() - m_node[nodesid[0]].getY()) != 0.0)
+      m1 = (m_node[nodesid[1]].getX() - m_node[nodesid[0]].getX()) /
+      (m_node[nodesid[1]].getY() - m_node[nodesid[0]].getY());
+    if ((m_node[nodesid[2]].getY() - m_node[nodesid[0]].getY()) != 0.0)
+      m2 = (m_node[nodesid[2]].getX() - m_node[nodesid[0]].getX()) /
+      (m_node[nodesid[2]].getY() - m_node[nodesid[0]].getY());
+
+    if (fabs(m1 - m2) < tol)
+    {
+      // Triangle with DUMMY Value
+      m_tsderiv[triid].setX(m_nodatavalue);
+      m_tsderiv[triid].setY(m_nodatavalue);
+      m_tsderiv[triid].setZ(m_nodatavalue);
+      continue;
+    }
+    
+    // Calculate using dx
+    for (j = 0; j < 3; j++)
+    {
+      p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
+      p3da[j].setY(m_node[nodesid[j]].getNPoint().getY());
+      if (m_node[nodesid[j]].getType() > Last && m_node[nodesid[j]].getType() < Sample)
+        // If breakline node
+        p3da[j].setZ(fderiv[nodesid[j] - m_fbnode].getX());
+      else
+        p3da[j].setZ(m_nfderiv[nodesid[j]].getX());
+    }
+
+    if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
+    {
+      m_tsderiv[triid].setX(0.);
+      dxy = 0.;
+    }
+    else
+    {
+      triangleNormalVector(p3da, nvector);
+      m_tsderiv[triid].setX(-nvector[0] / nvector[2]);
+      dxy = (-nvector[1] / nvector[2]);
+    }
+
+    // Calculate using dy
+    for (j = 0; j < 3; j++)
+      if (m_node[nodesid[j]].getType() > Last && m_node[nodesid[j]].getType() < Sample)
+        // If breakline node
+        p3da[j].setZ(fderiv[nodesid[j] - m_fbnode].getY());
+      else
+        p3da[j].setZ(m_nfderiv[nodesid[j]].getY());
+
+    if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
+    {
+      m_tsderiv[triid].setY(0.);
+      dyx = 0.;
+    }
+    else
+    {
+      triangleNormalVector(p3da, nvector);
+      m_tsderiv[triid].setY(-nvector[1] / (double)nvector[2]);
+      dyx = (-nvector[0] / (double)nvector[2]);
+    }
+    m_tsderiv[triid].setZ((float)((dxy + dyx) / 2.));
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::BreakNodeSecondDeriv()
+{
+  int32_t bnodesize,
+    node1, node2,
+    rclstnids[CLNODES], lclstnids[CLNODES];
+  TinNode rsderiv, lsderiv;
+  double deltax, deltay, modxy,
+    costheta, sintheta,
+    cos2theta, sin2theta, sincostheta,
+    dzdss, dzdtt, dzdst,
+    dzdxx, dzdyy, dzdxy;
+
+  if (!m_tsderiv.size())
+    return false;
+
+  // Create and Initialize second derivatives vector
+  bnodesize = m_lnode - m_fbnode;
+  if (m_nbrsderiv.size())
+  {
+    m_nbrsderiv.clear();
+  }
+
+  size_t i;
+  for (i = 0; i < bnodesize + 1; i++)
+  {
+    m_nbrsderiv.push_back(m_nsderiv[i + m_fbnode]);
+    m_nblsderiv.push_back(m_nsderiv[i + m_fbnode]);
+  }
+
+  // To each break node
+  for (i = m_fbnode + 1; i < m_lnode - 1; i++)
+  {
+    // Special cases
+    if ((m_node[i].getZ() >= m_nodatavalue) ||
+      (m_node[i].getType() == Deletednode) ||
+      (m_node[i].getType() > Breaklinenormal))
+      continue;
+
+    // Look for triangles that share the node
+    BreakNodeClosestPoints((int32_t)i, rclstnids, lclstnids);
+    rsderiv = CalcNodeSecondDeriv((int32_t)i, rclstnids);
+    lsderiv = CalcNodeSecondDeriv((int32_t)i, lclstnids);
+
+    node1 = NextNode((int32_t)i);
+    node2 = PreviousNode((int32_t)i);
+
+    deltax = m_node[node1].getX() - m_node[node2].getX();
+    deltay = m_node[node1].getY() - m_node[node2].getY();
+    modxy = sqrt(deltax*deltax + deltay*deltay);
+    costheta = deltax / modxy;
+    sintheta = deltay / modxy;
+    cos2theta = costheta*costheta;
+    sin2theta = sintheta*sintheta;
+    sincostheta = sintheta*costheta;
+
+    dzdss = cos2theta*m_nsderiv[i].getX() -
+      2 * sincostheta*m_nsderiv[i].getZ() +
+      sin2theta*m_nsderiv[i].getY();
+
+    dzdtt = sin2theta*rsderiv.getX() +
+      2 * sincostheta*rsderiv.getZ() +
+      cos2theta*rsderiv.getY();
+    dzdst = sincostheta*rsderiv.getX() +
+      (cos2theta - sin2theta)*rsderiv.getZ() -
+      sincostheta*rsderiv.getY();
+
+    dzdxx = cos2theta*dzdss +
+      2 * sincostheta*dzdst +
+      sin2theta*dzdtt;
+    dzdyy = sin2theta*dzdss -
+      2 * sincostheta*dzdst +
+      cos2theta*dzdtt;
+    dzdxy = -sincostheta*dzdss +
+      (cos2theta - sin2theta)*dzdst +
+      sincostheta*dzdtt;
+
+    m_nbrsderiv[i - m_fbnode].setX(dzdxx);
+    m_nbrsderiv[i - m_fbnode].setY(dzdyy);
+    m_nbrsderiv[i - m_fbnode].setZ(dzdxy);
+
+    dzdtt = sin2theta*lsderiv.getX() +
+      2 * sincostheta*lsderiv.getZ() +
+      cos2theta*lsderiv.getY();
+    dzdst = sincostheta*lsderiv.getX() +
+      (cos2theta - sin2theta)*lsderiv.getZ() -
+      sincostheta*lsderiv.getY();
+
+    dzdxx = cos2theta*dzdss +
+      2 * sincostheta*dzdst +
+      sin2theta*dzdtt;
+    dzdyy = sin2theta*dzdss -
+      2 * sincostheta*dzdst +
+      cos2theta*dzdtt;
+    dzdxy = -sincostheta*dzdss +
+      (cos2theta - sin2theta)*dzdst +
+      sincostheta*dzdtt;
+
+    m_nblsderiv[i - m_fbnode].setX(dzdxx);
+    m_nblsderiv[i - m_fbnode].setY(dzdyy);
+    m_nblsderiv[i - m_fbnode].setZ(dzdxy);
+  }
+
+  return true;
+}
+
+bool te::mnt::Tin::CheckTopology()
+{
+  int32_t triangid;
+
+  for (triangid = 0; triangid < m_ltriang; triangid++)
+  {
+    CheckLines(triangid);
+  }
+
+  return true;
+}
+
+
+bool te::mnt::Tin::CheckLines(int32_t trid)
+{
+  int32_t lids[3], nids[3];
+  double a, b, c, d, s;
+  short i;
+
+  if ((trid == -1) || (trid > m_ltriang))
+    return false;
+
+  m_triang[trid].LinesId(lids);
+  NodesId(trid, nids);
+
+  a = m_node[nids[1]].getX() - m_node[nids[0]].getX();
+  b = m_node[nids[1]].getY() - m_node[nids[0]].getY();
+  c = m_node[nids[2]].getX() - m_node[nids[0]].getX();
+  d = m_node[nids[2]].getY() - m_node[nids[0]].getY();
+  s = a*d - b*c;
+
+  // To all triangle lines
+  for (i = 0; i < 3; i++)
+  {
+    // Make sure that triangle is inside
+    if (s > 0.)
+    {
+      if (((m_line[lids[i]].getNodeFrom() == nids[i]) &&
+        (m_line[lids[i]].getRightPolygon() == trid)) ||
+        ((m_line[lids[i]].getNodeTo() == nids[i]) &&
+        (m_line[lids[i]].getLeftPolygon() == trid)))
+        m_line[lids[i]].SwapPolygon();
+    }
+    else
+    {
+      if (((m_line[lids[i]].getNodeTo() == nids[i]) &&
+        (m_line[lids[i]].getRightPolygon() == trid)) ||
+        ((m_line[lids[i]].getNodeFrom() == nids[i]) &&
+        (m_line[lids[i]].getLeftPolygon() == trid)))
+        m_line[lids[i]].SwapPolygon();
+    }
+  }
+
+  return true;
+}
+
+
+int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
+{
+  static int32_t oldtri = 1;
+  int32_t i, j, k, lids[3];
+  short m;
+
+  if ((oldtri < 0) || (oldtri >= m_ltriang))
+    oldtri = 0;
+  if (oldtri == 0)
+  {
+    for (i = 0; i < m_ltriang; i++)
+    {
+      m_triang[i].LinesId(lids);
+      for (m = 0; m < 3; m++)
+      {
+        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
+          (m_line[lids[m]].getNodeTo() == snid))
+        {
+          oldtri = i;
+          return lids[m];
+        }
+        if ((m_line[lids[m]].getNodeTo() == fnid) &&
+          (m_line[lids[m]].getNodeFrom() == snid))
+        {
+          oldtri = i;
+          return lids[m];
+        }
+      }
+    }
+    return -1;
+  }
+  j = oldtri;
+  k = oldtri + 1;
+  while ((j > 0) || (k < m_ltriang))
+  {
+    if (j > 0)
+    {
+      m_triang[j].LinesId(lids);
+      for (m = 0; m < 3; m++)
+      {
+        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
+          (m_line[lids[m]].getNodeTo() == snid))
+        {
+          oldtri = j;
+          return lids[m];
+        }
+        if ((m_line[lids[m]].getNodeTo() == fnid) &&
+          (m_line[lids[m]].getNodeFrom() == snid))
+        {
+          oldtri = j;
+          return lids[m];
+        }
+      }
+      j--;
+    }
+    if (k < m_ltriang)
+    {
+      m_triang[k].LinesId(lids);
+      for (m = 0; m < 3; m++)
+      {
+        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
+          (m_line[lids[m]].getNodeTo() == snid))
+        {
+          oldtri = k;
+          return lids[m];
+        }
+        if ((m_line[lids[m]].getNodeTo() == fnid) &&
+          (m_line[lids[m]].getNodeFrom() == snid))
+        {
+          oldtri = k;
+          return lids[m];
+        }
+      }
+      k++;
+    }
+  }
+  oldtri = 1;
+  return -1;
+}
