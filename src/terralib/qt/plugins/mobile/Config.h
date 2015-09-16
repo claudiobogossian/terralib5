@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_PLUGINS_TERRAMOBILE_INTERNAL_CONFIG_H
 
 // TerraLib
-#include <terralib_config.h>
+#include <terralib_buildconfig.h>
 
 
 /*!
