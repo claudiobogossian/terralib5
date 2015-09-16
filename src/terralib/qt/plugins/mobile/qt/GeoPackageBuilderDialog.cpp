@@ -340,6 +340,10 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onTabWidgetChanged(i
         subItem->setIcon(0, QIcon::fromTheme("layer-info"));
         item->addChild(subItem);
         item->setExpanded(true);
+
+        //QComboBox* comboBox = new QComboBox(m_ui->m_treeWidget);
+
+        //m_ui->m_treeWidget->setItemWidget(subItem, 1, comboBox);
       }
     }
 

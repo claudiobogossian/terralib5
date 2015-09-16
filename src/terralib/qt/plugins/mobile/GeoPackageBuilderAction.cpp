@@ -28,6 +28,7 @@
 #include "../../../qt/af/BaseApplication.h"
 #include "../../../qt/af/Project.h"
 #include "qt/GeoPackageBuilderDialog.h"
+#include "qt/GeoPackageBuilderWizard.h"
 #include "GeoPackageBuilderAction.h"
 
 // Qt
@@ -59,7 +60,7 @@ void te::qt::plugins::terramobile::GeoPackageBuilderAction::onActionActivated(bo
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
   //show interface
-  te::qt::plugins::terramobile::GeoPackageBuilderDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::plugins::terramobile::GeoPackageBuilderWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
   dlg.setLayerList(list);
 
