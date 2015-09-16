@@ -410,7 +410,7 @@ bool te::mnt::segInterPoint(te::gm::PointZ &pfr, te::gm::PointZ &pto, te::gm::Po
 */
 bool te::mnt::testVertexValues(double isolin, te::gm::PointZ *p3da)
 {
-  double  delta = (float).9999;
+  double  delta = .9999;
   size_t  i;
 
   for (i = 0; i < 3; i++)
@@ -539,36 +539,36 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
   std::vector<te::gm::PointZ>::iterator it, itf, itn;
   short borda; // borda = 1 no boundary reached, 2 one boundary reached.
 
-  //std::ofstream ofs("d:\\teste\\Extract.txt", std::ofstream::out | std::ofstream::app);
-  //ofs.precision(8);
+  std::ofstream ofs("d:\\teste\\Extract.txt", std::ofstream::out | std::ofstream::app);
+  ofs.precision(8);
 
   initLineVector(pline, velin);
   borda = 1;
- /* ofs << "velin.size " << velin.size() << std::endl;
+  ofs << "velin.size " << velin.size() << std::endl;
   for (size_t vv = 0; vv < velin.size(); vv++)
-    ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;*/
+    ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
 
   //index pindex to the current point of old line
   it = itf = pline.begin();
   itn = ++it;
   te::gm::PointZ ptf(*itf);
   te::gm::PointZ ptn(*itn);
-  //ofs << "pline.size " << pline.size() << std::endl;
+  ofs << "pline.size " << pline.size() << std::endl;
   while (it != pline.end())
   {
     ptf = *itf;
     ptn = *itn;
     pt = velin[velin.size()-1];
-    //ofs << "ptf " << ptf.getX() << " " << ptf.getY() << " ptn " << ptn.getX() << " " << ptn.getY() << " pt " << pt.getX() << " " << pt.getY() << std::endl;
+    ofs << "ptf " << ptf.getX() << " " << ptf.getY() << " ptn " << ptn.getX() << " " << ptn.getY() << " pt " << pt.getX() << " " << pt.getY() << std::endl;
     if (equalFptSpt(ptf, pt, scale))
     {// conection on ptf
       velin.push_back(ptn);
       --it;
       it = itf = pline.erase(it);
       itn = pline.erase(it);
-      //ofs << "velin.size " << velin.size() << std::endl;
-      //for (size_t vv = 0; vv < velin.size(); vv++)
-      //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+      ofs << "velin.size " << velin.size() << std::endl;
+      for (size_t vv = 0; vv < velin.size(); vv++)
+        ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
     }
     else if (equalFptSpt(ptn, pt, scale))
     {// conection on ptn
@@ -576,9 +576,9 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
       --it;
       it = itf = pline.erase(it);
       itn = pline.erase(it);
-      //ofs << "velin.size " << velin.size() << std::endl;
-      //for (size_t vv = 0; vv < velin.size(); vv++)
-      //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+      ofs << "velin.size " << velin.size() << std::endl;
+      for (size_t vv = 0; vv < velin.size(); vv++)
+        ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
     }
     else
     {
@@ -591,17 +591,17 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
         {// If first point is on boundary -> open contour
           assembLine(clinlist, velin);
           initLineVector(pline, velin); //SSL0296
-          //ofs << "velin.size " << velin.size() << std::endl;
-          //for (size_t vv = 0; vv < velin.size(); vv++)
-          //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+          ofs << "velin.size " << velin.size() << std::endl;
+          for (size_t vv = 0; vv < velin.size(); vv++)
+            ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
           borda = 1;
         }
         else
         {// If not on boundary, invert line points
           std::reverse(velin.begin(), velin.end());
-          //ofs << " Reverse velin.size " << velin.size() << std::endl;
-          //for (size_t vv = 0; vv < velin.size(); vv++)
-          //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+          ofs << " Reverse velin.size " << velin.size() << std::endl;
+          for (size_t vv = 0; vv < velin.size(); vv++)
+            ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
           borda = 2;
         }
         it = itf = pline.begin();
@@ -626,7 +626,7 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
   }
 
   assembLine(clinlist, velin);
-  //ofs.close();
+  ofs.close();
 
   return true;
 }
@@ -675,7 +675,7 @@ FALSE    failure
 *************************************************************/
 bool te::mnt::assembLine(std::vector<te::gm::LineString> &linlout, std::vector<te::gm::PointZ> &vect)
 {
-  if (vect.size() == 1)
+  if (vect.size() <= 1)
     return true;
 
   te::gm::LineString linout(vect.size(), te::gm::LineStringZType);
@@ -687,3 +687,462 @@ bool te::mnt::assembLine(std::vector<te::gm::LineString> &linlout, std::vector<t
 
   return true;
 }
+
+/*!
+\brief Function that defines the triangle normal vector
+\param p3da are pointers to objets Point3d representing the triangle vertices
+\param nvector are the coordinates of the normal vector
+\return TRUE always
+*/
+
+bool te::mnt::triangleNormalVector(te::gm::PointZ *p3da, double *nvector)
+{
+  double	ux, vx, uy, vy, uz, vz;
+
+  if ((p3da == NULL) || (nvector == NULL)){
+    return false;
+  }
+
+  nvector[0] = 0.;
+  nvector[1] = 0.;
+
+  // Define normal vector (uvx,uvy,uvz)
+  ux = p3da[1].getX() - p3da[0].getX();
+  vx = p3da[2].getX() - p3da[0].getX();
+  uy = p3da[1].getY() - p3da[0].getY();
+  vy = p3da[2].getY() - p3da[0].getY();
+  uz = p3da[1].getZ() - p3da[0].getZ();
+  vz = p3da[2].getZ() - p3da[0].getZ();
+
+  if ((ux == 0) && (vx == 0))
+  {
+    nvector[0] = 1.;
+    nvector[1] = 0.;
+    nvector[2] = 0.;
+    return true;
+  }
+  if ((uy == 0) && (vy == 0))
+  {
+    nvector[0] = 0.;
+    nvector[1] = 1.;
+    nvector[2] = 0.;
+    return true;
+  }
+  if ((uz == 0) && (vz == 0))
+  {
+    nvector[0] = 0.;
+    nvector[1] = 0.;
+    nvector[2] = 1.;
+    return true;
+  }
+
+  nvector[2] = ux * vy - vx * uy;
+  if (nvector[2] < 0.)
+  {
+    // Make sure that normal vector is always positive
+    nvector[2] = -nvector[2];
+    nvector[0] = vy * uz - uy * vz;
+    nvector[1] = ux * vz - vx * uz;
+  }
+  else
+  {
+    nvector[0] = uy * vz - vy * uz;
+    nvector[1] = vx * uz - ux * vz;
+  }
+  return true;
+}
+
+/*!
+\brief Function that normalize a vector by its size
+\param nvector is a pointer to the vector coordinates x, y and z
+\return TRUE always
+*/
+
+bool te::mnt::normalizeVector(double *nvector)
+{
+  double	vectorSize;
+
+  if (nvector == NULL){
+    return false;
+  }
+
+  vectorSize = sqrt(nvector[0] * nvector[0] + nvector[1] * nvector[1] + nvector[2] * nvector[2]);
+
+  if (vectorSize != 0.)
+  {
+    nvector[0] = nvector[0] / vectorSize;
+    nvector[1] = nvector[1] / vectorSize;
+    nvector[2] = nvector[2] / vectorSize;
+  }
+  return true;
+}
+
+/*!
+\brief Function that checks if a point pt is on a segment
+\param pt, fseg, lseg are pointers to Point objects
+\param tol is the tolerance distance between the point and the segment
+\return true if the point is on the segment or false otherwise
+*/
+bool te::mnt::onSegment(te::gm::PointZ& pt, te::gm::PointZ& fseg, te::gm::PointZ& lseg, double tol)
+{
+  double	pax, pay, bax, bay;
+  double	area2, minxy, daux;
+
+  if ((pt.getX() < fseg.getX()) && (pt.getX() < lseg.getX()))
+    return false;
+  if ((pt.getY() < fseg.getY()) && (pt.getY() < lseg.getY()))
+    return false;
+  if ((pt.getX() > fseg.getX()) && (pt.getX() > lseg.getX()))
+    return false;
+  if ((pt.getY() > fseg.getY()) && (pt.getY() > lseg.getY()))
+    return false;
+  pax = pt.getX() - fseg.getX();
+  bax = lseg.getX() - fseg.getX();
+  if ((pax == 0.) && (bax == 0.))
+    // On segment
+    return true;
+
+  pay = pt.getY() - fseg.getY();
+  bay = lseg.getY() - fseg.getY();
+  if ((pay == 0.) && (bay == 0.))
+    // On segment
+    return true;
+
+  area2 = fabs((pay * bax) - (pax * bay));
+  bax = fabs(bax);
+  bay = fabs(bay);
+  minxy = bay;
+  if (bax < bay)
+    minxy = bax;
+  daux = area2 / (bax + bay - (minxy / 2));
+
+  if (daux < tol)
+    // On segment
+    return true;
+
+  return false;
+}
+
+
+int te::mnt::onSameSide(te::gm::PointZ &pt1, te::gm::PointZ &pt2, te::gm::PointZ &fseg, te::gm::PointZ &lseg)
+{
+  double	a, b, c, ip, ipt;
+
+  a = lseg.getY() - fseg.getY();
+  b = fseg.getX() - lseg.getX();
+  c = lseg.getX()*fseg.getY() - fseg.getX()*lseg.getY();
+  ip = a*pt1.getX() + b*pt1.getY() + c;
+  if (ip == 0.)
+    // On segment
+    return -1;
+  ipt = a*pt2.getX() + b*pt2.getY() + c;
+  if ((ip > 0.) && (ipt < 0.))
+    return 0;
+  if ((ip < 0.) && (ipt > 0.))
+    return 0;
+
+  // On same side
+  return 1;
+}
+
+/*!
+\brief Function that filters the points that are closer considering a given tolerance
+\param p3dl is a pointer to a list of Point3dList objects
+\param tol is a tolerance value
+\return TRUE always
+*/
+
+bool te::mnt::point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<bool> &fixed, double tol)
+{
+  te::gm::PointZ p3d;
+  int32_t npts, nptsmax, i, j, maxdiffindex = 0;
+  double x0 = 0, y0 = 0, z0, coef[5];
+  double maxdiff;
+  double maxfixptdiff;
+  short degree;
+
+  npts = 0;
+  nptsmax = 0;
+
+  double vectd[200];
+  double vectz[200];
+  double vectx[200];
+  double vecty[200];
+  double fvectz[200];
+  short ptype[200];
+  te::gm::PointZ p3dlaux[200];
+
+  npts = 0;
+  for (size_t pp = 0; pp < p3dl.size(); pp++)
+  {
+    p3d = p3dl[pp];
+    if ((p3d.getX() >= FLT_MAX) || (npts > 199))
+    {
+      // If last point of a line
+      maxdiff = FLT_MAX;
+      maxfixptdiff = FLT_MAX;
+      j = 4;
+      while ((maxdiff > tol) && (maxfixptdiff > tol) &&
+        (j > 3) && (npts > 3))
+      {
+        j = 0;
+        for (i = 0; i < npts; i++)
+        {
+          if (ptype[i] == 0)
+            continue;
+          vectx[j] = vectd[i];
+          vecty[j++] = vectz[i];
+        }
+        if (j < 3)
+          break;
+        if (j < 5)
+          degree = 1;
+        else if (j < 8)
+          degree = 2; //6 is minimum npts for 3rd degree
+        else
+          degree = 3;	//8 is minimum npts for 3rd degree
+        Least_square_fitting(vectx, vecty, (short)j, degree, coef);
+        for (i = 0; i < npts; i++)
+        {
+          fvectz[i] = coef[0];
+          for (j = 1; j <= degree; j++)
+            fvectz[i] += coef[j] * pow(vectd[i], (double)j);
+        }
+        maxfixptdiff = 0.;
+        for (i = 0; i < npts; i++)
+        {
+          if ((ptype[i] == 0) || (ptype[i] == 1))
+            continue;
+          if (fabs(fvectz[i] - vectz[i]) > maxfixptdiff)
+            maxfixptdiff = (float)fabs(fvectz[i] - vectz[i]);
+        }
+        maxdiff = 0.;
+        for (i = 0; i < npts; i++)
+        {
+          if ((ptype[i] == 0) || (ptype[i] == 2))
+            continue;
+          if (fabs(fvectz[i] - vectz[i]) > maxdiff)
+          {
+            maxdiff = (float)fabs(fvectz[i] - vectz[i]);
+            maxdiffindex = i;
+          }
+        }
+        if (i == 0)
+          break;
+        ptype[maxdiffindex] = 0;
+      }
+
+      for (i = 0; i < npts; i++)
+      {
+        p3d = p3dlaux[i];
+        p3d.setZ(fvectz[i]);
+        z0 = p3d.getZ();
+      }
+      npts = 0;
+      continue;
+    }
+    if (npts == 0)
+    {
+      x0 = p3d.getX();
+      y0 = p3d.getY();
+    }
+
+    p3dlaux[npts] = p3d;
+    vectd[npts] = sqrt((p3d.getX() - x0)*(p3d.getX() - x0) +
+      (p3d.getY() - y0)*(p3d.getY() - y0));
+    if (npts > 0)
+      vectd[npts] += vectd[npts - 1];
+    if (p3d.getZ() < FLT_MAX)
+      ptype[npts] = 1;
+    else
+      ptype[npts] = 0;
+    if (!fixed[pp])
+      ptype[npts] = 2;
+    vectz[npts] = p3d.getZ();
+    fvectz[npts++] = p3d.getZ();
+    x0 = p3d.getX();
+    y0 = p3d.getY();
+  }
+
+  return true;
+}
+
+/*!
+\brief Function that performs a leat square fitting in a set of points
+\param vectx and vecty are the point coordinates
+\param np is the number of points
+\param deg is degree of the polynomium used in the fitting
+\param coef is a pointer to the the polynomiun coefficients
+\return TRUE if the fitting was performed with no errors or FALSE otherwise
+*/
+
+bool te::mnt::Least_square_fitting(double *vectx, double *vecty, short np, short deg, double *coef)
+{
+  short  i, j, m, n;
+  double matx[6][6];
+  double powx[200],
+    sumpow[200],
+    fx[200];
+
+  if (np > 200)
+    return false;
+
+  // initialization 
+  for (i = 0; i<np; i++)
+  {
+    powx[i] = 1.;
+    fx[i] = vecty[i];
+  }
+
+  // compute the rigth hand side of the first normal equation 
+  matx[0][deg + 1] = 0;
+  for (i = 0; i<np; i++)
+    matx[0][deg + 1] = matx[0][deg + 1] + vecty[i];
+
+  // compute the rigth hand side of the other normal equation 
+  // and also the sums 	
+  sumpow[0] = np;
+  for (i = 1; i <= deg; i++)
+  {
+    sumpow[i] = 0;
+    matx[i][deg + 1] = 0;
+
+    for (j = 0; j< np; j++)
+    {
+      powx[j] = powx[j] * vectx[j];
+      fx[j] = fx[j] * vectx[j];
+      sumpow[i] = sumpow[i] + powx[j];
+      matx[i][deg + 1] = matx[i][deg + 1] + fx[j];
+    }
+  }
+
+  for (i = deg + 1; i< 2 * (deg + 1); i++)
+  {
+    sumpow[i] = 0;
+    for (j = 0; j<np; j++)
+    {
+      powx[j] = powx[j] * vectx[j];
+      sumpow[i] = sumpow[i] + powx[j];
+    }
+  }
+
+  for (i = 0; i <= deg; i++)
+    for (j = 0; j <= deg; j++)
+      matx[i][j] = sumpow[i + j];
+
+  // perform Gaussian elimination
+  m = deg + 1;
+  n = 1;
+
+  if (!Gauss_elimination(m, n, matx))
+  {
+    return false;
+  }
+
+  for (i = 0; i<deg + 1; i++)
+    coef[i] = matx[i][m];
+
+  return false;
+}
+
+
+/*********************************************************************
+NAME		: Gauss_elimination
+AUTHOR		: Jose Claudio Mura			oct - 95
+RESUME		: Solve a system of linear equation throught the Gauss
+elimination method.
+INPUT        	: Number of the variables (m), number of equations (n) and
+array with the variables (mat).
+OUTPUT       	: Solution in the last column of the (a).
+RETURN		: TRUE		successful
+FALSE		failure
+*********************************************************************/
+
+bool te::mnt::Gauss_elimination(short m, short n, double mat[6][6])
+{
+  short i, j, k, l, ii, jj, kk;
+  double aux, piv, eps;
+
+  /*-- estimated error bound (machine epsilon) --*/
+  eps = .000000001;
+
+  if (m > 1)
+  {
+    for (i = 0; i<m - 1; i++)
+    {
+      piv = fabs(mat[i][i]);
+      ii = i + 1;
+      jj = i;
+
+      /*-- search for the index in of maximum pivot value -*/
+      for (j = ii; j< m; j++)
+      {
+        if (fabs(mat[j][i]) > piv)
+        {
+          piv = fabs(mat[j][i]);
+          jj = j;
+        }
+      }
+
+      if (i != jj)
+      {
+        /*-- interchange rows i and index jj --*/
+        for (j = i; j< m + n; j++)
+        {
+          aux = mat[i][j];
+          mat[i][j] = mat[jj][j];
+          mat[jj][j] = aux;
+        }
+      }
+
+      /*-- check if pivot is too smal --*/
+      if (piv < eps)
+      {
+        return false;
+      }
+
+      /*-- forward elimination step --*/
+      for (j = ii; j< m; j++)
+      {
+        for (k = ii; k< m + n; k++)
+          mat[j][k] = mat[j][k] - mat[j][i] * mat[i][k] / mat[i][i];
+      }
+    }
+
+    if (fabs(mat[m - 1][m - 1]) < eps)
+    {
+      return false;
+    }
+
+    /*-- back substitution --*/
+    for (i = 0; i<n; i++)
+    {
+      mat[m - 1][i + m] = mat[m - 1][i + m] / mat[m - 1][m - 1];
+
+      for (j = 0; j<m - 1; j++)
+      {
+        k = m - j - 2;
+        kk = k + 1;
+
+        for (l = kk; l<m; l++)
+          mat[k][i + m] = mat[k][i + m] - mat[l][i + m] * mat[k][l];
+
+        mat[k][i + m] = mat[k][i + m] / mat[k][k];
+      }
+    }
+  }
+  else
+  {
+    if (fabs(mat[0][0]) < eps)
+    {
+      return false;
+    }
+
+    for (i = 0; i<n; i++)
+      mat[0][m + i] = mat[0][m + i] / mat[0][0];
+  }
+  
+  return true;
+}
+
+

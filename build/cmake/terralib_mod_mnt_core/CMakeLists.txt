@@ -7,7 +7,7 @@ include_directories(${Boost_INCLUDE_DIR})
 # Export as DLL on Microsoft Windows
 #
 if(WIN32)
-  add_definitions(-DTEMNTCOREDLL)
+  add_definitions(-DTEMNTDLL)
 endif()
  
 #
