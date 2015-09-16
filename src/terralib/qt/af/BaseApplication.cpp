@@ -199,7 +199,7 @@ void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
   m_display->setCurrentTool(zoomArea);
 
   te::qt::af::evt::ZoomInButtonToggled ezoom;
-  m_app->triggered(&ezoom);
+  m_app->trigger(&ezoom);
 }
 
 void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
@@ -213,7 +213,7 @@ void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
   m_display->setCurrentTool(zoomOut);
 
   te::qt::af::evt::ZoomOutButtonToggled ezoom;
-  m_app->triggered(&ezoom);
+  m_app->trigger(&ezoom);
 }
 
 void te::qt::af::BaseApplication::onPreviousExtentTriggered()
@@ -235,7 +235,7 @@ void te::qt::af::BaseApplication::onPanToggled(bool checked)
   m_display->setCurrentTool(pan);
 
   te::qt::af::evt::PanButtonToggled epan;
-  m_app->triggered(&epan);
+  m_app->trigger(&epan);
 }
 
 void te::qt::af::BaseApplication::onZoomExtentTriggered()
@@ -284,7 +284,7 @@ void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()
     ++it;
 
     te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
-    m_app->triggered(&e);
+    m_app->trigger(&e);
   }
 }
 
@@ -300,7 +300,7 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
   te::qt::af::evt::SelectionButtonToggled esel;
-  m_app->triggered(&esel);
+  m_app->trigger(&esel);
 }
 
 void te::qt::af::BaseApplication::onMapSRIDTriggered()
@@ -314,7 +314,7 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
   std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
 
   te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
-  m_app->triggered(&mapSRIDChagned);
+  m_app->trigger(&mapSRIDChagned);
 
   m_display->getDisplay()->setSRID(srid.first);
 }
@@ -323,7 +323,7 @@ void te::qt::af::BaseApplication::onMapSetUnknwonSRIDTriggered()
 {
   std::pair<int, std::string> srid = std::make_pair(TE_UNKNOWN_SRS, "");
   te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
-  m_app->triggered(&mapSRIDChagned);
+  m_app->trigger(&mapSRIDChagned);
 
   m_display->getDisplay()->setSRID(TE_UNKNOWN_SRS);
 }
@@ -439,7 +439,7 @@ void te::qt::af::BaseApplication::onLayerRemoveItemTriggered()
   //for (it = selectedItems.begin(); it != selectedItems.end(); ++it)
   //{
   //  te::qt::af::evt::ItemOfLayerRemoved evt((*it));
-  //  m_app->triggered(&evt);
+  //  m_app->trigger(&evt);
   //}
 }
 
@@ -811,7 +811,7 @@ void te::qt::af::BaseApplication::onLayerSelectedObjectsChanged(const te::map::A
   assert(layer.get());
 
   te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
-  m_app->triggered(&e);
+  m_app->trigger(&e);
 }
 
 void te::qt::af::BaseApplication::makeDialog()
