@@ -246,14 +246,14 @@ namespace te
       \brief Method used to load a triangular network (TIN)
       \return true if the TIN is loaded with no errors or false otherwise
       */
-      bool te::mnt::TINGeneration::LoadTin();
+      bool LoadTin();
 
 
       /*!
       \brief Method used to create a Triangulation using the Minimum Angle Method
       \return TRUE if the triangulation is created with no errors or FALSE otherwise
       */
-      bool te::mnt::TINGeneration::CreateMinAngleTriangulation();
+      bool CreateMinAngleTriangulation();
 
       /*!
       \brief Method used to test the angle between two normals
