@@ -17,6 +17,8 @@
 #include "../../geometry/Point.h"
 #include "../../geometry/TIN.h"
 
+#include <limits>
+
 
 te::mnt::TINGeneration::TINGeneration()
 {
@@ -485,7 +487,7 @@ bool te::mnt::TINGeneration::InsertNode(int32_t nodeId, int type)
 
   //  Test if the point is on an edge
   int nedge = -1;
-  double dmin = FLT_MAX;
+  double dmin = std::numeric_limits< float >::max();
   te::gm::PointZ paux, pmin;
   for (int j = 0; j < 3; j++)
   {
@@ -1072,8 +1074,8 @@ bool te::mnt::TINGeneration::TestDelaunay(int32_t triId, short nviz)
   int32_t  nodid, linid, neighids[3];
   te::gm::PointZ  vert[3];
   short  i;
-  double  minx = FLT_MAX,
-    miny = FLT_MAX;
+  double  minx = std::numeric_limits< float >::max(),
+    miny = std::numeric_limits< float >::max();
 
   if (triId == -1)
     return false;
@@ -1103,7 +1105,7 @@ bool te::mnt::TINGeneration::TestDelaunay(int32_t triId, short nviz)
     if (vert[i].getY() < miny)
       miny = vert[i].getY();
   }
-  if ((minx < FLT_MAX) && (miny < FLT_MAX))
+  if ((minx < std::numeric_limits< float >::max()) && (miny < std::numeric_limits< float >::max()))
   {
     for (i = 0; i < 3; i++)
     {
@@ -1984,7 +1986,7 @@ bool te::mnt::TINGeneration::InsertBreakNodes(te::gm::MultiLineString &breakline
     }
 
     // Mark last point of a line
-    te::gm::PointZ p3d(FLT_MAX, FLT_MAX, FLT_MAX);
+    te::gm::PointZ p3d(std::numeric_limits< float >::max(), std::numeric_limits< float >::max(), std::numeric_limits< float >::max());
     p3dl.push_back(p3d);
     fixed.push_back(false);
   }
@@ -2121,7 +2123,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
   // edges and the segment from first to last point.
   m_triang[ftri].LinesId(lids);
   NeighborsId(ftri, nids);
-  te::gm::PointZ pt(FLT_MAX, 0., 0.);
+  te::gm::PointZ pt(std::numeric_limits< float >::max(), 0., 0.);
   te::gm::PointZ minpt;
   int auxj = -1, j, minj;
   for (j = 0; j < 3; j++)
@@ -2147,7 +2149,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
   if (j == 3)
   {
     minj = -1;
-    mindist = FLT_MAX;
+    mindist = std::numeric_limits< float >::max();
     for (j = 0; j < 3; j++)
     {
       te::gm::PointZ pt1 = m_node[m_line[lids[j]].getNodeFrom()].getNPoint();
@@ -2310,7 +2312,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
     if (j == 3)
     {
       minj = -1;
-      mindist = FLT_MAX;
+      mindist = std::numeric_limits< float >::max();
       for (j = 0; j < 3; j++)
       {
         if (lids[j] == ledge)

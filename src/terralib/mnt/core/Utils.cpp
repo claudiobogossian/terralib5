@@ -1,6 +1,8 @@
 #include "Utils.h"
 #include "../../geometry/Point.h"
 
+#include <cmath>
+#include <limits>
 
 double te::mnt::Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2)
 {
@@ -876,11 +878,11 @@ bool te::mnt::point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<b
   for (size_t pp = 0; pp < p3dl.size(); pp++)
   {
     p3d = p3dl[pp];
-    if ((p3d.getX() >= FLT_MAX) || (npts > 199))
+    if ((p3d.getX() >= std::numeric_limits< float >::max()) || (npts > 199))
     {
       // If last point of a line
-      maxdiff = FLT_MAX;
-      maxfixptdiff = FLT_MAX;
+      maxdiff = std::numeric_limits< float >::max();
+      maxfixptdiff = std::numeric_limits< float >::max();
       j = 4;
       while ((maxdiff > tol) && (maxfixptdiff > tol) &&
         (j > 3) && (npts > 3))
@@ -952,7 +954,7 @@ bool te::mnt::point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<b
       (p3d.getY() - y0)*(p3d.getY() - y0));
     if (npts > 0)
       vectd[npts] += vectd[npts - 1];
-    if (p3d.getZ() < FLT_MAX)
+    if (p3d.getZ() < std::numeric_limits< float >::max())
       ptype[npts] = 1;
     else
       ptype[npts] = 0;
