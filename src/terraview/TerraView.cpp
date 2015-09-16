@@ -1873,13 +1873,13 @@ void TerraView::onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, 
   assert(dataset);
 
   te::qt::af::evt::HighlightLayerObjects e(layer, dataset, color);
-  m_app->triggered(&e);
+  m_app->trigger(&e);
 }
 
 void TerraView::onCreateNewLayer(te::map::AbstractLayerPtr layer)
 {
   te::qt::af::evt::LayerAdded evt(layer);
-  m_app->triggered(&evt);
+  m_app->trigger(&evt);
 }
 
 

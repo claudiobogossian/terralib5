@@ -376,6 +376,9 @@ namespace te
 
         public:
 
+
+          void trigger(te::qt::af::evt::Event*);
+
           /*!
             \brief Returns the application name.
 

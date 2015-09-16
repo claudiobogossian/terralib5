@@ -91,7 +91,7 @@ void te::qt::af::TableWidget::saveChanges()
 
   te::qt::af::evt::TableAlternatingColorsChanged tableAlternatingColorsChanged(isChecked, m_primaryColor, m_secondaryColor);
 
-  m_app->triggered(&tableAlternatingColorsChanged);
+  m_app->trigger(&tableAlternatingColorsChanged);
 
   changeApplyButtonState(false);
 }

@@ -72,8 +72,6 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QToolBar>
-#include <QStandardPaths>
-
 
 void te::qt::af::UpdateUserSettings()
 {
