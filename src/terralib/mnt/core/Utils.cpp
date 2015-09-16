@@ -1,6 +1,8 @@
 #include "Utils.h"
 #include "../../geometry/Point.h"
 
+#include <stdint.h>
+
 
 double te::mnt::Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2)
 {
