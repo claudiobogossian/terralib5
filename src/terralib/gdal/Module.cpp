@@ -41,6 +41,7 @@
 
 // STL
 #include <cstdlib>
+#include <iostream>
 
 // GDAL
 #include <gdal_priv.h>
@@ -58,14 +59,12 @@ void te::gdal::Module::startup()
 {
   if(m_initialized)
     return;
-  
-// for all platforms, first look at TERRALIB_GDAL_DATA detected by CMAKE
-// note: installed versions on developers machine may look for this version of GDAL
-  std::string gdal_data_dir(TERRALIB_GDAL_DATA);
-  
-  if(gdal_data_dir.empty())
-  {
-// search for GDAL in TerraLib PATH
+
+// Set the GDAL_DATA directory
+  std::string gdal_data_dir;
+
+// Search for the GDAL_DATA directory using the utility function te::common::FindInTerraLibPath.
+// Note: This directory must be found by this utility function for the TerraLib installation phase.
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
     gdal_data_dir = te::common::FindInTerraLibPath("/share/data");
 #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
@@ -75,12 +74,15 @@ void te::gdal::Module::startup()
 #else
     #error "unsupported plataform: please, contact terralib-team@terralib.org"
 #endif
-  }
-  
-  if(!gdal_data_dir.empty())
+
+  if(gdal_data_dir.empty())
   {
-    CPLSetConfigOption("GDAL_DATA", gdal_data_dir.c_str());
+// If the GDAL_DATA directory is not detected, set this directory as TERRALIB_GDAL_DATA
+// that was set by CMAKE (development version of TerraLib)
+    gdal_data_dir = TERRALIB_GDAL_DATA;
   }
+
+  CPLSetConfigOption("GDAL_DATA", gdal_data_dir.c_str());
 
   CPLSetConfigOption("GDAL_PAM_ENABLED", "NO");
 
