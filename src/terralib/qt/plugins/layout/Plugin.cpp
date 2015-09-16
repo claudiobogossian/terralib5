@@ -139,7 +139,7 @@ void te::qt::plugins::layout::Plugin::startup()
 
   evt.m_actions.push_back(act);
 
-  emit triggered(&evt);
+  te::qt::af::AppCtrlSingleton::getInstance().trigger(&evt);
 
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_layout->getAction());
 }
