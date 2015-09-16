@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
+#include <QDialog>
 
 ProjectInfoDialog::ProjectInfoDialog(QWidget* parent) :
 QDialog(parent)

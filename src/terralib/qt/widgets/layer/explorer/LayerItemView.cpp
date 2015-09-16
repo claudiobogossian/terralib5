@@ -211,10 +211,17 @@ void te::qt::widgets::LayerItemView::updateLegend(te::map::AbstractLayer* l)
     LayerItem* li = static_cast<LayerItem*>(lIdx.internalPointer());
     li->updateLegend();
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+
     QVector<int> roles;
+
     roles << Qt::DecorationRole;
 
     dataChanged(lIdx.child(0, 0), lIdx.child(0, 0), roles);
+#else
+    dataChanged(lIdx.child(0, 0), lIdx.child(0, 0));
+#endif
+
   }
 }
 
