@@ -42,11 +42,16 @@ void te::qt::widgets::LayerViewDelegate::paint(QPainter * painter, const QStyleO
 
   QSize s(20, 20);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
   if(opt.icon.isNull())
     opt.icon = ic;
+#endif
 
   opt.decorationSize = s;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
   opt.features |= QStyleOptionViewItem::HasDecoration;
+#endif
 
   if(m_decorated != 0)
   {

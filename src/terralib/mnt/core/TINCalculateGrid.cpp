@@ -13,6 +13,8 @@
 #include "../../raster/Grid.h"
 #include "../../raster/RasterFactory.h"
 
+#include <limits>
+
 
 /*!
 \brief Method that generates a regular Grid from a given TIN
@@ -152,8 +154,8 @@ bool te::mnt::TINCalculateGrid::DefineInterLinesColumns(int32_t *nodesid, int32_
   double rx1 = m_rst->getExtent()->getLowerLeftX() + m_resx/2;
   double ry2 = m_rst->getExtent()->getUpperRightY() - m_resy/2;
 
-  te::gm::Point llpt(FLT_MAX, FLT_MAX);
-  te::gm::Point urpt(-FLT_MAX, -FLT_MAX);
+  te::gm::Point llpt(std::numeric_limits< float >::max(), std::numeric_limits< float >::max());
+  te::gm::Point urpt(-std::numeric_limits< float >::max(), -std::numeric_limits< float >::max());
   for (size_t j = 0; j < 3; j++)
   {
     llpt = Min(llpt, m_node[nodesid[j]].getNPoint());

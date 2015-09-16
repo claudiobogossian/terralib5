@@ -38,6 +38,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <list>
 #include <memory>
 
+#ifndef Q_DECL_OVERRIDE
+  #define Q_DECL_OVERRIDE
+#endif
+
+
 // Forward declarations
 namespace te
 {

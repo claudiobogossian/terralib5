@@ -71,8 +71,6 @@ void te::qt::plugins::layout::Plugin::startup()
   if(m_initialized)
     return;
 
-  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
-
 // it initializes the Translator support for the TerraLib LayoutEditor Qt Plugin
   TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_LAYOUT_TEXT_DOMAIN, TE_QT_PLUGIN_LAYOUT_TEXT_DOMAIN_DIR, "UTF-8");
 
@@ -139,7 +137,7 @@ void te::qt::plugins::layout::Plugin::startup()
 
   evt.m_actions.push_back(act);
 
-  emit triggered(&evt);
+  te::qt::af::AppCtrlSingleton::getInstance().trigger(&evt);
 
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_layout->getAction());
 }

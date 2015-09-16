@@ -53,8 +53,6 @@ namespace te
 
         class Plugin : public QObject, public te::plugin::Plugin
         {
-          Q_OBJECT
-
           public:
 
             Plugin(const te::plugin::PluginInfo& pluginInfo);
@@ -78,10 +76,6 @@ namespace te
 
             */
             void unRegisterActions();
-
-          Q_SIGNALS:
-
-            void triggered(te::qt::af::evt::Event* e);
 
           protected:
 
