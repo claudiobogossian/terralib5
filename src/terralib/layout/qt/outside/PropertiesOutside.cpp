@@ -330,7 +330,9 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
         connectItem = pConnectItemPos.getValue().toBool();
         if(connectItem == true)
         {
-          selectedItem->setPos(mapItem->pos());
+          //We must move the selected item to the position of the map in scene coordinate system
+
+          selectedItem->setPos(mapItem->scenePos());
           listItemsToConnect.push_back(selectedItem);
         }
       }
@@ -339,7 +341,17 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
 
   if(listItemsToConnect.empty() == false)
   {
-    listItemsToConnect.push_front(mapItem);
+    //checks if the map item is already in a group
+    QGraphicsItemGroup* group = mapItem->group();
+    if(group != 0)
+    {
+      listItemsToConnect.push_front(group);
+    }
+    else
+    {
+      listItemsToConnect.push_front(mapItem);
+    }
+    
     Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
     if(lScene != 0)
     {
