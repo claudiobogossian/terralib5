@@ -21,6 +21,8 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 
+#include <limits>
+
 bool te::mnt::TinLine::operator== (const TinLine &rhs) const
 {
   if ((this->m_nodefrom != rhs.m_nodefrom) ||
@@ -1328,7 +1330,7 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
     {
       TinNode nd;
       te::gm::Point *p = lr->getPointN(j);
-      val[j] = val[j] > zmax || val[j] < zmin || val[j] > FLT_MAX ? m_nodatavalue : val[j];
+      val[j] = val[j] > zmax || val[j] < zmin || val[j] > std::numeric_limits< float >::max() ? m_nodatavalue : val[j];
 
       if (val[j] != m_nodatavalue)
       {

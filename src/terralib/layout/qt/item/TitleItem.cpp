@@ -28,8 +28,8 @@
 // TerraLib
 #include "TitleItem.h"
 
-te::layout::TitleItem::TitleItem(AbstractItemController* controller, bool invertedMatrix) :
-  TextItem(controller, invertedMatrix)
+te::layout::TitleItem::TitleItem(AbstractItemController* controller) 
+  : TextItem(controller)
 {
 }
 

@@ -52,7 +52,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        TitleItem(AbstractItemController* controller, bool invertedMatrix = false);
+        TitleItem(AbstractItemController* controller);
 
         /*!
           \brief Destructor
