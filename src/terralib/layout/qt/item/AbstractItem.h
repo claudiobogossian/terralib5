@@ -303,6 +303,8 @@ namespace te
         return;
       }
 
+      painter->save();
+
       //Draws the background
       drawBackground( painter );
 
@@ -317,6 +319,8 @@ namespace te
       {
         drawSelection(painter);
       }
+
+      painter->restore();
     }
 
     template <class T>
@@ -337,7 +341,7 @@ namespace te
 
       QRectF bRect = boundingRect();
 
-      const qreal adj = penWidth / 2.;
+      qreal adj = penWidth / 2.;
       QRectF rectAdjusted = bRect.adjusted(adj, adj, -adj, -adj);
 
       return rectAdjusted;
@@ -384,11 +388,14 @@ namespace te
       }
 
       const Property& pFrameColor = m_controller->getProperty("frame_color");
+      const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
       const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+      double frameThickness = pFrameThickness.getValue().toDouble();
+
       QColor qFrameColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
 
       painter->save();
-      QPen pen(qFrameColor, 0, Qt::SolidLine);
+      QPen pen(qFrameColor, frameThickness, Qt::SolidLine);
       painter->setPen(pen);
       painter->setBrush(Qt::NoBrush);
       painter->setRenderHint( QPainter::Antialiasing, true );
@@ -410,12 +417,15 @@ namespace te
         return;
       }
 
+      const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
+      double frameThickness = pFrameThickness.getValue().toDouble();
+
       painter->save();
 
       const QColor fgcolor(0,255,0);
       const QColor backgroundColor(0,0,0);
 
-      QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+      QPen penBackground(backgroundColor, frameThickness, Qt::SolidLine);
       painter->setPen(penBackground);
       painter->setBrush(Qt::NoBrush);
 
@@ -423,30 +433,26 @@ namespace te
       QRectF rectAdjusted = getAdjustedBoundingRect(painter);
       painter->drawRect(rectAdjusted);
 
-      QPen penForeground(fgcolor, 0, Qt::DashLine);
+      QPen penForeground(fgcolor, frameThickness, Qt::DashLine);
       painter->setPen(penForeground);
       painter->setBrush(Qt::NoBrush);
 
       //gets the adjusted boundigng rectangle based of the painter settings
-      rectAdjusted = getAdjustedBoundingRect(painter);
       painter->drawRect(rectAdjusted);
 
       painter->setPen(Qt::NoPen);
       QBrush brushEllipse(fgcolor);
       painter->setBrush(fgcolor);
 
-      //gets the adjusted boundigng rectangle based of the painter settings
-      rectAdjusted = getAdjustedBoundingRect(painter);
-
-      double w = 2.0;
-      double h = 2.0;
-      double half = 1.0;
+      double w = 2.;
+      double h = 2.;
+      double half = 1.;
 
       painter->drawRect(rectAdjusted.center().x() - half, rectAdjusted.center().y() - half, w, h); // center
-      painter->drawRect(rectAdjusted.bottomLeft().x(), rectAdjusted.bottomLeft().y() - h, w, h); // left-top
-      painter->drawRect(rectAdjusted.bottomRight().x() - w, rectAdjusted.bottomRight().y() - h, w, h); // right-top
+      painter->drawRect(rectAdjusted.bottomLeft().x(), rectAdjusted.bottomLeft().y() - half, w, h); // left-top
+      painter->drawRect(rectAdjusted.bottomRight().x() - half, rectAdjusted.bottomRight().y() - half, w, h); // right-top
       painter->drawRect(rectAdjusted.topLeft().x(), rectAdjusted.topLeft().y(), w, h); // left-bottom
-      painter->drawRect(rectAdjusted.topRight().x() - w, rectAdjusted.topRight().y(), w, h); // right-bottom
+      painter->drawRect(rectAdjusted.topRight().x() - half, rectAdjusted.topRight().y(), w, h); // right-bottom
 
       painter->restore();
     }
