@@ -346,7 +346,19 @@ bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVaria
   else if(property.getType() == dataType->getDataTypeStringList())
   {    
     addAttribute(vproperty, property);
-    vproperty->setValue(property.getOptionByCurrentChoice().toString().c_str());
+
+    std::string currentValue = property.getOptionByCurrentChoice().toString();
+
+    std::vector<Variant> vecChoices = property.getOptionChoices();
+    for(size_t i = 0; i < vecChoices.size(); ++i)
+    {
+      if(currentValue == vecChoices[i].toString())
+      {
+        QVariant vValue((int)i);
+        vproperty->setValue(vValue);
+        break;
+      }
+    }
   }
   else if(property.getType() == dataType->getDataTypeGroup())
   {    

@@ -31,8 +31,8 @@
 // Qt
 #include <QStyleOptionGraphicsItem>
 
-te::layout::BarCodeItem::BarCodeItem(AbstractItemController* controller, bool invertedMatrix) :
-  TextItem(controller, invertedMatrix)
+te::layout::BarCodeItem::BarCodeItem(AbstractItemController* controller) 
+  : TextItem(controller)
 {
  
 }

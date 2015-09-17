@@ -139,7 +139,7 @@ void SaveTIN_shp(std::string dir, std::string out, std::auto_ptr<geos::geom::Geo
   connInfo["URI"] = filename;
   connInfo["DRIVER"] = "ESRI Shapefile";
 
-  te::da::DataSourcePtr datasource = te::da::DataSourceFactory::make("OGR");
+  std::auto_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR");
   datasource->setConnectionInfo(connInfo);
   datasource->open();
 

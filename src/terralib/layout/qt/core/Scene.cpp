@@ -345,10 +345,40 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 {
   this->clearSelection();
 
-  //The scene create a new group with important restriction
-  QGraphicsItemGroup* p = QGraphicsScene::createItemGroup(items);
+  QList<QGraphicsItem*> listUngroupedItems;
 
   EnumObjectType* object = Enums::getInstance().getEnumObjectType();
+  size_t size = items.size();
+  size_t groupCount = 0;
+  for(int i = 0; i <  items.size(); ++i)
+  {
+    QGraphicsItem* item = items[i];
+    AbstractItemView* view = dynamic_cast<AbstractItemView*>(item);
+    if(view == 0)
+    {
+      listUngroupedItems.append(item);
+      continue;
+    }
+
+    if(view->getController()->getProperties().getTypeObj() == object->getItemGroup())
+    {
+      QList<QGraphicsItem*> childItems = item->childItems();
+      foreach (QGraphicsItem* childItem, childItems)
+      {
+        listUngroupedItems.append(childItem);
+      }
+
+      destroyItemGroup((QGraphicsItemGroup*) item);
+    }
+    else
+    {
+      listUngroupedItems.append(item);
+    }
+  }
+
+
+  //The scene create a new group with important restriction
+  QGraphicsItemGroup* p = QGraphicsScene::createItemGroup(listUngroupedItems);
 
   BuildGraphicsItem build(this);
   
@@ -357,9 +387,9 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 
   double x = 0.;
   double y = 0.;
-  for(int i = 0; i <  items.size(); ++i)
+  for(int i = 0; i <  listUngroupedItems.size(); ++i)
   {
-    QGraphicsItem* currentItem = items[i];
+    QGraphicsItem* currentItem = listUngroupedItems[i];
     if(i == 0)
     {
       x = currentItem->pos().x();

@@ -39,6 +39,7 @@
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/AbstractScene.h"
 #include "../../core/property/Property.h"
+#include "../../core/pattern/singleton/Context.h"
 
 //Qt
 #include <QPainter>
@@ -298,6 +299,7 @@ namespace te
       if (m_currentAction == RESIZE_ACTION)
       {
         drawItemResized(painter, option, widget);
+        drawFrame(painter);
         return;
       }
 
@@ -680,13 +682,24 @@ inline void te::layout::AbstractItem<T>::drawItemResized( QPainter * painter, co
 template <class T>
 inline void te::layout::AbstractItem<T>::setPixmap()
 {
-  //Utils* utils = Context::getInstance().getUtils();
-  //te::gm::Envelope box(0, 0, boundingRect().width(), boundingRect().height());
-  //box = utils->viewportBox(box);
-  m_clonePixmap = QPixmap(/*box.getWidth(), box.getHeight()*/boundingRect().width(), boundingRect().height());
+  Utils* utils = Context::getInstance().getUtils();
+  QRectF itemBounding = boundingRect();
+  te::gm::Envelope box(0, 0, itemBounding.width(), itemBounding.height());
+  box = utils->viewportBox(box);
+  m_clonePixmap = QPixmap(box.getWidth(), box.getHeight());
   QPainter p(&m_clonePixmap);
+  double resX = box.getWidth() / itemBounding.width();
+  double resY = box.getHeight() / itemBounding.height();
+  QTransform transform;
+  transform.scale(resX, -resY);
+  transform.translate(-itemBounding.bottomLeft().x(), -itemBounding.bottomLeft().y());
+  p.setTransform(transform);
   QStyleOptionGraphicsItem opt;
   this->drawItem(&p, &opt, 0);
+  p.end();
+  QImage image = m_clonePixmap.toImage();
+  image = image.mirrored();
+  m_clonePixmap = QPixmap::fromImage(image);
 }
 
 template <class T>

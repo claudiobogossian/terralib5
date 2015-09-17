@@ -30,6 +30,8 @@
 #include "TextController.h"
 #include "../../item/TextModel.h"
 #include "../../qt/core/Scene.h"
+#include "../core/ItemUtils.h"
+#include "../../core/pattern/singleton/Context.h"
 
 // STL
 #include <string>
@@ -44,12 +46,18 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
 
-te::layout::TextItem::TextItem(AbstractItemController* controller, bool invertedMatrix)
-  : AbstractItem<QGraphicsTextItem>(controller, true)
+te::layout::TextItem::TextItem(AbstractItemController* controller)
+  : AbstractItem<QGraphicsTextItem>(controller, false)
 {  
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(false);
   setCursor(Qt::ArrowCursor); // default cursor
+
+  QTransform trans;
+  trans.scale(1, -1);
+  trans.translate(0, -boundingRect().height());
+
+  this->setTransform(trans, true);
 
   connect(document(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateGeometry(int, int, int)));
 }
@@ -63,31 +71,6 @@ void te::layout::TextItem::drawItem( QPainter * painter, const QStyleOptionGraph
 {
   //asks the item to paint itself
   QGraphicsTextItem::paint(painter, option, widget);
-}
-
-QVariant te::layout::TextItem::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
-{
-  if(change == QGraphicsItem::ItemSceneHasChanged)
-  {
-    Scene* myScene = dynamic_cast<Scene*>(this->scene());
-    if(myScene != 0)
-    {
-      QTransform transfView = myScene->sceneTransform();
-      QTransform transfItem = this->transform();
-      if(transfItem != transfView.inverted())
-      {
-        QTransform transf = transfView.inverted();
-        this->setTransform(transf);
-
-        TextController* controller = dynamic_cast<TextController*>(m_controller);
-        if(controller != 0)
-        {
-          controller->sceneChanged();
-        }
-      }
-    }
-  }
-  return AbstractItem<QGraphicsTextItem>::itemChange(change, value);
 }
 
 void te::layout::TextItem::mousePressEvent(QGraphicsSceneMouseEvent * event)

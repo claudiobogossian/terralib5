@@ -88,7 +88,9 @@ namespace te
 
           std::string getConnInfoAsString();
 
-          void setConnInfo(const std::map<std::string, std::string>& conninfo);
+          void setConnInfo(const std::map<std::string, std::string>& connInfo);
+
+          void setConnInfoFromString(const std::string& conninfo);
 
           bool operator<(const DataSourceInfo& rhs) const;
 

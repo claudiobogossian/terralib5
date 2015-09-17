@@ -46,7 +46,7 @@ namespace te
     {
       public:
 
-        BarCodeItem(AbstractItemController* controller, bool invertedMatrix = false);
+        BarCodeItem(AbstractItemController* controller);
 
         virtual ~BarCodeItem();
         

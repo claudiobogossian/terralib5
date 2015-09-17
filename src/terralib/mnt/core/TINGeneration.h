@@ -4,7 +4,8 @@
 
 \brief This file contains a class to generate TIN.
  Adapted from SPRING
-*/
+
+ */
 
 #ifndef __TERRALIB_MNT_INTERNAL_TINGENERATION_H
 #define __TERRALIB_MNT_INTERNAL_TINGENERATION_H
@@ -26,6 +27,10 @@ namespace te
   namespace mnt
   {
     
+    /*!
+    \enum InputType
+    \brief Input types.
+    */
     enum InputType
     {
       Isolines,
@@ -36,6 +41,8 @@ namespace te
 
     \brief Class to generate TIN.
 
+    \ingroup mnt
+
     */
     class TEMNTEXPORT TINGeneration : public Tin
     {
@@ -45,17 +52,48 @@ namespace te
 
       ~TINGeneration();
 
+      /*!
+      \brief Generate TIN
+      \ return true or false.
+      */
       bool run();
 
+      /*!
+      \brief It sets the Datasource that is being used to generate TIN.
+      \param inDsrc The datasource being used.
+      \param inDsetName datasource name
+      \param inDsetType input DataSetType
+      \param type Input type: Sample or Isoline
+      */
       void setInput(te::da::DataSourcePtr inDsrc,
         std::string inDsetName,
         std::auto_ptr<te::da::DataSetType> inDsetType,
         InputType type);
 
+      /*!
+      \brief It sets the  BreakLine Datasource that is being used to generate TIN.
+      \param inDsrc The datasource contains breaklines.
+      \param inDsetName
+      \param inDsetType
+      \param tol breaklines simplification tolerance in meters.
+      */
       void setBreakLine(te::da::DataSourcePtr inDsrc, std::string inDsetName, std::auto_ptr<te::da::DataSetType> inDsetType, double tol);
 
+      /*!
+      \brief It sets the Datasource that is being used to save TIN.
+      \param inDsrc The output datasource.
+      \param dsname
+      */
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
+      /*!
+      \brief It sets the parameters to generate TIN.
+      \param tolerance lines simplification tolerance in meters.
+      \param maxdist lines simplification maximum distance in meters.
+      \param minedgesize edges minimum size in meters.
+      \param atrz_iso isolines attribute contains Z value.
+      \param atrz_pt samples  attribute contains Z value.
+      */
       void setParams(const double& tolerance,
         const double &maxdist,
         const double &minedgesize,
@@ -70,6 +108,7 @@ namespace te
       /*! Function used to set Triangulation edges minimum size */
       void setMinedgesize(double minedgesize) { m_minedgesize = minedgesize; };
 
+      /*! Function used to set Triangulation method Delanay or Smaller Angle */
       void setMethod(int method) { m_method = method; }
 
     protected:
@@ -246,14 +285,14 @@ namespace te
       \brief Method used to load a triangular network (TIN)
       \return true if the TIN is loaded with no errors or false otherwise
       */
-      bool te::mnt::TINGeneration::LoadTin();
+      bool LoadTin();
 
 
       /*!
       \brief Method used to create a Triangulation using the Minimum Angle Method
       \return TRUE if the triangulation is created with no errors or FALSE otherwise
       */
-      bool te::mnt::TINGeneration::CreateMinAngleTriangulation();
+      bool CreateMinAngleTriangulation();
 
       /*!
       \brief Method used to test the angle between two normals

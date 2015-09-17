@@ -69,7 +69,7 @@ namespace te
         /*!
           \brief Method called by the view to inform that the extent and scale have been changed
         */
-        virtual void extentChanged(const te::gm::Envelope& envelope, double scale);
+        virtual void extentChanged(const te::gm::Envelope& envelope, double scale, int srid);
 
         virtual void setZoom(const int& zoom);
 
@@ -77,7 +77,7 @@ namespace te
 
         virtual void setProperties(const Properties& properties);
 
-        virtual Properties getExtentChangedProperties(const te::gm::Envelope& envelope, double scale);
+        virtual Properties getExtentChangedProperties(const te::gm::Envelope& envelope, double scale, int srid);
 
         /*!
           \brief Checks if the given property is a property to be sync with the map display
