@@ -309,12 +309,9 @@ void te::qt::widgets::TimeSliderWidget::onRemovePushButtonClicked(bool)
 
 void te::qt::widgets::TimeSliderWidget::onRemoveAllPushButtonClicked(bool)
 {
-  while(true)
+  while(m_spd->m_ui->m_animationComboBox->count() != 0)
   {
     int ind = m_spd->m_ui->m_animationComboBox->currentIndex();
-    if(ind == -1)
-      break;
-    m_animationIdList.removeAt(ind);
     removeAnimation(ind);
   }
 }
@@ -947,11 +944,11 @@ void te::qt::widgets::TimeSliderWidget::onDisplayPaintEvent(QPainter* painter)
       AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
       if(ai->pixmap().isNull())
       {
-        // draw only the items that are within the time frame 
-        te::dt::TimeInstant tini = ai->m_animationTime.first();
-        te::dt::TimeInstant tfim = ai->m_animationTime.last();
-        if(t < tini || t > tfim)
-          continue;
+        //// draw only the items that are within the time frame 
+        //te::dt::TimeInstant tini = ai->m_animationTime.first();
+        //te::dt::TimeInstant tfim = ai->m_animationTime.last();
+        //if(t < tini || t > tfim)
+        //  outOfTime = true;
 
         // draw pixmap itens
         ImageItem* pi = dynamic_cast<ImageItem*>(ai);
