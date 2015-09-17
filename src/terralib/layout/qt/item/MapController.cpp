@@ -55,14 +55,14 @@ void te::layout::MapController::addLayers(const std::list<te::map::AbstractLayer
   setProperty(property);
 }
 
-void te::layout::MapController::extentChanged(const te::gm::Envelope& envelope, double scale)
+void te::layout::MapController::extentChanged(const te::gm::Envelope& envelope, double scale, int srid)
 {
   if(m_ignoreExtentChangedEvent == true)
   {
     return;
   }
 
-  Properties properties = getExtentChangedProperties(envelope, scale);
+  Properties properties = getExtentChangedProperties(envelope, scale, srid);
   if(properties.getProperties().empty() == false)
   {
     AbstractItemController::setProperties(properties);
@@ -96,7 +96,7 @@ void te::layout::MapController::setProperty(const te::layout::Property& property
 
   if(wasSync == true)
   {
-    Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale());
+    Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale(), mapDisplay->getSRID());
     AbstractItemController::setProperties(extentChangedProperties);
 
     view->doRefresh();
@@ -139,7 +139,7 @@ void te::layout::MapController::setProperties(const te::layout::Properties& prop
 
   if(wasSync == true)
   {
-    Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale());
+    Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale(), mapDisplay->getSRID());
     for(size_t j = 0; j < extentChangedProperties.getProperties().size(); ++j)
     {
       propertiesCopy.addProperty(extentChangedProperties.getProperties()[j]);
@@ -210,15 +210,17 @@ bool te::layout::MapController::syncMapDisplayProperty(const te::layout::Propert
   return false;
 }
 
-te::layout::Properties te::layout::MapController::getExtentChangedProperties(const te::gm::Envelope& envelope, double scale)
+te::layout::Properties te::layout::MapController::getExtentChangedProperties(const te::gm::Envelope& envelope, double scale, int srid)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   const Property& pWorldBox = getProperty("world_box");
   const Property& pScale = getProperty("scale");
+  const Property& pSrid = getProperty("srid");
 
   te::gm::Envelope currentEnvelope = pWorldBox.getValue().toEnvelope();
   double currentScale = pScale.getValue().toDouble();
+  int currentSrid =  pSrid.getValue().toInt();
 
   Properties properties("");
   if(envelope.equals(currentEnvelope) == false)
@@ -235,6 +237,14 @@ te::layout::Properties te::layout::MapController::getExtentChangedProperties(con
     property.setName("scale");
     scale = scale * (m_zoom / 100.);
     property.setValue(scale, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+
+  if(srid != currentSrid)
+  {
+    Property property;
+    property.setName("srid");
+    property.setValue(srid, dataType->getDataTypeInt());
     properties.addProperty(property);
   }
 
