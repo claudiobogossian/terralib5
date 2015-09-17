@@ -29,6 +29,8 @@
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
 #include "../core/form/AbstractFormItem.h"
+#include "../core/form/Form.h"
+#include "../core/form/Section.h"
 #include "../Config.h"
 
 // STL
@@ -89,6 +91,7 @@ namespace te
             std::list<te::map::AbstractLayerPtr> m_list;
 
             std::map<std::string, Section*> m_sectionsMap;
+            te::qt::plugins::terramobile::Section* m_section;
 
             te::qt::plugins::terramobile::Form* m_curForm;
             te::qt::plugins::terramobile::AbstractFormItem* m_curFormItem;

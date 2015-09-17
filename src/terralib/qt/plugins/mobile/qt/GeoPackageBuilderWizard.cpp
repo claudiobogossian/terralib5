@@ -29,12 +29,14 @@
 #include "../../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../gdal/Utils.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../widgets/utils/DoubleListWidget.h"
 #include "../../../widgets/utils/ScopedCursor.h"
+#include "../core/form/Serializer.h"
 #include "BuilderGatheringLayersWizardPage.h"
 #include "BuilderInputLayersWizardPage.h"
 #include "BuilderFormsWizardPage.h"
@@ -273,7 +275,6 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   //get forms
   std::map<std::string, Section*> sectionsMap = m_formsPage->getSections();
-  //std::string jsonStr = te::qt::plugins::terramobile::Write(m_section);
 
   te::gdal::createGeopackage(gpkgName);
 
@@ -284,6 +285,25 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("OGR");
   dsGPKG->setConnectionInfo(connInfo);
   dsGPKG->open();
+
+  std::string sql1 = "CREATE TABLE IF NOT EXISTS tm_style(layer_name TEXT PRIMARY KEY NOT NULL, sld_xml TEXT); ";
+  std::string sql2 = "CREATE TABLE IF NOT EXISTS tm_layer_form ";
+  sql2 += "(tm_conf_id INTEGER PRIMARY KEY AUTOINCREMENT, gpkg_layer_identify TEXT NOT NULL, tm_form TEXT, ";
+  sql2 += "CONSTRAINT fk_layer_identify_id FOREIGN KEY (gpkg_layer_identify) REFERENCES gpkg_contents(table_name));";
+  
+  std::auto_ptr<te::da::DataSourceTransactor> transactor = dsGPKG->getTransactor();
+
+  try
+  {
+    transactor->execute(sql1);
+    transactor->execute(sql2);
+    transactor->commit();
+  }
+  catch (...)
+  {
+    transactor->rollBack();
+    throw;
+  }
 
   std::list<te::map::AbstractLayerPtr> inputLayers = getInputLayers();
   std::list<te::map::AbstractLayerPtr> gatheringLayers = getGatheringLayers();
@@ -298,17 +318,30 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
     exportToGPKG(*it, dsGPKG.get(), gpkgName);
+    std::string name = (*it)->getSchema()->getName();
   }
 
-  bool visibleArea = m_outputPage->useVisibleArea();
-  if (visibleArea)
+  std::map<std::string, Section*>::iterator itb = sectionsMap.begin();
+  std::map<std::string, Section*>::iterator ite = sectionsMap.end();
+
+  while (itb != ite)
   {
-    std::string query = "create table if not exists VISIBLE_AREA (LLX real not null, LLY real not null, URX real not null, URY real not null);";
-    te::gdal::queryGeopackage(gpkgName, query);
-  }
+    std::string jsonStr = te::qt::plugins::terramobile::Write(itb->second);
 
-  std::string query = "create table if not exists TM_STYLE (LAYER_NAME text primary key not null, SLD_XML text);";
-  te::gdal::queryGeopackage(gpkgName, query);
+    std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form' )  values('" + itb->first + "', '" + jsonStr + "');";
+
+    try
+    {
+      transactor->execute(insert);
+      transactor->commit();
+    }
+    catch (...)
+    {
+      transactor->rollBack();
+      throw;
+    }
+    ++itb;
+  }
 
   return true;
 }

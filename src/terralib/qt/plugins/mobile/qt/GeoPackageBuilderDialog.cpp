@@ -1014,7 +1014,6 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::onOkPushButtonClicke
       transactor->rollBack();
       throw;
     }
-
   }
 
   this->accept();
