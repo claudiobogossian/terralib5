@@ -3,6 +3,7 @@
 
 \brief This file contains a class to generate isolines from a TIN.
 Adapted from SPRING
+
 */
 
 #ifndef __TERRALIB_MNT_INTERNAL_TINCREATEISOLINES_H
@@ -25,6 +26,8 @@ namespace te
     \class TINCreateIsolines
 
     \brief Class to generate isolines from TIN.
+
+    \ingroup mnt
 
     */
     class TEMNTEXPORT TINCreateIsolines : public Tin
