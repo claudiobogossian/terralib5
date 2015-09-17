@@ -4,7 +4,8 @@
 
 \brief This file contains a class to generate TIN.
  Adapted from SPRING
-*/
+
+ */
 
 #ifndef __TERRALIB_MNT_INTERNAL_TINGENERATION_H
 #define __TERRALIB_MNT_INTERNAL_TINGENERATION_H
@@ -26,6 +27,10 @@ namespace te
   namespace mnt
   {
     
+    /*!
+    \enum InputType
+    \brief Input types.
+    */
     enum InputType
     {
       Isolines,
@@ -36,6 +41,8 @@ namespace te
 
     \brief Class to generate TIN.
 
+    \ingroup mnt
+
     */
     class TEMNTEXPORT TINGeneration : public Tin
     {
@@ -45,15 +52,48 @@ namespace te
 
       ~TINGeneration();
 
+      /*!
+      \brief Generate TIN
+      \ return true or false.
+      */
       bool run();
 
+      /*!
+      \brief It sets the Datasource that is being used to generate TIN.
+      \param inDsrc The datasource being used.
+      \param inDsetName datasource name
+      \param inDsetType input DataSetType
+      \param type Input type: Sample or Isoline
+      */
       void setInput(te::da::DataSourcePtr inDsrc,
         std::string inDsetName,
         std::auto_ptr<te::da::DataSetType> inDsetType,
         InputType type);
 
+      /*!
+      \brief It sets the  BreakLine Datasource that is being used to generate TIN.
+      \param inDsrc The datasource contains breaklines.
+      \param inDsetName
+      \param inDsetType
+      \param tol breaklines simplification tolerance in meters.
+      */
+      void setBreakLine(te::da::DataSourcePtr inDsrc, std::string inDsetName, std::auto_ptr<te::da::DataSetType> inDsetType, double tol);
+
+      /*!
+      \brief It sets the Datasource that is being used to save TIN.
+      \param inDsrc The output datasource.
+      \param dsname
+      */
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
+      /*!
+      \brief It sets the parameters to generate TIN.
+      \param tolerance lines simplification tolerance in meters.
+      \param maxdist lines simplification maximum distance in meters.
+      \param minedgesize edges minimum size in meters.
+      \param atrz_iso isolines attribute contains Z value.
+      \param atrz_pt samples  attribute contains Z value.
+      */
       void setParams(const double& tolerance,
         const double &maxdist,
         const double &minedgesize,
@@ -68,10 +108,15 @@ namespace te
       /*! Function used to set Triangulation edges minimum size */
       void setMinedgesize(double minedgesize) { m_minedgesize = minedgesize; };
 
+      /*! Function used to set Triangulation method Delanay or Smaller Angle */
+      void setMethod(int method) { m_method = method; }
+
     protected:
       size_t ReadPoints(te::gm::MultiPoint &mpt, std::string &geostype);
 
       size_t ReadSamples(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
+
+      size_t ReadBreakLines(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
 
       /*! Create the two initial triangles, based on box.*/
       bool CreateInitialTriangles(size_t nsamples);
@@ -240,7 +285,91 @@ namespace te
       \brief Method used to load a triangular network (TIN)
       \return true if the TIN is loaded with no errors or false otherwise
       */
-      bool te::mnt::TINGeneration::LoadTin();
+      bool LoadTin();
+
+
+      /*!
+      \brief Method used to create a Triangulation using the Minimum Angle Method
+      \return TRUE if the triangulation is created with no errors or FALSE otherwise
+      */
+      bool CreateMinAngleTriangulation();
+
+      /*!
+      \brief Method used to test the angle between two normals
+      \param triId is the triangle identification number
+      \param nviz  is the number of the neighbour triangle
+      \return TRUE if the angle is smaller than old triangles or FALSE otherwise
+      */
+      bool TestAngleBetweenNormals(int32_t triId, short nviz);
+      bool InsertBreakNodes(te::gm::MultiLineString &breaklines);
+      bool InsertBreakLines();
+
+
+      /*!
+      \brief Method fint the point that intersects two triangles containing points pf and pn
+      \param pf is a pointer to the first point
+      \param pn is a pointer to the last point
+      \param p3d is a pointer to a list of Point3d objects
+      \return TRUE if the point is found with no errors or FALSE otherwise
+      */
+      bool FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ &pn, std::vector<te::gm::PointZ> &p3d, std::vector<bool> &fixed);
+
+      /*!
+      \brief Method that checks if a point 3D is on the isoline segment
+      \param linid is the line identification number
+      \param pt3d is a pointer to a list of Point3D objects
+      \return TRUE if the point is on the isoline segment or FALSE otherwise
+      */
+      bool OnIsolineSegment(int32_t linid, te::gm::PointZ &pt3d, bool &fixed);
+
+      /*!
+      \brief Method that evaluates Z values for pt1 and pt2 using the Akima polynomium fitted in a triangle
+      \param triid is the triangle identificator number
+      \param pt1 is a pointer to a Point3d object
+      \param pt2 is a pointer to a Point3d object
+      \return TRUE always
+      */
+      bool CalcZvalueAkima(int32_t triid, te::gm::PointZ &pt1, te::gm::PointZ &pt2);
+
+      /*!
+      \brief Method that defines the coefficients of the Akima polynomium fitted in a given triangle
+      \param triid is the triangle identification number
+      \param coef is a pointer to a double vector containing the polynomium coefficients
+      \return TRUE if the coefficients are determined with no errors or FALSE otherwise
+      */
+      bool DefineAkimaCoeficients(int32_t triid, double *coef);
+
+      /*!
+      \brief Method that defines the coefficients of the Akima polynomium fitted in a given triangle
+      \param triid is the triangle identification number
+      \param nodesid is the list of triangle nodes identification
+      \param p3d is a pointer to a Point3d object
+      \param coef is a pointer to a double vector containing the polynomium coefficients
+      \return TRUE if the coefficients are determined with no errors or FALSE otherwise
+      */
+      bool DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef);
+
+      /*!
+      \brief Method that order lines
+      \return TRUE if the lines were ordered with no errors or FALSE otherwise
+      */
+      bool OrderLines();
+
+      /*!
+      \brief Method that recreates a Delaunay triangulation
+      \return TRUE if the triangulation is recreated with no errors or False otherwise
+      */
+      bool ReCreateDelaunay();
+
+
+      /*!
+      \brief Method that regenerates a Delaunay triangulation
+      \param nt is the triangle number
+      \param ntbase is the base triangle number
+      \param contr is a counter
+      \return TRUE if the triangulation is regenerated with no errors or False otherwise
+      */
+      bool ReGenerateDelaunay(int32_t nt, int32_t ntbase, int32_t contr);
 
     protected:
 
@@ -251,6 +380,10 @@ namespace te
       te::da::DataSourcePtr m_inDsrc_point;
       std::string m_inDsetName_point;
       std::auto_ptr<te::da::DataSetType> m_inDsetType_point;
+
+      te::da::DataSourcePtr m_inDsrc_break;
+      std::string m_inDsetName_break;
+      std::auto_ptr<te::da::DataSetType> m_inDsetType_break;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDsetName;
@@ -264,6 +397,10 @@ namespace te
       double m_tolerance; //!< Triangulation lines simplification tolerance.
       double m_maxdist; //!< Triangulation lines simplification maximum distance.
       double m_minedgesize; //!< Triangulation edges minimum size.
+   
+      double m_tolerance_break; //!< Triangulation breaklines simplification tolerance.
+
+      int m_method; //!< Triangulation method Delanay or Smaller Angle
     };
   } // end namespace mnt
 } // end namespace te

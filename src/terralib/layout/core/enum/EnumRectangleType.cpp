@@ -31,8 +31,8 @@
 te::layout::EnumRectangleType::EnumRectangleType() :
   m_noneType(0),
   m_simpleRect(0),
-	m_roundedRect(0),
-	m_singleCornerTrimmedRect(0)
+  m_roundedRect(0),
+  m_singleCornerTrimmedRect(0)
 {
   init();
 }
@@ -50,7 +50,7 @@ void te::layout::EnumRectangleType::init()
 
   m_roundedRect = createEnum("Rounded Rectangle", this);
 
-	m_singleCornerTrimmedRect = createEnum("Single Corner Trimmed Rectangle", this);
+  m_singleCornerTrimmedRect = createEnum("Single Corner Trimmed Rectangle", this);
 }
 
 te::layout::EnumType* te::layout::EnumRectangleType::getNoneType() const
@@ -70,5 +70,5 @@ te::layout::EnumType* te::layout::EnumRectangleType::getRoundedRetangleType() co
 
 te::layout::EnumType* te::layout::EnumRectangleType::getSingleCornerTrimmedRectangleType() const
 {
-	return m_singleCornerTrimmedRect;
+  return m_singleCornerTrimmedRect;
 }

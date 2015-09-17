@@ -72,7 +72,7 @@ void te::qt::af::DisplayWidget::saveChanges()
 
   te::qt::af::evt::MapColorChanged mapColorChanged(m_ui->m_backColor->palette().color(QPalette::Window));
 
-  m_app->triggered(&mapColorChanged);
+  m_app->trigger(&mapColorChanged);
 
   changeApplyButtonState(false);
 }

@@ -36,7 +36,7 @@ namespace te
   namespace layout
   {
 
-	/*!
+  /*!
       \class AbstractBuildGraphicsOutside
 
       \brief Abstract class for build MVC widgets.  
@@ -47,13 +47,13 @@ namespace te
     class TELAYOUTEXPORT AbstractBuildGraphicsOutside
     {
       public:
-	  
-	      /*!
+    
+        /*!
           \brief Constructor
         */       
         AbstractBuildGraphicsOutside();
-		
-		    /*!
+    
+        /*!
           \brief Destructor
         */
         virtual ~AbstractBuildGraphicsOutside();

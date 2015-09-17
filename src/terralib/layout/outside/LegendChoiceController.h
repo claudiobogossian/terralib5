@@ -29,21 +29,22 @@
 #define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHOICE_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
-#include "../core/property/Property.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT LegendChoiceController : public OutsideController
+    class AbstractOutsideModel;
+
+    class TELAYOUTEXPORT LegendChoiceController : public AbstractOutsideController
     {
       public:
 
-	      LegendChoiceController( Observable* o );
+        LegendChoiceController(AbstractOutsideModel* o);
 
-	      virtual ~LegendChoiceController();
+        virtual ~LegendChoiceController();
     };
   }
 }

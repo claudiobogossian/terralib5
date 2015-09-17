@@ -27,30 +27,15 @@
 
 // TerraLib
 #include "TemplateFactory.h"
-#include "JSONTemplate.h"
-#include "../enum/Enums.h"
-
-te::layout::TemplateFactory::TemplateFactory()
-{
-
-}
 
 te::layout::TemplateFactory::~TemplateFactory()
 {
 
 }
 
-te::layout::AbstractTemplate* te::layout::TemplateFactory::make( EnumType* type, TemplateParamsCreate params /*= LayoutTemplateParamsCreate()*/ )
+te::layout::TemplateFactory::TemplateFactory(const std::string& factoryKey)
+: te::common::ParameterizedAbstractFactory<AbstractTemplate, std::string, TemplateFactoryParamsCreate>(factoryKey)
 {
-  AbstractTemplate* item = 0;
 
-  EnumTemplateType* typeTemplate = Enums::getInstance().getEnumTemplateType();
-
-  if(type == typeTemplate->getJsonType())
-  {
-    JSONTemplate* jsonTemplate = new JSONTemplate(params.getPath());
-    item = (AbstractTemplate*)jsonTemplate;
-  }
-  
-  return item;
 }
+

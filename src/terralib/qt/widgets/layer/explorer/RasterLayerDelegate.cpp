@@ -31,9 +31,20 @@ void te::qt::widgets::RasterLayerDelegate::paint(QPainter * painter, const QStyl
     {
       QStyleOptionViewItem opt = option;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+
       opt.icon = QIcon(QIcon::fromTheme("file-raster"));
+
+#endif
+
       opt.decorationSize = QSize(20, 20);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+
       opt.features |= QStyleOptionViewItem::HasDecoration;
+
+#endif
+
       opt.font.setItalic(true);
       opt.palette.setColor(QPalette::Text, Qt::red);
 

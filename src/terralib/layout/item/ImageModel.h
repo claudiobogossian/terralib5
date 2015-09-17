@@ -31,31 +31,26 @@
 #define __TERRALIB_LAYOUT_INTERNAL_IMAGE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../../maptools/Enums.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/Config.h"
-
-// STL
-#include <string>
 
 namespace te
 {
   namespace layout
   {
     /*!
-      \brief Class that represents a "Model" part of Image MVC component. 
+      \brief Class that represents a "Model" part of Arrow MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          This is also son of AbstractItemModel, so it can become observable.
+          
+      \ingroup layout
 
-      \sa te::layout::ItemModelObservable
-	  */
-    class TELAYOUTEXPORT ImageModel : public ItemModelObservable
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT ImageModel : public AbstractItemModel
     {
       public:
-
+           
         /*!
           \brief Constructor
         */
@@ -65,52 +60,9 @@ namespace te
           \brief Destructor
         */ 
         virtual ~ImageModel();
-
-        /*!
-          \brief Reimplemented from ItemModelObservable
-         */
-        virtual te::layout::Properties* getProperties() const;
-
-        /*!
-          \brief Reimplemented from ItemModelObservable
-         */
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);   
-        
-        /*!
-          \brief Change file name
-
-          \param fileName file name
-         */
-        virtual void setFileName(const std::string& fileName);
-
-        /*!
-          \brief Change file name
-
-          \param fileName file name
-         */
-        virtual const std::string& getFileName() const;
-        
-        /*!
-          \brief Returns the file extension.
-
-          \param file extension
-         */
-        virtual const std::string& getFileExtension() const;
-
-        /*!
-          \brief Returns the type of the image.
-
-          \return type of the image
-         */
-        virtual te::map::ImageType getFileType();
-
-      protected:
-        
-        std::string m_fileName; //!< full path where the file is
-        std::string m_fileExtension; //!< file extension
-        te::map::ImageType m_imgType; //!< image type
     };
   }
 }
 
 #endif 
+

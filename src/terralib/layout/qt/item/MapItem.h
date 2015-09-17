@@ -24,7 +24,7 @@
    This object is of type QGraphicsProxyWidget. He have a directly interaction by user. 
    His transformation matrix is inverted, that is, the inverse of the matrix of the scene, so its coordinate system is screen (pixel), 
    but its position in the scene remains in millimeters.
-   This is also son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
+   This is also son of AbstractItem, so it can become observer of a model (Observable). "View" part of MVC component.
 
   \ingroup layout
 */
@@ -32,48 +32,45 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_ITEM_H 
 #define __TERRALIB_LAYOUT_INTERNAL_MAP_ITEM_H
 
-// Qt
-#include <QGraphicsProxyWidget>
-#include <QVariant>
-#include <QPixmap>
-
 // TerraLib
-#include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../../maptools/AbstractLayer.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
-#include "ParentItem.h"
-#include "../../../qt/widgets/tools/ZoomWheel.h"
 
-// STL
-#include <list>
+// Qt
+#include <QGraphicsObject>
 
-class QGraphicsSceneMouseEvent;
-class QMimeData;
+//class QGraphicsSceneMouseEvent;
+//class QMimeData;
 class QVariant;
 
 namespace te
 {
+  namespace qt
+  {
+    namespace widgets
+    {
+      class MapDisplay;
+      class Pan;
+      class ZoomWheel;
+    }
+  }
+
   namespace layout
   {
-    class Observable;
-    class ItemController;
-    class EnumType;
-
+    class AbstractItemController;
     /*!
     \brief This class is a proxy MapDisplay. This makes it possible to add a MapDisplay as item of a scene. 
     This object is of type QGraphicsProxyWidget. He have a directly interaction by user. 
     His transformation matrix is inverted, that is, the inverse of the matrix of the scene, so its coordinate system is screen (pixel), 
     but its position in the scene remains in millimeters.
     Drawing starting point is llx, lly.
-    He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
+    He is also the son of AbstractItem, so it can become observer of a model (Observable). "View" part of MVC component.
     
     \ingroup layout
 
-    \sa te::layout::ItemObserver
+    \sa te::layout::AbstractItem
   */
-    class TELAYOUTEXPORT MapItem : public ParentItem<QGraphicsProxyWidget>
+    class TELAYOUTEXPORT MapItem : public AbstractItem<QGraphicsObject>
     {
       Q_OBJECT //for slots/signals
 
@@ -85,157 +82,82 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        MapItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        MapItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
         */ 
         virtual ~MapItem();
-        
-        /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual void updateObserver(ContextItem context);
 
-        void setPixmap( const QPixmap& pixmap );
-               
-        virtual void changeCurrentTool(EnumType* mode);
+        virtual te::qt::widgets::MapDisplay* getMapDisplay();
 
-        void clearCurrentTool();
+        virtual void contextUpdated(const ContextObject& context);
 
         /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
-        
-        /*!
-          \brief Reimplemented from ParentItem
-         */
-        virtual QRectF boundingRect() const;
-
-        /*!
-          \brief Redraws the graphic component.
+          \brief For any specific drawing, the item must reimplement this function
         */
-        virtual void redraw(bool bRefresh = true);
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
-          \brief Reimplemented from ParentItem.
-         */
-        virtual bool canBeChild(ItemObserver* item);
-                                        
-
-        virtual void contextUpdated();
-
-        virtual void updateScale();
-
-      protected slots:
-
-          void onDrawLayersFinished(const QMap<QString, QString>& errors);
-          
-      protected:
-      
-        /*!
-            \brief Reimplemented from QGraphicsProxyWidget
-         */
-        virtual void  dropEvent ( QGraphicsSceneDragDropEvent * event );
+          \brief Reimplemented from QGraphicsItem to capture changes in the item
+        */
+        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
         /*!
-            \brief Reimplemented from QGraphicsProxyWidget
-         */
-        virtual void  mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-
-        /*!
-            \brief Reimplemented from QGraphicsProxyWidget
-         */
+           \brief Reimplemented from QGraphicsProxyWidget
+        */
         virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
             \brief Reimplemented from QGraphicsProxyWidget
-         */
+          */
+        virtual void  mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
+        /*!
+            \brief Reimplemented from QGraphicsProxyWidget
+          */
         virtual void  mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
-            \brief Reimplemented from QGraphicsProxyWidget
-         */
-        virtual void	wheelEvent ( QGraphicsSceneWheelEvent * event );
-
-        /*!
-            \brief Reimplemented from QGraphicsProxyWidget
-         */
+          \brief Reimplemented from QGraphicsProxyWidget
+        */
         virtual void  dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
 
         /*!
-            \brief Reimplemented from QGraphicsProxyWidget
+          \brief Reimplemented from QGraphicsProxyWidget
          */
-        virtual void  dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
-
+        virtual void  dropEvent ( QGraphicsSceneDragDropEvent * event );
+        
         /*!
-            \brief Reimplemented from QGraphicsProxyWidget
-         */
-        virtual void  dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
-                  
-        /*!
-            \brief Reimplemented from ItemObserver
-         */
-        virtual te::gm::Coord2D getPosition();
+          \brief Reimplemented from QGraphicsProxyWidget
+        */
+        virtual void  wheelEvent ( QGraphicsSceneWheelEvent * event );
 
-        virtual void drawItem(QPainter * painter);
-
-        /*!
-            \brief Reimplemented from ParentItem
-         */
-        virtual void drawBackground( QPainter* painter );
-
-        /*!
-            \brief Reimplemented from ParentItem
-         */
-        virtual void drawSelection(QPainter* painter);
-
-        /*!
-            \brief Reimplemented from ParentItem
-         */
-        virtual void drawBorder(QPainter* painter);
-
-        virtual void getMimeData(const QMimeData* mime);
-
-        std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
-            
-        void setCurrentTool(te::qt::widgets::AbstractTool* tool);
-      
-        virtual QImage generateImage();
-
-        virtual void calculateFrameMargin();
-
-        virtual void generateMapPixmap();        
-
-        virtual void recalculateBoundingRect();
-
-        virtual void updateMapDisplay();
-
-        virtual bool reloadLayers(bool draw = true);
-
-        virtual bool hasListLayerChanged();
-
-        /*!
-            \brief Reimplemented from ParentItem
-         */
-        virtual bool checkTouchesCorner(const double& x, const double& y);
+        virtual void doRefresh();
 
       protected:
 
-        QSize                                         m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
-        QMimeData*                                    m_mime;      
-        te::qt::widgets::MapDisplay*                  m_mapDisplay;
-        bool                                          m_grabbedByWidget;
-        te::qt::widgets::AbstractTool*                m_tool;
-        double                                        m_wMargin;
-        double                                        m_hMargin;
-        te::qt::widgets::ZoomWheel*                   m_zoomWheel;
-        bool                                          m_pixmapIsDirty;
-        std::list<te::map::AbstractLayerPtr>          m_oldLayers;
-        int                                           m_currentMapScale;
-        int                                           m_oldMapScale;
-        bool                                          m_forceMapRefresh;
+        virtual void enterEditionMode();
+
+        virtual void leaveEditionMode();
+
+        virtual QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRectF& widget) const;
+
+    protected slots:
+
+        void extentChanged();
+
+        virtual void  dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
+
+        virtual void  dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
+
+      protected:
+
+        virtual void resized();
+
+        te::qt::widgets::MapDisplay*  m_mapDisplay;
+        te::qt::widgets::Pan*         m_pan;
+        te::qt::widgets::ZoomWheel*   m_zoomWheel;
     };
   }
 }

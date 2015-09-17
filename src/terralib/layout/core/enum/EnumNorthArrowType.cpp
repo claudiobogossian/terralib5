@@ -31,8 +31,8 @@
 te::layout::EnumNorthArrowType::EnumNorthArrowType() :
   m_noneType(0),
   m_northArrow1(0),
-	m_northArrow2(0),
-	m_northArrow3(0)
+  m_northArrow2(0),
+  m_northArrow3(0)
 {
   init();
 }
@@ -50,7 +50,7 @@ void te::layout::EnumNorthArrowType::init()
 
   m_northArrow2 = createEnum("North Arrow 2", this);
 
-	m_northArrow3 = createEnum("North Arrow 3", this);
+  m_northArrow3 = createEnum("North Arrow 3", this);
 
 }
 
@@ -71,5 +71,5 @@ te::layout::EnumType* te::layout::EnumNorthArrowType::getNorthArrowType2() const
 
 te::layout::EnumType* te::layout::EnumNorthArrowType::getNorthArrowType3() const
 {
-	return m_northArrow3;
+  return m_northArrow3;
 }

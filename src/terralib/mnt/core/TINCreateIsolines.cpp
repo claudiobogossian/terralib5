@@ -38,7 +38,7 @@ bool te::mnt::TINCreateIsolines::run()
   {
     cvalue = m_values[v];
 
-    for (size_t i = 1; i < m_triang.size(); i++)
+    for (size_t i = 0; i < m_triang.size(); i++)
     {
       if (!NodesId((int32_t)i, nodesid))
         continue;

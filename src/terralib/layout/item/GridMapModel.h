@@ -31,6 +31,11 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRIDMAP_MODEL_H
 
 // TerraLib
+#include "../core/pattern/mvc/AbstractItemModel.h"
+#include "../core/Config.h"
+
+/*
+// TerraLib
 #include "../core/property/Properties.h"
 #include "../../maptools/Canvas.h"
 #include "../../maptools/Enums.h"
@@ -49,22 +54,24 @@
 #include <map>
 #include <string>
 
+*/
+
 namespace te
 {
   namespace layout
   {
-    class GridSettingsConfigProperties;
+    //class GridSettingsConfigProperties;
 
     /*!
       \brief Class that represents a "Model" part of GridMap MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          He is also the son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          He is also the son of AbstractItemModel, so it can become observable.
+          
+      \ingroup layout
 
-      \sa te::layout::ItemModelObservable
-	  */
-    class TELAYOUTEXPORT GridMapModel : public ItemModelObservable, public AbstractVisitor
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT GridMapModel : public AbstractItemModel
     {
       public:
 
@@ -76,12 +83,14 @@ namespace te
         /*!
           \brief Constructor
         */
-        GridMapModel(GridSettingsConfigProperties* settingsConfig);
+        //GridMapModel(GridSettingsConfigProperties* settingsConfig);
 
         /*!
           \brief Destructor
         */ 
         virtual ~GridMapModel();
+
+        /*
 
         virtual Properties* getProperties() const;
 
@@ -172,12 +181,13 @@ namespace te
         virtual bool isTopRotateText();
 
         virtual double getCrossOffSet();
+        
 
       protected:
 
         virtual void init();
 
-        virtual void visitDependent(ContextItem context);
+        //virtual void visitDependent(ContextItem context);
 
         virtual void calculateGaps(te::gm::Envelope box);
 
@@ -197,27 +207,27 @@ namespace te
         double                                  m_mapDisplacementX;
         double                                  m_mapDisplacementY;
 
-        /* Grid */
+        // Grid
         bool                                    m_visible;
         double                                  m_lneHrzGap;
         double                                  m_lneVrtGap;
         double                                  m_initialGridPointX; 
         double                                  m_initialGridPointY;
 
-        /* Just one is visible */
+        // Just one is visible
         EnumType*                               m_gridStyle;
 
-        /* Line */
+        // Line
         EnumType*                               m_lineStyle;
         te::color::RGBAColor                    m_lineColor;
         int                                     m_lineWidth;
 
-        /* Text: Basic Configuration */
+        // Text: Basic Configuration
         int                                     m_pointTextSize;
         std::string                             m_fontText;
         te::color::RGBAColor                    m_textColor;
 
-        /* Text: Advanced configuration */
+        // Text: Advanced configuration
         bool                                    m_visibleAllTexts;
         bool                                    m_superscriptText;
         double                                  m_lneVrtDisplacement;
@@ -232,6 +242,7 @@ namespace te
         bool                                    m_topRotateText;  
 
         double                                  m_crossOffSet;
+        */
     };
   }
 }

@@ -27,22 +27,13 @@
 
 // TerraLib
 #include "ImageItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/ImageModel.h"
 
 // Qt
 #include <QStyleOptionGraphicsItem>
 
-te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o, bool invertedMatrix ) 
-  : ObjectItem(controller, o, invertedMatrix)
+te::layout::ImageItem::ImageItem(AbstractItemController* controller)
+: AbstractItem<QGraphicsItem>(controller)
 {
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::ImageItem::~ImageItem()
@@ -50,44 +41,62 @@ te::layout::ImageItem::~ImageItem()
 
 }
 
-void te::layout::ImageItem::updateObserver(ContextItem context)
+const std::string& te::layout::ImageItem::getFileName() const
 {
-  if(!m_model)
-    return;
-
-  ImageModel* model = dynamic_cast<ImageModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  const std::string& fileName = model->getFileName();
-  if(fileName.compare("") == 0)
+  return m_fileName;
+}
+void te::layout::ImageItem::setFileName(const std::string& fileName)
+{
+  m_fileName = fileName;
+  if (m_fileName.empty() == true)
   {
     m_image = QImage();
-    return;
   }
-
-  QImage img(fileName.c_str());
-  m_image = img.mirrored();
-
-  ObjectItem::updateObserver(context);
+  else
+  {
+    if (m_image.load(m_fileName.c_str()) == true)
+    {
+      m_image = m_image.mirrored();
+    }
+  }
 }
 
-void te::layout::ImageItem::drawItem( QPainter * painter )
+void te::layout::ImageItem::drawItem(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-  if(m_image.isNull() == true)
+  painter->save();
+
+  const Property& pFrameColor = m_controller->getProperty("frame_color");
+  const te::color::RGBAColor& framwColor = pFrameColor.getValue().toColor();
+  QColor qContourColor(framwColor.getRed(), framwColor.getGreen(), framwColor.getBlue(), framwColor.getAlpha());
+
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  QRectF boundRect = boundingRect();
+
+  if (m_image.isNull() == true)
   {
+    painter->save();
+
+    painter->setPen(pen);
+
+    painter->drawRect(boundRect);
+
+    painter->restore();
+
     return;
   }
+
+  QRectF sourceRect(0, 0, m_image.width(), m_image.height());
 
   painter->save();
 
-  QRectF boundRect = boundingRect();
-  QRectF sourceRect(0, 0, m_image.width(), m_image.height());
+  painter->setPen(pen);
+  painter->setRenderHint(QPainter::Antialiasing, true);
 
   //draws the item
   painter->drawImage(boundRect, m_image, sourceRect);
 
   painter->restore();
 }
+
+

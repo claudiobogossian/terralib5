@@ -29,22 +29,38 @@
 #define __TERRALIB_LAYOUT_INTERNAL_BALLOON_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class BalloonModel : public ItemModelObservable
+
+    /*!
+      \brief Class that represents a "Model" part of Balloon MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
+          
+      \ingroup layout
+
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT BalloonModel : public AbstractItemModel
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         BalloonModel();
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~BalloonModel();
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_BALLOONLAYOUT_MODEL_H
+#endif

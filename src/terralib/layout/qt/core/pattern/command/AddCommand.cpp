@@ -27,9 +27,10 @@
 
 // TerraLib
 #include "AddCommand.h"
-#include "../../../../core/pattern/mvc/ItemObserver.h"
+#include "../../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../../../core/enum/EnumType.h"
-#include "../../../../core/pattern/mvc/Observable.h"
 #include "../../Scene.h"
 
 // Qt
@@ -92,13 +93,13 @@ QString te::layout::AddCommand::createCommandString( QGraphicsItem* item, const 
   if(!m_item)
     return QObject::tr("%1");
 
-  ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+  AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
 
   if(!obs)
     return QObject::tr("%1");
   
   return QObject::tr("%1 at (%2, %3)")
-    .arg(obs->getModel()->getType()->getName().c_str())
+    .arg(obs->getController()->getProperties().getTypeObj()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
 }
 

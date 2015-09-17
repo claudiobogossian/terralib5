@@ -139,7 +139,7 @@ void SaveTIN_shp(std::string dir, std::string out, std::auto_ptr<geos::geom::Geo
   connInfo["URI"] = filename;
   connInfo["DRIVER"] = "ESRI Shapefile";
 
-  te::da::DataSourcePtr datasource = te::da::DataSourceFactory::make("OGR");
+  std::auto_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR");
   datasource->setConnectionInfo(connInfo);
   datasource->open();
 
@@ -388,7 +388,7 @@ void GenerateIso()
   double tol = 2;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
 
   std::vector<double> val;
-  for (double n = 1010; n < 1172; n += 10)
+  for (double n = 1010; n <= 1180; n += 10)
     val.push_back(n);
 
   std::map<std::string, std::string> srcInfo;
@@ -500,11 +500,11 @@ int main(int /*argc*/, char** /*argv*/)
 
  //   TesteGEOS();
 
-    GenerateTIN();
+  //  GenerateTIN();
 
     GenerateIso();
 
-    CalculateGrid();
+  //  CalculateGrid();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

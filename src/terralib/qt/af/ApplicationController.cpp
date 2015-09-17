@@ -922,3 +922,8 @@ const QString& te::qt::af::ApplicationController::getUserDataDir() const
 {
   return m_userDataDir;
 }
+
+void te::qt::af::ApplicationController::trigger(te::qt::af::evt::Event* e)
+{
+  emit triggered(e);
+}

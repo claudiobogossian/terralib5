@@ -31,6 +31,7 @@
 // TerraLib
 #include "../../core/Config.h"
 #include "../../core/enum/AbstractType.h"
+#include "../../core/ContextObject.h"
 
 // Qt
 #include <QObject>
@@ -44,25 +45,42 @@ namespace te
 {
   namespace layout
   {
-    class PaperConfig;
-
     /*!
-	  \brief Class responsible for printing the entire content or part of the scene. As the scene is upside down, it is necessary to invert the y of the painter before printing.
-	  
-	  \ingroup layout
-	  */
+    \brief Class responsible for printing the entire content or part of the scene. As the scene is upside down, it is necessary to invert the y of the painter before printing.
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT PrintScene : public QObject
     {
       Q_OBJECT //for slots/signals
         
       public:
 
-        PrintScene( QGraphicsScene* scene, PaperConfig* config );
+        /*!
+          \brief Constructor
+      
+          \param scene
+        */
+        PrintScene( QGraphicsScene* scene );
 
+        /*!
+          \brief Destructor
+        */
         virtual ~PrintScene();
 
+        /*!
+          \brief Shows a preview window before printing(only the area corresponding to the paper).
+        */
         virtual void printPreview();
 
+        /*!
+          \brief Print the scene(only the area corresponding to the paper).
+        */
+        virtual void print();
+
+        /*!
+          \brief Export scene to pdf(only the area corresponding to the paper).
+        */
         virtual bool exportToPDF();
 
       protected slots:
@@ -75,12 +93,9 @@ namespace te
 
         virtual void renderScene( QPainter* newPainter, QPrinter* printer );
 
-        virtual void deselectAllItems();
-
-        virtual void contextUpdated();
+        virtual ContextObject createNewContext(QPrinter* printer);
 
         QGraphicsScene* m_scene;
-        PaperConfig*    m_config;
         te::layout::PrinterScene m_printState;
     };
   }

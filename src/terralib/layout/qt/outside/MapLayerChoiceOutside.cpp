@@ -24,10 +24,14 @@
 */
 
 // TerraLib
+#include "MapLayerChoiceOutside.h"
 #include "../../../common/Logger.h"
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
-#include "MapLayerChoiceOutside.h"
 #include "../../outside/MapLayerChoiceModel.h"
+#include "../../core/enum/Enums.h"
+#include "../../core/property/GenericVariant.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
+#include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "ui_MapLayerChoice.h"
 
 // STL
@@ -36,12 +40,10 @@
 // Qt
 #include <QGridLayout>
 #include <QMessageBox>
-#include "../../core/enum/Enums.h"
-#include "../../core/property/GenericVariant.h"
 
-te::layout::MapLayerChoiceOutside::MapLayerChoiceOutside(OutsideController* controller, Observable* o)
+te::layout::MapLayerChoiceOutside::MapLayerChoiceOutside(AbstractOutsideController* controller)
   : QDialog(0),
-    OutsideObserver(controller, o),
+    AbstractOutsideView(controller),
     m_ui(new Ui::MapLayerChoice)
 {
 // add controls
@@ -65,7 +67,8 @@ te::layout::MapLayerChoiceOutside::~MapLayerChoiceOutside()
 
 void te::layout::MapLayerChoiceOutside::init()
 {
-  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(m_model);
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(abstractModel);
   if(!model)
   {
     return;
@@ -112,7 +115,8 @@ void te::layout::MapLayerChoiceOutside::init()
 
 void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 {
-  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(m_model);
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(abstractModel);
   if(!model)
   {
     return;
@@ -159,15 +163,6 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 void te::layout::MapLayerChoiceOutside::onCancelPushButtonClicked()
 {
   reject();
-}
-
-void te::layout::MapLayerChoiceOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::MapLayerChoiceOutside::setPosition( const double& x, const double& y )

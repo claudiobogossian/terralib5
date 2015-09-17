@@ -29,7 +29,8 @@
 #include "PropertiesModel.h"
 #include "../core/enum/Enums.h"
 
-te::layout::PropertiesModel::PropertiesModel()
+te::layout::PropertiesModel::PropertiesModel() :
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getPropertiesWindow();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

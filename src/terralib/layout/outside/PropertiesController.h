@@ -29,20 +29,22 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PROPERTIES_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT PropertiesController : public OutsideController
+    class AbstractOutsideModel;
+
+    class TELAYOUTEXPORT PropertiesController : public AbstractOutsideController
     {
       public:
 
-	      PropertiesController( Observable* o );
+        PropertiesController(AbstractOutsideModel* o);
 
-	      virtual ~PropertiesController();
+        virtual ~PropertiesController();
     };
   }
 }

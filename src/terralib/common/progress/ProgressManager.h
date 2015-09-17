@@ -144,6 +144,8 @@ namespace te
         */
         void clearAll();
 
+        void setSuspendViewers(bool flag) { m_suspendViewers = flag; }
+
       protected:
 
         /*! \brief Default constructor. */
@@ -171,7 +173,10 @@ namespace te
         int m_taskCounter;                                //!< Counter used to generate a task id.
         int m_viewerCounter;                              //!< Counter used to generate a viewer id.
         std::map<int, TaskProgress*> m_tasks;             //!< Container with tasks.
-        std::map<int, AbstractProgressViewer*> m_viewers; //!< Container with viewers.
+        std::map<int, AbstractProgressViewer*> m_viewers; //!< Container with viewers. 
+
+        bool m_suspendViewers;
+
     };
 
   } // end namespace common

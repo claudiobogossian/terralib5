@@ -306,7 +306,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChange
     return;
   
   QMessageBox::warning(this, tr("Cellular Spaces"), tr("Unable to convert between the selected unit for the resolution and the unit of new cell layer SRS"));
-  m_ui->m_unitComboBox->setCurrentText(bbUnit->getName().c_str());
+  m_ui->m_unitComboBox->setItemText(m_ui->m_unitComboBox->currentIndex(), QString(bbUnit->getName().c_str()));
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResXLineEditEditingFinished()

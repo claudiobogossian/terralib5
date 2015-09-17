@@ -30,23 +30,25 @@
 #include "../../../core/property/Properties.h"
 #include "../../../core/enum/Enums.h"
 #include "../../../core/Font.h"
-#include "../../../core/AbstractBuildGraphicsOutside.h"
 #include "../../../core/pattern/singleton/Context.h"
-#include "../BuildGraphicsOutside.h"
 #include "../../outside/GridSettingsOutside.h"
 #include "../../../outside/GridSettingsModel.h"
-#include "../ItemUtils.h"
 #include "../../outside/MapLayerChoiceOutside.h"
 #include "../../../outside/MapLayerChoiceModel.h"
 #include "../../outside/LegendChoiceOutside.h"
 #include "../../../outside/LegendChoiceModel.h"
 #include "../../../core/pattern/proxy/AbstractProxyProject.h"
-#include "../../item/MapItem.h"
 #include "../../../item/MapModel.h"
-#include "../../outside/ColorDialogOutside.h"
 #include "../../../outside/ColorDialogModel.h"
-#include "../../outside/SVGDialogOutside.h"
 #include "../../../outside/SVGDialogModel.h"
+#include "../../../core/pattern/mvc/AbstractOutsideView.h"
+#include "../../../core/pattern/mvc/AbstractOutsideController.h"
+#include "../../../core/pattern/mvc/AbstractOutsideModel.h"
+#include "../../item/MapItem.h"
+#include "../../outside/ColorDialogOutside.h"
+#include "../../outside/SVGDialogOutside.h"
+#include "../ItemUtils.h"
+#include "../BuildGraphicsOutside.h"
 
 // STL
 #include <vector>
@@ -321,7 +323,9 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
 
   appendDialog(gridSettings);
 
-  GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(gridSettings->getModel());
+  AbstractOutsideController* abstractController = const_cast<AbstractOutsideController*>(gridSettings->getController());
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(abstractController->getModel());
+  GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(abstractModel);
   if(!model)
   {
     return;
@@ -460,7 +464,9 @@ void te::layout::DialogPropertiesBrowser::onShowColorDlg()
 
   appendDialog(colorDialog);
 
-  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(colorDialog->getModel());
+  AbstractOutsideController* abstractController = const_cast<AbstractOutsideController*>(colorDialog->getController());
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(abstractController->getModel());
+  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(abstractModel);
   if(!model)
   {
     return;
@@ -476,34 +482,37 @@ void te::layout::DialogPropertiesBrowser::onShowColorDlg()
 
 void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
 {
+
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-  if(!enumObj)
+  if (!enumObj)
   {
     return;
   }
 
   QWidget* widget = createOutside(enumObj->getMapLayerChoice());
-  if(!widget)
+  if (!widget)
   {
     return;
   }
 
   MapLayerChoiceOutside* layerChoice = dynamic_cast<MapLayerChoiceOutside*>(widget);
-  if(!layerChoice)
+  if (!layerChoice)
   {
     return;
   }
-  
+
   appendDialog(layerChoice);
 
-  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(layerChoice->getModel());
-  if(!model)
+  AbstractOutsideController* abstractController = const_cast<AbstractOutsideController*>(layerChoice->getController());
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(abstractController->getModel());
+  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(abstractModel);
+  if (!model)
   {
     return;
   }
 
   AbstractProxyProject* proxy = Context::getInstance().getProxyProject();
-  if(!proxy)
+  if (!proxy)
   {
     return;
   }
@@ -514,21 +523,21 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
   ItemUtils* utils = Context::getInstance().getItemUtils();
 
   std::vector<MapItem*> mapList = utils->getMapItemList(true);
-  
-  std::vector<Properties*> props;
+
+  std::vector<Properties> props;
 
   std::vector<MapItem*>::const_iterator it = mapList.begin();
-  for( ; it != mapList.end() ; ++it)
+  for (; it != mapList.end(); ++it)
   {
     MapItem* mIt = (*it);
-    MapModel* mapModel = dynamic_cast<MapModel*>(mIt->getModel());
-    props.push_back(mapModel->getProperties());
+    props.push_back(mIt->getController()->getProperties());
   }
 
   model->setPropertiesMaps(props);
 
   layerChoice->init();
   layerChoice->show();
+
 }
 
 void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()
@@ -553,7 +562,9 @@ void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()
 
   appendDialog(legendChoice);
 
-  LegendChoiceModel* model = dynamic_cast<LegendChoiceModel*>(legendChoice->getModel());
+  AbstractOutsideController* abstractController = const_cast<AbstractOutsideController*>(legendChoice->getController());
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(abstractController->getModel());
+  LegendChoiceModel* model = dynamic_cast<LegendChoiceModel*>(abstractModel);
   if(!model)
   {
     return;
@@ -584,7 +595,9 @@ void te::layout::DialogPropertiesBrowser::onShowViewDlg()
 
   appendDialog(svgOutside);
 
-  SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(svgOutside->getModel());
+  AbstractOutsideController* abstractController = const_cast<AbstractOutsideController*>(svgOutside->getController());
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(abstractController->getModel());
+  SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(abstractModel);
   if(!model)
   {
     return;
@@ -748,20 +761,9 @@ QWidget* te::layout::DialogPropertiesBrowser::createOutside( EnumType* enumType 
   {
     return widget;
   }
-
-  AbstractBuildGraphicsOutside* abstractBuild = Context::getInstance().getAbstractBuildGraphicsOutside();
-  if(!abstractBuild)
-  {
-    return widget;
-  }
-
-  BuildGraphicsOutside* build = dynamic_cast<BuildGraphicsOutside*>(abstractBuild);
-  if(!build)
-  {
-    return widget;
-  }
-
-  widget = build->createOuside(enumType);
+  
+  BuildGraphicsOutside build;
+  widget = build.createOuside(enumType);
   return widget;
 }
 

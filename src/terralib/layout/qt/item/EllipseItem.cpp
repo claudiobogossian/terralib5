@@ -27,19 +27,11 @@
 
 // TerraLib
 #include "EllipseItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/EllipseModel.h"
 
-te::layout::EllipseItem::EllipseItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
+te::layout::EllipseItem::EllipseItem(AbstractItemController* controller, bool invertedMatrix)
+: AbstractItem<QGraphicsItem>(controller, invertedMatrix)
 {
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::EllipseItem::~EllipseItem()
@@ -47,18 +39,15 @@ te::layout::EllipseItem::~EllipseItem()
 
 }
 
-void te::layout::EllipseItem::drawItem( QPainter * painter )
+void te::layout::EllipseItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  EllipseModel* model = dynamic_cast<EllipseModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
 
-  const te::color::RGBAColor& fillColor = model->getFillColor();
-  const te::color::RGBAColor& contourColor = model->getContourColor();
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());

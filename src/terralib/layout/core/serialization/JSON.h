@@ -45,11 +45,11 @@ namespace te
   {
     /*!
       \brief Implementation of .json for Serialization. It is a JSON file. Save or change a file .json and serializes the properties of the objects, MVC component.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
       \sa te::layout::Serialization
-	  */
+    */
     class TELAYOUTEXPORT JSON : public Serialization
     {
       public:
@@ -62,13 +62,13 @@ namespace te
 
         virtual boost::property_tree::ptree retrievePTree();
 
-        virtual std::vector<te::layout::Properties*> retrieve();
+        virtual std::vector<te::layout::Properties> retrieve();
 
         virtual bool isEmpty();
 
         virtual void loadFromPath( std::string loadPath );
 
-        virtual void loadFromProperties( std::vector<te::layout::Properties*> properties );
+        virtual void loadFromProperties( std::vector<te::layout::Properties> properties );
 
       protected:
 

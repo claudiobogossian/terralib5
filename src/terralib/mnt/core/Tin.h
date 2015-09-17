@@ -20,6 +20,9 @@ Adapted from SPRING
 
 #include <vector>
 
+const short MAXTRIANGLES = 50;
+const short CLNODES = 10;
+
 namespace te
 {
   namespace mnt
@@ -171,6 +174,24 @@ namespace te
       /*!  Get line type.*/
       Ltype getType() { return m_type; }
 
+      /*!
+      \brief Method for swap two nodes
+      \return TRUE always
+      */
+      bool SwapNode();
+
+        /*!
+      \brief Method for swap two adjacent polygons
+      \return TRUE always
+      */
+      bool SwapPolygon();
+
+      /*!
+      \brief Method for swap two nodes and two adjacent polygons
+      \return TRUE always
+      */
+      bool SwapNodePolygon();
+
     protected:
       int32_t m_nodefrom; //!<  initial node number
       int32_t m_nodeto; //!<  last node number
@@ -266,6 +287,8 @@ namespace te
     \class Tin
 
     \brief Class to define TIN strutures.
+
+    \ingroup mnt
 
     */
     class TEMNTEXPORT Tin
@@ -416,7 +439,129 @@ namespace te
       \return true always
       */
       bool ReallocateVectors(size_t nSize);
-      
+
+      /*!
+      \brief Method that calculates the first and second derivatives in the nodes of a given triangle
+      \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
+      */
+      bool NodeDerivatives();
+
+      /*!
+      \brief Method that calculates the first derivatives in the nodes of a given triangle
+      \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
+      */
+      bool TriangleFirstDeriv();
+
+      /*!
+      \brief Method that calculates the second derivatives in the nodes of a given triangle
+      \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
+      */
+      bool TriangleSecondDeriv();
+
+      /*!
+      \brief Method that calculates the first derivatives in the nodes of a given triangle
+      \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
+      */
+      bool NodeFirstDeriv();
+
+      /*!
+      \brief Method that calculates the second derivative at all triangulation nodes
+      \return TRUE if the derivatives are calculated with no errors or False otherwise
+      */
+      bool NodeSecondDeriv();
+
+      /*!
+      \brief Method that find the triangle list sharing a given node
+      \param nodeid is the node identification number
+      \param rightri is a pointer to the triangles at right side
+      \param lefttri is a pointer to the triangles at left side
+      \return TRUE if the lists are find with no errors or FALSE otherwise
+      */
+      bool NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, std::vector<int32_t> &leftri);
+
+      /*!
+      \brief Method that searches the closest points of a specific node
+      \param nid is the node identification number
+      \param clstNids is a pointer to a list of closest node identificators
+      \param useBrNode is the break nodeidentification
+      \return TRUE if the points are found with no errors or FALSE otherwise
+      */
+      bool NodeClosestPoints(int32_t nid, int32_t *clstNids, bool useBrNode = true);
+
+      /*!
+      \brief Method that calculates the first derivative in a given node
+      \param nodeid is the node identification number
+      \param clstNodes is the vector of a list of nodes)
+      \return a Point object containing the first derivative in x and y directions
+      */
+      te::gm::PointZ CalcNodeFirstDeriv(int32_t nodeId, int32_t clstNodes[CLNODES]);
+
+      /*!
+      \brief Method that calculates the second derivative in a given node
+      \param nodeid is the node identification number
+      \param clstNIds is the vector of a list of nodes identification
+      \return a Point object containing the first derivative in x and y directions
+      */
+      TinNode CalcNodeSecondDeriv(int32_t nodeId, int32_t clstNIds[CLNODES]);
+        
+        /*!
+      \brief Method that calculates the first derivatives in the nodes of a given break triangle
+      \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
+      */
+      bool BreakNodeFirstDeriv();
+
+      /*!
+      \brief Method that calculates the second derivatives in the nodes of a given break triangle
+      \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
+      */
+      bool BreakTriangleSecondDeriv();
+
+      /*!
+      \brief Method that searches the Break node closest points
+      \param nid is the node identification number
+      \param rClstNids is a pointer to a list of right node identificators
+      \param lClstNids is a pointer to a list of left node identificators
+      \return TRUE if the points are found with no errors or FALSE otherwise
+      */
+      bool BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32_t *lClstNids);
+
+      /*!
+      \brief Method that calculates the second derivatives in a node of a given triangle
+      \param nodeid is the node identification number
+      \param triangles is a pointer to a list of triangle identificators (SIDList object)
+      \param fderiv is a pointer to a Point object representing the first derivative in x and y directions
+      \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
+      */
+      bool CalcTriangleSecondDeriv(int32_t nodeid, std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv);
+
+      /*!
+      \brief Method that calculates the second derivative at all triangulation break nodes
+      \return TRUE if the derivatives are calculated with no errors or False otherwise
+      */
+      bool BreakNodeSecondDeriv();
+
+      /*!
+      \brief Method that check the topology in a triangulation
+      \return TRUE if the topology was checked with no errors or FALSE otherwise
+      */
+      bool CheckTopology();
+
+      /*!
+      \brief Method that check the lines in a triangulation
+      \return TRUE if the lines was checked with no errors or FALSE otherwise
+      */
+      bool CheckLines(int32_t trid);
+
+
+      /*!
+      \brief Method that find a line given two nodes identification
+      \param fnid is the first node identification number
+      \param snid is the second node identification number
+      \return the number of the line if it was found with no errors or FALSE (-1L) otherwise
+      */
+      int32_t FindLine(int32_t fnid, int32_t snid);
+
+
       int m_srid;                                  //!< Attribute with spatial reference information
 
       te::gm::Envelope m_env;                      //!< Attribute used to restrict the area to generate the samples.
@@ -428,6 +573,15 @@ namespace te
       std::vector<TinLine> m_line; //!< Triangulation lines vector.
       std::vector<TinTriang> m_triang; //!< Triangulation triangles vector.
       std::vector<TinNode> m_node; //!< Triangulation nodes vector.
+
+      std::vector<te::gm::PointZ> m_tfderiv; //Pointer to triangles first derivatives vector.
+      std::vector<te::gm::PointZ> m_nfderiv; //Pointer to nodes first derivatives vector.
+      std::vector<te::gm::PointZ> m_nbrfderiv; //Pointer to right side nodes first derivatives vector.
+      std::vector<te::gm::PointZ> m_nblfderiv; //Pointer to left side nodes first derivatives vector.
+      std::vector<TinNode> m_tsderiv; //Pointer to triangles second derivatives vector.
+      std::vector<TinNode> m_nsderiv; //Pointer to nodes second derivatives vector.
+      std::vector<TinNode> m_nbrsderiv; //Pointer to right side nodes second derivatives vector.
+      std::vector<TinNode> m_nblsderiv; //Pointer to left side nodes second derivatives vector.
 
       int32_t m_fbnode; //!<First break node number.
       int32_t m_lnode; //!<Triangulation last node number.

@@ -22,7 +22,7 @@
    
    \brief Class that represents a "Model" part of Map MVC component.  
    Its coordinate system is the same of scene (millimeters). 
-   This is also son of ItemModelObservable, so it can become observable, and son of Visitable, so it can become visitable.
+   This is also son of AbstractItemModel, so it can become observable.
 
   \ingroup layout
 */
@@ -31,12 +31,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/derivativevisitor/Visitable.h"
-#include "../../maptools/AbstractLayer.h"
-#include "../../common/UnitOfMeasure.h"
-#include "../../geometry/Point.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/Config.h"
 
 // STL
@@ -54,13 +49,13 @@ namespace te
     /*!
     \brief Class that represents a "Model" part of Map MVC component.  
     Its coordinate system is the same of scene (millimeters). 
-    This is also son of ItemModelObservable, so it can become observable, and son of Visitable, so it can become visitable.
+    This is also son of AbstractItemModel, so it can become observable.
           
       \ingroup layout
 
-      \sa te::layout::ItemModelObservable , te::layout::Visitable
+      \sa te::layout::AbstractItemModel
     */
-    class TELAYOUTEXPORT MapModel : public ItemModelObservable, public Visitable
+    class TELAYOUTEXPORT MapModel : public AbstractItemModel
     {
       public:
 
@@ -74,6 +69,18 @@ namespace te
         */ 
         virtual ~MapModel();
 
+        virtual void setProperty(const Property& property);
+
+        virtual void setProperties(const Properties& properties);
+
+        /*!
+          \brief Handles the newLayer list, defining the new information related to the world box, srid, etc.
+                 The output of this function is the set of parameters changed by the new layer list.
+                 This set of properties returned does not include the "layers" property
+        */ 
+        virtual Properties handleNewLayerList(const Property& property);
+
+        /*
         virtual te::layout::Properties* getProperties() const;
 
         virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
@@ -158,6 +165,7 @@ namespace te
         te::gm::Envelope                        m_worldBox;
         bool                                    m_loadedLayer;
         std::vector<std::string>                m_layerNames;
+        */
     };
   }
 }

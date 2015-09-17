@@ -13,6 +13,8 @@
 
 // Qt
 #include <QMimeData>
+#include <QVector>
+#include <QStringList>
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -428,10 +430,17 @@ bool te::qt::widgets::LayerItemModel::setData(const QModelIndex& index, const QV
       l = l.child(count - 1, 0);
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+
     QVector<int> roles;
+
     roles << Qt::CheckStateRole;
 
     emit dataChanged(f, l, roles);
+
+#else
+    emit dataChanged(f, l);
+#endif
 
     emit visibilityChanged();
   }

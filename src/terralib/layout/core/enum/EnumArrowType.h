@@ -38,11 +38,11 @@ namespace te
 
     /*!
       \brief Class to represent a scale star enumeration.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumArrowType : public AbstractEnum
     {
       public:
@@ -59,32 +59,32 @@ namespace te
 
         /*!
           \brief Returns value that represents none type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNoneType() const;
         
         /*!
           \brief Returns value that represents right arrow type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getRightArrowType() const;
 
         /*!
           \brief Returns value that represents double arrow type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDoubleArrowType() const;
-					/*!
+          /*!
           \brief Returns value that represents left arrow type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getLeftArrowType() const;
-		
-			protected:
+    
+      protected:
 
         /*!
           \brief Reimplemented from AbstractEnum
@@ -95,8 +95,8 @@ namespace te
 
         EnumType* m_noneType; //!< value that represents none type belonging to enumeration
         EnumType* m_rightArrow; //!< value that represents right arrow type belonging to enumeration
-				EnumType* m_leftArrow; //!< value that represents left arrow type belonging to enumeration
-				EnumType* m_doubleArrow; //!< value that represents double arrow points type belonging to enumeration
+        EnumType* m_leftArrow; //!< value that represents left arrow type belonging to enumeration
+        EnumType* m_doubleArrow; //!< value that represents double arrow points type belonging to enumeration
  
     };
   }

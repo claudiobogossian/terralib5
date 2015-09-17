@@ -29,17 +29,15 @@
   \ingroup layout
 */
 
-#ifndef	__TERRALIB_LAYOUT_INTERNAL_SCENE_H 
+#ifndef  __TERRALIB_LAYOUT_INTERNAL_SCENE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_SCENE_H
 
 // TerraLib
+#include "../../../geometry/Envelope.h"
 #include "../../core/AbstractScene.h"
 #include "../../core/Config.h"
-#include "PrintScene.h"
-#include "AlignItems.h"
 #include "../item/MovingItemGroup.h"
-#include "../../../geometry/Envelope.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "AlignItems.h"
 
 // STL
 #include <string>
@@ -60,6 +58,8 @@ class QGraphicsItemGroup;
 class QPainter;
 class QWidget;
 class QStyleOptionGraphicsItem;
+class QGraphicsSceneMouseEvent;
+class QKeyEvent;
 
 namespace te
 {
@@ -69,25 +69,30 @@ namespace te
     class Properties;
     class VisualizationArea;
     class PaperConfig;
+    class View;
+    class AbstractItemView;
+    class ItemObserver;
+    class AbstractItemController;
+    class ContextObject;
 
-	/*!
-	  \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
+  /*!
+    \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
     The scene is not drawn, but the items that are inserted into it. She is responsible for managing items QGraphicsItem and know when and how to redrawing them.
-	  The scene has a coordinate system that is, by default, the same for all items that are inserted. 
+    The scene has a coordinate system that is, by default, the same for all items that are inserted. 
     The coordinate system of this representation is millimeters and your point 0.0 is in the bottom left(Cartesian coordinate system).
-	  The default settings of the layout module are in the object Context (singleton).
-	  
-	  \ingroup layout
+    The default settings of the layout module are in the object Context (singleton).
+    
+    \ingroup layout
 
-	  \sa te::layout::AbstractScene
-	*/
+    \sa te::layout::AbstractScene
+  */
     class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
       Q_OBJECT //for slots/signals
 
       public:
 
-		    /*!
+        /*!
           \brief Constructor
         */ 
         Scene(QObject* object = (QObject*)0);
@@ -95,46 +100,52 @@ namespace te
         /*!
           \brief Constructor. The ownership of objects passed via parameter becomes the scene.
 
-          \param align applying the alignment of one or more objects 
-          \param print printing the entire content or part of the scene
+          \param align applying the alignment of one or more objects
         */ 
-        Scene(AlignItems* align, PrintScene* print, QObject* object = 0);
+        Scene(AlignItems* align, PaperConfig* paperConfig, QObject* object = 0);
 
-		    /*!
+        /*!
           \brief Destructor
         */ 
         virtual ~Scene();
 
-		    /*!
-          \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
-		  
-		      \param item graphic object		  
-        */ 
+        /*!
+        \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
+
+        \param item graphic object
+        */
         virtual void insertItem(ItemObserver* item);
 
         /*!
           \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
-		  
-		  \param item graphic object		  
+      
+          \param item graphic object      
+        */ 
+        virtual void insertItem(AbstractItemView* item);
+
+        /*!
+          \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
+      
+      \param item graphic object      
         */ 
         virtual void insertItem(QGraphicsItem* item);
                
-		/*!
+    /*!
           \brief Method that starts the scene and configures. Calculates the transformation matrix of the scene and calculates the ratio of the size of the scene with the paper size.
-		  
-		  \param screenWMM width of physical screen in millimeters
-		  \param screenHMM height of physical screen in millimeters
+      
+      \param screenWMM width of physical screen in millimeters
+      \param screenHMM height of physical screen in millimeters
         */
-        virtual void init(double screenWMM, double screenHMM);
+        virtual void init(double screenWMM, double screenHMM, ContextObject context);
 
-		/*!
+    /*!
           \brief Method that returns the matrix transformation scene.
-		  		  
-		  \return transformation matrix
+            
+      \return transformation matrix
         */
         virtual QTransform sceneTransform();
         
-		/*!
+    /*!
           \brief Method that deletes all selected items in the scene.
         */
         virtual void deleteItems();
@@ -144,108 +155,87 @@ namespace te
         */
         virtual bool deleteItem(QGraphicsItem *item);
 
-		/*!
+    /*!
           \brief Method that removes all selected items in the scene and creates a Command to Undo/Redo of type DeleteCommand. The item is removed from the scene, but is not deleted.
         */
         virtual void removeSelectedItems();
-		
-		/*!
+    
+    /*!
           \brief Groups objects and creates a QGraphicsItemGroup object. A command Undo/Redo of type AddCommand is created.
-		  
-		  \param list of objects
-		  
-		  \return items group of objects
+      
+      \param list of objects
+      
+      \return items group of objects
         */
         virtual QGraphicsItemGroup* createItemGroup( const QList<QGraphicsItem *> & items );
 
         
         virtual te::layout::MovingItemGroup* createMovingItemGroup( const QList<QGraphicsItem*>& items);
 
-		/*!
+    /*!
           \brief Method that delete object grouping, but the individual objects continue to exist.
-		  
-		  \param group list of objects
+      
+      \param group list of objects
         */
         virtual void destroyItemGroup( QGraphicsItemGroup *group );
-
-		/*!
-          \brief Method that create a graphic object and place it in the scene. A name and a position is added. A command Undo/Redo of type AddCommand is created.
-		  
-		  \param coord Coordinated where the item is located. The coordinate should be the same scene coordinates system
-        */
-        virtual QGraphicsItem* createItem( const te::gm::Coord2D& coord );
-
-		/*!
+        
+    /*!
           \brief Method that insert command Undo/Redo of type AddCommand in the Undo/Redo stack.
-		  
-		  \param command command
+      
+      \param command command
         */
         virtual void addUndoStack( QUndoCommand* command );
 
-		/*!
+    /*!
           \brief Method that limits the size of the stack of Undo/Redo.
-		  
-		  \param limit limit
+      
+      \param limit limit
         */
         virtual void setUndoStackLimit( int limit );
 
-		/*!
+    /*!
           \brief Method that returns the size limit of the stack Undo/Redo.
-		  
-		  \return limit
+      
+      \return limit
         */
         virtual int getUndoStackLimit();
 
-		/*!
+    /*!
           \brief Method that return stack of Undo/Redo.
-		  
-		  \return stack
+      
+      \return stack
         */
         virtual QUndoStack* getUndoStack();
-		
-		/*!
+    
+    /*!
           \brief Method that resets the scene and calculates again.
-		  
-		  \param widthMM width of physical screen in millimeters
-		  \param heightMM height of physical screen in millimeters
+      
+      \param widthMM width of physical screen in millimeters
+      \param heightMM height of physical screen in millimeters
         */
         virtual void calculateSceneMeasures(double widthMM, double heightMM);
 
-		/*!
-          \brief Method that returns the object responsible for printing the scene.
-		  
-		  \return print object
-        */
-        virtual PrintScene* getPrintScene();
-
-		/*!
-          \brief Method that returns the object responsible for aligning objects in the scene.
-		  
-		  \return align object
-        */
-        virtual AlignItems* getAlignItems();
-
-		/*!
+    /*!
           \brief Method that exports all the objects in the scene to a template. Ex.: JSON.
-		  
-		  \param type type of template. Ex .: JSON type
-		  \param fileName Full path where the template is saved.
-		  
-		  \return true if exported, false otherwise
+      
+      \param type type of template. Ex .: JSON type
+      \param fileName Full path where the template is saved.
+      
+      \return true if exported, false otherwise
         */
         virtual bool exportPropertiesToTemplate(EnumType* type, std::string fileName);
 
-		/*!
+    /*!
           \brief Method that imports a template and turns it into properties. Ex.: JSON.
-		  
-		  \param type type of template. Ex .: JSON type
-		  \param fileName Full path where the template is saved
-		  
-		  \return true list of properties, false list of empty properties
+      
+      \param type type of template. Ex .: JSON type
+      \param fileName Full path where the template is saved
+      
+      \return true list of properties, false list of empty properties
         */
-        virtual std::vector<te::layout::Properties*> importTemplateToProperties(EnumType* type, std::string fileName);
+        virtual std::vector<te::layout::Properties> importTemplateToProperties(EnumType* type, std::string fileName);
         
-		/*!
+    /*!
           \brief Method that clears the scene and the stack of Undo/Redo.
         */
         virtual void reset();
@@ -259,64 +249,57 @@ namespace te
           \brief Method that delete the paper item.
         */
         virtual QGraphicsItem* getPaperItem();
-		
-		/*!
+    
+    /*!
           \brief Method that import a template and build all objects. Ex.: JSON.
-		  
-		  \param type type of template. Ex .: JSON type
-		  \param fileName Full path where the template is saved.
-		  
-		  \return true if exported, false otherwise
+      
+      \param type type of template. Ex .: JSON type
+      \param fileName Full path where the template is saved.
+      
+      \return true if exported, false otherwise
         */
         virtual bool buildTemplate(VisualizationArea* vzArea, EnumType* type, std::string fileName);
 
-		/*!
+    /*!
           \brief Redraws the Layer of the selected map.
         */
         virtual void redrawSelectionMap();
 
-		/*!
+    /*!
           \brief Saves each item in the scene as image. Ex .: .png.
-		  
-		  \param dir Full path where the images will be saved
+      
+      \param dir Full path where the images will be saved
         */
         virtual void exportItemsToImage(std::string dir);
-
-		/*!
-          \brief Reimplemented from QGraphicsScene
-        */
-        virtual bool eventFilter ( QObject * watched, QEvent * event );
-
-		/*!
+        
+    /*!
        \brief Select an item an item by name.
-		  
-		  \param name graphic object name
+      
+      \param name graphic object name
         */
         virtual void selectItem(std::string name);
     /*!
       \brief Select items by name.
-		  
-		  \param names vector with object names
+      
+      \param names vector with object names
         */
         virtual void selectItems(std::vector<std::string> names);
 
     /*!
       \brief Select items.
-		  
-		  \param items vector with QGraphicsItems
+      
+      \param items vector with QGraphicsItems
         */
         virtual void selectItems(QList<QGraphicsItem*> items);
 
    /*!
       \brief Select specified item.
-		  
-		  \param item instance of QGraphicsItem
+      
+      \param item instance of QGraphicsItem
         */
         virtual void selectItem(QGraphicsItem* item);
 
         virtual void redrawItems();
-
-        virtual void updateSelectedItemsPositions();
 
         /*
           \brief Add to stack that stores the items that are not entered into the scene.
@@ -344,55 +327,118 @@ namespace te
 
         virtual void applyPaperProportion(QSize oldPaper, QSize newPaper);
 
-      public slots:
+        /*!
+          \brief Context between te::layout::View and te::layout::Scene: zoom, dpix, dpiy, paper config and mode.
+        */
+        virtual ContextObject getContext();
+        
+        /*!
+          \brief Method that returns the object responsible for aligning objects in the scene.
+      
+          \return align object
+        */
+        virtual AlignItems* getAlignItems();
 
         /*!
-          \brief It is called immediately when the zoom factor is changed in the Context.
-
-          \param zoom current zoom factor of the layout module
-         */
-        virtual void onChangeZoomFactor(int zoom);
+          \brief Method that returns the first view in the list.
+      
+          \return view object
+        */
+        View* getView();
         
+        virtual void deselectAllItems();
+
+        /*!
+          \brief Returns paper setting. 
+      
+          \return A te::layout::PaperConfig pointer      
+        */
+        PaperConfig* getPaperConfig();
+
+        virtual void setEditionMode(bool editionMode);
+
+        bool isEditionMode();
+
+        void setContext(ContextObject context = ContextObject(0,0,0,0));
+
       signals:
 
-		 /*!
+     /*!
           \brief Issued after insertion of an item in the scene.
         */
-         void addItemFinalized();
-		
-		/*!
+         void addItemFinalized(QGraphicsItem* item);
+    
+    /*!
           \brief Issued after deleting an item in the scene.
-		  
-		  \param names names of items removed
+      
+      \param names names of items removed
         */
          void deleteFinalized(std::vector<std::string> names);
         
       protected:
 
-		/*!
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void  mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent);
+        
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void  mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent);
+        
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void  mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent);
+
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void	mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent);
+
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void	keyPressEvent(QKeyEvent * keyEvent);
+
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void drawForeground(QPainter * painter, const QRectF & rect);
+
+    /*!
           \brief Method that calculates the transformation matrix of the scene. This matrix will be set in each QGraphicsView class that watches this scene.
         */
         virtual void calculateMatrixViewScene();
 
-		/*!
+    /*!
           \brief Method that calculates the ratio of the size of the scene with the paper size. This calculation is necessary so that the paper always is centered in the scene.
-		  
-		  \param wMM width of physical screen in millimeters
-		  \param hMM height of physical screen in millimeters
+      
+      \param wMM width of physical screen in millimeters
+      \param hMM height of physical screen in millimeters
         */
         virtual void calculateWindow(double wMM, double hMM); 
 
-		/*!
+    /*!
           \brief Method that returns a list of the properties of all the graphic objects in the scene.
-		  
-		  \return list of properties
+      
+      \return list of properties
         */
-        virtual std::vector<te::layout::Properties*> getItemsProperties();
+        virtual std::vector<te::layout::Properties> getItemsProperties();
 
         virtual void applyProportionAllItems(QSize oldPaper, QSize newPaper);
 
-        virtual void updateBoxFromProperties(te::gm::Envelope box, ItemModelObservable* model);
-                
+        virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemController* controller);
+
+        virtual void changeViewMode(EnumType* mode);
+
+        virtual void enterEditionMode();
+
+        virtual void leaveEditionMode();
+
+        virtual te::gm::Envelope switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper);
+
     protected:
 
         QTransform                         m_matrix; //!< transformation matrix of the scene.
@@ -400,10 +446,13 @@ namespace te
         QUndoStack*                        m_undoStack; //!< Undo/Redo stack
         int                                m_undoStackLimit; //!< Undo/Redo limit size
         AlignItems*                        m_align; //!< object responsible for aligning objects in the scene.
-        PrintScene*                        m_print; //!< object responsible for printing the scene.
         bool                               m_moveWatched;
         std::map<QGraphicsItem*, QPointF>  m_moveWatches;
         QList<QGraphicsItem*>              m_itemStackWithoutScene; //!< Items that are not included in any scene 
+        PaperConfig*                       m_paperConfig; //!< paper settings
+        AbstractItemView*                  m_currentItemEdition;
+        bool                               m_isEditionMode;
+        ContextObject                      m_context;
     };
   }
 }

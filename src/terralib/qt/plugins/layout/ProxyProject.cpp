@@ -30,6 +30,7 @@
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
 
+
 te::qt::plugins::layout::ProxyProject::ProxyProject()
 {
   te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);

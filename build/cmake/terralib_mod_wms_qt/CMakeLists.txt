@@ -60,7 +60,7 @@ else() # QT4_FOUND
   add_definitions(${QT_DEFINITIONS})
 
   # moc'ing
-    set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/wms/qt/WMSLayerItem.h)
+    set(TERRALIB_HDRS_TO_MOC_FILES )
 
     QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 

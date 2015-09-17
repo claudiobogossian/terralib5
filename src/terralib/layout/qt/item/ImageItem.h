@@ -26,61 +26,64 @@
 
   \ingroup layout
 */
-
 #ifndef __TERRALIB_LAYOUT_INTERNAL_IMAGE_ITEM_H 
 #define __TERRALIB_LAYOUT_INTERNAL_IMAGE_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
 
-// Qt
-#include <QPixmap>
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
+    class AbstractItemController;
     /*!
-    \brief Class that represents a graphic Image. 
+    \brief Class that represents a graphic Arrow. 
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
-	  
-	    \ingroup layout
+        He is also the son of AbstractItem, so it can become observer of a model (Observable). 
+    
+      \ingroup layout
 
-	    \sa te::layout::ObjectItem
-	  */
-    class TELAYOUTEXPORT ImageItem : public ObjectItem
+      \sa te::layout::ObjectItem
+    */
+    class TELAYOUTEXPORT ImageItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
         /*!
-          \brief Constructor
+        \brief Constructor
 
-          \param controller "Controller" part of MVC component
-          \param o "Model" part of MVC component
-        */ 
-        ImageItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        \param controller "Controller" part of MVC component
+        \param o "Model" part of MVC component
+        */
+        ImageItem(AbstractItemController* controller);
 
         /*!
-          \brief Destructor
-         */
+        \brief Destructor
+        */
         virtual ~ImageItem();
 
         /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual void updateObserver(ContextItem context);
+        \brief Gets the file name of the image
+        */
+        virtual const std::string& getFileName() const;
+
+        /*!
+        \brief Sets the file name of the image
+        */
+        virtual void setFileName(const std::string& fileName);
 
       protected:
 
-        virtual void drawItem ( QPainter * painter );
+        virtual void drawItem(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
 
       protected:
 
-        QImage  m_image; //!< Represents the loaded image
+        QImage      m_image; //!< Represents the loaded image
+        std::string m_fileName; //!< The file name of the loaded image
     };
   }
 }

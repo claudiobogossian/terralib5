@@ -28,18 +28,17 @@
 // TerraLib
 #include "PropertiesOutside.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
+#include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../core/propertybrowser/PropertyBrowser.h"
 #include "../item/MapItem.h"
 #include "../../core/property/SharedProperties.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../item/MapModel.h"
 #include "../core/ItemUtils.h"
-#include "../../core/pattern/derivativevisitor/VisitorUtils.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/enum/Enums.h"
 #include "../core/pattern/command/ChangePropertyCommand.h"
 #include "../core/Scene.h"
@@ -57,17 +56,18 @@
 
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
 
-te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
-	QWidget(0),
-	OutsideObserver(controller, o),
+te::layout::PropertiesOutside::PropertiesOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser) :
+  QWidget(0),
+  AbstractOutsideView(controller),
   m_updatingValues(false),
   m_sharedProps(0),
   m_propUtils(0)
 {
-	te::gm::Envelope box = m_model->getBox();	
-	setBaseSize(box.getWidth(), box.getHeight());
-	setVisible(false);
-	setWindowTitle("Properties");
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  te::gm::Envelope box = abstractModel->getBox();
+  setBaseSize(box.getWidth(), box.getHeight());
+  setVisible(false);
+  setWindowTitle("Properties");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   m_propUtils = new PropertiesUtils;
@@ -149,19 +149,10 @@ void te::layout::PropertiesOutside::createLayout()
   setLayout(layoutAll);
 }
 
-void te::layout::PropertiesOutside::updateObserver( ContextItem context )
-{
-	setVisible(context.isShow());
-	if(context.isShow() == true)
-		show();
-	else
-		hide();
-}
-
 void te::layout::PropertiesOutside::setPosition( const double& x, const double& y )
 {
-	move(x,y);
-	refresh();
+  move(x,y);
+  refresh();
 }
 
 te::gm::Coord2D te::layout::PropertiesOutside::getPosition()
@@ -188,10 +179,10 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   m_updatingValues = false;
   bool window = false;
 
-  Properties* props = m_propUtils->intersection(graphicsItems, window);
+  Properties props = m_propUtils->intersection(graphicsItems, window);
   m_layoutPropertyBrowser->setHasWindows(window);
 
-  if(!props)
+  if(props.getProperties().empty())
     return;
 
   if(updateTree(graphicsItems, props))
@@ -207,9 +198,9 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 
   m_allItems = allItems;
 
-  m_nameLabel->setText(tr("Component::") + props->getObjectName().c_str());
+  m_nameLabel->setText(tr("Component::") + props.getObjectName().c_str());
   
-  foreach( Property prop, props->getProperties()) 
+  foreach( Property prop, props.getProperties()) 
   {
     if(!prop.isVisible())
       continue;
@@ -252,44 +243,39 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
 
   std::vector<QGraphicsItem*> commandItems;
-  std::vector<Properties*> commandOld;
-  std::vector<Properties*> commandNew;
+  std::vector<Properties> commandOld;
+  std::vector<Properties> commandNew;
 
-  foreach( QGraphicsItem *item, m_graphicsItems) 
+  foreach(QGraphicsItem* item, m_graphicsItems)
   {
     if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
+    {
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+      if (lItem)
       {
-        if(!lItem->getModel())
+        if (!lItem->getController())
         {
           continue;
         }
 
-        Properties* props = new Properties("");
-        Properties* beforeProps = lItem->getModel()->getProperties();
-        Properties* oldCommand = new Properties(*beforeProps);
-        if(props)
-        {
-          props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
-          props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
-          props->addProperty(property);
+        Properties beforeProps = lItem->getController()->getProperties();
 
-          lItem->getModel()->updateProperties(props);
+        Properties props("");
+        props.setObjectName(beforeProps.getObjectName());
+        props.setTypeObj(beforeProps.getTypeObj());
+        props.setHashCode(beforeProps.getHashCode());
+        props.addProperty(property);
 
-          if(beforeProps)
-          {
-            beforeProps = lItem->getModel()->getProperties();
-            Properties* newCommand = new Properties(*beforeProps);
-            commandItems.push_back(item);
-            commandOld.push_back(oldCommand);
-            commandNew.push_back(newCommand);
-          }
-        }       
+        lItem->getController()->setProperty(property);
+
+        Properties afterProps = lItem->getController()->getProperties();
+        commandItems.push_back(item);
+        commandOld.push_back(beforeProps);
+        commandNew.push_back(afterProps);
+
+        }
       }
-    }
-  }
+   }
 
   if(!m_graphicsItems.isEmpty())
   {
@@ -323,52 +309,65 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
   if(!iUtils)
     return;
 
-  MapItem* item = iUtils->getMapItem(name);
-  if(!item)
+  MapItem* mapItem = iUtils->getMapItem(name);
+  if(!mapItem)
     return;
 
-  ItemModelObservable* obsMdl = dynamic_cast<ItemModelObservable*>(item->getModel());
-  if(!obsMdl)
-    return;
+  QList<QGraphicsItem*> listItemsToConnect;
+  bool connectItem = false;
 
-  MapModel* model = dynamic_cast<MapModel*>(obsMdl);
- 
-  if(!model)
-    return;
+  //the selected item will now be the observer and the mapItem will be the subject
+  foreach( QGraphicsItem* selectedItem, m_graphicsItems) 
+  {
+    if(selectedItem)
+    {
+      AbstractItemView* selectedAbsView = dynamic_cast<AbstractItemView*>(selectedItem);
+      if(selectedAbsView != 0)
+      {
+        mapItem->getController()->attach(selectedAbsView->getController());
 
-  te::layout::VisitorUtils::getInstance().changeMapVisitable(m_graphicsItems, model);
-}
+        const Property& pConnectItemPos = selectedAbsView->getController()->getProperty("connect_item_position");
+        connectItem = pConnectItemPos.getValue().toBool();
+        if(connectItem == true)
+        {
+          //We must move the selected item to the position of the map in scene coordinate system
 
-te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )
-{
-  MapModel* map = 0;
+          selectedItem->setPos(mapItem->scenePos());
+          listItemsToConnect.push_back(selectedItem);
+        }
+      }
+    }
+  }
 
-  ItemUtils* iUtils = Context::getInstance().getItemUtils();
-  if(!iUtils)
-    return map;
-
-  MapItem* item = iUtils->getMapItem(nameMap);
-  if(!item)
-    return map;
-
-  ItemModelObservable* obsMdl = dynamic_cast<ItemModelObservable*>(item->getModel());
-  if(!obsMdl)
-    return map;
-
-  MapModel* model = dynamic_cast<MapModel*>(obsMdl);
-  map = model;
-
-  return map;
+  if(listItemsToConnect.empty() == false)
+  {
+    //checks if the map item is already in a group
+    QGraphicsItemGroup* group = mapItem->group();
+    if(group != 0)
+    {
+      listItemsToConnect.push_front(group);
+    }
+    else
+    {
+      listItemsToConnect.push_front(mapItem);
+    }
+    
+    Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+    if(lScene != 0)
+    {
+      lScene->createItemGroup(listItemsToConnect);
+    }
+  }
 }
 
 void te::layout::PropertiesOutside::refreshOutside()
 {
   bool window = false;
 
-  Properties* props = m_propUtils->intersection(m_graphicsItems, window);
+  Properties props = m_propUtils->intersection(m_graphicsItems, window);
   m_layoutPropertyBrowser->setHasWindows(window);
 
-  if(!props)
+  if(props.getProperties().empty())
     return;
 
   updatePropertyBrowser(props);
@@ -379,7 +378,7 @@ void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
   clearAll();
 }
 
-void te::layout::PropertiesOutside::updatePropertyBrowser( Properties* props )
+void te::layout::PropertiesOutside::updatePropertyBrowser( Properties props )
 {
   m_layoutPropertyBrowser->updateProperties(props);
 }
@@ -393,7 +392,7 @@ void te::layout::PropertiesOutside::clearAll()
   m_allItems.clear();
 }
 
-bool te::layout::PropertiesOutside::updateTree( QList<QGraphicsItem*> graphicsItems, Properties* props )
+bool te::layout::PropertiesOutside::updateTree( QList<QGraphicsItem*> graphicsItems, Properties props )
 {
   bool result = false;
 
