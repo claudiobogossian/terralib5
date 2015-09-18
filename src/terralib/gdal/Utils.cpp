@@ -990,3 +990,39 @@ const std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseEx
   return extensions;
 }
 
+void te::gdal::createGeopackage(std::string outFileName)
+{
+  const char *gpkgFormat = "GPKG";
+
+  GDALDriver *gpkgDriver;
+
+  gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
+
+  char **papszOptions = NULL;
+  GDALDataset *poDstDS;
+  poDstDS = gpkgDriver->Create(outFileName.c_str(), 0, 0, 0, GDT_Unknown, papszOptions);
+  GDALClose((GDALDatasetH)poDstDS);
+}
+
+void te::gdal::copyToGeopackage(std::string inFileName, std::string outFileName)
+{
+  const char *gpkgFormat = "GPKG";
+  GDALDriver *gpkgDriver;
+
+  std::string inName = GetDriverName(inFileName);
+  const char *inFormat = inName.c_str();
+  GDALDriver *inDriver;
+  
+  gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
+  inDriver = GetGDALDriverManager()->GetDriverByName(inFormat);
+
+  char **papszOptions = NULL;
+  papszOptions = CSLSetNameValue(papszOptions,"APPEND_SUBDATASET", "YES");
+
+  GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(inFileName.c_str(), GA_ReadOnly);
+  GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), poSrcDS, FALSE, papszOptions, NULL, NULL);
+
+  CSLDestroy(papszOptions);
+  GDALClose((GDALDatasetH)poSrcDS);
+  GDALClose((GDALDatasetH)poDstDS);
+}
