@@ -65,7 +65,6 @@ te::qt::plugins::terramobile::GeoPackageBuilderWizard::~GeoPackageBuilderWizard(
 
 void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName)
 {
-  int srid = layer->getSRID();
   std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
 
   //Checking if the layer contains a raster property
@@ -85,77 +84,16 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map
   }
   else
   {
+    //SRID adaptation
+    int inputSRID = layer->getSRID();
+    int outputSRID = 4326;
+
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsGPKG->getCapabilities(), dsGPKG->getEncoding());
+    te::da::AssociateDataSetTypeConverterSRID(converter, inputSRID, outputSRID);
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
 
     dsTypeResult->setName(dsType->getName());
-
-    // Check dataset name
-    if (!dsGPKG->isDataSetNameValid(dsTypeResult->getName()))
-    {
-      int r = QMessageBox::question(this, tr("GeoPackage Builder"), tr("Layer name invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
-
-      if (r == QMessageBox::Yes)
-      {
-        bool aux;
-        std::string newName = te::common::ReplaceSpecialChars(dsTypeResult->getName(), aux);
-        dsTypeResult->setName(newName);
-      }
-      else
-      {
-        throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
-      }
-    }
-
-    // Check properties names
-    std::vector<te::dt::Property* > props = dsTypeResult->getProperties();
-    std::map<std::size_t, std::string> invalidNames;
-    for (std::size_t i = 0; i < props.size(); ++i)
-    {
-      if (!dsGPKG->isPropertyNameValid(props[i]->getName()))
-      {
-        invalidNames[i] = props[i]->getName();
-      }
-    }
-
-    if (!invalidNames.empty())
-    {
-      int r = QMessageBox::question(this, tr("GeoPackage Builder"), tr("Some property name is invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
-
-      if (r == QMessageBox::Yes)
-      {
-        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
-
-        while (it != invalidNames.end())
-        {
-          bool aux;
-          std::string newName = te::common::ReplaceSpecialChars(it->second, aux);
-
-          props[it->first]->setName(newName);
-
-          ++it;
-        }
-      }
-      else
-      {
-        QString err(tr("Some property name is invalid for output datasource:\n\n"));
-
-        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
-
-        while (it != invalidNames.end())
-        {
-          err.append(" - ");
-          err.append(it->second.c_str());
-
-          ++it;
-        }
-
-        throw te::common::Exception(err.toStdString());
-      }
-    }
-
-    te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
 
     //exporting
     std::map<std::string, std::string> nopt;
@@ -265,6 +203,7 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::addPages()
 
 bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 {
+  te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
   std::string gpkgName = m_outputPage->getGeoPackageFilePath();
 
   if (gpkgName.empty())
