@@ -3,6 +3,7 @@
 
 \brief This file contains a class to calculate a grid from a TIN.
 Adapted from SPRING
+
 */
 
 #ifndef __TERRALIB_MNT_INTERNAL_TINCALCULATEGRID_H
@@ -33,6 +34,9 @@ namespace te
     /*!
     \class TINCalculateGrid
     \brief Class to calculate grid from TIN.
+
+    \ingroup mnt
+
     */
 
     class TEMNTEXPORT TINCalculateGrid : public Tin

@@ -64,10 +64,14 @@ QSizeF te::layout::TextController::updateView()
     qft.setFamily(ft.getFamily().c_str());
     qft.setBold(ft.isBold());
     qft.setItalic(ft.isItalic());
-    qft.setPointSizeF(ft.getPointSize());
     qft.setKerning(ft.isKerning());
     qft.setStrikeOut(ft.isStrikeout());
     qft.setUnderline(ft.isUnderline());
+
+    //we need to set the font size from PT to MM
+    double ptSize = 0.352777778; //size of 1 pt in mm  
+    qft.setPointSizeF(ft.getPointSize() * ptSize);
+
 
     //converts the text
     QString qText(text.c_str());
@@ -93,16 +97,21 @@ QSizeF te::layout::TextController::updateView()
     }
 
     // We now synchronize the attributes of the view based on he attributes of the model
+    bool changed = false;
     if(view->toPlainText() != qText)
     {
       view->setPlainText(qText);
+      changed = true;
     }
     if(view->font() != qft)
     {
       view->setFont(qft);
+      changed = true;
     }
-    if(view->textWidth() != view->boundingRect().width())
+    
+    if(changed == true) 
     {
+      view->setTextWidth(-1);
       view->setTextWidth(view->boundingRect().width());
     }
     if(view->document()->defaultTextOption().alignment() != txtOpt.alignment())

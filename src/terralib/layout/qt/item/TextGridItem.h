@@ -56,7 +56,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        TextGridItem(AbstractItemController* controller, bool invertedMatrix = false);
+        TextGridItem(AbstractItemController* controller);
 
         /*!
           \brief Destructor

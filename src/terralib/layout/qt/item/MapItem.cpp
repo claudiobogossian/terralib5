@@ -286,7 +286,7 @@ void te::layout::MapItem::enterEditionMode()
   }
   if(m_zoomWheel == 0)
   {
-    m_zoomWheel = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.5, false);
+    m_zoomWheel = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.25, false);
   }
 
   m_mapDisplay->installEventFilter(m_pan);
@@ -333,7 +333,7 @@ void te::layout::MapItem::extentChanged()
   MapController* mapController = dynamic_cast<MapController*>(m_controller);
   if(mapController != 0)
   {
-    mapController->extentChanged(m_mapDisplay->getExtent(), m_mapDisplay->getScale());
+    mapController->extentChanged(m_mapDisplay->getExtent(), m_mapDisplay->getScale(), m_mapDisplay->getSRID());
   }
 }
 

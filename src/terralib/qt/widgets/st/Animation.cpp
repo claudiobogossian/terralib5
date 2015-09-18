@@ -1,5 +1,5 @@
 #include "Animation.h"
-#include "AnimationItem.h"
+#include "ImageItem.h"
 
 te::qt::widgets::Animation::Animation(QObject* target, const QByteArray& propertyName, QObject* parent)
   : QPropertyAnimation(target, propertyName, parent)
@@ -27,7 +27,19 @@ void te::qt::widgets::Animation::adjustDataToAnimationTemporalExtent(const te::d
 
 void te::qt::widgets::Animation::setDataKeyValues()
 {
-  te::qt::widgets::AnimationItem* ai = (te::qt::widgets::AnimationItem*)targetObject();
+  te::qt::widgets::AnimationItem* ai = static_cast<te::qt::widgets::AnimationItem*>(targetObject());
+  if (ai->pixmap().isNull())
+  {
+    te::qt::widgets::ImageItem* ii = static_cast<te::qt::widgets::ImageItem*>(ai);
+    if (ii->m_animationFiles.empty()) // out of animation time
+    {
+      ai->m_animationTime.clear();
+      ai->m_animationRoute.clear();
+      setStartValue(QPoint(0, 0));
+      setEndValue(QPoint(1, 1));
+      return;
+    }
+  }
 
   // total time duration 
   boost::posix_time::ptime iTime = m_temporalAnimationExtent.getInitialTimeInstant().getTimeInstant();
