@@ -51,7 +51,7 @@ te::ogr::SQLVisitor::SQLVisitor(const te::da::SQLDialect& dialect, std::string& 
 
 void te::ogr::SQLVisitor::visit(const te::da::DataSetName& visited)
 {
-  m_sql += "\'" + visited.getName() + "\'";
+  m_sql += "\"" + visited.getName() + "\"";
 }
 
 void te::ogr::SQLVisitor::visit(const te::da::LiteralEnvelope& visited)

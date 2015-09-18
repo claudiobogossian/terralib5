@@ -1281,6 +1281,24 @@ double te::attributefill::VectorToVectorMemory::getArea(te::gm::Geometry* geom)
       area = g->getArea();
       break;
     }
+    case te::gm::MultiSurfaceType:
+    {
+      te::gm::MultiSurface* col = dynamic_cast<te::gm::MultiSurface*>(geom);
+      for (std::size_t j = 0; j < col->getNumGeometries(); ++j)
+      {
+        te::gm::Geometry* auxGeom = col->getGeometryN(j);
+        if (isPolygon(auxGeom->getGeomTypeId()))
+        {
+          area += dynamic_cast<te::gm::Polygon*>(auxGeom)->getArea();
+        }
+        else if (isMultiPolygon(auxGeom->getGeomTypeId()))
+        {
+          area += dynamic_cast<te::gm::MultiPolygon*>(auxGeom)->getArea();
+        }
+      }
+
+      break;
+    }
     case te::gm::GeometryCollectionType:
     {
       te::gm::GeometryCollection* col = dynamic_cast<te::gm::GeometryCollection*>(geom);

@@ -83,7 +83,8 @@ void te::wfs::DataSource::open()
 
   verifyConnectionInfo();
 
-  m_ogrDS = OGRSFDriverRegistrar::Open(m_connectionInfo.find("URI")->second.c_str());
+  //m_ogrDS = OGRSFDriverRegistrar::Open(m_connectionInfo.find("URI")->second.c_str());
+  m_ogrDS = (GDALDataset*)GDALOpenEx(m_connectionInfo.find("URI")->second.c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
 
   if(m_ogrDS == 0)
     throw Exception(TE_TR("Could not open the WFS data source!"));
@@ -93,8 +94,9 @@ void te::wfs::DataSource::open()
 
 void te::wfs::DataSource::close()
 {
-  if(m_ogrDS)
-    OGRDataSource::DestroyDataSource(m_ogrDS);
+//  if (m_ogrDS)
+    //OGRDataSource::DestroyDataSource(m_ogrDS);
+//    GDALClose(m_ogrDS);
 
   m_ogrDS = 0;
 
@@ -115,11 +117,14 @@ bool te::wfs::DataSource::isValid() const
   if(it == m_connectionInfo.end())
     return false;
 
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(it->second.c_str());
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(it->second.c_str());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(it->second.c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
+
   if(ds == 0)
     return false;
 
-  OGRDataSource::DestroyDataSource(ds);
+  //OGRDataSource::DestroyDataSource(ds);
+  GDALClose(ds);
 
   return true;
 }
@@ -145,7 +150,8 @@ void te::wfs::DataSource::setDialect(te::da::SQLDialect* dialect)
   sm_dialect = dialect;
 }
 
-OGRDataSource* te::wfs::DataSource::getOGRDataSource()
+//OGRDataSource* te::wfs::DataSource::getOGRDataSource()
+GDALDataset* te::wfs::DataSource::getOGRDataSource()
 {
   return m_ogrDS;
 }
@@ -179,11 +185,13 @@ bool te::wfs::DataSource::exists(const std::map<std::string, std::string>& dsInf
   if(it == dsInfo.end())
     return false;
 
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(it->second.c_str());
-  if(ds == 0)
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(it->second.c_str());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(it->second.c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
+  if (ds == 0)
     return false;
 
-  OGRDataSource::DestroyDataSource(ds);
+  //OGRDataSource::DestroyDataSource(ds);
+  GDALClose(ds);
 
   return true;
 }

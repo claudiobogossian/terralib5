@@ -93,7 +93,7 @@ void te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent()
       break;
     }
   }
-  size = fim - ini;
+  size = 1 + fim - ini;
   size_t tfim = ini + size;
 
   m_animationRoute.clear();

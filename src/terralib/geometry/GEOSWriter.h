@@ -42,11 +42,11 @@ namespace geos
   namespace geom
   {
     class CoordinateSequence;
-	class Envelope;
+	  class Envelope;
     class Geometry;
     class GeometryCollection;
     class LinearRing;
-	class LineSegment;
+	  class LineSegment;
     class LineString;
     class MultiLineString;
     class MultiPoint;
@@ -63,7 +63,7 @@ namespace te
 // Forward declaration
     class Geometry;
     class GeometryCollection;
-	class Line;
+	  class Line;
     class LinearRing;
     class LineString;
     class MultiLineString;
@@ -74,7 +74,7 @@ namespace te
     class PointZ;
     class PointZM;
     class Polygon;
-	class Envelope;
+	  class Envelope;
 
     /*!
       \class GEOSWriter

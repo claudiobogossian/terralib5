@@ -70,7 +70,8 @@ void GetQueryCapabilities(te::da::DataSourceCapabilities& caps)
   caps.setQueryCapabilities(qy_caps);
 }
 
-void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
+//void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
+void GetCapabilities(GDALDataset* ds, te::da::DataSourceCapabilities& caps)
 {
   // DataSet
   if(!ds || ds->GetLayerCount() <= 0)
@@ -138,12 +139,14 @@ void te::ogr::DataSource::open()
   path = it->second;
 
   if (boost::filesystem::exists(path))
-    m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
+    //m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
+    m_ogrDS = (GDALDataset*)GDALOpenEx(path.c_str(), GDAL_OF_UPDATE, NULL, NULL, NULL);
   
   // let's try to open it without update permission
   if (!m_ogrDS)
   {
-    m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 0);
+    //m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 0);
+    m_ogrDS = (GDALDataset*)GDALOpenEx(path.c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
     if (m_ogrDS)
       m_capabilities.setAccessPolicy(te::common::RAccess);
   }
@@ -162,8 +165,9 @@ void te::ogr::DataSource::open()
 void te::ogr::DataSource::close()
 {
   if (m_ogrDS)
-    OGRDataSource::DestroyDataSource(m_ogrDS);
-  
+    //OGRDataSource::DestroyDataSource(m_ogrDS);
+    GDALClose(m_ogrDS);
+
   m_ogrDS = 0;  
   
   m_isValid = false;
@@ -197,7 +201,8 @@ void te::ogr::DataSource::setDialect(te::da::SQLDialect* dialect)
   sm_myDialect = dialect;
 }
 
-OGRDataSource* te::ogr::DataSource::getOGRDataSource()
+//OGRDataSource* te::ogr::DataSource::getOGRDataSource()
+GDALDataset* te::ogr::DataSource::getOGRDataSource()
 {
   return m_ogrDS;
 }
@@ -226,8 +231,11 @@ void  te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map
     if (!boost::filesystem::exists(dir))
       boost::filesystem::create_directory(dir);
     
-    OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
-    OGRSFDriver* driver;
+    //OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
+    //OGRSFDriver* driver;
+
+    GDALDriverManager* driverManager = GetGDALDriverManager();
+    GDALDriver* driver;
     
     it = m_connectionInfo.find("DRIVER");
     if (it!=m_connectionInfo.end())
@@ -238,8 +246,11 @@ void  te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map
     if (driver == 0)
       throw(Exception(TE_TR("Driver not found.")));
     
-    if(!driver->TestCapability(ODrCCreateDataSource))
-      throw(Exception(TE_TR("The Driver does not have create capability.")));
+    //if(!driver->TestCapability(ODrCCreateDataSource))
+    //  throw(Exception(TE_TR("The driver has no capability for creating a datasource!")));
+
+    if (!OGR_Dr_TestCapability(driver, ODrCCreateDataSource))
+      throw(Exception(TE_TR("The driver has no capability for creating a datasource!")));
     
     char** papszOptions = 0;
     it = m_connectionInfo.begin();
@@ -254,14 +265,15 @@ void  te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map
       ++it;
     }
     
-    m_ogrDS = driver->CreateDataSource(path.c_str(),papszOptions);
-    
+    //m_ogrDS = driver->CreateDataSource(path.c_str(), papszOptions);
+    m_ogrDS = driver->Create(path.c_str(), 0, 0, 0, GDT_Unknown, papszOptions);
+
     if(papszOptions)
       CSLDestroy(papszOptions);
   }
   
   if (!m_ogrDS)
-    throw(Exception(TE_TR("Error creating the dataset.")));
+    throw(Exception(TE_TR("Error creating the dataset!")));
   
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
   return t->createDataSet(dt, options);
@@ -271,20 +283,28 @@ void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
   std::string path = dsInfo.begin()->second;
 
-  if(m_ogrDS!=0 && path.compare(m_ogrDS->GetName()) == 0)
+  //if (m_ogrDS != 0 && path.compare(m_ogrDS->GetName()) == 0)
+  if (m_ogrDS != 0 && path.compare(m_ogrDS->GetDescription()) == 0)
     close();
 
-  OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
-  OGRSFDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
+  //OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
+  //OGRSFDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
+
+  GDALDriverManager* driverManager = GetGDALDriverManager();
+  GDALDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
 
   if (driver == 0)
-    throw(Exception(TE_TR("Driver not found.")));
+    throw(Exception(TE_TR("Driver not found!")));
 
-  if(!driver->TestCapability(ODrCDeleteDataSource))
-    throw(Exception(TE_TR("The Driver does not have drop capability.")));
+//  if(!driver->TestCapability(ODrCDeleteDataSource))
+//    throw(Exception(TE_TR("The Driver does not have drop capability.")));
 
-  if(driver->DeleteDataSource(path.c_str()) != OGRERR_NONE)
-    throw(Exception(TE_TR("Error when dropping the data source.")));   
+  if (!OGR_Dr_TestCapability(driver, ODrCDeleteDataSource))
+    throw(Exception(TE_TR("The driver has no drop capability!")));
+
+//  if(driver->DeleteDataSource(path.c_str()) != OGRERR_NONE)
+//    throw(Exception(TE_TR("Error when dropping the data source.")));
+  GDALClose(driver);
 }
 
 bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& dsInfo)

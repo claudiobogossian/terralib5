@@ -61,10 +61,10 @@ namespace te
         CircularStringMType  = 2008,        /*!< A CircularString in R3 with coordinate values for x, y and m.    */
         CircularStringZMType = 3008,        /*!< A CircularString in R4 with coordinate values for x, y, z and m. */
 
-        CompoundCurveType   =    9,        /*!< A CompoundCurve in R2 with coordinate values for x and y.       */
-        CompoundCurveZType  = 1009,        /*!< A CompoundCurve in R3 with coordinate values for x, y and z.    */
-        CompoundCurveMType  = 2009,        /*!< A CompoundCurve in R3 with coordinate values for x, y and m.    */
-        CompoundCurveZMType = 3009,        /*!< A CompoundCurve in R4 with coordinate values for x, y, z and m. */
+        CompoundCurveType   =    9,         /*!< A CompoundCurve in R2 with coordinate values for x and y.       */
+        CompoundCurveZType  = 1009,         /*!< A CompoundCurve in R3 with coordinate values for x, y and z.    */
+        CompoundCurveMType  = 2009,         /*!< A CompoundCurve in R3 with coordinate values for x, y and m.    */
+        CompoundCurveZMType = 3009,         /*!< A CompoundCurve in R4 with coordinate values for x, y, z and m. */
 
         PolygonType   =    3,               /*!< A Polygon in R2 with coordinate values for x and y.       */
         PolygonZType  = 1003,               /*!< A Polygon in R3 with coordinate values for x, y and z.    */
@@ -96,20 +96,25 @@ namespace te
         MultiPolygonMType  = 2006,          /*!< A MultiPolygon in R3 with coordinate values for x, y and m.    */
         MultiPolygonZMType = 3006,          /*!< A MultiPolygon in R4 with coordinate values for x, y, z and m. */
 
-        PolyhedralSurfaceType   =   15,     /*!< A PolyhedralSurface in R2 with coordinate values for x and y.       */
-        PolyhedralSurfaceZType  = 1015,     /*!< A PolyhedralSurface in R3 with coordinate values for x, y and z.    */
-        PolyhedralSurfaceMType  = 2015,     /*!< A PolyhedralSurface in R3 with coordinate values for x, y and m.    */
-        PolyhedralSurfaceZMType = 3015,     /*!< A PolyhedralSurface in R4 with coordinate values for x, y, z and m. */
+        MultiSurfaceType = 12,               /*!< A MultiSurface in R2 with coordinate values for x and y.       */
+        MultiSurfaceZType = 1012,            /*!< A MultiSurface in R3 with coordinate values for x, y and z.    */
+        MultiSurfaceMType = 2012,            /*!< A MultiSurface in R3 with coordinate values for x, y and m.    */
+        MultiSurfaceZMType = 3012,           /*!< A MultiSurface in R4 with coordinate values for x, y, z and m. */
 
-        TINType   =   16,                   /*!< A TIN in R2 with coordinate values for x and y.       */
-        TINZType  = 1016,                   /*!< A TIN in R3 with coordinate values for x, y and z.    */
-        TINMType  = 2016,                   /*!< A TIN in R3 with coordinate values for x, y and m.    */
-        TINZMType = 3016,                   /*!< A TIN in R4 with coordinate values for x, y, z and m. */
+        PolyhedralSurfaceType = 15,          /*!< A PolyhedralSurface in R2 with coordinate values for x and y.       */
+        PolyhedralSurfaceZType  = 1015,      /*!< A PolyhedralSurface in R3 with coordinate values for x, y and z.    */
+        PolyhedralSurfaceMType  = 2015,      /*!< A PolyhedralSurface in R3 with coordinate values for x, y and m.    */
+        PolyhedralSurfaceZMType = 3015,      /*!< A PolyhedralSurface in R4 with coordinate values for x, y, z and m. */
 
-        TriangleType   =   17,              /*!< A Triangle in R2 with coordinate values for x and y.       */
-        TriangleZType  = 1017,              /*!< A Triangle in R3 with coordinate values for x, y and z.    */
-        TriangleMType  = 2017,              /*!< A Triangle in R3 with coordinate values for x, y and m.    */
-        TriangleZMType = 3017,              /*!< A Triangle in R4 with coordinate values for x, y, z and m. */
+        TINType   =   16,                    /*!< A TIN in R2 with coordinate values for x and y.       */
+        TINZType  = 1016,                    /*!< A TIN in R3 with coordinate values for x, y and z.    */
+        TINMType  = 2016,                    /*!< A TIN in R3 with coordinate values for x, y and m.    */
+        TINZMType = 3016,                    /*!< A TIN in R4 with coordinate values for x, y, z and m. */
+
+        TriangleType   =   17,               /*!< A Triangle in R2 with coordinate values for x and y.       */
+        TriangleZType  = 1017,               /*!< A Triangle in R3 with coordinate values for x, y and z.    */
+        TriangleMType  = 2017,               /*!< A Triangle in R3 with coordinate values for x, y and m.    */
+        TriangleZMType = 3017,               /*!< A Triangle in R4 with coordinate values for x, y, z and m. */
 
         UnknownGeometryType = 0xFFFFFFFF    /*!< Just a marker for an unknown geometry type. */
     };

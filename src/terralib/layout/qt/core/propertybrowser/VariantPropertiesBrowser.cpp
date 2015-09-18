@@ -354,7 +354,8 @@ bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVaria
     {
       if(currentValue == vecChoices[i].toString())
       {
-        vproperty->setValue(i);
+        QVariant vValue((int)i);
+        vproperty->setValue(vValue);
         break;
       }
     }

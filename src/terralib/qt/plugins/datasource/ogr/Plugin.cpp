@@ -119,7 +119,8 @@ QString GetSupportedFiles()
 
   for(int i=0; i<count; i++)
   {
-    std::string dName = dMgr->GetDriver(i)->GetName();
+    //std::string dName = dMgr->GetDriver(i)->GetName();
+    std::string dName = dMgr->GetDriver(i)->GetDescription();
 
     QString drv = GetFileExtensionName(dName);
 

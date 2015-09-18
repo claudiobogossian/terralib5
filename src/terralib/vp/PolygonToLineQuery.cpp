@@ -47,7 +47,6 @@
 #include "../dataaccess/utils/Utils.h"
 
 #include "../datatype/Property.h"
-
 #include "../geometry/GeometryProperty.h"
 
 #include "PolygonToLineQuery.h"

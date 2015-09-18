@@ -83,14 +83,15 @@ bool te::qt::widgets::Eta5kmItem::loadData()
 
 bool te::qt::widgets::Eta5kmItem::getCtlParameters()
 {
-  char buf[2000];
+  char buf[300];
   QString file(m_dir.path() + "/Prec5km.ctl");
   FILE* fp = fopen(file.toStdString().c_str(), "r");
   if (fp == 0)
     return false;
 
-  fread(buf, 2000, sizeof(char), fp);
+  size_t n = fread(buf, sizeof(char), 300, fp);
   fclose(fp);
+  buf[n] = 0;
   QString ss(QString(buf).simplified());
 
   // validation
@@ -154,6 +155,10 @@ bool te::qt::widgets::Eta5kmItem::getCtlParameters()
   double h = (double)m_nlines * resY;
   m_imaRect = QRectF(llx, lly, w, h);
 
+  // get static representation
+  if (m_dir.exists("staticRepresentation.png"))
+    m_staticRepresentation = QImage(m_dir.path() + "/staticRepresentation.png");
+
   return true;
 }
 
@@ -163,62 +168,98 @@ void te::qt::widgets::Eta5kmItem::loadCurrentImage()
     delete m_image;
   m_image = 0;
 
-  QString path = m_dir.absolutePath() + "/";
-  QString file = m_currentImageFile;
-  QFileInfo fi(file);
-  QString baseName = fi.baseName();
-
-  if (m_suffix == ".bin" && baseName.contains("Prec5km"))
+  if (m_currentImageFile.isEmpty())
   {
-    QString auxFile(file);
-    size_t pos = auxFile.indexOf(baseName);
-    auxFile.remove(0, (int)pos);
-    pos = auxFile.indexOf("_");
-    size_t pp = auxFile.indexOf(".bin");
-    int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toStdString().c_str());
-    size_t fileSize = m_nlines * m_ncols * 4 + 8; // dado é float e desprepreza 4 bytes iniciais e 4 bytes finais
-    offset *= (int)fileSize;
-    auxFile.remove((int)pos, auxFile.length() - (int)pos);
-    auxFile = path + auxFile + m_suffix;
-
-    size_t nchars = m_ncols * 4;
-    uchar* buf = new uchar[nchars];
-    FILE* fp = fopen(auxFile.toStdString().c_str(), "rb");
-    fseek(fp, offset, SEEK_SET);
-    fseek(fp, 4, SEEK_CUR); // despreza 4 bytes da primeira linha
-    m_image = new QImage((int)m_ncols, (int)m_nlines, QImage::Format_ARGB32);
-    m_image->fill(Qt::transparent);
-
-    uchar uc[5];
-    uc[4] = 0;
-    for (size_t j = 0; j < m_nlines; ++j)
+    if (m_staticRepresentation.isNull())
     {
-      uchar* u = m_image->scanLine((int)m_nlines - 1 - (int)j); // origem bottom left
-      fread(buf, nchars, sizeof(char), fp);
+      QRect r = getRect();
+      m_image = new QImage(r.size(), QImage::Format_ARGB32);
+      m_image->fill(QColor(0, 0, 255, 100));
+      QPainter p(m_image);
+      p.setPen(QPen(QColor(255, 0, 0)));
 
-      for (size_t i = 0; i < m_ncols; i++)
+      QFont font(p.font());
+      int ps = 7;
+      int w = (int)((double)m_image->width() / 1.2);
+      int h = (int)((double)m_image->width() / 5.);
+
+      font.setPointSize(ps);
+      QFontMetrics fm(font);
+      QRectF rec(fm.boundingRect(m_title));
+
+      while (rec.width() < w && rec.height() < h)
       {
-        uc[0] = *(buf + (i << 2));
-        uc[1] = *(buf + (1 + (i << 2)));
-        uc[2] = *(buf + (2 + (i << 2)));
-        uc[3] = *(buf + (3 + (i << 2)));
-        float b = *(float*)uc;
-        if (b != m_undef)
+        ++ps;
+        font.setPointSize(ps);
+        QFontMetrics fm(font);
+        rec = fm.boundingRect(m_title);
+      }
+      rec.moveCenter(m_image->rect().center());
+      p.setFont(font);
+      p.drawText(rec.toRect(), Qt::AlignLeft, m_title);
+    }
+    else
+      m_image = new QImage(m_staticRepresentation);
+  }
+  else
+  {
+    QString path = m_dir.absolutePath() + "/";
+    QString file = m_currentImageFile;
+    QFileInfo fi(file);
+    QString baseName = fi.baseName();
+
+    if (m_suffix == ".bin" && baseName.contains("Prec5km"))
+    {
+      QString auxFile(file);
+      size_t pos = auxFile.indexOf(baseName);
+      auxFile.remove(0, (int)pos);
+      pos = auxFile.indexOf("_");
+      size_t pp = auxFile.indexOf(".bin");
+      int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toStdString().c_str());
+      size_t fileSize = m_nlines * m_ncols * 4 + 8; // dado é float e desprepreza 4 bytes iniciais e 4 bytes finais
+      offset *= (int)fileSize;
+      auxFile.remove((int)pos, auxFile.length() - (int)pos);
+      auxFile = path + auxFile + m_suffix;
+
+      size_t nchars = m_ncols * 4;
+      uchar* buf = new uchar[nchars];
+      FILE* fp = fopen(auxFile.toStdString().c_str(), "rb");
+      fseek(fp, offset, SEEK_SET);
+      fseek(fp, 4, SEEK_CUR); // despreza 4 bytes da primeira linha
+      m_image = new QImage((int)m_ncols, (int)m_nlines, QImage::Format_ARGB32);
+      m_image->fill(Qt::transparent);
+
+      uchar uc[5];
+      uc[4] = 0;
+      for (size_t j = 0; j < m_nlines; ++j)
+      {
+        uchar* u = m_image->scanLine((int)m_nlines - 1 - (int)j); // origem bottom left
+        fread(buf, nchars, sizeof(char), fp);
+
+        for (size_t i = 0; i < m_ncols; i++)
         {
-          uchar a = (uchar)(b * 10000. + .5);
-          QRgb* v = (QRgb*)(u + (i << 2));
-          *v = qRgba(m_lut[a].red(), m_lut[a].green(), m_lut[a].blue(), 255);
+          uc[0] = *(buf + (i << 2));
+          uc[1] = *(buf + (1 + (i << 2)));
+          uc[2] = *(buf + (2 + (i << 2)));
+          uc[3] = *(buf + (3 + (i << 2)));
+          float b = *(float*)uc;
+          if (b != m_undef)
+          {
+            uchar a = (uchar)(b * 10000. + .5);
+            QRgb* v = (QRgb*)(u + (i << 2));
+            *v = qRgba(m_lut[a].red(), m_lut[a].green(), m_lut[a].blue(), 255);
+          }
         }
       }
+      fclose(fp);
+      delete[]buf;
     }
-    fclose(fp);
-    delete[]buf;
   }
 }
 
-void drawCurrentImage(QPainter* p)
-{
-}
+//void drawCurrentImage(QPainter* p)
+//{
+//}
 
 te::dt::TimeInstant te::qt::widgets::Eta5kmItem::getTime(QString fileName)
 {

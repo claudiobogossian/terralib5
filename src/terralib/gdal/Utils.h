@@ -405,7 +405,10 @@ namespace te
      \return Returns a map all GDAL supported Upper-case extensions to their respective driver names.
      */    
     const std::multimap< std::string, std::string >& GetGDALDriversUCaseExt2DriversMap();    
-        
+       
+    TEGDALEXPORT void createGeopackage(std::string outFileName);
+
+    TEGDALEXPORT void copyToGeopackage(std::string inFileName, std::string outFileName);
   } // end namespace gdal
 } // end namespace te
 #endif

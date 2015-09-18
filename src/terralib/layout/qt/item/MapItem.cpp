@@ -333,7 +333,7 @@ void te::layout::MapItem::extentChanged()
   MapController* mapController = dynamic_cast<MapController*>(m_controller);
   if(mapController != 0)
   {
-    mapController->extentChanged(m_mapDisplay->getExtent(), m_mapDisplay->getScale());
+    mapController->extentChanged(m_mapDisplay->getExtent(), m_mapDisplay->getScale(), m_mapDisplay->getSRID());
   }
 }
 
