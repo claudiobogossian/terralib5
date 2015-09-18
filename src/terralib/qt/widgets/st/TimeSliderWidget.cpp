@@ -1608,11 +1608,12 @@ void te::qt::widgets::TimeSliderWidget::putToFront(te::qt::widgets::AnimationIte
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked();
   
-  QList<QGraphicsItem*> list = m_animationScene->items(Qt::AscendingOrder);
+  QList<QGraphicsItem*> list = m_animationScene->items(Qt::AscendingOrder); // get a copy of animation list
   int i = list.indexOf(item);
   list.takeAt(i);
   list.prepend(item); // put to last item
 
+  // remove all animations of the scene
   QList<QGraphicsItem*>::iterator it = list.begin();
   while(it != list.end())
   {
@@ -1620,6 +1621,7 @@ void te::qt::widgets::TimeSliderWidget::putToFront(te::qt::widgets::AnimationIte
     m_animationScene->removeItem(ai);
   }
 
+  // reinicialiaze the scene in correct order 
   while(list.isEmpty() == false)
   {
     te::qt::widgets::AnimationItem* ai = dynamic_cast<te::qt::widgets::AnimationItem*>(list.takeFirst());
@@ -1640,6 +1642,7 @@ void te::qt::widgets::TimeSliderWidget::putToBack(te::qt::widgets::AnimationItem
   list.takeAt(i);
   list.append(item); // put to first item
 
+  // remove all animations of the scene
   QList<QGraphicsItem*>::iterator it = list.begin();
   while(it != list.end())
   {
@@ -1647,7 +1650,8 @@ void te::qt::widgets::TimeSliderWidget::putToBack(te::qt::widgets::AnimationItem
     m_animationScene->removeItem(ai);
   }
 
-  while(list.isEmpty() == false)
+  // reinicialiaze the scene in correct order 
+  while (list.isEmpty() == false)
   {
     te::qt::widgets::AnimationItem* ai = dynamic_cast<te::qt::widgets::AnimationItem*>(list.takeFirst());
     m_animationScene->addItem(ai);
