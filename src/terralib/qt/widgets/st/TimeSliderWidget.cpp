@@ -1608,7 +1608,7 @@ void te::qt::widgets::TimeSliderWidget::putToFront(te::qt::widgets::AnimationIte
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked();
   
-  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*> list = m_animationScene->items(Qt::AscendingOrder);
   int i = list.indexOf(item);
   list.takeAt(i);
   list.prepend(item); // put to last item
@@ -1635,7 +1635,7 @@ void te::qt::widgets::TimeSliderWidget::putToBack(te::qt::widgets::AnimationItem
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked();
   
-  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*> list = m_animationScene->items(Qt::AscendingOrder);
   int i = list.indexOf(item);
   list.takeAt(i);
   list.append(item); // put to first item

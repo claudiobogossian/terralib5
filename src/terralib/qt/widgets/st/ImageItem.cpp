@@ -404,38 +404,38 @@ void te::qt::widgets::ImageItem::adjustDataToAnimationTemporalExtent()
 
   size_t size = m_time.size();
   te::dt::TimeInstant tinicial = m_time[0];
-  te::dt::TimeInstant tfinal = m_time[(int)size-1];
+  te::dt::TimeInstant tfinal = m_time[(int)size - 1];
 
   if (iTime > tfinal || fTime < tinicial) // out of animation time
     return;
 
   size_t ini = 0;
+  if (tinicial > iTime)
+  {
+    for (int i = 0; i < (int)size; ++i)
+    {
+      if (m_time[i] == iTime || m_time[i] > iTime)
+      {
+        ini = i;
+        break;
+      }
+    }
+  }
+
   size_t fim = size - 1;
-  for (int i = 0; i < (int)size; ++i)
+  if (tfinal > fTime)
   {
-    if (m_time[i] == iTime || m_time[i] > iTime)
+    for (int i = (int)fim; i > (int)ini; --i)
     {
-      ini = i;
-      break;
+      if (m_time[i] == fTime || m_time[i] < fTime)
+      {
+        fim = i;
+        break;
+      }
     }
   }
 
-  for (int i = (int)size - 1; i >= 0; --i)
-  {
-    if (m_time[i] == fTime || m_time[i] < fTime)
-    {
-      fim = i;
-      break;
-    }
-  }
-  size = fim - ini;
-  size_t tfim = ini + size;
-
-  size_t count = m_files.count();
-  if (tfim > count)
-    tfim = count;
-
-  for (int i = (int)ini; i < (int)tfim; ++i)
+  for (int i = (int)ini; i <= (int)fim; ++i)
   {
     QString f = m_files[i];
     m_animationFiles.push_back(f);
