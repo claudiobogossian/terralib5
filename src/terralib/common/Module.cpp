@@ -33,11 +33,12 @@
 #include "TerraLib.h"
 #include "Translator.h"
 #include "UnitsOfMeasureManager.h"
+#include "../BuildConfig.h"
 
 // STL
 #include <cstdlib>
 
-#if TE_USE_GNU_TEXT_UTILITIES
+#ifdef TERRALIB_GNU_GETTEXT_ENABLED
 // GNU Text Utilities -> it is not true for now!
 #include <locale.h>
 #endif

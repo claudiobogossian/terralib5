@@ -66,14 +66,18 @@ void te::gdal::Module::startup()
   if(gdal_data_dir.empty())
   {
 // search for GDAL in TerraLib PATH
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#if defined(TE_PLATFORM) && defined(TE_PLATFORMCODE_MSWINDOWS)
+  #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
     gdal_data_dir = te::common::FindInTerraLibPath("/share/data");
-#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+  #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
     gdal_data_dir = te::common::FindInTerraLibPath("/share/gdal");
-#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+  #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
     gdal_data_dir= te::common::FindInTerraLibPath("/share/gdal");
-#else
+  #else
     #error "unsupported plataform: please, contact terralib-team@terralib.org"
+  #endif
+#else
+  #error "the macro TE_PLATFORM is not set, please, contact terralib-team@terralib.org"
 #endif
   }
   
