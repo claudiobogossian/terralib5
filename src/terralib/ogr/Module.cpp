@@ -41,6 +41,9 @@
 #include "Globals.h"
 #include "Module.h"
 
+// Boost
+#include <boost/filesystem.hpp>
+
 // OGR
 #include <cpl_conv.h>
 #include <ogr_api.h>

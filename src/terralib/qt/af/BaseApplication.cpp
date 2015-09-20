@@ -37,6 +37,7 @@
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
+#include "../../Defines.h"
 #include "../widgets/canvas/EyeBirdMapDisplayWidget.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
 #include "../widgets/canvas/ZoomInMapDisplayWidget.h"

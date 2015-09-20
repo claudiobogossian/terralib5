@@ -41,7 +41,9 @@
 
 // STL
 #include <cstdlib>
-#include <iostream>
+
+// Boost
+#include <boost/filesystem.hpp>
 
 // GDAL
 #include <gdal_priv.h>
