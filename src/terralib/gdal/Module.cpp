@@ -41,6 +41,7 @@
 
 // STL
 #include <cstdlib>
+#include <iostream>
 
 // GDAL
 #include <gdal_priv.h>
@@ -58,14 +59,17 @@ void te::gdal::Module::startup()
 {
   if(m_initialized)
     return;
-  
-// for all platforms, first look at TERRALIB_GDAL_DATA detected by CMAKE
+// for all platforms, first look at an environment variable 
+// defined by macro TERRALIB_GDAL_DATA.
+// note: TERRALIB_GDAL_DATA is detected by CMAKE.
 // note: installed versions on developers machine may look for this version of GDAL
   std::string gdal_data_dir(TERRALIB_GDAL_DATA);
-  
-  if(gdal_data_dir.empty())
+
+// if the above variable is not set or it points to an invalid directory
+  if(gdal_data_dir.empty() || !boost::filesystem::is_directory(gdal_data_dir))
   {
-// search for GDAL in TerraLib PATH
+// search for GDAL in a PATH relative to TerraLib.
+// note: each SO will look in a different folder
 #if defined(TE_PLATFORM) && defined(TE_PLATFORMCODE_MSWINDOWS)
   #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
     gdal_data_dir = te::common::FindInTerraLibPath("/share/data");
@@ -76,7 +80,7 @@ void te::gdal::Module::startup()
   #else
     #error "unsupported plataform: please, contact terralib-team@terralib.org"
   #endif
-#else
+#else 
   #error "the macro TE_PLATFORM is not set, please, contact terralib-team@terralib.org"
 #endif
   }
