@@ -39,6 +39,60 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsSegmenter );
 
+void TsSegmenter::DummyStrategy()
+{
+  // Progress interface
+  te::common::ConsoleProgressViewer progressViewerInstance;
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  
+  // open input raster
+  
+  std::map<std::string, std::string> inputRasterInfo;
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
+    inputRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPointer.get() );
+  
+  // access a raster datasource to create the output raster
+  
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Segmenter_DummyStrategy_Test.tif";
+  
+  // Creating the algorithm parameters
+  
+  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters strategyParameters;
+  strategyParameters.m_minSegmentSize = 50;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
+  
+  te::rp::Segmenter::InputParameters algoInputParams;
+  algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inputRasterBands.push_back( 0 );
+  algoInputParams.m_inputRasterBands.push_back( 1 );
+  algoInputParams.m_inputRasterBands.push_back( 2 );
+  algoInputParams.m_enableThreadedProcessing = false;
+  algoInputParams.m_maxSegThreads = 0;
+  algoInputParams.m_enableBlockProcessing = false;
+  algoInputParams.m_blocksOverlapPercent = 0;
+  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_strategyName = "Dummy";
+  algoInputParams.setSegStrategyParams( strategyParameters );
+  algoInputParams.m_enableProgress = true;
+  
+  te::rp::Segmenter::OutputParameters algoOutputParams;
+  algoOutputParams.m_rInfo = outputRasterInfo;
+  algoOutputParams.m_rType = "GDAL";
+  
+  // Executing the algorithm
+  
+  te::rp::Segmenter algorithmInstance;
+  
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
+}
+
 void TsSegmenter::BlockProcessingWithoutMerging()
 {
   // Progress interface
