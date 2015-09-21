@@ -11,6 +11,8 @@
 #include "connectors/StyleExplorer.h"
 #include "events/ApplicationEvents.h"
 #include "events/LayerEvents.h"
+#include "events/MapEvents.h"
+#include "events/ToolEvents.h"
 #include "Utils.h"
 
 #include "../widgets/layer/explorer/FolderItem.h"
@@ -25,16 +27,13 @@
 #include "../widgets/srs/SRSManagerDialog.h"
 #include "../widgets/Utils.h"
 
+#include "../../Defines.h"
 #include "../../common/TerraLib.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../maptools/Utils.h"
 #include "../../plugin/PluginManager.h"
-
-#include "events/LayerEvents.h"
-#include "events/MapEvents.h"
-#include "events/ToolEvents.h"
 
 // Qt
 #include <QInputDialog>
