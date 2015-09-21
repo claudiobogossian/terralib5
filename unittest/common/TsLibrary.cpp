@@ -17,8 +17,11 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-// TerraLib
+// TerraLib Unittest
 #include "TsLibrary.h"
+
+// TerraLib
+#include <terralib/Defines.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsLibrary);
 
