@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../qt/af/ApplicationController.h"
 #include "../../../qt/af/BaseApplication.h"
-#include "../../../qt/af/Project.h"
 #include "qt/CreateLayerDialog.h"
 #include "CreateLayerAction.h"
 
@@ -48,10 +47,10 @@ te::qt::plugins::terramobile::CreateLayerAction::~CreateLayerAction()
 void te::qt::plugins::terramobile::CreateLayerAction::onActionActivated(bool checked)
 {
   //get display extent
-  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   //show interface
-  te::qt::plugins::terramobile::CreateLayerDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::plugins::terramobile::CreateLayerDialog dlg(ba);
 
   if(dlg.exec() == QDialog::Accepted)
   {

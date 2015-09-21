@@ -29,8 +29,6 @@
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
 #include "../core/form/AbstractFormItem.h"
-#include "../core/form/Form.h"
-#include "../core/form/Section.h"
 #include "../Config.h"
 
 // STL
@@ -53,6 +51,7 @@ namespace te
       {
 
         class Section;
+        class Form;
         /*!
           \class BuilderFormsWizardPage
 
@@ -84,6 +83,16 @@ namespace te
 
             void onSaveFormItemToolButton();
 
+            void onRemoveFormItemToolButtonPressed();
+
+            void onItemTypeChanged(int index);
+
+          protected:
+
+            Form* getForm(const std::string& formName);
+
+            void listSectionMap();
+
           private:
 
             std::auto_ptr<Ui::BuilderFormsWizardPageForm> m_ui;
@@ -91,7 +100,6 @@ namespace te
             std::list<te::map::AbstractLayerPtr> m_list;
 
             std::map<std::string, Section*> m_sectionsMap;
-            te::qt::plugins::terramobile::Section* m_section;
 
             te::qt::plugins::terramobile::Form* m_curForm;
             te::qt::plugins::terramobile::AbstractFormItem* m_curFormItem;

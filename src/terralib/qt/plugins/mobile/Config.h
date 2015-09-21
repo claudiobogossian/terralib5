@@ -73,7 +73,7 @@
   \note To compile plug-ins in Windows, remember to insert TEQTPLUGINTERRAMOBILEEXPORT into the project's list of defines.
  */
 #ifdef WIN32
-  #ifdef TERRAMOBILEDLL
+#ifdef MOBILEDLL
     #define TERRAMOBILEPLUGINSDLLEXPORT  __declspec(dllexport)   // export DLL information
   #else
     #define TERRAMOBILEPLUGINSDLLEXPORT  __declspec(dllimport)   // import DLL information

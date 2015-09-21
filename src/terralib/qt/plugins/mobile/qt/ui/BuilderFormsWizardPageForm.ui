@@ -70,12 +70,29 @@
                <layout class="QGridLayout" name="gridLayout_23">
                 <item row="0" column="0">
                  <layout class="QGridLayout" name="gridLayout_20">
-                  <item row="0" column="0">
+                  <item row="1" column="0">
                    <widget class="QLineEdit" name="m_formItemLineEdit">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
                    </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string>Description</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_2">
+                    <property name="text">
+                     <string>Name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLineEdit" name="m_descLineEdit"/>
                   </item>
                  </layout>
                 </item>
@@ -487,7 +504,11 @@
                          </widget>
                         </item>
                         <item row="0" column="1">
-                         <widget class="QLineEdit" name="m_stringLineEdit"/>
+                         <widget class="QLineEdit" name="m_stringLineEdit">
+                          <property name="enabled">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
                         </item>
                        </layout>
                       </item>
@@ -539,7 +560,11 @@
                          </widget>
                         </item>
                         <item row="0" column="1">
-                         <widget class="QTimeEdit" name="m_timeEdit"/>
+                         <widget class="QTimeEdit" name="m_timeEdit">
+                          <property name="enabled">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
                         </item>
                        </layout>
                       </item>
@@ -630,19 +655,6 @@
                 <item row="1" column="0">
                  <layout class="QGridLayout" name="gridLayout_21">
                   <item row="0" column="0">
-                   <spacer name="horizontalSpacer_3">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item row="0" column="1">
                    <widget class="QToolButton" name="m_saveFormItemToolButton">
                     <property name="text">
                      <string>Update</string>
@@ -652,7 +664,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="2">
+                  <item row="0" column="1">
                    <spacer name="horizontalSpacer_4">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
@@ -664,6 +676,16 @@
                      </size>
                     </property>
                    </spacer>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QToolButton" name="m_removeFormItemToolButton">
+                    <property name="text">
+                     <string>Remove</string>
+                    </property>
+                    <property name="toolButtonStyle">
+                     <enum>Qt::ToolButtonTextBesideIcon</enum>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </item>
@@ -700,5 +722,134 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_defaultValueBoolCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_boolComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>402</x>
+     <y>187</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>435</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueDateCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_dateEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>440</x>
+     <y>192</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueDoubleCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_doubleLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>398</x>
+     <y>185</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>434</x>
+     <y>187</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueIntCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_intLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>371</x>
+     <y>186</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>443</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueLabelCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_labelLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>377</x>
+     <y>187</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>442</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueStringComboCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_stringComboLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>193</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>446</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueStringCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_stringLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>379</x>
+     <y>188</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>462</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_defaultValueTimeCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_timeEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>390</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>439</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

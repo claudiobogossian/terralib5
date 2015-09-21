@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../qt/af/ApplicationController.h"
 #include "../../../qt/af/BaseApplication.h"
-#include "../../../qt/af/Project.h"
 #include "qt/GeoPackageBuilderDialog.h"
 #include "qt/GeoPackageBuilderWizard.h"
 #include "GeoPackageBuilderAction.h"
@@ -49,18 +48,13 @@ te::qt::plugins::terramobile::GeoPackageBuilderAction::~GeoPackageBuilderAction(
 void te::qt::plugins::terramobile::GeoPackageBuilderAction::onActionActivated(bool checked)
 {
   //get input layers
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-  std::list<te::map::AbstractLayerPtr> list;
-
-  if(prj)
-    list = prj->getVisibleSingleLayers();
+  std::list<te::map::AbstractLayerPtr> list = getLayers();
 
   //get display extent
-  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   //show interface
-  te::qt::plugins::terramobile::GeoPackageBuilderWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::plugins::terramobile::GeoPackageBuilderWizard dlg(ba);
 
   dlg.setLayerList(list);
 

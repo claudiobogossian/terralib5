@@ -51,15 +51,6 @@
 #include <QMenu>
 #include <QMenuBar>
 
-#include "ogrsf_frmts.h"
-#include "ogr_p.h"
-#include "cpl_conv.h"
-#include "cpl_string.h"
-#include "ogr_api.h"
-#include "gdal.h"
-#include "gdal_alg.h"
-#include "gdal_priv.h"
-
 te::qt::plugins::terramobile::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_menu(0)
 {
@@ -74,16 +65,18 @@ void te::qt::plugins::terramobile::Plugin::startup()
   if(m_initialized)
     return;
 
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
+
   TE_LOG_TRACE(TE_TR("Terra Mobile Plugin startup!"));
 
 // add plugin menu
-  m_menu = te::qt::af::ApplicationController::getInstance().getMenu("terramobile");
+  m_menu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("terramobile");
 
-  m_menu->setTitle(TE_TR("TerraMobile"));
+  m_menu->setTitle(TE_TR("Mobile"));
 
 // add pop up menu
   m_popupAction = new QAction(m_menu);
-  m_popupAction->setText(TE_TR("TerraMobile"));
+  m_popupAction->setText(TE_TR("Mobile"));
 
 // register actions
   registerActions();
@@ -112,19 +105,23 @@ void te::qt::plugins::terramobile::Plugin::registerActions()
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GEOPACKAGEBUILDER
   m_gpBuider = new te::qt::plugins::terramobile::GeoPackageBuilderAction(m_menu);
+  connect(m_gpBuider, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GEOPACKAGEPUBLISHER
   m_gpPublisher = new te::qt::plugins::terramobile::GeoPackagePublisherAction(m_menu);
+  connect(m_gpPublisher, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GATHERINGLAYERCONFIGURER
   m_glConfiguer = new te::qt::plugins::terramobile::GatheringLayerConfigurerAction(m_menu);
+  connect(m_glConfiguer, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER
   m_menu->addSeparator();
   m_createLayer = new te::qt::plugins::terramobile::CreateLayerAction(m_menu);
+  connect(m_createLayer, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 }
