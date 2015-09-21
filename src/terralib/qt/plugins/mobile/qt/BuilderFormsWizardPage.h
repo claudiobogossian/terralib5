@@ -83,6 +83,8 @@ namespace te
 
             void onSaveFormItemToolButton();
 
+            void onRemoveFormItemToolButtonPressed();
+
             void onItemTypeChanged(int index);
 
           protected:

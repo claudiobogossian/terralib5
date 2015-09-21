@@ -64,7 +64,8 @@ te::qt::plugins::terramobile::BuilderFormsWizardPage::BuilderFormsWizardPage(QWi
   this->setTitle(tr("GeoPackage Builder Forms Configurer"));
   this->setSubTitle(tr("Used to configure Forms for each Gathering Layer selected."));
 
-  m_ui->m_saveFormItemToolButton->setIcon(QIcon::fromTheme("check"));
+  m_ui->m_saveFormItemToolButton->setIcon(QIcon::fromTheme("view-refresh"));
+  m_ui->m_removeFormItemToolButton->setIcon(QIcon::fromTheme("list-remove"));
 
   m_ui->m_doubleLineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_intLineEdit->setValidator(new QIntValidator(this));
@@ -76,6 +77,7 @@ te::qt::plugins::terramobile::BuilderFormsWizardPage::BuilderFormsWizardPage(QWi
   connect(m_ui->m_treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));
   connect(m_ui->m_stringComboAddToolButton, SIGNAL(pressed()), this, SLOT(onStringComboAddToolButtonPressed()));
   connect(m_ui->m_saveFormItemToolButton, SIGNAL(pressed()), this, SLOT(onSaveFormItemToolButton()));
+  connect(m_ui->m_removeFormItemToolButton, SIGNAL(pressed()), this, SLOT(onRemoveFormItemToolButtonPressed()));
 }
 
 te::qt::plugins::terramobile::BuilderFormsWizardPage::~BuilderFormsWizardPage()
@@ -187,6 +189,9 @@ std::map<std::string, te::qt::plugins::terramobile::Section*>& te::qt::plugins::
 
 void te::qt::plugins::terramobile::BuilderFormsWizardPage::onTreeItemClicked(QTreeWidgetItem* item, int column)
 {
+  m_curForm = 0;
+  m_curFormItem = 0;
+
   if (!item)
     return;
 
@@ -343,7 +348,11 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onTreeItemClicked(QTr
 
     m_ui->m_descLineEdit->setEnabled(true);
 
+    m_curForm = form;
     m_curFormItem = formItem;
+
+    m_ui->m_saveFormItemToolButton->setEnabled(true);
+    m_ui->m_removeFormItemToolButton->setEnabled(true);
   }
   else if (item->type() == FORM_TREE_ITEM)
   {
@@ -369,6 +378,10 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onTreeItemClicked(QTr
     m_ui->m_descLineEdit->setEnabled(false);
 
     m_curForm = form;
+    m_curFormItem = 0;
+
+    m_ui->m_saveFormItemToolButton->setEnabled(true);
+    m_ui->m_removeFormItemToolButton->setEnabled(false);
   }
 
   m_itemTreeType = item->type();
@@ -518,6 +531,33 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onSaveFormItemToolBut
   }
 
   listSectionMap();
+}
+
+void te::qt::plugins::terramobile::BuilderFormsWizardPage::onRemoveFormItemToolButtonPressed()
+{
+  if (!m_curForm || !m_curFormItem)
+    return;
+
+  std::vector<AbstractFormItem*>::iterator it = m_curForm->getItems().begin();
+
+  while (it != m_curForm->getItems().end())
+  {
+    if ((*it)->getKey() == m_curFormItem->getKey())
+    {
+      delete (*it);
+      m_curForm->getItems().erase(it);
+
+      listSectionMap();
+
+      QMessageBox::information(this, tr("Information"), tr("Form item removed."));
+
+      return;
+    }
+
+    ++it;
+  }
+
+  QMessageBox::warning(this, tr("Warning"), tr("Form item not removed."));
 }
 
 void te::qt::plugins::terramobile::BuilderFormsWizardPage::onItemTypeChanged(int index)
@@ -710,6 +750,9 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::listSectionMap()
 
   m_curForm = 0;
   m_curFormItem = 0;
+
+  m_ui->m_saveFormItemToolButton->setEnabled(false);
+  m_ui->m_removeFormItemToolButton->setEnabled(false);
 
   //build sections descriptions
   m_ui->m_plainTextEdit->clear();
