@@ -43,7 +43,7 @@ te::qt::plugins::terramobile::AbstractFormItem* te::qt::plugins::terramobile::Fo
 {
   for (std::size_t t = 0; t < m_items.size(); ++t)
   {
-    if (m_items[t]->getLabel() == itemName)
+    if (m_items[t]->getKey() == itemName)
       return m_items[t];
   }
 

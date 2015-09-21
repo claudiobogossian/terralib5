@@ -26,7 +26,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 //TerraLib
 #include "TimeFormItem.h"
 
-te::qt::plugins::terramobile::TimeFormItem::TimeFormItem() : AbstractFormItem()
+te::qt::plugins::terramobile::TimeFormItem::TimeFormItem() : AbstractFormItem(), m_value(0)
 {
   m_type = TIMEFORMITEMTYPE;
 }
@@ -48,5 +48,6 @@ te::dt::DateTime* te::qt::plugins::terramobile::TimeFormItem::getValue()
 
 void te::qt::plugins::terramobile::TimeFormItem::toString()
 {
-  m_defaultValue = m_value->toString();
+  if (m_value)
+    m_defaultValue = m_value->toString();
 }
