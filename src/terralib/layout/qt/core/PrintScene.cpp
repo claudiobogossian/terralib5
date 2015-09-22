@@ -261,7 +261,7 @@ bool te::layout::PrintScene::exportToPDF()
   } 
 
   QMessageBox msgBox;
-  if (state == QPrinter::PrinterState::Error)
+  if (state == QPrinter::Error)
   {
     msgBox.setIcon(QMessageBox::Critical);
     msgBox.setText("Could not export the PDF! Possible cause: the file is already opened by another application.");
