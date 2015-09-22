@@ -145,20 +145,18 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
     QLineF line(llx, y, urx, y);
     m_horizontalLines.push_back(line);
 
-    std::ostringstream convert;
-    convert.precision(10);
     double number = y1 / (double)unit;
-    convert << number;
+    QString convert = QString::number(number, 'f', 0);
 
-    itemUtils->getTextBoundary(ft, wtxt, htxt,convert.str());
+    itemUtils->getTextBoundary(ft, wtxt, htxt, convert);
 
     // text left
     QPointF ptLeft(llx - wtxt, y);
-    m_leftTexts[convert.str()] = ptLeft;
+    m_leftTexts[convert.toStdString()] = ptLeft;
 
     // text right
     QPointF ptRight(urx, y);
-    m_rightTexts[convert.str()] = ptRight;
+    m_rightTexts[convert.toStdString()] = ptRight;
 
     te::gm::Envelope leftTextBox(ptLeft.x(), ptLeft.y(), ptLeft.x() + wtxt, ptLeft.y() + htxt);
     te::gm::Envelope rightTextBox(ptRight.x(), ptRight.y(), ptRight.x() + wtxt, ptRight.y() + htxt);
@@ -224,20 +222,18 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
     QLineF line(x, lly, x, ury);
     m_verticalLines.push_back(line);
 
-    std::ostringstream convert;
-    convert.precision(10);
     double number = x1 / (double)unit;
-    convert << number;
+    QString convert = QString::number(number, 'f', 0);
 
-    itemUtils->getTextBoundary(ft, wtxt, htxt, convert.str());
+    itemUtils->getTextBoundary(ft, wtxt, htxt, convert);
 
     // text bottom
     QPointF ptBottom(x - (wtxt/2.), lly - htxt);
-    m_bottomTexts[convert.str()] = ptBottom;
+    m_bottomTexts[convert.toStdString()] = ptBottom;
 
     // text top
     QPointF ptTop(x - (wtxt/2.), ury);
-    m_topTexts[convert.str()] = ptTop;
+    m_topTexts[convert.toStdString()] = ptTop;
 
     te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y(), ptBottom.x() + wtxt, ptBottom.y() + htxt);
     te::gm::Envelope topTextBox(ptTop.x(), ptTop.y(), ptTop.x() + wtxt, ptTop.y() + htxt);

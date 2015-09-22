@@ -171,7 +171,7 @@ namespace te
           \param w
           \param h
         */
-        virtual void getTextBoundary(QFont ft, double& w, double& h, std::string txt);
+        virtual void getTextBoundary(QFont ft, double& w, double& h, QString qtx);
 
         void changeViewMode(EnumType* mode);
           

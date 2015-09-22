@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "Globals.h"
+#include "../Defines.h"
 
 #if TE_MACHINE_BYTE_ORDER == TE_NDR
 const te::common::MachineByteOrder te::common::Globals::sm_machineByteOrder(te::common::NDR);

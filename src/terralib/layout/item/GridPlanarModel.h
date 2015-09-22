@@ -55,6 +55,7 @@ namespace te
 
         virtual te::gm::Envelope getWorldBoxInPlanar(const te::gm::Envelope& worldBox, int srid);
 
+        double getInitialCoord(double intialCoord, double distance, double& gap);
         /*
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);

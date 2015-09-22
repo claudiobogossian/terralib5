@@ -111,6 +111,12 @@ geos::geom::Geometry* te::gm::GEOSWriter::write(const Geometry* geom)
     case MultiLineStringZMType:
       return write(static_cast<const  MultiLineString*>(geom));
 
+    case te::gm::MultiSurfaceType:
+    case te::gm::MultiSurfaceZType:
+    case te::gm::MultiSurfaceMType:
+    case te::gm::MultiSurfaceZMType:
+      return write(static_cast<const  MultiSurface*>(geom));
+
     case GeometryCollectionType:
     case GeometryCollectionZType:
     case GeometryCollectionMType:
@@ -330,10 +336,14 @@ geos::geom::LineSegment* te::gm::GEOSWriter::write(const Line* teLin)
 
 geos::geom::GeometryCollection* te::gm::GEOSWriter::write(const GeometryCollection* teGeomColl)
 {
-  assert((teGeomColl != 0) && (teGeomColl->getGeomTypeId() == GeometryCollectionType ||
-                          teGeomColl->getGeomTypeId() == GeometryCollectionMType ||
-                          teGeomColl->getGeomTypeId() == GeometryCollectionZType ||
-                          teGeomColl->getGeomTypeId() == GeometryCollectionZMType));
+  assert((teGeomColl != 0) && (teGeomColl->getGeomTypeId() == GeometryCollectionType    ||
+                               teGeomColl->getGeomTypeId() == GeometryCollectionMType   ||
+                               teGeomColl->getGeomTypeId() == GeometryCollectionZType   ||
+                               teGeomColl->getGeomTypeId() == GeometryCollectionZMType  ||
+                               teGeomColl->getGeomTypeId() == MultiSurfaceType          ||      
+                               teGeomColl->getGeomTypeId() == MultiSurfaceMType         ||
+                               teGeomColl->getGeomTypeId() == MultiSurfaceZType         ||
+                               teGeomColl->getGeomTypeId() == MultiSurfaceZMType));
 
   std::vector<geos::geom::Geometry*>* geoms = getGeometries(teGeomColl);
 

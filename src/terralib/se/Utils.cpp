@@ -236,6 +236,10 @@ te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType, c
     case te::gm::MultiPolygonMType:
     case te::gm::MultiPolygonZType:
     case te::gm::MultiPolygonZMType:
+    case te::gm::MultiSurfaceType:
+    case te::gm::MultiSurfaceMType:
+    case te::gm::MultiSurfaceZType:
+    case te::gm::MultiSurfaceZMType:
     {
       te::se::Fill* fill = CreateFill(color, "1.0");
       te::se::Stroke* stroke = CreateStroke("#000000", "1");

@@ -58,17 +58,15 @@ bool te::qt::widgets::ImageItem::loadData()
   if (getCtlParameters() == false)
     return false;
 
-  //m_animationScene->addItem(pi);
   if (m_animation)
     delete m_animation;
   m_animation = new te::qt::widgets::Animation(this, "pos");
   m_animation->m_spatialExtent = te::gm::Envelope(m_imaRect.x(), m_imaRect.y(), m_imaRect.right(), m_imaRect.bottom());
   m_animation->setEasingCurve(QEasingCurve::Linear);
-  //m_parallelAnimation->addAnimation(animation);
 
   QString suffix = "." + m_suffix;
   QStringList nameFilter;
-  nameFilter.append("*" + suffix);
+  nameFilter.append(m_preffix + "*" + suffix);
   QStringList files = m_dir.entryList(nameFilter, QDir::Files, QDir::Name);
   size_t count = files.count();
 
@@ -94,29 +92,38 @@ bool te::qt::widgets::ImageItem::loadData()
 
 bool te::qt::widgets::ImageItem::getCtlParameters()
 {
-  char buf[2000];
+  char buf[300];
   QString file(m_dir.path() + "/image.ctl");
   FILE* fp = fopen(file.toStdString().c_str(), "r");
   if (fp == 0)
     return false;
 
-  fread(buf, 2000, sizeof(char), fp);
+  size_t n = fread(buf, sizeof(char), 300, fp);
   fclose(fp);
+  buf[n] = 0;
   QString s, ss(QString(buf).simplified());
 
   // validation
-  if (!(ss.contains("suffix ", Qt::CaseInsensitive) && ss.contains("undef", Qt::CaseInsensitive) &&
-    ss.contains("srid", Qt::CaseInsensitive) && ss.contains("llx", Qt::CaseInsensitive) &&
-    ss.contains("lly", Qt::CaseInsensitive) && ss.contains("urx", Qt::CaseInsensitive) &&
-    ss.contains("ury", Qt::CaseInsensitive)))
+  if (!(ss.contains("suffix ", Qt::CaseInsensitive) && ss.contains("preffix ", Qt::CaseInsensitive) &&
+    ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("srid ", Qt::CaseInsensitive) && 
+    ss.contains("llx ", Qt::CaseInsensitive) && ss.contains("lly ", Qt::CaseInsensitive) && 
+    ss.contains("urx ", Qt::CaseInsensitive) && ss.contains("ury ", Qt::CaseInsensitive)))
     return false;
 
   // get suffix 
   size_t pos = ss.indexOf("suffix ", Qt::CaseInsensitive) + strlen("suffix ");
   ss.remove(0, (int)pos);
-  pos = ss.indexOf(" undef", Qt::CaseInsensitive);
+  pos = ss.indexOf(" preffix", Qt::CaseInsensitive);
   s = ss.left((int)pos);
   m_suffix = s;
+  ss.remove(0, (int)pos);
+
+  // get preffix 
+  pos = ss.indexOf("preffix ", Qt::CaseInsensitive) + strlen("preffix ");
+  ss.remove(0, (int)pos);
+  pos = ss.indexOf(" undef", Qt::CaseInsensitive);
+  s = ss.left((int)pos);
+  m_preffix = s;
   ss.remove(0, (int)pos);
 
   // get undef
@@ -168,6 +175,10 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
   double h = ury - lly;
   m_imaRect = QRectF(llx, lly, w, h);
 
+  // get static representation
+  if (m_dir.exists("staticRepresentation.png"))
+    m_staticRepresentation = QImage(m_dir.path() + "/staticRepresentation.png");
+  
   return true;
 }
 
@@ -178,10 +189,53 @@ void te::qt::widgets::ImageItem::loadCurrentImage()
   m_image = 0;
 
   if (m_currentImageFile.isEmpty())
-    return;
+  {
+    if (m_staticRepresentation.isNull())
+    {
+      QRect r = getRect();
+      m_image = new QImage(r.size(), QImage::Format_ARGB32);
+      m_image->fill(QColor(0, 0, 255, 100));
+      QPainter p(m_image);
+      p.setPen(QPen(QColor(255, 0, 0)));
 
-  QString file = m_currentImageFile;
-  m_image = new QImage(file);
+      QFont font(p.font());
+      int ps = 7;
+      int w = (int)((double)m_image->width() / 1.2);
+      int h = (int)((double)m_image->width() / 5.);
+
+      font.setPointSize(ps);
+      QFontMetrics fm(font);
+      QRectF rec(fm.boundingRect(m_title));
+
+      while (rec.width() < w && rec.height() < h)
+      {
+        ++ps;
+        font.setPointSize(ps);
+        QFontMetrics fm(font);
+        rec = fm.boundingRect(m_title);
+      }
+      rec.moveCenter(m_image->rect().center());
+      p.setFont(font);
+      p.drawText(rec.toRect(), Qt::AlignLeft, m_title);
+    }
+    else
+      m_image = new QImage(m_staticRepresentation);
+  }
+  else
+  {
+    QString file = m_currentImageFile;
+    m_image = new QImage(file);
+  }
+
+  //if (m_image)
+  //  delete m_image;
+  //m_image = 0;
+
+  //if (m_currentImageFile.isEmpty())
+  //  return;
+
+  //QString file = m_currentImageFile;
+  //m_image = new QImage(file);
 }
 
 void te::qt::widgets::ImageItem::drawCurrentImage(QPainter* painter)
@@ -348,34 +402,40 @@ void te::qt::widgets::ImageItem::adjustDataToAnimationTemporalExtent()
   te::dt::TimeInstant iTime = m_animation->m_temporalAnimationExtent.getInitialTimeInstant();
   te::dt::TimeInstant fTime = m_animation->m_temporalAnimationExtent.getFinalTimeInstant();
 
-  size_t ini = 0;
   size_t size = m_time.size();
-  size_t fim = size;
-  for (int i = 0; i < (int)size; ++i)
+  te::dt::TimeInstant tinicial = m_time[0];
+  te::dt::TimeInstant tfinal = m_time[(int)size - 1];
+
+  if (iTime > tfinal || fTime < tinicial) // out of animation time
+    return;
+
+  size_t ini = 0;
+  if (tinicial > iTime)
   {
-    if (m_time[i] == iTime || m_time[i] > iTime)
+    for (int i = 0; i < (int)size; ++i)
     {
-      ini = i;
-      break;
+      if (m_time[i] == iTime || m_time[i] > iTime)
+      {
+        ini = i;
+        break;
+      }
     }
   }
-  for (int i = (int)size - 1; i >= 0; --i)
+
+  size_t fim = size - 1;
+  if (tfinal > fTime)
   {
-    if (m_time[i] == fTime || m_time[i] < fTime)
+    for (int i = (int)fim; i > (int)ini; --i)
     {
-      fim = i;
-      break;
+      if (m_time[i] == fTime || m_time[i] < fTime)
+      {
+        fim = i;
+        break;
+      }
     }
   }
-  //size = fim - ini + 1;
-  size = fim - ini;
-  size_t tfim = ini + size;
 
-  size_t count = m_files.count();
-  if (tfim > count)
-    tfim = count;
-
-  for (int i = (int)ini; i < (int)tfim; ++i)
+  for (int i = (int)ini; i <= (int)fim; ++i)
   {
     QString f = m_files[i];
     m_animationFiles.push_back(f);

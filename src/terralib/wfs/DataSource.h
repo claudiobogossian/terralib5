@@ -38,7 +38,8 @@
 #include <vector>
 
 // Forward declarations
-class OGRDataSource;
+//class OGRDataSource;
+class GDALDataset;
 
 namespace te
 {
@@ -81,7 +82,8 @@ namespace te
 
         static void setDialect(te::da::SQLDialect* dialect);
 
-        OGRDataSource* getOGRDataSource();
+        //OGRDataSource* getOGRDataSource();
+        GDALDataset* getOGRDataSource();
 
         const std::vector<WFSLayerInfo>& getLayersInfo();
 
@@ -106,7 +108,8 @@ namespace te
       private:
 
         std::map<std::string, std::string> m_connectionInfo;
-        OGRDataSource* m_ogrDS;
+        //OGRDataSource* m_ogrDS;
+        GDALDataset* m_ogrDS;
         bool m_isOpened;
         std::vector<WFSLayerInfo> m_layersInfo;
         static te::da::DataSourceCapabilities sm_capabilities;

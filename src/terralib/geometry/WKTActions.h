@@ -145,6 +145,14 @@ namespace te
 
         void createMultiPolygonZM();
 
+        void createMultiSurface();
+
+        void createMultiSurfaceZ();
+
+        void createMultiSurfaceM();
+
+        void createMultiSurfaceZM();
+
         void createPolyhedralSurface();
 
         void createPolyhedralSurfaceZ();
@@ -215,6 +223,8 @@ namespace te
         void buildMultiLineString(const GeomType& t);
 
         void buildMultiPolygon(const GeomType& t);
+
+        void buildMultiSurface(const GeomType& t);
 
         void buildPolyhedralSurface(PolyhedralSurface* ps);
 
