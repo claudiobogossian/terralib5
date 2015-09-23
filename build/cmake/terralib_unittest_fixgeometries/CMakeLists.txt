@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build the Unit Test for the Raster Processing Blender.
+#  Description: Build the Unit Test for the Fix Geometry.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>

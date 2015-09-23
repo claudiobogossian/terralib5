@@ -71,15 +71,6 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
 
   Utils* utils = Context::getInstance().getUtils();
 
-  //double wMargin = mapModel->getDisplacementX();
-  //double hMargin = mapModel->getDisplacementY();
-
-  //te::gm::Envelope newBoxMM(wMargin, hMargin, boxMM.getWidth() + wMargin, boxMM.getHeight() + hMargin);
-
-  //model->setSRID(srid);
-  //model->setMapScale(scale); // put visit
-  //model->calculateGaps(box); //TODO rever
-  
   // Box necessario para desenhar a curvatura
   te::gm::Envelope planarBox = geographicBox;
   int zone = utils->calculatePlanarZone(geographicBox);
@@ -90,7 +81,6 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
   }
 
   utils->remapToPlanar(&planarBox, zone);
- // model->setPlanarBox(planarBoxGeodesic);
 
   calculateVertical(geographicBox, planarBox, newBoxMM);
   calculateHorizontal(geographicBox, planarBox, newBoxMM);

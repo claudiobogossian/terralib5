@@ -38,6 +38,7 @@ namespace te
     class BinaryFunction;
     class BinaryOp;
     class BinaryOpEncoder;
+    class Coalesce;
     class Count;
     class DataSetName;
     class Div;
@@ -110,8 +111,10 @@ namespace te
     class ST_Equals;
     class ST_Intersection;
     class ST_Intersects;
+    class ST_IsEmpty;
     class ST_IsValid;
     class ST_Length;
+    class ST_Multi;
     class ST_NumGeometries;
     class ST_Overlaps;
     class ST_Perimeter;

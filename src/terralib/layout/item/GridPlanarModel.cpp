@@ -34,24 +34,6 @@
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
-
-/*
-#include "GridPlanarModel.h"
-#include "../core/ContextItem.h"
-
-#include "../../geometry/Envelope.h"
-#include "../../geometry/Coord2D.h"
-#include "../core/property/Property.h"
-#include "../core/property/PlanarGridSettingsConfigProperties.h"
-#include "../core/enum/Enums.h"
-
-// STL
-#include <string>
-#include <sstream> 
-
-*/
-
-
 te::layout::GridPlanarModel::GridPlanarModel()
   : GridMapModel()
   , Observer()
@@ -102,22 +84,10 @@ te::layout::GridPlanarModel::GridPlanarModel()
     property.addOption(v);
     m_properties.addProperty(property);
   }
-
-//  m_type = ;
-
-  //m_lneVrtDisplacement = 2;
-  //m_lneHrzDisplacement = 2;
 }
 
 te::layout::GridPlanarModel::~GridPlanarModel()
 {
-  /*
-  if(m_settingsConfig)
-  {
-    delete m_settingsConfig;
-    m_settingsConfig = 0;
-  }
-  */
 }
 
 void te::layout::GridPlanarModel::update(const Subject* subject)
@@ -193,28 +163,34 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
     te::gm::Envelope defaultPlanarBox(0, 0, 10000, 10000);
     if(newPlanarBox.equals(defaultPlanarBox) == false)
     {
+      double gapX = 0;
+      double distance = newPlanarBox.getWidth();
+      double initialX = getInitialCoord(newPlanarBox.getLowerLeftX(), distance, gapX);
       {
         Property property(0);
         property.setName(settingsConfig.getInitialGridPointX());
-        property.setValue(newPlanarBox.getLowerLeftX(), dataType->getDataTypeDouble());
+        property.setValue(initialX, dataType->getDataTypeDouble());
         properties.addProperty(property);
       }
+      double gapY = 0;
+      distance = newPlanarBox.getHeight();
+      double initialY = getInitialCoord(newPlanarBox.getLowerLeftY(), distance, gapY);
       {
         Property property(0);
         property.setName(settingsConfig.getInitialGridPointY());
-        property.setValue(newPlanarBox.getLowerLeftY(), dataType->getDataTypeDouble());
+        property.setValue(initialY, dataType->getDataTypeDouble());
         properties.addProperty(property);
       }
       {
         Property property(0);
         property.setName(settingsConfig.getLneHrzGap());
-        property.setValue(newScale * 0.05, dataType->getDataTypeDouble());
+        property.setValue(gapX, dataType->getDataTypeDouble());
         properties.addProperty(property);
       }
       {
         Property property(0);
         property.setName(settingsConfig.getLneVrtGap());
-        property.setValue(newScale * 0.05, dataType->getDataTypeDouble());
+        property.setValue(gapY, dataType->getDataTypeDouble());
         properties.addProperty(property);
       }
     }
@@ -252,48 +228,19 @@ te::gm::Envelope te::layout::GridPlanarModel::getWorldBoxInPlanar(const te::gm::
   return worldBoxPlanar;
 }
 
-/*
-void te::layout::GridPlanarModel::calculateGaps( te::gm::Envelope box )
+double te::layout::GridPlanarModel::getInitialCoord(double initialCoord, double distance, double& gap)
 {
-  if(m_lneHrzGap <= 0)
+  int gaps[25] = {1000, 1500, 2000, 2500, 5000, 7500, 10000, 12500, 15000, 20000, 25000, 50000, 100000, 125000, 150000, 175000, 200000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 1750000, 2000000};
+  int numberOfIntervals = 5;
+  gap = distance / numberOfIntervals;
+  for (unsigned int i = 0; i < 15; i++)
   {
-    m_lneHrzGap = m_mapScale * 0.05;
+    if (gap <= gaps[i])
+    {
+      gap = gaps[i-1];
+      break;
+    }
   }
-
-  if(m_lneVrtGap <= 0)
-  {
-    m_lneVrtGap = m_lneHrzGap;
-  }
-
-  if(m_initialGridPointX == 0)
-  {
-    m_initialGridPointX = box.getLowerLeftX();
-  }
-  if(m_initialGridPointY == 0)
-  {
-    m_initialGridPointY = box.getLowerLeftY();
-  }
+  int interval = initialCoord / gap;
+  return interval * gap;
 }
-
-te::layout::LayoutUnit te::layout::GridPlanarModel::getUnit()
-{
-  return m_unit;
-}
-
-void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid )
-{
-
-}
-
-void te::layout::GridPlanarModel::drawVerticalLines( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
-{
-
-}
-
-void te::layout::GridPlanarModel::drawHorizontalLines( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
-{
-
-}
-*/
-
-

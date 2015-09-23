@@ -330,7 +330,7 @@ namespace te
         /*!
           \brief Context between te::layout::View and te::layout::Scene: zoom, dpix, dpiy, paper config and mode.
         */
-        virtual ContextObject getContext();
+        virtual const ContextObject& getContext() const;
         
         /*!
           \brief Method that returns the object responsible for aligning objects in the scene.

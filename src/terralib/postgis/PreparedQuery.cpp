@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../Defines.h"
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
