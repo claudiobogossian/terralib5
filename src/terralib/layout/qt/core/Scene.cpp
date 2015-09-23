@@ -1028,7 +1028,7 @@ te::gm::Envelope te::layout::Scene::switchBox(te::gm::Envelope box, QSize oldPap
   return box;
 }
 
-te::layout::ContextObject te::layout::Scene::getContext()
+const te::layout::ContextObject& te::layout::Scene::getContext() const
 {
   return m_context;
 }

@@ -143,11 +143,25 @@ int te::layout::Utils::mm2pixel( double mm )
   {
     return -1;
   }
-  ContextObject context = scene->getContext();
+  const ContextObject& context = scene->getContext();
 
   int devDpi = context.getDpiX();
   int px = (mm * devDpi) / 25.4 ;
   return px;
+}
+
+double te::layout::Utils::pixel2mm( int pixel )
+{
+  AbstractScene* scene = Context::getInstance().getScene();
+  if(!scene)
+  {
+    return -1;
+  }
+  const ContextObject& context = scene->getContext();
+
+  double devDpi = (double)context.getDpiX();
+  double mm = (pixel / devDpi) * 25.4 ;
+  return mm;
 }
 
 void te::layout::Utils::configCanvas( te::gm::Envelope box, bool resize, bool applyZoom )

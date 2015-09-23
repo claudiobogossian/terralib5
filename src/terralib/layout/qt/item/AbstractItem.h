@@ -460,26 +460,26 @@ namespace te
     template <class T>
     inline void te::layout::AbstractItem<T>::drawText( const QPointF& point, QPainter* painter, const std::string& text )
     {
+      QGraphicsScene* scene = T::scene();
+      if(scene == 0)
+      {
+        return;
+      }
+
+      AbstractScene* myScene = dynamic_cast<AbstractScene*>(scene);
+      if(myScene == 0)
+      {
+        return;
+      }
+
       painter->save();
 
-      QTransform t = painter->transform();
-      QPointF p = t.map(point);
+      QTransform transform;
+      transform.translate(0., 2. * point.y());
+      transform.scale(1., -1.);
+      painter->setTransform(transform, true);
 
-      QGraphicsScene* scn = T::scene();
-      AbstractScene* sc = dynamic_cast<AbstractScene*>(scn);
-      ContextObject context = sc->getContext();
-
-      int zoom = context.getZoom();
-      double zoomFactor = zoom / 100.;
-
-      QFont ft = painter->font();
-      ft.setPointSize(ft.pointSize() * zoomFactor);
-      painter->setFont(ft);
-
-      //Keeps the size of the text.(Aspect)
-      painter->setMatrixEnabled(false);
-      painter->drawText(p, text.c_str());
-      painter->setMatrixEnabled(true);
+      painter->drawText(point, text.c_str());
 
       painter->restore();
     }

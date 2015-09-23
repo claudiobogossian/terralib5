@@ -94,7 +94,7 @@ namespace te
           \brief The most important common data.
           \return most important common data between te::layout::View and te::layout::Scene
         */
-        virtual ContextObject getContext() = 0;
+        virtual const ContextObject& getContext() const = 0 ;
                         
       protected:
         
