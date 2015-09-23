@@ -450,7 +450,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
   std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
   if (dsQuery->isEmpty())
-    return false;
+    return 0;
 
   SetOutputDSet(dsQuery.get(), outDSet.get());
 
@@ -630,7 +630,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
   std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
   if (dsQuery->isEmpty())
-    return false;
+    return 0;
 
   SetOutputDSet(dsQuery.get(), outDSet.get());
 
@@ -818,7 +818,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
   std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
   if (dsQuery->isEmpty())
-    return false;
+    return 0;
 
   SetOutputDSet(dsQuery.get(), outDSet.get());
 
