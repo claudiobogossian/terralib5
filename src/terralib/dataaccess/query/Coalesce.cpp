@@ -18,28 +18,27 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOpEncoder.cpp
+  \file terralib/dataaccess/query/Coalesce.cpp
 
-  \brief A query encoder for unary operator expressions.
+  \brief Coalesce operator.
 */
 
 // TerraLib
-#include "Function.h"
-#include "SQLVisitor.h"
-#include "UnaryOpEncoder.h"
+#include "Coalesce.h"
 
-// STL
-#include <cassert>
-
-void te::da::UnaryOpEncoder::toSQL(const Function& f,
-                                   std::string& buff,
-                                   SQLVisitor& v) const
+te::da::Coalesce::Coalesce(const Coalesce& rhs)
+  : BinaryFunction(rhs)
 {
-  assert(f.getNumArgs() == 1);
-  //buff += "(";
-  buff += m_name;
-  buff += " ";
-  f[0]->accept(v);
-  //buff += ")";
+}
+
+te::da::Coalesce& te::da::Coalesce::operator=(const Coalesce& rhs)
+{
+  BinaryFunction::operator=(rhs);
+  return *this;
+}
+
+te::da::Expression* te::da::Coalesce::clone() const
+{
+  return new Coalesce(*this);
 }
 

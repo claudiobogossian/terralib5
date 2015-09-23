@@ -18,28 +18,18 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOpEncoder.cpp
+  \file Config.h
 
-  \brief A query encoder for unary operator expressions.
-*/
+  \brief Configuration flags for TerraLib Unittest Vector Processing.
+ */
+
+#ifndef __TERRALIB_UNITTEST_VP_INTERNAL_CONFIG_H
+#define __TERRALIB_UNITTEST_VP_INTERNAL_CONFIG_H
 
 // TerraLib
-#include "Function.h"
-#include "SQLVisitor.h"
-#include "UnaryOpEncoder.h"
+#include "../Config.h"
 
-// STL
-#include <cassert>
 
-void te::da::UnaryOpEncoder::toSQL(const Function& f,
-                                   std::string& buff,
-                                   SQLVisitor& v) const
-{
-  assert(f.getNumArgs() == 1);
-  //buff += "(";
-  buff += m_name;
-  buff += " ";
-  f[0]->accept(v);
-  //buff += ")";
-}
+#endif  // __TERRALIB_UNITTEST_VP_INTERNAL_CONFIG_H
+
 

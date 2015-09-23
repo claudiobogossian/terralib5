@@ -18,28 +18,49 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOpEncoder.cpp
+ \file Algorithm.h
+ 
+ \brief Abstract algorithm.
+ 
+ \ingroup vp
+ */
 
-  \brief A query encoder for unary operator expressions.
-*/
+#ifndef __TERRALIB_VP_INTERNAL_ALGORITHM_H
+#define __TERRALIB_VP_INTERNAL_ALGORITHM_H
 
-// TerraLib
-#include "Function.h"
-#include "SQLVisitor.h"
-#include "UnaryOpEncoder.h"
+// Terralib
+#include "../memory/DataSet.h"
+
+#include "Config.h"
+#include "AlgorithmParams.h"
 
 // STL
-#include <cassert>
+#include <map>
 
-void te::da::UnaryOpEncoder::toSQL(const Function& f,
-                                   std::string& buff,
-                                   SQLVisitor& v) const
+namespace te
 {
-  assert(f.getNumArgs() == 1);
-  //buff += "(";
-  buff += m_name;
-  buff += " ";
-  f[0]->accept(v);
-  //buff += ")";
-}
+  namespace vp
+  {
+    class TEVPEXPORT Algorithm
+    {
+    public:
+      
+      Algorithm();
+      
+      virtual ~Algorithm() {}
+      
+      virtual bool executeMemory(AlgorithmParams* mainParams, te::da::DataSet* teste) = 0;
 
+      virtual bool executeQuery(AlgorithmParams* mainParams) = 0;
+
+      virtual bool isSupportQuery(AlgorithmParams* mainParams) = 0;
+    
+    private:
+
+      Algorithm(const Algorithm&);
+
+      const Algorithm& operator=(const Algorithm&);
+    };
+  }
+}
+#endif // __TERRALIB_VP_INTERNAL_ALGORITHM_H

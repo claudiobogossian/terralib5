@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build the Unit Test for the Fix Geometry.
+#  Description: Build the Unit Test for the Vector Processing.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -28,18 +28,17 @@
 
 include_directories(${Boost_INCLUDE_DIR}
                     ${CPPUNIT_INCLUDE_DIR}
-                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
+					${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/fixgeometries/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/fixgeometries/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/vp/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/vp/*.h)
 
-add_executable(terralib_unittest_fixgeometries ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+add_executable(terralib_unittest_vp ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-target_link_libraries(terralib_unittest_fixgeometries terralib_mod_geometry
-                                                      terralib_mod_plugin 
-                                                      terralib_mod_memory
-                                                      ${CPPUNIT_LIBRARY})
+target_link_libraries(terralib_unittest_vp 	terralib_mod_plugin 
+											terralib_mod_vp_core
+											${CPPUNIT_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/fixgeometries COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/vp COMPONENT devel)

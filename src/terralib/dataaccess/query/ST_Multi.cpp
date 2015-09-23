@@ -18,28 +18,48 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOpEncoder.cpp
+  \file terralib/dataaccess/query/ST_Multi.cpp
 
-  \brief A query encoder for unary operator expressions.
+  \brief Spatial multi operator.
 */
 
 // TerraLib
-#include "Function.h"
-#include "SQLVisitor.h"
-#include "UnaryOpEncoder.h"
+#include "../../geometry/Geometry.h"
+#include "LiteralGeom.h"
+#include "PropertyName.h"
+#include "ST_Multi.h"
 
-// STL
-#include <cassert>
-
-void te::da::UnaryOpEncoder::toSQL(const Function& f,
-                                   std::string& buff,
-                                   SQLVisitor& v) const
+te::da::ST_Multi::ST_Multi(const te::gm::Geometry& g)
+  : Function("st_multi")
 {
-  assert(f.getNumArgs() == 1);
-  //buff += "(";
-  buff += m_name;
-  buff += " ";
-  f[0]->accept(v);
-  //buff += ")";
+  LiteralGeom* geom = new LiteralGeom(g);
+  m_args.push_back(geom);
+}
+
+te::da::ST_Multi::ST_Multi(const PropertyName& prop)
+  : Function("st_multi")
+{
+  m_args.push_back(prop.clone());
+}
+
+te::da::ST_Multi::ST_Multi(const Expression& e)
+  : Function("st_multi")
+{
+  m_args.push_back(e.clone());
+}
+
+te::da::ST_Multi::~ST_Multi()
+{
+}
+
+te::da::ST_Multi& te::da::ST_Multi::operator=(const ST_Multi& rhs)
+{
+  Function::operator=(rhs);
+  return *this;
+}
+
+te::da::Expression* te::da::ST_Multi::clone() const
+{
+  return new ST_Multi(*this);
 }
 

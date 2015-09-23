@@ -193,6 +193,23 @@ void te::ogr::SQLVisitor::visitDistinct(const te::da::Distinct& visited)
   is case insensitive in OGR SQL. The result of a SELECT with a DISTINCT keyword is a layer with one column
   (named the same as the field operated on), and one feature per distinct value.
   Geometries are discarded. The distinct values are assembled in memory, so alot of memory may be used for datasets with a large number of distinct values. */
+  
+  m_sql = "SELECT DISTINCT ";
+  
+  for (std::size_t i = 0; i < visited.size(); ++i)
+  {
+    te::da::Expression* exp = visited[i].clone();
+    te::da::PropertyName* propName = new te::da::PropertyName(dynamic_cast<te::da::PropertyName&>(*exp));
+
+    if (propName)
+    {
+      const std::string& att = propName->getName();
+      m_sql += att;
+      m_sql += ", ";
+    }
+  }
+  int size = m_sql.size();
+  m_sql.erase(m_sql.begin() + (size - 2), m_sql.end() - 1);
 }
 
 te::gm::Envelope* te::ogr::SQLVisitor::getMBR()

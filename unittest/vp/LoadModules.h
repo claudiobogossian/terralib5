@@ -18,28 +18,39 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOpEncoder.cpp
+  \file LoadModules.h
+ 
+  \brief Load terralib modules.
+ */
 
-  \brief A query encoder for unary operator expressions.
-*/
+#ifndef __TERRALIB_UNITTEST_VP_LOADMODULES_H
+#define __TERRALIB_UNITTEST_VP_LOADMODULES_H
 
-// TerraLib
-#include "Function.h"
-#include "SQLVisitor.h"
-#include "UnaryOpEncoder.h"
+#include <terralib/common.h>
+#include <terralib/plugin.h>
+#include "Config.h"
 
-// STL
-#include <cassert>
+/*!
+  \brief Load terralib modules.
+ */
 
-void te::da::UnaryOpEncoder::toSQL(const Function& f,
-                                   std::string& buff,
-                                   SQLVisitor& v) const
+void LoadModules()
 {
-  assert(f.getNumArgs() == 1);
-  //buff += "(";
-  buff += m_name;
-  buff += " ";
-  f[0]->accept(v);
-  //buff += ")";
-}
+  std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
 
+  te::plugin::PluginInfo* info;
+  
+#ifdef TERRALIB_MOD_OGR_ENABLED
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
+  te::plugin::PluginManager::getInstance().add(info); 
+#endif
+
+#ifdef TERRALIB_MOD_POSTGIS_ENABLED
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");
+  te::plugin::PluginManager::getInstance().add(info);
+#endif
+
+  te::plugin::PluginManager::getInstance().loadAll();  
+};
+
+#endif  // __TERRALIB_UNITTEST_VP_LOADMODULES_H

@@ -18,28 +18,28 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOpEncoder.cpp
+ \file Algorithm.cpp
+ */
 
-  \brief A query encoder for unary operator expressions.
-*/
+#include "../memory/DataSet.h"
 
-// TerraLib
-#include "Function.h"
-#include "SQLVisitor.h"
-#include "UnaryOpEncoder.h"
+#include "Algorithm.h"
 
-// STL
-#include <cassert>
-
-void te::da::UnaryOpEncoder::toSQL(const Function& f,
-                                   std::string& buff,
-                                   SQLVisitor& v) const
+namespace te
 {
-  assert(f.getNumArgs() == 1);
-  //buff += "(";
-  buff += m_name;
-  buff += " ";
-  f[0]->accept(v);
-  //buff += ")";
-}
+  namespace vp
+  {
+    Algorithm::Algorithm()
+    {
+    }
 
+    Algorithm::Algorithm(const Algorithm&)
+    {
+    }
+
+    const Algorithm& Algorithm::operator=(const Algorithm&)
+    {
+      return *this;
+    }
+  }// end namespace vp
+}// end namespace te
