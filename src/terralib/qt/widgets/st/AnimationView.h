@@ -86,6 +86,7 @@ namespace te
 
       public:
         bool m_dragDropAccepted;
+        bool m_sameSRID;
       };
     } // end namespace widgets
   }   // end namespace qt
