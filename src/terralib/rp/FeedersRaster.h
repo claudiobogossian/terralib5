@@ -146,7 +146,7 @@ namespace te
           \brief Constructor from an input directory name.
           \param directoryName The directory full path name. 
           \param recursive true if a recursive search must be performed. 
-          \param rType The name of the specific driver to instantiate each raster. 
+          \param rType The name of the specific driver to instantiate each raster ( See te::rst::RasterFactory dictionary for valid registered values ). 
           \param sortFileNames If true, the file names will be sorted.
           \param fileExtensions The file extensions filter (example: ".tif"), or an empty vector if all extensions must be accepted.
         */        

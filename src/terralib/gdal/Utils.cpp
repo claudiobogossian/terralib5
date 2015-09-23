@@ -170,10 +170,10 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds, const int multiResLevel)
     double gridAffineParams[ 6 ];
     gridAffineParams[ 0 ] = gtp[ 1 ];
     gridAffineParams[ 1 ] = gtp[ 2 ];
-    gridAffineParams[ 2 ] = gtp[ 0 ];
+    gridAffineParams[ 2 ] = gtp[ 0 ] + ( gtp[ 1 ] / 2.0 );
     gridAffineParams[ 3 ] = gtp[ 4 ];
     gridAffineParams[ 4 ] = gtp[ 5 ];
-    gridAffineParams[ 5 ] = gtp[ 3 ];     
+    gridAffineParams[ 5 ] = gtp[ 3 ] + ( gtp[ 5 ] / 2.0 );     
     
     if( multiResLevel == -1 )
     {
@@ -555,18 +555,18 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
   if(poDataset == 0)
     throw Exception("Could not create raster!");
   
-  const double* cgt = g->getGeoreference();
+  const double* gridAffineParams = g->getGeoreference();
   
-  double gt[6];
+  double gtp[6];
   
-  gt[0] = cgt[2]; 
-  gt[1] = cgt[0]; 
-  gt[2] = cgt[1]; 
-  gt[3] = cgt[5]; 
-  gt[4] = cgt[3]; 
-  gt[5] = cgt[4];
+  gtp[0] = gridAffineParams[2] - ( gridAffineParams[ 0 ] / 2.0 ); 
+  gtp[1] = gridAffineParams[0]; 
+  gtp[2] = gridAffineParams[1]; 
+  gtp[3] = gridAffineParams[5] - ( gridAffineParams[ 4 ] / 2.0  ); 
+  gtp[4] = gridAffineParams[3]; 
+  gtp[5] = gridAffineParams[4];
   
-  poDataset->SetGeoTransform(gt);
+  poDataset->SetGeoTransform(gtp);
   
   OGRSpatialReference oSRS;
   
@@ -812,9 +812,11 @@ std::string te::gdal::GetGDALConnectionInfo(const std::map<std::string, std::str
 void te::gdal::Vectorize(GDALRasterBand* band, std::vector<te::gm::Geometry*>& geometries)
 {
 // create data source of geometries in memory
-  OGRSFDriver *ogrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("Memory");
+  //OGRSFDriver *ogrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("Memory");
+  GDALDriver* ogrDriver = GetGDALDriverManager()->GetDriverByName("Memory");
 
-  OGRDataSource* ds = ogrDriver->CreateDataSource("ds_vectorize", NULL);
+  //OGRDataSource* ds = ogrDriver->CreateDataSource("ds_vectorize", NULL);
+  GDALDataset* ds = ogrDriver->Create("ds_vectorize", 0, 0, 0, GDT_Unknown, NULL);
 
   OGRLayer* ogrLayer = ds->CreateLayer("vectorization", NULL, wkbMultiPolygon, NULL);
 
@@ -828,7 +830,8 @@ void te::gdal::Vectorize(GDALRasterBand* band, std::vector<te::gm::Geometry*>& g
   for (int g = 0; g < ogrLayer->GetFeatureCount(); g++)
     geometries.push_back(te::ogr::Convert2TerraLib(ogrLayer->GetFeature(g)->GetGeometryRef()));
 
-  OGRDataSource::DestroyDataSource(ds);
+  //OGRDataSource::DestroyDataSource(ds);
+  GDALClose(ds);
 }
 
 void te::gdal::Rasterize(std::vector<te::gm::Geometry*> geometries, GDALDataset* outraster)
@@ -987,3 +990,39 @@ const std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseEx
   return extensions;
 }
 
+void te::gdal::createGeopackage(std::string outFileName)
+{
+  const char *gpkgFormat = "GPKG";
+
+  GDALDriver *gpkgDriver;
+
+  gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
+
+  char **papszOptions = NULL;
+  GDALDataset *poDstDS;
+  poDstDS = gpkgDriver->Create(outFileName.c_str(), 0, 0, 0, GDT_Unknown, papszOptions);
+  GDALClose((GDALDatasetH)poDstDS);
+}
+
+void te::gdal::copyToGeopackage(std::string inFileName, std::string outFileName)
+{
+  const char *gpkgFormat = "GPKG";
+  GDALDriver *gpkgDriver;
+
+  std::string inName = GetDriverName(inFileName);
+  const char *inFormat = inName.c_str();
+  GDALDriver *inDriver;
+  
+  gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
+  inDriver = GetGDALDriverManager()->GetDriverByName(inFormat);
+
+  char **papszOptions = NULL;
+  papszOptions = CSLSetNameValue(papszOptions,"APPEND_SUBDATASET", "YES");
+
+  GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(inFileName.c_str(), GA_ReadOnly);
+  GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), poSrcDS, FALSE, papszOptions, NULL, NULL);
+
+  CSLDestroy(papszOptions);
+  GDALClose((GDALDatasetH)poSrcDS);
+  GDALClose((GDALDatasetH)poDstDS);
+}

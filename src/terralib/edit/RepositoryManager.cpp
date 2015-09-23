@@ -15,7 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
-*/
+ */
 
 /*!
   \file terralib/edit/RepositoryManager.cpp
@@ -35,7 +35,7 @@
 // STL
 #include <cassert>
 
-void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm::Geometry* geom)
+void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm::Geometry* geom, OperationType operation)
 {
   Repository* repository = getRepository(source);
 
@@ -45,16 +45,17 @@ void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm:
     repository = new Repository(source);
 
     // Add the geometry
-    repository->add(geom);
+    repository->add(geom, operation);
 
     // Store!
     m_repositories[source] = repository;
+
   }
   else
-    repository->add(geom);
+    repository->add(geom, operation);
 }
 
-void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
 {
   Repository* repository = getRepository(source);
 
@@ -64,13 +65,13 @@ void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da:
     repository = new Repository(source);
 
     // Add the geometry
-    repository->add(id, geom);
+    repository->add(id, geom, operation);
 
     // Store!
     m_repositories[source] = repository;
   }
   else
-    repository->add(id, geom);
+    repository->add(id, geom, operation);
 }
 
 void te::edit::RepositoryManager::addFeature(const std::string& source, Feature* f)
@@ -174,6 +175,25 @@ void te::edit::RepositoryManager::remove(const std::string& source)
   delete it->second;
 }
 
+void te::edit::RepositoryManager::removeFeature(const std::string& source, te::da::ObjectId* id)
+{
+  Repository* repository = getRepository(source);
+
+  if (repository == 0)
+  {
+    // Not found! Create a new repository associated with the given source
+    repository = new Repository(source);
+
+    // Remove the feature
+    repository->remove(id);
+
+    // Store!
+    m_repositories[source] = repository;
+  }
+  else
+    repository->remove(id);
+}
+
 te::edit::RepositoryManager::RepositoryManager()
 {
 }
@@ -182,3 +202,5 @@ te::edit::RepositoryManager::~RepositoryManager()
 {
   removeAll();
 }
+
+

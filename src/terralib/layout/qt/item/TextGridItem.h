@@ -37,14 +37,15 @@ namespace te
   namespace layout
   {
     class Observable;
+    class AbstractItemController;
 
     /*!
       \brief Class daughter of te::layout::TitleItem representing a grid with cells which can be inserted texts.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::TitleItem
-	  */
+      \sa te::layout::TitleItem
+    */
     class TELAYOUTEXPORT TextGridItem : public TitleItem
     {
       public:
@@ -55,7 +56,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        TextGridItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        TextGridItem(AbstractItemController* controller);
 
         /*!
           \brief Destructor

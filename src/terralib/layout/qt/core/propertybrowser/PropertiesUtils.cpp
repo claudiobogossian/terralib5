@@ -28,14 +28,15 @@
 // TerraLib
 #include "PropertiesUtils.h"
 #include "../../../core/property/Properties.h"
-#include "../../../core/pattern/mvc/ItemObserver.h"
 #include "../../../core/property/SharedProperties.h"
 #include "../../../core/enum/Enums.h"
 #include "../../../core/pattern/singleton/Context.h"
+#include "../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../core/pattern/mvc/AbstractItemModel.h"
 #include "../ItemUtils.h"
 #include "../Scene.h"
 #include "../pattern/command/ChangePropertyCommand.h"
-#include "../../../core/pattern/mvc/Observable.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -52,9 +53,9 @@ te::layout::PropertiesUtils::~PropertiesUtils()
   
 }
 
-te::layout::Properties* te::layout::PropertiesUtils::intersection( QList<QGraphicsItem*> graphicsItems, bool& window )
+te::layout::Properties te::layout::PropertiesUtils::intersection( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
-  Properties* props = 0;
+  Properties props("");
 
   if(graphicsItems.empty())
   {
@@ -65,14 +66,22 @@ te::layout::Properties* te::layout::PropertiesUtils::intersection( QList<QGraphi
   {
     QGraphicsItem* item = graphicsItems.first();
     if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+    {
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(lItem->getModel())
+        if(lItem->getController())
         {
-          props = const_cast<Properties*>(lItem->getModel()->getProperties());
-          window = props->hasWindows();
+          props = lItem->getController()->getProperties();
+          window = props.hasWindows();
+        }
+      }
+      else
+      {
+        AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
+        if(absItem != 0)
+        {
+          props = absItem->getController()->getProperties();
         }
       }
     }
@@ -85,54 +94,50 @@ te::layout::Properties* te::layout::PropertiesUtils::intersection( QList<QGraphi
   return props;
 }
 
-te::layout::Properties* te::layout::PropertiesUtils::sameProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
+te::layout::Properties te::layout::PropertiesUtils::sameProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
-  Properties* props = 0;
-  std::vector<Properties*> propsVec = getAllProperties(graphicsItems, window);
+  Properties props("");
+  std::vector<Properties> propsVec = getAllProperties(graphicsItems, window);
 
   QGraphicsItem* firstItem = graphicsItems.first();
-  ItemObserver* lItem = dynamic_cast<ItemObserver*>(firstItem);
+  AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(firstItem);
 
   if(!lItem)
   {
     return props;
   }
 
-  Properties* firstProps = 0;
+  Properties firstProps("");
 
-  if(lItem->getModel())
+  if(lItem->getController())
   {
-    firstProps = const_cast<Properties*>(lItem->getModel()->getProperties());
+    firstProps = lItem->getController()->getProperties();
   }
 
-  if(!firstProps)
+  if(firstProps.getProperties().empty())
   {
     return props;
   }
 
-  std::vector<Properties*>::iterator it = propsVec.begin();
-  std::vector<Properties*>::iterator itend = propsVec.end();
+  std::vector<Properties>::iterator it = propsVec.begin();
+  std::vector<Properties>::iterator itend = propsVec.end();
   bool result = false;
-  foreach( Property prop, firstProps->getProperties()) 
+  foreach( Property prop, firstProps.getProperties()) 
   {
     contains(itend, it, prop.getName(), result);
     if(result)
     {
-      if(!props)
-      {
-        props = new Properties("");
-      }
       prop.setParentItemHashCode(0);
-      props->addProperty(prop);
+      props. addProperty(prop);
     }
   }  
 
   return props;
 }
 
-void te::layout::PropertiesUtils::contains( std::vector<Properties*>::iterator itend, std::vector<Properties*>::iterator it, std::string name, bool& result )
+void te::layout::PropertiesUtils::contains( std::vector<Properties>::iterator itend, std::vector<Properties>::iterator it, std::string name, bool& result )
 {
-  Property prop = (*it)->contains(name);
+  Property prop = (*it).getProperty(name);
   if(prop.isNull())
   {
     result = false;
@@ -149,30 +154,30 @@ void te::layout::PropertiesUtils::contains( std::vector<Properties*>::iterator i
   }
 }
 
-std::vector<te::layout::Properties*> te::layout::PropertiesUtils::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
+std::vector<te::layout::Properties> te::layout::PropertiesUtils::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
-  std::vector<Properties*> propsVec;
+  std::vector<Properties> propsVec;
   bool result = true;
 
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+    {      
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(!lItem->getModel())
+        if(!lItem->getController())
         {
           continue;
         }
 
-        Properties* propsItem = const_cast<Properties*>(lItem->getModel()->getProperties());
-        if(propsItem)
+        Properties propsItem = lItem->getController()->getProperties();
+        if(!propsItem.getProperties().empty())
         {
           propsVec.push_back(propsItem);
           if(result)
           {
-            result = propsItem->hasWindows();
+            result = propsItem.hasWindows();
           }
         }
       }
@@ -229,30 +234,7 @@ void te::layout::PropertiesUtils::mapNameDynamicProperty( Property& property, QL
   addDynamicOptions(property, strList);
 }
 
-QGraphicsItem* te::layout::PropertiesUtils::equalsHashCode( Property property, QList<QGraphicsItem*> graphicsItems )
-{
-  QGraphicsItem *itemSelected = 0;
 
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-      {
-        if(lItem->getModel())
-        {
-          int hashcode = lItem->getModel()->getHashCode();
-          if(hashcode == property.getParentItemHashCode())
-          {
-            itemSelected = item;
-          }
-        } 
-      }
-    }
-  }
-  return itemSelected;
-}
 
 
 

@@ -32,47 +32,78 @@
 
 // Qt
 #include <QAction>
-#include <QtCore/QObject>
 #include <QMenu>
+
+class EditDelegate;
 
 namespace te
 {
+  namespace map
+  {
+    class AbstractLayer;
+  }
+
   namespace qt
   {
+    namespace widgets
+    {
+      class LayerItemView;
+    }
+
     namespace plugins
     {
       namespace edit
       {
-// Forward declaration
+        // Forward declaration
         class ToolBar;
 
         class Plugin : public QObject, public te::plugin::Plugin
         {
           Q_OBJECT
-          public:
 
-            Plugin(const te::plugin::PluginInfo& pluginInfo);
+        public:
 
-            ~Plugin();
+          Plugin(const te::plugin::PluginInfo& pluginInfo);
 
-            void startup();
+          ~Plugin();
 
-            void shutdown();
+          void startup();
 
-          protected slots:
-            /*!
+          void shutdown();
+
+        protected slots:
+          /*!
             \brief Slot function used when a action was selected.
 
             \param checked Flag used in case a toggle action.
             */
-            void onActionActivated(bool checked);
+          void onActionActivated(bool);
 
-          protected:
+          void onApplicationTriggered(te::qt::af::evt::Event* e);
 
-            ToolBar* m_toolbar; //!< Main toolbar of TerraLib Edit Qt Plugin.
-            QMenu* m_menu;      //!< Main menu of TerraLib Edit Qt Plugin.
-            QAction* m_action;    //!< Action used to call the process
+          void onStashedLayer(te::map::AbstractLayer* layer);
 
+          void onGeometriesChanged();
+
+        Q_SIGNALS:
+
+          void triggered(te::qt::af::evt::Event* e);
+
+        protected:
+
+          void drawStashed();
+
+          void updateDelegate(const bool& add);
+
+          te::qt::widgets::LayerItemView* getLayerExplorer();
+
+          ToolBar* m_toolbar; //!< Main toolbar of TerraLib Edit Qt Plugin.
+          QMenu* m_menu;      //!< Main menu of TerraLib Edit Qt Plugin.
+          QAction* m_action;    //!< Action used to call the process
+
+          EditDelegate* m_delegate;
+
+          //void createAction(std::string name, std::string pixmap = "");
         };
 
       } // end namespace edit
@@ -80,6 +111,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINEDITEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINEDITEXPORT)
 
 #endif //__TE_QT_PLUGINS_EDIT_INTERNAL_PLUGIN_H

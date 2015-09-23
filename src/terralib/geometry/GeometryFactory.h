@@ -122,6 +122,12 @@ namespace te
         case MultiPolygonZMType:
           return new MultiPolygon(0, t, srid, 0);
 
+        case MultiSurfaceType:
+        case MultiSurfaceZType:
+        case MultiSurfaceMType:
+        case MultiSurfaceZMType:
+          return new MultiSurface(0, t, srid, 0);
+
         case GeometryCollectionType:
         case GeometryCollectionZType:
         case GeometryCollectionMType:

@@ -685,6 +685,11 @@ void te::gm::Geometry::loadGeomTypeId()
   sm_geomTypeMap["MULTIPOLYGONZ"] = te::gm::MultiPolygonZType;
   sm_geomTypeMap["MULTIPOLYGONZM"] = te::gm::MultiPolygonZMType;
 
+  sm_geomTypeMap["MULTISURFACE"] = te::gm::MultiSurfaceType;
+  sm_geomTypeMap["MULTISURFACEM"] = te::gm::MultiSurfaceMType;
+  sm_geomTypeMap["MULTISURFACEZ"] = te::gm::MultiSurfaceZType;
+  sm_geomTypeMap["MULTISURFACEZM"] = te::gm::MultiSurfaceZMType;
+
   sm_geomTypeMap["GEOMETRYCOLLECTION"] = te::gm::GeometryCollectionType;
   sm_geomTypeMap["GEOMETRYCOLLECTIONM"] = te::gm::GeometryCollectionMType;
   sm_geomTypeMap["GEOMETRYCOLLECTIONZ"] = te::gm::GeometryCollectionZType;

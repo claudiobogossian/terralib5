@@ -196,6 +196,10 @@ te::gm::Geometry* te::pgis::EWKBReader::getGeometry(const char* ewkb, const char
     case te::gm::MultiPolygonZType:
     case te::gm::MultiPolygonMType:
     case te::gm::MultiPolygonZMType:
+    case te::gm::MultiSurfaceType:
+    case te::gm::MultiSurfaceZType:
+    case te::gm::MultiSurfaceMType:
+    case te::gm::MultiSurfaceZMType:
     case te::gm::GeometryCollectionType:
     case te::gm::GeometryCollectionZType:
     case te::gm::GeometryCollectionMType:

@@ -48,9 +48,9 @@ namespace te
   {
     /*!
       \brief Undo/Redo for moving components.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT MoveCommand : public QUndoCommand
     {
       public:

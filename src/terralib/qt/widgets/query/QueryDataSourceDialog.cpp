@@ -144,7 +144,11 @@ void te::qt::widgets::QueryDataSourceDialog::loadDataSourcesInformation()
 
   while(it != itend)
   {
-    if(it->second->getType() != "GDAL")
+    te::da::DataSourcePtr ds = te::da::GetDataSource(it->second->getId());
+
+    const te::da::SQLDialect* dialect = ds->getDialect();
+    
+    if (dialect)
       m_ui->m_dataSourceComboBox->addItem(it->second->getTitle().c_str(), QVariant(it->second->getId().c_str()));
 
     ++it;

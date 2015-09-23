@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Geometry.h"
@@ -38,6 +39,7 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/UpdateCommand.h"
 #include "VertexTool.h"
 
 // Qt
@@ -52,12 +54,10 @@
 #include <string>
 
 te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-  : AbstractTool(display, parent),
-    m_layer(layer),
-    m_feature(0),
-    m_currentStage(FEATURE_SELECTION)
+: GeometriesUpdateTool(display, layer.get(), parent),
+  m_currentStage(FEATURE_SELECTION),
+  m_updateWatches(0)
 {
-  assert(m_layer.get());
 
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
@@ -72,6 +72,7 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
 te::edit::VertexTool::~VertexTool()
 {
   delete m_feature;
+  m_updateWatches.clear();
 }
 
 bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
@@ -104,6 +105,7 @@ bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
 
       return true;
     }
+
   }
 
   // This operation will be handled by mouse double click
@@ -196,8 +198,12 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
 
       pickFeature(m_layer, GetPosition(e));
 
-      if(m_feature)
+      if (m_feature)
+      {
         setStage(VERTEX_SEARCH);
+      }
+
+      storeUndoCommand();
 
       return true;
     }
@@ -207,11 +213,15 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
       updateRTree();
 
       setStage(VERTEX_SEARCH);
+
+      storeUndoCommand();
     }
 
     default:
       return false;
   }
+
+  
 }
 
 bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
@@ -271,7 +281,7 @@ void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, c
 
   try
   {
-    m_feature = PickFeature(layer, env, m_display->getSRID());
+    m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
     m_lines.clear();
 
@@ -416,5 +426,32 @@ void te::edit::VertexTool::updateCursor()
 
 void te::edit::VertexTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+
+  emit geometriesEdited();
+
+}
+
+void te::edit::VertexTool::storeUndoCommand()
+{
+    std::size_t count = 0;
+
+    if (m_feature == 0)
+      return;
+
+    m_updateWatches.push_back(m_feature->clone());
+
+    for (std::size_t i = 0; i < m_updateWatches.size(); ++i)
+    {
+      if (m_updateWatches[i]->getId()->getValueAsString() == m_feature->getId()->getValueAsString())
+        count++;
+    }
+
+    // only to store the first "feature" of geometry
+    if (count == 1)
+      return;
+
+    QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
+    UndoStackManager::getInstance().addUndoStack(command);
+
 }

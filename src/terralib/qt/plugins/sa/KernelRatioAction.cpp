@@ -41,7 +41,7 @@ te::qt::plugins::sa::KernelRatioAction::~KernelRatioAction()
 
 void te::qt::plugins::sa::KernelRatioAction::onActionActivated(bool checked)
 {
-  te::sa::KernelRatioDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::KernelRatioDialog dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

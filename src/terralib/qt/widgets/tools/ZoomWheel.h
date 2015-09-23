@@ -64,7 +64,7 @@ namespace te
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          ZoomWheel(MapDisplay* display, const double& zoomFactor = 2.0, QObject* parent = 0);
+          ZoomWheel(MapDisplay* display, const double& zoomFactor = 2.0, const bool& centralize = true, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~ZoomWheel();
@@ -79,6 +79,12 @@ namespace te
           bool eventFilter(QObject* watched, QEvent* e);
 
           //@}
+
+        protected:
+
+          bool m_centralize; //!< If TRUE, the reference that will be used will be the center of the map display extent. If FALSE, the position of the wheel will be used as reference.
+
+
       };
 
     } // end namespace widgets

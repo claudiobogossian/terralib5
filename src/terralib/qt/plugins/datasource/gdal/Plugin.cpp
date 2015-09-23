@@ -39,9 +39,10 @@
 #include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
-#include "../../../af/Project.h"
+//#include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
+#include "../../../af/events/ApplicationEvents.h"
 
 #include "GDALType.h"
 #include "Plugin.h"
@@ -89,6 +90,7 @@ QObject(),
  te::plugin::Plugin(pluginInfo),
  m_openFile(0)
 {
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
 
 te::qt::plugins::gdal::Plugin::~Plugin() 
@@ -107,21 +109,29 @@ void te::qt::plugins::gdal::Plugin::startup()
   m_initialized = true;
 
   //Initializing action
-  QAction* act = te::qt::af::ApplicationController::getInstance().findAction("Project.Add Layer.Tabular File");
-  QMenu* mnu = te::qt::af::ApplicationController::getInstance().findMenu("Project.Add Layer");
+  m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), this);
+  m_openFile->setObjectName("Project.Add Layer.Raster File");
 
-  if(act != 0 && mnu != 0)
-  {
-    QWidget* parent = act->parentWidget();
-    m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), parent);
-    m_openFile->setObjectName("Project.Add Layer.Raster File");
-    mnu->insertAction(act, m_openFile);
-    //mnu->addAction(m_openFile);
+  te::qt::af::evt::NewActionsAvailable e;
+  e.m_category = "Dataaccess";
+  e.m_actions << m_openFile;
 
-    te::qt::af::AddActionToCustomToolbars(m_openFile);
+  emit triggered(&e);
+//  QAction* act = te::qt::af::AppCtrlSingleton::getInstance().findAction("Project.Add Layer.Tabular File");
+//  QMenu* mnu = te::qt::af::AppCtrlSingleton::getInstance().findMenu("Project.Add Layer");
+
+//  if(act != 0 && mnu != 0)
+//  {
+//    QWidget* parent = act->parentWidget();
+//    m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), parent);
+//    m_openFile->setObjectName("Project.Add Layer.Raster File");
+//    mnu->insertAction(act, m_openFile);
+//    //mnu->addAction(m_openFile);
+
+//    te::qt::af::AddActionToCustomToolbars(m_openFile);
 
     connect (m_openFile, SIGNAL(triggered()), SLOT(openFileDialog()));
-  }
+//  }
 }
 
 void te::qt::plugins::gdal::Plugin::shutdown()
@@ -136,21 +146,21 @@ void te::qt::plugins::gdal::Plugin::shutdown()
 
   m_initialized = false;
 
-  delete m_openFile;
+//  delete m_openFile;
 }
 
 void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
-  te::qt::af::Project* proj = te::qt::af::ApplicationController::getInstance().getProject();
+//  te::qt::af::Project* proj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 
-  if(proj == 0)
-  {
-    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Raster File"), tr("Error: there is no opened project!"));
-    return;
-  }
+//  if(proj == 0)
+//  {
+//    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Raster File"), tr("Error: there is no opened project!"));
+//    return;
+//  }
 
   QStringList fileNames = QFileDialog::getOpenFileNames(
-    te::qt::af::ApplicationController::getInstance().getMainWindow(), 
+    te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(),
     tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
     te::qt::widgets::GetDiskRasterFileSelFilter());
 
@@ -190,8 +200,7 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 
     ds->setType("GDAL");
 
-    ds->setId(id);
-    if (!te::da::DataSourceInfoManager::getInstance().add(ds))
+    if(!te::da::DataSourceInfoManager::getInstance().add(ds))
       ds = te::da::DataSourceInfoManager::getInstance().getByConnInfo(ds->getConnInfoAsString());
 
     GetLayers(ds, layers);
@@ -201,16 +210,16 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
   // otherwise, add the layer as a top level layer
   te::map::AbstractLayerPtr parentLayer(0);
 
-  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers();
+//  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::AppCtrlSingleton::getInstance().getProject()->getSelectedLayers();
 
-  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
-    parentLayer = selectedLayers.front();
+//  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
+//    parentLayer = selectedLayers.front();
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
   {
     te::qt::af::evt::LayerAdded evt(*it, parentLayer);
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    emit triggered(&evt);
   }
 }
 

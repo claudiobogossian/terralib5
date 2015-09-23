@@ -154,6 +154,15 @@ void te::gdal::Band::setIValue(unsigned int c, unsigned int r, const double valu
 
 void te::gdal::Band::read(int x, int y, void* buffer) const
 {
+  if (m_update_buffer)
+  {
+    m_rasterBand->WriteBlock(m_x, m_y, m_buffer);
+
+    m_rasterBand->FlushCache();
+
+    m_update_buffer = false;
+  }  
+  
   m_rasterBand->ReadBlock(x, y, buffer);
   
   // If there is a palette, the values must be interpreted as
@@ -232,15 +241,6 @@ void* te::gdal::Band::read(int x, int y)
 {
   if( ( x != m_x ) || ( y != m_y ) )
   {
-    if (m_update_buffer)
-    {
-      m_rasterBand->WriteBlock(m_x, m_y, m_buffer);
-
-      m_rasterBand->FlushCache();
-
-      m_update_buffer = false;
-    }
-        
     read( x, y, m_buffer );
     m_x = x;
     m_y = y;
@@ -251,6 +251,15 @@ void* te::gdal::Band::read(int x, int y)
 
 void te::gdal::Band::write(int x, int y, void* buffer)
 {
+  if (m_update_buffer)
+  {
+    m_rasterBand->WriteBlock(m_x, m_y, m_buffer);
+
+    m_rasterBand->FlushCache();
+
+    m_update_buffer = false;
+  }  
+  
   m_rasterBand->WriteBlock(x, y, buffer);
 }
 

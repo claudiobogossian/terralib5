@@ -91,22 +91,8 @@ void te::qt::widgets::AnimationScene::setDuration(const int& duration)
   QList<QGraphicsItem*>::iterator it;
   for(it = list.begin(); it != list.end(); ++it)
   {
-    AnimationItem* ai = (AnimationItem*)(*it);
+    AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
     ai->setDuration(duration);
-  }
-}
-
-void te::qt::widgets::AnimationScene::setAutomaticPan(const QString& title)
-{
-  QList<QGraphicsItem*> list = items();
-  QList<QGraphicsItem*>::iterator it;
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    AnimationItem* ai = (AnimationItem*)(*it);
-    if(ai->m_title == title)
-      ai->m_automaticPan = !ai->m_automaticPan; // TOGGLE
-    else
-      ai->m_automaticPan = false;
   }
 }
 
@@ -116,7 +102,7 @@ void te::qt::widgets::AnimationScene::draw(const int& curTime)
   QList<QGraphicsItem*>::iterator it;
   for(it = list.begin(); it != list.end(); ++it)
   {
-    AnimationItem* ai = (AnimationItem*)(*it);
+    AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
     ai->m_curTimeDuration = curTime;
     ai->draw();
   }

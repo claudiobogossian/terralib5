@@ -44,9 +44,9 @@ namespace te
     \brief Abstract class to provide a surrogate or placeholder for te::qt::af::Project to control access to it. 
       A wrapper to access without complexity. This abstract proxy is required because module not must have dependence te::qt::af.
       Useful to access the Layers belonging to the project.
-	  
-	  \ingroup layout
-	  */
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT AbstractProxyProject
     {
       public:
@@ -77,7 +77,7 @@ namespace te
 
           \return The list of all the layers that are selected.
         */
-        virtual const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) const = 0;
+        virtual const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) = 0;
 
         /*!
             \brief Checks whether the layer is in the project.

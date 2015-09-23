@@ -76,7 +76,7 @@ namespace te
 
           te::qt::widgets::StyleDockWidget* getExplorer() const;
 
-        protected slots:
+        public slots:
 
           /*!
             \brief Listener to the application framewrork events.
@@ -84,6 +84,12 @@ namespace te
             \param evt An event sent by framework.
           */
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
+
+          void styleChanged(te::map::AbstractLayer* l);
+
+        signals:
+
+          void triggered(te::qt::af::evt::Event* e);
 
         protected:
 

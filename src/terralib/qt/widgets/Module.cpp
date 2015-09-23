@@ -31,7 +31,7 @@
 #include "../../maptools/ExternalGraphicRendererManager.h"
 #include "../../maptools/MarkRendererManager.h"
 #include "charts/ChartRenderer.h"
-#include "layer/explorer/AbstractTreeItemFactory.h"
+//#include "layer/explorer/AbstractTreeItemFactory.h"
 #include "property/DateTimePropertyWidgetFactory.h"
 #include "property/GeometryPropertyWidgetFactory.h"
 #include "property/NumericPropertyWidgetFactory.h"
@@ -96,7 +96,7 @@ void te::qt::widgets::Module::initialize()
   te::qt::widgets::GraphicFillWidgetFactory::initialize();
   
 // It initializes the layer item factory
-  AbstractTreeItemFactory::initialize();
+//  AbstractTreeItemFactory::initialize();
 #endif
 
 #ifdef TERRALIB_MOD_DATAACCESS_ENABLED
@@ -114,7 +114,7 @@ void te::qt::widgets::Module::finalize()
 {
 #ifdef TERRALIB_MOD_MAPTOOLS_ENABLED
 // It finalizes the layer item factory
-  AbstractTreeItemFactory::finalize();
+//  AbstractTreeItemFactory::finalize();
 
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();

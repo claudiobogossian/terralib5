@@ -99,7 +99,9 @@ void te::ogr::Transactor::commit()
     return;
 
   // we have to reopen datasource so pending data gets synched to disk!
-  m_ogrDs->open();
+  //if(m_ogrDs->getOGRDataSource()->SyncToDisk() != OGRERR_NONE)
+  if(OGR_DS_SyncToDisk(m_ogrDs) != OGRERR_NONE)
+    throw;
 }
 
 void te::ogr::Transactor::rollBack()
@@ -119,9 +121,10 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
-  std::string sql = "SELECT FID, * FROM \'" + name + "\'";
+  std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -141,9 +144,10 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
-  std::string sql = "SELECT FID, * FROM \'" + name + "\'";
+  std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -165,9 +169,10 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
-  std::string sql = "SELECT FID, * FROM \'" + name + "\'";
+  std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -190,7 +195,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
   std::string sql;
 
@@ -221,7 +227,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& que
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
 
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
   // Adding FID attribute case "SELECT *"
   std::string queryCopy = query;
@@ -311,8 +318,8 @@ std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSetType>();
   
-  std::string sql("SELECT FID, * FROM \'");
-  sql += name + "\'";
+  std::string sql("SELECT FID, * FROM \"");
+  sql += name + "\"";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -370,8 +377,8 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
   if (!m_ogrDs->getOGRDataSource())
     return ps;
 
-  std::string sql("SELECT FID, * FROM \'");
-  sql += datasetName + "\'";
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -397,8 +404,8 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
     return std::auto_ptr<te::dt::Property>();
 
   int idx = -1;
-  std::string sql("SELECT FID, * FROM \'");
-  sql += datasetName + "\'";
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -412,13 +419,14 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
 
 std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
-  OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return std::auto_ptr<te::dt::Property>();
 
   std::auto_ptr<te::dt::Property> res;
-  std::string sql ("SELECT FID, * FROM \'");
-  sql += datasetName + "\'";
+  std::string sql ("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
   OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -438,13 +446,14 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
 
 std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string& datasetName)
 {
-  OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return std::vector<std::string>();
   
   std::vector<std::string> res;
-  std::string sql ("SELECT FID, * FROM \'");
-  sql += datasetName + "\'";
+  std::string sql ("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
   OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -463,12 +472,13 @@ std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string
 
 std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datasetName)
 {
-  OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return 0;
 
-  std::string sql("SELECT FID, * FROM \'");
-  sql += datasetName + "\'";
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
   OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -485,12 +495,13 @@ std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datase
 
 bool te::ogr::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
-  OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return false;
 
-  std::string sql("SELECT FID, * FROM \'");
-  sql += datasetName + "\'";
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
   bool res = false;
 
   OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -619,7 +630,8 @@ void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetNam
     if(err != OGRERR_NONE)
       throw Exception(TE_TR("Fail to to change field type."));
 
-    std::string name = m_ogrDs->getOGRDataSource()->GetName();
+    //std::string name = m_ogrDs->getOGRDataSource()->GetName();
+    std::string name = m_ogrDs->getOGRDataSource()->GetDescription();
 
     err = l->SyncToDisk();
   }
@@ -631,8 +643,8 @@ std::auto_ptr<te::da::PrimaryKey> te::ogr::Transactor::getPrimaryKey(const std::
     return std::auto_ptr<te::da::PrimaryKey>();
   
   std::auto_ptr<te::da::PrimaryKey> res;
-  std::string sql("SELECT FID, * FROM \'");
-  sql += datasetName + "\'";
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
   OGRLayer* layer = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -794,8 +806,8 @@ std::auto_ptr<te::gm::Envelope> te::ogr::Transactor::getExtent(const std::string
   
   std::auto_ptr<te::gm::Envelope> res;
   std::string sql("SELECT ");
-  sql += propertyName + " FROM \'";
-  sql += datasetName + "\'";
+  sql += propertyName + " FROM \"";
+  sql += datasetName + "\"";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -986,6 +998,9 @@ void te::ogr::Transactor::add(const std::string& datasetName,
           continue;
         }
 
+        if(d->getPropertyName(i) == "FID")
+          continue;
+
         switch(d->getPropertyDataType(i))
         {
           case te::dt::INT16_TYPE:
@@ -1115,11 +1130,13 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it = oids->begin();
 
+  begin();
+
   while(it != oids->end())
   {
-    begin();
+    std::string id = (*it)->getValueAsString();
     
-    if(l->DeleteFeature(atoi((*it)->getValue()[0].toString().c_str())) != OGRERR_NONE)
+    if(l->DeleteFeature(atoi(id.c_str())) != OGRERR_NONE)
     {
       rollBack();
       throw Exception(TE_TR("Error when attempting to remove the feature."));
@@ -1128,7 +1145,11 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
     ++it;
   }
 
+  l->SyncToDisk();
+
   commit();
+
+  m_ogrDs->getOGRDataSource()->ExecuteSQL(("REPACK " + datasetName).c_str(), NULL, NULL);
 }
 
 

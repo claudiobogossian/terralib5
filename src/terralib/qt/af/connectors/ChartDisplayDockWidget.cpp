@@ -52,7 +52,8 @@ te::gm::Envelope* computeDataSetEnvelope(std::auto_ptr<te::da::DataSet> dataset,
 te::qt::af::ChartDisplayDockWidget::ChartDisplayDockWidget(te::qt::widgets::ChartDisplayWidget* displayWidget, QWidget* parent) :
 QDockWidget(parent, Qt::Widget),
   m_displayWidget(displayWidget),
-  m_layer(0)
+  m_layer(0), 
+  m_app(0)
 {
   setWidget(m_displayWidget);
   m_displayWidget->setParent(this);
@@ -84,6 +85,11 @@ void te::qt::af::ChartDisplayDockWidget::setLayer(te::map::AbstractLayer* layer)
   setWindowTitle(m_layer->getTitle().c_str());
 }
 
+void te::qt::af::ChartDisplayDockWidget::setAppController(te::qt::af::ApplicationController* app)
+{
+  m_app = app;
+}
+
 void te::qt::af::ChartDisplayDockWidget::setSelectionColor(QColor selColor)
 {
   m_displayWidget->setSelectionColor(selColor);
@@ -112,11 +118,12 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
     case te::qt::af::evt::LAYER_REMOVED:
       {
         te::qt::af::evt::LayerRemoved* ev = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
-
-        if(ev->m_layer->getId() == m_layer->getId())
-        {
-          this->close();
-        }
+        for(std::list<te::map::AbstractLayerPtr>::iterator it = ev->m_layers.begin(); it != ev->m_layers.end(); ++it)
+          if((*it)->getId() == m_layer->getId())
+          {
+            this->close();
+            return;
+          }
       }
     break;
 
@@ -178,13 +185,15 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
 
     m_layer->select(added);
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, computeDataSetEnvelope(ds, geomPos));
-    ApplicationController::getInstance().broadcast(&e);
+
+    emit triggered(&e);
   }
   else
   {
     m_layer->select(added);
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
-    ApplicationController::getInstance().broadcast(&e);
+
+    emit triggered(&e);
   }
   oids->clear();
 }

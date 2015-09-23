@@ -41,7 +41,7 @@ te::qt::plugins::sa::GeostatisticalMethodsAction::~GeostatisticalMethodsAction()
 
 void te::qt::plugins::sa::GeostatisticalMethodsAction::onActionActivated(bool checked)
 {
-  te::sa::GeostatisticalMethodsDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::GeostatisticalMethodsDialog dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

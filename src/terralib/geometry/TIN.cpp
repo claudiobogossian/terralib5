@@ -51,3 +51,16 @@ const std::string& te::gm::TIN::getGeometryType() const throw()
   return sm_typeName;
 }
 
+
+void te::gm::TIN::setGeometryN(std::size_t i, te::gm::Polygon* g)
+{
+	assert((i < m_polygons.size()) && (m_polygons[i] == 0));
+	delete m_polygons[i];
+	m_polygons[i] = g;
+}
+
+void te::gm::TIN::add(te::gm::Polygon* g)
+{
+	m_polygons.push_back(g);
+}
+

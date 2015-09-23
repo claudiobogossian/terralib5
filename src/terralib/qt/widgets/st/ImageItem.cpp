@@ -17,13 +17,13 @@ te::qt::widgets::ImageItem::ImageItem()
 {
 }
 
-te::qt::widgets::ImageItem::ImageItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
+te::qt::widgets::ImageItem::ImageItem(const QString& title, const QString& folder, te::qt::widgets::MapDisplay* display)
   : te::qt::widgets::AnimationItem(title, display),
   m_image(0)
 {
-  m_dir = QDir(file);
+  m_dir = QDir(folder);
 
-  QFileInfo fi(file);
+  QFileInfo fi(folder);
   m_baseFile = fi.completeBaseName();
   m_suffix = fi.suffix();
 
@@ -58,17 +58,15 @@ bool te::qt::widgets::ImageItem::loadData()
   if (getCtlParameters() == false)
     return false;
 
-  //m_animationScene->addItem(pi);
   if (m_animation)
     delete m_animation;
   m_animation = new te::qt::widgets::Animation(this, "pos");
   m_animation->m_spatialExtent = te::gm::Envelope(m_imaRect.x(), m_imaRect.y(), m_imaRect.right(), m_imaRect.bottom());
   m_animation->setEasingCurve(QEasingCurve::Linear);
-  //m_parallelAnimation->addAnimation(animation);
 
   QString suffix = "." + m_suffix;
   QStringList nameFilter;
-  nameFilter.append("*" + suffix);
+  nameFilter.append(m_preffix + "*" + suffix);
   QStringList files = m_dir.entryList(nameFilter, QDir::Files, QDir::Name);
   size_t count = files.count();
 
@@ -94,29 +92,38 @@ bool te::qt::widgets::ImageItem::loadData()
 
 bool te::qt::widgets::ImageItem::getCtlParameters()
 {
-  char buf[2000];
+  char buf[300];
   QString file(m_dir.path() + "/image.ctl");
   FILE* fp = fopen(file.toStdString().c_str(), "r");
   if (fp == 0)
     return false;
 
-  fread(buf, 2000, sizeof(char), fp);
+  size_t n = fread(buf, sizeof(char), 300, fp);
   fclose(fp);
+  buf[n] = 0;
   QString s, ss(QString(buf).simplified());
 
   // validation
-  if (!(ss.contains("suffix ", Qt::CaseInsensitive) && ss.contains("undef", Qt::CaseInsensitive) &&
-    ss.contains("srid", Qt::CaseInsensitive) && ss.contains("llx", Qt::CaseInsensitive) &&
-    ss.contains("lly", Qt::CaseInsensitive) && ss.contains("urx", Qt::CaseInsensitive) &&
-    ss.contains("ury", Qt::CaseInsensitive)))
+  if (!(ss.contains("suffix ", Qt::CaseInsensitive) && ss.contains("preffix ", Qt::CaseInsensitive) &&
+    ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("srid ", Qt::CaseInsensitive) && 
+    ss.contains("llx ", Qt::CaseInsensitive) && ss.contains("lly ", Qt::CaseInsensitive) && 
+    ss.contains("urx ", Qt::CaseInsensitive) && ss.contains("ury ", Qt::CaseInsensitive)))
     return false;
 
   // get suffix 
   size_t pos = ss.indexOf("suffix ", Qt::CaseInsensitive) + strlen("suffix ");
   ss.remove(0, (int)pos);
-  pos = ss.indexOf(" undef", Qt::CaseInsensitive);
+  pos = ss.indexOf(" preffix", Qt::CaseInsensitive);
   s = ss.left((int)pos);
   m_suffix = s;
+  ss.remove(0, (int)pos);
+
+  // get preffix 
+  pos = ss.indexOf("preffix ", Qt::CaseInsensitive) + strlen("preffix ");
+  ss.remove(0, (int)pos);
+  pos = ss.indexOf(" undef", Qt::CaseInsensitive);
+  s = ss.left((int)pos);
+  m_preffix = s;
   ss.remove(0, (int)pos);
 
   // get undef
@@ -168,6 +175,10 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
   double h = ury - lly;
   m_imaRect = QRectF(llx, lly, w, h);
 
+  // get static representation
+  if (m_dir.exists("staticRepresentation.png"))
+    m_staticRepresentation = QImage(m_dir.path() + "/staticRepresentation.png");
+  
   return true;
 }
 
@@ -177,14 +188,65 @@ void te::qt::widgets::ImageItem::loadCurrentImage()
     delete m_image;
   m_image = 0;
 
-  QString file = m_currentImageFile;
-  m_image = new QImage(file);
+  if (m_currentImageFile.isEmpty())
+  {
+    if (m_staticRepresentation.isNull())
+    {
+      QRect r = getRect();
+      m_image = new QImage(r.size(), QImage::Format_ARGB32);
+      m_image->fill(QColor(0, 0, 255, 100));
+      QPainter p(m_image);
+      p.setPen(QPen(QColor(255, 0, 0)));
+
+      QFont font(p.font());
+      int ps = 7;
+      int w = (int)((double)m_image->width() / 1.2);
+      int h = (int)((double)m_image->width() / 5.);
+
+      font.setPointSize(ps);
+      QFontMetrics fm(font);
+      QRectF rec(fm.boundingRect(m_title));
+
+      while (rec.width() < w && rec.height() < h)
+      {
+        ++ps;
+        font.setPointSize(ps);
+        QFontMetrics fm(font);
+        rec = fm.boundingRect(m_title);
+      }
+      rec.moveCenter(m_image->rect().center());
+      p.setFont(font);
+      p.drawText(rec.toRect(), Qt::AlignLeft, m_title);
+    }
+    else
+      m_image = new QImage(m_staticRepresentation);
+  }
+  else
+  {
+    QString file = m_currentImageFile;
+    m_image = new QImage(file);
+  }
+
+  //if (m_image)
+  //  delete m_image;
+  //m_image = 0;
+
+  //if (m_currentImageFile.isEmpty())
+  //  return;
+
+  //QString file = m_currentImageFile;
+  //m_image = new QImage(file);
 }
 
-void te::qt::widgets::ImageItem::drawCurrentImage(QPainter* painter, QRect& r)
+void te::qt::widgets::ImageItem::drawCurrentImage(QPainter* painter)
 {
   if (m_image == 0)
     return;
+
+  painter->save();
+
+  tryDoReprojectionUsingAffineTransform(painter);
+  QRect r(getRect());
 
   if (m_opacity == 255)
     painter->drawImage(r, *m_image);
@@ -229,6 +291,107 @@ void te::qt::widgets::ImageItem::drawCurrentImage(QPainter* painter, QRect& r)
   }
   delete m_image;
   m_image = 0;
+
+  painter->restore();
+}
+
+void te::qt::widgets::ImageItem::tryDoReprojectionUsingAffineTransform(QPainter* painter)
+{
+  // If the projection is different, try do reprojection using affine transform.
+  // Note: For small areas it gives a good result, however, for larger areas the result is not good.
+  if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
+  {
+    // get width, height and rotation
+    te::gm::LineString line(9, te::gm::LineStringType, m_SRID);
+    line.setPoint(0, m_imaRect.x(), m_imaRect.y());
+    line.setPoint(1, m_imaRect.x(), m_imaRect.y() + m_imaRect.height());
+    line.setPoint(2, m_imaRect.x() + m_imaRect.width(), m_imaRect.y() + m_imaRect.height());
+    line.setPoint(3, m_imaRect.x() + m_imaRect.width(), m_imaRect.y());
+    line.setPoint(4, m_imaRect.center().x(), m_imaRect.center().y());
+    line.setPoint(5, m_imaRect.x(), m_imaRect.center().y());
+    line.setPoint(6, m_imaRect.x() + m_imaRect.width(), m_imaRect.center().y());
+    line.setPoint(7, m_imaRect.center().x(), m_imaRect.y());
+    line.setPoint(8, m_imaRect.center().x(), m_imaRect.y() + m_imaRect.height());
+    line.transform(m_display->getSRID());
+
+    // transform to device coordinate
+    QPointF p0 = m_matrix.map(QPointF(line.getPointN(0)->getX(), line.getPointN(0)->getY()));
+    QPointF p1 = m_matrix.map(QPointF(line.getPointN(1)->getX(), line.getPointN(1)->getY()));
+    QPointF p2 = m_matrix.map(QPointF(line.getPointN(2)->getX(), line.getPointN(2)->getY()));
+    QPointF p3 = m_matrix.map(QPointF(line.getPointN(3)->getX(), line.getPointN(3)->getY()));
+    QPointF c = m_matrix.map(QPointF(line.getPointN(4)->getX(), line.getPointN(4)->getY()));
+    QPointF p5 = m_matrix.map(QPointF(line.getPointN(5)->getX(), line.getPointN(5)->getY()));
+    QPointF p6 = m_matrix.map(QPointF(line.getPointN(6)->getX(), line.getPointN(6)->getY()));
+    QPointF p7 = m_matrix.map(QPointF(line.getPointN(7)->getX(), line.getPointN(7)->getY()));
+    QPointF p8 = m_matrix.map(QPointF(line.getPointN(8)->getX(), line.getPointN(8)->getY()));
+    QPointF ph(p8 - p7);
+    QPointF ph1(p0 - p1);
+    QPointF ph2(p3 - p2);
+    QPointF pw(p6 - p5);
+    QPointF pw1(p2 - p1);
+    QPointF pw2(p3 - p0);
+    QPointF prot(p6 - c);
+
+    double w = fabs(pw.x());
+    double h = fabs(ph.y());
+
+    double PI = 3.14159265;
+    double rad = 0;
+    painter->translate(c.toPoint());
+
+    if (prot.x() == 0)
+    {
+      if (prot.y() >= 0)
+        rad = PI / 2.;
+      else
+        rad = -PI / 2.;
+    }
+    else if (prot.y() == 0)
+    {
+      if (prot.x() >= 0)
+        rad = 0;
+      else
+        rad = -PI;
+    }
+    else
+    {
+      rad = atan(prot.y() / prot.x());
+      if (prot.x() < 0)
+      {
+        if (prot.y() < 0)
+          rad -= PI;
+        else
+          rad += PI;
+      }
+    }
+
+    // set scale indirectly - calculate a new image rect
+    if (rad != 0)
+    {
+      w /= fabs(cos(rad));
+      h /= fabs(cos(PI + rad));
+    }
+
+    QRect r(0, 0, w, h);
+    r.moveCenter(c.toPoint()); // move to center
+
+    if (ph1.x() != 0 && ph2.x() != 0 && ph1.y() == ph2.y()) // make horizontal shear
+    {
+      double horiz = (ph1.x() + ph2.x()) / 1.35;
+      painter->shear(horiz / w, 0);
+    }
+    else if (pw1.y() != 0 && pw2.y() != 0 && pw1.x() == pw2.x()) // make vertical shear
+    {
+      double vert = (pw1.y() + pw2.y()) / 1.35;
+      painter->shear(0, vert / h);
+    }
+    else if (rad != 0) // make rotation
+    {
+      double degree = rad * 180. / PI;
+      painter->rotate(degree);
+    }
+    painter->translate(-c.toPoint());
+  }
 }
 
 void te::qt::widgets::ImageItem::adjustDataToAnimationTemporalExtent()
@@ -239,29 +402,40 @@ void te::qt::widgets::ImageItem::adjustDataToAnimationTemporalExtent()
   te::dt::TimeInstant iTime = m_animation->m_temporalAnimationExtent.getInitialTimeInstant();
   te::dt::TimeInstant fTime = m_animation->m_temporalAnimationExtent.getFinalTimeInstant();
 
-  size_t ini = 0;
   size_t size = m_time.size();
-  size_t fim = size;
-  for (int i = 0; i < (int)size; ++i)
-  {
-    if (m_time[i] == iTime || m_time[i] > iTime)
-    {
-      ini = i;
-      break;
-    }
-  }
-  for (int i = (int)size - 1; i >= 0; --i)
-  {
-    if (m_time[i] == fTime || m_time[i] < fTime)
-    {
-      fim = i;
-      break;
-    }
-  }
-  size = fim - ini + 1;
-  size_t tfim = ini + size;
+  te::dt::TimeInstant tinicial = m_time[0];
+  te::dt::TimeInstant tfinal = m_time[(int)size - 1];
 
-  for (int i = (int)ini; i < (int)tfim; ++i)
+  if (iTime > tfinal || fTime < tinicial) // out of animation time
+    return;
+
+  size_t ini = 0;
+  if (tinicial > iTime)
+  {
+    for (int i = 0; i < (int)size; ++i)
+    {
+      if (m_time[i] == iTime || m_time[i] > iTime)
+      {
+        ini = i;
+        break;
+      }
+    }
+  }
+
+  size_t fim = size - 1;
+  if (tfinal > fTime)
+  {
+    for (int i = (int)fim; i > (int)ini; --i)
+    {
+      if (m_time[i] == fTime || m_time[i] < fTime)
+      {
+        fim = i;
+        break;
+      }
+    }
+  }
+
+  for (int i = (int)ini; i <= (int)fim; ++i)
   {
     QString f = m_files[i];
     m_animationFiles.push_back(f);
@@ -300,8 +474,14 @@ void te::qt::widgets::ImageItem::calculateCurrentFile(const unsigned int& curTim
 {
   double nt = (double)curTime / (double)m_duration;
   int ind = m_animation->getAnimationDataIndex(nt);
-  QString f = m_animationFiles[ind];
-  m_currentImageFile = m_dir.path() + "/" + f;
+  if (ind >= 0 && ind < m_animationFiles.count())
+  {
+    QString f = m_animationFiles[ind];
+    m_currentImageFile = m_dir.path() + "/" + f;
+  }
+  else
+    m_currentImageFile.clear();
+
   m_curTimeDuration = curTime;
 }
 
@@ -347,7 +527,7 @@ void te::qt::widgets::ImageItem::generateRoute()
   size_t count = m_files.count();
   m_route = new te::gm::LineString(count, te::gm::LineStringType, m_SRID);
 
-  // crie valores não repetitivos e nem muito grandes ou pequenos
+  // create non-repetitive values and not too large or small
   QPointF pos(m_animation->m_spatialExtent.m_llx, m_animation->m_spatialExtent.m_lly);
   double w = m_animation->m_spatialExtent.getWidth();
   double h = m_animation->m_spatialExtent.getHeight();

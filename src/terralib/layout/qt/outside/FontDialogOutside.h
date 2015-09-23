@@ -28,41 +28,39 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_FONT_DIALOG_OUTSIDE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_FONT_DIALOG_OUTSIDE_H
 
-// Qt
-#include <QFontDialog>
-
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../../geometry/Envelope.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../core/Config.h"
+#include "terralib/geometry/Coord2D.h"
 
 // STL
 #include <vector>
+
+// Qt
+#include <QFontDialog>
 
 namespace te
 {
   namespace layout
   {
-    
+    class AbstractOutsideController;
     /*!
     \brief Properties tree for any item, MVC component, using Qt for presentation and editing.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::OutsideObserver
-	  */
-    class TELAYOUTEXPORT FontDialogOutside : public QFontDialog, public OutsideObserver
+      \sa te::layout::OutsideObserver
+    */
+    class TELAYOUTEXPORT FontDialogOutside : public QFontDialog, public AbstractOutsideView
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 
-        FontDialogOutside(OutsideController* controller, Observable* o);
+        FontDialogOutside(AbstractOutsideController* controller);
 
         virtual ~FontDialogOutside();
-
-        virtual void updateObserver(ContextItem context);
-
+        
         virtual void setPosition( const double& x, const double& y );
 
         virtual te::gm::Coord2D getPosition();

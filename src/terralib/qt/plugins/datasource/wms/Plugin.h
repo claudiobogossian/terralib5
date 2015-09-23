@@ -30,16 +30,33 @@
 #include "../../../../plugin/Plugin.h"
 #include "Config.h"
 
+// Qt
+#include <QObject>
+
 namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        // Forward declarations
+        struct Event;
+      }
+    }
+
     namespace plugins
     {
       namespace wms
       {
-        class Plugin : public te::plugin::Plugin
+        // Forward declarations
+        class WMSItemDelegate;
+
+        class Plugin : public QObject, public te::plugin::Plugin
         {
+          Q_OBJECT
+
           public:
 
             Plugin(const te::plugin::PluginInfo& pluginInfo);
@@ -49,13 +66,22 @@ namespace te
             void startup();
 
             void shutdown();
-        };
 
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
+
+        protected:
+
+            void updateDelegate(const bool& add);
+
+            WMSItemDelegate* m_delegate;
+        };
       } // end namespace wms
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINWMSEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINWMSEXPORT)
 
 #endif //__TE_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_PLUGIN_H

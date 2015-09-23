@@ -28,11 +28,32 @@
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/Config.h.in
                ${CMAKE_BINARY_DIR}/terraview_config.h @ONLY)
 
-include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
+
+include_directories(${Boost_INCLUDE_DIR} ${LOG4CXX_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.h)
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ui/*.ui)
+
+source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
+source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
+
+#events
+file(GLOB TERRALIB_EVENTS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/events/*.h)
+
+source_group("Header Files\\events"  FILES ${TERRALIB_EVENTS_HDR_FILES})
+
+#settings
+file(GLOB TERRALIB_SETTINGS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/*.cpp)
+file(GLOB TERRALIB_SETTINGS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/*.h)
+file(GLOB TERRALIB_SETTINGS_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/ui/*.ui)
+
+source_group("Source Files\\settings"  FILES ${TERRALIB_SETTINGS_SRC_FILES})
+source_group("Header Files\\settings"  FILES ${TERRALIB_SETTINGS_HDR_FILES})
+source_group("UI Files\\settings"  FILES ${TERRALIB_SETTINGS_UI_FILES})
+
+
 
 if(APPLE)
 
@@ -69,8 +90,12 @@ if(Qt5_FOUND)
 
 # uic'ing
   QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
+  QT5_WRAP_UI(TERRALIB_SETTINGS_GEN_HDR_FILES ${TERRALIB_SETTINGS_UI_FILES})
 
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
+                     ${TERRALIB_EVENTS_HDR_FILES}
+                     ${TERRALIB_SETTINGS_SRC_FILES} ${TERRALIB_SETTINGS_HDR_FILES} ${TERRALIB_SETTINGS_GEN_HDR_FILES})
+
 
   add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
   
@@ -117,13 +142,21 @@ else()
 
 # uic'ing
   QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
+  QT4_WRAP_UI(TERRALIB_SETTINGS_GEN_HDR_FILES ${TERRALIB_SETTINGS_UI_FILES})
 
 # moc'ing
-  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/TerraView.h)
+  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/TerraView.h
+  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ProjectInfoDialog.h
+  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ProjectInfoWidget.h
+  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/TerraViewController.h
+  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/AboutDialog.h
+  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/ProjectWidget.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES}
+                     ${TERRALIB_EVENTS_HDR_FILES}
+                     ${TERRALIB_SETTINGS_SRC_FILES} ${TERRALIB_SETTINGS_HDR_FILES} ${TERRALIB_SETTINGS_GEN_HDR_FILES})
 
   add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 

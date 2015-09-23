@@ -54,8 +54,7 @@
 #include <cstdlib>
 #include <dirent.h>
 #include <sys/stat.h>  
-#include <sys/sysctl.h>
-#include <mach/mach.h> 
+#include <sys/sysctl.h> 
 
 #else
   #error "Unsuported plataform for physical memory checking"
@@ -72,13 +71,13 @@ unsigned long int te::common::GetFreePhysicalMemory()
       unsigned long int freemem = 0;
 
 #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-      int64_t usermem = 0;
+      unsigned int usermem;
 
       std::size_t usermem_len = sizeof(usermem);
 
       int mib[2] = { CTL_HW, HW_USERMEM };
         
-      if(sysctl(mib, 2, &usermem, &usermem_len, NULL, 0) == 0)
+      if(sysctl(mib, (2 * sizeof(int)), &usermem, &usermem_len, NULL, 0) == 0)
       {
         freemem = static_cast<unsigned long int>(usermem);
       }
@@ -162,10 +161,6 @@ unsigned long int te::common::GetUsedVirtualMemory()
                   stringO, itrealvalue, starttime;
       
       std::ifstream stat_stream("/proc/self/stat", std::ios_base::in); 
-      if( !stat_stream.is_open() )
-      {
-        throw Exception("Could not get the used virtual memory!");
-      }
         
       stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr 
                   >> tpgid >> flags >> minflt >> cminflt >> majflt >> cmajflt 
@@ -173,12 +168,9 @@ unsigned long int te::common::GetUsedVirtualMemory()
                   >> stringO >> itrealvalue >> starttime >> usedmem;    
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_AIX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-    struct mach_task_basic_info info;
-    mach_msg_type_number_t infoCount = MACH_TASK_BASIC_INFO_COUNT;
-    if ( task_info( mach_task_self( ), MACH_TASK_BASIC_INFO,
-                   (task_info_t)&info, &infoCount ) != KERN_SUCCESS )
-        throw;
-    usedmem = (unsigned long int)info.resident_size;
+      struct rusage rusageinfo;
+      getrusage(RUSAGE_SELF, &rusageinfo);
+      usedmem = static_cast<unsigned long int>(1024 * rusageinfo.ru_maxrss);
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
       LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;

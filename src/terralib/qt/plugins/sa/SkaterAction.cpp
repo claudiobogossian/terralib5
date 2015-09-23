@@ -41,7 +41,7 @@ te::qt::plugins::sa::SkaterAction::~SkaterAction()
 
 void te::qt::plugins::sa::SkaterAction::onActionActivated(bool checked)
 {
-  te::sa::SkaterDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::SkaterDialog dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

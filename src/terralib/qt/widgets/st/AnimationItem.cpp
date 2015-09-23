@@ -77,24 +77,23 @@ void te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent()
   size_t ini = 0;
   size_t size = m_time.count();
   size_t fim = size;
-  for(size_t i = 0; i < size; ++i)
+  for(int i = 0; i < (int)size; ++i)
   {
-    if(m_time[(int)i] == iTime || m_time[(int)i] > iTime)
+    if(m_time[i] == iTime || m_time[i] > iTime)
     {
-      ini = i;
+      ini = (size_t)i;
       break;
     }
   }
-  for(size_t i = size-1; i == 0; --i)
+  for(int i = (int)size-1; i >= 0; --i)
   {
-    if (m_time[(int)i] == fTime || m_time[(int)i] < fTime)
+    if (m_time[i] == fTime || m_time[i] < fTime)
     {
-      fim = i;
+      fim = (size_t)i;
       break;
     }
   }
-  //size = fim - ini + 1;
-  size = fim - ini;
+  size = 1 + fim - ini;
   size_t tfim = ini + size;
 
   m_animationRoute.clear();

@@ -36,6 +36,7 @@ if(WIN32)
 endif()
 
 set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common"
+                                    "terralib_mod_plugin"
                                     "terralib_mod_qt_widgets")
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/*.cpp)
@@ -47,8 +48,7 @@ source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
 
 set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ApplicationController.h
-                               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/BaseApplication.h
-                               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ProjectInfoDialog.h)
+                               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/BaseApplication.h)
 
 #connectors
 file(GLOB TERRALIB_CONNECTORS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/*.cpp)
@@ -82,7 +82,6 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/DisplayWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/GeneralConfigWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/MenuBarModel.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/ProjectWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/SettingsDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/TableWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/ToolbarsWidget.h)

@@ -82,13 +82,26 @@ namespace te
         virtual const std::vector<T> operator*() const = 0;
 
         /*!
-          \brief Returns the value in current position (column, row, band) from iterator.
+          \brief Returns the real value in current position (column, row, band) from iterator.
 
           \param i The band index.
 
-          \return The pixel value in current position.
+          \return The pixel real value in current position.
+          
+          \note For complex values use operator()
         */
         virtual T operator[](const unsigned int i) const = 0;
+        
+        /*!
+          \brief Returns the complex value in current position (column, row, band) from iterator.
+
+          \param i The band index.
+
+          \return The pixel comples value in current position.
+          
+          \note For real values use operator[]
+        */
+        virtual std::complex< T > operator()(const unsigned int i) const = 0;        
 
         /*! \brief Returns the current row in iterator. */
         virtual unsigned int getRow() const = 0;
@@ -179,6 +192,8 @@ namespace te
         const std::vector<T> operator*() const;
 
         T operator[](const unsigned int i) const;
+        
+        std::complex< T > operator()(const unsigned int i) const;
 
         unsigned int getRow() const;
 
@@ -215,6 +230,8 @@ namespace te
         int m_maxrows;                                     //!< The number of rows in band.
         int m_actualintersection;                          //!< The actual line of the iterator.
         int m_nintersections;                              //!< The number number of intersected lines in current line of the iterator.
+        mutable double m_operatorBrackets_value;                   //!< Used by the operator[] method.
+        mutable std::complex< double > m_operatorParenthesis_value;     //!< Used by the operator() method.
 
     };
 
@@ -252,6 +269,8 @@ namespace te
         const std::vector<T> operator*() const;
 
         T operator[](const unsigned int i) const;
+        
+        std::complex< T > operator()(const unsigned int i) const;
 
         unsigned int getRow() const;
 
@@ -278,6 +297,9 @@ namespace te
         const te::gm::Line* m_line;                   //!< The spatial restriction to be applied in the iterator.
         int m_currentpixelindex;                      //!< The index of the current pixel location.
         std::vector<te::gm::Point*> m_pixelsinline;   //!< A vector of pixel locations that intersects the line.
+        mutable double m_operatorBrackets_value;                   //!< Used by the operator[] method.
+        mutable std::complex< double > m_operatorParenthesis_value;     //!< Used by the operator() method.
+        
 
     };
 
@@ -315,6 +337,8 @@ namespace te
         const std::vector<T> operator*() const;
 
         T operator[](const unsigned int i) const;
+        
+        std::complex< T > operator()(const unsigned int i) const;
 
         unsigned int getRow() const;
 
@@ -340,6 +364,9 @@ namespace te
 
         std::vector<te::gm::Point*> m_pixelsinpointset;    //!< The spatial restriction to be applied in the iterator.
         int m_currentpixelindex;                           //!< The index of the current pixel location.
+        mutable double m_operatorBrackets_value;                   //!< Used by the operator[] method.
+        mutable std::complex< double > m_operatorParenthesis_value;     //!< Used by the operator() method.
+        
 
     };
 // implementation of abstract position iterator
@@ -659,12 +686,17 @@ namespace te
 
     template<class T> T te::rst::PolygonIterator<T>::operator[](const unsigned int i) const
     {
-      double value;
+      this->m_raster->getValue(m_column, m_row, m_operatorBrackets_value, i);
 
-      this->m_raster->getValue(m_column, m_row, value, i);
-
-      return (T) value;
+      return (T) m_operatorBrackets_value;
     }
+    
+    template<class T> std::complex< T > te::rst::PolygonIterator<T>::operator()(const unsigned int i) const
+    {
+      this->m_raster->getValue(m_column, m_row, m_operatorParenthesis_value, i);
+
+      return (std::complex< T >) m_operatorParenthesis_value;
+    }    
 
     template<class T> unsigned int te::rst::PolygonIterator<T>::getRow() const
     {
@@ -854,12 +886,18 @@ namespace te
 
     template<class T> T te::rst::LineIterator<T>::operator[](const unsigned int i) const
     {
-      double value;
+      this->m_raster->getValue(getColumn(), getRow(), m_operatorBrackets_value, i);
 
-      this->m_raster->getValue(getColumn(), getRow(), value, i);
-
-      return (T) value;
+      return (T) m_operatorBrackets_value;
     }
+    
+    template<class T> std::complex< T > te::rst::LineIterator<T>::operator()(const unsigned int i) const
+    {
+      this->m_raster->getValue(getColumn(), getRow(), m_operatorParenthesis_value, i);
+
+      return (std::complex< T >) m_operatorParenthesis_value;
+    }
+        
     template<class T> unsigned int te::rst::LineIterator<T>::getRow() const
     {
       return (unsigned int)(m_pixelsinline[m_currentpixelindex]->getY());
@@ -989,12 +1027,17 @@ namespace te
 
     template<class T> T te::rst::PointSetIterator<T>::operator[](const unsigned int i) const
     {
-      double value;
+      this->m_raster->getValue(getColumn(), getRow(), m_operatorBrackets_value, i);
 
-      this->m_raster->getValue(getColumn(), getRow(), value, i);
-
-      return (T) value;
+      return (T) m_operatorBrackets_value;
     }
+    
+    template<class T> std::complex< T > te::rst::PointSetIterator<T>::operator()(const unsigned int i) const
+    {
+      this->m_raster->getValue(getColumn(), getRow(), m_operatorParenthesis_value, i);
+
+      return (std::complex< T >) m_operatorParenthesis_value;
+    }    
 
     template<class T> unsigned int te::rst::PointSetIterator<T>::getRow() const
     {

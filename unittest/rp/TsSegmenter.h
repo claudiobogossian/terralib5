@@ -43,6 +43,8 @@ class TsSegmenter : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsSegmenter );
   
+  CPPUNIT_TEST( DummyStrategy );
+  
   CPPUNIT_TEST( BlockProcessingWithoutMerging );
  
   CPPUNIT_TEST( BlockProcessingWithMerging );  
@@ -62,6 +64,8 @@ class TsSegmenter : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE_END();
   
   protected :
+    
+    void DummyStrategy();
     
     void BlockProcessingWithoutMerging();
     

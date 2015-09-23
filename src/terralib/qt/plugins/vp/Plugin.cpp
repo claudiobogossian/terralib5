@@ -91,12 +91,12 @@ void te::qt::plugins::vp::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
+  QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Processing");
   m_vpMenu = new QMenu(pluginMenu);
   m_vpMenu->setIcon(QIcon::fromTheme("vp-vectorprocessing-icon"));
 
   // Insert action before plugin manager action
-  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  QAction* pluginsSeparator = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
 
   pluginMenu->insertMenu(pluginsSeparator, m_vpMenu);
 
@@ -106,7 +106,7 @@ void te::qt::plugins::vp::Plugin::startup()
   registerActions();
 
 // vp log startup
-  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
   path += "/log/terralib_vp.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
@@ -128,6 +128,8 @@ void te::qt::plugins::vp::Plugin::startup()
 
 #endif
   m_initialized = true;
+
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
 
 void te::qt::plugins::vp::Plugin::shutdown()
@@ -148,6 +150,8 @@ void te::qt::plugins::vp::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::vp::Plugin::registerActions()
@@ -159,16 +163,24 @@ void te::qt::plugins::vp::Plugin::registerActions()
   m_multipart2singlepart = new te::qt::plugins::vp::MultipartToSinglepartAction(m_vpMenu);
   m_lineToPolygon = new te::qt::plugins::vp::LineToPolygonAction(m_vpMenu);
   m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
+
+  connect(m_aggregation, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_buffer, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_geometricOp, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_intersection, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_multipart2singlepart, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_lineToPolygon, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_polygonToLine, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
   //m_transformation = new te::qt::plugins::vp::TransformationAction(m_vpMenu);
 
-  te::qt::af::AddActionToCustomToolbars(m_aggregation->getAction());
-  te::qt::af::AddActionToCustomToolbars(m_buffer->getAction());
-  te::qt::af::AddActionToCustomToolbars(m_geometricOp->getAction());
-  te::qt::af::AddActionToCustomToolbars(m_intersection->getAction());
-  te::qt::af::AddActionToCustomToolbars(m_multipart2singlepart->getAction());
-  te::qt::af::AddActionToCustomToolbars(m_lineToPolygon->getAction());
-  te::qt::af::AddActionToCustomToolbars(m_polygonToLine->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_aggregation->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_buffer->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_geometricOp->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_intersection->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_multipart2singlepart->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_lineToPolygon->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_polygonToLine->getAction());
 }
 
 void  te::qt::plugins::vp::Plugin::unRegisterActions()

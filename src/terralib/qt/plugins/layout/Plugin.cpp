@@ -29,6 +29,7 @@
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/events/ApplicationEvents.h"
 #include "Plugin.h"
 #include "../../af/Utils.h"
 
@@ -56,7 +57,8 @@
 #include <QMenuBar>
 
 te::qt::plugins::layout::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_layoutMenu(0)
+  : QObject(),
+  te::plugin::Plugin(pluginInfo), m_layoutMenu(0)
 {
 }
 
@@ -75,29 +77,37 @@ void te::qt::plugins::layout::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Map Layout Plugin startup!"));
   
   // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Plugins");
 
-  if(!pluginMenu)
-    return;
+  //if(!pluginMenu)
+  //  return;
 
-  // Insert action before plugin manager action
-  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
 
-  if(!pluginsSeparator)
-    return;
+  // register actions
+  //registerActions();
+  //QMenu* mnu = te::qt::af::AppCtrlSingleton::getInstance().findMenu("Tools");
+  //QAction* act = te::qt::af::AppCtrlSingleton::getInstance().findAction("Tools.Customize");
+
+  //if(act)
+  //{
+//  evt.m_actions << m_showWindow;
+  //mnu->insertAction(act, m_showWindow);
+  //mnu->addSeparator();
+
+//  connect(m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
+
+  //if(!pluginsSeparator)
+  //  return;
 
   m_layoutMenu = new QMenu(pluginMenu);
   m_layoutMenu->setIcon(QIcon::fromTheme("map-layout-icon"));
-
-  pluginMenu->insertMenu(pluginsSeparator, m_layoutMenu);
-
-  m_layoutMenu->setTitle(TE_TR("Map Layout"));
+  m_layoutMenu->setTitle(tr("Map Layout"));
 
   // register actions
   registerActions();
 
   // layout log startup
-  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
   path += "/log/terralib_map_layout.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
@@ -119,7 +129,17 @@ void te::qt::plugins::layout::Plugin::startup()
 #endif
   m_initialized = true;
 
-  //te::qt::af::AddActionToCustomToolbars(m_layout->getAction());
+  te::qt::af::evt::NewActionsAvailable evt;
+  evt.m_category = "Layout";
+  evt.m_plgName = "Layout";
+  QAction* act = m_layoutMenu->menuAction();
+  act->setText(tr("Map Layout"));
+
+  evt.m_actions.push_back(act);
+
+  te::qt::af::AppCtrlSingleton::getInstance().trigger(&evt);
+
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_layout->getAction());
 }
 
 void te::qt::plugins::layout::Plugin::shutdown()

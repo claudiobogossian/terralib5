@@ -31,25 +31,24 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SVG_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
 #include "../../core/Config.h"
+#include "AbstractItem.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
+    class AbstractItemController;
     /*!
-    \brief Class that represents a graphic Point. 
+    \brief Class that represents a graphic SVG. 
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
-	  
-	    \ingroup layout
+        He is also the son of AbstractItem, so it can become observer of a model (Observable). 
 
-	    \sa te::layout::ObjectItem
-	  */
-    class TELAYOUTEXPORT SVGItem : public ObjectItem
+      \ingroup layout
+
+      \sa te::layout::AbstractItem
+    */
+    class TELAYOUTEXPORT SVGItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -59,31 +58,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        SVGItem( ItemController* controller, Observable* o );
+        SVGItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
          */
         virtual ~SVGItem();
-        
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
       protected:
 
-        virtual void drawSVG(QPainter * painter);
-
-        /*virtual void drawCircle(QPainter * painter);
-
-        virtual void drawX(QPainter * painter);
-
-        virtual void drawSquare(QPainter * painter);
-
-        virtual void drawRhombus(QPainter * painter);
-
-        virtual void drawCross(QPainter * painter);*/
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }

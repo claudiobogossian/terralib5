@@ -44,7 +44,7 @@ std::vector<std::string> te::layout::GenericVariant::toStringVector()
   return m_vString;
 }
 
-std::list<te::map::AbstractLayerPtr> te::layout::GenericVariant::toLayerList()
+const std::list<te::map::AbstractLayerPtr>& te::layout::GenericVariant::toLayerList() const
 {
   return m_listLayer;
 }

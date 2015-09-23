@@ -75,10 +75,10 @@ namespace te
         \brief Constructor
         It constructs a Image Item.
         \param title The image item title.
-        \param file The absolute file path name.
+        \param folder The absolute folder path name.
         \param display Where the pixmap item is displayed.
         */
-        ImageItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display);
+        ImageItem(const QString& title, const QString& folder, te::qt::widgets::MapDisplay* display);
 
         /*!
         \brief Destructor
@@ -111,6 +111,14 @@ namespace te
         void draw();
 
         /*!
+        \brief It try do reprojection using affine transfom.
+        For small areas it gives a good result, however, for larger areas the result is not good.
+
+        \param painter Painter that will be configured to try do reprojection.
+        */
+        void tryDoReprojectionUsingAffineTransform(QPainter* painter);
+
+        /*!
         \brief Adjust data for a given time animation period.
         */
         void adjustDataToAnimationTemporalExtent();
@@ -136,7 +144,7 @@ namespace te
         \Param r Image rect in device coordinate.
         \Param ima Pointer to QImage.
         */
-        void drawCurrentImage(QPainter* p, QRect& r);
+        virtual void drawCurrentImage(QPainter* p);
 
         /*!
         \brief It gets image rect in device coordinate.
@@ -181,19 +189,21 @@ namespace te
         virtual te::dt::TimeInstant getTime(QString file) = 0;
 
       public:
-        QDir m_dir;                           //!< The image data directory.
-        size_t  m_nlines;                     //!< number of lines.
-        size_t  m_ncols;                      //!< number of colunms.
-        float m_undef;                        //!< undef value.
-        QVector<QString> m_files;             //!< The input files.
-        QVector<QString> m_animationFiles;    //!< The png files in display projection. It contains only the portions to be animated.
-        QString          m_currentImageFile;  //!< Image to be displayed on paint event animation.
-        QImage*          m_image;             //!< current image
-        QString          m_baseFile;          //!< Base file name.
-        QString          m_suffix;            //!< File suffix.
-        QRectF           m_imaRect;           //!< Image location.
-        std::map<uchar, QColor> m_lut;        //!< LUT
-        QPointF          m_imageCenterPos;    //!< Center of the image.
+        QDir m_dir;                               //!< The image data directory.
+        size_t  m_nlines;                         //!< number of lines.
+        size_t  m_ncols;                          //!< number of colunms.
+        float m_undef;                            //!< undef value.
+        QVector<QString> m_files;                 //!< The input files.
+        QVector<QString> m_animationFiles;        //!< The png files in display projection. It contains only the portions to be animated.
+        QString          m_currentImageFile;      //!< Image to be displayed on paint event animation.
+        QImage*          m_image;                 //!< current image
+        QString          m_baseFile;              //!< Base file name.
+        QString          m_suffix;                //!< File suffix.
+        QString          m_preffix;               //!< File preffix.
+        QRectF           m_imaRect;               //!< Image location.
+        std::map<uchar, QColor> m_lut;            //!< LUT
+        QPointF          m_imageCenterPos;        //!< Center of the image.
+        QImage           m_staticRepresentation;  //!< Static representation of the animation.
       };
     } // end namespace widgets
   }   // end namespace qt

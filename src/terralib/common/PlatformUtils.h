@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "../Defines.h"
 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 #include "WinUtils.h"
@@ -66,7 +67,7 @@ namespace te
     /*!
       \brief Returns the amount of used virtual memory (bytes) for the current process (physical + swapped).
 
-      \return The amount of used virtual memory (bytes).
+      \return The amount of free virtual memory (bytes).
     */
     TECOMMONEXPORT unsigned long int GetUsedVirtualMemory();
 

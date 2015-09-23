@@ -45,11 +45,11 @@ namespace te
       \brief Class to represent a graphic object (MVC component) and widget object (MVC widget) type enumeration. 
         Ex. component: map, legend, scale, rectangle, text, etc.
         Ex. widget: object inspector, toolbar, etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumObjectType : public AbstractEnum
     {
       public:
@@ -66,288 +66,288 @@ namespace te
         
         /*!
           \brief Returns value that represents rectangle (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getRectangleItem() const;
 
         /*!
           \brief Returns value that represents map (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getMapItem() const;
                 
         /*!
           \brief Returns value that represents paper (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getPaperItem() const;
         
         /*!
           \brief Returns value that represents legend (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getLegendItem() const;
         
         /*!
           \brief Returns value that represents properties widget (MVC widget) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getPropertiesWindow() const;
         
         /*!
           \brief Returns value that represents QGraphicsView widget (MVC widget) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getDisplayWindow() const;
         
         /*!
           \brief Returns value that represents object inspector widget (MVC widget) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getObjectInspectorWindow() const;
         
         /*!
           \brief Returns value that represents toolbar widget (MVC widget) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getToolbar() const;
         
         /*!
           \brief Returns value that represents GridSettings window (MVC dialog) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getGridSettings() const;
         
         /*!
           \brief Returns value that represents grid planar type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getGridPlanarItem() const;
         
         /*!
           \brief Returns value that represents grid geodesic type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getGridGeodesicItem() const;
                 
         /*!
           \brief Returns value that represents item group (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getItemGroup() const;
 
         /*!
           \brief Returns value that represents moving item group (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getMovingItemGroup() const;
         
         /*!
           \brief Returns value that represents scale (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getScaleItem() const;
         
         /*!
           \brief Returns value that represents page setup window (MVC dialog) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getPageSetup() const;
         
         /*!
           \brief Returns value that represents image (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getImageItem() const;
         
         /*!
           \brief Returns value that represents systematic scale window (MVC dialog) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getSystematicScale() const;
         
         /*!
           \brief Returns value that represents point (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getPointItem() const;
         
         /*!
           \brief Returns value that represents arrow (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getArrowItem() const;
         
         /*!
           \brief Returns value that represents ellipse (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getEllipseItem() const;
         
         /*!
           \brief Returns value that represents title (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getTitleItem() const;
         
         /*!
           \brief Returns value that represents text grid (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getTextGridItem() const;
           
         /*!
           \brief Returns value that represents edit template widget (MVC widget) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getEditTemplate() const;
                 
         /*!
           \brief Returns value that represents text grid settings (MVC widget) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getTextGridSettings() const;
 
         /*!
           \brief Returns value that represents legend child (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getLegendChildItem() const;
         
         /*!
           \brief Returns value that represents text (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getTextItem() const;
 
         /*!
           \brief Returns value that represents unknown type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getObjectUnknown() const;
 
         /*!
           \brief Returns value that represents line (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
-		    virtual EnumType* getLineItem() const; 
+        virtual EnumType* getLineItem() const; 
         
         /*!
           \brief Returns value that represents polygon (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getPolygonItem() const; 
 
         /*!
           \brief Returns value that represents balloon (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getBalloonItem() const; 
         
         /*!
           \brief Returns value that represents barcode (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getBarCodeItem() const;
 
         /*!
           \brief Returns value that represents gridmapitem (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getGridMapItem() const;
 
         /*!
           \brief Returns value that represents map layer choice (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getMapLayerChoice() const;
 
         /*!
           \brief Returns value that represents SVG (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getSVGDialog() const;
 
         /*!
           \brief Returns value that represents north (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNorthItem() const;
 
         /*!
           \brief Returns value that represents map location (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getMapLocationItem() const;
 
         /*!
           \brief Returns value that represents color dialog widget (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getColorDialog() const;
 
         /*!
           \brief Returns value that represents font dialog widget (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getFontDialog() const;
 
         /*!
           \brief Returns value that represents font dialog widget (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getLegendChoice() const;
 
         /*!
           \brief Returns value that represents star location (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStarItem() const;
 
         /*!
           \brief Returns value that represents SVG location (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getSVGItem() const;
 

@@ -40,7 +40,6 @@
 #include "../../../../qt/widgets/rp/Utils.h"
 #include "../../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../../qt/af/ApplicationController.h"
-#include "../../../../qt/af/Project.h"
 #include "../../../../qt/af/events/LayerEvents.h"
 #include "../../../../raster/Utils.h"
 #include "../../../../terralib4/DataSource.h"
@@ -849,7 +848,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       te::qt::af::evt::LayerAdded evt(layer);
 
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      emit triggered(&evt);
     }
 
     std::vector<::terralib4::ThemeInfo> themes = m_themeSelection->getThemes();
@@ -935,7 +934,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       te::qt::af::evt::LayerAdded evt(layer);
 
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      emit triggered(&evt);
     }
   }
   catch(const te::da::Exception& e)

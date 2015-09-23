@@ -122,7 +122,43 @@ namespace te
         */
         te::dt::AbstractData* clone() const;
 
-        //@}
+
+  /*!
+....\ Computes an intersection point between two segments, if there is one.
+....\ There may be 0, 1 or many intersection points between two segments.
+....\ If there are 0, null is returned. If there is 1 or more, a single
+....\ one is returned (chosen at the discretion of the algorithm).
+....\ If more information is required about the details of the
+....\ intersection, the LineIntersector class should be used.
+....
+....\param line other segmento to calculate intersection
+....\param coord the Coordinate to write the result into
+....\return true if an intersection was found, false otherwise
+....*/
+    bool intersection(const Line& line, Point& coord) const;
+
+    /*!
+    \ Returns the slope of the segment
+    \ If the line is vertical returns DBL_MAX
+    */
+    double Angle();
+
+    /*!
+    \ Sets coordinates of the segment
+
+    \param index 0 or 1 poisition of coordinate
+    \param x x value of coordinate
+    \param y y value of coordinate
+    \param z z value of coordinate
+    \param m m value of coordinate
+    */
+    void setCoord(int index, double x, double y, double z = 0., double m = 0.);
+
+    /*!
+    \ Point line distance formula by calculating the coefficients A, B, C of the line Ax + By + C = 0 from points p1, p2
+    */
+    double distance(te::gm::Point p);
+      //@}
     };
 
   } // end namespace gm

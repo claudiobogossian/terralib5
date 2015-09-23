@@ -30,28 +30,27 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_ITEM_H
 #define __TERRALIB_LAYOUT_INTERNAL_LEGEND_ITEM_H
 
-#include <QVariant>
-
 // TerraLib
-#include "ObjectItem.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
+
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
+    class AbstractItemController;
     /*!
     \brief Class that represents a graphic legend of a map.
         Its coordinate system is the same of scene (millimeters). 
         This is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::ObjectItem
-	  */
-    class TELAYOUTEXPORT LegendItem : public ObjectItem
+      \sa te::layout::ObjectItem
+    */
+    class TELAYOUTEXPORT LegendItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -61,31 +60,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        LegendItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        LegendItem(AbstractItemController* controller);
 
         /*!
           \brief Destructor
          */
         virtual ~LegendItem();
-        
-        /*!
-          \brief Reimplemented from ObjectItem
-         */
-        virtual void updateObserver(ContextItem context);
-
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
-
-         /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
     protected:
 
-        virtual void drawItem(QPainter* painter);
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
     private:
 

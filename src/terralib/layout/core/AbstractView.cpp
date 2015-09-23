@@ -27,17 +27,31 @@
 
 // TerraLib
 #include "AbstractView.h"
+#include "enum/Enums.h"
 
 te::layout::AbstractView::AbstractView():
-  m_visibleRulers(true)
+  m_visibleRulers(true),
+  m_currentZoom(50),
+  m_defaultZoom(50),
+  m_oldZoom(50),
+  m_maxZoomLimit(900),
+  m_minZoomLimit(10),
+  m_currentMode(0),
+  m_oldMode(0)
 {
-  m_zoomFactors[0.42] = "42%";
-  m_zoomFactors[0.5] = "50%";
-  m_zoomFactors[0.7] = "70%";
-  m_zoomFactors[1.] = "100%";
-  m_zoomFactors[1.5] = "150%";
-  m_zoomFactors[2.] = "200%";
-  m_zoomFactors[3.] = "300%";
+  m_zooms[42] = "42%";
+  m_zooms[50] = "50%";
+  m_zooms[70] = "70%";
+  m_zooms[100] = "100%";
+  m_zooms[150] = "150%";
+  m_zooms[200] = "200%";
+  m_zooms[300] = "300%";
+
+  if(Enums::getInstance().getEnumModeType())
+  {
+    m_currentMode = Enums::getInstance().getEnumModeType()->getModeNone();
+    m_oldMode = m_currentMode;
+  }
 }
 
 bool te::layout::AbstractView::isVisibleRulers()
@@ -50,52 +64,150 @@ void te::layout::AbstractView::setVisibleRulers( bool visible )
   m_visibleRulers = visible;
 }
 
-void te::layout::AbstractView::addZoomFactor( double factor, std::string text )
+void te::layout::AbstractView::addZoom( int zoom, std::string text )
 {
-  m_zoomFactors[factor] = text;
+  m_zooms[zoom] = text;
 }
 
-void te::layout::AbstractView::clearZoomFactors()
+void te::layout::AbstractView::removeZoom( int zoom )
 {
-  m_zoomFactors.clear();
+  std::map<int, std::string>::iterator it;
+
+  it = m_zooms.find(zoom);
+
+  if(it != m_zooms.end())
+  {
+    m_zooms.erase(it);
+  }
 }
 
-double te::layout::AbstractView::nextFactor( double currentFactor )
+void te::layout::AbstractView::clearZoomList()
 {
-  double zoomFactor = 0;
-  std::map<double, std::string>::iterator it;
+  m_zooms.clear();
+}
+
+int te::layout::AbstractView::nextZoom()
+{
+  int zoom = 0;
+  std::map<int, std::string>::iterator it;
   
-  it = m_zoomFactors.find(currentFactor);
+  it = m_zooms.find(m_currentZoom);
 
-  if(it != m_zoomFactors.end())
+  if(it != m_zooms.end())
   {
     ++it;
-    if(it != m_zoomFactors.end())
+    if(it != m_zooms.end())
     {
-      zoomFactor = it->first;
-      return zoomFactor;
+      if(m_currentZoom != it->first)
+      {
+        zoom = it->first;
+      }
     }
   }
-
-  return zoomFactor;
+  return zoom;
 }
 
-double te::layout::AbstractView::previousFactor( double currentFactor )
+int te::layout::AbstractView::previousZoom()
 {
-  double zoomFactor = 0;
-  std::map<double, std::string>::iterator it;
+  int zoom = 0;
+  std::map<int, std::string>::iterator it;
 
-  it = m_zoomFactors.find(currentFactor);
+  it = m_zooms.find(m_currentZoom);
 
-  if(it != m_zoomFactors.end())
+  if(it != m_zooms.end())
   {
     --it;
-    if(it != m_zoomFactors.end())
+    if(it != m_zooms.end())
     {
-      zoomFactor = it->first;
-      return zoomFactor;
+      if(m_currentZoom != it->first)
+      {
+        zoom = it->first;
+      }
     }
   }
-
-  return zoomFactor;
+  return zoom;
 }
+
+void te::layout::AbstractView::setDefaultZoom( int zoom )
+{
+  m_defaultZoom = zoom;
+}
+
+int te::layout::AbstractView::getDefaultZoom()
+{
+  return m_defaultZoom;
+}
+
+int te::layout::AbstractView::getCurrentZoom()
+{
+  return m_currentZoom;
+}
+
+int te::layout::AbstractView::getOldZoom()
+{
+  return m_oldZoom;
+}
+
+bool te::layout::AbstractView::isLimitExceeded( int newZoom )
+{
+  bool result = false;
+
+  //Zooming In
+  if(newZoom > m_maxZoomLimit || newZoom < m_minZoomLimit)
+    result = true;
+
+  return result;
+}
+
+void te::layout::AbstractView::setMaxZoomLimit( int zoom )
+{
+  m_maxZoomLimit = zoom;
+}
+
+int te::layout::AbstractView::getMaxZoomLimit()
+{
+  return m_maxZoomLimit;
+}
+
+void te::layout::AbstractView::setMinZoomLimit( int zoom )
+{
+  m_minZoomLimit = zoom;
+}
+
+int te::layout::AbstractView::getMinZoomLimit()
+{
+  return m_minZoomLimit;
+}
+
+void te::layout::AbstractView::setCurrentZoom( int zoom )
+{
+  if(m_currentZoom == zoom)
+  {
+    return;
+  }
+  m_oldZoom = m_currentZoom;
+  m_currentZoom = zoom;
+}
+
+te::layout::EnumType* te::layout::AbstractView::getCurrentMode()
+{
+  return m_currentMode;
+}
+
+te::layout::EnumType* te::layout::AbstractView::getOldMode()
+{
+  return m_oldMode;
+}
+
+void te::layout::AbstractView::setCurrentMode( EnumType* mode )
+{
+  m_oldMode = m_currentMode;
+  m_currentMode = mode;
+}
+
+
+
+
+
+
+

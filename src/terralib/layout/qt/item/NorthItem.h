@@ -20,9 +20,9 @@
 /*!
   \file NorthItem.h
    
-   \brief Class that represents a graphic Rectangle. 
+   \brief Class that represents a graphic North. 
       Its coordinate system is the same of scene (millimeters). 
-      This is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+      This is also son of AbstractItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
@@ -31,25 +31,26 @@
 #define __TERRALIB_LAYOUT_INTERNAL_NORTH_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
+
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
+    class AbstractItemController;
     /*!
-    \brief Class that represents a graphic Rectangle. 
+    \brief Class that represents a graphic North. 
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+        He is also the son of AbstractItem, so it can become observer of a model (Observable). 
     
       \ingroup layout
 
-      \sa te::layout::ObjectItem
+      \sa te::layout::AbstractItem
     */
-    class TELAYOUTEXPORT NorthItem : public ObjectItem
+    class TELAYOUTEXPORT NorthItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -59,7 +60,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        NorthItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        NorthItem(AbstractItemController* controller, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -69,13 +70,15 @@ namespace te
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual void drawItem (QPainter * painter);
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
         
       protected:
 
         virtual void drawNorthArrow1(QPainter * painter);
         virtual void drawNorthArrow2(QPainter * painter);
         virtual void drawNorthArrow3(QPainter * painter);
+
+        QColor setBrush(QPainter* painter);
     };
   }
 }

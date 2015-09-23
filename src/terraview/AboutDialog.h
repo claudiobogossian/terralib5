@@ -43,6 +43,10 @@ class AboutDialog : public QDialog
 
     ~AboutDialog();
 
+    void setTerraViewLogoFilePath(std::string path);
+
+    void setTerraLibLogoFilePath(std::string path);
+
   private:
 
     std::auto_ptr<Ui::AboutDialogForm> m_ui;

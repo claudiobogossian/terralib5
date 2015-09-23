@@ -1,5 +1,6 @@
 
 //TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
@@ -13,6 +14,7 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/UpdateCommand.h"
 #include "SubtractAreaTool.h"
 
 // Qt
@@ -25,19 +27,20 @@
 // STL
 #include <cassert>
 #include <memory>
+#include <iostream>
+
 
 te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-  m_feature(0)
+  m_updateWatches(0) 
 {
-
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 }
 
 te::edit::SubtractAreaTool::~SubtractAreaTool()
 {
-  delete m_feature;
+  reset();
 }
 
 bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
@@ -51,8 +54,7 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
-  if (m_feature == 0)
-    pickFeature(m_layer);
+  pickFeature(m_layer, GetPosition(e));
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -74,6 +76,7 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     if (m_feature == 0) // Can not stop yet...
     {
+      te::edit::CreateLineTool::clear();
       QMessageBox::critical(m_display, tr("Error"), QString(tr("Error subtracting area to the polygon")));
       return false;
     }
@@ -83,6 +86,8 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
     draw();
 
     storeEditedFeature();
+
+    storeUndoCommand();
 
     return true;
   }
@@ -138,6 +143,8 @@ void te::edit::SubtractAreaTool::drawPolygon()
 
 te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
 {
+  te::gm::Geometry* geoSubtract = 0;
+
   // Build the geometry
   te::gm::LinearRing* ring = new te::gm::LinearRing(m_coords.size() + 1, te::gm::LineStringType);
   for (std::size_t i = 0; i < m_coords.size(); ++i)
@@ -149,75 +156,12 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
 
   pHole->setSRID(m_display->getSRID());
 
-  te::gm::Geometry* geo = 0;
-
   if (!pHole->intersects(m_feature->getGeometry()))
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-  geo = Difference(m_feature->getGeometry(), pHole);
+  geoSubtract = convertGeomType(m_layer, differenceGeometry(m_feature->getGeometry(), pHole));
 
-  //projection
-  if (geo->getSRID() == m_layer->getSRID())
-    return geo;
-
-  // else, need conversion...
-  geo->transform(m_layer->getSRID());
-
-  return geo;
-}
-
-void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer)
-{
-  reset();
-
-  try
-  {
-    std::auto_ptr<te::da::DataSetType> dt(layer->getSchema());
-
-    const te::da::ObjectIdSet* objSet = layer->getSelected();
-
-    std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
-
-    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
-
-    if (ds->moveNext())
-    {
-      te::gm::Coord2D coord(0, 0);
-
-      std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope auxEnv(*geom->getMBR());
-
-      // Try finds the geometry centroid
-      switch (geom->getGeomTypeId())
-      {
-        case te::gm::PolygonType:
-        {
-          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
-          coord = *p->getCentroidCoord();
-
-          break;
-        }
-        case te::gm::MultiPolygonType:
-        {
-          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
-          coord = *mp->getCentroidCoord();
-
-          break;
-        }
-      }
-
-      // Build the search envelope
-      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
-
-      m_feature = PickFeature(m_layer, e, m_display->getSRID());
-
-    }
-
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
-  }
+  return geoSubtract;
 }
 
 te::gm::Envelope te::edit::SubtractAreaTool::buildEnvelope(const QPointF& pos)
@@ -250,10 +194,59 @@ void te::edit::SubtractAreaTool::onExtentChanged()
 
 void te::edit::SubtractAreaTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()));
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 }
 
-te::gm::Geometry* te::edit::SubtractAreaTool::Difference(te::gm::Geometry* g1, te::gm::Geometry* g2)
+te::gm::Geometry* te::edit::SubtractAreaTool::differenceGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
   return g1->difference(g2);
+}
+
+void te::edit::SubtractAreaTool::storeUndoCommand()
+{
+  m_updateWatches.push_back(m_feature->clone());
+
+  QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
+  UndoStackManager::getInstance().addUndoStack(command);
+}
+
+void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+{
+  te::gm::Envelope env = buildEnvelope(pos);
+
+  try
+  {
+    if (m_feature == 0)
+    {
+      m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+
+      if (m_feature){
+        m_updateWatches.push_back(m_feature->clone());
+        m_oidsSet.insert(m_feature->getId()->getValueAsString());
+      }
+    }
+    else
+    {
+      Feature* feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+      if (feature)
+      {
+        if (m_oidsSet.find(feature->getId()->clone()->getValueAsString()) == m_oidsSet.end())
+        {
+          m_updateWatches.push_back(feature->clone());
+          m_oidsSet.insert(feature->getId()->clone()->getValueAsString());
+          m_feature = feature;
+        }
+        else
+        {
+          if (m_feature->getId()->clone()->getValueAsString() != feature->getId()->clone()->getValueAsString())
+            m_feature = feature;
+        }
+      }
+    }
+
+  }
+  catch (std::exception& e)
+  {
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
+  }
 }

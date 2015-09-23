@@ -48,7 +48,7 @@
 #include "events/ApplicationEvents.h"
 #include "ApplicationController.h"
 #include "Exception.h"
-#include "Project.h"
+//#include "Project.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
 #include "XMLFormatter.h"
@@ -95,7 +95,7 @@ te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
     m_defaultSRID(TE_UNKNOWN_SRS),
     m_selectionColor(QColor(0, 255, 0)),
     m_initialized(false),
-    m_project(0),
+//    m_project(0),
     m_resetTerralib(true)
 {
 }
@@ -122,7 +122,7 @@ void te::qt::af::ApplicationController::addToolBar(const QString& id, QToolBar* 
 // send event: tool bar added
   te::qt::af::evt::ToolBarAdded evt(bar);
 
-  broadcast(&evt);
+  emit triggered(&evt);
 }
 
 void te::qt::af::ApplicationController::registerToolBar(const QString& id, QToolBar* bar)
@@ -268,28 +268,19 @@ QActionGroup* te::qt::af::ApplicationController::findActionGroup(const QString& 
   return 0;
 }
 
-void te::qt::af::ApplicationController::addListener(QObject* obj)
+void te::qt::af::ApplicationController::addListener(QObject* obj, const ListenerType& type)
 {
-  std::set<QObject*>::const_iterator it = m_applicationItems.find(obj);
+  if(type == SENDER || type == BOTH)
+    connect(obj, SIGNAL(triggered(te::qt::af::evt::Event*)),
+            this, SIGNAL(triggered(te::qt::af::evt::Event*)));
 
-  if(it != m_applicationItems.end())
-    return;
-
-  m_applicationItems.insert(obj);
-
-  obj->connect(this, SIGNAL(triggered(te::qt::af::evt::Event*)), SLOT(onApplicationTriggered(te::qt::af::evt::Event*)));
+  if(type == RECEIVER || type == BOTH)
+    obj->connect(this, SIGNAL(triggered(te::qt::af::evt::Event*)), SLOT(onApplicationTriggered(te::qt::af::evt::Event*)));
 }
 
 void te::qt::af::ApplicationController::removeListener(QObject* obj)
 {
-  std::set<QObject*>::iterator it = m_applicationItems.find(obj);
-
-  if(it == m_applicationItems.end())
-    return;
-
-  m_applicationItems.erase(it);
-
-  disconnect(SIGNAL(triggered(te::qt::af::evt::Event*)), obj, SLOT(onApplicationTriggered(te::qt::af::evt::Event*)));
+  disconnect(obj);
 }
 
 void  te::qt::af::ApplicationController::initialize()
@@ -342,7 +333,7 @@ void  te::qt::af::ApplicationController::initialize()
 
   m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
   m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
-  m_appProjectExtension = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension"));
+  //m_appProjectExtension = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension"));
   m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
   
   if(!boost::filesystem::exists(m_appIconName.toStdString()))
@@ -472,7 +463,7 @@ void  te::qt::af::ApplicationController::initialize()
 
       te::serialize::xml::ReadDataSourceInfo(m_appDatasourcesFile);
 
-      XMLFormatter::formatDataSourceInfos(false);
+      te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
       SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
     }
@@ -494,7 +485,7 @@ void  te::qt::af::ApplicationController::initialize()
 
           te::serialize::xml::ReadDataSourceInfo(dataSourcesFile);
 
-          XMLFormatter::formatDataSourceInfos(false);
+          te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
           SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
         }
@@ -512,11 +503,6 @@ void  te::qt::af::ApplicationController::initialize()
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
 
-  QFileInfo info(user_settings.fileName());
-
-  if(!info.exists())
-    CreateDefaultSettings();
-
   m_initialized = true;
 }
 
@@ -530,7 +516,7 @@ void te::qt::af::ApplicationController::initializePlugins()
   {
     SplashScreenManager::getInstance().showMessage(tr("Reading application plugins list..."));
 
-    std::vector<std::string> default_plg = GetDefaultPluginsNames();
+    std::vector<std::string> default_plg = GetDefaultPluginsNames(this);
     plgFiles = GetPluginsFiles();
 
     //SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
@@ -653,142 +639,142 @@ void te::qt::af::ApplicationController::initializePlugins()
   }
 }
 
-void te::qt::af::ApplicationController::initializeProjectMenus()
-{
-  SplashScreenManager::getInstance().showMessage("Loading recent projects...");
+//void te::qt::af::ApplicationController::initializeProjectMenus()
+//{
+//  SplashScreenManager::getInstance().showMessage("Loading recent projects...");
+//
+//  try
+//  {
+//    QSettings user_settings(QSettings::IniFormat,
+//                            QSettings::UserScope,
+//                            QApplication::instance()->organizationName(),
+//                            QApplication::instance()->applicationName());
+//
+//    QVariant projPath = user_settings.value("projects/most_recent/path", "");
+//    QVariant projTitle = user_settings.value("projects/most_recent/title", "");
+//
+//    QMenu* mnu = getMenu("File.Recent Projects");
+//
+//    if(!projPath.toString().isEmpty())
+//    {
+//      QAction* act = mnu->addAction(projPath.toString());
+//      act->setData(projPath);
+//
+//      mnu->addSeparator();
+//
+//      m_recentProjs.append(projPath.toString());
+//      m_recentProjsTitles.append(projTitle.toString());
+//    }
+//    
+//    user_settings.beginGroup("projects");
+//    
+//    int nrc = user_settings.beginReadArray("recents");
+//    
+//    for(int i = 0; i != nrc; ++i)
+//    {
+//      user_settings.setArrayIndex(i);
+//      QString npath = user_settings.value("projects/path").toString();
+//      QString ntitle = user_settings.value("projects/title").toString();
+//      
+//      
+//      QAction* act = mnu->addAction(npath);
+//      act->setData(npath);
+//      m_recentProjs.append(npath);
+//      m_recentProjsTitles.append(ntitle);
+//    }
+//
+//    mnu->setEnabled(true);
+//
+//    SplashScreenManager::getInstance().showMessage("Recent projects loaded!");
+//  }
+//  catch(const std::exception& e)
+//  {
+//    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
+//
+//    QString msgErr(tr("Error loading the registered projects: %1"));
+//
+//    msgErr = msgErr.arg(e.what());
+//
+//    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
+//  }
+//}
+//
+//void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
+//{
+//  int pos = m_recentProjs.indexOf(prjFile);
+//
+//  QString author;
+//  int maxSaved;
+//
+//  GetProjectInformationsFromSettings(author, maxSaved);
+//
+//  if(pos != 0)
+//  {
+//    if(pos < 0)
+//    {
+//      if(m_recentProjs.size() > maxSaved) // TODO: Size of the list must be configurable.
+//      {
+//        m_recentProjs.removeLast();
+//        m_recentProjsTitles.removeLast();
+//      }
+//
+//      m_recentProjs.prepend(prjFile);
+//      m_recentProjsTitles.prepend(prjTitle);
+//    }
+//    else
+//    {
+//      m_recentProjs.move(pos, 0);
+//      m_recentProjsTitles.move(pos, 0);
+//    }
+//
+//    if(m_recentProjs.isEmpty())
+//      return;
+//
+//    QMenu* mnu = getMenu("File.Recent Projects");
+//
+//    mnu->clear();
+//
+//    mnu->setEnabled(true);
+//
+//    QString recPrj = m_recentProjs.at(0);
+//    QAction* act = mnu->addAction(recPrj);
+//    act->setData(recPrj);
+//
+//    mnu->addSeparator();
+//
+//    if(m_recentProjs.size() > 1)
+//      for(int i=1; i<m_recentProjs.size(); i++)
+//      {
+//        recPrj = m_recentProjs.at(i);
+//        act = mnu->addAction(recPrj);
+//        act->setData(recPrj);
+//      }
+//  }
+//
+//  QAction* act = findAction("File.Save Project As");
+//
+//  if(act != 0)
+//    act->setEnabled(true);
+//}
 
-  try
-  {
-    QSettings user_settings(QSettings::IniFormat,
-                            QSettings::UserScope,
-                            QApplication::instance()->organizationName(),
-                            QApplication::instance()->applicationName());
+//void te::qt::af::ApplicationController::set(te::qt::af::Project* prj)
+//{
+//  m_project = prj;
+//}
 
-    QVariant projPath = user_settings.value("projects/most_recent/path", "");
-    QVariant projTitle = user_settings.value("projects/most_recent/title", "");
-
-    QMenu* mnu = getMenu("File.Recent Projects");
-
-    if(!projPath.toString().isEmpty())
-    {
-      QAction* act = mnu->addAction(projPath.toString());
-      act->setData(projPath);
-
-      mnu->addSeparator();
-
-      m_recentProjs.append(projPath.toString());
-      m_recentProjsTitles.append(projTitle.toString());
-    }
-    
-    user_settings.beginGroup("projects");
-    
-    int nrc = user_settings.beginReadArray("recents");
-    
-    for(int i = 0; i != nrc; ++i)
-    {
-      user_settings.setArrayIndex(i);
-      QString npath = user_settings.value("projects/path").toString();
-      QString ntitle = user_settings.value("projects/title").toString();
-      
-      
-      QAction* act = mnu->addAction(npath);
-      act->setData(npath);
-      m_recentProjs.append(npath);
-      m_recentProjsTitles.append(ntitle);
-    }
-
-    mnu->setEnabled(true);
-
-    SplashScreenManager::getInstance().showMessage("Recent projects loaded!");
-  }
-  catch(const std::exception& e)
-  {
-    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
-
-    QString msgErr(tr("Error loading the registered projects: %1"));
-
-    msgErr = msgErr.arg(e.what());
-
-    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
-  }
-}
-
-void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
-{
-  int pos = m_recentProjs.indexOf(prjFile);
-
-  QString author;
-  int maxSaved;
-
-  GetProjectInformationsFromSettings(author, maxSaved);
-
-  if(pos != 0)
-  {
-    if(pos < 0)
-    {
-      if(m_recentProjs.size() > maxSaved) // TODO: Size of the list must be configurable.
-      {
-        m_recentProjs.removeLast();
-        m_recentProjsTitles.removeLast();
-      }
-
-      m_recentProjs.prepend(prjFile);
-      m_recentProjsTitles.prepend(prjTitle);
-    }
-    else
-    {
-      m_recentProjs.move(pos, 0);
-      m_recentProjsTitles.move(pos, 0);
-    }
-
-    if(m_recentProjs.isEmpty())
-      return;
-
-    QMenu* mnu = getMenu("File.Recent Projects");
-
-    mnu->clear();
-
-    mnu->setEnabled(true);
-
-    QString recPrj = m_recentProjs.at(0);
-    QAction* act = mnu->addAction(recPrj);
-    act->setData(recPrj);
-
-    mnu->addSeparator();
-
-    if(m_recentProjs.size() > 1)
-      for(int i=1; i<m_recentProjs.size(); i++)
-      {
-        recPrj = m_recentProjs.at(i);
-        act = mnu->addAction(recPrj);
-        act->setData(recPrj);
-      }
-  }
-
-  QAction* act = findAction("File.Save Project As");
-
-  if(act != 0)
-    act->setEnabled(true);
-}
-
-void te::qt::af::ApplicationController::set(te::qt::af::Project* prj)
-{
-  m_project = prj;
-}
-
-te::qt::af::Project* te::qt::af::ApplicationController::getProject()
-{
-  return m_project;
-}
+//te::qt::af::Project* te::qt::af::ApplicationController::getProject()
+//{
+//  return m_project;
+//}
 
 void te::qt::af::ApplicationController::finalize()
 {
   if(!m_initialized)
     return;
 
-  UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
+//  UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
 
-  SaveDataSourcesFile();
+//  SaveDataSourcesFile();
 
   te::plugin::PluginManager::getInstance().shutdownAll();
 
@@ -831,13 +817,13 @@ void te::qt::af::ApplicationController::finalize()
 
   m_appTitle.clear();
 
-  m_appProjectExtension.clear();
+  //m_appProjectExtension.clear();
 
   m_tLibLogo.clear();
           
-  m_recentProjs.clear();
+  //m_recentProjs.clear();
 
-  m_recentProjsTitles.clear();
+  //m_recentProjsTitles.clear();
 
   m_appUserSettingsFile.clear();
   
@@ -849,6 +835,8 @@ void te::qt::af::ApplicationController::finalize()
   
   m_selectionColor = QColor();
 
+//  m_project = 0;
+
   m_initialized = false;
 }
 
@@ -857,13 +845,13 @@ QSettings& te::qt::af::ApplicationController::getSettings()
   return m_appSettings;
 }
 
-void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
-{
-  // Need to check event send to prevent loops
-  // -----------------------------------------
+//void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
+//{
+//  // Need to check event send to prevent loops
+//  // -----------------------------------------
 
-  emit triggered(evt);
-}
+//  emit triggered(evt);
+//}
 
 const QString& te::qt::af::ApplicationController::getAppName() const
 {
@@ -875,10 +863,10 @@ const QString& te::qt::af::ApplicationController::getAppTitle() const
   return m_appTitle;
 }
 
-const QString& te::qt::af::ApplicationController::getAppProjectExtension() const
-{
-  return m_appProjectExtension;
-}
+//const QString& te::qt::af::ApplicationController::getAppProjectExtension() const
+//{
+//  return m_appProjectExtension;
+//}
 
 const QString& te::qt::af::ApplicationController::getAppIconName() const
 {
@@ -900,10 +888,10 @@ const QString& te::qt::af::ApplicationController::getTlibLogo() const
   return m_tLibLogo;
 }
 
-QString te::qt::af::ApplicationController::getMostRecentProject() const
-{
-  return m_recentProjs.isEmpty() ? QString("") : m_recentProjs.front();
-}
+//QString te::qt::af::ApplicationController::getMostRecentProject() const
+//{
+//  return m_recentProjs.isEmpty() ? QString("") : m_recentProjs.front();
+//}
 
 int te::qt::af::ApplicationController::getDefaultSRID() const
 {
@@ -933,4 +921,9 @@ void te::qt::af::ApplicationController::setResetTerraLibFlag(const bool& status)
 const QString& te::qt::af::ApplicationController::getUserDataDir() const
 {
   return m_userDataDir;
+}
+
+void te::qt::af::ApplicationController::trigger(te::qt::af::evt::Event* e)
+{
+  emit triggered(e);
 }

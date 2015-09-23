@@ -49,7 +49,8 @@ if(Qt5_FOUND)
   add_library(terralib_mod_qt_plugins_datasource_wfs SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_datasource_wfs terralib_mod_qt_widgets
-                                                               terralib_mod_qt_apf)
+                                                               terralib_mod_qt_apf
+															   terralib_mod_wfs)
 
   qt5_use_modules(terralib_mod_qt_plugins_datasource_wfs Widgets)
 

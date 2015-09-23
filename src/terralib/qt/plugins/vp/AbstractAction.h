@@ -39,6 +39,13 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
     namespace plugins
     {
       namespace vp
@@ -110,6 +117,10 @@ namespace te
 
             */
             std::list<te::map::AbstractLayerPtr> getLayers();
+
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
 
           public:
             QAction* getAction()

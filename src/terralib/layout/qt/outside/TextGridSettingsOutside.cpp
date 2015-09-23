@@ -28,8 +28,6 @@
 // TerraLib
 #include "TextGridSettingsOutside.h"
 #include "ui_TextGridSettings.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../outside/TextGridSettingsController.h"
 #include "../../core/enum/Enums.h"
@@ -43,9 +41,9 @@
 #include <QCheckBox>
 #include <QColorDialog>
 
-te::layout::TextGridSettingsOutside::TextGridSettingsOutside( OutsideController* controller, Observable* o ) :
+te::layout::TextGridSettingsOutside::TextGridSettingsOutside(AbstractOutsideController* controller) :
   QDialog(0),
-  OutsideObserver(controller, o),
+  AbstractOutsideView(controller),
   m_ui(new Ui::TextGridSettings)
 {
   m_ui->setupUi(this);
@@ -94,15 +92,6 @@ void te::layout::TextGridSettingsOutside::init()
 
   m_ui->frmTableColor->setAutoFillBackground(true); 
   m_ui->frmTableColor->installEventFilter(this);
-}
-
-void te::layout::TextGridSettingsOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::TextGridSettingsOutside::setPosition( const double& x, const double& y )
@@ -175,7 +164,7 @@ te::color::RGBAColor te::layout::TextGridSettingsOutside::configColor( QWidget* 
 
   QColor color = QColorDialog::getColor(brush.color(),this, "Color" );
 
-  if(!color.isValid())	
+  if(!color.isValid())  
     return rgbaColor;
 
   QPalette paltt(widget->palette());
@@ -465,7 +454,7 @@ void te::layout::TextGridSettingsOutside::initColor( QWidget* widget, std::strin
   te::color::RGBAColor color = prop.getValue().toColor();
   QColor qcolor(color.getRed(), color.getGreen(), color.getBlue());
 
-  if(!qcolor.isValid())	
+  if(!qcolor.isValid())  
     return;
 
   if(!widget)

@@ -47,7 +47,7 @@ te::qt::plugins::rp::FilterAction::~FilterAction()
 
 void te::qt::plugins::rp::FilterAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::FilterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::FilterWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

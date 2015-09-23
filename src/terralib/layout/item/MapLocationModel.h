@@ -46,11 +46,11 @@ namespace te
     \brief Class that represents a "Model" part of Map MVC component.  
     Its coordinate system is the same of scene (millimeters). 
     This is also son of ItemModelObservable, so it can become observable, and son of Visitable, so it can become visitable.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::ItemModelObservable , te::layout::Visitable
-	  */
+    */
     class TELAYOUTEXPORT MapLocationModel : public MapModel
     {
       public:

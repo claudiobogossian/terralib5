@@ -41,7 +41,7 @@ te::qt::plugins::sa::SamplePointsGeneratorAction::~SamplePointsGeneratorAction()
 
 void te::qt::plugins::sa::SamplePointsGeneratorAction::onActionActivated(bool checked)
 {
-  te::sa::SamplePointsGeneratorDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::SamplePointsGeneratorDialog dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

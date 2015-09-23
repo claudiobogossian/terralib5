@@ -26,6 +26,9 @@
 #ifndef __TERRALIB_QT_AF_ABSTRACTSETTINGWIDGET_H
 #define __TERRALIB_QT_AF_ABSTRACTSETTINGWIDGET_H
 
+// TerraLib
+#include "../ApplicationController.h"
+
 // Qt
 #include <QWidget>
 #include <QMessageBox>
@@ -41,7 +44,7 @@ namespace te
 
         \brief A frame for setting Table options.
       */
-      class AbstractSettingWidget : public QWidget
+      class TEQTAFEXPORT AbstractSettingWidget : public QWidget
       {
         Q_OBJECT
         
@@ -82,6 +85,11 @@ namespace te
           */
           bool hasChanges();
 
+          /*!
+          \brief
+          */
+          virtual void setApplicationController(te::qt::af::ApplicationController* app);
+
         public slots:
           
           virtual void onApplyButtonClicked();
@@ -107,11 +115,14 @@ namespace te
           bool m_hasChanged;  //!< Flag that defines if the widget has changes to apply.
 
           QString m_resumeText;
+
+          te::qt::af::ApplicationController* m_app;
       };
 
       inline AbstractSettingWidget::AbstractSettingWidget(QWidget* parent):
       QWidget(parent),
-      m_hasChanged(false)
+      m_hasChanged(false),
+      m_app(0)
       {
       }
 
@@ -127,6 +138,11 @@ namespace te
       inline bool AbstractSettingWidget::hasChanges()
       {
         return m_hasChanged;
+      }
+
+      inline void AbstractSettingWidget::setApplicationController(te::qt::af::ApplicationController* app)
+      {
+        m_app = app;
       }
 
       inline void AbstractSettingWidget::onApplyButtonClicked()

@@ -27,32 +27,16 @@
 
 // TerraLib
 #include "GridGeodesicItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/GridMapModel.h"
-#include "MapItem.h"
-#include "../../core/WorldTransformer.h"
-#include "../../item/MapModel.h"
-#include "../../item/GridGeodesicModel.h"
-#include "../../../geometry/LinearRing.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "../../core/Utils.h"
+
 #include "../core/ItemUtils.h"
+#include "../../core/WorldTransformer.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/property/GridSettingsConfigProperties.h"
 
-//Qt
-#include <QStyleOptionGraphicsItem>
-#include <QPointF>
-#include <QLineF>
-
-te::layout::GridGeodesicItem::GridGeodesicItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  GridMapItem(controller, o, invertedMatrix)
+te::layout::GridGeodesicItem::GridGeodesicItem(AbstractItemController* controller, bool invertedMatrix)
+  : GridMapItem(controller, invertedMatrix)
 {  
-  m_nameClass = std::string(this->metaObject()->className());
+  
 }
 
 te::layout::GridGeodesicItem::~GridGeodesicItem()
@@ -60,73 +44,56 @@ te::layout::GridGeodesicItem::~GridGeodesicItem()
 
 }
 
+
 void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
 {
-  if(!parentItem())
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pGeographicBox = m_controller->getProperty("geographic_box");
+  const Property& pWidth = m_controller->getProperty("width");
+  const Property& pHeight = m_controller->getProperty("height");
+  const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
+
+  const te::gm::Envelope& geographicBox = pGeographicBox.getValue().toEnvelope();
+  double width = pWidth.getValue().toDouble();
+  double height = pHeight.getValue().toDouble();
+  const std::string& style = pStyle.getValue().toString();
+
+  EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
+  if(currentStyle != 0)
   {
-    return;
+    currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
   }
 
-  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  MapItem* item = dynamic_cast<MapItem*>(parentItem());
-  if(!item)
-  {
-    return;    
-  }
-
-  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
-  if(!mapModel)
-  {
-    return;    
-  }
-
-  if(!mapModel->isLoadedLayer())
-  {
-    return;
-  }
-
-  std::list<te::map::AbstractLayerPtr> layerListMap = mapModel->getLayers();
-
-  std::list<te::map::AbstractLayerPtr>::iterator it;
-  it = layerListMap.begin();
-
-  te::map::AbstractLayerPtr layer = (*it);
-  
-  int srid = layer->getSRID();
-  if(srid <= 0)
-    return;
+  te::gm::Envelope newBoxMM(0, 0, width, height);
 
   clear();
 
   Utils* utils = Context::getInstance().getUtils();
 
-  double scale = mapModel->getFixedScale();
-  te::gm::Envelope box = mapModel->getWorldInDegrees();
-  te::gm::Envelope boxMM = mapModel->getMapBox();
+  //double wMargin = mapModel->getDisplacementX();
+  //double hMargin = mapModel->getDisplacementY();
 
-  double wMargin = mapModel->getDisplacementX();
-  double hMargin = mapModel->getDisplacementY();
+  //te::gm::Envelope newBoxMM(wMargin, hMargin, boxMM.getWidth() + wMargin, boxMM.getHeight() + hMargin);
 
-  te::gm::Envelope newBoxMM(wMargin, hMargin, boxMM.getWidth() + wMargin, boxMM.getHeight() + hMargin);
-
-  model->setSRID(srid);
-  model->setMapScale(scale); // put visit
-  model->calculateGaps(box);
+  //model->setSRID(srid);
+  //model->setMapScale(scale); // put visit
+  //model->calculateGaps(box); //TODO rever
   
-  /* Box necess�rio para desenhar a curvatura */
-  te::gm::Envelope planarBoxGeodesic = box;
-  int zone = utils->calculatePlanarZone(box);
+  // Box necessario para desenhar a curvatura
+  te::gm::Envelope planarBox = geographicBox;
+  int zone = utils->calculatePlanarZone(geographicBox);
+  if(zone < 0 || zone > 60)
+  {
+    painter->drawRect(boundingRect());
+    return;
+  }
 
-  utils->remapToPlanar(&planarBoxGeodesic, zone);
-  model->setPlanarBox(planarBoxGeodesic);
+  utils->remapToPlanar(&planarBox, zone);
+ // model->setPlanarBox(planarBoxGeodesic);
 
-  calculateVertical(box, newBoxMM, scale);
-  calculateHorizontal(box, newBoxMM, scale);
+  calculateVertical(geographicBox, planarBox, newBoxMM);
+  calculateHorizontal(geographicBox, planarBox, newBoxMM);
 
   EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
   if(!gridStyle)
@@ -134,90 +101,104 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
     return;
   }
 
-  if(model->getGridStyle() == gridStyle->getStyleContinuous())
+  if(currentStyle == gridStyle->getStyleContinuous())
   {
     drawContinuousLines(painter);
   }
-  else if(model->getGridStyle() == gridStyle->getStyleCross())
+  else if(currentStyle == gridStyle->getStyleCross())
   {
     drawCrossLines(painter);
   }
 }
 
-double te::layout::GridGeodesicItem::initVerticalLines( te::gm::Envelope geoBox )
+
+double te::layout::GridGeodesicItem::initVerticalLines( const te::gm::Envelope& geoBox )
 {
-  double			yInit = 0;
- 
-  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
-  if(!model)
-  {
-    return yInit;
-  }
-  
-  yInit = model->getInitialGridPointY();
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pInitialGridPointY = m_controller->getProperty(settingsConfig.getInitialGridPointY());
+  const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
+
+  double initialGridPointY = pInitialGridPointY.getValue().toDouble();
+  double verticalGap = pVerticalGap.getValue().toDouble();
+
+  double yInit = initialGridPointY;
   if(yInit < geoBox.getLowerLeftY())
   {
     double dify = geoBox.getLowerLeftY() - yInit;
-    int nParts = (int)(dify/model->getLneVrtGap());
+    int nParts = (int)(dify/verticalGap);
     if(nParts == 0)
     {
-      yInit = model->getInitialGridPointY();
+      yInit = initialGridPointY;
     }
     else
     {
-      yInit = yInit + (nParts * model->getLneVrtGap());
+      yInit = yInit + (nParts * verticalGap);
     }
   }
   return yInit;
 }
 
-double te::layout::GridGeodesicItem::initHorizontalLines( te::gm::Envelope geoBox )
+double te::layout::GridGeodesicItem::initHorizontalLines( const te::gm::Envelope& geoBox )
 {
-  double			xInit = 0;
+  GridSettingsConfigProperties settingsConfig;
 
-  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
-  if(!model)
-  {
-    return xInit;
-  }
+  const Property& pInitialGridPointX = m_controller->getProperty(settingsConfig.getInitialGridPointX());
+  const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
 
-  xInit = model->getInitialGridPointX();
+  double initialGridPointX = pInitialGridPointX.getValue().toDouble();
+  double horizontalGap = pHorizontalGap.getValue().toDouble();
+
+  double xInit = initialGridPointX;
+
   if(xInit < geoBox.getLowerLeftX())
   {
     double difx = geoBox.getLowerLeftX() - xInit;
-    int nParts = (int)(difx/model->getLneHrzGap());
+    int nParts = (int)(difx/horizontalGap);
     if(nParts == 0)
     {
-      xInit = model->getInitialGridPointX();
+      xInit = initialGridPointX;
     }
     else
     {
-      xInit = xInit + (nParts * model->getLneHrzGap());
+      xInit = xInit + (nParts * horizontalGap);
     }
   }
   return xInit;
 }
 
-void te::layout::GridGeodesicItem::calculateVertical( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
+void te::layout::GridGeodesicItem::calculateVertical(const te::gm::Envelope& geoBox, const te::gm::Envelope& planarBox, const te::gm::Envelope& boxMM )
 {
-  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
+  const Property& pShowDegreesText = m_controller->getProperty("show_degrees_text");
+  const Property& pShowMinutesText = m_controller->getProperty("show_minutes_text");
+  const Property& pShowSecondsText = m_controller->getProperty("show_seconds_text");
+  const Property& pHorizontalDisplacement = m_controller->getProperty(settingsConfig.getLneHrzDisplacement());
+
+  double verticalGap = pVerticalGap.getValue().toDouble();
+  bool showDegreesText = pShowDegreesText.getValue().toBool();
+  bool showMinutesText = pShowMinutesText.getValue().toBool();
+  bool showSecondsText = pShowSecondsText.getValue().toBool();
+  double horizontalDisplacement = pHorizontalDisplacement.getValue().toDouble();
 
   // Draw a horizontal line and the y coordinate change(vertical)
 
   Utils* utils = Context::getInstance().getUtils();
 
-  WorldTransformer transf = utils->getTransformGeo(model->getPlanarBox(), boxMM);
+  WorldTransformer transf = utils->getTransformGeo(planarBox, boxMM);
   transf.setMirroring(false);
 
   int zone = utils->calculatePlanarZone(geoBox);
+  if(zone < 0 || zone > 60)
+  {
+    return;
+  }
 
   double y1 = initVerticalLines(geoBox);
 
-  for( ; y1 < geoBox.getUpperRightY() ; y1 += model->getLneVrtGap())
+  for( ; y1 < geoBox.getUpperRightY() ; y1 += verticalGap)
   {
     if(y1 < geoBox.getLowerLeftY())
       continue;
@@ -225,7 +206,7 @@ void te::layout::GridGeodesicItem::calculateVertical( te::gm::Envelope geoBox, t
     te::gm::Envelope env(geoBox.getLowerLeftX(), y1, geoBox.getUpperRightX(), y1);
 
     te::gm::LinearRing* line = 0;
-    line = utils->addCoordsInX(env, y1, model->getLneVrtGap());
+    line = utils->addCoordsInX(env, y1, verticalGap);
     
     // Line curvature: of latlong to planar;
     // Draw line: planar to mm
@@ -237,14 +218,14 @@ void te::layout::GridGeodesicItem::calculateVertical( te::gm::Envelope geoBox, t
     QLineF lne(ev->getLowerLeftX(), ev->getLowerLeftY(), ev->getUpperRightX(), ev->getUpperRightY());
     m_horizontalLines.push_back(lne);
 
-    std::string text = utils->convertDecimalToDegree(y1, model->isDegreesText(), model->isMinutesText(), model->isSecondsText());
+    std::string text = utils->convertDecimalToDegree(y1, showDegreesText, showMinutesText, showSecondsText);
 
     // text left
-    QPointF ptLeft(ev->getLowerLeftX() - model->getLneHrzDisplacement(), ev->getLowerLeftY());
+    QPointF ptLeft(ev->getLowerLeftX() - horizontalDisplacement, ev->getLowerLeftY());
     m_leftTexts[text] =  ptLeft;
 
     // text right
-    QPointF ptRight(ev->getUpperRightX() + model->getLneHrzDisplacement(), ev->getUpperRightY());
+    QPointF ptRight(ev->getUpperRightX() + horizontalDisplacement, ev->getUpperRightY());
     m_rightTexts[text] = ptRight;
 
     if(line)
@@ -255,35 +236,45 @@ void te::layout::GridGeodesicItem::calculateVertical( te::gm::Envelope geoBox, t
   }
 }
 
-void te::layout::GridGeodesicItem::calculateHorizontal( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
+void te::layout::GridGeodesicItem::calculateHorizontal( const te::gm::Envelope& geoBox, const te::gm::Envelope& planarBox, const te::gm::Envelope& boxMM )
 {
-  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
+  const Property& pShowDegreesText = m_controller->getProperty("show_degrees_text");
+  const Property& pShowMinutesText = m_controller->getProperty("show_minutes_text");
+  const Property& pShowSecondsText = m_controller->getProperty("show_seconds_text");
+  const Property& pVerticalDisplacement = m_controller->getProperty(settingsConfig.getLneVrtDisplacement());
+  
+  double horizontalGap = pHorizontalGap.getValue().toDouble();
+  bool showDegreesText = pShowDegreesText.getValue().toBool();
+  bool showMinutesText = pShowMinutesText.getValue().toBool();
+  bool showSecondsText = pShowSecondsText.getValue().toBool();
+  double verticalDisplacement = pVerticalDisplacement.getValue().toDouble();
 
   // Draw a vertical line and the x coordinate change(horizontal)
 
   Utils* utils = Context::getInstance().getUtils();
   
-  te::gm::Envelope planarBox = model->getPlanarBox();
-
   WorldTransformer transf = utils->getTransformGeo(planarBox, boxMM);
   transf.setMirroring(false);
 
   int zone = utils->calculatePlanarZone(geoBox);
+  if(zone < 0 || zone > 60)
+  {
+    return;
+  }
 
   double x1 = initHorizontalLines(geoBox);
 
-  for( ; x1 < geoBox.getUpperRightX() ; x1 += model->getLneHrzGap())
+  for( ; x1 < geoBox.getUpperRightX() ; x1 += horizontalGap)
   {
     if(x1 < geoBox.getLowerLeftX())
       continue;
 
     te::gm::Envelope env(x1, geoBox.getLowerLeftY(), x1, geoBox.getUpperRightY());
     te::gm::LinearRing* line = 0;
-    line = utils->addCoordsInY(env, x1, model->getLneHrzGap());
+    line = utils->addCoordsInY(env, x1, horizontalGap);
 
     // Line curvature: of latlong to planar;
     // Draw line: planar to mm
@@ -295,14 +286,14 @@ void te::layout::GridGeodesicItem::calculateHorizontal( te::gm::Envelope geoBox,
     QLineF lne(ev->getLowerLeftX(), ev->getLowerLeftY(), ev->getUpperRightX(), ev->getUpperRightY());
     m_verticalLines.push_back(lne);
 
-    std::string text = utils->convertDecimalToDegree(x1, model->isDegreesText(), model->isMinutesText(), model->isSecondsText());
+    std::string text = utils->convertDecimalToDegree(x1, showDegreesText, showMinutesText, showSecondsText);
 
     // text bottom
-    QPointF ptBottom(ev->getLowerLeftX(), ev->getLowerLeftX() - model->getLneVrtDisplacement());
+    QPointF ptBottom(ev->getLowerLeftX(), ev->getLowerLeftX() - verticalDisplacement);
     m_bottomTexts[text] = ptBottom;
 
     // text top
-    QPointF ptTop(ev->getUpperRightX(), ev->getUpperRightY() + model->getLneVrtDisplacement());
+    QPointF ptTop(ev->getUpperRightX(), ev->getUpperRightY() + verticalDisplacement);
     m_topTexts[text] = ptTop;
 
     if(line)
@@ -312,6 +303,3 @@ void te::layout::GridGeodesicItem::calculateHorizontal( te::gm::Envelope geoBox,
     }
   }
 }
-
-
-

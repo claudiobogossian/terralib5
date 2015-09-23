@@ -22,7 +22,7 @@
    
    \brief Class that represents a "Model" part of Scale MVC component.  
    Its coordinate system is the same of scene (millimeters). 
-   This is also son of ItemModelObservable, so it can become observable, and son of AbstractVisitor, so it can become visitor.
+   This is also son of AbstractItemModel, so it can become observable.
    It is must visit the map, via te::layout::Visitable*, to get the scale value.
 
   \ingroup layout
@@ -32,19 +32,9 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SCALE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/derivativevisitor/AbstractVisitor.h"
-#include "../../maptools/Canvas.h"
-#include "../core/Utils.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
+#include "../core/pattern/observer/Observer.h"
 #include "../core/Config.h"
-#include "../core/enum/EnumScaleType.h"
-#include "../core/enum/EnumType.h"
-#include "../core/property/Property.h"
-
-// STL
-#include <string>
-#include <vector>
 
 namespace te
 {
@@ -53,14 +43,14 @@ namespace te
     /*!
     \brief Class that represents a "Model" part of Scale MVC component.  
     Its coordinate system is the same of scene (millimeters). 
-    This is also son of ItemModelObservable, so it can become observable, and son of AbstractVisitor, so it can become visitor.
+    This is also son of AbstractItemModel, so it can become observable, and son of AbstractVisitor, so it can become visitor.
     It is must visit the map, via te::layout::Visitable*, to get the scale value.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
-      \sa te::layout::ItemModelObservable , te::layout::AbstractVisitor
-	  */
-    class TELAYOUTEXPORT ScaleModel : public ItemModelObservable, public AbstractVisitor
+      \sa te::layout::AbstractItemModel, NewObserver
+    */
+    class TELAYOUTEXPORT ScaleModel : public AbstractItemModel, public Observer
     {
       public:
 
@@ -71,39 +61,10 @@ namespace te
 
         /*!
           \brief Destructor
-        */ 
+        */
         virtual ~ScaleModel();
-        
-        virtual Properties* getProperties() const;
-        
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
-        virtual void setScaleGapX(double x);
-
-        virtual double getScaleGapX();
-
-        virtual void setScaleGapY(double y);
-        
-        virtual double getScaleGapY();
-
-        virtual double getMapScale();
-
-        virtual EnumScaleType* getEnumScaleType();
-
-        virtual EnumType* getCurrentScaleType();
-
-       protected:
-
-         virtual void visitDependent(ContextItem context);
-
-         virtual Property scaleProperty() const;
-         
-         std::string              m_mapName;
-         double                   m_mapScale;
-         double                   m_scaleGapX;
-         double                   m_scaleGapY;
-         EnumScaleType*           m_enumScaleType;
-         EnumType*                m_currentScaleType;
+        virtual void update(const Subject* subject);
     };
   }
 }

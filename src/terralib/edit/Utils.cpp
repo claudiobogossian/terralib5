@@ -52,29 +52,34 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <cmath>
 #include <memory>
 
-te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
+te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, OperationType operation)
 {
-  if (layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
+  return PickFeature(layer.get(), env, srid, operation);
+}
+
+te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayer* layer, const te::gm::Envelope& env, int srid, OperationType operation)
+{
+  if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
     return 0;
 
   te::gm::Envelope reprojectedEnvelope(env);
 
-  if ((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
+  if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
     reprojectedEnvelope.transform(srid, layer->getSRID());
 
   // Try retrieves from RepositoryManager...
   Feature* f = RepositoryManager::getInstance().getFeature(layer->getId(), env, srid);
-  if (f)
+  if(f)
     return f->clone();
 
   // ...else, retrieve from layer
 
-  if (!reprojectedEnvelope.intersects(layer->getExtent()))
+  if(!reprojectedEnvelope.intersects(layer->getExtent()))
     return 0;
 
   std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
 
-  if (!schema->hasGeom())
+  if(!schema->hasGeom())
     return 0;
 
   std::vector<std::string> oidPropertyNames;
@@ -85,7 +90,7 @@ te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer,
   // Gets the dataset
   std::auto_ptr<te::da::DataSet> dataset = layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS);
 
-  if (dataset.get() == 0)
+  if(dataset.get() == 0)
     return 0;
 
   // Generates a geometry from the given extent. It will be used to refine the results
@@ -95,12 +100,13 @@ te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer,
   te::gm::Coord2D center = reprojectedEnvelope.getCenter();
   te::gm::Point point(center.x, center.y, layer->getSRID());
 
-  while (dataset->moveNext())
+  while(dataset->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
     if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get())) // Geometry found!
-      return new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release());
+      return new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release(), operation);
+
   }
 
   return 0;

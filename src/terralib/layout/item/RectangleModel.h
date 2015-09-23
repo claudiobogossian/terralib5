@@ -31,15 +31,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/Config.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
-#include "../core/enum/EnumRectangleType.h"
-#include "../core/enum/EnumType.h"
-#include "../core/property/Properties.h"
 
 namespace te
 {
@@ -49,13 +42,13 @@ namespace te
     /*!
       \brief Class that represents a "Model" part of Rectangle MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          He is also the son of ItemModelObservable, so it can become observable.
+          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
           
       \ingroup layout
 
-      \sa te::layout::ItemModelObservable
+      \sa te::layout::AbstractItemModel
     */
-    class TELAYOUTEXPORT RectangleModel : public ItemModelObservable
+    class TELAYOUTEXPORT RectangleModel : public AbstractItemModel
     {
       public:
 
@@ -68,24 +61,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~RectangleModel();
-
-        virtual Properties* getProperties() const;
-
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-
-        virtual EnumRectangleType* getEnumRectangleType();
-
-        virtual EnumType* getCurrentRectangleType();
-
-        virtual double getShapeSize();
-
-    protected:
-
-      virtual Property rectangleProperty() const;
-
-      EnumRectangleType* m_enumRectangleType;
-      EnumType*      m_currentRectangleType;
-      double         m_shapeSize;
     };
   }
 }

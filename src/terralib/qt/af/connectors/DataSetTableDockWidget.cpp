@@ -35,8 +35,6 @@ te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
 {
   m_view = new te::qt::widgets::DataSetTableView(this);
 
-  m_view->setHighlightColor(ApplicationController::getInstance().getSelectionColor());
-
   setWidget(m_view);
 
   setAttribute(Qt::WA_DeleteOnClose, true);
@@ -84,6 +82,11 @@ te::map::AbstractLayer* te::qt::af::DataSetTableDockWidget::getLayer() const
   return m_layer;
 }
 
+void te::qt::af::DataSetTableDockWidget::setHighlightColor(QColor color)
+{
+  m_view->setHighlightColor(color);
+}
+
 void te::qt::af::DataSetTableDockWidget::chartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartWidget)
 {
   emit createChartDisplay(chartWidget, getLayer());
@@ -122,11 +125,13 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
       {
         te::qt::af::evt::LayerRemoved* ev = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
 
-        if(ev->m_layer->getId() == m_layer->getId())
+        for(std::list<te::map::AbstractLayerPtr>::iterator it = ev->m_layers.begin(); it != ev->m_layers.end(); ++it)
+        if((*it)->getId() == m_layer->getId())
         {
           this->close();
+          return;
         }
-      }
+    }
       break;
 
   }
@@ -140,7 +145,7 @@ void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* o
   m_layer->select(oids);
 
   te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, env);
-  ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 }
 
 void te::qt::af::DataSetTableDockWidget::removeSelectedOIds(te::da::ObjectIdSet* oids)
@@ -150,6 +155,6 @@ void te::qt::af::DataSetTableDockWidget::removeSelectedOIds(te::da::ObjectIdSet*
     m_layer->deselect(oids);
 
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, 0);
-    ApplicationController::getInstance().broadcast(&e);
+    emit triggered(&e);
   }
 }

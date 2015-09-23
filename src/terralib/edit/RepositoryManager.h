@@ -1,26 +1,26 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
 
-TerraLib is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Lesser General Public License for more details.
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with TerraLib. See COPYING. If not, write to
-TerraLib Team at <terralib-team@terralib.org>.
-*/
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
 
 /*!
-\file terralib/edit/RepositoryManager.h
+  \file terralib/edit/RepositoryManager.h
 
-\brief This is a singleton for managing edit repositories.
+  \brief This is a singleton for managing edit repositories.
 */
 
 #ifndef __TERRALIB_EDIT_INTERNAL_REPOSITORYMANAGER_H
@@ -29,6 +29,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 // TerraLib
 #include "../common/Singleton.h"
 #include "Config.h"
+#include "Utils.h"
+
 
 // STL
 #include <map>
@@ -65,9 +67,9 @@ namespace te
 
     public:
 
-      void addGeometry(const std::string& source, te::gm::Geometry* geom);
+      void addGeometry(const std::string& source, te::gm::Geometry* geom, OperationType operation);
 
-      void addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom);
+      void addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
 
       void addFeature(const std::string& source, Feature* f);
 
@@ -89,17 +91,20 @@ namespace te
 
       void remove(const std::string& source);
 
-    protected:
+      void removeFeature(const std::string& source, te::da::ObjectId* id);
 
-      /*! \brief It initializes the singleton instance of the repository manager. */
-      RepositoryManager();
+      protected:
 
-      /*! \brief Singleton destructor. */
-      ~RepositoryManager();
+        /*! \brief It initializes the singleton instance of the repository manager. */
+        RepositoryManager();
 
-    private:
+        /*! \brief Singleton destructor. */
+        ~RepositoryManager();
 
-      std::map<std::string, Repository*> m_repositories;
+      private:
+
+        std::map<std::string, Repository*> m_repositories;
+
     };
 
   } // end namespace edit

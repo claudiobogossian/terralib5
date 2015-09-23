@@ -122,6 +122,10 @@ te::gm::Geometry* te::gm::WKBReader::getGeometry(const char* wkb, const char** e
     case te::gm::MultiPolygonZType:
     case te::gm::MultiPolygonMType:
     case te::gm::MultiPolygonZMType:
+    case te::gm::MultiSurfaceType:
+    case te::gm::MultiSurfaceZType:
+    case te::gm::MultiSurfaceMType:
+    case te::gm::MultiSurfaceZMType:
     case te::gm::GeometryCollectionType:
     case te::gm::GeometryCollectionZType:
     case te::gm::GeometryCollectionMType:
@@ -580,6 +584,13 @@ te::gm::GeometryCollection* te::gm::WKBReader::getGeometryCollection(const char*
     case MultiLineStringZMType:
       gc = new MultiLineString(nGeoms, static_cast<GeomType>(gType));
     break;
+
+    case MultiSurfaceType:
+    case MultiSurfaceZType:
+    case MultiSurfaceMType:
+    case MultiSurfaceZMType:
+      gc = new MultiSurface(nGeoms, static_cast<GeomType>(gType));
+      break;
 
     case GeometryCollectionType:
     case GeometryCollectionZType:

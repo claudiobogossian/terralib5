@@ -29,16 +29,14 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
+#include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT ObjectInspectorModel : public OutsideModelObservable
+    class TELAYOUTEXPORT ObjectInspectorModel : public AbstractOutsideModel
     {
     public:
 

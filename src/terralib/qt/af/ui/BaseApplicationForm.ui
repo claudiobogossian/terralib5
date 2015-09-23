@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BaseApplicationForm</class>
+ <widget class="QMainWindow" name="BaseApplicationForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1140</width>
+    <height>702</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="te::qt::widgets::MultiThreadMapDisplay" name="m_display" native="true">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>11</y>
+      <width>926</width>
+      <height>654</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1140</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="te::qt::widgets::StyleDockWidget" name="m_styleExplorer">
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>Layer Explorer</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="te::qt::widgets::LayerItemView" name="m_layerExplorer"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::MultiThreadMapDisplay</class>
+   <extends>QWidget</extends>
+   <header>terralib/qt/widgets/canvas/MultiThreadMapDisplay.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>te::qt::widgets::StyleDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>terralib/qt/widgets/se/StyleDockWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>te::qt::widgets::LayerItemView</class>
+   <extends>QTreeView</extends>
+   <header>terralib/qt/widgets/layer/explorer/LayerItemView.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+ <slots>
+  <slot>onAddLayerTriggered()</slot>
+  <slot>onDrawTriggered()</slot>
+  <slot>onZoomInTriggered(bool)</slot>
+  <slot>onPanTriggered(bool)</slot>
+  <slot>onSelectionTriggered(bool)</slot>
+  <slot>onFitLayersTriggered()</slot>
+ </slots>
+</ui>

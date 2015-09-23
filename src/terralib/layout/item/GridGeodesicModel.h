@@ -29,14 +29,15 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_GEODESIC_MODEL_H
 
 // TerraLib
-#include "../core/Config.h"
 #include "GridMapModel.h"
+#include "../core/Config.h"
+#include "../core/pattern/observer/Observer.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT GridGeodesicModel: public GridMapModel 
+    class TELAYOUTEXPORT GridGeodesicModel: public GridMapModel, public Observer
     {
       public:
 
@@ -44,6 +45,11 @@ namespace te
 
         virtual ~GridGeodesicModel();
 
+        virtual void update(const Subject* subject);
+
+        virtual te::gm::Envelope getWorldBoxInGeographic(const te::gm::Envelope& worldBox, int srid);
+
+        /*
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
         
         virtual te::gm::Envelope getPlanarBox();
@@ -76,7 +82,7 @@ namespace te
          
          te::gm::Envelope m_planarBox;
 
-         /*Text: Basic Configuration*/
+         //Text: Basic Configuration
          int    m_pointTextSizeCorner;
          std::string m_fontTextCorner;
          te::color::RGBAColor  m_textColorCorner;
@@ -92,7 +98,7 @@ namespace te
          bool m_upperLeftCornerText;
          bool m_visibleCornerTextsText;
 
-         /* Geodesic: Topographic Map */
+         // Geodesic: Topographic Map
 
          bool m_defineScale;
          bool m_clip;
@@ -105,9 +111,9 @@ namespace te
          double m_lneX4;
          double m_lneY3;
          double m_lneY4;
-};
+         */
+    };
   }
 }
 
 #endif 
-

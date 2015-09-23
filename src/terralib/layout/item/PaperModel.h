@@ -31,7 +31,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PAPER_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/ContextItem.h"
 #include "../core/PaperConfig.h"
 #include "../core/Config.h"
@@ -45,13 +45,13 @@ namespace te
     /*!
       \brief Class that represents a "Model" part of Paper MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          This is also son of AbstractItemModel, so it can become observable.
+          
+      \ingroup layout
 
-      \sa te::layout::ItemModelObservable
-	  */
-    class TELAYOUTEXPORT PaperModel : public ItemModelObservable
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT PaperModel : public AbstractItemModel
     {
       public:
 
@@ -60,13 +60,19 @@ namespace te
         */
         PaperModel();
 
-        PaperModel(PaperConfig* paperConfig);
-
         /*!
           \brief Destructor
         */
         virtual ~PaperModel();
-        
+
+        virtual void setProperty(const Property& property);
+
+        virtual void setProperties(const Properties& properties);
+
+        virtual Properties handleNewPaperSize(double paperWidth, double paperHeight);
+
+
+        /*
         virtual te::color::RGBAColor getShadowColor();
 
         virtual void setShadowColor(te::color::RGBAColor color);
@@ -95,6 +101,7 @@ namespace te
       te::color::RGBAColor m_shadowColor;
       double m_shadowPadding;
       te::color::RGBAColor m_paperColor;
+      */
     };
   }
 }

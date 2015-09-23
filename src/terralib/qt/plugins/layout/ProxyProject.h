@@ -27,7 +27,7 @@
   \ingroup layout
 */
 
-#ifndef	__TE_QT_PLUGINS_LAYOUT_INTERNAL_PROXY_PROJECT_H 
+#ifndef  __TE_QT_PLUGINS_LAYOUT_INTERNAL_PROXY_PROJECT_H 
 #define __TE_QT_PLUGINS_LAYOUT_INTERNAL_PROXY_PROJECT_H
 
 // TerraLib
@@ -43,19 +43,26 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
     namespace plugins
     {
       namespace layout
       {
         /*!
-        \brief Provide a surrogate or placeholder for te::qt::af::Project to control access to it. 
+        \brief Provide a surrogate or placeholder for te::qt::af::Project to control access to it.
           A wrapper to access without complexity. This proxy is required because module not must have dependence te::qt::af.
           Useful to access the Layers belonging to the project.
-	  
-	      \ingroup layout
+
+        \ingroup layout
 
         \sa te::layout::AbstractProxyProject
-	      */
+        */
         class ProxyProject : public QObject, public te::layout::AbstractProxyProject
         {
           Q_OBJECT //for slots/signals
@@ -80,12 +87,16 @@ namespace te
             /*!
               \brief Reimplemented from AbstractProxyProject
             */
-            const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) const;
+            const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) ;
 
             /*!
               \brief Reimplemented from AbstractProxyProject
             */
             te::map::AbstractLayerPtr contains(std::string name);
+
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
          };
        }
     }

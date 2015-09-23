@@ -27,31 +27,17 @@
 
 // TerraLib
 #include "GridPlanarItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/GridPlanarModel.h"
-#include "MapItem.h"
-#include "../../core/WorldTransformer.h"
-#include "../../item/MapModel.h"
-#include "../../../maptools/AbstractLayer.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "../../core/Utils.h"
+
 #include "../core/ItemUtils.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/property/GridSettingsConfigProperties.h"
+#include "../../core/WorldTransformer.h"
+#include "../../core/Utils.h"
 
-//Qt
-#include <QStyleOptionGraphicsItem>
-#include <QPointF>
-#include <QLineF>
-
-te::layout::GridPlanarItem::GridPlanarItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  GridMapItem(controller, o, invertedMatrix)
+te::layout::GridPlanarItem::GridPlanarItem(AbstractItemController* controller, bool invertedMatrix)
+  : GridMapItem(controller, invertedMatrix)
 {  
-  m_nameClass = std::string(this->metaObject()->className());
+  
 }
 
 te::layout::GridPlanarItem::~GridPlanarItem()
@@ -61,134 +47,260 @@ te::layout::GridPlanarItem::~GridPlanarItem()
 
 void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
 {
-  if(!parentItem())
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pPlanarBox = m_controller->getProperty("planar_box");
+  const Property& pWidth = m_controller->getProperty("width");
+  const Property& pHeight = m_controller->getProperty("height");
+  const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
+
+  const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
+  double width = pWidth.getValue().toDouble();
+  double height = pHeight.getValue().toDouble();
+
+  const std::string& style = pStyle.getValue().toString();
+  EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
+  if(currentStyle != 0)
   {
-    return;
+    currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
   }
 
-  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  MapItem* item = dynamic_cast<MapItem*>(parentItem());
-  if(!item)
-  {
-    return;    
-  }
-
-  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
-  if(!mapModel)
-  {
-    return;    
-  }
-
-  if(!mapModel->isLoadedLayer())
-  {
-    return;
-  }
-
-  std::list<te::map::AbstractLayerPtr> layerListMap = mapModel->getLayers();
-  std::list<te::map::AbstractLayerPtr>::iterator it;
-
-  it = layerListMap.begin();
-
-  te::map::AbstractLayerPtr layer = (*it);
-  
-  int srid = layer->getSRID();
-  if(srid <= 0)
-    return;
+  te::gm::Envelope referenceBoxMM(0, 0, width, height);
 
   clear();
 
-  double scale = mapModel->getCurrentScale();
-  te::gm::Envelope box = mapModel->getWorldInMeters();
-  te::gm::Envelope boxMM = mapModel->getMapBox();
+  //double scale = mapModel->getCurrentScale();
+  //te::gm::Envelope boxMM = mapModel->getMapBox();
 
-  double wMargin = mapModel->getDisplacementX();
-  double hMargin = mapModel->getDisplacementY();
+  //double wMargin = mapModel->getDisplacementX();
+  //double hMargin = mapModel->getDisplacementY();
 
-  te::gm::Envelope newBoxMM(wMargin, hMargin, boxMM.getWidth() + wMargin, boxMM.getHeight() + hMargin);
+  //te::gm::Envelope referenceBoxMM(wMargin, hMargin, boxMM.getWidth() + wMargin, boxMM.getHeight() + hMargin);
 
-  model->setMapScale(scale); // put visit
-  model->calculateGaps(box);
+  //model->setMapScale(scale); // put visit
+  //model->calculateGaps(planarBox); ///TODO
 
-  calculateVertical(box, newBoxMM, scale);
-  calculateHorizontal(box, newBoxMM, scale);
-  
+  calculateVertical(planarBox, referenceBoxMM);
+  calculateHorizontal(planarBox, referenceBoxMM);
+
   EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
   if(!gridStyle)
   {
     return;
   }
   
-  if(model->getGridStyle() == gridStyle->getStyleContinuous())
+  if(currentStyle == gridStyle->getStyleContinuous())
   {
     drawContinuousLines(painter);
   }
-  else if(model->getGridStyle() == gridStyle->getStyleCross())
+  else if(currentStyle == gridStyle->getStyleCross())
   {
     drawCrossLines(painter);
   }
 }
 
-double te::layout::GridPlanarItem::initVerticalLines( te::gm::Envelope geoBox )
+void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
 {
-  double yInit = 0;
+  GridSettingsConfigProperties settingsConfig;
 
-  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
-  if(!model)
-  {
-    return yInit;
-  }
+  const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
+  const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
+  const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
+  const Property& pUnit = m_controller->getProperty("unit");
+
+  std::string fontFamily = pFontFamily.getValue().toString();
+  int textPointSize = pTextPointSize.getValue().toInt();
+  double verticalGap = pVerticalGap.getValue().toDouble();
+  LayoutUnit unit = (LayoutUnit)pUnit.getValue().toInt();
+
+
+  Utils* utils = Context::getInstance().getUtils();
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+
+  // Draw a horizontal line and the y coordinate change(vertical)
+
+  WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
+  transf.setMirroring(false);
+
+  double y1 = initVerticalLines(geoBox);
+
+  double wtxt = 0;
+  double htxt = 0;
+
+  m_boundingBox.Union(boxMM);
   
-  yInit = model->getInitialGridPointY();
+  QFont ft(fontFamily.c_str(), textPointSize);
+  
+  for( ; y1 < geoBox.getUpperRightY() ; y1 += verticalGap)
+  {
+    if(y1 < geoBox.getLowerLeftY())
+      continue;
+
+    double llx = 0;
+    double urx = 0;
+    double y = 0;
+    transf.system1Tosystem2(geoBox.getLowerLeftX(), y1, llx, y);
+    transf.system1Tosystem2(geoBox.getUpperRightX(), y1, urx, y);
+    
+    QLineF line(llx, y, urx, y);
+    m_horizontalLines.push_back(line);
+
+    double number = y1 / (double)unit;
+    QString convert = QString::number(number, 'f', 0);
+
+    itemUtils->getTextBoundary(ft, wtxt, htxt, convert);
+
+    // text left
+    QPointF ptLeft(llx - wtxt, y);
+    m_leftTexts[convert.toStdString()] = ptLeft;
+
+    // text right
+    QPointF ptRight(urx, y);
+    m_rightTexts[convert.toStdString()] = ptRight;
+
+    te::gm::Envelope leftTextBox(ptLeft.x(), ptLeft.y(), ptLeft.x() + wtxt, ptLeft.y() + htxt);
+    te::gm::Envelope rightTextBox(ptRight.x(), ptRight.y(), ptRight.x() + wtxt, ptRight.y() + htxt);
+
+    m_boundingBox.Union(leftTextBox);
+    m_boundingBox.Union(rightTextBox);
+  }
+}
+
+void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
+{
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
+  const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
+  const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
+  const Property& pUnit = m_controller->getProperty("unit");
+
+  std::string fontFamily = pFontFamily.getValue().toString();
+  int textPointSize = pTextPointSize.getValue().toInt();
+  double horizontalGap = pHorizontalGap.getValue().toDouble();
+  LayoutUnit unit = (LayoutUnit)pUnit.getValue().toInt();
+
+  Utils* utils = Context::getInstance().getUtils();
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+
+  // Draw a vertical line and the x coordinate change(horizontal)
+
+  WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
+  transf.setMirroring(false);
+
+  double x1 = initHorizontalLines(geoBox);
+
+  utils = Context::getInstance().getUtils();
+
+  double wtxt = 0;
+  double htxt = 0;
+
+  m_boundingBox.Union(boxMM);
+  
+  QFont ft(fontFamily.c_str(), textPointSize);
+
+  for( ; x1 < geoBox.getUpperRightX() ; x1 += horizontalGap)
+  {
+    if(x1 < geoBox.getLowerLeftX())
+      continue;
+
+    double lly = 0;
+    double ury = 0;
+    double x = 0;
+    transf.system1Tosystem2(x1, geoBox.getLowerLeftY(), x, lly);
+    transf.system1Tosystem2(x1, geoBox.getUpperRightY(), x, ury);
+
+    te::gm::Envelope newBox(x, lly, x, ury);
+
+    if(lly > ury)
+    {
+      double ycopy = lly;
+      lly = ury;
+      ury = ycopy;
+    }
+
+    QLineF line(x, lly, x, ury);
+    m_verticalLines.push_back(line);
+
+    double number = x1 / (double)unit;
+    QString convert = QString::number(number, 'f', 0);
+
+    itemUtils->getTextBoundary(ft, wtxt, htxt, convert);
+
+    // text bottom
+    QPointF ptBottom(x - (wtxt/2.), lly - htxt);
+    m_bottomTexts[convert.toStdString()] = ptBottom;
+
+    // text top
+    QPointF ptTop(x - (wtxt/2.), ury);
+    m_topTexts[convert.toStdString()] = ptTop;
+
+    te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y(), ptBottom.x() + wtxt, ptBottom.y() + htxt);
+    te::gm::Envelope topTextBox(ptTop.x(), ptTop.y(), ptTop.x() + wtxt, ptTop.y() + htxt);
+
+    m_boundingBox.Union(bottomTextBox);
+    m_boundingBox.Union(topTextBox);
+  }
+}
+
+double te::layout::GridPlanarItem::initVerticalLines( const te::gm::Envelope& geoBox )
+{
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pInitialGridPointY = m_controller->getProperty(settingsConfig.getInitialGridPointY());
+  const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
+
+  double initialGridPointY = pInitialGridPointY.getValue().toDouble();
+  double verticalGap = pVerticalGap.getValue().toDouble();
+
+  double yInit = initialGridPointY;
   if(yInit < geoBox.getLowerLeftY())
   {
     double dify = geoBox.getLowerLeftY() - yInit;
-    int nParts = (int)(dify/model->getLneVrtGap());
+    int nParts = (int)(dify/verticalGap);
     if(nParts == 0)
     {
-      yInit = model->getInitialGridPointY();
+      yInit = initialGridPointY;
     }
     else
     {
-      yInit = yInit + (nParts * model->getLneVrtGap());
+      yInit = yInit + (nParts * verticalGap);
     }
   }
 
   return yInit;
 }
 
-double te::layout::GridPlanarItem::initHorizontalLines( te::gm::Envelope geoBox )
+double te::layout::GridPlanarItem::initHorizontalLines( const te::gm::Envelope& geoBox )
 {
-  double xInit = 0;
+  GridSettingsConfigProperties settingsConfig;
 
-  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
-  if(!model)
-  {
-    return xInit;
-  }
+  const Property& pInitialGridPointX = m_controller->getProperty(settingsConfig.getInitialGridPointX());
+  const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
 
-  xInit = model->getInitialGridPointX();
+  double initialGridPointX = pInitialGridPointX.getValue().toDouble();
+  double horizontalGap = pHorizontalGap.getValue().toDouble();
+
+  double xInit = initialGridPointX;
   if(xInit < geoBox.getLowerLeftX())
   {
     double difx = geoBox.getLowerLeftX() - xInit;
-    int nParts = (int)(difx/model->getLneHrzGap());
+    int nParts = (int)(difx/horizontalGap);
     if(nParts == 0)
     {
-      xInit = model->getInitialGridPointX();
+      xInit = initialGridPointX;
     }
     else
     {
-      xInit = xInit + (nParts * model->getLneHrzGap());
+      xInit = xInit + (nParts * horizontalGap);
     }
   }
 
   return xInit;
 }
 
+
+/*
 void te::layout::GridPlanarItem::calculateVertical( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
 {
   GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
@@ -319,7 +431,7 @@ void te::layout::GridPlanarItem::calculateHorizontal( te::gm::Envelope geoBox, t
 }
 
 
-
+*/
 
 
 

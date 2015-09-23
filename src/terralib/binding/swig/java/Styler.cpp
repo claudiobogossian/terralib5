@@ -26,7 +26,7 @@ void Styler::initDialog()
   hL->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
   hL->addWidget(btn);
 
-  m_explorer = new te::qt::widgets::StyleDockWidget(tr("Change Layer Style"), this);
+  m_explorer = new te::qt::widgets::StyleDockWidget(this);
 
   QVBoxLayout* vL = new QVBoxLayout;
 
