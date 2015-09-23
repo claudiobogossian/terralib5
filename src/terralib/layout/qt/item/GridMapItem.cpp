@@ -375,6 +375,11 @@ void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
 
 QRectF te::layout::GridMapItem::boundingRect() const
 {
+  if (m_currentAction == RESIZE_ACTION)
+  {
+    return AbstractItem<QGraphicsItem>::boundingRect();
+  }
+
   if(m_boundingBox.isValid())
   {
     return QRectF(m_boundingBox.getLowerLeftX(), m_boundingBox.getLowerLeftY(), m_boundingBox.getWidth(), m_boundingBox.getHeight());
