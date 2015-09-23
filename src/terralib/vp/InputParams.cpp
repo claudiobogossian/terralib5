@@ -27,7 +27,7 @@
 #include "InputParams.h"
 
 te::vp::InputParams::InputParams()
-  : m_inputDataSource(0),
+  :
   m_inputDataSetName(""),
   m_inputDataSet(0),
   m_inputDataSetType(0),
@@ -36,7 +36,7 @@ te::vp::InputParams::InputParams()
 }
 
 te::vp::InputParams::InputParams(const InputParams& rhs)
-  : m_inputDataSource(0),
+  :
   m_inputDataSetName(""),
   m_inputDataSet(0),
   m_inputDataSetType(0),
@@ -72,7 +72,7 @@ te::vp::InputParams& te::vp::InputParams::operator=(const InputParams& rhs)
 
 void te::vp::InputParams::clear()
 {
-  m_inputDataSource = 0;
+  m_inputDataSource.reset();
   m_inputDataSetName = "";
   m_inputDataSet = 0;
   m_inputDataSetType = 0;
