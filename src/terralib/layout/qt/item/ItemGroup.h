@@ -62,6 +62,11 @@ namespace te
         virtual ~ItemGroup();
 
         /*!
+          \brief Reimplemented from ParentItem
+         */
+        virtual QRectF boundingRect() const;
+
+        /*!
           \brief For any specific drawing, the item must reimplement this function
         */
         virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );

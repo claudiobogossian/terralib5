@@ -36,17 +36,26 @@
 te::layout::ItemGroup::ItemGroup(AbstractItemController* controller, bool invertedMatrix)
   : AbstractItem<QGraphicsItemGroup>(controller, invertedMatrix)
 {
-  
 }
 
 te::layout::ItemGroup::~ItemGroup()
 {
-  
+}
+
+QRectF te::layout::ItemGroup::boundingRect() const
+{
+  QRectF rect = this->childrenBoundingRect();
+  if(rect.isValid() == true)
+  {
+    return rect;
+  }
+
+  return QGraphicsItemGroup::boundingRect();
 }
 
 void te::layout::ItemGroup::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  QGraphicsItemGroup::paint(painter, option, widget);
+  //we dont want the group to draw its selection, so we dont call the paint function
 }
 
 QVariant te::layout::ItemGroup::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
