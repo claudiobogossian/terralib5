@@ -513,9 +513,9 @@ void te::layout::Utils::remapToPlanar( te::gm::LinearRing* line, int zone )
   if(!line)
     return;
 
-  int npoints = line->getNPoints();
+  std::size_t npoints = line->getNPoints();
 
-  for(int i = 0 ; i < npoints ; ++i)
+  for(std::size_t i = 0 ; i < npoints ; ++i)
   {
     te::gm::Point* p = line->getPointN(i);
     const te::gm::Envelope* env = p->getMBR();
@@ -543,9 +543,9 @@ void te::layout::Utils::convertToMillimeter( WorldTransformer transf, te::gm::Li
   if(!line)
     return;
 
-  int npoints = line->getNPoints();
+  std::size_t npoints = line->getNPoints();
 
-  for(int i = 0 ; i < npoints ; ++i)
+  for(std::size_t i = 0 ; i < npoints ; ++i)
   {
     te::gm::Point* p = line->getPointN(i);   
     double x = 0;
@@ -563,9 +563,9 @@ void te::layout::Utils::convertToMillimeter( WorldTransformer transf, te::gm::Po
   if(!poly)
     return;
 
-  int nrings = poly->getNumInteriorRings();
+  std::size_t nrings = poly->getNumInteriorRings();
 
-  for(int i = 0 ; i < nrings ; ++i)
+  for(std::size_t i = 0 ; i < nrings ; ++i)
   {
     te::gm::LinearRing* line = dynamic_cast<te::gm::LinearRing*>(poly->getInteriorRingN(i));
     if(line)

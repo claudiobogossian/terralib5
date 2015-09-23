@@ -181,7 +181,7 @@ int te::layout::AbstractOutsideModel::getHashCode()
 
 int te::layout::AbstractOutsideModel::calculateHashCode()
 {
-  int nameLength = m_name.length();
+  int nameLength = (int)m_name.length();
   int id = m_id;
   int type = 0;
   if(m_type)
@@ -197,7 +197,7 @@ int te::layout::AbstractOutsideModel::calculateHashCode()
 
     if(props)
     {
-      propertiesLength = getProperties()->getProperties().size();
+      propertiesLength = (int)getProperties()->getProperties().size();
     }
   }
 
