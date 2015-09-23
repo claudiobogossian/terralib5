@@ -67,6 +67,8 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
 
   te::gm::Envelope referenceBoxMM(0, 0, width, height);
 
+
+  QRectF previousRect = this->boundingRect();
   clear();
 
   const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
@@ -76,10 +78,16 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
   int fontSize = pFontSize.getValue().toInt();
 
   ItemUtils::ConfigurePainterForTexts(painter, fontFamily, fontSize);
-  this->prepareGeometryChange();
 
   calculateVertical(planarBox, referenceBoxMM);
   calculateHorizontal(planarBox, referenceBoxMM);
+
+  QRectF currentRect = this->boundingRect();
+  if (previousRect != currentRect)
+  {
+    this->prepareGeometryChange();
+  }
+
 
   EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
   if(!gridStyle)
