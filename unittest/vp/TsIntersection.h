@@ -91,7 +91,7 @@ class TsIntersection : public CPPUNIT_NS::TestFixture
 
   private:
 
-    std::vector<const te::vp::InputParams> m_inputParams;
+    std::vector<te::vp::InputParams> m_inputParams;
     te::da::DataSourcePtr m_outputDataSource;
     te::vp::AlgorithmParams* m_params;
 };
