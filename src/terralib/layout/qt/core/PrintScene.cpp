@@ -252,6 +252,8 @@ bool te::layout::PrintScene::exportToPDF()
 
   printPaper(printer);
 
+  QPrinter::PrinterState state = printer->printerState();
+
   if(printer)
   {
     delete printer;
@@ -259,8 +261,16 @@ bool te::layout::PrintScene::exportToPDF()
   } 
 
   QMessageBox msgBox;
-  msgBox.setIcon(QMessageBox::Information);
-  msgBox.setText("PDF exported successfully!");    
+  if (state == QPrinter::Error)
+  {
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.setText("Could not export the PDF! Possible cause: the file is already opened by another application.");
+  }
+  else
+  {
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setText("PDF exported successfully!");
+  }
   msgBox.exec();
 
   Scene* sc = dynamic_cast<Scene*>(m_scene);

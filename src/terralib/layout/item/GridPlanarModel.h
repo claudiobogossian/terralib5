@@ -48,6 +48,8 @@ namespace te
         virtual void update(const Subject* subject);
 
         virtual te::gm::Envelope getWorldBoxInPlanar(const te::gm::Envelope& worldBox, int srid);
+
+        double getInitialCoord(double intialCoord, double distance, double& gap);
     };
   }
 }

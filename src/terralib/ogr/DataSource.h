@@ -34,7 +34,8 @@
 #include "Exception.h"
 
 // Forward declarations
-class OGRDataSource;
+//class OGRDataSource;
+class GDALDataset;
 
 namespace te
 {
@@ -79,7 +80,8 @@ namespace te
 
         static void setDialect(te::da::SQLDialect* dialect);
 
-        OGRDataSource* getOGRDataSource();
+        //OGRDataSource* getOGRDataSource();
+        GDALDataset* getOGRDataSource();
 
       protected:
 
@@ -96,7 +98,8 @@ namespace te
       protected:
 
         std::map<std::string, std::string> m_connectionInfo;        //!< Connection information.
-        OGRDataSource* m_ogrDS;                                     //!< A pointer to OGR Data Source.
+        //OGRDataSource* m_ogrDS;                                     //!< A pointer to OGR Data Source.
+        GDALDataset* m_ogrDS;                                     //!< A pointer to OGR Data Source.
         bool m_isValid;                                             //!< True if this is a valid datasource.
         te::da::DataSourceCapabilities m_capabilities;              //!< OGR capabilities.
         bool m_isInTransaction;                                     //!< Tells if there is a transaction in progress.

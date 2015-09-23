@@ -38,6 +38,7 @@
 #include "../datatype/StringProperty.h"
 
 #include "../geometry/Geometry.h"
+#include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Utils.h"
 
@@ -58,6 +59,8 @@
 #include <map>
 #include <math.h>
 #include <string>
+#include <time.h>
+#include <iostream>
 #include <vector>
 
 // BOOST
@@ -236,6 +239,7 @@ std::auto_ptr<te::da::DataSetType> te::vp::AggregationMemory::buildOutDataSetTyp
 bool te::vp::AggregationMemory::run() throw( te::common::Exception )
 {  
   te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_converter->getResult());
+  te::gm::GeomType outGeoType = getGeomResultType(geom->getGeometryType());
   std::string geomName = geom->getName();
   std::size_t geomIdx = boost::lexical_cast<std::size_t>(m_converter->getResult()->getPropertyPosition(geomName));
   
@@ -262,7 +266,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   
   inDset->moveBeforeFirst();
   while(inDset->moveNext())
-  {      
+  {
     // the group key is a combination of the distinct grouping property values as a string
     std::string key = inDset->getAsString(groupPropIdxs[0]);
     for(std::size_t i=1; i<groupPropIdxs.size(); ++i)
@@ -302,12 +306,16 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   task.setTotalSteps((int)groups.size());
   task.useTimer(true);
   
+  std::string timeResult = "Aggregation - Start.";
+  te::common::Logger::logDebug("vp", timeResult.c_str());
+
   itg = groups.begin();
   while(itg != groups.end())
   {
+    task.pulse();
+
     // calculate the spatial aggregation
     std::string value = itg->first;
-    te::gm::GeomType outGeoType = getGeomResultType(geom->getGeometryType());
 
     //verify geometries
     for (size_t i = 0; i < itg->second.size(); ++i)
@@ -371,9 +379,10 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   
     if (task.isActive() == false)
       throw te::vp::Exception(TE_TR("Operation canceled!"));
-  
-    task.pulse();
   }
+
+  timeResult = "Aggregation - End.";
+  te::common::Logger::logDebug("vp", timeResult.c_str());
 
   te::vp::Save(m_outDsrc.get(), outDataset.get(), outDsType.get());
   return true;

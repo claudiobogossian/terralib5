@@ -37,7 +37,8 @@
 // Forward declarations
 class OGRLayer;
 class OGRFeature;
-class OGRDataSource;
+//class OGRDataSource;
+class GDALDataset;
 
 namespace te
 {
@@ -66,7 +67,8 @@ namespace te
         //@{
 
         /*! \brief Constructor. */
-        DataSet(OGRDataSource* dsrc, OGRLayer* layer);
+        //DataSet(OGRDataSource* dsrc, OGRLayer* layer);
+        DataSet(GDALDataset* dsrc, OGRLayer* layer);
 
         /*! \brief Destructor. */
         ~DataSet();
@@ -155,7 +157,8 @@ namespace te
 
         mutable te::da::DataSetType* m_dt;    //!< DataSetType.
 
-        OGRDataSource* m_ogrDs;               //<! Pointer to OGR data source. 
+        //OGRDataSource* m_ogrDs;               //<! Pointer to OGR data source. 
+        GDALDataset* m_ogrDs;                 //<! Pointer to OGR data source. 
         OGRLayer* m_layer;                    //<! A pointer to OGR Layer.
         OGRFeature* m_currentFeature;         //<! A pointer to current OGR Feature of layer.
         int m_i;                              //<! The current dataset index.

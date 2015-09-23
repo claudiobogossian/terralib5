@@ -64,14 +64,15 @@ bool te::qt::widgets::HidroItem::loadData()
 
 bool te::qt::widgets::HidroItem::getCtlParameters()
 {
-  char buf[2000];
+  char buf[300];
   QString file(m_dir.path() + "/racc.ctl");
   FILE* fp = fopen(file.toStdString().c_str(), "r");
   if(fp == 0)
     return false;
 
-  fread(buf, 2000, sizeof(char), fp);
+  size_t n = fread(buf, sizeof(char), 300, fp);
   fclose(fp);
+  buf[n] = 0;
   QString s, ss(QString(buf).simplified());
 
   // validation
@@ -133,6 +134,10 @@ bool te::qt::widgets::HidroItem::getCtlParameters()
   double h = (double)m_nlines * resY;
   m_imaRect = QRectF(llx, lly, w, h);
 
+  // get static representation
+  if (m_dir.exists("staticRepresentation.png"))
+    m_staticRepresentation = QImage(m_dir.path() + "/staticRepresentation.png");
+
   return true;
 }
 
@@ -142,40 +147,76 @@ void te::qt::widgets::HidroItem::loadCurrentImage()
     delete m_image;
   m_image = 0;
 
-  QString path = m_dir.absolutePath() + "/";
-  QString file = m_currentImageFile;
-  QFileInfo fi(file);
-  QString baseName = fi.baseName();
-
-  if (m_suffix == ".bin" && baseName == "racc")
+  if (m_currentImageFile.isEmpty())
   {
-    size_t nchars = m_ncols * 2;
-    uchar* buf = new uchar[nchars];
-    FILE* fp = fopen(file.toStdString().c_str(), "rb");
-    m_image = new QImage((int)m_ncols, (int)m_nlines, QImage::Format_ARGB32);
-    m_image->fill(Qt::transparent);
-
-    uchar uc[3];
-    uc[2] = 0;
-    for (size_t j = 0; j < m_nlines; ++j)
+    if (m_staticRepresentation.isNull())
     {
-      uchar* u = m_image->scanLine((int)j);
-      fread(buf, nchars, sizeof(char), fp);
-      for (size_t i = 0; i < m_ncols; i++)
+      QRect r = getRect();
+      m_image = new QImage(r.size(), QImage::Format_ARGB32);
+      m_image->fill(QColor(0, 0, 255, 100));
+      QPainter p(m_image);
+      p.setPen(QPen(QColor(255, 0, 0)));
+
+      QFont font(p.font());
+      int ps = 7;
+      int w = (int)((double)m_image->width() / 1.2);
+      int h = (int)((double)m_image->width() / 5.);
+
+      font.setPointSize(ps);
+      QFontMetrics fm(font);
+      QRectF rec(fm.boundingRect(m_title));
+
+      while (rec.width() < w && rec.height() < h)
       {
-        uc[0] = *(buf + (i << 1));
-        uc[1] = *(buf + (1 + (i << 1)));
-        ushort b = *(ushort*)uc;
-        if (b != m_undef)
+        ++ps;
+        font.setPointSize(ps);
+        QFontMetrics fm(font);
+        rec = fm.boundingRect(m_title);
+      }
+      rec.moveCenter(m_image->rect().center());
+      p.setFont(font);
+      p.drawText(rec.toRect(), Qt::AlignLeft, m_title);
+    }
+    else
+      m_image = new QImage(m_staticRepresentation);
+  }
+  else
+  {
+    QString path = m_dir.absolutePath() + "/";
+    QString file = m_currentImageFile;
+    QFileInfo fi(file);
+    QString baseName = fi.baseName();
+
+    if (m_suffix == ".bin" && baseName == "racc")
+    {
+      size_t nchars = m_ncols * 2;
+      uchar* buf = new uchar[nchars];
+      FILE* fp = fopen(file.toStdString().c_str(), "rb");
+      m_image = new QImage((int)m_ncols, (int)m_nlines, QImage::Format_ARGB32);
+      m_image->fill(Qt::transparent);
+
+      uchar uc[3];
+      uc[2] = 0;
+      for (size_t j = 0; j < m_nlines; ++j)
+      {
+        uchar* u = m_image->scanLine((int)j);
+        fread(buf, nchars, sizeof(char), fp);
+        for (size_t i = 0; i < m_ncols; i++)
         {
-          b = (b + 5) / 10;
-          QRgb* v = (QRgb*)(u + (i << 2));
-          *v = qRgba(m_lut[b].red(), m_lut[b].green(), m_lut[b].blue(), 255);
+          uc[0] = *(buf + (i << 1));
+          uc[1] = *(buf + (1 + (i << 1)));
+          ushort b = *(ushort*)uc;
+          if (b != m_undef)
+          {
+            b = (b + 5) / 10;
+            QRgb* v = (QRgb*)(u + (i << 2));
+            *v = qRgba(m_lut[b].red(), m_lut[b].green(), m_lut[b].blue(), 255);
+          }
         }
       }
+      fclose(fp);
+      delete[]buf;
     }
-    fclose(fp);
-    delete[]buf;
   }
 }
 

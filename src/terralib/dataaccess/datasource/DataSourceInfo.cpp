@@ -24,7 +24,11 @@
 */
 
 // TerraLib
+#include "../../common/StringUtils.h"
 #include "DataSourceInfo.h"
+
+// STL
+#include <vector>
 
 te::da::DataSourceInfo::DataSourceInfo()
 {
@@ -96,19 +100,45 @@ std::map<std::string, std::string>& te::da::DataSourceInfo::getConnInfo()
 
 std::string te::da::DataSourceInfo::getConnInfoAsString()
 {
-  std::string conInfo;
-  std::map<std::string, std::string>::iterator conIt = m_conninfo.begin();
-  while (conIt != m_conninfo.end())
+  std::string connInfo;
+  std::map<std::string, std::string>::iterator connIt = m_conninfo.begin();
+  while (connIt != m_conninfo.end())
   {
-    conInfo += conIt->second;
-    ++conIt;
+    connInfo += connIt->first;
+    connInfo += "=";
+    connInfo += connIt->second;
+    connInfo += ";";
+    ++connIt;
   }
-  return conInfo;
+  return connInfo;
 }
 
 void te::da::DataSourceInfo::setConnInfo(const std::map<std::string, std::string>& conninfo)
 {
   m_conninfo = conninfo;
+}
+
+void te::da::DataSourceInfo::setConnInfoFromString(const std::string& connInfo)
+{
+  m_conninfo.clear();
+
+  std::vector<std::string> vec;
+
+  te::common::Tokenize(connInfo, vec, ";");
+
+  for (std::size_t t = 0; t < vec.size(); ++t)
+  {
+    std::string pairStr = vec[t];
+
+    std::vector<std::string> pairVec;
+
+    te::common::Tokenize(pairStr, pairVec, "=");
+
+    if (pairVec.size() == 2)
+    {
+      m_conninfo[pairVec[0]] = pairVec[1];
+    }
+  }
 }
 
 bool te::da::DataSourceInfo::operator<(const DataSourceInfo& rhs) const

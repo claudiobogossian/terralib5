@@ -52,6 +52,7 @@ namespace te
     class PointZ;
     class PointZM;
     class Polygon;
+    class MultiSurface;
   }
 
   namespace at
@@ -259,6 +260,12 @@ namespace te
         */
         virtual void draw(const te::gm::GeometryCollection* g) = 0;
 
+        /*!
+        \brief It draws the MultiSurface on canvas.
+
+        \param g The MultiSurface.
+        */
+        virtual void draw(const te::gm::MultiSurface* g) = 0;
         //@}
 
         /** @name Image Handling

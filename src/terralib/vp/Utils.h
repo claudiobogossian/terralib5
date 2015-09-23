@@ -53,6 +53,8 @@ namespace te
 
     void SplitGeometryCollection(te::gm::GeometryCollection* geomIn, te::gm::GeometryCollection* gcOut);
 
+    bool VerifyGeometryRepresentation(te::gm::Geometry* geom, te::gm::GeomType type);
+
     std::string GetSimpleTableName(std::string fullName);
 
     void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);

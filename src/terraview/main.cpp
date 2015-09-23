@@ -27,6 +27,7 @@
 #include "Config.h"
 #include "../terralib/Defines.h"
 #include "TerraView.h"
+#include "TerraViewApp.h"
 
 // TerraLib
 #include <terralib/common/PlatformUtils.h>
@@ -57,7 +58,8 @@
 
 int main(int argc, char** argv)
 {
-  QApplication app(argc, argv);
+  //QApplication app(argc, argv);
+  TerraViewApp app(argc, argv);
 
   QDir dir(QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 

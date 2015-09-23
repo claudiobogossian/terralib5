@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "../Defines.h"
 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 #include "WinUtils.h"

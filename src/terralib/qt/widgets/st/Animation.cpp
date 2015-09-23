@@ -1,5 +1,5 @@
 #include "Animation.h"
-#include "AnimationItem.h"
+#include "ImageItem.h"
 
 te::qt::widgets::Animation::Animation(QObject* target, const QByteArray& propertyName, QObject* parent)
   : QPropertyAnimation(target, propertyName, parent)
@@ -27,7 +27,19 @@ void te::qt::widgets::Animation::adjustDataToAnimationTemporalExtent(const te::d
 
 void te::qt::widgets::Animation::setDataKeyValues()
 {
-  te::qt::widgets::AnimationItem* ai = (te::qt::widgets::AnimationItem*)targetObject();
+  te::qt::widgets::AnimationItem* ai = static_cast<te::qt::widgets::AnimationItem*>(targetObject());
+  if (ai->pixmap().isNull())
+  {
+    te::qt::widgets::ImageItem* ii = static_cast<te::qt::widgets::ImageItem*>(ai);
+    if (ii->m_animationFiles.empty()) // out of animation time
+    {
+      ai->m_animationTime.clear();
+      ai->m_animationRoute.clear();
+      setStartValue(QPoint(0, 0));
+      setEndValue(QPoint(1, 1));
+      return;
+    }
+  }
 
   // total time duration 
   boost::posix_time::ptime iTime = m_temporalAnimationExtent.getInitialTimeInstant().getTimeInstant();
@@ -95,61 +107,59 @@ void te::qt::widgets::Animation::setDataKeyValues()
 int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
 {
   AnimationItem* ai = (AnimationItem*)targetObject();
-  size_t count = ai->m_animationTime.count();
 
-  // animation time duration 
+  // this animation: initial and final time 
   boost::posix_time::ptime aiTime = m_temporalExtent.getInitialTimeInstant().getTimeInstant();
   boost::posix_time::ptime afTime = m_temporalExtent.getFinalTimeInstant().getTimeInstant();
 
-  // total time duration 
+  // temporal animation extent 
   boost::posix_time::ptime iTime = m_temporalAnimationExtent.getInitialTimeInstant().getTimeInstant();
   boost::posix_time::ptime fTime = m_temporalAnimationExtent.getFinalTimeInstant().getTimeInstant();
   boost::posix_time::time_duration diff = fTime - iTime;
   double totalSeconds = diff.total_seconds();
 
-  diff = aiTime - iTime;
-  double aiSeconds = diff.total_seconds();
-  double itrel = aiSeconds / totalSeconds;
-  if (trel < itrel) // time is before start of this animation
+  // get curent time
+  int secs = qRound(totalSeconds * trel);
+  boost::posix_time::time_duration td = boost::posix_time::seconds(secs);
+  boost::posix_time::ptime curTime = iTime + td;
+
+  if (curTime < iTime || curTime > fTime) // out of animation
     return -1;
 
-  diff = afTime - iTime;
-  double afSeconds = diff.total_seconds();
-  double ftrel = afSeconds / totalSeconds;
-  if (trel > ftrel)// time is after the end of this animation
-    return -1;
-
-  int i;
-  if (direction() == QAbstractAnimation::Forward)
+  size_t count = ai->m_animationTime.count();
+  for (int i = 0; i < (int)count; ++i)
   {
-    for (i = 0; i < count; ++i)
+    te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+    boost::posix_time::ptime time = tinstant.getTimeInstant();
+
+    if (time == curTime)
+      return i;
+    else if (time > curTime)
     {
-      te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
-      boost::posix_time::ptime time = tinstant.getTimeInstant();
-      diff = time - iTime;
-      double seconds = diff.total_seconds();
-
-      // normalizing the time
-      double t = seconds / totalSeconds;
-
-      if (t >= trel)
+      if (i == 0 || i == ((int)count - 1))
         return i;
-    }
-  }
-  else
-  {
-    for (i = (int)count-1; i >= 0; --i)
-    {
-      te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
-      boost::posix_time::ptime time = tinstant.getTimeInstant();
-      diff = time - iTime;
-      double seconds = diff.total_seconds();
+      else
+      {
+        diff = time - curTime;
+        unsigned long long secs = abs(diff.total_seconds());
 
-      // normalizing the time
-      double t = seconds / totalSeconds;
+        tinstant = ai->m_animationTime[i - 1]; // before curTime
+        boost::posix_time::ptime btime = tinstant.getTimeInstant();
+        diff = btime - curTime;
+        unsigned long long bsecs = abs(diff.total_seconds());
 
-      if (t <= trel)
-        return i;
+        tinstant = ai->m_animationTime[i + 1]; // after curTime
+        boost::posix_time::ptime atime = tinstant.getTimeInstant();
+        diff = atime - curTime;
+        unsigned long long asecs = abs(diff.total_seconds());
+
+        if (secs < bsecs && secs < asecs)
+          return i;
+        else if(bsecs < asecs)
+          return i - 1;
+        else
+          return i + 1;
+      }
     }
   }
   return -1;
