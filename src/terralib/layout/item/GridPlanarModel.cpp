@@ -241,6 +241,6 @@ double te::layout::GridPlanarModel::getInitialCoord(double initialCoord, double 
       break;
     }
   }
-  int interval = initialCoord / gap;
+  int interval = (int)(initialCoord / gap);
   return interval * gap;
 }

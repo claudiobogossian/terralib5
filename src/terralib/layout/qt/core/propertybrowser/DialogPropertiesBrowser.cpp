@@ -181,13 +181,8 @@ QtDlgEditorFactory* te::layout::DialogPropertiesBrowser::getDlgEditorFactory()
   return m_dlgEditorFactory;
 }
 
-bool te::layout::DialogPropertiesBrowser::changeQtPropertyValue(QtProperty* pproperty, Property property)
+bool te::layout::DialogPropertiesBrowser::changeQtPropertyValue(QtProperty* pproperty, const Property& property)
 {
-  QColor qcolor;
-  QFont qfont;
-  te::color::RGBAColor color;
-  Font font;
-
   m_changeProperty = true;
 
   if(!pproperty)
@@ -200,7 +195,7 @@ bool te::layout::DialogPropertiesBrowser::changeQtPropertyValue(QtProperty* ppro
   return true;
 }
 
-QtProperty* te::layout::DialogPropertiesBrowser::addProperty( Property property )
+QtProperty* te::layout::DialogPropertiesBrowser::addProperty( const Property& property )
 {
   QtProperty* qproperty = 0;
 
@@ -230,7 +225,7 @@ QtProperty* te::layout::DialogPropertiesBrowser::addProperty( Property property 
   return qproperty;
 }
 
-bool te::layout::DialogPropertiesBrowser::checkDlgType( Property prop )
+bool te::layout::DialogPropertiesBrowser::checkDlgType( const Property& prop )
 {
   bool result = false;
 
@@ -246,7 +241,7 @@ bool te::layout::DialogPropertiesBrowser::checkDlgType( Property prop )
   return result;
 }
 
-te::layout::Property te::layout::DialogPropertiesBrowser::findDlgProperty( std::string name )
+te::layout::Property te::layout::DialogPropertiesBrowser::findDlgProperty( const std::string& name )
 {
   Property prop;
 
@@ -284,7 +279,7 @@ te::layout::Property te::layout::DialogPropertiesBrowser::findDlgProperty( EnumT
   return prop;
 }
 
-void te::layout::DialogPropertiesBrowser::changeValueQtPropertyDlg( std::string name, QVariant variant )
+void te::layout::DialogPropertiesBrowser::changeValueQtPropertyDlg( const std::string& name, const QVariant& variant )
 {
   if(!m_strDlgManager)
   {
@@ -615,7 +610,7 @@ void te::layout::DialogPropertiesBrowser::onShowViewDlg()
   svgOutside->show();
 }
 
-te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::string name )
+te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( const std::string& name )
 {
   Property prop;
   prop.setName(name);
@@ -646,7 +641,7 @@ te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::stri
   return prop;
 }
 
-te::layout::EnumType* te::layout::DialogPropertiesBrowser::getLayoutType( QVariant::Type type, std::string name /*= ""*/ )
+te::layout::EnumType* te::layout::DialogPropertiesBrowser::getLayoutType( QVariant::Type type, const std::string& name /*= ""*/ )
 {
   Property prop;
   EnumDataType* dtType = Enums::getInstance().getEnumDataType();
@@ -715,15 +710,10 @@ int te::layout::DialogPropertiesBrowser::getVariantType( EnumType* dataType )
   return type;
 }
 
-bool te::layout::DialogPropertiesBrowser::updateProperty( Property property )
+bool te::layout::DialogPropertiesBrowser::updateProperty( const Property& property )
 {
-  std::string name = property.getName();
+  const std::string& name = property.getName();
   QtProperty* qprop = findProperty(name);
-  QColor qcolor;
-  te::color::RGBAColor color;
-  Font font;
-  QFont qfont;
-  
   if(!qprop)
   {
     return false;
@@ -767,12 +757,12 @@ QWidget* te::layout::DialogPropertiesBrowser::createOutside( EnumType* enumType 
   return widget;
 }
 
-void te::layout::DialogPropertiesBrowser::updateOutside( Property prop )
+void te::layout::DialogPropertiesBrowser::updateOutside( const Property& prop )
 {
   emit changeDlgProperty(prop);
 }
 
-void te::layout::DialogPropertiesBrowser::updateOutside( std::vector<Property> props )
+void te::layout::DialogPropertiesBrowser::updateOutside( const std::vector<Property>& props )
 {
   emit changeDlgProperty(props);
 }

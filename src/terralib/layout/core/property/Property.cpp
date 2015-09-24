@@ -111,7 +111,7 @@ const std::vector<te::layout::Variant>& te::layout::Property::getOptionChoices()
   return m_options;
 }
 
-bool te::layout::Property::isEditable()
+bool te::layout::Property::isEditable() const
 {
   return m_editable;
 }
@@ -255,7 +255,7 @@ void te::layout::Property::setVisible( bool visible )
   m_visible = visible;
 }
 
-bool te::layout::Property::isVisible()
+bool te::layout::Property::isVisible() const
 {
   return m_visible;
 }
