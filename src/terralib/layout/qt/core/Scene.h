@@ -437,8 +437,8 @@ namespace te
 
         virtual void leaveEditionMode();
 
-        virtual te::gm::Envelope switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper);
-
+        virtual te::gm::Envelope calculateProportion(te::gm::Envelope box, QSize oldPaper, QSize newPaper);
+        
     protected:
 
         QTransform                         m_matrix; //!< transformation matrix of the scene.
