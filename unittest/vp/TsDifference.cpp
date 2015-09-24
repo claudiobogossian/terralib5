@@ -25,8 +25,6 @@
 #include <terralib/dataaccess/datasource/DataSourceInfo.h>
 #include <terralib/dataaccess/datasource/DataSourceManager.h>
 
-#include <terralib/vp/TilesByAttributes.h>
-#include <terralib/vp/TileParams.h>
 #include <terralib/vp/Utils.h>
 
 // BOOST

@@ -225,7 +225,7 @@ namespace te
 
     inline bool Properties::addProperty(const Property& property)
     {
-      unsigned int total = m_properties.size();
+      std::size_t total = m_properties.size();
       m_properties.push_back(property);   
 
       if(m_properties.size() > total)

@@ -29,7 +29,7 @@ te::vp::AlgorithmParams::AlgorithmParams():
 {
 }
 
-te::vp::AlgorithmParams::AlgorithmParams( std::vector<const te::vp::InputParams> inputParams,
+te::vp::AlgorithmParams::AlgorithmParams( const std::vector<te::vp::InputParams>& inputParams,
                                           te::da::DataSource* outputDataSource,
                                           const std::string& outputDataSetName,
                                           const std::map<std::string, te::dt::AbstractData*>& specificParams)
@@ -45,12 +45,12 @@ te::vp::AlgorithmParams::~AlgorithmParams()
 }
 
 
-std::vector<const te::vp::InputParams> te::vp::AlgorithmParams::getInputParams()
+std::vector<te::vp::InputParams> te::vp::AlgorithmParams::getInputParams()
 {
   return m_inputParams;
 }
 
-void te::vp::AlgorithmParams::setInputParams(std::vector<const te::vp::InputParams> inputParams)
+void te::vp::AlgorithmParams::setInputParams( const std::vector<te::vp::InputParams>& inputParams)
 {
   m_inputParams = inputParams;
 }

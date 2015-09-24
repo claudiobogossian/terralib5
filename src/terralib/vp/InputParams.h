@@ -47,7 +47,7 @@ namespace te
 
       \brief A structure to hold the input parameters of vector processing.
     */
-    struct TEVPEXPORT InputParams
+    class TEVPEXPORT InputParams
     {
       public:
 

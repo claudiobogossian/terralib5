@@ -79,7 +79,7 @@ void te::layout::MoveCommand::undo()
   if(m_moveItems.empty())
     return;
 
-  int size = m_moveItems.size();
+  std::size_t size = m_moveItems.size();
 
   std::map<QGraphicsItem*, QPointF>::iterator it;
   for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)
@@ -106,7 +106,7 @@ void te::layout::MoveCommand::redo()
   if(m_moveItems.empty())
     return;
 
-  int moveItensSize = m_moveItems.size();
+  std::size_t moveItensSize = m_moveItems.size();
 
   if(moveItensSize != m_itemsPoints.size())
     return;
@@ -129,7 +129,7 @@ void te::layout::MoveCommand::redo()
     }
   }
 
-  int size = m_moveItems.size();
+  std::size_t size = m_moveItems.size();
 
   //no makes redo while the command is not on the stack
   if(resultFound)

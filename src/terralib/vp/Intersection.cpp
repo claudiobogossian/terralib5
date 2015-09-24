@@ -235,7 +235,7 @@ bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
   //}
   //*TESTE SPECIFC PARAM*//
 
-  std::vector<const te::vp::InputParams> inputParams = mainParams->getInputParams();
+  std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
 
   if (inputParams.size() < 2)
   {
@@ -512,7 +512,7 @@ te::da::DataSetType* te::vp::Intersection::getOutputDataSetType(te::vp::Algorith
   outputDataSetType->setPrimaryKey(pk);
 
 // Get the first layer SRID to set in output dataSetType.
-  std::vector<const te::vp::InputParams> inputParams = mainParams->getInputParams();
+  std::vector< te::vp::InputParams> inputParams = mainParams->getInputParams();
 
   te::da::DataSourcePtr dataSource = inputParams[0].m_inputDataSource;
   std::string dataSetName = inputParams[0].m_inputDataSetName;

@@ -103,7 +103,7 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams, te::
 
 bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 {
-  std::vector<const te::vp::InputParams> inputParams = mainParams->getInputParams();
+  std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
 
   if (inputParams.size() < 2)
   {
@@ -364,7 +364,7 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
   outputDataSetType->setPrimaryKey(pk);
 
 // Get the first layer SRID to set in output dataSetType.
-  std::vector<const te::vp::InputParams> inputParams = mainParams->getInputParams();
+  std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
 
   te::da::DataSourcePtr dataSource = inputParams[0].m_inputDataSource;
   std::string dataSetName = inputParams[0].m_inputDataSetName;

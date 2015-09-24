@@ -1045,7 +1045,7 @@ te::gm::Envelope te::layout::Scene::calculateProportion(te::gm::Envelope box, QS
   return boxCopy;
 }
 
-te::layout::ContextObject te::layout::Scene::getContext()
+const te::layout::ContextObject& te::layout::Scene::getContext() const
 {
   return m_context;
 }

@@ -60,7 +60,7 @@ namespace te
 
       \note The AlgorithmParams will take the ownership of DataSource.
       */
-      AlgorithmParams(std::vector<const te::vp::InputParams> inputParams,
+      AlgorithmParams(const std::vector<te::vp::InputParams>& inputParams,
                       te::da::DataSource* outputDataSource,
                       const std::string& outputDataSetName,
                       const std::map<std::string, te::dt::AbstractData*>& specificParams);
@@ -69,9 +69,9 @@ namespace te
       ~AlgorithmParams();
 
 
-      std::vector<const te::vp::InputParams> getInputParams();
+      std::vector<te::vp::InputParams> getInputParams();
 
-      void setInputParams(std::vector<const te::vp::InputParams> setInputParams);
+      void setInputParams(const std::vector<te::vp::InputParams>& setInputParams);
 
 
       te::da::DataSource* getOutputDataSource();
@@ -90,7 +90,7 @@ namespace te
 
     protected:
 
-      std::vector<const te::vp::InputParams> m_inputParams;
+      std::vector<te::vp::InputParams> m_inputParams;
       te::da::DataSource* m_outputDataSource;
       std::string m_outputDataSetName;
       std::map<std::string, te::dt::AbstractData*> m_specificParams;
