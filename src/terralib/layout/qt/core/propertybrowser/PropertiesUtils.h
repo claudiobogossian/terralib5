@@ -59,20 +59,20 @@ namespace te
 
       virtual ~PropertiesUtils();
       
-      virtual Properties intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
+      virtual Properties intersection(const QList<QGraphicsItem*>& graphicsItems, bool& window);
 
-      virtual Properties sameProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
+      virtual Properties sameProperties(const QList<QGraphicsItem*>& graphicsItems, bool& window);
 
       virtual void contains(std::vector<Properties>::iterator itend, 
         std::vector<Properties>::iterator it, std::string name, bool& result);
 
-      virtual std::vector<Properties> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
+      virtual std::vector<Properties> getAllProperties(const QList<QGraphicsItem*>& graphicsItems, bool& window);
       
-      virtual void addDynamicOptions(Property& property, std::vector<std::string> list);
+      virtual void addDynamicOptions(Property& property, const std::vector<std::string>& list);
 
-      virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
+      virtual void checkDynamicProperty(Property& property, const QList<QGraphicsItem*>& graphicsItems);
 
-      virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
+      virtual void mapNameDynamicProperty(Property& property, const QList<QGraphicsItem*>& graphicsItems);
     };
   }
 }

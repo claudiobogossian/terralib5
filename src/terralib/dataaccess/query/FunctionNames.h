@@ -84,9 +84,11 @@ namespace te
         static const std::string sm_ST_Equals;
         static const std::string sm_ST_Intersection;
         static const std::string sm_ST_Intersects;
+        static const std::string sm_ST_IsEmpty;
         static const std::string sm_ST_IsValid;
         static const std::string sm_ST_Length;
         static const std::string sm_ST_MakePolygon;
+        static const std::string sm_ST_Multi;
         static const std::string sm_ST_NumGeometries;
         static const std::string sm_ST_Overlaps;
         static const std::string sm_ST_Perimeter;
@@ -115,6 +117,7 @@ namespace te
         static const std::string sm_Variance;
 
 // others
+        static const std::string sm_Coalesce;
         static const std::string sm_IsNull;
         static const std::string sm_In;
     };

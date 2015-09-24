@@ -171,10 +171,18 @@ namespace te
           \param w
           \param h
         */
-        virtual void getTextBoundary(QFont ft, double& w, double& h, QString qtx);
+        virtual QRectF getTextBoundary( const std::string& fontName, int fontSize, const std::string& text ) const;
 
         void changeViewMode(EnumType* mode);
-          
+
+        /*!
+          \brief This function is used to conigure the painter for text drawing in a Coordinate System based on millimeters
+          \param painter The painter to be configured
+          \param fontFamily The font to be used
+          \param fontSize The font size of the text
+        */
+        static void ConfigurePainterForTexts(QPainter* painter, const std::string& fontFamily, int fontSize);
+
       protected:
 
         /*!

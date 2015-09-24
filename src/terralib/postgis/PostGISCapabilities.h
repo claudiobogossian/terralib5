@@ -54,6 +54,7 @@ queryCapabilities.addFunction("upper");
 queryCapabilities.addFunction("lower");
 queryCapabilities.addFunction("sum");
 queryCapabilities.addFunction("avg");
+queryCapabilities.addFunction("coalesce");
 queryCapabilities.addFunction("count");
 queryCapabilities.addFunction("max");
 queryCapabilities.addFunction("min");

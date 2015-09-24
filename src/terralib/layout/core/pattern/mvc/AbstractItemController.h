@@ -124,6 +124,11 @@ namespace te
 
         virtual void refresh();
 
+        /*!
+          \brief 
+        */
+        virtual void updateItemPos(const Properties& properties);
+        
         AbstractItemModel*    m_model; //!< The model of the view
         AbstractItemView*     m_view; //!< The view
     };

@@ -24,6 +24,7 @@ mydialect->insert("year", new te::da::TemplateEncoder("extract", "(year from $1)
 mydialect->insert("str", new te::da::TemplateEncoder("cast", "($1 as varchar)"));
 mydialect->insert("sum", new te::da::FunctionEncoder("sum"));
 mydialect->insert("avg", new te::da::FunctionEncoder("avg"));
+mydialect->insert("coalesce", new te::da::FunctionEncoder("coalesce"));
 mydialect->insert("count", new te::da::FunctionEncoder("count"));
 mydialect->insert("max", new te::da::FunctionEncoder("max"));
 mydialect->insert("min", new te::da::FunctionEncoder("min"));

@@ -30,23 +30,23 @@
 
 // TerraLib
 #include "AbstractPropertiesBrowser.h"
-#include "../../../core/property/Property.h"
+//#include "../../../core/property/Property.h"
 #include "../../../core/Config.h"
 
 // Qt
 #include <QObject>
+#include <QVariant>
 
-// QtPropertyBrowser
-#include <QtPropertyBrowser/QtProperty>
-#include <QtPropertyBrowser/QtVariantPropertyManager>
-#include <QtPropertyBrowser/QtVariantEditorFactory>
-#include <QtPropertyBrowser/QtVariantProperty>
+class QtVariantPropertyManager;
+class QtVariantEditorFactory;
+class QtVariantProperty;
 
 namespace te
 {
   namespace layout
   {
     class Properties;
+    class Property;
     class EnumType;
 
     /*!
@@ -64,17 +64,17 @@ namespace te
 
         virtual ~VariantPropertiesBrowser();
 
-        virtual QtVariantProperty* addProperty(Property property);
+        virtual QtProperty* addProperty(const Property& property);
 
-        virtual bool updateProperty(Property property);
+        virtual bool updateProperty(const Property& property);
 
-        virtual Property getProperty(std::string name);
+        virtual Property getProperty(const std::string& name);
 
-        virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
+        virtual EnumType* getLayoutType(QVariant::Type type, const std::string& name = "");
 
         virtual int getVariantType(EnumType* dataType);
 
-        virtual bool changeQtVariantPropertyValue(QtVariantProperty* vproperty, Property property);
+        virtual bool changeQtVariantPropertyValue(QtVariantProperty* vproperty, const Property& property);
 
         QtVariantPropertyManager* getVariantPropertyManager();
 
@@ -84,7 +84,7 @@ namespace te
 
         virtual void createManager();
 
-        virtual void addAttribute(QtVariantProperty* vproperty, Property property);
+        virtual void addAttribute(QtVariantProperty* vproperty, const Property& property);
 
         QtVariantPropertyManager* m_variantPropertyEditorManager; 
         QtVariantEditorFactory*   m_variantPropertyEditorFactory;
@@ -93,5 +93,3 @@ namespace te
 }
 
 #endif
-
-

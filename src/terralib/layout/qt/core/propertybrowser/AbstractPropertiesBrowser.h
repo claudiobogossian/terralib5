@@ -29,7 +29,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_PROPERTIES_BROWSER_H
 
 // TerraLib
-#include "../../../core/property/Property.h"
 #include "../../../core/Config.h"
 
 // STL
@@ -53,6 +52,7 @@ namespace te
   namespace layout
   {
     class Properties;
+    class Property;
     class EnumType;
 
     /*!
@@ -68,21 +68,21 @@ namespace te
 
         virtual ~AbstractPropertiesBrowser();
 
-        virtual QtProperty* addProperty(Property property) = 0;
+        virtual QtProperty* addProperty(const Property& property) = 0;
 
-        virtual bool updateProperty(Property property) = 0;
+        virtual bool updateProperty(const Property& property) = 0;
 
         virtual void clearAll();
         
-        virtual Property getProperty(std::string name) = 0;
+        virtual Property getProperty(const std::string& name) = 0;
 
-        virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "") = 0;
+        virtual EnumType* getLayoutType(QVariant::Type type, const std::string& name = "") = 0;
 
         virtual int getVariantType(EnumType* dataType) = 0;
         
-        virtual QVariant findPropertyValue(std::string name);
+        virtual QVariant findPropertyValue(const std::string& name);
 
-        virtual QtProperty* findProperty(std::string name);
+        virtual QtProperty* findProperty(const std::string& name);
 
         virtual bool removeProperty(QtProperty* prop);
                           

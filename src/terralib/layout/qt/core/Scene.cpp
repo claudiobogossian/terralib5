@@ -51,6 +51,7 @@
 #include "../../core/PaperConfig.h"
 #include "View.h"
 #include "../../core/ContextObject.h"
+#include "../../core/WorldTransformer.h"
 
 // STL
 #include <algorithm>
@@ -930,6 +931,14 @@ void te::layout::Scene::applyPaperProportion(QSize oldPaper, QSize newPaper)
 void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper )
 {
   QGraphicsItem* paper = getPaperItem(); 
+
+  Utils* utils = Context::getInstance().getUtils();
+
+  te::gm::Envelope oldPp(0, 0, oldPaper.width(), oldPaper.height());
+  te::gm::Envelope newPp(0, 0, newPaper.width(), newPaper.height());
+
+  WorldTransformer transf = utils->getTransformGeo(oldPp, newPp);
+  transf.setMirroring(false);
   
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems)
@@ -940,30 +949,29 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
       {
         AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
         if(it)
-        {
-          const Property& pX = it->getController()->getProperty("x");
-          const Property& pY = it->getController()->getProperty("y");
-          const Property& pWidth = it->getController()->getProperty("width");
-          const Property& pHeight = it->getController()->getProperty("height");
+        {                    
+          double x = item->scenePos().x();
+          double y = item->scenePos().y();
+          double width = item->boundingRect().width();
+          double height = item->boundingRect().height();
 
-          double x = pX.getValue().toDouble();
-          double y = pY.getValue().toDouble();
-          double width = pWidth.getValue().toDouble();
-          double height = pHeight.getValue().toDouble();
+          // map position to new position
+          transf.system1Tosystem2(x, y, x, y);
 
           te::gm::Envelope box;
           box.m_llx = x;
           box.m_lly = y;
-          box.m_urx = box.m_llx + width;
-          box.m_ury = box.m_lly + height;
-
-          box = switchBox(box, oldPaper, newPaper);   
-
-          box.m_llx = ((box.m_llx * newPaper.width()) / oldPaper.width());
-          box.m_lly = ((box.m_lly * newPaper.height()) / oldPaper.height());
-          box.m_urx = ((box.m_urx * newPaper.width()) / oldPaper.width());
-          box.m_ury = ((box.m_ury * newPaper.height()) / oldPaper.height());
+          box.m_urx = (box.m_llx + width);
+          box.m_ury = (box.m_lly + height);
           
+          // calculate proportion
+          te::gm::Envelope boxProportion = calculateProportion(box, oldPaper, newPaper);
+
+          box.m_llx = x;
+          box.m_lly = y;
+          box.m_urx = (box.m_llx + boxProportion.getWidth());
+          box.m_ury = (box.m_lly + boxProportion.getHeight());
+                    
           updateBoxFromProperties(box, it->getController());
         }
       }
@@ -1009,26 +1017,35 @@ void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractIt
   controller->setProperties(props);
 }
 
-te::gm::Envelope te::layout::Scene::switchBox(te::gm::Envelope box, QSize oldPaper, QSize newPaper)
+te::gm::Envelope te::layout::Scene::calculateProportion(te::gm::Envelope box, QSize oldPaper, QSize newPaper)
 {
-  if (oldPaper.height() == newPaper.height()
-    && oldPaper.width() == newPaper.width())
+  // The comparison is always made with the paper in portrait.
+  double w = 0;
+  if (oldPaper.width() > oldPaper.height())
   {
-    return box;
+    w = oldPaper.width();
+    oldPaper.setWidth(oldPaper.height());
+    oldPaper.setHeight(w);
   }
 
-  double width = box.getWidth();
-  double height = box.getHeight();
+  if (newPaper.width() > newPaper.height())
+  {
+    w = newPaper.width();
+    newPaper.setWidth(newPaper.height());
+    newPaper.setHeight(w);
+  }
 
-  box.m_llx = box.m_llx - height;
-  box.m_lly = box.m_ury;
-  box.m_urx = box.m_llx + width;
-  box.m_ury = box.m_lly + height;
+  // calculate proportion
+  te::gm::Envelope boxCopy = box;
+  boxCopy.m_llx = ((box.m_llx * newPaper.width()) / oldPaper.width());
+  boxCopy.m_lly = ((box.m_lly * newPaper.height()) / oldPaper.height());
+  boxCopy.m_urx = ((box.m_urx * newPaper.width()) / oldPaper.width());
+  boxCopy.m_ury = ((box.m_ury * newPaper.height()) / oldPaper.height());
 
-  return box;
+  return boxCopy;
 }
 
-te::layout::ContextObject te::layout::Scene::getContext()
+const te::layout::ContextObject& te::layout::Scene::getContext() const
 {
   return m_context;
 }

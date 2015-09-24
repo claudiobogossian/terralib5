@@ -11,6 +11,7 @@ te::layout::AbstractItemModel::AbstractItemModel()
   te::color::RGBAColor frameColor(0, 0, 0, 255);
   double rotation = 0;
   int zValue = 0;
+  double frameThickness = 0.5; //in mm
 
   m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getObjectUnknown());
 
@@ -85,6 +86,16 @@ te::layout::AbstractItemModel::AbstractItemModel()
     property.setLabel("Frame Color");
     property.setValue(frameColor, dataType->getDataTypeColor());
     property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("frame_thickness");
+    property.setLabel("Frame Thickness");
+    property.setValue(frameThickness, dataType->getDataTypeDouble());
+    property.setVisible(false);
+    property.setEditable(false);
     m_properties.addProperty(property);
   }
 

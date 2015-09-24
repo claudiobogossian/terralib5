@@ -69,17 +69,27 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
   }
   if(items.size() > 2)
   {
-    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, seedGeometry->getSRID());
+    //te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, seedGeometry->getSRID());
+    
+    std::size_t pos = 1;
+    while (!seedGeometry->isValid())
+    {
+      seedGeometry = items[pos]->getGeometry(geomIdx);
+      ++pos;
+    }
 
-    for(std::size_t i = 1; i < items.size(); ++i)
+    for (std::size_t i = pos; i < items.size(); ++i)
     {
       std::auto_ptr<te::gm::Geometry> currentGeom = items[i]->getGeometry(geomIdx);
 
       if(currentGeom->isValid())
-        teGeomColl->add(currentGeom.release());
+        resultGeometry = seedGeometry->Union(currentGeom.release());
+
+      seedGeometry.reset(resultGeometry);
     }
 
-    resultGeometry = seedGeometry->Union(teGeomColl);
+    resultGeometry = seedGeometry.release();
+    //resultGeometry = seedGeometry->Union(teGeomColl);
 
   }
 
@@ -157,6 +167,116 @@ void te::vp::SplitGeometryCollection(te::gm::GeometryCollection* gcIn, te::gm::G
     else
       SplitGeometryCollection(gc, gcOut);
   }
+}
+
+bool te::vp::VerifyGeometryRepresentation(te::gm::Geometry* geom, te::gm::GeomType type)
+{
+  bool geometryRepresentation = false;
+
+  if (type == te::gm::GeometryCollectionType ||
+    type == te::gm::GeometryCollectionZType ||
+    type == te::gm::GeometryCollectionMType ||
+    type == te::gm::GeometryCollectionZMType ||
+
+    type == te::gm::MultiPointType ||
+    type == te::gm::MultiPointZType ||
+    type == te::gm::MultiPointMType ||
+    type == te::gm::MultiPointZMType ||
+
+    type == te::gm::MultiLineStringType ||
+    type == te::gm::MultiLineStringZType ||
+    type == te::gm::MultiLineStringMType ||
+    type == te::gm::MultiLineStringZMType ||
+
+    type == te::gm::MultiPolygonType ||
+    type == te::gm::MultiPolygonZType ||
+    type == te::gm::MultiPolygonMType ||
+    type == te::gm::MultiPolygonZMType)
+  {
+    te::gm::GeomType geomType = geom->getGeomTypeId();
+    te::gm::GeometryCollection* gcOut = new te::gm::GeometryCollection(0, type, geom->getSRID());
+
+    if (geomType == te::gm::GeometryCollectionType ||
+      geomType == te::gm::GeometryCollectionZType ||
+      geomType == te::gm::GeometryCollectionMType ||
+      geomType == te::gm::GeometryCollectionZMType ||
+
+      geomType == te::gm::MultiPointType ||
+      geomType == te::gm::MultiPointZType ||
+      geomType == te::gm::MultiPointMType ||
+      geomType == te::gm::MultiPointZMType ||
+
+      geomType == te::gm::MultiLineStringType ||
+      geomType == te::gm::MultiLineStringZType ||
+      geomType == te::gm::MultiLineStringMType ||
+      geomType == te::gm::MultiLineStringZMType ||
+
+      geomType == te::gm::MultiPolygonType ||
+      geomType == te::gm::MultiPolygonZType ||
+      geomType == te::gm::MultiPolygonMType ||
+      geomType == te::gm::MultiPolygonZMType)
+    {
+      std::vector<te::gm::Geometry*> geomVec = ((te::gm::GeometryCollection*)geom)->getGeometries();
+      for (std::size_t i = 0; i < geomVec.size(); ++i)
+      {
+        te::gm::GeometryCollection* gcIn = dynamic_cast<te::gm::GeometryCollection*>(geomVec[i]);
+        if (gcIn == 0)
+          gcOut->add(geomVec[i]);
+        else
+          SplitGeometryCollection(gcIn, gcOut);
+      }
+    }
+    else
+    {
+      gcOut->add(geom);
+    }
+    
+    std::vector<te::gm::Geometry*> geomVecRessult = gcOut->getGeometries();
+    
+    for (std::size_t j = 0; j < geomVecRessult.size(); ++j)
+    {
+      if (type == geomVecRessult[j]->getGeomTypeId())
+        continue;
+
+      switch (type)
+      {
+      case te::gm::PointType:
+      case te::gm::MultiPointType:
+        {
+          if (geomVecRessult[j]->getGeomTypeId() != te::gm::PointType)
+            return false;
+        }
+      break;
+      case te::gm::LineStringType:
+      case te::gm::MultiLineStringType:
+      {
+        if (geomVecRessult[j]->getGeomTypeId() != te::gm::LineStringType)
+          return false;
+      }
+      break;
+      case te::gm::PolygonType:
+      case te::gm::MultiPolygonType:
+        {
+          if (geomVecRessult[j]->getGeomTypeId() != te::gm::PolygonType)
+            return false;
+        }
+        break;
+      case te::gm::UnknownGeometryType:
+        return false;
+        break;
+      default:
+        return false;
+        break;
+      }
+    }
+    return true;
+  }
+  else
+  {
+    if (type == geom->getGeomTypeId())
+      return true;
+  }
+  return false;
 }
 
 std::string te::vp::GetSimpleTableName(std::string fullName)

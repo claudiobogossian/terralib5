@@ -168,6 +168,9 @@
 	  <Function name="st_nrings">
         <FunctionEncoder alias="st_nrings"/>
       </Function>
+	  	  <Function name="st_multi">
+        <FunctionEncoder alias="st_multi"/>
+      </Function>
 	  <Function name="st_numgeometries">
         <FunctionEncoder alias="st_numgeometries"/>
       </Function>
@@ -219,7 +222,7 @@
         <BinaryOpEncoder alias="or"/>
       </Function>
       <Function name="not">
-        <BinaryOpEncoder alias="not"/>
+        <UnaryOpEncoder alias="not"/>
       </Function>
     </LogicalOperators>
     <ComparsionOperators>
@@ -274,6 +277,9 @@
       </Function>  
       <Function name="avg">
         <FunctionEncoder alias="avg"/>
+      </Function>
+	  <Function name="coalesce">
+        <FunctionEncoder alias="coalesce"/>
       </Function>
       <Function name="count">
         <FunctionEncoder alias="count"/>
