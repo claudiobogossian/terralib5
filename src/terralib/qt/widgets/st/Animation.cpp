@@ -127,7 +127,32 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
     return -1;
 
   size_t count = ai->m_animationTime.count();
-  for (int i = 0; i < (int)count; ++i)
+  int min = 0;
+  int max = (int)count - 1;
+  while ((max - min) > 100)
+  {
+    int d = (max - min) / 10;
+    int i = min;
+    while (i <= max)
+    {
+      te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+      boost::posix_time::ptime time = tinstant.getTimeInstant();
+
+      if (time == curTime)
+        return i;
+      else if (time > curTime)
+      {
+        min = i - d;
+        max = i;
+        break;
+      }
+      i += d;
+    }
+    if (i > max)
+      min = i - d;
+  }
+
+  for (int i = min; i <= max; ++i)
   {
     te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
     boost::posix_time::ptime time = tinstant.getTimeInstant();
@@ -155,7 +180,7 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
 
         if (secs < bsecs && secs < asecs)
           return i;
-        else if(bsecs < asecs)
+        else if (bsecs < asecs)
           return i - 1;
         else
           return i + 1;
@@ -163,4 +188,43 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
     }
   }
   return -1;
+
+
+  //size_t count = ai->m_animationTime.count();
+  //for (int i = 0; i < (int)count; ++i)
+  //{
+  //  te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+  //  boost::posix_time::ptime time = tinstant.getTimeInstant();
+
+  //  if (time == curTime)
+  //    return i;
+  //  else if (time > curTime)
+  //  {
+  //    if (i == 0 || i == ((int)count - 1))
+  //      return i;
+  //    else
+  //    {
+  //      diff = time - curTime;
+  //      unsigned long long secs = abs(diff.total_seconds());
+
+  //      tinstant = ai->m_animationTime[i - 1]; // before curTime
+  //      boost::posix_time::ptime btime = tinstant.getTimeInstant();
+  //      diff = btime - curTime;
+  //      unsigned long long bsecs = abs(diff.total_seconds());
+
+  //      tinstant = ai->m_animationTime[i + 1]; // after curTime
+  //      boost::posix_time::ptime atime = tinstant.getTimeInstant();
+  //      diff = atime - curTime;
+  //      unsigned long long asecs = abs(diff.total_seconds());
+
+  //      if (secs < bsecs && secs < asecs)
+  //        return i;
+  //      else if (bsecs < asecs)
+  //        return i - 1;
+  //      else
+  //        return i + 1;
+  //    }
+  //  }
+  //}
+  //return -1;
 }
