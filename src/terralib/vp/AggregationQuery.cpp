@@ -238,7 +238,7 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
 
 
   if (dsQuery->isEmpty())
-    return false;
+    return 0;
   
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSetType.get()));
 

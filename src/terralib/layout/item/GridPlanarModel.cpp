@@ -34,24 +34,6 @@
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
-
-/*
-#include "GridPlanarModel.h"
-#include "../core/ContextItem.h"
-
-#include "../../geometry/Envelope.h"
-#include "../../geometry/Coord2D.h"
-#include "../core/property/Property.h"
-#include "../core/property/PlanarGridSettingsConfigProperties.h"
-#include "../core/enum/Enums.h"
-
-// STL
-#include <string>
-#include <sstream> 
-
-*/
-
-
 te::layout::GridPlanarModel::GridPlanarModel()
   : GridMapModel()
   , Observer()
@@ -102,22 +84,10 @@ te::layout::GridPlanarModel::GridPlanarModel()
     property.addOption(v);
     m_properties.addProperty(property);
   }
-
-//  m_type = ;
-
-  //m_lneVrtDisplacement = 2;
-  //m_lneHrzDisplacement = 2;
 }
 
 te::layout::GridPlanarModel::~GridPlanarModel()
 {
-  /*
-  if(m_settingsConfig)
-  {
-    delete m_settingsConfig;
-    m_settingsConfig = 0;
-  }
-  */
 }
 
 void te::layout::GridPlanarModel::update(const Subject* subject)
@@ -260,63 +230,18 @@ te::gm::Envelope te::layout::GridPlanarModel::getWorldBoxInPlanar(const te::gm::
 
 double te::layout::GridPlanarModel::getInitialCoord(double initialCoord, double distance, double& gap)
 {
-  int gaps[25] = {1000, 1500, 2000, 2500, 5000, 7500, 10000, 12500, 15000, 20000, 25000, 50000, 100000, 125000, 150000, 175000, 200000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 1750000, 2000000};
+  unsigned const int size = 25;
+  int gaps[size] = { 1000, 1500, 2000, 2500, 5000, 7500, 10000, 12500, 15000, 20000, 25000, 50000, 100000, 125000, 150000, 175000, 200000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 1750000, 2000000 };
   int numberOfIntervals = 5;
-  gap = distance / numberOfIntervals;
-  for (unsigned int i = 0; i < 15; i++)
+  gap = (int)(distance / numberOfIntervals);
+  for (unsigned int i = 0; i < size; i++)
   {
     if (gap <= gaps[i])
     {
-      gap = gaps[i-1];
+      gap = gaps[i - 1];
       break;
     }
   }
-  int interval = initialCoord / gap;
+  int interval = (int)(initialCoord / gap);
   return interval * gap;
 }
-
-/*
-void te::layout::GridPlanarModel::calculateGaps( te::gm::Envelope box )
-{
-  if(m_lneHrzGap <= 0)
-  {
-    m_lneHrzGap = m_mapScale * 0.05;
-  }
-
-  if(m_lneVrtGap <= 0)
-  {
-    m_lneVrtGap = m_lneHrzGap;
-  }
-
-  if(m_initialGridPointX == 0)
-  {
-    m_initialGridPointX = box.getLowerLeftX();
-  }
-  if(m_initialGridPointY == 0)
-  {
-    m_initialGridPointY = box.getLowerLeftY();
-  }
-}
-
-te::layout::LayoutUnit te::layout::GridPlanarModel::getUnit()
-{
-  return m_unit;
-}
-
-void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid )
-{
-
-}
-
-void te::layout::GridPlanarModel::drawVerticalLines( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
-{
-
-}
-
-void te::layout::GridPlanarModel::drawHorizontalLines( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
-{
-
-}
-*/
-
-

@@ -33,7 +33,8 @@
 #include "../../core/pattern/singleton/Context.h"
 #include "../../qt/core/Scene.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
-//#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h" //rever esta dependencia
+#include "../../../qt/widgets/layer/explorer/TreeItem.h" //rever esta dependencia
+#include "../../../qt/widgets/layer/explorer/LayerItem.h" //rever esta dependencia
 #include "../../../qt/widgets/tools/Pan.h"
 #include "../../../qt/widgets/tools/ZoomWheel.h"
 
@@ -113,8 +114,7 @@ void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphi
 
   painter->save();
 
-  painter->setClipRect(boundingRect());
-  painter->drawPixmap(boundingRect(), pixmap, pixmap.rect());
+  painter->drawPixmap(this->getAdjustedBoundingRect(painter), pixmap, pixmap.rect());
 
   painter->restore();
 }
@@ -180,7 +180,7 @@ void  te::layout::MapItem::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 
 void  te::layout::MapItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 {
-    if(m_isEditionMode == false)
+  if(m_isEditionMode == false)
   {
     AbstractItem<QGraphicsObject>::mouseReleaseEvent(event);
     return;
@@ -228,21 +228,29 @@ void te::layout::MapItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 
 void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 {
-  /*
   event->setDropAction(Qt::CopyAction);
 
-  QString s = event->mimeData()->data("application/x-terralib;value=\"DraggedItems\"").constData();
-  unsigned long v = s.toULongLong();
-  std::vector<te::qt::widgets::AbstractTreeItem*>* vecItems = reinterpret_cast<std::vector<te::qt::widgets::AbstractTreeItem*>*>(v);
+  QByteArray encodedData = event->mimeData()->data("application/x-terralib;value=\"DraggedItems\"");
+  qulonglong dataValue = encodedData.toULongLong();
 
-  if(vecItems->empty())
-    return;
+  std::auto_ptr< std::vector<te::qt::widgets::TreeItem*> > vecItems(reinterpret_cast< std::vector<te::qt::widgets::TreeItem*>* >(dataValue));
 
   std::list<te::map::AbstractLayerPtr> listLayers;
   for(size_t i = 0 ; i < vecItems->size(); ++i)
   {
-    te::qt::widgets::AbstractTreeItem* treeItem = vecItems->operator[](i);
-    te::map::AbstractLayerPtr layer = treeItem->getLayer();
+    te::qt::widgets::TreeItem* item = vecItems->operator[](i);
+    if(item->getType() != "LAYER")
+    {
+      continue;
+    }
+
+    te::qt::widgets::LayerItem* layerItem = dynamic_cast<te::qt::widgets::LayerItem*>(item);
+    if(layerItem == 0)
+    {
+      continue;
+    }
+
+    te::map::AbstractLayerPtr layer = layerItem->getLayer();
     listLayers.push_back(layer);
   }
 
@@ -251,7 +259,6 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
   {
     mapController->addLayers(listLayers);
   }
-  */
 }
 
 void te::layout::MapItem::wheelEvent ( QGraphicsSceneWheelEvent * event )

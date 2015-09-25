@@ -29,6 +29,7 @@
 #include "ScaleItem.h"
 #include "../../../color/RGBAColor.h"
 #include "../../core/enum/EnumScaleType.h"
+#include "../core/ItemUtils.h"
 
 te::layout::ScaleItem::ScaleItem(AbstractItemController* controller, bool invertedMatrix)
   : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
@@ -110,6 +111,10 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
 
   QRectF newBoxFirst;
   QRectF newBoxSecond;
+
+  std::string fontFamily("Arial");
+  int fontSize = 10;
+  ItemUtils::ConfigurePainterForTexts(painter, fontFamily, fontSize);
 
   for( ; x1 < boundRect.topRight().x(); x1 += width)
   {
@@ -215,6 +220,10 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   QRectF newBoxFirst;
   QRectF newBoxSecond;
 
+  std::string fontFamily("Arial");
+  int fontSize = 10;
+  ItemUtils::ConfigurePainterForTexts(painter, fontFamily, fontSize);
+
   for( ; x1 < boundRect.topRight().x(); x1 += width)
   {
     if(x1+gapX >= boundRect.topRight().x())
@@ -264,7 +273,7 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   double centerX = rectScale.center().x();  
   painter->setPen(QPen(textColor));
   
-  QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
+  QPointF coordText(centerX, boundRect.topLeft().y() + 1);
   drawText(coordText, painter, strUnit);
 
   painter->restore();
@@ -315,6 +324,10 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
 
   QRectF newBoxFirst;
   QRectF newBoxSecond;
+
+  std::string fontFamily("Arial");
+  int fontSize = 10;
+  ItemUtils::ConfigurePainterForTexts(painter, fontFamily, fontSize);
 
   //Rect around scale
   QPen pn(black, 0, Qt::SolidLine);
@@ -369,7 +382,7 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   double centerX = rectScale.center().x();  
   painter->setPen(QPen(textColor));
 
-  QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
+  QPointF coordText(centerX, boundRect.topLeft().y() + 1);
   drawText(coordText, painter, strUnit);
 
   painter->restore();

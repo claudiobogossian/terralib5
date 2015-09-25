@@ -68,7 +68,7 @@ void te::layout::AbstractPropertiesBrowser::clearAll()
   m_idToProperty.clear();
 }
 
-QVariant te::layout::AbstractPropertiesBrowser::findPropertyValue( std::string name )
+QVariant te::layout::AbstractPropertiesBrowser::findPropertyValue( const std::string& name )
 {
   QVariant variant;
 
@@ -96,7 +96,7 @@ QVariant te::layout::AbstractPropertiesBrowser::findPropertyValue( std::string n
   return variant;
 }
 
-QtProperty* te::layout::AbstractPropertiesBrowser::findProperty( std::string name )
+QtProperty* te::layout::AbstractPropertiesBrowser::findProperty( const std::string& name )
 {
   QtProperty* prop = 0;
 

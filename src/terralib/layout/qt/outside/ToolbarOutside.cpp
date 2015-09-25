@@ -66,7 +66,6 @@ te::layout::ToolbarOutside::ToolbarOutside(AbstractOutsideController* controller
   m_actionMapCreateTextGrid("map_text_grid"),
   m_actionMapCreateMapText("map_text_map"),
   m_actionMapCreateLegendChildAsObject("legend_child"),
-  m_actionGridMap("map_grid_map"),
   m_actionGridPlanar("map_grid_planar"),
   m_actionGridGeodesic("map_grid_geodesic"),
   m_actionNorth("map_north"),
@@ -954,11 +953,6 @@ std::string te::layout::ToolbarOutside::getActionMapCreateMapText()
 std::string te::layout::ToolbarOutside::getActionMapCreateLegendChildAsObject()
 {
   return m_actionMapCreateLegendChildAsObject;
-}
-
-std::string te::layout::ToolbarOutside::getActionGridMap()
-{
-  return m_actionGridMap;
 }
 
 std::string te::layout::ToolbarOutside::getActionGridPlanar()

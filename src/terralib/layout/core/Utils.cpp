@@ -143,11 +143,25 @@ int te::layout::Utils::mm2pixel( double mm )
   {
     return -1;
   }
-  ContextObject context = scene->getContext();
+  const ContextObject& context = scene->getContext();
 
   int devDpi = context.getDpiX();
   int px = (mm * devDpi) / 25.4 ;
   return px;
+}
+
+double te::layout::Utils::pixel2mm( int pixel )
+{
+  AbstractScene* scene = Context::getInstance().getScene();
+  if(!scene)
+  {
+    return -1;
+  }
+  const ContextObject& context = scene->getContext();
+
+  double devDpi = (double)context.getDpiX();
+  double mm = (pixel / devDpi) * 25.4 ;
+  return mm;
 }
 
 void te::layout::Utils::configCanvas( te::gm::Envelope box, bool resize, bool applyZoom )
@@ -499,9 +513,9 @@ void te::layout::Utils::remapToPlanar( te::gm::LinearRing* line, int zone )
   if(!line)
     return;
 
-  int npoints = line->getNPoints();
+  std::size_t npoints = line->getNPoints();
 
-  for(int i = 0 ; i < npoints ; ++i)
+  for(std::size_t i = 0 ; i < npoints ; ++i)
   {
     te::gm::Point* p = line->getPointN(i);
     const te::gm::Envelope* env = p->getMBR();
@@ -529,9 +543,9 @@ void te::layout::Utils::convertToMillimeter( WorldTransformer transf, te::gm::Li
   if(!line)
     return;
 
-  int npoints = line->getNPoints();
+  std::size_t npoints = line->getNPoints();
 
-  for(int i = 0 ; i < npoints ; ++i)
+  for(std::size_t i = 0 ; i < npoints ; ++i)
   {
     te::gm::Point* p = line->getPointN(i);   
     double x = 0;
@@ -549,9 +563,9 @@ void te::layout::Utils::convertToMillimeter( WorldTransformer transf, te::gm::Po
   if(!poly)
     return;
 
-  int nrings = poly->getNumInteriorRings();
+  std::size_t nrings = poly->getNumInteriorRings();
 
-  for(int i = 0 ; i < nrings ; ++i)
+  for(std::size_t i = 0 ; i < nrings ; ++i)
   {
     te::gm::LinearRing* line = dynamic_cast<te::gm::LinearRing*>(poly->getInteriorRingN(i));
     if(line)

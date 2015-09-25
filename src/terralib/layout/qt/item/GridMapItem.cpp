@@ -29,6 +29,7 @@
 #include "GridMapItem.h"
 
 #include "../../core/property/GridSettingsConfigProperties.h"
+#include "../core/ItemUtils.h"
 
 te::layout::GridMapItem::GridMapItem(AbstractItemController* controller, bool invertedMatrix)
   : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
@@ -37,8 +38,6 @@ te::layout::GridMapItem::GridMapItem(AbstractItemController* controller, bool in
   , m_onePointMM(0.3527777778)
   , m_changeSize(false)
 {  
-  //m_nameClass = std::string(this->metaObject()->className());
-
   //The text size or length that exceeds the sides will be cut
   setFlag(QGraphicsItem::ItemClipsToShape);
 }
@@ -90,11 +89,11 @@ void te::layout::GridMapItem::drawDefaultGrid( QPainter* painter )
 
   int heightRect = (int)parentBound.height();
   int widgetRect = (int)parentBound.width();
-    
-  QFont ft(fontFamily.c_str(), pointTextSize);
-  painter->setFont(ft);
+
+  ItemUtils::ConfigurePainterForTexts(painter, fontFamily, pointTextSize);
 
   // PostScript to mm
+  QFont ft(fontFamily.c_str(), pointTextSize);
   m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
 
   QString text = "GRID";
@@ -134,54 +133,25 @@ void te::layout::GridMapItem::drawDefaultGrid( QPainter* painter )
   painter->restore();
 }
 
-void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft, bool displacementRight )
+void te::layout::GridMapItem::drawText( const QPointF& point, QPainter* painter, const std::string& text, bool displacementLeft, bool displacementRight )
 {
-  painter->save();
-  
-  QTransform t = painter->transform();
-  QPointF p = t.map(point);
+  const QFont& font = painter->font();
 
-  AbstractScene* sc = dynamic_cast<AbstractScene*>(scene());
-  ContextObject context = sc->getContext();
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+  QRectF rectF = itemUtils->getTextBoundary(font.family().toStdString(), font.pixelSize(), text);
 
-  int zoom = context.getZoom();
-  double zoomFactor = zoom / 100.;
-
-  QFont ft = painter->font();
-  ft.setPointSize(ft.pointSize() * zoomFactor);
-  painter->setFont(ft);
-
-  QFontMetrics fm(ft);
-  int width = fm.width(text.c_str());
-
-  QPointF newPoint (p);
-
+  QPointF newPoint (point);
   if(displacementLeft)
   {
-    newPoint.setX(newPoint.x() - width);
+    newPoint.setX(newPoint.x() - rectF.width());
   }
 
   if(displacementRight)
   {
-    newPoint.setX(newPoint.x() + width);
+    newPoint.setX(newPoint.x() + rectF.width());
   }
 
-  QTransform copyT = painter->transform().inverted();
-  QPointF copyP = copyT.map(newPoint);
-  double widthMM = point.x() - copyP.x();
-
-  if(widthMM > m_maxWidthTextMM)
-  {
-    m_maxWidthTextMM = widthMM;
-    m_changeSize = true;
-  }
-
-  //Keeps the size of the text.(Aspect)
-  painter->setMatrixEnabled(false);
-  painter->drawText(newPoint, text.c_str());
-  painter->setMatrixEnabled(true);
-
-  painter->restore();
+  AbstractItem<QGraphicsItem>::drawText(newPoint, painter, text);
 }
 
 void te::layout::GridMapItem::configPainter( QPainter* painter )
@@ -242,16 +212,15 @@ void te::layout::GridMapItem::configTextPainter( QPainter* painter )
   const Property& pTextFontFamily = m_controller->getProperty(settingsConfig.getFontText());
   const Property& pTextColor = m_controller->getProperty(settingsConfig.getTextColor());
 
-  double textPointSize = pTextPointSize.getValue().toDouble();  
+  int textPointSize = pTextPointSize.getValue().toInt();
   const std::string& fontFamily = pTextFontFamily.getValue().toString();
   const te::color::RGBAColor& textColor = pTextColor.getValue().toColor();
 
-  QFont ft(fontFamily.c_str(), textPointSize);
   QColor clrText(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), textColor.getAlpha());
 
-  QPen pen;
-  pen.setColor(clrText);
-  painter->setFont(ft);
+  ItemUtils::ConfigurePainterForTexts(painter, fontFamily, textPointSize);
+
+  QPen pen (clrText);
   painter->setPen(pen);
 }
 
@@ -406,6 +375,11 @@ void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
 
 QRectF te::layout::GridMapItem::boundingRect() const
 {
+  if (m_currentAction == RESIZE_ACTION)
+  {
+    return AbstractItem<QGraphicsItem>::boundingRect();
+  }
+
   if(m_boundingBox.isValid())
   {
     return QRectF(m_boundingBox.getLowerLeftX(), m_boundingBox.getLowerLeftY(), m_boundingBox.getWidth(), m_boundingBox.getHeight());
@@ -413,7 +387,7 @@ QRectF te::layout::GridMapItem::boundingRect() const
   return AbstractItem<QGraphicsItem>::boundingRect();
 }
 
-void te::layout::GridMapItem::drawCrossLines( QPainter* painter )
+void te::layout::GridMapItem::drawCrossLines(QPainter* painter)
 {
   painter->save();
 
@@ -500,288 +474,3 @@ bool te::layout::GridMapItem::drawCrossIntersectMapBorder( QLineF vrt, QLineF hr
 
   return result;
 }
-
-/*
-QRectF te::layout::GridMapItem::boundingRect() const
-{
-  if(parentItem())
-  {
-    return parentItem()->boundingRect();
-  }
-  return m_rect;
-}
-
-void te::layout::GridMapItem::recalculateBoundingRect()
-{
-  if(!m_changeSize)
-    return;
-
-  if(parentItem())
-  {    
-    QRectF parentBoundRect = parentItem()->boundingRect();
-    if(parentBoundRect.isValid())
-    {
-      QRectF boundRect = boundingRect();
-      double w = parentBoundRect.width() + (m_maxWidthTextMM*2);
-      double h = parentBoundRect.height() + (m_maxHeigthTextMM*2);
-      if(boundRect.width() != w || boundRect.height() != h)
-      {
-        prepareGeometryChange();
-        QRectF rect(0., 0., w, h);
-        setRect(rect);
-        
-        //update model
-        te::gm::Envelope box(m_model->getBox());
-        box.m_urx = box.m_llx + w;
-        box.m_ury = box.m_lly + h;
-        m_controller->setBox(box);
-      }
-    } 
-  }
-  m_changeSize = false;
-}
-
-QVariant te::layout::GridMapItem::itemChange( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
-{
-  if(change == QGraphicsItem::ItemParentHasChanged)
-  {
-    GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
-    if(model)
-    {
-      if(parentItem())
-      {
-        MapItem* item = dynamic_cast<MapItem*>(parentItem());
-        if(item)
-        {
-          if(item->getModel())
-          {
-            model->setMapName(item->getModel()->getName());
-          }
-        }
-      }
-    }
-  }
-  return QGraphicsItem::itemChange(change, value);
-}
-
-void te::layout::GridMapItem::drawGrid( QPainter* painter )
-{
-
-}
-
-bool te::layout::GridMapItem::hasLayer()
-{
-  bool result = false;
-
-  MapItem* item = dynamic_cast<MapItem*>(parentItem());
-  if(!item)
-  {
-    return result;    
-  }
-
-  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
-  if(!mapModel)
-  {
-    return result;    
-  }
-
-  if(!mapModel->isLoadedLayer())
-  {
-    return result;
-  }
-
-  return true;
-}
-
-void te::layout::GridMapItem::drawDefaultGrid( QPainter* painter )
-{
-  if(parentItem())
-  {
-    return;
-  }
-
-  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  painter->save();
-
-  QRectF parentBound = boundingRect();
-  
-  QPainterPath gridMapPath;
-  gridMapPath.setFillRule(Qt::WindingFill);
-
-  int heightRect = (int)parentBound.height();
-  int widgetRect = (int)parentBound.width();
-    
-  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
-  painter->setFont(ft);
-
-  // PostScript to mm
-  m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
-
-  QString text = "GRID";
-
-  for (int i = 0; i <= heightRect; i+=10)
-  {
-    QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
-
-    configTextPainter(painter);
-
-    QPointF pointInit(parentBound.topLeft().x(), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //left
-    drawText(pointInit, painter, text.toStdString(), true);
-    QPointF pointFinal(parentBound.topRight().x(), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //right
-    drawText(pointFinal, painter, text.toStdString());
-
-    configPainter(painter);
-
-    painter->drawLine(lineOne);
-
-    for (int j = 0; j <= widgetRect; j+=10)
-    {
-      QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
-
-      configTextPainter(painter);
-
-      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y() + (m_maxHeigthTextMM)); //lower
-      drawText(pointInit, painter, text.toStdString(), true);
-      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y()); //upper
-      drawText(pointFinal, painter, text.toStdString());
-
-      configPainter(painter);
-
-      painter->drawLine(lineTwo);
-    }    
-  }
-
-  painter->restore();
-}
-
-void te::layout::GridMapItem::calculateVertical( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
-{
-
-}
-
-void te::layout::GridMapItem::calculateHorizontal( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
-{
-
-}
-
-void te::layout::GridMapItem::drawVerticalLines( QPainter* painter )
-{
-  QList<QLineF>::iterator it = m_verticalLines.begin();
-  for( ; it != m_verticalLines.end() ; ++it )
-  {
-    QLineF line = (*it);
-    painter->drawLine(line);
-  }
-}
-
-void te::layout::GridMapItem::drawHorizontalLines( QPainter* painter )
-{
-  QList<QLineF>::iterator it = m_horizontalLines.begin();
-  for( ; it != m_horizontalLines.end() ; ++it )
-  {
-    QLineF line = (*it);
-    painter->drawLine(line);
-  }
-}
-
-void te::layout::GridMapItem::checkMaxMapDisplacement(QFont ft, std::string text, double& width, double& height )
-{
-  double mw = 0;
-  double mh = 0;
-
-  if(!parentItem())
-  {
-    return;
-  }
-
-  MapItem* mapParent = dynamic_cast<MapItem*>(parentItem());
-  if(!mapParent)
-  {
-    return;
-  }
-
-  MapModel* model = dynamic_cast<MapModel*>(mapParent->getModel());
-  if(!model)
-  {
-    return;
-  }
-
-  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
-
-  itemUtils->getTextBoundary(ft, width, height, text);
-
-  mw = model->getDisplacementX();
-  mh = model->getDisplacementY();
-
-  if(mw > width)
-  {
-    width = mw;
-  }
-
-  if(mh > height)
-  {
-    height = mh;
-  } 
-}
-
-void te::layout::GridMapItem::changeMapDisplacement( double width, double height )
-{
-  double mw = 0;
-  double mh = 0;
-
-  if(!parentItem())
-  {
-    return;
-  }
-
-  MapItem* mapParent = dynamic_cast<MapItem*>(parentItem());
-  if(!mapParent)
-  {
-    return;
-  }
-
-  MapModel* model = dynamic_cast<MapModel*>(mapParent->getModel());
-  if(!model)
-  {
-    return;
-  }
-
-  mw = model->getDisplacementX();
-  mh = model->getDisplacementY();
-
-  if(mw != width)
-  {
-    model->setDisplacementX(width);
-  }
-
-  if(mh != height)
-  {
-    model->setDisplacementY(height);
-  } 
-}
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

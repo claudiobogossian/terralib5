@@ -36,8 +36,8 @@
 
 te::layout::GridPlanarItem::GridPlanarItem(AbstractItemController* controller, bool invertedMatrix)
   : GridMapItem(controller, invertedMatrix)
-{  
-  
+{
+
 }
 
 te::layout::GridPlanarItem::~GridPlanarItem()
@@ -45,44 +45,26 @@ te::layout::GridPlanarItem::~GridPlanarItem()
 
 }
 
-void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
+void te::layout::GridPlanarItem::drawGrid(QPainter* painter)
 {
   GridSettingsConfigProperties settingsConfig;
-
-  const Property& pPlanarBox = m_controller->getProperty("planar_box");
-  const Property& pWidth = m_controller->getProperty("width");
-  const Property& pHeight = m_controller->getProperty("height");
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
-
-  const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
-  double width = pWidth.getValue().toDouble();
-  double height = pHeight.getValue().toDouble();
-
+  
   const std::string& style = pStyle.getValue().toString();
   EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
-  if(currentStyle != 0)
+  if (currentStyle != 0)
   {
     currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
   }
 
-  te::gm::Envelope referenceBoxMM(0, 0, width, height);
+  const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
+  const Property& pFontSize = m_controller->getProperty(settingsConfig.getPointTextSize());
 
-  clear();
+  std::string fontFamily = pFontFamily.getValue().toString();
+  int fontSize = pFontSize.getValue().toInt();
 
-  //double scale = mapModel->getCurrentScale();
-  //te::gm::Envelope boxMM = mapModel->getMapBox();
-
-  //double wMargin = mapModel->getDisplacementX();
-  //double hMargin = mapModel->getDisplacementY();
-
-  //te::gm::Envelope referenceBoxMM(wMargin, hMargin, boxMM.getWidth() + wMargin, boxMM.getHeight() + hMargin);
-
-  //model->setMapScale(scale); // put visit
-  //model->calculateGaps(planarBox); ///TODO
-
-  calculateVertical(planarBox, referenceBoxMM);
-  calculateHorizontal(planarBox, referenceBoxMM);
-
+  ItemUtils::ConfigurePainterForTexts(painter, fontFamily, fontSize);
+  
   EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
   if(!gridStyle)
   {
@@ -97,6 +79,42 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
   {
     drawCrossLines(painter);
   }
+}
+
+void te::layout::GridPlanarItem::calculateGrid()
+{
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pPlanarBox = m_controller->getProperty("planar_box");
+  const Property& pWidth = m_controller->getProperty("width");
+  const Property& pHeight = m_controller->getProperty("height");
+  const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
+
+  const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
+  double width = pWidth.getValue().toDouble();
+  double height = pHeight.getValue().toDouble();
+
+  const std::string& style = pStyle.getValue().toString();
+  EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
+  if (currentStyle != 0)
+  {
+    currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
+  }
+
+  te::gm::Envelope referenceBoxMM(0, 0, width, height);
+
+  clear();
+
+  const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
+  const Property& pFontSize = m_controller->getProperty(settingsConfig.getPointTextSize());
+
+  std::string fontFamily = pFontFamily.getValue().toString();
+  int fontSize = pFontSize.getValue().toInt();
+  
+  calculateVertical(planarBox, referenceBoxMM);
+  calculateHorizontal(planarBox, referenceBoxMM);
+
+  prepareGeometryChange();
 }
 
 void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
@@ -148,7 +166,9 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
     double number = y1 / (double)unit;
     QString convert = QString::number(number, 'f', 0);
 
-    itemUtils->getTextBoundary(ft, wtxt, htxt, convert);
+    QRectF rectF = itemUtils->getTextBoundary(fontFamily, textPointSize, convert.toStdString());
+    wtxt = rectF.width();
+    htxt = rectF.height();
 
     // text left
     QPointF ptLeft(llx - wtxt, y);
@@ -225,7 +245,9 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
     double number = x1 / (double)unit;
     QString convert = QString::number(number, 'f', 0);
 
-    itemUtils->getTextBoundary(ft, wtxt, htxt, convert);
+    QRectF rectF = itemUtils->getTextBoundary(fontFamily, textPointSize, convert.toStdString());
+    wtxt = rectF.width();
+    htxt = rectF.height();
 
     // text bottom
     QPointF ptBottom(x - (wtxt/2.), lly - htxt);
@@ -298,140 +320,3 @@ double te::layout::GridPlanarItem::initHorizontalLines( const te::gm::Envelope& 
 
   return xInit;
 }
-
-
-/*
-void te::layout::GridPlanarItem::calculateVertical( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
-{
-  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  if(!hasLayer())
-  {
-    return;
-  }
-
-  Utils* utils = Context::getInstance().getUtils();
-  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
-
-  // Draw a horizontal line and the y coordinate change(vertical)
-
-  WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
-  transf.setMirroring(false);
-
-  double y1 = initVerticalLines(geoBox);
-
-  double wtxt = 0;
-  double htxt = 0;
-  
-  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
-  
-  for( ; y1 < geoBox.getUpperRightY() ; y1 += model->getLneVrtGap())
-  {
-    if(y1 < geoBox.getLowerLeftY())
-      continue;
-
-    double llx = 0;
-    double urx = 0;
-    double y = 0;
-    transf.system1Tosystem2(geoBox.getLowerLeftX(), y1, llx, y);
-    transf.system1Tosystem2(geoBox.getUpperRightX(), y1, urx, y);
-    
-    QLineF line(llx, y, urx, y);
-    m_horizontalLines.push_back(line);
-
-    std::ostringstream convert;
-    convert.precision(10);
-    double number = y1 / (double)model->getUnit();
-    convert << number;
-
-    itemUtils->getTextBoundary(ft, wtxt, htxt,convert.str());
-        
-    // text left
-    QPointF ptLeft(llx - wtxt, y);
-    m_leftTexts[convert.str()] = ptLeft;
-
-    // text right
-    QPointF ptRight(urx, y);
-    m_rightTexts[convert.str()] = ptRight;
-  }
-}
-
-void te::layout::GridPlanarItem::calculateHorizontal( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
-{
-  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  if(!hasLayer())
-  {
-    return;
-  }
-
-  Utils* utils = Context::getInstance().getUtils();
-  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
-
-  // Draw a vertical line and the x coordinate change(horizontal)
-
-  WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
-  transf.setMirroring(false);
-
-  double x1 = initHorizontalLines(geoBox);
-
-  utils = Context::getInstance().getUtils();
-
-  double wtxt = 0;
-  double htxt = 0;
-  
-  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
-
-  for( ; x1 < geoBox.getUpperRightX() ; x1 += model->getLneHrzGap())
-  {
-    if(x1 < geoBox.getLowerLeftX())
-      continue;
-
-    double lly = 0;
-    double ury = 0;
-    double x = 0;
-    transf.system1Tosystem2(x1, geoBox.getLowerLeftY(), x, lly);
-    transf.system1Tosystem2(x1, geoBox.getUpperRightY(), x, ury);
-
-    te::gm::Envelope newBox(x, lly, x, ury);
-
-    if(lly > ury)
-    {
-      double ycopy = lly;
-      lly = ury;
-      ury = ycopy;
-    }
-
-    QLineF line(x, lly, x, ury);
-    m_verticalLines.push_back(line);
-
-    std::ostringstream convert;
-    convert.precision(10);
-    double number = x1 / (double)model->getUnit();
-    convert << number;
-
-    itemUtils->getTextBoundary(ft, wtxt, htxt, convert.str());
-
-    // text bottom
-    QPointF ptBottom(x - (wtxt/2.), lly - htxt);
-    m_bottomTexts[convert.str()] = ptBottom;
-
-    // text top
-    QPointF ptTop(x - (wtxt/2.), ury);
-    m_topTexts[convert.str()] = ptTop;
-  }
-}
-
-
-*/
-
-
-

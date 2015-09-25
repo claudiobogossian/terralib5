@@ -60,9 +60,11 @@ const std::string te::da::FunctionNames::sm_ST_EnvelopeIntersects("st_envelopein
 const std::string te::da::FunctionNames::sm_ST_Equals("st_equals");
 const std::string te::da::FunctionNames::sm_ST_Intersection("st_intersection");
 const std::string te::da::FunctionNames::sm_ST_Intersects("st_intersects");
+const std::string te::da::FunctionNames::sm_ST_IsEmpty("st_isempty");
 const std::string te::da::FunctionNames::sm_ST_IsValid("st_isvalid");
 const std::string te::da::FunctionNames::sm_ST_Length("st_length");
 const std::string te::da::FunctionNames::sm_ST_MakePolygon("st_makepolygon");
+const std::string te::da::FunctionNames::sm_ST_Multi("st_multi");
 const std::string te::da::FunctionNames::sm_ST_NumGeometries("st_numgeometries");
 const std::string te::da::FunctionNames::sm_ST_Overlaps("st_overlaps");
 const std::string te::da::FunctionNames::sm_ST_Perimeter("st_perimeter");
@@ -86,5 +88,6 @@ const std::string te::da::FunctionNames::sm_Min("min");
 const std::string te::da::FunctionNames::sm_StdDev("stddev");
 const std::string te::da::FunctionNames::sm_Variance("variance");
 
+const std::string te::da::FunctionNames::sm_Coalesce("coalesce");
 const std::string te::da::FunctionNames::sm_IsNull("isnull");
 const std::string te::da::FunctionNames::sm_In("in");
