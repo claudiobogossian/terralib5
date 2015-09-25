@@ -35,7 +35,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "pattern/factory/item/BarCodeItemFactory.h"
 #include "pattern/factory/item/EllipseItemFactory.h"
 #include "pattern/factory/item/GridGeodesicItemFactory.h"
-#include "pattern/factory/item/GridMapItemFactory.h"
 #include "pattern/factory/item/GridPlanarItemFactory.h"
 #include "pattern/factory/item/ImageItemFactory.h"
 #include "pattern/factory/item/ItemGroupItemFactory.h"
@@ -119,7 +118,6 @@ namespace te
         static BarCodeItemFactory BarCodeItemFactory_instance;
         static EllipseItemFactory EllipseItemFactory_instance;
         static GridGeodesicItemFactory GridGeodesicItemFactory_instance;
-        static GridMapItemFactory GridMapItemFactory_instance;
         static GridPlanarItemFactory GridPlanarItemFactory_instance;
         static ImageItemFactory ImageItemFactory_instance;
         static ItemGroupItemFactory ItemGroupItemFactory_instance;

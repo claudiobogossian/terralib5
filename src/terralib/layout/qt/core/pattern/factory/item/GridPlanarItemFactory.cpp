@@ -27,8 +27,8 @@
 #include "GridPlanarItemFactory.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/GridPlanarModel.h"
-#include "../../../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../../item/GridPlanarItem.h"
+#include "../../../../item/GridMapController.h"
 
 te::layout::AbstractItemView* te::layout::GridPlanarItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,7 +40,7 @@ te::layout::AbstractItemView* te::layout::GridPlanarItemFactory::build(ItemFacto
     setProperties(model, params);
   }
 
-  AbstractItemController* controller = new AbstractItemController(model);
+  GridMapController* controller = new GridMapController(model);
   GridPlanarItem* view = new GridPlanarItem(controller);
   controller->setView(view);
 

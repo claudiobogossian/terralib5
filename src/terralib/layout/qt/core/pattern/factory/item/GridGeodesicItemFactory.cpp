@@ -27,8 +27,8 @@
 #include "GridGeodesicItemFactory.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/GridGeodesicModel.h"
-#include "../../../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../../item/GridGeodesicItem.h"
+#include "../../../../item/GridMapController.h"
 
 te::layout::AbstractItemView* te::layout::GridGeodesicItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -40,7 +40,7 @@ te::layout::AbstractItemView* te::layout::GridGeodesicItemFactory::build(ItemFac
     setProperties(model, params);
   }
 
-  AbstractItemController* controller = new AbstractItemController(model);
+  GridMapController* controller = new GridMapController(model);
   GridGeodesicItem* view = new GridGeodesicItem(controller);
   controller->setView(view);
 
