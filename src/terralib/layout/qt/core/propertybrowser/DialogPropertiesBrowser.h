@@ -30,8 +30,8 @@
 
 // TerraLib
 #include "AbstractPropertiesBrowser.h"
-#include "../../../core/property/Property.h"
 #include "../../../core/Config.h"
+#include "../../../core/property/Property.h"
 
 // STL
 #include <map>
@@ -82,21 +82,21 @@ namespace te
 
         virtual void closeAllWindows();
         
-        virtual bool changeQtPropertyValue(QtProperty* pproperty, Property property);
+        virtual bool changeQtPropertyValue(QtProperty* pproperty, const Property& property);
 
-        virtual QtProperty* addProperty(Property property);
+        virtual QtProperty* addProperty(const Property& property);
 
-        virtual bool updateProperty(Property property);
+        virtual bool updateProperty(const Property& property);
 
-        virtual bool checkDlgType(Property prop);
+        virtual bool checkDlgType(const Property& prop);
 
-        virtual Property findDlgProperty(std::string name);
+        virtual Property findDlgProperty(const std::string& name);
 
         virtual Property findDlgProperty(EnumType* dataType);
         
-        virtual Property getProperty(std::string name);
+        virtual Property getProperty(const std::string& name);
 
-        virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
+        virtual EnumType* getLayoutType(QVariant::Type type, const std::string& name = "");
 
         virtual int getVariantType(EnumType* dataType);
 
@@ -116,9 +116,9 @@ namespace te
 
         virtual void onSetDlg(QWidget *parent, QtProperty * prop);
 
-        virtual void updateOutside(Property prop);
+        virtual void updateOutside(const Property& prop);
 
-        virtual void updateOutside(std::vector<Property> props);
+        virtual void updateOutside(const std::vector<Property>& props);
 
         virtual void onShowGridSettingsDlg();
 
@@ -146,7 +146,7 @@ namespace te
 
         virtual void createManager();
 
-        virtual void changeValueQtPropertyDlg(std::string name, QVariant variant);
+        virtual void changeValueQtPropertyDlg(const std::string& name, const QVariant& variant);
 
         virtual QWidget* createOutside(EnumType* enumType);
 

@@ -53,7 +53,7 @@ te::layout::PropertiesUtils::~PropertiesUtils()
   
 }
 
-te::layout::Properties te::layout::PropertiesUtils::intersection( QList<QGraphicsItem*> graphicsItems, bool& window )
+te::layout::Properties te::layout::PropertiesUtils::intersection( const QList<QGraphicsItem*>& graphicsItems, bool& window )
 {
   Properties props("");
 
@@ -94,7 +94,7 @@ te::layout::Properties te::layout::PropertiesUtils::intersection( QList<QGraphic
   return props;
 }
 
-te::layout::Properties te::layout::PropertiesUtils::sameProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
+te::layout::Properties te::layout::PropertiesUtils::sameProperties( const QList<QGraphicsItem*>& graphicsItems, bool& window )
 {
   Properties props("");
   std::vector<Properties> propsVec = getAllProperties(graphicsItems, window);
@@ -107,13 +107,11 @@ te::layout::Properties te::layout::PropertiesUtils::sameProperties( QList<QGraph
     return props;
   }
 
-  Properties firstProps("");
-
   if(lItem->getController())
   {
-    firstProps = lItem->getController()->getProperties();
+    return props;
   }
-
+  const Properties& firstProps = lItem->getController()->getProperties();
   if(firstProps.getProperties().empty())
   {
     return props;
@@ -122,13 +120,14 @@ te::layout::Properties te::layout::PropertiesUtils::sameProperties( QList<QGraph
   std::vector<Properties>::iterator it = propsVec.begin();
   std::vector<Properties>::iterator itend = propsVec.end();
   bool result = false;
-  foreach( Property prop, firstProps.getProperties()) 
+  const std::vector<Property>& vecProperty = firstProps.getProperties();
+  foreach(Property prop, vecProperty)
   {
     contains(itend, it, prop.getName(), result);
     if(result)
     {
       prop.setParentItemHashCode(0);
-      props. addProperty(prop);
+      props.addProperty(prop);
     }
   }  
 
@@ -154,7 +153,7 @@ void te::layout::PropertiesUtils::contains( std::vector<Properties>::iterator it
   }
 }
 
-std::vector<te::layout::Properties> te::layout::PropertiesUtils::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
+std::vector<te::layout::Properties> te::layout::PropertiesUtils::getAllProperties( const QList<QGraphicsItem*>& graphicsItems, bool& window )
 {
   std::vector<Properties> propsVec;
   bool result = true;
@@ -171,7 +170,7 @@ std::vector<te::layout::Properties> te::layout::PropertiesUtils::getAllPropertie
           continue;
         }
 
-        Properties propsItem = lItem->getController()->getProperties();
+        const Properties& propsItem = lItem->getController()->getProperties();
         if(!propsItem.getProperties().empty())
         {
           propsVec.push_back(propsItem);
@@ -188,7 +187,7 @@ std::vector<te::layout::Properties> te::layout::PropertiesUtils::getAllPropertie
   return propsVec;
 }
 
-void te::layout::PropertiesUtils::addDynamicOptions( Property& property, std::vector<std::string> list )
+void te::layout::PropertiesUtils::addDynamicOptions( Property& property, const std::vector<std::string>& list )
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -200,20 +199,16 @@ void te::layout::PropertiesUtils::addDynamicOptions( Property& property, std::ve
   }
 }
 
-void te::layout::PropertiesUtils::checkDynamicProperty( Property& property, QList<QGraphicsItem*> graphicsItems )
+void te::layout::PropertiesUtils::checkDynamicProperty( Property& property, const QList<QGraphicsItem*>& graphicsItems )
 {
-  SharedProperties* sharedProps = new SharedProperties;
-  
-  if(property.getName().compare(sharedProps->getMapName()) == 0)
+  SharedProperties sharedProps;  
+  if(property.getName().compare(sharedProps.getMapName()) == 0)
   {
     mapNameDynamicProperty(property, graphicsItems);
   }
-
-  delete sharedProps;
-  sharedProps = 0;
 }
 
-void te::layout::PropertiesUtils::mapNameDynamicProperty( Property& property, QList<QGraphicsItem*> graphicsItems )
+void te::layout::PropertiesUtils::mapNameDynamicProperty( Property& property, const QList<QGraphicsItem*>& graphicsItems )
 {
   std::string currentName = property.getValue().toString();
 

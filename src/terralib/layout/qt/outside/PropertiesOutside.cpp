@@ -200,7 +200,8 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 
   m_nameLabel->setText(tr("Component::") + props.getObjectName().c_str());
   
-  foreach( Property prop, props.getProperties()) 
+  const std::vector<Property>& vecProperties = props.getProperties();
+  foreach(Property prop, vecProperties)
   {
     if(!prop.isVisible())
       continue;
