@@ -84,6 +84,28 @@ void te::qt::widgets::DoubleListWidget::setInputValues(std::vector<std::string> 
   }
 }
 
+void te::qt::widgets::DoubleListWidget::setInputDataValues(std::vector<std::string> values, std::vector<int> ids)
+{
+  m_ui->m_leftListWidget->clear();
+
+  if (values.size() != ids.size())
+    return;
+
+  if (values.empty() == false)
+    m_ui->m_addAllToolButton->setEnabled(true);
+  else
+    m_ui->m_addAllToolButton->setEnabled(false);
+
+  for (size_t i = 0; i < values.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(m_ui->m_leftListWidget);
+    item->setText(values[i].c_str());
+    item->setData(Qt::UserRole, QVariant(ids[i]));
+
+    m_ui->m_leftListWidget->addItem(item);
+  }
+}
+
 void te::qt::widgets::DoubleListWidget::setOutputValues(std::vector<std::string> values)
 {
   m_ui->m_rightListWidget->clear();
@@ -96,6 +118,28 @@ void te::qt::widgets::DoubleListWidget::setOutputValues(std::vector<std::string>
   for(size_t i = 0; i < values.size(); ++i)
   {
     m_ui->m_rightListWidget->addItem(values[i].c_str());
+  }
+}
+
+void te::qt::widgets::DoubleListWidget::setOutputDataValues(std::vector<std::string> values, std::vector<int> ids)
+{
+  m_ui->m_rightListWidget->clear();
+
+  if (values.size() != ids.size())
+    return;
+
+  if (values.empty() == false)
+    m_ui->m_removeAllToolButton->setEnabled(true);
+  else
+    m_ui->m_removeAllToolButton->setEnabled(false);
+
+  for (size_t i = 0; i < values.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(m_ui->m_rightListWidget);
+    item->setText(values[i].c_str());
+    item->setData(Qt::UserRole, QVariant(ids[i]));
+
+    m_ui->m_rightListWidget->addItem(item);
   }
 }
 
@@ -129,6 +173,23 @@ std::vector<std::string> te::qt::widgets::DoubleListWidget::getOutputValues()
   for(int i = 0; i < count; ++i)
   {
     vec.push_back(m_ui->m_rightListWidget->item(i)->text().toLatin1().data());
+  }
+
+  return vec;
+}
+
+std::vector<int> te::qt::widgets::DoubleListWidget::getOutputDataValues()
+{
+  std::vector<int> vec;
+
+  int count = m_ui->m_rightListWidget->count();
+
+  for (int i = 0; i < count; ++i)
+  {
+    QVariant v = m_ui->m_rightListWidget->item(i)->data(Qt::UserRole);
+
+    if (v.isValid())
+      vec.push_back(v.toInt());
   }
 
   return vec;

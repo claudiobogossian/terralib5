@@ -68,11 +68,17 @@ namespace te
 
           void setInputValues(std::vector<std::string> values);
 
+          void setInputDataValues(std::vector<std::string> values, std::vector<int> ids);
+
           void setOutputValues(std::vector<std::string> values);
+
+          void setOutputDataValues(std::vector<std::string> values, std::vector<int> ids);
 
           void setFixedOutputValues(std::vector<std::string> values, std::string iconName);
 
           std::vector<std::string> getOutputValues();
+
+          std::vector<int> getOutputDataValues();
 
           void clearInputValues();
 
