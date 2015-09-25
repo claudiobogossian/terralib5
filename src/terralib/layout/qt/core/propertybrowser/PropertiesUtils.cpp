@@ -107,7 +107,7 @@ te::layout::Properties te::layout::PropertiesUtils::sameProperties( const QList<
     return props;
   }
 
-  if(lItem->getController())
+  if(lItem->getController() == 0)
   {
     return props;
   }
