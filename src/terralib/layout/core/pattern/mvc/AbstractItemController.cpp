@@ -22,12 +22,8 @@
 
 #include "AbstractItemModel.h"
 #include "AbstractItemView.h"
-#include "../singleton/Context.h"
 #include "../factory/ItemParamsCreate.h"
 #include "../factory/AbstractItemFactory.h"
-
-// Qt
-#include <QGraphicsItem>
 
 te::layout::AbstractItemController::AbstractItemController(AbstractItemModel* model)
   : Observer()
@@ -174,12 +170,6 @@ void te::layout::AbstractItemController::updateItemPos(const Properties& propert
     return;
   }
 
-  QGraphicsItem* view = dynamic_cast<QGraphicsItem*>(m_view);
-  if (!view)
-  {
-    return;
-  }
-
   Property prop_x = properties.getProperty("x");
   Property prop_y = properties.getProperty("y");
 
@@ -201,6 +191,6 @@ void te::layout::AbstractItemController::updateItemPos(const Properties& propert
   double x = prop_x.getValue().toDouble();
   double y = prop_y.getValue().toDouble();
 
-  view->setPos(x, y);
+  m_view->setItemPosition(x, y);
 }
 

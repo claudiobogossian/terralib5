@@ -202,9 +202,7 @@ namespace te
       std::string getActionMapCreateMapText();
 
       std::string getActionMapCreateLegendChildAsObject();
-
-      std::string getActionGridMap();
-
+      
       std::string getActionGridPlanar();
 
       std::string getActionGridGeodesic();
@@ -369,7 +367,6 @@ namespace te
       std::string m_actionMapCreateTextGrid;
       std::string m_actionMapCreateMapText;
       std::string m_actionMapCreateLegendChildAsObject;
-      std::string m_actionGridMap;
       std::string m_actionGridPlanar;
       std::string m_actionGridGeodesic;
       std::string m_actionNorth;

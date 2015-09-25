@@ -76,6 +76,8 @@ namespace te
          */
         virtual QRectF boundingRect() const;
 
+        virtual void calculateGrid() = 0;
+
       protected:
 
         /*!

@@ -110,9 +110,14 @@ namespace te
         virtual double getItemRotation() const;
 
         /*!
-          \brief Sets the rotation
+          \brief Implemented from AbstractItemView.
         */ 
         virtual void setItemRotation(double rotation);
+
+        /*!
+          \brief Implemented from AbstractItemView.
+        */
+        virtual void setItemPosition(double x, double y);
 
         /*!
           \brief Reimplemented from QGraphicsItem
@@ -284,6 +289,12 @@ namespace te
       T::setRotation(angle);
       transf.translate(-(w/2), -(h/2));
       T::setTransform(transf);
+    }
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::setItemPosition(double x, double y)
+    {
+      T::setPos(x, y);
     }
 
     template <class T>

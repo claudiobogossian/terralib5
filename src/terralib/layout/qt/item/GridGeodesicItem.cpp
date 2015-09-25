@@ -44,19 +44,15 @@ te::layout::GridGeodesicItem::~GridGeodesicItem()
 
 }
 
-
-void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
+void te::layout::GridGeodesicItem::drawGrid(QPainter* painter)
 {
   GridSettingsConfigProperties settingsConfig;
 
   const Property& pGeographicBox = m_controller->getProperty("geographic_box");
-  const Property& pWidth = m_controller->getProperty("width");
-  const Property& pHeight = m_controller->getProperty("height");
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
 
   const te::gm::Envelope& geographicBox = pGeographicBox.getValue().toEnvelope();
-  double width = pWidth.getValue().toDouble();
-  double height = pHeight.getValue().toDouble();
+
   const std::string& style = pStyle.getValue().toString();
 
   EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
@@ -64,11 +60,7 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
   {
     currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
   }
-
-  te::gm::Envelope newBoxMM(0, 0, width, height);
-
-  clear();
-
+  
   Utils* utils = Context::getInstance().getUtils();
 
   // Box necessario para desenhar a curvatura
@@ -79,12 +71,7 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
     painter->drawRect(boundingRect());
     return;
   }
-
-  utils->remapToPlanar(&planarBox, zone);
-
-  calculateVertical(geographicBox, planarBox, newBoxMM);
-  calculateHorizontal(geographicBox, planarBox, newBoxMM);
-
+  
   EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
   if(!gridStyle)
   {
@@ -101,6 +88,47 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
   }
 }
 
+void te::layout::GridGeodesicItem::calculateGrid()
+{
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pGeographicBox = m_controller->getProperty("geographic_box");
+  const Property& pWidth = m_controller->getProperty("width");
+  const Property& pHeight = m_controller->getProperty("height");
+  const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
+
+  const te::gm::Envelope& geographicBox = pGeographicBox.getValue().toEnvelope();
+  double width = pWidth.getValue().toDouble();
+  double height = pHeight.getValue().toDouble();
+  const std::string& style = pStyle.getValue().toString();
+
+  EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
+  if (currentStyle != 0)
+  {
+    currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
+  }
+
+  te::gm::Envelope newBoxMM(0, 0, width, height);
+
+  clear();
+
+  Utils* utils = Context::getInstance().getUtils();
+
+  // Box necessario para desenhar a curvatura
+  te::gm::Envelope planarBox = geographicBox;
+  int zone = utils->calculatePlanarZone(geographicBox);
+  if (zone < 0 || zone > 60)
+  {
+    return;
+  }
+
+  utils->remapToPlanar(&planarBox, zone);
+
+  calculateVertical(geographicBox, planarBox, newBoxMM);
+  calculateHorizontal(geographicBox, planarBox, newBoxMM);
+
+  prepareGeometryChange();
+}
 
 double te::layout::GridGeodesicItem::initVerticalLines( const te::gm::Envelope& geoBox )
 {

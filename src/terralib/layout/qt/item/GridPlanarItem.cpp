@@ -45,31 +45,17 @@ te::layout::GridPlanarItem::~GridPlanarItem()
 
 }
 
-void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
+void te::layout::GridPlanarItem::drawGrid(QPainter* painter)
 {
   GridSettingsConfigProperties settingsConfig;
-
-  const Property& pPlanarBox = m_controller->getProperty("planar_box");
-  const Property& pWidth = m_controller->getProperty("width");
-  const Property& pHeight = m_controller->getProperty("height");
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
-
-  const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
-  double width = pWidth.getValue().toDouble();
-  double height = pHeight.getValue().toDouble();
-
+  
   const std::string& style = pStyle.getValue().toString();
   EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
-  if(currentStyle != 0)
+  if (currentStyle != 0)
   {
     currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
   }
-
-  te::gm::Envelope referenceBoxMM(0, 0, width, height);
-
-
-  QRectF previousRect = this->boundingRect();
-  clear();
 
   const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
   const Property& pFontSize = m_controller->getProperty(settingsConfig.getPointTextSize());
@@ -78,17 +64,7 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
   int fontSize = pFontSize.getValue().toInt();
 
   ItemUtils::ConfigurePainterForTexts(painter, fontFamily, fontSize);
-
-  calculateVertical(planarBox, referenceBoxMM);
-  calculateHorizontal(planarBox, referenceBoxMM);
-
-  QRectF currentRect = this->boundingRect();
-  if (previousRect != currentRect)
-  {
-    this->prepareGeometryChange();
-  }
-
-
+  
   EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
   if(!gridStyle)
   {
@@ -103,6 +79,42 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
   {
     drawCrossLines(painter);
   }
+}
+
+void te::layout::GridPlanarItem::calculateGrid()
+{
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pPlanarBox = m_controller->getProperty("planar_box");
+  const Property& pWidth = m_controller->getProperty("width");
+  const Property& pHeight = m_controller->getProperty("height");
+  const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
+
+  const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
+  double width = pWidth.getValue().toDouble();
+  double height = pHeight.getValue().toDouble();
+
+  const std::string& style = pStyle.getValue().toString();
+  EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
+  if (currentStyle != 0)
+  {
+    currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
+  }
+
+  te::gm::Envelope referenceBoxMM(0, 0, width, height);
+
+  clear();
+
+  const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
+  const Property& pFontSize = m_controller->getProperty(settingsConfig.getPointTextSize());
+
+  std::string fontFamily = pFontFamily.getValue().toString();
+  int fontSize = pFontSize.getValue().toInt();
+  
+  calculateVertical(planarBox, referenceBoxMM);
+  calculateHorizontal(planarBox, referenceBoxMM);
+
+  prepareGeometryChange();
 }
 
 void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )

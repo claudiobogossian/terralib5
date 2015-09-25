@@ -387,7 +387,7 @@ QRectF te::layout::GridMapItem::boundingRect() const
   return AbstractItem<QGraphicsItem>::boundingRect();
 }
 
-void te::layout::GridMapItem::drawCrossLines( QPainter* painter )
+void te::layout::GridMapItem::drawCrossLines(QPainter* painter)
 {
   painter->save();
 
