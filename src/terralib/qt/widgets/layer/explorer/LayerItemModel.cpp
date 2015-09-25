@@ -443,7 +443,7 @@ bool te::qt::widgets::LayerItemModel::insertRows(int row, int count, const QMode
 
 Qt::DropActions te::qt::widgets::LayerItemModel::supportedDropActions() const
 {
-  return Qt::MoveAction;
+  return Qt::MoveAction | Qt::CopyAction;
 }
 
 QStringList te::qt::widgets::LayerItemModel::mimeTypes() const

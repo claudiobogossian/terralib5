@@ -205,7 +205,7 @@ void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
 {
   //Copy the map from layer tree
   Qt::DropActions actions = event->dropAction();
-  if(actions != Qt::CopyAction)
+  if(!(actions & Qt::CopyAction))
     return;
 
   const QMimeData* mime = event->mimeData();
