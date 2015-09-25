@@ -398,6 +398,7 @@ namespace te
         bool                          m_updateItemPos;
         WaitView*                     m_wait;
         bool                          m_flag;
+        QPixmap                       m_foreground; //!< This pixmap represents the foreground drawings and is used for double buffering
     };
   }
 }

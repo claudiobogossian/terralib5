@@ -815,6 +815,9 @@ void te::layout::View::newTemplate()
 
 void te::layout::View::fitZoom(const QRectF& rect)
 {
+  //clears the foreground pixmap
+  m_foreground = QPixmap();
+
   double scaleOld = this->transform().m11();
   this->fitInView(rect, Qt::KeepAspectRatio);
   double scaleNew = this->transform().m11();
@@ -840,6 +843,9 @@ void te::layout::View::fitZoom(const QRectF& rect)
 
 void te::layout::View::setZoom(int newZoom)
 {
+  //clears the foreground pixmap
+  m_foreground = QPixmap();
+
   int currentZoom = getCurrentZoom();
 
   if(newZoom == currentZoom)
@@ -932,10 +938,34 @@ void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
   if(!m_visibleRulers)
     return;
 
+  QGraphicsScene* scene = this->scene();
+  if(scene == 0)
+  {
+    return;
+  }
+
   double scale = transform().m11();
 
-  m_horizontalRuler->drawRuler(this, painter, scale);
-  m_verticalRuler->drawRuler(this, painter, scale); 
+
+  if (m_foreground.isNull())
+  {
+    m_foreground = QPixmap(painter->device()->width(), painter->device()->height());
+    m_foreground.fill(Qt::transparent);
+    QPainter painter2(&m_foreground);
+    painter2.setTransform(painter->transform());
+
+    m_horizontalRuler->drawRuler(this, &painter2, scale);
+    m_verticalRuler->drawRuler(this, &painter2, scale);
+
+    painter2.end();
+
+    m_foreground = QPixmap::fromImage(m_foreground.toImage().mirrored());
+  }
+
+  QRect rectView(0, 0, this->width(), this->height());
+  QPolygonF polygonScene = this->mapToScene(rectView);
+
+  painter->drawPixmap(polygonScene.boundingRect(), m_foreground, m_foreground.rect());
 }
 
 bool te::layout::View::exportProperties( EnumType* type )
