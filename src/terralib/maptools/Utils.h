@@ -236,12 +236,36 @@ namespace te
     TEMAPEXPORT te::rst::Raster* GetExtentRaster(te::rst::Raster* raster, int w, int h, const te::gm::Envelope& bbox, int bboxSRID,
                                 const te::gm::Envelope& visibleArea, int srid);
 
-    /*!
+     /*!
       \brief It gets the geometry type of the given layer.
 
       \param layer The layer that will be consulted.
     */
     TEMAPEXPORT te::gm::GeomType GetGeomType(const  te::map::AbstractLayerPtr& layer);
+
+
+    /*!
+     \brief It gets the requested envelope on a UTM planar projection
+
+     \param worldBox WordBox to be transformed to planar
+     \param srid The WorldBox SRID to transform from
+   */
+    TEMAPEXPORT te::gm::Envelope GetWorldBoxInPlanar(const te::gm::Envelope& worldBox, int srid);
+
+    /*!
+      \brief Returns proj4 string with UTM projection in the specified zone (Only working for south).
+      \param UTM Zone
+      \return proj4 string
+    */
+    TEMAPEXPORT std::string GetUTMProj4FromZone(int zone);
+
+    /*!
+      \brief Calculates the UTM zone from a Geographic envelope.
+
+      \param latLongBox Geographic envelope
+      \return UTM zone
+    */
+    TEMAPEXPORT int CalculatePlanarZone(te::gm::Envelope latLongBox);
 
   } // end namespace map
 }   // end namespace te

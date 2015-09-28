@@ -32,6 +32,7 @@
 #include "../../core/WorldTransformer.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/property/GridSettingsConfigProperties.h"
+#include "../../../maptools/Utils.h"
 
 te::layout::GridGeodesicItem::GridGeodesicItem(AbstractItemController* controller, bool invertedMatrix)
   : GridMapItem(controller, invertedMatrix)
@@ -65,7 +66,7 @@ void te::layout::GridGeodesicItem::drawGrid(QPainter* painter)
 
   // Box necessario para desenhar a curvatura
   te::gm::Envelope planarBox = geographicBox;
-  int zone = utils->calculatePlanarZone(geographicBox);
+  int zone = te::map::CalculatePlanarZone(geographicBox);
   if(zone < 0 || zone > 60)
   {
     painter->drawRect(boundingRect());
@@ -116,7 +117,7 @@ void te::layout::GridGeodesicItem::calculateGrid()
 
   // Box necessario para desenhar a curvatura
   te::gm::Envelope planarBox = geographicBox;
-  int zone = utils->calculatePlanarZone(geographicBox);
+  int zone = te::map::CalculatePlanarZone(geographicBox);
   if (zone < 0 || zone > 60)
   {
     return;
@@ -208,7 +209,7 @@ void te::layout::GridGeodesicItem::calculateVertical(const te::gm::Envelope& geo
   WorldTransformer transf = utils->getTransformGeo(planarBox, boxMM);
   transf.setMirroring(false);
 
-  int zone = utils->calculatePlanarZone(geoBox);
+  int zone = te::map::CalculatePlanarZone(geoBox);
   if(zone < 0 || zone > 60)
   {
     return;
@@ -277,7 +278,7 @@ void te::layout::GridGeodesicItem::calculateHorizontal( const te::gm::Envelope& 
   WorldTransformer transf = utils->getTransformGeo(planarBox, boxMM);
   transf.setMirroring(false);
 
-  int zone = utils->calculatePlanarZone(geoBox);
+  int zone = te::map::CalculatePlanarZone(geoBox);
   if(zone < 0 || zone > 60)
   {
     return;

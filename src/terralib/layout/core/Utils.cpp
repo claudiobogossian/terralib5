@@ -34,6 +34,7 @@
 #include "../../geometry/Enums.h"
 #include "../../geometry/LinearRing.h"
 #include "../../geometry/Point.h"
+#include "../../maptools/Utils.h"
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../common/Translator.h"
@@ -410,37 +411,6 @@ double te::layout::Utils::convertDegreeToDecimal()
   return 0;
 }
 
-std::string te::layout::Utils::proj4DescToPlanar( int zone )
-{
-  /* 
-  PROJ4
-  +proj      Projection name
-  +datum  Datum name
-  +lat_0    Latitude of origin
-  +lon_0   Central meridian 
-  +x_0       False easting
-  +y_0       False northing   
-  +lat_1     Latitude of first standard parallel
-  +lat_2     Latitude of second standard parallel
-  +units     meters, US survey feet, etc.
-  +lat_ts    Latitude of true scale
-  +south   Denotes southern hemisphere UTM zone
-  +no_defs Don't use the /usr/share/proj/proj_def.dat defaults file 
-  */
-  
-  std::stringstream szone;
-  szone << zone;
-
-  std::string proj4 = "+proj=utm";
-  proj4+= " +zone="+ szone.str();
-  proj4+= " +south"; // pode ser +noth?
-  proj4+= " +ellps=aust_SA";
-  proj4+= " +towgs84=-57,1,-41,0,0,0,0";
-  proj4+= " +units=m"; 
-  proj4+= " +no_defs ";
-  
-  return proj4;
-}
 
 std::string te::layout::Utils::proj4DescToGeodesic()
 {
@@ -453,21 +423,6 @@ std::string te::layout::Utils::proj4DescToGeodesic()
   return proj4;
 }
 
-int te::layout::Utils::calculatePlanarZone( te::gm::Envelope latLongBox )
-{
-  double longitude = latLongBox.getCenter().x;
-  int meridiano = (int)(longitude / 6);
-  meridiano = meridiano * 6;
-
-  meridiano = abs(meridiano) + 3;
-
-  double long0 = -meridiano * TeCDR;
-
-  // TeUTM T4
-  int zone = ((int)((long0*TeCRD+183.0)/6.0));
-
-  return zone;
-}
 
 te::common::UnitOfMeasurePtr te::layout::Utils::unitMeasure( int srid )
 {
@@ -488,7 +443,7 @@ void te::layout::Utils::remapToPlanar( te::gm::Envelope* latLongBox, int zone )
   
   try
   {
-    std::string proj4 = proj4DescToPlanar(zone);
+    std::string proj4 = te::map::GetUTMProj4FromZone(zone);
 
     // Get the id of the projection of destination 
     std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
