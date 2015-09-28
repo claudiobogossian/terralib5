@@ -408,7 +408,7 @@ namespace te
        
     TEGDALEXPORT void createGeopackage(std::string outFileName);
 
-    TEGDALEXPORT void copyToGeopackage(std::string inFileName, std::string outFileName);
+    TEGDALEXPORT void copyToGeopackage(te::rst::Raster* raster, std::string outFileName);
   } // end namespace gdal
 } // end namespace te
 #endif

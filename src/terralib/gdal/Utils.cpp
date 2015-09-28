@@ -999,30 +999,24 @@ void te::gdal::createGeopackage(std::string outFileName)
   gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
 
   char **papszOptions = NULL;
+
   GDALDataset *poDstDS;
   poDstDS = gpkgDriver->Create(outFileName.c_str(), 0, 0, 0, GDT_Unknown, papszOptions);
   GDALClose((GDALDatasetH)poDstDS);
 }
 
-void te::gdal::copyToGeopackage(std::string inFileName, std::string outFileName)
+void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName)
 {
   const char *gpkgFormat = "GPKG";
   GDALDriver *gpkgDriver;
-
-  std::string inName = GetDriverName(inFileName);
-  const char *inFormat = inName.c_str();
-  GDALDriver *inDriver;
-  
   gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
-  inDriver = GetGDALDriverManager()->GetDriverByName(inFormat);
 
   char **papszOptions = NULL;
-  papszOptions = CSLSetNameValue(papszOptions,"APPEND_SUBDATASET", "YES");
-
-  GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(inFileName.c_str(), GA_ReadOnly);
-  GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), poSrcDS, FALSE, papszOptions, NULL, NULL);
+  papszOptions = CSLSetNameValue(papszOptions, "APPEND_SUBDATASET", "YES");
+  
+  te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
+  GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
 
   CSLDestroy(papszOptions);
-  GDALClose((GDALDatasetH)poSrcDS);
   GDALClose((GDALDatasetH)poDstDS);
 }
