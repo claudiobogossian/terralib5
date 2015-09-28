@@ -273,22 +273,17 @@ namespace te
     template <class T>
     inline void te::layout::AbstractItem<T>::setItemRotation(double angle)
     {
+      QPointF center = boundingRect().center();
+
       double w = boundingRect().width();
       double h = boundingRect().height();
-
-      QTransform transf = T::transform();
 
       if(m_invertedMatrix)
       {
         angle = -angle;
       }
 
-      transf.translate(w/2, h/2);
-      transf.rotate(angle);
-      T::setTransform(transf);
       T::setRotation(angle);
-      transf.translate(-(w/2), -(h/2));
-      T::setTransform(transf);
     }
 
     template <class T>
