@@ -24,6 +24,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 // TerraLib
+#include "../../../../../se/serialization/xml/Style.h"
+#include "../../../../../xml/AbstractWriter.h"
+#include "../../../../../xml/AbstractWriterFactory.h"
 #include "Serializer.h"
 
 #include "AbstractFormItem.h"
@@ -33,7 +36,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 // Boost
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-
+#include <boost/filesystem/operations.hpp>
 
 std::string te::qt::plugins::terramobile::Write(te::qt::plugins::terramobile::Section* section)
 {
@@ -99,6 +102,49 @@ std::string te::qt::plugins::terramobile::Write(te::qt::plugins::terramobile::Se
   boost::property_tree::json_parser::write_json(ss, sec);
 
   return ss.str();
+}
+
+std::string te::qt::plugins::terramobile::Write(const te::se::Style* style, std::string path)
+{
+  boost::filesystem::wpath file = boost::filesystem::absolute(path);
+  std::string xml;
+  {
+    std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
+
+    writer->setURI(file.string());
+    writer->writeStartDocument("UTF-8", "no");
+
+    writer->writeStartElement("StyledLayerDescriptor");
+
+    writer->writeAttribute("xmlns", "http://www.opengis.net/sld");
+    writer->writeAttribute("xmlns:ogc", "http://www.opengis.net/ogc");
+    writer->writeAttribute("xmlns:se", "http://www.opengis.net/se");
+    writer->writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+    writer->writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+    writer->writeAttribute("xsi:schemaLocation", "http://www.opengis.net/sld StyledLayerDescriptor.xsd");
+
+    writer->writeAttribute("version", "1.0");
+
+    writer->writeStartElement("NamedLayer");
+    writer->writeStartElement("UserStyle");
+
+    te::se::serialize::Style::getInstance().write(style, *writer.get());
+
+    writer->writeEndElement("UserStyle");
+    writer->writeEndElement("NamedLayer");
+
+    writer->writeEndElement("StyledLayerDescriptor");
+    writer->writeToFile();
+
+    std::ifstream t(file.string());
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+
+    xml = buffer.str();
+  }
+
+  bool tst = boost::filesystem::remove(file);
+  return xml;
 }
 
 te::qt::plugins::terramobile::Section* te::qt::plugins::terramobile::Read(std::string filePath)

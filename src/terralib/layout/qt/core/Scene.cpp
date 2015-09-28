@@ -315,7 +315,7 @@ void te::layout::Scene::removeSelectedItems()
     }
   }
 
-  QUndoCommand* command = new DeleteCommand(this);
+  QUndoCommand* command = new DeleteCommand(this, graphicsItems);
   addUndoStack(command);
 
   if(!names.empty())
@@ -350,7 +350,6 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 
   EnumObjectType* object = Enums::getInstance().getEnumObjectType();
   size_t size = items.size();
-  size_t groupCount = 0;
   for(int i = 0; i <  items.size(); ++i)
   {
     QGraphicsItem* item = items[i];
@@ -369,6 +368,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
         listUngroupedItems.append(childItem);
       }
 
+      this->removeItem(item);
       destroyItemGroup((QGraphicsItemGroup*) item);
     }
     else
@@ -379,13 +379,8 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 
 
   //The scene create a new group with important restriction
-  QGraphicsItemGroup* p = QGraphicsScene::createItemGroup(listUngroupedItems);
-
   BuildGraphicsItem build(this);
   
-  te::gm::Coord2D coord(0,0);
-  QGraphicsItem* item = build.createItem(object->getItemGroup(), coord);
-
   double x = 0.;
   double y = 0.;
   for(int i = 0; i <  listUngroupedItems.size(); ++i)
@@ -407,28 +402,21 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
       y = currentItem->pos().y();
     }
   }
-
+  
+  // The group component must be initialized with a position (setPos).
+  te::gm::Coord2D coord(x, y);
+  QGraphicsItem* item = build.createItem(object->getItemGroup(), coord);
   ItemGroup* group = dynamic_cast<ItemGroup*>(item);
-  group->setPos(QPointF(x, y)); // The group component must be initialized with a position (setPos).
 
-  if(p)
-  {
-    if(group)
-    {   
-      QGraphicsItem* parent = group->parentItem();
-      group->setParentItem(p->parentItem());
-      foreach (QGraphicsItem *item, p->childItems())
-      {
-        group->addToGroup(item);
-      }
-
-      delete p;
-
-      group->setParentItem(parent);
-
-      QUndoCommand* command = new AddCommand(group);
-      addUndoStack(command);
+  if(group)
+  {   
+    foreach(QGraphicsItem *item, listUngroupedItems)
+    {
+      group->addToGroup(item);
     }
+
+    QUndoCommand* command = new AddCommand(group);
+    addUndoStack(command);
   }
 
   emit addItemFinalized(item);
@@ -439,7 +427,34 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 void te::layout::Scene::destroyItemGroup( QGraphicsItemGroup *group )
 {
   group->setHandlesChildEvents(false);
-  QGraphicsScene::destroyItemGroup(group);
+  
+  QList<QGraphicsItem*> listUngroupedItems;
+  QList<QGraphicsItem*> childItems = group->childItems();
+
+  foreach(QGraphicsItem* childItem, childItems)
+  {
+    group->removeFromGroup(childItem);
+  }
+
+  std::vector<std::string> vecNames;
+  AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(group);
+  if (abstractItem)
+  {
+    if (abstractItem->getController())
+    {
+      const Property& pName = abstractItem->getController()->getProperty("name");
+      vecNames.push_back(pName.getValue().toString());
+    }
+  }
+
+  QList<QGraphicsItem*> listItems;
+  listItems.push_back(group);
+
+  QUndoCommand* command = new DeleteCommand(this, listItems);
+  addUndoStack(command);
+
+  if (!vecNames.empty())
+    emit deleteFinalized(vecNames);
 }
 
 te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QList<QGraphicsItem*>& items )
