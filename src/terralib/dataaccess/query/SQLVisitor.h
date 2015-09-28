@@ -90,6 +90,7 @@ namespace te
         virtual void visit(const PropertyName& visited);
         virtual void visit(const Query& visited);
         virtual void visit(const Select& visited);
+        virtual void visit(const SelectExpression& visited);
         virtual void visit(const SubSelect& visited);
         virtual void visit(const In& visited);
 

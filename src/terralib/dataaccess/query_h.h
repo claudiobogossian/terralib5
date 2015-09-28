@@ -91,6 +91,7 @@
 #include "query/Query.h"
 #include "query/QueryVisitor.h"
 #include "query/Select.h"
+#include "query/SelectExpression.h"
 #include "query/SQLDialect.h"
 #include "query/SQLFunctionEncoder.h"
 #include "query/SQLVisitor.h"

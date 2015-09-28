@@ -91,6 +91,7 @@ namespace te
     class Query;
     class QueryVisitor;
     class Select;
+    class SelectExpression;
     class SQLDialect;
     class SQLFunctionEncoder;
     class SQLVisitor;
