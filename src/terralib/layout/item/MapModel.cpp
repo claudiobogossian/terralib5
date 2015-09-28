@@ -121,6 +121,13 @@ te::layout::MapModel::MapModel()
     property.setValue(height, dataType->getDataTypeDouble());
     this->m_properties.updateProperty(property);
   }
+
+  {
+    Property property(0);
+    property.setName("editable");
+    property.setValue(true, dataType->getDataTypeBool());
+    this->m_properties.updateProperty(property);
+  }
 }
 
 te::layout::MapModel::~MapModel()
