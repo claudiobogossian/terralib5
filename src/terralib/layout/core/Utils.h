@@ -41,14 +41,6 @@
 #include <iostream>
 #include <fstream>
 
-#ifndef TeCDR
-#define TeCDR 0.01745329251994329576    //!< Conversion factor: degrees to radians
-#endif
-
-#ifndef TeCRD
-#define TeCRD 57.29577951308232087679  //!< Conversion factor: radians to degrees
-#endif
-
 namespace te
 {
   namespace gm
@@ -211,27 +203,11 @@ namespace te
         virtual int roundNumber(const double& value);
 
         /*!
-          \brief Returns string wkt with UTM projection in the specified zone.
-      
-          \param zone UTM  
-          \return string wkt
-        */
-        std::string proj4DescToPlanar(int zone);
-
-        /*!
           \brief Returns string wkt with non-planar projection.
      
           \return wkt
         */
         std::string proj4DescToGeodesic();
-
-        /*!
-          \brief Calculates the area from a box in coordinated latlong
-      
-          \param latLongBox box in latlong
-          \return UTM zone
-        */
-        int calculatePlanarZone(te::gm::Envelope latLongBox);
 
         /*!
           \brief Returns a UnitOfMeasurePtr pointer.

@@ -53,8 +53,6 @@ namespace te
 
         virtual void update(const Subject* subject);
 
-        virtual te::gm::Envelope getWorldBoxInPlanar(const te::gm::Envelope& worldBox, int srid);
-
         /*
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);

@@ -58,6 +58,8 @@
 #include "../se/Utils.h"
 #include "../srs/Config.h"
 #include "../srs/Converter.h"
+#include "../srs/SpatialReferenceSystemManager.h"
+
 #include "Canvas.h"
 #include "CanvasConfigurer.h"
 #include "DataSetLayer.h"
@@ -75,6 +77,14 @@
 #include <cassert>
 #include <cstdlib>
 #include <memory>
+
+#ifndef TeCDR
+#define TeCDR 0.01745329251994329576    //!< Conversion factor: degrees to radians
+#endif
+
+#ifndef TeCRD
+#define TeCRD 57.29577951308232087679  //!< Conversion factor: radians to degrees
+#endif
 
 te::gm::Envelope te::map::GetSelectedExtent(const std::list<te::map::AbstractLayerPtr> layers, int srid, bool onlyVisibles)
 {
@@ -783,3 +793,82 @@ te::gm::GeomType te::map::GetGeomType(const  te::map::AbstractLayerPtr& layer)
 
   return g->getGeomTypeId();
 }
+
+te::gm::Envelope te::map::GetWorldBoxInPlanar(const te::gm::Envelope& worldBox, int srid)
+{
+  te::gm::Envelope worldBoxPlanar = worldBox;
+
+  // Checks if is Planar Geographic
+  std::string authName = "EPSG"; // Now: So far it is the only one supported by TerraLib 5. Future: Review this line!
+  te::srs::SpatialReferenceSystemManager::getInstance().isGeographic(srid, authName);
+  te::common::UnitOfMeasurePtr unitPtr = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid, authName);
+
+  if(!unitPtr)
+    return worldBoxPlanar;
+
+  std::string unitPtrStr = unitPtr->getName();
+  unitPtrStr = te::common::Convert2UCase(unitPtrStr);
+
+  if(unitPtrStr.compare("DEGREE") == 0)
+  {
+    int zone = CalculatePlanarZone(worldBox);
+    std::string proj4 = GetUTMProj4FromZone(zone);
+
+    // Get the id of the projection of destination
+    std::pair<std::string, unsigned int> projPlanar = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4);
+
+    // Remapping
+    worldBoxPlanar.transform(srid, projPlanar.second);
+  }
+
+  return worldBoxPlanar;
+}
+
+int te::map::CalculatePlanarZone( te::gm::Envelope latLongBox )
+{
+  double longitude = latLongBox.getCenter().x;
+  int meridiano = (int)(longitude / 6);
+  meridiano = meridiano * 6;
+
+  meridiano = abs(meridiano) + 3;
+
+  double long0 = -meridiano * TeCDR;
+
+  // TeUTM T4
+  int zone = ((int)((long0*TeCRD+183.0)/6.0));
+
+  return zone;
+}
+
+std::string te::map::GetUTMProj4FromZone( int zone )
+{
+  /*
+  PROJ4
+  +proj      Projection name
+  +datum  Datum name
+  +lat_0    Latitude of origin
+  +lon_0   Central meridian
+  +x_0       False easting
+  +y_0       False northing
+  +lat_1     Latitude of first standard parallel
+  +lat_2     Latitude of second standard parallel
+  +units     meters, US survey feet, etc.
+  +lat_ts    Latitude of true scale
+  +south   Denotes southern hemisphere UTM zone
+  +no_defs Don't use the /usr/share/proj/proj_def.dat defaults file
+  */
+
+  std::stringstream szone;
+  szone << zone;
+
+  std::string proj4 = "+proj=utm";
+  proj4+= " +zone="+ szone.str();
+  proj4+= " +south"; // pode ser +north?
+  proj4+= " +ellps=aust_SA";
+  proj4+= " +towgs84=-57,1,-41,0,0,0,0";
+  proj4+= " +units=m";
+  proj4+= " +no_defs ";
+
+  return proj4;
+}
+
