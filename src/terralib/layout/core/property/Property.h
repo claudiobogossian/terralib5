@@ -114,7 +114,7 @@ namespace te
 
           \return true if property is editable, false otherwise 
         */
-        bool isEditable();
+        bool isEditable() const;
 
         /*!
           \brief Sets true if property is editable, false otherwise 
@@ -209,7 +209,7 @@ namespace te
 
           \return true if visible, false otherwise
         */
-        virtual bool isVisible();
+        virtual bool isVisible() const;
 
         /*!
           \brief Returns true if property is required, false otherwise. 

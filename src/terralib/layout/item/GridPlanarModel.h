@@ -33,12 +33,6 @@
 #include "../core/Config.h"
 #include "../core/pattern/observer/Observer.h"
 
-/*
-#include "../core/enum/AbstractType.h"
-#include "../core/Config.h"
-
-*/
-
 namespace te
 {
   namespace layout
@@ -53,24 +47,7 @@ namespace te
 
         virtual void update(const Subject* subject);
 
-        /*
-
-        virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
-
-        virtual LayoutUnit getUnit();
-
-        virtual void calculateGaps(te::gm::Envelope box);
-        
-       protected:
-
-         virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-       protected:
-
-         LayoutUnit m_unit;
-         */
+        double getInitialCoord(double intialCoord, double distance, double& gap);
     };
   }
 }

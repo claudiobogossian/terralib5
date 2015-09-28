@@ -30,6 +30,12 @@
 #include "../../../core/property/Properties.h"
 #include "../../../core/enum/Enums.h"
 
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtProperty>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
+#include <QtPropertyBrowser/QtVariantEditorFactory>
+#include <QtPropertyBrowser/QtVariantProperty>
+
 // Qt
 #include <QVariant>
 #include <QFont>
@@ -64,7 +70,7 @@ void te::layout::VariantPropertiesBrowser::createManager()
   m_variantPropertyEditorFactory = new QtVariantEditorFactory;
 }
 
-QtVariantProperty* te::layout::VariantPropertiesBrowser::addProperty( Property property )
+QtProperty* te::layout::VariantPropertiesBrowser::addProperty( const Property& property )
 {
   QtVariantProperty* vproperty = 0;
 
@@ -72,11 +78,6 @@ QtVariantProperty* te::layout::VariantPropertiesBrowser::addProperty( Property p
   {
     return vproperty;
   }
-
-  te::color::RGBAColor color;
-  QColor qcolor;
-  QFont qfont;
-  Font font;
 
   if(!m_variantPropertyEditorManager)
   {
@@ -99,9 +100,9 @@ QtVariantProperty* te::layout::VariantPropertiesBrowser::addProperty( Property p
   return vproperty;
 }
 
-void te::layout::VariantPropertiesBrowser::addAttribute( QtVariantProperty* vproperty, Property property )
+void te::layout::VariantPropertiesBrowser::addAttribute( QtVariantProperty* vproperty, const Property& property )
 {
-  std::vector<Variant> vrt = property.getOptionChoices();
+  const std::vector<Variant>& vrt = property.getOptionChoices();
   QStringList  strList;
   foreach( Variant v, vrt) 
   {
@@ -113,7 +114,7 @@ void te::layout::VariantPropertiesBrowser::addAttribute( QtVariantProperty* vpro
   vproperty->setAttribute("enumNames", strList);
 }
 
-te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::string name )
+te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( const std::string& name )
 {
   Property prop;
   prop.setName(name);
@@ -136,14 +137,6 @@ te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::str
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  QColor qcolor;
-  te::color::RGBAColor color;
-  Variant v;
-  QStringList list;
-  std::string value;
-  Font font;
-  QFont qfont;
-
   if(type == dataType->getDataTypeString())
   {
     prop.setValue(variant.toString().toStdString(), type);
@@ -153,9 +146,10 @@ te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::str
     prop.setValue(variant.toString().toStdString(), type);
     if(vproperty)
     {
-      list = variant.toStringList();
-      value = list.value(vproperty->value().toInt()).toStdString();
+      QStringList list = variant.toStringList();
+      std::string value = list.value(vproperty->value().toInt()).toStdString();
 
+      Variant v;
       foreach(QString s, list)
       {
         v.clear();
@@ -182,16 +176,17 @@ te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::str
   }
   else if(type == dataType->getDataTypeColor())
   {
-    qcolor = variant.value<QColor>();
+    QColor qcolor = variant.value<QColor>();
     if(qcolor.isValid()) 
     {
-      color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
+      te::color::RGBAColor color(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
       prop.setValue(color, type);
     }
   }
   else if(type == dataType->getDataTypeFont())
   {
-    qfont = variant.value<QFont>();
+    QFont qfont = variant.value<QFont>();
+    Font font;
     font.setFamily(qfont.family().toStdString());
     font.setPointSize(qfont.pointSize());
     font.setBold(qfont.bold());
@@ -212,7 +207,7 @@ te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::str
   return prop;
 }
 
-te::layout::EnumType* te::layout::VariantPropertiesBrowser::getLayoutType( QVariant::Type type, std::string name )
+te::layout::EnumType* te::layout::VariantPropertiesBrowser::getLayoutType( QVariant::Type type, const std::string& name )
 {
   EnumDataType* dtType = Enums::getInstance().getEnumDataType();
 
@@ -321,14 +316,9 @@ int te::layout::VariantPropertiesBrowser::getVariantType( te::layout::EnumType* 
   return type;
 }
 
-bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVariantProperty* vproperty, Property property )
+bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVariantProperty* vproperty, const Property& property )
 {
   bool result = true;
-
-  QColor qcolor;
-  QFont qfont;
-  te::color::RGBAColor color;
-  Font font;
 
   m_changeProperty = true;
   
@@ -347,9 +337,9 @@ bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVaria
   {    
     addAttribute(vproperty, property);
 
-    std::string currentValue = property.getOptionByCurrentChoice().toString();
+    const std::string& currentValue = property.getOptionByCurrentChoice().toString();
 
-    std::vector<Variant> vecChoices = property.getOptionChoices();
+    const std::vector<Variant>& vecChoices = property.getOptionChoices();
     for(size_t i = 0; i < vecChoices.size(); ++i)
     {
       if(currentValue == vecChoices[i].toString())
@@ -378,7 +368,9 @@ bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVaria
   }
   else if(property.getType() == dataType->getDataTypeColor())
   {
-    color = property.getValue().toColor();
+    const te::color::RGBAColor& color = property.getValue().toColor();
+
+    QColor qcolor;
     qcolor.setRed(color.getRed());
     qcolor.setGreen(color.getGreen());
     qcolor.setBlue(color.getBlue());
@@ -387,7 +379,8 @@ bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVaria
   }
   else if(property.getType() == dataType->getDataTypeFont())
   {
-    font = property.getValue().toFont();
+    const Font& font = property.getValue().toFont();
+    QFont qfont;
     qfont.setFamily(font.getFamily().c_str());
     qfont.setPointSize(font.getPointSize());
     qfont.setBold(font.isBold());
@@ -424,14 +417,10 @@ QtVariantPropertyManager* te::layout::VariantPropertiesBrowser::getVariantProper
   return m_variantPropertyEditorManager;
 }
 
-bool te::layout::VariantPropertiesBrowser::updateProperty( Property property )
+bool te::layout::VariantPropertiesBrowser::updateProperty( const Property& property )
 {
-  std::string name = property.getName();
+  const std::string& name = property.getName();
   QtProperty* qprop = findProperty(name);
-  QColor qcolor;
-  te::color::RGBAColor color;
-  Font font;
-  QFont qfont;
 
   QtVariantProperty* vproperty = m_variantPropertyEditorManager->variantProperty(qprop);
   if(!vproperty)
@@ -443,7 +432,3 @@ bool te::layout::VariantPropertiesBrowser::updateProperty( Property property )
 
   return true;
 }
-
-
-
-

@@ -149,7 +149,7 @@ namespace te
 
           \return 
         */
-        virtual bool hasWindows();
+        virtual bool hasWindows() const;
 
         /*!
           \brief Checks if the property is contained within the set of properties.
@@ -157,7 +157,7 @@ namespace te
           \param property
           \return true if contained, false otherwise
         */
-        virtual bool contains(Property property) const;
+        virtual bool contains(const Property& property) const;
 
         /*!
           \brief Checks if the property is contained within the set of properties.
@@ -225,7 +225,7 @@ namespace te
 
     inline bool Properties::addProperty(const Property& property)
     {
-      unsigned int total = m_properties.size();
+      std::size_t total = m_properties.size();
       m_properties.push_back(property);   
 
       if(m_properties.size() > total)
@@ -298,7 +298,7 @@ namespace te
       m_typeObj = type;
     }
 
-    inline bool Properties::contains( Property property ) const
+    inline bool Properties::contains( const Property& property ) const
     {
       bool is_present = false;
       
@@ -336,7 +336,7 @@ namespace te
       m_hasWindows = windows;
     }
 
-    inline bool te::layout::Properties::hasWindows()
+    inline bool te::layout::Properties::hasWindows() const
     {
       return m_hasWindows;
     }

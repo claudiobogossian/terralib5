@@ -107,6 +107,15 @@ namespace te
         virtual int mm2pixel(double mm);
 
         /*!
+          \brief Pixel to millimeter
+      
+          \param pixel value
+          \return millimeter value
+        */ 
+        virtual double pixel2mm(int pixel);
+
+
+        /*!
           \brief Creates a LinearRing (line) pointer from a box in world coordinates (mm) 
       
           \param box in mm

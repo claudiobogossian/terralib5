@@ -63,6 +63,8 @@ namespace te
           \brief Destructor
          */
         virtual ~GridPlanarItem();
+
+        virtual void calculateGrid();
         
       protected:
 
@@ -80,4 +82,3 @@ namespace te
 }
 
 #endif
-

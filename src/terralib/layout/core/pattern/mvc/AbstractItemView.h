@@ -91,6 +91,11 @@ namespace te
         virtual void setItemRotation(double rotation) = 0;
 
         /*!
+          \brief Sets the position
+        */
+        virtual void setItemPosition(double x, double y) = 0;
+
+        /*!
         \brief Returns whether the graph component has the inverted matrix, otherwise the matrix scene.
 
         \return true if inverted, false otherwise

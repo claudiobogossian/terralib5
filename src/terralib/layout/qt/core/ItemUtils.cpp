@@ -517,40 +517,45 @@ QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
   return intersectionItem;
 }
 
-void te::layout::ItemUtils::getTextBoundary( QFont ft, double& w, double& h, std::string txt)
+QRectF te::layout::ItemUtils::getTextBoundary( const std::string& fontName, int fontSize, const std::string& text ) const
 {
   AbstractScene* abScene = Context::getInstance().getScene();
-
-  if(!abScene)
+  if(abScene == 0)
   {
-    return;
+    return QRectF();
   }
 
   Scene* scene = dynamic_cast<Scene*>(abScene);
-
-  QTransform matrix = scene->sceneTransform();
-
-  QString qtx(txt.c_str());
-  QFontMetrics fm(ft);  
-
-  int widthWithBearing = 0;
-
-  QChar *data = qtx.data();
-  while (!data->isNull()) 
+  if(scene == 0)
   {
-    QChar caracter(data->unicode());
-    widthWithBearing+= fm.width(caracter); // logical width of a character in pixels without bearing
-    widthWithBearing+= fm.leftBearing(caracter);
-    widthWithBearing+= fm.rightBearing(caracter);
-    ++data;
+    return QRectF();
   }
-  
-  //QRectF rec(0, 0, widthWithBearing, fm.boundingRect(qtx).height() - 1);
-  QRectF rec(fm.boundingRect(qtx));
-  QRectF wrec(matrix.inverted().mapRect(rec));
-  
-  w = wrec.width();
-  h = wrec.height();
+
+  Utils* utils = Context::getInstance().getUtils();
+  if(utils == 0)
+  {
+    return QRectF();
+  }
+
+  const ContextObject& context = scene->getContext();
+
+  double correctionFactorY = context.getDpiY() / 72.;
+
+  QFont font(fontName.c_str());
+  font.setPixelSize(fontSize * correctionFactorY);
+
+  QFontMetrics fontMetrics(font);
+  QRect rect = fontMetrics.boundingRect(text.c_str());
+  int width = rect.width();
+  int height = rect.height();
+  int descend = fontMetrics.descent();
+
+  double widthMM = utils->pixel2mm(width);
+  double heightMM = utils->pixel2mm(height);
+  double descendMM = utils->pixel2mm(descend);
+
+   QRectF textBoundingRect(0, - descendMM, widthMM, heightMM);
+   return textBoundingRect;
 }
 
 void te::layout::ItemUtils::changeViewMode( EnumType* mode )
@@ -577,6 +582,36 @@ void te::layout::ItemUtils::changeViewMode( EnumType* mode )
   view->changeMode(mode);
 }
 
+void te::layout::ItemUtils::ConfigurePainterForTexts(QPainter* painter, const std::string& fontFamily, int fontSize)
+{
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if(abScene == 0)
+  {
+    return;
+  }
+
+  Scene* myScene = dynamic_cast<Scene*>(abScene);
+  if(myScene == 0)
+  {
+    return;
+  }
+
+  Utils* utils = Context::getInstance().getUtils();
+  if(utils == 0)
+  {
+    return;
+  }
+
+  const ContextObject& context = myScene->getContext();
+  double correctionFactorY = context.getDpiY() / 72.;
+  double pixelInMM = 1. / context.getDpiY() * 25.4;
+
+  QFont fontCopy = painter->font();
+  fontCopy.setFamily(fontFamily.c_str());
+  fontCopy.setPixelSize(fontSize * correctionFactorY * pixelInMM);
+
+  painter->setFont(fontCopy);
+}
 
 
 

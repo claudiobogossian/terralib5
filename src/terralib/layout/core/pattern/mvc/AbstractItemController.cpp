@@ -22,7 +22,6 @@
 
 #include "AbstractItemModel.h"
 #include "AbstractItemView.h"
-#include "../singleton/Context.h"
 #include "../factory/ItemParamsCreate.h"
 #include "../factory/AbstractItemFactory.h"
 
@@ -57,7 +56,11 @@ const te::layout::Property& te::layout::AbstractItemController::getProperty(cons
 }
 
 void te::layout::AbstractItemController::setProperty(const te::layout::Property& property)
-{
+{  
+  Properties props(m_model->getName(), m_model->getType());
+  props.addProperty(property);
+
+  updateItemPos(props);
   m_model->setProperty(property);
 }
 
@@ -68,6 +71,7 @@ const te::layout::Properties& te::layout::AbstractItemController::getProperties(
 
 void te::layout::AbstractItemController::setProperties(const te::layout::Properties& properties)
 {
+  updateItemPos(properties);
   m_model->setProperties(properties);
 }
 
@@ -157,5 +161,36 @@ te::layout::AbstractItemModel* te::layout::AbstractItemController::getModel() co
 void te::layout::AbstractItemController::refresh()
 {
   // do nothing
+}
+
+void te::layout::AbstractItemController::updateItemPos(const Properties& properties)
+{
+  if (properties.getProperties().empty())
+  {
+    return;
+  }
+
+  Property prop_x = properties.getProperty("x");
+  Property prop_y = properties.getProperty("y");
+
+  if (prop_x.isNull() && prop_y.isNull())
+  {
+    return;
+  }
+
+  if (prop_x.isNull())
+  {
+    prop_x = m_model->getProperty("x");
+  }
+
+  if (prop_y.isNull())
+  {
+    prop_y = m_model->getProperty("y");
+  }
+
+  double x = prop_x.getValue().toDouble();
+  double y = prop_y.getValue().toDouble();
+
+  m_view->setItemPosition(x, y);
 }
 

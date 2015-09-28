@@ -110,9 +110,14 @@ namespace te
         virtual double getItemRotation() const;
 
         /*!
-          \brief Sets the rotation
+          \brief Implemented from AbstractItemView.
         */ 
         virtual void setItemRotation(double rotation);
+
+        /*!
+          \brief Implemented from AbstractItemView.
+        */
+        virtual void setItemPosition(double x, double y);
 
         /*!
           \brief Reimplemented from QGraphicsItem
@@ -268,22 +273,23 @@ namespace te
     template <class T>
     inline void te::layout::AbstractItem<T>::setItemRotation(double angle)
     {
+      QPointF center = boundingRect().center();
+
       double w = boundingRect().width();
       double h = boundingRect().height();
-
-      QTransform transf = T::transform();
 
       if(m_invertedMatrix)
       {
         angle = -angle;
       }
 
-      transf.translate(w/2, h/2);
-      transf.rotate(angle);
-      T::setTransform(transf);
       T::setRotation(angle);
-      transf.translate(-(w/2), -(h/2));
-      T::setTransform(transf);
+    }
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::setItemPosition(double x, double y)
+    {
+      T::setPos(x, y);
     }
 
     template <class T>
@@ -303,6 +309,8 @@ namespace te
         return;
       }
 
+      painter->save();
+
       //Draws the background
       drawBackground( painter );
 
@@ -317,6 +325,8 @@ namespace te
       {
         drawSelection(painter);
       }
+
+      painter->restore();
     }
 
     template <class T>
@@ -337,7 +347,7 @@ namespace te
 
       QRectF bRect = boundingRect();
 
-      const qreal adj = penWidth / 2.;
+      qreal adj = penWidth / 2.;
       QRectF rectAdjusted = bRect.adjusted(adj, adj, -adj, -adj);
 
       return rectAdjusted;
@@ -384,11 +394,14 @@ namespace te
       }
 
       const Property& pFrameColor = m_controller->getProperty("frame_color");
+      const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
       const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+      double frameThickness = pFrameThickness.getValue().toDouble();
+
       QColor qFrameColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
 
       painter->save();
-      QPen pen(qFrameColor, 0, Qt::SolidLine);
+      QPen pen(qFrameColor, frameThickness, Qt::SolidLine);
       painter->setPen(pen);
       painter->setBrush(Qt::NoBrush);
       painter->setRenderHint( QPainter::Antialiasing, true );
@@ -410,12 +423,15 @@ namespace te
         return;
       }
 
+      const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
+      double frameThickness = pFrameThickness.getValue().toDouble();
+
       painter->save();
 
       const QColor fgcolor(0,255,0);
       const QColor backgroundColor(0,0,0);
 
-      QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+      QPen penBackground(backgroundColor, frameThickness, Qt::SolidLine);
       painter->setPen(penBackground);
       painter->setBrush(Qt::NoBrush);
 
@@ -423,30 +439,26 @@ namespace te
       QRectF rectAdjusted = getAdjustedBoundingRect(painter);
       painter->drawRect(rectAdjusted);
 
-      QPen penForeground(fgcolor, 0, Qt::DashLine);
+      QPen penForeground(fgcolor, frameThickness, Qt::DashLine);
       painter->setPen(penForeground);
       painter->setBrush(Qt::NoBrush);
 
       //gets the adjusted boundigng rectangle based of the painter settings
-      rectAdjusted = getAdjustedBoundingRect(painter);
       painter->drawRect(rectAdjusted);
 
       painter->setPen(Qt::NoPen);
       QBrush brushEllipse(fgcolor);
       painter->setBrush(fgcolor);
 
-      //gets the adjusted boundigng rectangle based of the painter settings
-      rectAdjusted = getAdjustedBoundingRect(painter);
-
-      double w = 2.0;
-      double h = 2.0;
-      double half = 1.0;
+      double w = 2.;
+      double h = 2.;
+      double half = 1.;
 
       painter->drawRect(rectAdjusted.center().x() - half, rectAdjusted.center().y() - half, w, h); // center
-      painter->drawRect(rectAdjusted.bottomLeft().x(), rectAdjusted.bottomLeft().y() - h, w, h); // left-top
-      painter->drawRect(rectAdjusted.bottomRight().x() - w, rectAdjusted.bottomRight().y() - h, w, h); // right-top
+      painter->drawRect(rectAdjusted.bottomLeft().x(), rectAdjusted.bottomLeft().y() - half, w, h); // left-top
+      painter->drawRect(rectAdjusted.bottomRight().x() - half, rectAdjusted.bottomRight().y() - half, w, h); // right-top
       painter->drawRect(rectAdjusted.topLeft().x(), rectAdjusted.topLeft().y(), w, h); // left-bottom
-      painter->drawRect(rectAdjusted.topRight().x() - w, rectAdjusted.topRight().y(), w, h); // right-bottom
+      painter->drawRect(rectAdjusted.topRight().x() - half, rectAdjusted.topRight().y(), w, h); // right-bottom
 
       painter->restore();
     }
@@ -454,26 +466,26 @@ namespace te
     template <class T>
     inline void te::layout::AbstractItem<T>::drawText( const QPointF& point, QPainter* painter, const std::string& text )
     {
+      QGraphicsScene* scene = T::scene();
+      if(scene == 0)
+      {
+        return;
+      }
+
+      AbstractScene* myScene = dynamic_cast<AbstractScene*>(scene);
+      if(myScene == 0)
+      {
+        return;
+      }
+
       painter->save();
 
-      QTransform t = painter->transform();
-      QPointF p = t.map(point);
+      QTransform transform;
+      transform.translate(0., 2. * point.y());
+      transform.scale(1., -1.);
+      painter->setTransform(transform, true);
 
-      QGraphicsScene* scn = T::scene();
-      AbstractScene* sc = dynamic_cast<AbstractScene*>(scn);
-      ContextObject context = sc->getContext();
-
-      int zoom = context.getZoom();
-      double zoomFactor = zoom / 100.;
-
-      QFont ft = painter->font();
-      ft.setPointSize(ft.pointSize() * zoomFactor);
-      painter->setFont(ft);
-
-      //Keeps the size of the text.(Aspect)
-      painter->setMatrixEnabled(false);
-      painter->drawText(p, text.c_str());
-      painter->setMatrixEnabled(true);
+      painter->drawText(point, text.c_str());
 
       painter->restore();
     }
@@ -687,6 +699,7 @@ inline void te::layout::AbstractItem<T>::setPixmap()
   te::gm::Envelope box(0, 0, itemBounding.width(), itemBounding.height());
   box = utils->viewportBox(box);
   m_clonePixmap = QPixmap(box.getWidth(), box.getHeight());
+  m_clonePixmap.fill(Qt::transparent);
   QPainter p(&m_clonePixmap);
   double resX = box.getWidth() / itemBounding.width();
   double resY = box.getHeight() / itemBounding.height();

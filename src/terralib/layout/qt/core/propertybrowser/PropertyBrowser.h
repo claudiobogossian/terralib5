@@ -84,7 +84,7 @@ namespace te
 
         virtual void closeAllWindows();
 
-        virtual QtProperty* addProperty(Property property);
+        virtual QtProperty* addProperty(const Property& property);
       
         virtual bool removeProperty(Property property);
 

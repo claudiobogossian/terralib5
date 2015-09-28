@@ -76,6 +76,8 @@ namespace te
          */
         virtual QRectF boundingRect() const;
 
+        virtual void calculateGrid() = 0;
+
       protected:
 
         /*!
@@ -88,7 +90,7 @@ namespace te
         */
         virtual void drawDefaultGrid(QPainter* painter);
 
-        virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
+        virtual void drawText( const QPointF& point, QPainter* painter, const std::string& text, bool displacementLeft = false, bool displacementRight = false);
 
         virtual void configPainter(QPainter* painter);
 
@@ -116,38 +118,8 @@ namespace te
 
         virtual bool drawCrossIntersectMapBorder(QLineF vrt, QLineF hrz, QPainter* painter);
 
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        /*
-        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
+    protected:
 
-        virtual void drawGrid(QPainter* painter);
-
-        virtual void drawDefaultGrid(QPainter* painter);
-
-        virtual void calculateVertical(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
-
-        virtual void calculateHorizontal(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
-
-        virtual void recalculateBoundingRect();
-
-        virtual bool hasLayer();
-
-        */
-        /*!
-          \brief Check if is necessary change map displacement.
-
-          \param width text width in mm
-          \param height text height in mm
-         */
-        /*
-        virtual void checkMaxMapDisplacement(QFont ft, std::string text, double& width, double& height);
-
-        virtual void changeMapDisplacement(double width, double height);
-        
-        virtual bool drawCrossIntersectMapBorder(QLineF vrt, QLineF hrz, QPainter* painter);
-        */
         double                    m_maxWidthTextMM;
         double                    m_maxHeigthTextMM;
         double                    m_onePointMM;
@@ -167,4 +139,3 @@ namespace te
 }
 
 #endif
-

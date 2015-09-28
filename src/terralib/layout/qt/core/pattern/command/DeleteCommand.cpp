@@ -33,12 +33,11 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 
-te::layout::DeleteCommand::DeleteCommand( QGraphicsScene* scene, QUndoCommand *parent /*= 0*/ ) :
+te::layout::DeleteCommand::DeleteCommand( QGraphicsScene* scene, const QList<QGraphicsItem*>& listItems, QUndoCommand *parent /*= 0*/ ) :
   QUndoCommand(parent),
-  m_scene(scene)
+  m_scene(scene),
+  m_items(listItems)
 {
-  m_items = m_scene->selectedItems();
-
   foreach( QGraphicsItem *item, m_items ) 
   {
     item->setSelected(false);

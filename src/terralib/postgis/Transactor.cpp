@@ -265,7 +265,18 @@ void te::pgis::Transactor::cancel()
 
 boost::int64_t te::pgis::Transactor::getLastGeneratedId()
 {
-  throw Exception(TE_TR("Not implemented yet!"));
+  std::string sql("SELECT lastval()");
+
+  std::auto_ptr<te::da::DataSet> dataset = query(sql);
+
+  if (dataset->size() != 1)
+    throw Exception(TE_TR("Error getting last generated id."));
+
+  dataset->moveFirst();
+
+  boost::int64_t value = dataset->getInt64(0);
+
+  return value;
 }
 
 std::string te::pgis::Transactor::escape(const std::string& value)

@@ -150,7 +150,7 @@ void te::qt::plugins::terramobile::GeoPackageBuilderDialog::exportToGPKG(te::map
     if (boost::filesystem::is_directory(connInfo))
       connInfo += ("/" + dsLayer->getDataSetName());
 
-    te::gdal::copyToGeopackage(connInfo, m_ui->m_geopackageFileNameLineEdit->text().toStdString());
+     //te::gdal::copyToGeopackage(connInfo, m_ui->m_geopackageFileNameLineEdit->text().toStdString());
   }
   else
   {

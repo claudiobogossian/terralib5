@@ -38,6 +38,7 @@ void te::da::UnaryOpEncoder::toSQL(const Function& f,
   assert(f.getNumArgs() == 1);
   //buff += "(";
   buff += m_name;
+  buff += " ";
   f[0]->accept(v);
   //buff += ")";
 }

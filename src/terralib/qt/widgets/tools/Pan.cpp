@@ -53,6 +53,7 @@ bool te::qt::widgets::Pan::mousePressEvent(QMouseEvent* e)
   m_panStarted = true;
   m_origin = e->pos();
   m_delta *= 0;
+  m_referencePoint = m_display->transform(e->pos());
 
   // Adjusting the action cursor
   if(m_actionCursor.shape() != Qt::BlankCursor)
@@ -103,21 +104,25 @@ bool te::qt::widgets::Pan::mouseReleaseEvent(QMouseEvent* e)
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  // Calculates the extent translated
-  QRect rec(0, 0, m_display->width(), m_display->height());
-  QPoint center = rec.center();
-  center -= m_delta;
-  rec.moveCenter(center);
-
-  // Conversion to world coordinates
-  QPointF ll(rec.left(), rec.bottom());
-  QPointF ur(rec.right(), rec.top());
-  ll = m_display->transform(ll);
-  ur = m_display->transform(ur);
-
   // Updates the map display with the new extent
-  te::gm::Envelope envelope(ll.x(), ll.y(), ur.x(), ur.y());
-  m_display->setExtent(envelope);
+  const te::gm::Envelope& extent = m_display->getExtent();
+  double width = extent.getWidth();
+  double height = extent.getHeight();
+
+  //Calculates the transtation, in World Coordinate System
+  QPointF oldCenter(extent.getCenter().getX(), extent.getCenter().getY());
+  
+  QPointF releasePoint(m_display->transform(e->pos()));
+  double dx = releasePoint.x() - m_referencePoint.x();
+  double dy = releasePoint.y() - m_referencePoint.y();
+
+  //Calculates the new center of the extent, in World Coordinate System
+  QPointF newCenter(oldCenter.x() - dx, oldCenter.y() - dy);
+
+  te::gm::Envelope newExtent(newCenter.x() - (width / 2.), newCenter.y() - (height / 2.), newCenter.x() + (width / 2.), newCenter.y() + (height / 2.));
+
+  //Sets the new extent to the map display
+  m_display->setExtent(newExtent);
 
   return true;
 }

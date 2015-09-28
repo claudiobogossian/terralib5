@@ -105,11 +105,28 @@ void te::qt::widgets::AnimationView::dropEvent(QDropEvent* e)
 void te::qt::widgets::AnimationView::paintEvent(QPaintEvent* e)
 {
   setMatrix();
+
+  // The following code ensures continuous animation.
+  // Without this, when we give great zooms, it is observed the loss of a few frames of animation.
+  QRectF sceneRec = scene()->sceneRect(); // The scene rect is already on display projection
+  if (sceneRec != sceneRect())
+    updateSceneRect(sceneRec);
+
+  // if the projection is different, increase the scene rect
+  if (m_sameSRID == false)
+  {
+    QPointF c = sceneRec.center();
+    sceneRec = QRectF(0, 0, sceneRec.width() * 50, sceneRec.height() * 50);
+    sceneRec.moveCenter(c);
+  }
+  fitInView(sceneRec);
   QGraphicsView::paintEvent(e);
+  update();
 }
 
 void te::qt::widgets::AnimationView::setMatrix()
 {
+  m_sameSRID = true;
   int w = m_display->getDisplayPixmap()->width();
   int h = m_display->getDisplayPixmap()->height();
   te::qt::widgets::Canvas canvas(w, h);
@@ -124,14 +141,12 @@ void te::qt::widgets::AnimationView::setMatrix()
   {
     AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
     ai->m_matrix = matrix;
+    if (ai->m_SRID != m_display->getSRID())
+      m_sameSRID = false;
   }
 
   if (rect() != m_display->getDisplayPixmap()->rect())
     resize(m_display->getDisplayPixmap()->rect().size());
-  QGraphicsView::setMatrix(matrix);
-
-  QRectF sceneRec = scene()->sceneRect(); // The scene rect is already on display projection
-  if (sceneRec != sceneRect())
-    updateSceneRect(sceneRec);
-  fitInView(sceneRec);
+  if (matrix != QGraphicsView::matrix())
+    QGraphicsView::setMatrix(matrix);
 }

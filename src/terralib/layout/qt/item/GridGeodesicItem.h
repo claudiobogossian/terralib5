@@ -64,6 +64,8 @@ namespace te
          */
         virtual ~GridGeodesicItem();
 
+        virtual void calculateGrid();
+
       protected:
         
         virtual void drawGrid(QPainter* painter);

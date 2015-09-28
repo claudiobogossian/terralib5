@@ -58,7 +58,7 @@ namespace te
           \param scene
           \param parent
         */
-        DeleteCommand(QGraphicsScene* scene, QUndoCommand *parent = 0);
+        DeleteCommand(QGraphicsScene* scene, const QList<QGraphicsItem*>& listItems, QUndoCommand *parent = 0);
 
         /*!
           \brief Destructor

@@ -227,12 +227,8 @@ QtTreePropertyBrowser* te::layout::PropertyBrowser::getPropertyEditor()
   return m_propertyEditor;
 }
 
-QtProperty* te::layout::PropertyBrowser::addProperty( Property property )
+QtProperty* te::layout::PropertyBrowser::addProperty( const Property& property )
 {
-  te::color::RGBAColor color;
-  QColor qcolor;
-  QFont qfont;
-  Font font;
   QtVariantProperty* vproperty = 0;
 
   if(!property.isVisible())
@@ -249,7 +245,8 @@ QtProperty* te::layout::PropertyBrowser::addProperty( Property property )
 
   m_changeQtPropertyVariantValue = true;
   
-  vproperty = m_variantPropertiesBrowser->addProperty(property);
+  QtProperty* qProperty = m_variantPropertiesBrowser->addProperty(property);
+  vproperty = dynamic_cast<QtVariantProperty*>(qProperty);
   if(vproperty) 
   {
     bool is_readOnly = !property.isEditable();

@@ -78,15 +78,17 @@ void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 
   const Property& pFillColor = m_controller->getProperty("fill_color");
   const Property& pContourColor = m_controller->getProperty("contour_color");
+  const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+  double frameThickness = pFrameThickness.getValue().toDouble();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
 
   QBrush brush(qFillColor);
-  QPen pen(qContourColor, 0, Qt::SolidLine);
+  QPen pen(qContourColor, frameThickness, Qt::SolidLine);
 
   painter->setPen(pen);
   painter->setBrush(brush);
@@ -109,15 +111,17 @@ void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 
   const Property& pFillColor = m_controller->getProperty("fill_color");
   const Property& pContourColor = m_controller->getProperty("contour_color");
+  const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+  double frameThickness = pFrameThickness.getValue().toDouble();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
 
   QBrush brush(qFillColor);
-  QPen pen(qContourColor, 0, Qt::SolidLine);
+  QPen pen(qContourColor, frameThickness, Qt::SolidLine);
 
   painter->setPen(pen);
   painter->setBrush(brush);
@@ -141,15 +145,17 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
 
   const Property& pFillColor = m_controller->getProperty("fill_color");
   const Property& pContourColor = m_controller->getProperty("contour_color");
+  const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+  double frameThickness = pFrameThickness.getValue().toDouble();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
 
   QBrush brush(qFillColor);
-  QPen pen(qContourColor, 0, Qt::SolidLine);
+  QPen pen(qContourColor, frameThickness, Qt::SolidLine);
 
   painter->setPen(pen);
   painter->setBrush(brush);

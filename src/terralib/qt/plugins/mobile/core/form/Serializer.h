@@ -34,6 +34,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 namespace te
 {
+  //Forward declaration
+  namespace se { class Style; }
+
   namespace qt
   {
     namespace plugins
@@ -43,6 +46,8 @@ namespace te
         class Section;
 
         std::string Write(te::qt::plugins::terramobile::Section* section);
+
+        std::string Write(const te::se::Style* style, std::string path = "style.xml");
 
         te::qt::plugins::terramobile::Section* Read(std::string ss);
 
