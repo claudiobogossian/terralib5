@@ -699,6 +699,7 @@ inline void te::layout::AbstractItem<T>::setPixmap()
   te::gm::Envelope box(0, 0, itemBounding.width(), itemBounding.height());
   box = utils->viewportBox(box);
   m_clonePixmap = QPixmap(box.getWidth(), box.getHeight());
+  m_clonePixmap.fill(Qt::transparent);
   QPainter p(&m_clonePixmap);
   double resX = box.getWidth() / itemBounding.width();
   double resY = box.getHeight() / itemBounding.height();
