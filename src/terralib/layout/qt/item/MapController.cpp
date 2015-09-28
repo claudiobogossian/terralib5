@@ -97,6 +97,11 @@ void te::layout::MapController::setProperty(const te::layout::Property& property
   if(wasSync == true)
   {
     Properties extentChangedProperties = getExtentChangedProperties(mapDisplay->getExtent(), mapDisplay->getScale(), mapDisplay->getSRID());
+    if (property.getName() == "layers")
+    {
+      extentChangedProperties.addProperty(property);
+    }
+
     AbstractItemController::setProperties(extentChangedProperties);
 
     view->doRefresh();

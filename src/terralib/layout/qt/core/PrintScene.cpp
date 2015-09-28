@@ -135,16 +135,27 @@ QPrinter* te::layout::PrintScene::createPrinter()
 
   printer = new QPrinter(QPrinter::HighResolution);
   QSizeF sf(w, h);
-  printer->setPaperSize(sf, QPrinter::Millimeter);
 
-  if(config->getPaperOrientantion() == Portrait)
+  if (config->getPaperOrientantion() == Portrait)
   {
-    printer->setOrientation( QPrinter::Portrait );
+    printer->setOrientation(QPrinter::Portrait);
   }
   else
   {
-    printer->setOrientation( QPrinter::Landscape );
+    printer->setOrientation(QPrinter::Landscape);
+
+    /*
+    There is a bug in Qt 4 when the orientation is changed to "Landscape", so
+    it is necessary to switch height and width manually.
+    The error occurs because the default is "Portrait", but when it is changed to "Landscape" 
+    QPrinter is rotating two times, once properly and the second makes return to "Portrait".
+    This bug was corrected only in Qt 5.3.
+    */
+    sf.setHeight(w);
+    sf.setWidth(h);
   }
+
+  printer->setPaperSize(sf, QPrinter::Millimeter);
   printer->pageRect(QPrinter::Millimeter);
 
   return printer;
