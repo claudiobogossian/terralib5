@@ -55,6 +55,7 @@
 #include "OrderByItem.h"
 #include "PropertyName.h"
 #include "Select.h"
+#include "SelectExpression.h"
 #include "SQLDialect.h"
 #include "SQLFunctionEncoder.h"
 #include "SQLVisitor.h"
@@ -323,6 +324,15 @@ void te::da::SQLVisitor::visit(const Select& visited)
 
   if(visited.getOrderBy())
     visit(*(visited.getOrderBy()));
+}
+
+void te::da::SQLVisitor::visit(const SelectExpression& visited)
+{
+  assert(visited.getSelect());
+
+  m_sql += "(";
+  visited.getSelect()->accept(*this);
+  m_sql += ")";
 }
 
 void te::da::SQLVisitor::visit(const SubSelect& visited)

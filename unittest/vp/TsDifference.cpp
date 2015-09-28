@@ -150,7 +150,7 @@ void TsDifference::tcDifferenceQuery1()
   CPPUNIT_ASSERT_MESSAGE("A dataset with the same requested output dataset name already exists: " + outputDataSetName, !m_outputDataSource->dataSetExists(outputDataSetName));
 
   m_params->setInputParams(m_inputParams);
-  m_params->setOutputDataSource(m_inputDataSource.get());
+  m_params->setOutputDataSource(m_outputDataSource.get());
   m_params->setOutputDataSetName(outputDataSetName);
 
   te::vp::Difference difference;
