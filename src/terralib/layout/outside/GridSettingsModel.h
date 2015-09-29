@@ -32,18 +32,12 @@
 #include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../core/Config.h"
 #include "../core/property/Property.h"
-
-// STL
-#include <vector>
+#include "../core/property/Properties.h"
 
 namespace te
 {
   namespace layout
   {
-    class PlanarGridSettingsConfigProperties;
-    class GeodesicGridSettingsConfigProperties;
-    class Properties;
-
     class TELAYOUTEXPORT GridSettingsModel : public AbstractOutsideModel
     {
     public:
@@ -52,9 +46,9 @@ namespace te
 
       virtual ~GridSettingsModel();
 
-      virtual void setProperties(std::vector<te::layout::Properties*> properties);
+      virtual void setGridProperties(te::layout::Properties properties);
             
-      virtual te::layout::Properties* containsGrid(EnumType* enumType);
+      virtual bool containsGrid(EnumType* enumType);
 
       virtual te::layout::Property containsProperty( std::string name, EnumType* enumType );
       
@@ -62,7 +56,7 @@ namespace te
 
     protected:
 
-      std::vector<te::layout::Properties*> m_properties;
+      te::layout::Properties m_properties;
     };
   }
 }
