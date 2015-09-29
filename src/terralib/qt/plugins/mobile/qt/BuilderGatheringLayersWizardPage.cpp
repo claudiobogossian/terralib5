@@ -41,8 +41,8 @@ te::qt::plugins::terramobile::BuilderGatheringLayersWizardPage::BuilderGathering
   layout->addWidget(m_widget.get());
 
   //configure page
-  this->setTitle(tr("Input Layers Selection"));
-  this->setSubTitle(tr("Select the layers to be exported to geopackage."));
+  this->setTitle(tr("Input Layers Points Selection"));
+  this->setSubTitle(tr("Select the gathering layers to be exported to geopackage."));
 
   m_widget->setLeftLabel("Point Layers");
   m_widget->setRightLabel("Gathering Layers");

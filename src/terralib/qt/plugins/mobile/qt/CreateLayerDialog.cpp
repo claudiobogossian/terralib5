@@ -99,7 +99,20 @@ void te::qt::plugins::terramobile::CreateLayerDialog::onOkPushButtonClicked()
   //create
   std::map<std::string, std::string> nopt;
 
-  outputDataSource->createDataSet(dsType.get(), nopt);
+  try
+  {
+    outputDataSource->createDataSet(dsType.get(), nopt);
+  }
+  catch (const std::exception& ex)
+  {
+    QMessageBox::warning(this, tr("Warning"), ex.what());
+    return;
+  }
+  catch (...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Error creating layer."));
+    return;
+  }
 
   accept();
 }
@@ -148,6 +161,8 @@ void te::qt::plugins::terramobile::CreateLayerDialog::onTargetDatasourceToolButt
   m_outputDatasource = *it;
 
   te::da::DataSourcePtr outputDataSource = te::da::DataSourceManager::getInstance().get(m_outputDatasource->getId(), m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
+
+  outputDataSource->open();
 
   m_newPropWidget->setDataSourceId(m_outputDatasource->getId());
 

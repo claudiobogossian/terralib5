@@ -37,7 +37,7 @@
 
 te::qt::plugins::terramobile::GatheringLayerConfigurerAction::GatheringLayerConfigurerAction(QMenu* menu) :te::qt::plugins::terramobile::AbstractAction(menu)
 {
-  createAction(tr("Gathering Layer Configurer...").toStdString(), "");
+  createAction(tr("GeoPackage Synchronizer...").toStdString(), "");
 }
 
 te::qt::plugins::terramobile::GatheringLayerConfigurerAction::~GatheringLayerConfigurerAction()
