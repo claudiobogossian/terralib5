@@ -307,7 +307,10 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   {
     if(getCurrentMode() != mode->getModeTextEditorInteraction())
     {
-      scne->removeSelectedItems();
+      if (scne->isEditionMode() == false)
+      {
+        scne->removeSelectedItems();
+      }
     }
   }
   else if(keyEvent->key() == Qt::Key_Escape)
