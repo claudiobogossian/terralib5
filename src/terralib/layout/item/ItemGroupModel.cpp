@@ -29,8 +29,19 @@
 #include "ItemGroupModel.h"
 
 te::layout::ItemGroupModel::ItemGroupModel()
+  : AbstractItemModel()
 {
   m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getItemGroup());
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  //updating properties
+  {
+    Property property(0);
+    property.setName("resizable");
+    property.setValue(false, dataType->getDataTypeBool());
+    m_properties.updateProperty(property);
+  }
 }
 
 te::layout::ItemGroupModel::~ItemGroupModel()
