@@ -36,6 +36,7 @@
 te::layout::ItemGroup::ItemGroup(AbstractItemController* controller, bool invertedMatrix)
   : AbstractItem<QGraphicsItemGroup>(controller, invertedMatrix)
 {
+
 }
 
 te::layout::ItemGroup::~ItemGroup()
@@ -66,6 +67,20 @@ QVariant te::layout::ItemGroup::itemChange ( QGraphicsItem::GraphicsItemChange c
     if(controller != 0)
     {
       controller->itemAdded();
+    }
+
+    QGraphicsItem* child = qvariant_cast<QGraphicsItem *>(value);
+    if (child != 0)
+    {
+      child->setFlag(QGraphicsItem::ItemStacksBehindParent);
+    }
+  }
+  else if (change == QGraphicsItem::ItemChildRemovedChange)
+  {
+    QGraphicsItem* child = qvariant_cast<QGraphicsItem *>(value);
+    if (child != 0)
+    {
+      child->setFlag(QGraphicsItem::ItemStacksBehindParent, false);
     }
   }
 
