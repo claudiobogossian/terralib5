@@ -581,12 +581,18 @@ inline void te::layout::AbstractItem<T>::mousePressEvent( QGraphicsSceneMouseEve
 {  
   T::mousePressEvent(event);
 
-  bool startResizing = checkTouchesCorner(event->pos().x(), event->pos().y());
-  if (startResizing == true)
+  //checks if the item is resizable.
+  const Property& property = m_controller->getProperty("resizable");
+  if (property.getValue().toBool() == true)
   {
-    m_currentAction = RESIZE_ACTION;
-    setPixmap();
-    m_initialCoord = event->pos();
+    //If so, checks if the resize operation must be started
+    bool startResizing = checkTouchesCorner(event->pos().x(), event->pos().y());
+    if (startResizing == true)
+    {
+      m_currentAction = RESIZE_ACTION;
+      setPixmap();
+      m_initialCoord = event->pos();
+    }
   }
 }
 
