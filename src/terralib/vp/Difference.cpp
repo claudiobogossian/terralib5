@@ -46,6 +46,7 @@
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Not.h"
 #include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/SelectExpression.h"
 #include "../dataaccess/query/SubSelect.h"
 #include "../dataaccess/query/ST_Difference.h"
 #include "../dataaccess/query/ST_Intersects.h"
@@ -125,49 +126,47 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   dsType_second = inputParams[1].m_inputDataSource->getDataSetType(inputParams[1].m_inputDataSetName);
   geom_second = te::da::GetFirstGeomProperty(dsType_second.get());
 
-
-// Subselect to join the layer that will be used to diff.
-  te::da::Fields* fields = new te::da::Fields;
+//Union Expression to set into Difference expression.
+  te::da::Fields* fieldsUnion = new te::da::Fields;
   te::da::Expression* e_union = new te::da::ST_Union(
     new te::da::PropertyName(dsType_second->getName() + "." + geom_second->getName()));
   te::da::Field* f_union = new te::da::Field(*e_union, "c_union");
-  fields->push_back(f_union);
+  fieldsUnion->push_back(f_union);
 
-  te::da::FromItem * internFromItem = new te::da::DataSetName(dsType_second->getName());
-  te::da::From* internFrom = new te::da::From;
-  internFrom->push_back(internFromItem);
+  te::da::FromItem * fromItemUnion = new te::da::DataSetName(dsType_second->getName());
+  te::da::From* fromUnion = new te::da::From;
+  fromUnion->push_back(fromItemUnion);
 
-  te::da::Select* internSelect = new te::da::Select(fields, internFrom);
-  te::da::SubSelect* subInternSelect = new te::da::SubSelect(internSelect, "internSelect");
+  te::da::Expression* e_intersects = new te::da::ST_Intersects(
+    new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()),
+    new te::da::PropertyName(dsType_second->getName() + "." + geom_second->getName()));
+
+  te::da::Where* whereUnion = new te::da::Where(e_intersects);
+
+  te::da::Select* selectUnion = new te::da::Select(fieldsUnion, fromUnion, whereUnion);
+  te::da::SelectExpression* subSelectExpression = new te::da::SelectExpression(selectUnion);
 
 // Expressions to execute the Difference.
   te::da::Expression* e_difference = new te::da::ST_Difference(
     new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()),
-    new te::da::PropertyName(subInternSelect->getAlias() + "." + "c_union"));
+    subSelectExpression);
 
   te::da::Expression* e_coalesce = new te::da::Coalesce(e_difference,
     new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()));
 
   te::da::Expression* e_multi = new te::da::ST_Multi(*e_coalesce);
-  
+
   te::da::Fields* fieldsExpressions = new te::da::Fields;
   te::da::Field* f_multi = new te::da::Field(*e_multi, "geom");
   fieldsExpressions->push_back(f_multi);
 
-// FROM clause with LEFT JOIN.
+// FROM clause.
   te::da::FromItem* firstFromItem = new te::da::DataSetName(dsType_first->getName());
-  
-  te::da::Expression* e_intersects = new te::da::ST_Intersects(
-    new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()),
-    new te::da::PropertyName(subInternSelect->getAlias() + ".c_union"));
-  
-  te::da::JoinConditionOn* on = new te::da::JoinConditionOn(e_intersects);
-  te::da::Join* join = new te::da::Join(*firstFromItem, *subInternSelect, te::da::LEFT_JOIN, *on);
-  te::da::From* from = new te::da::From;
-  from->push_back(join);
+  te::da::From* fromDifference = new te::da::From;
+  fromDifference->push_back(firstFromItem);
 
-  te::da::Select* mainSelect = new te::da::Select(fieldsExpressions, from);
-  te::da::SubSelect* subMainSelect = new te::da::SubSelect(mainSelect, "result");
+  te::da::Select* selectDifference = new te::da::Select(fieldsExpressions, fromDifference);
+  te::da::SubSelect* subSelectDifference = new te::da::SubSelect(selectDifference, "result");
 
 // Outer Select 
   te::da::Fields* outerFields = new te::da::Fields;
@@ -175,9 +174,9 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   outerFields->push_back(f_outer);
 
   te::da::From* outerFrom = new te::da::From;
-  outerFrom->push_back(subMainSelect);
+  outerFrom->push_back(subSelectDifference);
 
-  te::da::Expression* e_isempty = new te::da::ST_IsEmpty(subMainSelect->getAlias() + ".geom");
+  te::da::Expression* e_isempty = new te::da::ST_IsEmpty(subSelectDifference->getAlias() + ".geom");
   te::da::Expression* e_not = new te::da::Not(e_isempty);
   te::da::Where* outerWhere = new te::da::Where(e_not);
 
@@ -224,7 +223,7 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   }
   else
   {
-    std::auto_ptr<te::da::DataSet> dsQuery = inputParams[0].m_inputDataSource->query(mainSelect);
+    std::auto_ptr<te::da::DataSet> dsQuery = inputParams[0].m_inputDataSource->query(outerSelect);
     dsQuery->moveBeforeFirst();
 
     if (dsQuery->size() == 0)

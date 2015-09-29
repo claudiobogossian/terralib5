@@ -433,7 +433,7 @@ namespace te
 
         virtual void changeViewMode(EnumType* mode);
 
-        virtual void enterEditionMode();
+        virtual bool enterEditionMode();
 
         virtual void leaveEditionMode();
 

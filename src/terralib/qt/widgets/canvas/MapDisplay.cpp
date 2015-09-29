@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../common/StringUtils.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
@@ -444,27 +445,41 @@ double te::qt::widgets::MapDisplay::getScale() const
   double hPixels = this->getHeight();
   double wMM = this->getWidthMM();
 
-  te::gm::Envelope envelope = this->getExtent();
-  double wdx = envelope.getWidth();
-  double wdy = envelope.getHeight();
-
-  double dx = wPixels / wdx, dy = hPixels / wdy, f = (dx > dy) ? dx : dy;
-
-  double wT = wMM;
-
   te::common::UnitOfMeasurePtr unitPtr =
       te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_srid);
 
+  te::gm::Envelope envelope = this->getExtent();
+
+  double wdx = envelope.getWidth();
+
+  double wdy = envelope.getHeight();
+
+
   if (unitPtr != NULL) {
+
     std::string unit = unitPtr->getName();
+
+    if (unit == "DEGREE")
+    {
+
+      te::gm::Envelope planarEnvelope = te::map::GetWorldBoxInPlanar(envelope, m_srid);
+
+      wdx = planarEnvelope.getWidth();
+      wdy = planarEnvelope.getHeight();
+
+      unit ="METRE";
+    }
+
+    double dx = wPixels / wdx, dy = hPixels / wdy, f = (dx > dy) ? dx : dy;
+
+    double wT = wMM;
+
     if (unit == "METRE")
       wT = wMM / 1000.;
     else if (unit == "KILOMETRE")
       wT = wMM / 1000000.;
     else if (unit == "FOOT")
       wT = wMM / (12. * 25.4);
-    else if (unit == "DEGREE")
-      wT = wMM / 111000000.;
 
     double wp = wT / wPixels;
     m_scale = (1. / f) / wp;

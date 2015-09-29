@@ -92,6 +92,7 @@ namespace te
           QPoint m_origin;        //!< Origin point on mouse pressed.
           QPoint m_delta;         //!< Difference between pressed point and destination point on mouse move.
           QCursor m_actionCursor; //!< An optional cursor to be used during the pan user action.
+          QPointF m_referencePoint;   //!< The reference origin point, in World Coordinate System.
 
       };
 

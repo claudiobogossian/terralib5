@@ -101,6 +101,12 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
 
 void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
+  if (m_mapDisplay->getWidth() > 4000. || m_mapDisplay->getHeight() > 4000.)
+  {
+    drawTilesMap(painter);
+    return;
+  }
+
   QPixmap pixmap(m_mapDisplay->width(), m_mapDisplay->height());
   pixmap.fill(Qt::transparent);
 
@@ -357,3 +363,95 @@ void te::layout::MapItem::doRefresh()
 {
   m_mapDisplay->refresh();
 }
+
+void te::layout::MapItem::drawTilesMap(QPainter* painter)
+{
+  if (!painter)
+  {
+    return;
+  }
+  
+  te::gm::Envelope originalExtent = m_mapDisplay->getExtent();
+
+  int numTilesX = (int)std::ceil(m_mapDisplay->getWidth() / 4000.);
+  int numTilesY = (int)std::ceil(m_mapDisplay->getHeight() / 4000.);
+
+  int tileWidth = std::ceil(m_mapDisplay->getWidth() / (double)numTilesX);
+  int tileHeight = std::ceil(m_mapDisplay->getHeight() / (double)numTilesY);
+  if (tileWidth > tileHeight)
+  {
+    tileHeight = tileWidth;
+  }
+  else
+  {
+    tileWidth = tileHeight;
+  }
+
+  double worldTileWidth = m_mapDisplay->getExtent().getWidth() / (double)numTilesX;
+  double worldTileHeight = m_mapDisplay->getExtent().getHeight() / (double)numTilesY;
+  if (worldTileWidth > worldTileHeight)
+  {
+    worldTileHeight = worldTileWidth;
+  }
+  else
+  {
+    worldTileWidth = worldTileHeight;
+  }
+
+  QRectF boundRect = this->getAdjustedBoundingRect(painter);
+
+  double boundingTileWidth = boundRect.width() / (double)numTilesX;
+  double boundingTileHeight = boundRect.height() / (double)numTilesY;
+  if (boundingTileWidth > boundingTileHeight)
+  {
+    boundingTileHeight = boundingTileWidth;
+  }
+  else
+  {
+    boundingTileWidth = boundingTileHeight;
+  }
+
+  m_mapDisplay->resize(tileWidth, tileHeight);
+
+  double extentWidth = m_mapDisplay->getExtent().getLowerLeftX();
+  double extendHeight = m_mapDisplay->getExtent().getLowerLeftY();
+    
+  painter->save();
+
+  for (int i = 0; i < numTilesX; ++i)
+  {
+    for (int j = 0; j < numTilesY; ++j)
+    {
+      double baseWorldX = extentWidth + (i * worldTileWidth);
+      double baseWorldY = extendHeight + (j * worldTileHeight);
+
+      te::gm::Envelope currentWorldBox(baseWorldX, baseWorldY, baseWorldX + worldTileWidth, baseWorldY + worldTileHeight);
+
+      m_mapDisplay->setExtent(currentWorldBox);
+      
+      QPixmap pixmap(m_mapDisplay->width(), m_mapDisplay->height());
+      pixmap.fill(Qt::transparent);
+
+      QPainter localPainter(&pixmap);
+      m_mapDisplay->render(&localPainter, QPoint(), QRegion(), QWidget::DrawChildren);
+      localPainter.end();
+
+      QImage image = pixmap.toImage();
+      image = image.mirrored();
+      pixmap = QPixmap::fromImage(image);
+
+      double baseBoundingX = i * boundingTileWidth;
+      double baseBoundingY = j * boundingTileHeight;
+      
+      QRectF currentBoundingBox(baseBoundingX, baseBoundingY, boundingTileWidth, boundingTileHeight);
+     
+      painter->drawPixmap(currentBoundingBox, pixmap, pixmap.rect());
+    }
+  }
+
+  painter->restore();
+
+  m_mapDisplay->setExtent(originalExtent); //restore original extent
+}
+
+

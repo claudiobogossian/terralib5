@@ -53,16 +53,12 @@ void updateSummary(te::da::DataSet* dataSet, Ui::HistogramDataWidgetForm* ui)
     ui->m_summaryComboBox->addItem(QString::fromStdString("None"), QVariant(-1));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), QVariant(te::stat::MIN_VALUE));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), QVariant(te::stat::MAX_VALUE));
-    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), QVariant(te::stat::COUNT));
-    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), QVariant(te::stat::VALID_COUNT));
   }
   else
   {
     ui->m_summaryComboBox->addItem(QString::fromStdString("None"), QVariant(-1));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), QVariant(te::stat::MIN_VALUE));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), QVariant(te::stat::MAX_VALUE));
-    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), QVariant(te::stat::COUNT));
-    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), QVariant(te::stat::VALID_COUNT));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), QVariant(te::stat::MEAN));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), QVariant(te::stat::SUM));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), QVariant(te::stat::STANDARD_DEVIATION));
@@ -72,7 +68,6 @@ void updateSummary(te::da::DataSet* dataSet, Ui::HistogramDataWidgetForm* ui)
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), QVariant(te::stat::AMPLITUDE));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), QVariant(te::stat::MEDIAN));
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), QVariant(te::stat::VAR_COEFF));
-    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), QVariant(te::stat::MODE));
   }
   ui->m_summaryComboBox->setCurrentIndex(0);
 }

@@ -155,6 +155,8 @@ namespace te
 
         virtual void resized();
 
+        virtual void drawTilesMap(QPainter* painter);
+
         te::qt::widgets::MapDisplay*  m_mapDisplay;
         te::qt::widgets::Pan*         m_pan;
         te::qt::widgets::ZoomWheel*   m_zoomWheel;

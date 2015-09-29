@@ -1134,14 +1134,14 @@ te::layout::PaperConfig* te::layout::Scene::getPaperConfig()
 
 void te::layout::Scene::setEditionMode(bool editionMode)
 {
-  m_isEditionMode = editionMode;
-  if(m_isEditionMode)
+  if (editionMode == true)
   {
-    enterEditionMode();
+    m_isEditionMode = enterEditionMode();
   }
   else
   {
     leaveEditionMode();
+    m_isEditionMode = false;
   }
 }
 
@@ -1150,16 +1150,22 @@ bool te::layout::Scene::isEditionMode()
   return m_isEditionMode;
 }
 
-void te::layout::Scene::enterEditionMode()
+bool te::layout::Scene::enterEditionMode()
 {
   if (!mouseGrabberItem())
   {
-    return;
+    return false;
   }
 
   AbstractItemView* item = dynamic_cast<AbstractItemView*>(mouseGrabberItem());
   if (!item)
-    return;
+    return false;
+
+  const Property& property = item->getController()->getProperty("editable");
+  if (property.getValue().toBool() == false)
+  {
+    return false;
+  }
 
   if (m_currentItemEdition)
     m_currentItemEdition->setEditionMode(false);
@@ -1168,6 +1174,8 @@ void te::layout::Scene::enterEditionMode()
   m_isEditionMode = true;
   m_currentItemEdition->setEditionMode(true);
   update();
+
+  return true;
 }
 
 void te::layout::Scene::leaveEditionMode()

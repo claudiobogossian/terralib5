@@ -33,6 +33,7 @@
 #include "../../common/StringUtils.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
+#include "../../maptools/Utils.h"
 
 te::layout::GridPlanarModel::GridPlanarModel()
   : GridMapModel()
@@ -116,7 +117,7 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   double newHeight = pNewHeight.getValue().toDouble();
   int newSrid = pNewSrid.getValue().toInt();
   const te::gm::Envelope& newWorldBox = pNewWorldBox.getValue().toEnvelope();
-  te::gm::Envelope newPlanarBox = getWorldBoxInPlanar(newWorldBox, newSrid);
+  te::gm::Envelope newPlanarBox = te::map::GetWorldBoxInPlanar(newWorldBox, newSrid);
   double newScale = pNewScale.getValue().toDouble();
 
   if(newScale == 0)
@@ -197,35 +198,6 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
 
     setProperties(properties);
   }
-}
-
-te::gm::Envelope te::layout::GridPlanarModel::getWorldBoxInPlanar(const te::gm::Envelope& worldBox, int srid)
-{
-  te::gm::Envelope worldBoxPlanar = worldBox;
-
-  //About units names (SI): terralib5\resources\json\uom.json 
-  Utils* utils = Context::getInstance().getUtils();
-  te::common::UnitOfMeasurePtr unitPtr = utils->unitMeasure(srid);
-
-  if(!unitPtr)
-    return worldBoxPlanar;
-  
-  std::string unitPtrStr = unitPtr->getName(); 
-  unitPtrStr = te::common::Convert2UCase(unitPtrStr);
-
-  if(unitPtrStr.compare("DEGREE") == 0)
-  {
-    int zone = utils->calculatePlanarZone(worldBox);
-    std::string proj4 = utils->proj4DescToPlanar(zone);
-    
-    // Get the id of the projection of destination 
-    std::pair<std::string, unsigned int> projPlanar = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
-
-    // Remapping 
-    worldBoxPlanar.transform(srid, projPlanar.second);
-  }
-
-  return worldBoxPlanar;
 }
 
 double te::layout::GridPlanarModel::getInitialCoord(double initialCoord, double distance, double& gap)

@@ -119,6 +119,13 @@ te::layout::TextModel::TextModel()
     property.setValue(false, dataType->getDataTypeBool());
     this->m_properties.updateProperty(property);
   }
+  
+  {
+    Property property(0);
+    property.setName("editable");
+    property.setValue(true, dataType->getDataTypeBool());
+    this->m_properties.updateProperty(property);
+  }
 }
 
 te::layout::TextModel::~TextModel()

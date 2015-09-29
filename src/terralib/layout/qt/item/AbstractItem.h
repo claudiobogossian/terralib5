@@ -273,22 +273,17 @@ namespace te
     template <class T>
     inline void te::layout::AbstractItem<T>::setItemRotation(double angle)
     {
+      QPointF center = boundingRect().center();
+
       double w = boundingRect().width();
       double h = boundingRect().height();
-
-      QTransform transf = T::transform();
 
       if(m_invertedMatrix)
       {
         angle = -angle;
       }
 
-      transf.translate(w/2, h/2);
-      transf.rotate(angle);
-      T::setTransform(transf);
       T::setRotation(angle);
-      transf.translate(-(w/2), -(h/2));
-      T::setTransform(transf);
     }
 
     template <class T>
@@ -704,6 +699,7 @@ inline void te::layout::AbstractItem<T>::setPixmap()
   te::gm::Envelope box(0, 0, itemBounding.width(), itemBounding.height());
   box = utils->viewportBox(box);
   m_clonePixmap = QPixmap(box.getWidth(), box.getHeight());
+  m_clonePixmap.fill(Qt::transparent);
   QPainter p(&m_clonePixmap);
   double resX = box.getWidth() / itemBounding.width();
   double resY = box.getHeight() / itemBounding.height();
