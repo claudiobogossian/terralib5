@@ -93,18 +93,7 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(name, dataType->getDataTypeGridSettings());  
     m_properties.addProperty(property);
   }
-  {
-    Property property(0);
-    property.setName(sharedProps.getMapName());
-    property.setComposeWidget(true);
-    property.setValue(mapName, dataType->getDataTypeStringList());
   
-    Variant v;
-    v.setValue(mapName, dataType->getDataTypeString());
-    property.addOption(v);
-    m_properties.addProperty(property);
-  }
-
   // Grid 
   {
     Property property(0);
