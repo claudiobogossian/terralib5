@@ -146,6 +146,8 @@ void te::layout::MapItem::mousePressEvent ( QGraphicsSceneMouseEvent * event )
     return;
   }
 
+  this->setCursor(Qt::ClosedHandCursor);
+
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
   if(!iUtils)
     return;
@@ -191,6 +193,8 @@ void  te::layout::MapItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event 
     AbstractItem<QGraphicsObject>::mouseReleaseEvent(event);
     return;
   }
+
+  this->setCursor(Qt::OpenHandCursor);
 
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
   if(!iUtils)

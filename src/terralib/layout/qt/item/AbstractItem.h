@@ -521,7 +521,7 @@ namespace te
     template <class T>
     inline void te::layout::AbstractItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event )
     {
-      if(m_controller->getProperty("resizable").getValue().toBool())
+      if(isEditionMode() == false && m_controller->getProperty("resizable").getValue().toBool())
       {
         checkTouchesCorner(event->pos().x(), event->pos().y());
       }
@@ -581,6 +581,11 @@ inline void te::layout::AbstractItem<T>::mousePressEvent( QGraphicsSceneMouseEve
 {  
   T::mousePressEvent(event);
 
+  if(isEditionMode() == true)
+  {
+    return;
+  }
+  
   //checks if the item is resizable.
   const Property& property = m_controller->getProperty("resizable");
   if (property.getValue().toBool() == true)

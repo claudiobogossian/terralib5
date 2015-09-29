@@ -190,7 +190,9 @@ void te::layout::ToolbarOutside::createToolbar()
   this->addSeparator();
   
   createViewAreaToolButton();
-  createMapToolsToolButton();
+
+  //Due to the refactrtoing, all the map tools need some revision.For this reason, this toolbutton is being temporarily disabled
+  //createMapToolsToolButton();
   this->addSeparator();
 
   createMapToolButton();  
