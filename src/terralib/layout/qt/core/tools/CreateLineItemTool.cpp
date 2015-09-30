@@ -92,6 +92,7 @@ bool te::layout::CreateLineItemTool::keyPressEvent( QKeyEvent* keyEvent )
   if(keyEvent->key() == Qt::Key_Escape)
   {
     m_coords.clear();
+    m_view->resetDefaultConfig(true);
   }
   return true;
 }
