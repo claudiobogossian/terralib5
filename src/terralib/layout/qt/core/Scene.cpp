@@ -1187,6 +1187,7 @@ void te::layout::Scene::leaveEditionMode()
   m_isEditionMode = false;
   m_currentItemEdition->setEditionMode(false);
   update();
+  emit editionFinalized();
 }
 
 void te::layout::Scene::setContext(ContextObject context)

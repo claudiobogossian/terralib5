@@ -378,6 +378,7 @@ void te::layout::View::config()
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+  connect(scene(), SIGNAL(editionFinalized()), this, SLOT(onEditionFinalized()));
 }
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
@@ -1129,5 +1130,10 @@ te::layout::ContextObject te::layout::View::getContext()
   int zoom = getCurrentZoom();
   EnumType* mode = getCurrentMode();
   return ContextObject(zoom, dpiX, dpiY, mode);
+}
+
+void te::layout::View::onEditionFinalized()
+{
+  reload();
 }
 

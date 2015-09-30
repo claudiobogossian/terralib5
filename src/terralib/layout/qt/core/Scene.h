@@ -374,6 +374,12 @@ namespace te
       \param names names of items removed
         */
          void deleteFinalized(std::vector<std::string> names);
+
+         /*!
+          \brief Issued after leaving the edition mode
+          */
+         void editionFinalized();
+
         
       protected:
 

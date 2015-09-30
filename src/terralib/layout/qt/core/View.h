@@ -259,6 +259,11 @@ namespace te
         */
         virtual void setZoom(int zoom);
 
+        /*!
+          \brief Update properties when the scene leaves the edition mode
+        */
+        virtual void onEditionFinalized();
+
       signals:
 
     /*!
