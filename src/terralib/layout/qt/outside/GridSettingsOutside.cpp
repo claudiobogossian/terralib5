@@ -244,7 +244,7 @@ void te::layout::GridSettingsOutside::load()
   if(!model)
     return;
 
-  if(!model->containsGrid(m_planarType))
+  if (!model->containsGrid(m_planarType))
   {
     m_ui->tabType->setTabEnabled(0, false);
   }

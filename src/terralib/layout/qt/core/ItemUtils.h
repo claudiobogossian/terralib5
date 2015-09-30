@@ -55,6 +55,7 @@ namespace te
     class EnumType;
     class MapModel;
     class GridMapItem;
+    class AbstractItemView;
 
     /*!
       \brief Utility class for manipulating items in the scene and vectorization of text and legend.
@@ -174,6 +175,8 @@ namespace te
         virtual QRectF getTextBoundary( const std::string& fontName, int fontSize, const std::string& text ) const;
 
         void changeViewMode(EnumType* mode);
+
+        virtual AbstractItemView* getSelectedItem();
 
         /*!
           \brief This function is used to conigure the painter for text drawing in a Coordinate System based on millimeters

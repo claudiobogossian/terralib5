@@ -582,6 +582,34 @@ void te::layout::ItemUtils::changeViewMode( EnumType* mode )
   view->changeMode(mode);
 }
 
+te::layout::AbstractItemView* te::layout::ItemUtils::getSelectedItem()
+{
+  AbstractItemView* abstractItem = 0;
+
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if (abScene == 0)
+  {
+    return abstractItem;
+  }
+
+  Scene* myScene = dynamic_cast<Scene*>(abScene);
+  if (myScene == 0)
+  {
+    return abstractItem;
+  }
+
+  QList<QGraphicsItem*> items = myScene->items();
+  QGraphicsItem* item = items.first();
+
+  if (!item)
+  {
+    return abstractItem;
+  }
+
+  abstractItem = dynamic_cast<AbstractItemView*>(item);
+  return abstractItem;
+}
+
 void te::layout::ItemUtils::ConfigurePainterForTexts(QPainter* painter, const std::string& fontFamily, int fontSize)
 {
   AbstractScene* abScene = Context::getInstance().getScene();
