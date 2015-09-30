@@ -63,7 +63,7 @@ void te::srs::Module::initialize()
 
 void te::srs::Module::finalize()
 {
-  
+  te::srs::SpatialReferenceSystemManager::getInstance().clear();
   TE_LOG_TRACE(TE_TR("TerraLib SRS Finalized!"));
 }
 
