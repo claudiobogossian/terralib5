@@ -21,7 +21,10 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 
+#include "../../sam.h"
+
 #include <limits>
+#include <math.h>
 
 bool te::mnt::TinLine::operator== (const TinLine &rhs) const
 {
@@ -117,11 +120,11 @@ bool te::mnt::TinLine::SwapNodePolygon()
 
 bool te::mnt::TinNode::operator== (const TinNode &rhs) const
 {
-  if ((this->m_point.getX() != rhs.m_point.getX()) ||
-    (this->m_point.getY() != rhs.m_point.getY()))
-    return false;
-  else
+  if ((this->m_point.getX() == rhs.m_point.getX()) &&
+    (this->m_point.getY() == rhs.m_point.getY()))
     return true;
+  else
+    return false;
 }
 
 bool te::mnt::TinNode::operator> (const TinNode &rhs) const
@@ -269,7 +272,9 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
               //    o triângulo taux que contém aaux.
               int32_t lidsaux[3];
               t = m_line[ai].getLeftPolygon();
-              m_triang[t].LinesId(lidsaux);
+              if (!m_triang[t].LinesId(lidsaux))
+                return -1;
+
               for (short j = 0; j < 3; j++)
               {
                 if (lidsaux[j] == aaux)
@@ -291,7 +296,9 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
             //7.1.4. Redefina o conjunto A={a1, a2}.
             aam.clear();
             int32_t lids[3];
-            m_triang[t].LinesId(lids);
+            if (!m_triang[t].LinesId(lids))
+              return -1;
+
             for (short j = 0; j < 3; j++)
             {
               // As arestas a1 e a2 são as arestas diferentes de ai do triângulo t,
@@ -432,10 +439,8 @@ bool te::mnt::Tin::ContainsPoint(int32_t triangId, te::gm::PointZ &pt)
   TrianglePoints(triangId, vert);
 
   //  Calculate the base triangle area
-  triangleArea = fabs(((vert[1].getX() - vert[0].getX()) *
-    (vert[2].getY() - vert[0].getY())) -
-    ((vert[2].getX() - vert[0].getX()) *
-    (vert[1].getY() - vert[0].getY())));
+  triangleArea = fabs(((vert[1].getX() - vert[0].getX()) * (vert[2].getY() - vert[0].getY())) -
+    ((vert[2].getX() - vert[0].getX()) * (vert[1].getY() - vert[0].getY())));
   triangleArea *= 1.00001;
   totalArea = fabs(((vert[0].getX() - pt.getX()) * (vert[1].getY() - pt.getY())) -
     ((vert[1].getX() - pt.getX()) * (vert[0].getY() - pt.getY())));
@@ -508,13 +513,14 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
         linids.push_back(ao); // A = lines
       }
 
-      // 4.1.5. Retorne a 4.
+      // 4.1.5. Returns to 4.
       continue;
     }
 
-    // 4.2. Defina a aresta aaux do triângulo ti que conecta o vértice v 
-    // e é diferente de ai,
-    m_triang[ti].LinesId(lids);
+    // 4.2. Defines edge aaux of ti triangle that conects the v vertex and is different of ai 
+    if (!m_triang[ti].LinesId(lids))
+      return false;
+
     for (j = 0; j < 3; j++)
     {
       if (lids[j] == ai)
@@ -529,8 +535,7 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
 
     aaux = lids[j];
 
-    // 4.3. Defina taux como sendo o triângulo que compartilha a 
-    // aresta aaux com ti,
+    // 4.3. Defines taux as the triangle that shares the aaux edge with ti 
     if (m_line[aaux].getRightPolygon() == ti)
       taux = m_line[aaux].getLeftPolygon();
     else if (m_line[aaux].getLeftPolygon() == ti)
@@ -539,13 +544,11 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
       return false;
     }
 
-    // 4.4. Defina ti como sendo o triângulo taux e ai como sendo
-    // aresta aaux,
+    // 4.4. Defines ti as taux triangle and ai as aaux edge
     ti = taux;
     ai = aaux;
 
-    // 4.5. Se o triângulo ti não for nulo, insira aresta ao de ti que 
-    // não é diretamente conectado a v no conjunto A,
+    // 4.5. If ti triangle isn't NULL, insert ao edge of ti that isn't directly connected to v in A set 
     if (ti != -1)
     {
       ao = OppositeEdge(ti, v);
@@ -554,7 +557,7 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
       linids.push_back(ao); // A = lines
     }
 
-    // 4.6. Retorne a 4.
+    // 4.6. Returns to 4.
   }
   return true;
 }
@@ -565,7 +568,9 @@ int32_t te::mnt::Tin::OppositeEdge(int32_t triangId, int32_t nodeId)
   int32_t lids[3];
   short j;
 
-  m_triang[triangId].LinesId(lids);
+  if (!m_triang[triangId].LinesId(lids))
+    return -1;
+
   for (j = 0; j < 3; j++)
   {
     if ((m_line[lids[j]].getNodeFrom() != nodeId) &&
@@ -600,7 +605,8 @@ int32_t te::mnt::Tin::FindLine(int32_t nid)
   {
     for (i = 0; i < m_ltriang; i++)
     {
-      m_triang[i].LinesId(lids);
+      if (!m_triang[i].LinesId(lids))
+        return -1;
       for (m = 0; m < 3; m++)
       {
         if ((m_line[lids[m]].getNodeFrom() == nid) ||
@@ -620,7 +626,8 @@ int32_t te::mnt::Tin::FindLine(int32_t nid)
   {
     if (j > 0)
     {
-      m_triang[j].LinesId(lids);
+      if (!m_triang[j].LinesId(lids))
+        return -1;
       for (m = 0; m < 3; m++)
       {
         if ((m_line[lids[m]].getNodeFrom() == nid) ||
@@ -635,7 +642,8 @@ int32_t te::mnt::Tin::FindLine(int32_t nid)
     }
     if (k < m_ltriang)
     {
-      m_triang[k].LinesId(lids);
+      if (!m_triang[k].LinesId(lids))
+        return -1;
       for (m = 0; m < 3; m++)
       {
         if ((m_line[lids[m]].getNodeFrom() == nid) ||
@@ -695,7 +703,8 @@ bool te::mnt::Tin::NodeLines(int32_t v, std::vector<int32_t> &linids)
 
     //    4.2. Defina a aresta aaux do triângulo ti que conecta o 
     //    vértice v e é diferente de ai,
-    m_triang[ti].LinesId(lids);
+    if (!m_triang[ti].LinesId(lids))
+      return false;
     for (j = 0; j < 3; j++)
     {
       if (lids[j] == ai)
@@ -785,7 +794,8 @@ bool te::mnt::Tin::NeighborsId(int32_t triangId, int32_t *neighsId)
   int32_t  linesid[3];
   short  i;
 
-  m_triang[triangId].LinesId(linesid);
+  if (!m_triang[triangId].LinesId(linesid))
+    return false;
   for (i = 0; i < 3; i++)
   {
     if (linesid[i] >(int32_t)m_linesize)
@@ -1095,7 +1105,7 @@ te::da::DataSetType* te::mnt::Tin::GetDataSetType(std::string &outDsetName)
   te::da::DataSetType* dsType = new te::da::DataSetType(outDsetName);
 
   //Primary key
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outDsetName + "_id", te::dt::INT32_TYPE);
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty("tri_id", te::dt::INT32_TYPE);
   pkProperty->setAutoNumber(true);
   dsType->add(pkProperty);
 
@@ -1144,24 +1154,33 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
 
   te::gm::PointZ vert[3];
   int32_t tEdges[3];
+  int32_t nids[3];
   int32_t left[3];
   int32_t right[3];
   Ntype type[3];
   double value[3];
 
-  for (size_t tri = 0; tri < m_triangsize; tri++)
+  for (int32_t tri = 0; tri < (int32_t)m_triangsize; tri++)
   {
     te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet.get());
     if (!m_triang[tri].LinesId(tEdges))
       continue;
-    TrianglePoints((int32_t)tri, vert);
+    TrianglePoints(tri, vert);
+    NodesId(tri, nids);
     for (size_t e = 0; e < 3; e++)
     {
       value[e] = vert[e].getZ();
       left[e] = m_line[tEdges[e]].getLeftPolygon();
       right[e] = m_line[tEdges[e]].getRightPolygon();
-      type[e] = m_node[m_line[tEdges[e]].getNodeFrom()].getType();
+      type[e] = m_node[nids[e]].getType();
     }
+   // if (type[0] == Box || type[1] == Box || type[2] == Box)
+   //   continue;
+    //if (type[0] == Deletednode || type[1] == Deletednode || type[2] == Deletednode)
+    //  continue;
+    //if (value[0] == m_nodatavalue || value[1] == m_nodatavalue || value[2] == m_nodatavalue)
+    //  continue;
+
     std::auto_ptr<te::gm::Polygon> p(new te::gm::Polygon(0, te::gm::PolygonZType));
     std::auto_ptr<te::gm::LinearRing> s(new te::gm::LinearRing(4, te::gm::LineStringZType));
     s->setPointN(0, vert[0]);
@@ -1254,6 +1273,15 @@ void te::mnt::Tin::Save(te::da::DataSource* source, te::da::DataSet* result, te:
 
 
 
+bool fncomp(te::mnt::TinNode lhs, te::mnt::TinNode rhs) { return lhs<rhs; }
+
+struct nodecomp {
+  bool operator() (const te::mnt::TinNode& lhs, const te::mnt::TinNode& rhs) const
+  {
+    return lhs<rhs;
+  }
+};
+
 /*!
 \brief Method used to load a triangular network (TIN)
 \return TRUE if the TIN is loaded with no errors or FALSE otherwise
@@ -1269,14 +1297,16 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   int32_t lid[3];
 
   std::auto_ptr<te::da::DataSet> inDset = inDsrc->getDataSet(inDsetName);
-
+  std::string geo_attr("tri_id");
   const std::size_t np = inDset->getNumProperties();
   m_triangsize = inDset->size();
-  int32_t i;
 
-  // Create and set tin triangles vector
-  for (i = 0; i < m_triangsize + 2; i++)
-    m_triang.push_back(TinTriang());
+  //	Open tin nodes file for nodes data load
+  m_fbnode = 0;
+
+  //// Create and set tin triangles vector
+  //for (i = 0; i < m_triangsize + 2; i++)
+  //  m_triang.push_back(TinTriang());
 
   std::vector<std::string>pnames;
   std::vector<int> ptypes;
@@ -1292,14 +1322,17 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
 
   std::size_t pos = 0;
   bool first = true;
-  std::map<te::mnt::TinLine, int32_t> linemap;
-  std::map<te::mnt::TinLine, int32_t>::iterator itline;
-  std::map<te::mnt::TinNode, int32_t> nodemap;
-  std::map<te::mnt::TinNode, int32_t>::iterator itnode;
+
+  typedef te::sam::kdtree::Node<te::gm::Coord2D, int32_t, int32_t> KD_NODE;
+  typedef te::sam::kdtree::Index<KD_NODE> KD_TREE;
+  te::gm::Envelope e;
+  KD_TREE nodetree(e);
+  KD_TREE linetree(e);
+  std::vector<KD_NODE*> reports;
 
   while (inDset->moveNext())
   {
-    id = inDset->getInt32("FID");
+    id = inDset->getInt32(1);
     if (inDset->isNull("val1"))
       val[0] = m_nodatavalue;
     else
@@ -1340,24 +1373,30 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
           m_max = val[j];
       }
       nd.Init(p->getX(), p->getY(), val[j], type[j]);
-      itnode = nodemap.find(nd);
-      if (itnode != nodemap.end())
+
+      te::gm::Envelope ept(*p->getMBR());
+      nodetree.search(ept, reports);
+      size_t kn = 0;
+      for (kn = 0; kn < reports.size(); kn++)
       {
-        if ((*itnode).first == nd)
-          no[j] = (*itnode).second;
-        else
+        te::gm::Coord2D ind = reports[kn]->getKey();
+        if (ind.getX() == p->getX() && ind.getY() == p->getY())
         {
-          nodemap.insert(std::pair<TinNode, int32_t>(nd, (int32_t)m_node.size()));
-          no[j] = (int32_t)m_node.size();
-          m_node.push_back(nd);
+          no[j] = reports[kn]->getData();
+          break;
         }
       }
-      else
+      if (kn == reports.size())
       {
-        nodemap.insert(std::pair<TinNode, int32_t>(nd, (int32_t)m_node.size()));
-        no[j] =(int32_t) m_node.size();
+        no[j] = (int32_t)m_node.size();
         m_node.push_back(nd);
+        te::gm::Coord2D coord(p->getX(), p->getY());
+        nodetree.insert(coord, no[j]);
       }
+      reports.clear();
+
+      if (m_fbnode == 0 && nd.getType() == Breaklinefirst)
+        m_fbnode = no[j];
     }
 
     if (first)
@@ -1368,73 +1407,68 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
     else
       m_env.Union(*lr->getMBR());
 
-    TinLine tl0(no[0], no[1], left[0], right[0], Normalline);
-    TinLine tl1(no[1], no[2], left[1], right[1], Normalline);
-    TinLine tl2(no[2], no[0], left[2], right[2], Normalline);
+    TinLine tl[3];
+    tl[0] = TinLine(no[0], no[1], left[0], right[0], Normalline);
+    tl[1] = TinLine(no[1], no[2], left[1], right[1], Normalline);
+    tl[2] = TinLine(no[2], no[0], left[2], right[2], Normalline);
 
-    itline = linemap.find(tl0);
-    if (itline != linemap.end())
+    for (int j = 0; j < 3; j++)
     {
-      if ((*itline).first == tl0)
-        lid[0] = (*itline).second;
-      else
+      te::gm::Coord2D coord0((double)tl[j].getNodeFrom(), (double)tl[j].getNodeTo());
+      te::gm::Coord2D coord1((double)tl[j].getNodeTo(), (double)tl[j].getNodeFrom());
+      te::gm::Envelope ept0(coord0.getX(), coord0.getY(), coord0.getX(), coord0.getY());
+      te::gm::Envelope ept1(coord1.getX(), coord1.getY(), coord1.getX(), coord1.getY());
+      linetree.search(ept0, reports);
+      size_t kl = 0;
+      for (kl = 0; kl < reports.size(); kl++)
       {
-        linemap.insert(std::pair<TinLine, int32_t>(tl0, (int32_t)m_line.size()));
-        lid[0] = (int32_t)m_line.size();
-        m_line.push_back(tl0);
+        te::gm::Coord2D ind = reports[kl]->getKey();
+        if (ind.getX() == coord0.getX() && ind.getY() == coord0.getY())
+        {
+          lid[j] = reports[kl]->getData();
+          break;
+        }
       }
-    }
-    else
-    {
-      linemap.insert(std::pair<TinLine, int32_t>(tl0, (int32_t)m_line.size()));
-      lid[0] = (int32_t)m_line.size();
-      m_line.push_back(tl0);
-    }
-
-    itline = linemap.find(tl1);
-    if (itline != linemap.end())
-    {
-      if ((*itline).first == tl1)
-        lid[1] = (*itline).second;
-      else
+      if (kl == reports.size())
       {
-        linemap.insert(std::pair<TinLine, int32_t>(tl1, (int32_t)m_line.size()));
-        lid[1] = (int32_t)m_line.size();
-        m_line.push_back(tl1);
+        reports.clear();
+        linetree.search(ept1, reports);
+        size_t kl = 0;
+        for (kl = 0; kl < reports.size(); kl++)
+        {
+          te::gm::Coord2D ind = reports[kl]->getKey();
+          if (ind.getX() == coord1.getX() && ind.getY() == coord1.getY())
+          {
+            lid[j] = reports[kl]->getData();
+            break;
+          }
+        }
+        if (kl == reports.size())
+        {
+          lid[j] = (int32_t)m_line.size();
+          m_line.push_back(tl[j]);
+          linetree.insert(coord0, lid[j]);
+        }
       }
-    }
-    else
-    {
-      linemap.insert(std::pair<TinLine, int32_t>(tl1, (int32_t)m_line.size()));
-      lid[1] = (int32_t)m_line.size();
-      m_line.push_back(tl1);
+      reports.clear();
     }
 
-    itline = linemap.find(tl2);
-    if (itline != linemap.end())
-    {
-      if ((*itline).first == tl2)
-        lid[2] = (*itline).second;
-      else
-      {
-        linemap.insert(std::pair<TinLine, int32_t>(tl2, (int32_t)m_line.size()));
-        lid[2] = (int32_t)m_line.size();
-        m_line.push_back(tl2);
-      }
-    }
-    else
-    {
-      linemap.insert(std::pair<TinLine, int32_t>(tl2, (int32_t)m_line.size()));
-      lid[2] = (int32_t)m_line.size();
-      m_line.push_back(tl2);
-    }
-
-
+    while (id >= m_triang.size())
+      m_triang.push_back(TinTriang());
     m_triang[id].setEdges(lid[0], lid[1], lid[2]);
   }
 
   m_nodesize = m_node.size();
+  m_lnode = (int32_t)m_nodesize;
   m_linesize = m_line.size();
+  m_lline = (int32_t)m_linesize;
+  m_triangsize = m_triang.size();
+  m_ltriang = (int32_t)m_triangsize;
+
+  for (size_t l = 0; l < m_line.size(); l++)
+  {
+    m_node[m_line[l].getNodeTo()].setEdge((int32_t)l);
+  }
 
   return true;
 }
@@ -1499,7 +1533,12 @@ bool te::mnt::Tin::TriangleFirstDeriv()
 
   for (i = 0; i < m_ltriang; i++)
   {
-    NodesId((int32_t)i, nodesid);
+    if (!NodesId((int32_t)i, nodesid))
+    {
+      m_tfderiv[i].setY(m_nodatavalue);
+      continue;
+    }
+
     for (j = 0; j < 3; j++)
     {
       p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
@@ -1574,7 +1613,11 @@ bool te::mnt::Tin::TriangleSecondDeriv()
 
   for (i = 0; i < m_ltriang; i++)
   {
-    NodesId((int32_t)i, nodesid);
+    if (!NodesId((int32_t)i, nodesid))
+    {
+      m_tsderiv[i].setZ(m_nodatavalue);
+      continue;
+    }
 
     // Special case
     if ((m_nfderiv[nodesid[0]].getX() >= m_nodatavalue) ||
@@ -1664,7 +1707,7 @@ bool te::mnt::Tin::NodeFirstDeriv()
   }
 
   // To each node
-  for (i = 1; i < m_lnode; i++)
+  for (i = 0; i < m_lnode; i++)
   {
     // Special cases
     if (m_node[i].getZ() >= m_nodatavalue)
@@ -1674,7 +1717,8 @@ bool te::mnt::Tin::NodeFirstDeriv()
       continue;
 
     // Look for closest points of the node
-    NodeClosestPoints((int32_t)i, clstnids);
+    if (!NodeClosestPoints((int32_t)i, clstnids))
+      continue;
     m_nfderiv[i] = CalcNodeFirstDeriv((int32_t)i, clstnids);
   }
 
@@ -1701,7 +1745,7 @@ bool te::mnt::Tin::NodeSecondDeriv()
     m_nsderiv[i].Init(0., 0., 0.);
   }
 
-  for (i = 1; i < m_lnode; i++)
+  for (i = 0; i < m_lnode; i++)
   {
     // Special cases
     if (m_node[i].getZ() >= m_nodatavalue)
@@ -1712,7 +1756,8 @@ bool te::mnt::Tin::NodeSecondDeriv()
       continue;
 
     // Look for closest point of the node
-    NodeClosestPoints((int32_t)i, clstnids);
+    if (!NodeClosestPoints((int32_t)i, clstnids))
+      continue;
     sderiv = CalcNodeSecondDeriv((int32_t)i, clstnids);
     m_nsderiv[i].setX(sderiv.getX());
     m_nsderiv[i].setY(sderiv.getY());
@@ -1746,14 +1791,16 @@ bool te::mnt::Tin::NodeClosestPoints(int32_t nid, int32_t *clstNids, bool useBrN
   // Find right and left triangle
   rtri = m_line[lineid].getRightPolygon();
   ltri = m_line[lineid].getLeftPolygon();
-  if (rtri == -1L)
+  if (rtri == -1)
   {
     rtri = ltri;
-    ltri = -1L;
+    ltri = -1;
   }
   while (rtri != ltri)
   {
-    m_triang[rtri].LinesId(lids);
+    if (!m_triang[rtri].LinesId(lids))
+      return false;
+
     for (j = 0; j < 3; j++)
     {
       // Find line that contains node
@@ -1807,7 +1854,7 @@ bool te::mnt::Tin::NodeClosestPoints(int32_t nid, int32_t *clstNids, bool useBrN
     if ((rtri == -1) && (ltri != -1))
     {
       rtri = ltri;
-      ltri = -1L;
+      ltri = -1;
       lineid = flin;
     }
   }
@@ -1833,7 +1880,7 @@ te::gm::PointZ te::mnt::Tin::CalcNodeFirstDeriv(int32_t nodeId, int32_t clstNode
   tnz = 0.;
   for (j = 0; j < CLNODES; j++)
   {
-    if (clstNodes[j] == -1L)
+    if (clstNodes[j] == -1)
       break;
     p3da[1].setX(m_node[clstNodes[j]].getNPoint().getX());
     p3da[1].setY(m_node[clstNodes[j]].getNPoint().getY());
@@ -1909,14 +1956,14 @@ te::mnt::TinNode te::mnt::Tin::CalcNodeSecondDeriv(int32_t nodeId, int32_t clstN
 
   for (j = 0; j < CLNODES; j++)
   {
-    if (clstNIds[j] == -1L)
+    if (clstNIds[j] == -1)
       break;
     p3da[1].setX(m_node[clstNIds[j]].getNPoint().getX());
     p3da[1].setY(m_node[clstNIds[j]].getNPoint().getY());
     p3da[1].setZ(m_nfderiv[clstNIds[j]].getX());
     for (k = j + 1; k < CLNODES; k++)
     {
-      if (clstNIds[k] == -1L)
+      if (clstNIds[k] == -1)
         break;
       p3da[2].setX(m_node[clstNIds[k]].getNPoint().getX());
       p3da[2].setY(m_node[clstNIds[k]].getNPoint().getY());
@@ -1951,14 +1998,14 @@ te::mnt::TinNode te::mnt::Tin::CalcNodeSecondDeriv(int32_t nodeId, int32_t clstN
   p3da[0].setZ(m_nfderiv[nodeId].getY());
   for (j = 0; j < CLNODES; j++)
   {
-    if (clstNIds[j] == -1L)
+    if (clstNIds[j] == -1)
       break;
     p3da[1].setX(m_node[clstNIds[j]].getNPoint().getX());
     p3da[1].setY(m_node[clstNIds[j]].getNPoint().getY());
     p3da[1].setZ(m_nfderiv[clstNIds[j]].getY());
     for (k = j + 1; k < CLNODES; k++)
     {
-      if (clstNIds[k] == -1L)
+      if (clstNIds[k] == -1)
         break;
       p3da[2].setX(m_node[clstNIds[k]].getNPoint().getX());
       p3da[2].setY(m_node[clstNIds[k]].getNPoint().getY());
@@ -2037,7 +2084,7 @@ bool ::te::mnt::Tin::BreakNodeFirstDeriv()
   }
 
   // To each break node
-  for (i = m_fbnode + 1; i < m_lnode - 1; i++)
+  for (i = m_fbnode ; i < m_lnode - 1; i++)
   {
     // Special cases
     if ((m_node[i].getZ() >= m_nodatavalue) ||
@@ -2101,7 +2148,7 @@ bool te::mnt::Tin::BreakTriangleSecondDeriv()
     return false;
 
   // To each break node except first and last
-  for (i = m_fbnode + 1; i < m_lnode - 1; i++)
+  for (i = m_fbnode; i < m_lnode - 1; i++)
   {
     if (m_node[i].getZ() >- m_nodatavalue)
       continue;
@@ -2160,7 +2207,9 @@ bool te::mnt::Tin::NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, 
     }
 
     // Find line that contains node in the right triangle
-    m_triang[rtri].LinesId(lids);
+    if (!m_triang[rtri].LinesId(lids))
+      return false;
+
     for (k = 0; k < 3; k++)
     {
       if (lids[k] == linid)
@@ -2234,14 +2283,16 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
   // Find right and left triangle
   rtri = m_line[lineid].getRightPolygon();
   ltri = m_line[lineid].getLeftPolygon();
-  if (rtri == -1L)
+  if (rtri == -1)
   {
     rtri = ltri;
-    ltri = -1L;
+    ltri = -1;
   }
   while (rtri != ltri)
   {
-    m_triang[rtri].LinesId(lids);
+    if (!m_triang[rtri].LinesId(lids))
+      return false;
+
     for (j = 0; j < 3; j++)
     {
       // Find line that contains node
@@ -2317,7 +2368,7 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
     if ((rtri == -1) && (ltri != -1))
     {
       rtri = ltri;
-      ltri = -1L;
+      ltri = -1;
       lineid = flin;
     }
   }
@@ -2447,7 +2498,7 @@ bool te::mnt::Tin::BreakNodeSecondDeriv()
   }
 
   // To each break node
-  for (i = m_fbnode + 1; i < m_lnode - 1; i++)
+  for (i = m_fbnode; i < m_lnode - 1; i++)
   {
     // Special cases
     if ((m_node[i].getZ() >= m_nodatavalue) ||
@@ -2544,7 +2595,9 @@ bool te::mnt::Tin::CheckLines(int32_t trid)
   if ((trid == -1) || (trid > m_ltriang))
     return false;
 
-  m_triang[trid].LinesId(lids);
+  if (!m_triang[trid].LinesId(lids))
+    return false;
+
   NodesId(trid, nids);
 
   a = m_node[nids[1]].getX() - m_node[nids[0]].getX();
@@ -2591,7 +2644,9 @@ int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
   {
     for (i = 0; i < m_ltriang; i++)
     {
-      m_triang[i].LinesId(lids);
+      if (!m_triang[i].LinesId(lids))
+        return -1;
+
       for (m = 0; m < 3; m++)
       {
         if ((m_line[lids[m]].getNodeFrom() == fnid) &&
@@ -2616,7 +2671,9 @@ int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
   {
     if (j > 0)
     {
-      m_triang[j].LinesId(lids);
+      if (!m_triang[j].LinesId(lids))
+        return -1;
+
       for (m = 0; m < 3; m++)
       {
         if ((m_line[lids[m]].getNodeFrom() == fnid) &&
@@ -2636,7 +2693,9 @@ int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
     }
     if (k < m_ltriang)
     {
-      m_triang[k].LinesId(lids);
+      if (!m_triang[k].LinesId(lids))
+        return -1;
+
       for (m = 0; m < 3; m++)
       {
         if ((m_line[lids[m]].getNodeFrom() == fnid) &&
@@ -2657,4 +2716,317 @@ int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
   }
   oldtri = 1;
   return -1;
+}
+
+
+bool te::mnt::Tin::CalcZvalueAkima(int32_t triid, te::gm::PointZ &pt1, te::gm::PointZ &pt2)
+{
+  double	u, v, ap, bp, cp, dp, x0, y0,
+    p00, p01, p02, p03, p04, p05,
+    p10, p11, p12, p13, p14,
+    p20, p21, p22, p23,
+    p30, p31, p32,
+    p40, p41, p50,
+    p0, p1, p2, p3, p4,
+    coef[27];
+
+  DefineAkimaCoeficients(triid, coef);
+
+  // Polynomial coefficients
+  p00 = coef[0]; p01 = coef[1]; p02 = coef[2]; p03 = coef[3]; p04 = coef[4]; p05 = coef[5];
+  p10 = coef[6]; p11 = coef[7]; p12 = coef[8]; p13 = coef[9]; p14 = coef[10];
+  p20 = coef[11]; p21 = coef[12]; p22 = coef[13]; p23 = coef[14];
+  p30 = coef[15]; p31 = coef[16]; p32 = coef[17];
+  p40 = coef[18]; p41 = coef[19];
+  p50 = coef[20];
+
+  // Coefficients of conversion from XY to UV coordinates
+  ap = coef[21]; bp = coef[22]; cp = coef[23]; dp = coef[24];
+  x0 = coef[25]; y0 = coef[26];
+
+  // Converts point from XY to UV
+  u = ap*(pt1.getX() - x0) +
+    bp*(pt1.getY() - y0);
+  v = cp*(pt1.getX() - x0) +
+    dp*(pt1.getY() - y0);
+
+  // Evaluates the polynomial
+  p0 = p00 + v*(p01 + v*(p02 + v*(p03 + v*(p04 + v*p05))));
+  p1 = p10 + v*(p11 + v*(p12 + v*(p13 + v*p14)));
+  p2 = p20 + v*(p21 + v*(p22 + v*p23));
+  p3 = p30 + v*(p31 + v*p32);
+  p4 = p40 + v*p41;
+
+  pt1.setZ((p0 + u*(p1 + u*(p2 + u*(p3 + u*(p4 + u*p50))))));
+
+  // Converts point from XY to UV
+  u = ap*(pt2.getX() - x0) +
+    bp*(pt2.getY() - y0);
+  v = cp*(pt2.getX() - x0) +
+    dp*(pt2.getY() - y0);
+
+  // Evaluates the polynomial
+  p0 = p00 + v*(p01 + v*(p02 + v*(p03 + v*(p04 + v*p05))));
+  p1 = p10 + v*(p11 + v*(p12 + v*(p13 + v*p14)));
+  p2 = p20 + v*(p21 + v*(p22 + v*p23));
+  p3 = p30 + v*(p31 + v*p32);
+  p4 = p40 + v*p41;
+
+  pt2.setZ((p0 + u*(p1 + u*(p2 + u*(p3 + u*(p4 + u*p50))))));
+
+  return true;
+}
+
+bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, double *coef)
+{
+  int32_t nodesid[3];
+  te::gm::PointZ p3d[3];
+  short j;
+
+  NodesId(triid, nodesid);
+  for (j = 0; j < 3; j++)
+  {
+    p3d[j].setX(m_node[nodesid[j]].getNPoint().getX());
+    p3d[j].setY(m_node[nodesid[j]].getNPoint().getY());
+    p3d[j].setZ(m_node[nodesid[j]].getZ());
+  }
+
+  DefineAkimaCoeficients(triid, nodesid, p3d, coef);
+
+  return true;
+}
+
+bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef)
+{
+  double a, b, c, d,
+    aa, bb, cc, dd,
+    ad, bc, det,
+    ap, bp, cp, dp,
+    lu, lv,
+    theta, phi, thxu, thphi,
+    cstheta, lusntheta, lvsntheta,
+    e, f, g, h,
+    p00, p01, p02, p03, p04, p05,
+    p10, p11, p12, p13, p14,
+    p20, p21, p22, p23,
+    p30, p31, p32,
+    p40, p41, p50,
+    h1, h2, h3, g1, g2,
+    fg, eh, ee, gg,
+    zu[3], zv[3], zuu[3], zvv[3], zuv[3];
+  short i, bside;
+  int32_t lids[3], nodid;
+  std::vector<te::gm::PointZ> fderiv;
+  std::vector<TinNode> sderiv;
+
+  // Coeficients of conversion from UV to XY coordinates
+  a = p3d[1].getX() - p3d[0].getX();
+  b = p3d[2].getX() - p3d[0].getX();
+  c = p3d[1].getY() - p3d[0].getY();
+  d = p3d[2].getY() - p3d[0].getY();
+
+  aa = a * a;
+  bb = b * b;
+  cc = c * c;
+  dd = d * d;
+
+  // Coeficients of conversion from XY to UV coordinates
+  ad = a * d;
+  bc = b * c;
+  det = ad - bc;
+  ap = d / det;
+  bp = -b / det;
+  cp = -c / det;
+  dp = a / det;
+
+  bside = 0;
+  if (m_fbnode > 0)
+  {
+    // If there are breaklines
+    if (!m_triang[triid].LinesId(lids))
+      return false;
+
+    for (i = 0; i < 3; i++)
+    {
+      if ((m_line[lids[i]].getNodeTo() >= m_fbnode) &&
+        (m_line[lids[i]].getNodeFrom() >= m_fbnode))
+      {
+        if (m_line[lids[i]].getRightPolygon() == triid)
+          // Triangle at the right side of a breakline
+          bside = 1;
+        else if (m_line[lids[i]].getLeftPolygon() == triid)
+          // Triangle at the left side of a breakline
+          bside = 2;
+        else
+          return false;
+        break;
+      }
+      if (m_line[lids[i]].getNodeTo() >= m_fbnode)
+      {
+        // Triangle at the right side of a breakline
+        bside = 1;
+        break;
+      }
+      if (m_line[lids[i]].getNodeFrom() >= m_fbnode)
+      {
+        // Triangle at the left side of a breakline
+        bside = 2;
+        break;
+      }
+    }
+  }
+
+  // Conversion of derivatives from XY to UV coordinates
+  for (i = 0; i < 3; i++)
+  {
+    if ((m_fbnode == 0) ||
+      ((m_fbnode > 0) && (nodesid[i] < m_fbnode)))
+    {
+      nodid = nodesid[i];
+      fderiv = m_nfderiv;
+      sderiv = m_nsderiv;
+    }
+    else if (bside == 1)
+    {
+      nodid = nodesid[i] - m_fbnode;
+      fderiv = m_nbrfderiv;
+      sderiv = m_nbrsderiv;
+    }
+    else if (bside == 2)
+    {
+      nodid = nodesid[i] - m_fbnode;
+      fderiv = m_nblfderiv;
+      sderiv = m_nbrsderiv;
+    }
+    else{
+      return false;
+    }
+
+    if (fderiv[nodid].getY() >= m_nodatavalue)
+    {
+      zu[i] = 0.; zv[i] = 0.;
+    }
+    else
+    {
+      zu[i] = a * fderiv[nodid].getX() +
+        c * fderiv[nodid].getY();
+      zv[i] = b * fderiv[nodid].getX() +
+        d * fderiv[nodid].getY();
+    }
+    if (sderiv[nodid].getZ() >= m_nodatavalue)
+    {
+      zuu[i] = 0.;
+      zuv[i] = 0.;
+      zvv[i] = 0.;
+    }
+    else
+    {
+      zuu[i] = aa * sderiv[nodid].getX() +
+        2.*a*c * (double)sderiv[nodid].getZ() +
+        cc * sderiv[nodid].getY();
+      zuv[i] = a*b * sderiv[nodid].getX() +
+        (ad + bc) * (double)sderiv[nodid].getZ() +
+        c*d * sderiv[nodid].getY();
+      zvv[i] = bb * sderiv[nodid].getX() +
+        2.*b*d * (double)sderiv[nodid].getZ() +
+        dd * sderiv[nodid].getY();
+    }
+  }
+
+  // Calculate U and V side sizes
+  lu = sqrt(aa + cc);
+  lv = sqrt(bb + dd);
+
+  // Calculate angle between U and V axis and its cosine
+  thxu = atan2(c, a);
+  theta = atan2(d, b) - thxu;
+  cstheta = cos(theta);
+  lusntheta = lu * sin(theta);
+  lvsntheta = lv * sin(theta);
+
+  // Calculate angle between U and S axis and its cosine
+  phi = atan2(d - c, b - a) - thxu;
+  thphi = theta - phi;
+
+  // Coeficients of conversion from ST to UV coordinates when
+  //  S axis is paralel to v2v3 side
+  e = sin(thphi) / lusntheta;
+  f = -cos(thphi) / lusntheta;
+  g = sin(phi) / lvsntheta;
+  h = cos(phi) / lvsntheta;
+
+  // Definition of the polynomial coefficients
+  // Using (u,v) = (0,0) -> v1
+  p00 = p3d[0].getZ();
+  p10 = zu[0];
+  p01 = zv[0];
+  p11 = zuv[0];
+  p20 = zuu[0] / 2.;
+  p02 = zvv[0] / 2.;
+
+  // Using (u,v) = (1,0) -> v2 and z(u,v), zu and zuu
+  h1 = p3d[1].getZ() - p00 - p10 - p20;
+  h2 = zu[1] - p10 - zuu[0];
+  h3 = zuu[1] - zuu[0];
+  p30 = 10.*h1 - 4.*h2 + h3 / 2.;
+  p40 = -15.*h1 + 7.*h2 - h3;
+  p50 = 6.*h1 - 3.*h2 + h3 / 2.;
+
+  // Using (u,v) = (0,1) -> v3 and z(u,v), zu and zuu
+  h1 = p3d[2].getZ() - p00 - p01 - p02;
+  h2 = zv[2] - p01 - zvv[0];
+  h3 = zvv[2] - zvv[0];
+  p03 = 10.*h1 - 4.*h2 + h3 / 2.;
+  p04 = -15.*h1 + 7.*h2 - h3;
+  p05 = 6.*h1 - 3.*h2 + h3 / 2.;
+
+  p41 = 5. * lv * cstheta * p50 / lu;
+  p14 = 5. * lu * cstheta * p05 / lv;
+
+  // Using (u,v) = (1,0) -> v2 and z(u,v) and zuv
+  h1 = zv[1] - p01 - p11 - p41;
+  h2 = zuv[1] - p11 - 4.*p41;
+  p21 = 3.*h1 - h2;
+  p31 = -2.*h1 + h2;
+
+  // Using (u,v) = (1,0) -> v3 and z(u,v) and zuv
+  h1 = zu[2] - p10 - p11 - p14;
+  h2 = zuv[2] - p11 - 4.*p14;
+  p12 = 3.*h1 - h2;
+  p13 = -2.*h1 + h2;
+
+  // Using continuity restriction and zvv at v2 and zuu at v3
+  fg = f * g;
+  eh = e * h;
+  ee = e * e;
+  gg = g * g;
+
+  g1 = ee*g*(3.*fg + 2.*eh);
+  g2 = e*gg*(2.*fg + 3.*eh);
+
+  h1 = -5.*ee*ee*f*p50 -
+    ee*e*(fg + eh)*p41 -
+    gg*g*(fg + 4 * eh) -
+    5.*gg*gg*h*p05;
+
+  h2 = zvv[1] / 2. - p02 - p12;
+  h3 = zuu[2] / 2. - p20 - p21;
+
+  p22 = (g1*h2 + g2*h3 - h1) / (g1 + g2);
+  p32 = h2 - p22;
+  p23 = h3 - p22;
+
+  // Polynomial coefficients
+  coef[0] = p00; coef[1] = p01; coef[2] = p02; coef[3] = p03; coef[4] = p04; coef[5] = p05;
+  coef[6] = p10; coef[7] = p11; coef[8] = p12; coef[9] = p13; coef[10] = p14;
+  coef[11] = p20; coef[12] = p21; coef[13] = p22; coef[14] = p23;
+  coef[15] = p30; coef[16] = p31; coef[17] = p32;
+  coef[18] = p40; coef[19] = p41;
+  coef[20] = p50;
+
+  // Coefficients of conversion from XY to UV coordinates
+  coef[21] = ap; coef[22] = bp; coef[23] = cp; coef[24] = dp;
+  coef[25] = p3d[0].getX(); coef[26] = p3d[0].getY();
+
+  return true;
 }

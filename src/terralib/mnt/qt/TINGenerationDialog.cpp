@@ -18,7 +18,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file terralib/mnt/TINGenerationDialog.cpp
+\file terralib/mnt/qt/TINGenerationDialog.cpp
 
 \brief A dialog for TIN generation
 */
@@ -313,14 +313,14 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       te::map::DataSetLayer* dsisoLayer = dynamic_cast<te::map::DataSetLayer*>(m_isolinesLayer.get());
       if (!dsisoLayer)
       {
-        QMessageBox::information(this, "TIN Generation", "Can not execute this operation on this type of layer.");
+        QMessageBox::information(this, tr("TIN Generation"), "Can not execute this operation on this type of layer.");
         return;
       }
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsisoLayer->getDataSourceId(), true);
       if (!inDataSource.get())
       {
-        QMessageBox::information(this, "TIN Generation", "The selected input data source can not be accessed.");
+        QMessageBox::information(this, tr("TIN Generation"), tr("The selected input data source can not be accessed."));
         return;
       }
 
@@ -333,14 +333,14 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       te::map::DataSetLayer* dssampleLayer = dynamic_cast<te::map::DataSetLayer*>(m_samplesLayer.get());
       if (!dssampleLayer)
       {
-        QMessageBox::information(this, "TIN Generation", "Can not execute this operation on this type of layer.");
+        QMessageBox::information(this, tr("TIN Generation"), tr("Can not execute this operation on this type of layer."));
         return;
       }
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dssampleLayer->getDataSourceId(), true);
       if (!inDataSource.get())
       {
-        QMessageBox::information(this, "TIN Generation", "The selected input data source can not be accessed.");
+        QMessageBox::information(this, tr("TIN Generation"), tr("The selected input data source can not be accessed."));
         return;
       }
 
@@ -354,14 +354,14 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       te::map::DataSetLayer* dsbreaklineLayer = dynamic_cast<te::map::DataSetLayer*>(m_breaklinesLayer.get());
       if (!dsbreaklineLayer)
       {
-        QMessageBox::information(this, "TIN Generation", "Can not execute this operation on this type of layer.");
+        QMessageBox::information(this, tr("TIN Generation"), tr("Can not execute this operation on this type of layer."));
         return;
       }
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsbreaklineLayer->getDataSourceId(), true);
       if (!inDataSource.get())
       {
-        QMessageBox::information(this, "TIN Generation", "The selected input data source can not be accessed.");
+        QMessageBox::information(this, tr("TIN Generation"), tr("The selected input data source can not be accessed."));
         return;
       }
 
@@ -372,7 +372,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
     if (outputdataset.empty())
     {
-      QMessageBox::information(this, "TIN Generation", "The selected output datasource is empty.");
+      QMessageBox::information(this, tr("TIN Generation"), tr("The selected output datasource is empty."));
       return;
     }
 
@@ -383,7 +383,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       if (boost::filesystem::exists(uri))
       {
-        QMessageBox::information(this, "TIN Generation", "Output file already exists. Remove it or select a new name and try again.");
+        QMessageBox::information(this, tr("TIN Generation"), tr("Output file already exists. Remove it or select a new name and try again."));
         return;
       }
 
@@ -399,7 +399,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
       if (dsOGR->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "TIN Generation", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
+        QMessageBox::information(this, tr("TIN Generation"), tr("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
         return;
       }
       Tin->setOutput(dsOGR, outputdataset);
@@ -409,12 +409,12 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
       if (!aux)
       {
-        QMessageBox::information(this, "TIN Generation", "The selected output datasource can not be accessed.");
+        QMessageBox::information(this, tr("TIN Generation"), tr("The selected output datasource can not be accessed."));
         return;
       }
       if (aux->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "TIN Generation", "Dataset already exists. Remove it or select a new name and try again. ");
+        QMessageBox::information(this, tr("TIN Generation"), tr("Dataset already exists. Remove it or select a new name and try again. "));
         return;
       }
     
@@ -475,7 +475,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
   catch (const std::exception& e)
   {
     this->setCursor(Qt::ArrowCursor);
-    QMessageBox::information(this, "TIN Generation", e.what());
+    QMessageBox::information(this, tr("TIN Generation"), e.what());
     return;
   }
   this->setCursor(Qt::ArrowCursor);

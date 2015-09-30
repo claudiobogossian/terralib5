@@ -49,8 +49,9 @@ namespace te
     {
       namespace mnt
       {
+        class MNTGenerationAction;
         class TINGenerationAction;
-    
+
         class Plugin : public QObject, public te::plugin::Plugin
         {
           Q_OBJECT
@@ -88,6 +89,7 @@ namespace te
 
             QMenu* m_mntMenu;                                    //!< MNT Main Menu registered.
 
+            MNTGenerationAction* m_MNTGeneration;    //!< GRID Generation Action
             TINGenerationAction* m_TINGeneration;    //!< TIN Generation Action
         };
       } // end namespace mnt

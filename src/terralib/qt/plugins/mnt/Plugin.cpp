@@ -30,6 +30,7 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/Utils.h"
+#include "MNTGenerationAction.h"
 #include "TINGenerationAction.h"
 #include "Plugin.h"
 
@@ -72,7 +73,7 @@ void te::qt::plugins::mnt::Plugin::startup()
     return;
 
 // it initializes the Translator support for the TerraLib MNT Qt Plugin
-   TE_LOG_TRACE(TE_TR("TerraLib Qt MNT Plugin startup!"));
+   TE_LOG_TRACE(TE_TR("TerraLib Qt DTM Plugin startup!"));
 
 // add plugin menu
   QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Processing");
@@ -84,7 +85,7 @@ void te::qt::plugins::mnt::Plugin::startup()
 
   pluginMenu->insertMenu(pluginsSeparator, m_mntMenu);
 
-  m_mntMenu->setTitle(TE_TR("MNT Processing"));
+  m_mntMenu->setTitle(TE_TR("DTM Processing"));
 
 // register actions
   registerActions();
@@ -131,7 +132,7 @@ void te::qt::plugins::mnt::Plugin::shutdown()
   log4cxx::LogManager::shutdown();
 #endif
 
-  TE_LOG_TRACE(TE_TR("TerraLib Qt MNT Plugin shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt DTM Plugin shutdown!"));
 
   m_initialized = false;
 
@@ -143,11 +144,16 @@ void te::qt::plugins::mnt::Plugin::registerActions()
   m_TINGeneration = new te::qt::plugins::mnt::TINGenerationAction(m_mntMenu);
   connect(m_TINGeneration, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_TINGeneration->getAction());
- }
+
+  m_MNTGeneration = new te::qt::plugins::mnt::MNTGenerationAction(m_mntMenu);
+  connect(m_MNTGeneration, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_MNTGeneration->getAction());
+}
 
 void  te::qt::plugins::mnt::Plugin::unRegisterActions()
 {
   delete m_TINGeneration;
+  delete m_MNTGeneration;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::mnt::Plugin)

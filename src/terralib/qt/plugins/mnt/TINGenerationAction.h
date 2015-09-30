@@ -41,7 +41,7 @@ namespace te
         /*!
           \class TINGenerationAction
 
-          \brief This class register the contrast action into MNT Plugin.
+          \brief This class register the Triangular Grid generation action into MNT Plugin.
 
         */
         class TINGenerationAction : public te::qt::plugins::mnt::AbstractAction
