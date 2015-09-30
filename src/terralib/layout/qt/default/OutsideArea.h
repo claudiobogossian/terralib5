@@ -86,7 +86,8 @@ namespace te
       virtual void onDeleteFinalized(std::vector<std::string>);
       virtual void onSelectionChanged(QList<QGraphicsItem*> selectedItems);
       virtual void onSelectionChanged();
-
+      virtual void onEditionFinalized();
+      virtual void onEditionInitialized();
 
     signals:
 

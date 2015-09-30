@@ -120,6 +120,8 @@ bool te::layout::CreateItemTool::mouseReleaseEvent(QMouseEvent* e)
   if (!item)
     return false;
 
+  m_view->resetDefaultConfig(true);
+
   //sc->update();
 
   return true;

@@ -1175,6 +1175,8 @@ bool te::layout::Scene::enterEditionMode()
   m_currentItemEdition->setEditionMode(true);
   update();
 
+  emit editionInitialized();
+
   return true;
 }
 
@@ -1187,6 +1189,7 @@ void te::layout::Scene::leaveEditionMode()
   m_isEditionMode = false;
   m_currentItemEdition->setEditionMode(false);
   update();
+  emit editionFinalized();
 }
 
 void te::layout::Scene::setContext(ContextObject context)

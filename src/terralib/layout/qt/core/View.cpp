@@ -85,6 +85,12 @@ te::layout::View::~View()
     m_currentTool = 0;
   }
 
+  for (size_t i = 0; i < m_lateRemovalVec.size(); ++i)
+  {
+    delete m_lateRemovalVec[i];
+  }
+  m_lateRemovalVec.clear();
+
   if(m_visualizationArea)
   {
     delete m_visualizationArea;
@@ -372,6 +378,7 @@ void te::layout::View::config()
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+  connect(scene(), SIGNAL(editionFinalized()), this, SLOT(onEditionFinalized()));
 }
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
@@ -432,7 +439,7 @@ void te::layout::View::destroyItemGroup()
   }
 }
 
-void te::layout::View::resetDefaultConfig()
+void te::layout::View::resetDefaultConfig(bool toolLateRemoval)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
@@ -443,11 +450,27 @@ void te::layout::View::resetDefaultConfig()
   setCursor(Qt::ArrowCursor);
   setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
 
+  for (size_t i = 0; i < m_lateRemovalVec.size(); ++i)
+  {
+    delete m_lateRemovalVec[i];
+  }
+  m_lateRemovalVec.clear();
+
   if(m_currentTool)
   {
     viewport()->removeEventFilter(m_currentTool);
-    delete m_currentTool;
-    m_currentTool = 0;
+    
+    if(toolLateRemoval == true)
+    {
+      m_currentTool->setParent(0);
+      m_lateRemovalVec.push_back(m_currentTool);
+      m_currentTool = 0;
+    }
+    else
+    {
+      delete m_currentTool;
+      m_currentTool = 0;
+    }    
   }
 }
 
@@ -1107,5 +1130,10 @@ te::layout::ContextObject te::layout::View::getContext()
   int zoom = getCurrentZoom();
   EnumType* mode = getCurrentMode();
   return ContextObject(zoom, dpiX, dpiY, mode);
+}
+
+void te::layout::View::onEditionFinalized()
+{
+  reload();
 }
 
