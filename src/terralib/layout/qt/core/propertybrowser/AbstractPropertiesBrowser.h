@@ -30,9 +30,11 @@
 
 // TerraLib
 #include "../../../core/Config.h"
+#include "../../../core/property/Properties.h"
 
 // STL
 #include <string>
+#include <vector>
 
 // Qt
 #include <QObject>
@@ -85,6 +87,8 @@ namespace te
         virtual QtProperty* findProperty(const std::string& name);
 
         virtual bool removeProperty(QtProperty* prop);
+
+        virtual void setAllProperties(Properties properties);
                           
       protected:
 
@@ -97,6 +101,7 @@ namespace te
         bool                        m_changeProperty;
         QMap<QtProperty*, QString>  m_propertyToId;
         QMap<QString, QtProperty*>  m_idToProperty;
+        Properties                  m_allProperties;
     };
   }
 }

@@ -30,6 +30,7 @@
 
 #include "../core/pattern/singleton/Context.h"
 #include "../core/property/GridSettingsConfigProperties.h"
+#include "../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../../common/StringUtils.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
@@ -47,10 +48,12 @@ te::layout::GridPlanarModel::GridPlanarModel()
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
+  PlanarGridSettingsConfigProperties settingsConfig;
+
   //adding properties
   {
     Property property(0);
-    property.setName("unit");
+    property.setName(settingsConfig.getUnit());
     property.setLabel("Unit");
     property.setValue((int)unit, dataType->getDataTypeInt());
     m_properties.addProperty(property);

@@ -29,7 +29,7 @@
 #include "GridGeodesicModel.h"
 
 #include "../core/pattern/singleton/Context.h"
-#include "../core/property/GridSettingsConfigProperties.h"
+#include "../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../../common/StringUtils.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
@@ -47,6 +47,8 @@ te::layout::GridGeodesicModel::GridGeodesicModel()
   bool showSecondsText = false;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  GeodesicGridSettingsConfigProperties settingsConfig;
 
   //adding properties
   // Reference Settings
@@ -80,21 +82,21 @@ te::layout::GridGeodesicModel::GridGeodesicModel()
   }
   {
     Property property(0);
-    property.setName("show_degrees_text");
+    property.setName(settingsConfig.getDegreesText());
     property.setLabel("Show Degrees Text");
     property.setValue(showDegreesText, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
   {
     Property property(0);
-    property.setName("show_minutes_text");
+    property.setName(settingsConfig.getMinutesText());
     property.setLabel("Show Minutes Text");
     property.setValue(showMinutesText, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
   {
     Property property(0);
-    property.setName("show_seconds_text");
+    property.setName(settingsConfig.getSecondsText());
     property.setLabel("Show Seconds Text");
     property.setValue(showSecondsText, dataType->getDataTypeBool());
     m_properties.addProperty(property);

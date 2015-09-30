@@ -329,20 +329,7 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
     return;
   }
 
-  ItemUtils* utils = Context::getInstance().getItemUtils();
-  if(!utils)
-  {
-    return;
-  }
-
-  AbstractItemView* abstractItem = utils->getSelectedItem();
-
-  GridMapItem* gridItem = dynamic_cast<GridMapItem*>(abstractItem);
-  if (gridItem)
-  {
-    te::layout::Properties props = gridItem->getController()->getProperties();
-    model->setGridProperties(props);
-  }
+  model->setGridProperties(m_allProperties);
   
   gridSettings->load();
   gridSettings->show(); // modeless dialog
