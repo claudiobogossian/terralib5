@@ -57,6 +57,7 @@ namespace te
     class EnumType;
     class VariantPropertiesBrowser;
     class DialogPropertiesBrowser;
+    class FilePathManager;
 
     /*!
     \brief Manage properties variants values. Maps the QProperty properties (Qt) and Property (Layout) and add to a tree (QtTreePropertyBrowser) for presentation to the user, 
@@ -151,6 +152,7 @@ namespace te
         QMap<QtProperty*, QString>  m_propertyToId;
         QMap<QString, QtProperty*>  m_idToProperty;
         QMap<QString, bool>         m_idToExpanded;
+        FilePathManager*            m_filePathManager;
 
 
         /* Custom Types: Dialog Window Type */

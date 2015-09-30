@@ -28,7 +28,7 @@ include_directories(${QTPROPERTYBROWSER_INCLUDE_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 if(WIN32)
-  add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTELAYOUTDLL)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTELAYOUTDLL -DQT_QTPROPERTYBROWSER_IMPORT)
 endif()
 
 if(Qt5_FOUND)

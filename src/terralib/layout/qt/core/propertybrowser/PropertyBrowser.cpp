@@ -46,11 +46,13 @@
 #include <QtPropertyBrowser/QtVariantPropertyManager>
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
 #include <QtPropertyBrowser/qteditorfactory.h>
+#include "VariantPropertiesBrowser.h"
+#include "DialogPropertiesBrowser.h"
+#include "FilePathManager.h"
+#include "FileEditFactory.h"
 
 // STL
 #include <algorithm>    // std::find
-#include "VariantPropertiesBrowser.h"
-#include "DialogPropertiesBrowser.h"
 
 te::layout::PropertyBrowser::PropertyBrowser(QObject* parent) :
   QObject(parent),
@@ -101,13 +103,18 @@ void te::layout::PropertyBrowser::createManager()
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(Property)), this, SLOT(onChangeDlgProperty(Property)));
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(std::vector<Property>)), this, SLOT(onChangeDlgProperty(std::vector<Property>)));
   
-
   m_propertyEditor->setFactoryForManager(m_dialogPropertiesBrowser->getStringPropertyManager(), m_dialogPropertiesBrowser->getDlgEditorFactory());
   m_propertyEditor->setFactoryForManager(m_variantPropertiesBrowser->getVariantPropertyManager(), m_variantPropertiesBrowser->getVariantEditorFactory());
   m_propertyEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   m_propertyEditor->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
 
   connect(m_propertyEditor, SIGNAL(currentItemChanged(QtBrowserItem*)), this, SLOT(onCurrentItemChanged(QtBrowserItem*)));
+
+  //New Factory, New Manager Test
+  m_filePathManager = new FilePathManager;
+  FileEditFactory* fileEditFactory = new FileEditFactory;
+  m_propertyEditor->setFactoryForManager(m_filePathManager, fileEditFactory);
+
 }
 
 void te::layout::PropertyBrowser::propertyEditorValueChanged( QtProperty *property, const QVariant &value )
@@ -249,9 +256,17 @@ QtProperty* te::layout::PropertyBrowser::addProperty( const Property& property )
   vproperty = dynamic_cast<QtVariantProperty*>(qProperty);
   if(vproperty) 
   {
-    bool is_readOnly = !property.isEditable();
+    /*bool is_readOnly = !property.isEditable();
     vproperty->setAttribute(QLatin1String("readOnly"), is_readOnly);
-    addPropertyItem(vproperty, QLatin1String(property.getName().c_str()));
+    addPropertyItem(vproperty, QLatin1String(property.getName().c_str()));*/
+
+    QtProperty* example = m_filePathManager->addProperty("Example");
+    m_filePathManager->setValue(example, "main.cpp");
+    m_filePathManager->setFilter(example, "Source files (*.cpp *.c)");
+    if (example)
+    {
+      addPropertyItem(example, QLatin1String(property.getName().c_str()));
+    }
   }
   else
   {
