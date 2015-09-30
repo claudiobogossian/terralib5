@@ -1175,6 +1175,8 @@ bool te::layout::Scene::enterEditionMode()
   m_currentItemEdition->setEditionMode(true);
   update();
 
+  emit editionInitialized();
+
   return true;
 }
 

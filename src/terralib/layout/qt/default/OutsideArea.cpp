@@ -119,6 +119,8 @@ void te::layout::OutsideArea::init()
     connect(m_view, SIGNAL(showView()), this, SLOT(onShowView()));
     connect(this, SIGNAL(changeMenuMode(te::layout::EnumType*)), m_view, SLOT(onMainMenuChangeMode(te::layout::EnumType*)));
     connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
+    connect(m_view->scene(), SIGNAL(editionFinalized()), this, SLOT(onEditionFinalized()));
+    connect(m_view->scene(), SIGNAL(editionInitialized()), this, SLOT(onEditionInitialized()));
   }
   
   createPropertiesDock();
@@ -541,5 +543,29 @@ QMenu* te::layout::OutsideArea::getMenu(QMenu* parentMenu)
     createMainMenu();
   }
   return m_layoutMenu;
+}
+
+void te::layout::OutsideArea::onEditionFinalized()
+{
+  if(m_dockProperties)
+  {
+    m_dockProperties->getPropertiesOutside()->setEnabled(true);
+  }
+  if(m_dockInspector)
+  {
+    m_dockInspector->getObjectInspectorOutside()->setEnabled(true);
+  }
+}
+
+void te::layout::OutsideArea::onEditionInitialized()
+{
+  if(m_dockProperties)
+  {
+    m_dockProperties->getPropertiesOutside()->setDisabled(true);
+  }
+  if(m_dockInspector)
+  {
+    m_dockInspector->getObjectInspectorOutside()->setDisabled(true);
+  }
 }
 

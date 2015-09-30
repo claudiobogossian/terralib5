@@ -380,6 +380,11 @@ namespace te
           */
          void editionFinalized();
 
+         /*!
+          \brief Issued after entering on edition mode
+          */
+         void editionInitialized();
+
         
       protected:
 
