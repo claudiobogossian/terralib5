@@ -604,6 +604,11 @@ inline void te::layout::AbstractItem<T>::mousePressEvent( QGraphicsSceneMouseEve
 template <class T>
 inline void te::layout::AbstractItem<T>::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
+  if (isEditionMode() == true)
+  {
+    return;
+  }
+
   if(m_currentAction == RESIZE_ACTION)
   {
     T::setOpacity(0.5);
