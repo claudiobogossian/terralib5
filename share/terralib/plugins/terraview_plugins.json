@@ -17,6 +17,7 @@
 	{"plugin":"te.qt.datasource.wms"},
 	{"plugin":"te.qt.edit"},
 	{"plugin":"te.qt.layout"},
+	{"plugin":"te.qt.mnt"},
 	{"plugin":"te.qt.rp"},
 	{"plugin":"te.qt.sa"},
 	{"plugin":"te.qt.vp"},
