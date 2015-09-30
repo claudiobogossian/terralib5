@@ -168,8 +168,9 @@ namespace te
 
         /*!
           \brief Reset the view interaction with the default settings, cursor, viewport update and no current tools.
+          \param lateToolDeletion If true, the tool will no be deleted imediately, but added to a list to late removal. This is useful 
         */
-        virtual void resetDefaultConfig();
+        virtual void resetDefaultConfig(bool toolLateRemoval = false);
 
         virtual void disableUpdate();
 
@@ -382,23 +383,24 @@ namespace te
 
       protected:
 
-        VisualizationArea*            m_visualizationArea;
-        AbstractLayoutTool*           m_currentTool;
-        PageSetupOutside*             m_pageSetupOutside;
-        SystematicScaleOutside*       m_systematicOutside;
-        te::gm::Coord2D               m_coordSystematic;
-        bool                          m_selectionChange;
-        MenuBuilder*                  m_menuBuilder;
-        HorizontalRuler*              m_horizontalRuler;
-        VerticalRuler*                m_verticalRuler;
-        double                        m_width;
-        double                        m_height;
-        bool                          m_isMoving;
-        te::layout::MovingItemGroup*  m_movingItemGroup;
-        bool                          m_updateItemPos;
-        WaitView*                     m_wait;
-        bool                          m_flag;
-        QPixmap                       m_foreground; //!< This pixmap represents the foreground drawings and is used for double buffering
+        VisualizationArea*                m_visualizationArea;
+        AbstractLayoutTool*               m_currentTool;
+        PageSetupOutside*                 m_pageSetupOutside;
+        SystematicScaleOutside*           m_systematicOutside;
+        te::gm::Coord2D                   m_coordSystematic;
+        bool                              m_selectionChange;
+        MenuBuilder*                      m_menuBuilder;
+        HorizontalRuler*                  m_horizontalRuler;
+        VerticalRuler*                    m_verticalRuler;
+        double                            m_width;
+        double                            m_height;
+        bool                              m_isMoving;
+        te::layout::MovingItemGroup*      m_movingItemGroup;
+        bool                              m_updateItemPos;
+        WaitView*                         m_wait;
+        bool                              m_flag;
+        QPixmap                           m_foreground; //!< This pixmap represents the foreground drawings and is used for double buffering
+        std::vector<AbstractLayoutTool*>  m_lateRemovalVec;
     };
   }
 }
