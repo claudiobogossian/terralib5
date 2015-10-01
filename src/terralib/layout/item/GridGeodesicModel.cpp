@@ -43,7 +43,6 @@ te::layout::GridGeodesicModel::GridGeodesicModel()
 {
   m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getGridGeodesicItem());
 
-  int srid = 0;
   te::gm::Envelope geographicBox(0, 0, 10000, 10000);
   bool showDegreesText = true;
   bool showMinutesText = false;
@@ -62,14 +61,6 @@ te::layout::GridGeodesicModel::GridGeodesicModel()
     property.setValue(geographicBox, dataType->getDataTypeEnvelope());
     m_properties.addProperty(property);
   }
-  {
-    Property property(0);
-    property.setName("srid");
-    property.setLabel("Srid");
-    property.setValue(srid, dataType->getDataTypeInt());
-    m_properties.addProperty(property);
-  }
-
   {
     std::string emptyString;
 
@@ -128,7 +119,6 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
   const Property& pCurrentWidth = this->getProperty("width");
   const Property& pCurrentHeight = this->getProperty("height");
   const Property& pCurrentGeographicBox = this->getProperty("geographic_box");
-  const Property& pCurrentSrid = this->getProperty("srid");
 
   //new values
   double newWidth = pNewWidth.getValue().toDouble();
@@ -140,7 +130,6 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
   //current values
   double currentWidth = pCurrentWidth.getValue().toDouble();
   double currentHeight = pCurrentHeight.getValue().toDouble();
-  int currentSrid = pCurrentSrid.getValue().toInt();
   te::gm::Envelope currentGeographicBox = pCurrentGeographicBox.getValue().toEnvelope();
 
   bool doUpdate = false;
@@ -156,10 +145,7 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
   {
     doUpdate = true;
   }
-  else if (currentSrid != newSrid)
-  {
-    doUpdate = true;
-  }
+
 
   if(doUpdate == true)
   {
@@ -174,12 +160,6 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
       Property property(0);
       property.setName("geographic_box");
       property.setValue(newGeographicBox, dataType->getDataTypeEnvelope());
-      properties.addProperty(property);
-    }
-    {
-      Property property(0);
-      property.setName("srid");
-      property.setValue(newSrid, dataType->getDataTypeInt());
       properties.addProperty(property);
     }
 
