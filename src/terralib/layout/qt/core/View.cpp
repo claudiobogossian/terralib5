@@ -811,8 +811,13 @@ void te::layout::View::recompose()
 {
   resetDefaultConfig();
 
-  int zoom = getDefaultZoom();
-  setZoom(zoom);
+  QRectF sceneRectV = sceneRect();
+
+  fitZoom(sceneRectV);
+
+  int zoom = getCurrentZoom();
+
+  setZoom(zoom*0.95);
 }
 
 void te::layout::View::arrowCursor()
