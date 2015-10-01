@@ -68,7 +68,8 @@ te::layout::View::View( QWidget* widget) :
   m_height(-1),
   m_isMoving(false),
   m_movingItemGroup(0),
-  m_updateItemPos(false)
+  m_updateItemPos(false),
+  m_mouseEvent(false)
 {
   setDragMode(RubberBandDrag);
 
@@ -124,8 +125,10 @@ te::layout::View::~View()
 
 void te::layout::View::mousePressEvent( QMouseEvent * event )
 {
+  m_mouseEvent = true;
+
   QGraphicsView::mousePressEvent(event);
-  
+
   QPointF scenePos = mapToScene(event->pos());
   te::gm::Coord2D coord(scenePos.x(), scenePos.y());
 
@@ -163,6 +166,8 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 {
+  m_mouseEvent = true;
+
   if (event->modifiers() & Qt::ControlModifier)
   {
     return;
@@ -191,6 +196,8 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 
 void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 {
+  m_mouseEvent = false;
+
   QGraphicsView::mouseReleaseEvent(event);
 
   Scene* sc = dynamic_cast<Scene*>(scene());
@@ -415,6 +422,8 @@ void te::layout::View::createItemGroup()
     If "enabled=false", QGraphicsItem Group will not block the child item's event 
     and let child item handle it own event.*/
     group->setHandlesChildEvents(true);
+    group->setSelected(true);
+    reload(); // load item group properties
   }
 }
 
@@ -624,11 +633,23 @@ void te::layout::View::onSystematicApply(double scale, SystematicScaleType type)
 
 void te::layout::View::onSelectionChanged()
 {
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if (!sc)
+    return;
+
   m_selectionChange = true;
 
   if(m_menuBuilder)
   {
     m_menuBuilder->closeAllWindows();
+  }
+
+  /* Scene isn't in edition mode and
+  mouse release yet happened, will happen the reload of the properties.
+  Otherwise, the reload will happen in double click event or in mouse release */
+  if (!sc->isEditionMode() && !m_mouseEvent)
+  {
+    reload();
   }
 }
 

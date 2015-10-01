@@ -362,7 +362,8 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
     Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
     if(lScene != 0)
     {
-      lScene->createItemGroup(listItemsToConnect);
+      QGraphicsItemGroup* group = lScene->createItemGroup(listItemsToConnect);
+      group->setSelected(true);
     }
   }
 }
