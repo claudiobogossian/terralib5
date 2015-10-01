@@ -85,7 +85,7 @@ namespace te
 
         virtual void closeAllWindows();
 
-        virtual QtProperty* addProperty(const Property& property);
+        virtual QMap<QString, QtProperty*> addProperties(const Properties& properties);
       
         virtual bool removeProperty(Property property);
 
@@ -133,6 +133,8 @@ namespace te
         void currentItemChanged(QtBrowserItem* item);
 
       protected:
+
+        virtual QtProperty* addProperty(const Property& property);
       
         virtual void addPropertyItem(QtProperty *property, const QString &id);
 

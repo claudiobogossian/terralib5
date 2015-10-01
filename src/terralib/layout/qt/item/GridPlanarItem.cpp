@@ -30,7 +30,7 @@
 
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "../../core/property/GridSettingsConfigProperties.h"
+#include "../../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../../core/WorldTransformer.h"
 #include "../../core/Utils.h"
 
@@ -47,7 +47,8 @@ te::layout::GridPlanarItem::~GridPlanarItem()
 
 void te::layout::GridPlanarItem::drawGrid(QPainter* painter)
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
+
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
   
   const std::string& style = pStyle.getValue().toString();
@@ -83,7 +84,7 @@ void te::layout::GridPlanarItem::drawGrid(QPainter* painter)
 
 void te::layout::GridPlanarItem::calculateGrid()
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pPlanarBox = m_controller->getProperty("planar_box");
   const Property& pWidth = m_controller->getProperty("width");
@@ -119,12 +120,12 @@ void te::layout::GridPlanarItem::calculateGrid()
 
 void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
   const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
-  const Property& pUnit = m_controller->getProperty("unit");
+  const Property& pUnit = m_controller->getProperty(settingsConfig.getUnit());
 
   std::string fontFamily = pFontFamily.getValue().toString();
   int textPointSize = pTextPointSize.getValue().toInt();
@@ -188,12 +189,12 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
 
 void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
   const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
-  const Property& pUnit = m_controller->getProperty("unit");
+  const Property& pUnit = m_controller->getProperty(settingsConfig.getUnit());
 
   std::string fontFamily = pFontFamily.getValue().toString();
   int textPointSize = pTextPointSize.getValue().toInt();
@@ -267,7 +268,7 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
 
 double te::layout::GridPlanarItem::initVerticalLines( const te::gm::Envelope& geoBox )
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pInitialGridPointY = m_controller->getProperty(settingsConfig.getInitialGridPointY());
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
@@ -295,7 +296,7 @@ double te::layout::GridPlanarItem::initVerticalLines( const te::gm::Envelope& ge
 
 double te::layout::GridPlanarItem::initHorizontalLines( const te::gm::Envelope& geoBox )
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pInitialGridPointX = m_controller->getProperty(settingsConfig.getInitialGridPointX());
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
