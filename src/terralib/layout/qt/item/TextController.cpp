@@ -52,7 +52,7 @@ QSizeF te::layout::TextController::updateView()
     const Property& pAligment = getProperty("alignment");
 
     const std::string& text = pText.getValue().toString();
-    Font ft = pFont.getValue().toFont();
+    const Font& ft = pFont.getValue().toFont();
     const te::color::RGBAColor& color = pColor.getValue().toColor();
 
     EnumAlignmentType enumAligmentType;
