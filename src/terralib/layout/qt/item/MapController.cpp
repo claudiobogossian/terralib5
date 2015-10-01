@@ -134,6 +134,12 @@ void te::layout::MapController::setProperties(const te::layout::Properties& prop
       if(syncMapDisplayProperty(property) == true)
       {
         wasSync = true;
+
+        if (property.getName() == "layers")
+        {
+          propertiesCopy.addProperty(property);
+        }
+
       }
     }
     else
@@ -347,8 +353,27 @@ bool te::layout::MapController::syncLayersToItem(const std::list<te::map::Abstra
   {
     te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
 
-    //if the current layer list was empty, we need to also define the srid e the envelope
-    if(currentLayerList.empty() == true)
+   //checks the intersection between the layers list in the model and the new layer list to be set
+    std::list<te::map::AbstractLayerPtr> intersectionList;
+
+    std::list<te::map::AbstractLayerPtr>::const_iterator itCurrent = currentLayerList.begin();
+    while (itCurrent != currentLayerList.end())
+    {
+      std::list<te::map::AbstractLayerPtr>::const_iterator itNew = layerList.begin();
+      while (itNew != layerList.end())
+      {
+        if (itCurrent->get()->getId() == itNew->get()->getId())
+        {
+          intersectionList.push_back(itCurrent->get());
+          break;
+        }
+        ++itNew;
+      }
+      ++itCurrent;
+    }
+
+    //If the old layer list has no intersection to the new, we need to also define the srid e the envelope
+    if(intersectionList.empty() == true)
     {
       te::gm::Envelope envelope;
       int srid = -1;
@@ -377,6 +402,13 @@ bool te::layout::MapController::syncLayersToItem(const std::list<te::map::Abstra
       mapDisplay->setSRID(srid, false);
       mapDisplay->refresh();
       mapDisplay->setExtent(envelope, false);
+      m_ignoreExtentChangedEvent = false;
+    }
+    else
+    {
+      //If there is an intersection, we just update the list and keep all other properties enchanged
+      m_ignoreExtentChangedEvent = true;
+      mapDisplay->setLayerList(layerList);
       m_ignoreExtentChangedEvent = false;
     }
 
