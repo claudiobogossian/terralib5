@@ -198,11 +198,23 @@ std::vector<int> te::qt::widgets::DoubleListWidget::getOutputDataValues()
 void te::qt::widgets::DoubleListWidget::clearInputValues()
 {
   m_ui->m_leftListWidget->clear();
+
+  m_ui->m_addToolButton->setEnabled(false);
+  m_ui->m_addAllToolButton->setEnabled(false);
 }
 
 void te::qt::widgets::DoubleListWidget::clearOutputValues()
 {
   m_ui->m_rightListWidget->clear();
+
+  m_ui->m_removeToolButton->setEnabled(false);
+  m_ui->m_removeAllToolButton->setEnabled(false);
+}
+
+void te::qt::widgets::DoubleListWidget::setVisibledOrderButtons(bool state)
+{
+  m_ui->m_upToolButton->setVisible(state);
+  m_ui->m_downToolButton->setVisible(state);
 }
 
 void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()

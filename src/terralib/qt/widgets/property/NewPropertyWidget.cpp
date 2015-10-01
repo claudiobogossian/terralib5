@@ -68,7 +68,6 @@ void te::qt::widgets::NewPropertyWidget::setDataSourceId(std::string id)
 
   //clear combobox
   m_ui->m_dataTypeComboBox->clear();
-  m_ui->m_dataTypeComboBox->addItem("");
 
   if(ds.get())
   {
@@ -139,6 +138,12 @@ void te::qt::widgets::NewPropertyWidget::setDataSourceId(std::string id)
     if(dataTypeCapabilities.supportsUInt64())
       m_ui->m_dataTypeComboBox->addItem(tr("U Int 64"), te::dt::UINT64_TYPE);
   }
+  else
+  {
+    m_ui->m_dataTypeComboBox->addItem("");
+  }
+
+  onDataTypeComboBoxActivated(0);
 }
 
 te::dt::SimpleProperty* te::qt::widgets::NewPropertyWidget::getProperty()
@@ -249,8 +254,25 @@ bool te::qt::widgets::NewPropertyWidget::buildProperty()
 
 void te::qt::widgets::NewPropertyWidget::onDataTypeComboBoxActivated(int index)
 {
+  //set interface for this new widget
+  m_ui->m_nameLineEdit->clear();
+
+  m_ui->m_defaultValueLineEdit->clear();
+  m_ui->m_defaultValueLineEdit->setEnabled(false);
+
+  m_ui->m_autoNumberCheckBox->setChecked(false);
+  m_ui->m_autoNumberCheckBox->setEnabled(false);
+
+  m_ui->m_requiredCheckBox->setChecked(false);
+  m_ui->m_requiredCheckBox->setEnabled(false);
+
   //create the specific widget
-  int dataType = m_ui->m_dataTypeComboBox->itemData(index).toInt();
+  QVariant var = m_ui->m_dataTypeComboBox->itemData(index);
+
+  if (!var.isValid())
+    return;
+
+  int dataType = var.toInt();
 
   delete m_spWidget;
 
@@ -264,18 +286,6 @@ void te::qt::widgets::NewPropertyWidget::onDataTypeComboBoxActivated(int index)
   {
     m_spWidget = 0;
   }
-
-  //set interface for this new widget
-  m_ui->m_nameLineEdit->clear();
-
-  m_ui->m_defaultValueLineEdit->clear();
-  m_ui->m_defaultValueLineEdit->setEnabled(false);
-
-  m_ui->m_autoNumberCheckBox->setChecked(false);
-  m_ui->m_autoNumberCheckBox->setEnabled(false);
-
-  m_ui->m_requiredCheckBox->setChecked(false);
-  m_ui->m_requiredCheckBox->setEnabled(false);
 
   if(m_spWidget)
   {

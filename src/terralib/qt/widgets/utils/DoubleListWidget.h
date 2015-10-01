@@ -84,6 +84,8 @@ namespace te
 
           void clearOutputValues();
 
+          void setVisibledOrderButtons(bool state);
+
         protected slots:
 
           void onAddToolButtonPressed();
