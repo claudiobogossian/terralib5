@@ -406,6 +406,7 @@ namespace te
         bool                              m_flag;
         QPixmap                           m_foreground; //!< This pixmap represents the foreground drawings and is used for double buffering
         std::vector<AbstractLayoutTool*>  m_lateRemovalVec;
+        bool                              m_mouseEvent; //!< if False yet happened mouseRelease, otherwise True
     };
   }
 }
