@@ -63,8 +63,6 @@ void te::layout::ImageItem::setFileName(const std::string& fileName)
 
 void te::layout::ImageItem::drawItem(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-  painter->save();
-
   const Property& pFrameColor = m_controller->getProperty("frame_color");
   const te::color::RGBAColor& framwColor = pFrameColor.getValue().toColor();
   QColor qContourColor(framwColor.getRed(), framwColor.getGreen(), framwColor.getBlue(), framwColor.getAlpha());

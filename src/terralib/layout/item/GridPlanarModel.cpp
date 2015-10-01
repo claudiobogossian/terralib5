@@ -44,7 +44,6 @@ te::layout::GridPlanarModel::GridPlanarModel()
   , Observer()
 {
   LayoutUnit unit(StyleKilometer);
-  int srid = 0;
   te::gm::Envelope planarBox(0, 0, 10000, 10000);
 
   m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getGridPlanarItem());
@@ -70,14 +69,6 @@ te::layout::GridPlanarModel::GridPlanarModel()
     property.setValue(planarBox, dataType->getDataTypeEnvelope());
     m_properties.addProperty(property);
   }
-  {
-    Property property(0);
-    property.setName("srid");
-    property.setLabel("Srid");
-    property.setValue(srid, dataType->getDataTypeInt());
-    m_properties.addProperty(property);
-  }
-
   {
     std::string emptyString;
 
@@ -116,7 +107,6 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   const Property& pCurrentWidth = this->getProperty("width");
   const Property& pCurrentHeight = this->getProperty("height");
   const Property& pCurrentPlanarBox = this->getProperty("planar_box");
-  const Property& pCurrentSrid = this->getProperty("srid");
 
   //new values
   double newWidth = pNewWidth.getValue().toDouble();
@@ -134,7 +124,6 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   //current values
   double currentWidth = pCurrentWidth.getValue().toDouble();
   double currentHeight = pCurrentHeight.getValue().toDouble();
-  int currentSrid = pCurrentSrid.getValue().toInt();
   te::gm::Envelope currentPlanarBox = pCurrentPlanarBox.getValue().toEnvelope();
 
   bool doUpdate = false;
@@ -147,10 +136,6 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
     doUpdate = true;
   }
   else if(newPlanarBox.equals(currentPlanarBox) == false)
-  {
-    doUpdate = true;
-  }
-  else if (currentSrid != newSrid)
   {
     doUpdate = true;
   }
