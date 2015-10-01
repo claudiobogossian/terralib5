@@ -36,6 +36,9 @@
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../maptools/Utils.h"
 
+// STL
+#include <string>
+
 te::layout::GridPlanarModel::GridPlanarModel()
   : GridMapModel()
   , Observer()
@@ -147,6 +150,10 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   {
     doUpdate = true;
   }
+  else if (currentSrid != newSrid)
+  {
+    doUpdate = true;
+  }
 
   if(doUpdate == true)
   {
@@ -156,11 +163,16 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
     Properties properties("");
     properties.addProperty(pNewWidth);
     properties.addProperty(pNewHeight);
-
     {
       Property property(0);
       property.setName("planar_box");
       property.setValue(newPlanarBox, dataType->getDataTypeEnvelope());
+      properties.addProperty(property);
+    }
+    {
+      Property property(0);
+      property.setName("srid");
+      property.setValue(newSrid, dataType->getDataTypeInt());
       properties.addProperty(property);
     }
 

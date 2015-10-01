@@ -60,7 +60,11 @@ void te::layout::GridMapItem::drawItem( QPainter * painter, const QStyleOptionGr
   }
   else
   {
-    drawDefaultGrid(painter);
+    const Property& pSRID = m_controller->getProperty("srid");
+    if (pSRID.getValue().toInt() <= 0)
+    {
+      drawDefaultGrid(painter);
+    }
   }
 }
 

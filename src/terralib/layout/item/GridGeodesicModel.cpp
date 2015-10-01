@@ -34,6 +34,9 @@
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
+// STL
+#include <string>
+
 te::layout::GridGeodesicModel::GridGeodesicModel() 
   : GridMapModel()
   , Observer()
@@ -153,6 +156,10 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
   {
     doUpdate = true;
   }
+  else if (currentSrid != newSrid)
+  {
+    doUpdate = true;
+  }
 
   if(doUpdate == true)
   {
@@ -167,6 +174,12 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
       Property property(0);
       property.setName("geographic_box");
       property.setValue(newGeographicBox, dataType->getDataTypeEnvelope());
+      properties.addProperty(property);
+    }
+    {
+      Property property(0);
+      property.setName("srid");
+      property.setValue(newSrid, dataType->getDataTypeInt());
       properties.addProperty(property);
     }
 
