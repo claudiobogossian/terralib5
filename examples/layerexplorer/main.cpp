@@ -23,7 +23,8 @@
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
 #include <terralib/qt/widgets.h>
-#include <terralib/qt/widgets/layer/explorer/LayerTreeModel.h>
+#include <terralib/qt/widgets/layer/explorer/LayerItemModel.h>
+#include <terralib/qt/widgets/layer/explorer/LayerItemView.h>
 
 //Qt
 #include <QApplication>
@@ -84,20 +85,20 @@ int main(int argc, char *argv[])
 
   std::cout << std::endl << "Time to create te::map::AbstractLayer hierarchical tree with " << maxi * maxj * maxk << " items in: " << end - begin << " miliseconds" << std:: endl;
 
-  // Create the layer explorer
+  // Create the layer view
   begin = clock();
 
-  te::qt::widgets::LayerExplorer* layerExplorer = new te::qt::widgets::LayerExplorer();
-  
+  te::qt::widgets::LayerItemView* layerItemView = new te::qt::widgets::LayerItemView();
+
   end = clock();
 
   std::cout << std::endl << "Time to create LayerExplorer for the hierarchical tree with " << maxi * maxj * maxk << " items in: " << end - begin << " miliseconds" << std:: endl;
 
   begin = clock();
 
-  layerExplorer->getTreeModel()->set(layers);
+  layerItemView->setLayers(layers);
 
-  layerExplorer->show();
+  layerItemView->show();
 
   end = clock();
 
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
 
   int ret = app.exec();
 
-  delete layerExplorer;
+  delete layerItemView;
 
   TerraLib::getInstance().finalize();
 
