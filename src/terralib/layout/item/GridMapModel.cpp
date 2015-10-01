@@ -128,8 +128,6 @@ te::layout::GridMapModel::GridMapModel()
   }
 
   //Just one is visible
-  /*
-  //need review
   {
     EnumGridStyleType gridStyleType;
     EnumType* currentGridStyle = gridStyleType.getStyleContinuous();
@@ -137,6 +135,7 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getStyle());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(currentGridStyle->getLabel(), dataType->getDataTypeStringList());
 
     Variant v;
@@ -158,11 +157,8 @@ te::layout::GridMapModel::GridMapModel()
 
     m_properties.addProperty(property);
   }
-  */
 
   // Line
-  /*
-  //need review
   {
     EnumLineStyleType lineStyleType;
     EnumType* currentLineStyle = lineStyleType.getStyleSolid();
@@ -170,6 +166,7 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getLineStyle());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(currentLineStyle->getLabel(), dataType->getDataTypeStringList());
 
     Variant v;
@@ -191,7 +188,6 @@ te::layout::GridMapModel::GridMapModel()
 
     m_properties.addProperty(property);
   }
-  */
 
   {
     Property property(0);
@@ -200,16 +196,15 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(lineColor, dataType->getDataTypeColor());
     m_properties.addProperty(property);
   }
-  /*
-  //need review
+
   {
     Property property(0);
     property.setName(settingsConfig.getLineWidth());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(lineWidth, dataType->getDataTypeInt());
     m_properties.addProperty(property);
   }
-  */
 
   // Text: Basic Configuration
   {
@@ -219,16 +214,15 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(pointTextSize, dataType->getDataTypeInt());
     m_properties.addProperty(property);
   }
-  /*
-  //need review
+  
   {
     Property property(0);
     property.setName(settingsConfig.getFontText());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(fontFamily, dataType->getDataTypeString());
     m_properties.addProperty(property);
   }
-  */
   {
     Property property(0);
     property.setName(settingsConfig.getTextColor());
@@ -245,36 +239,34 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(visibleAllTexts, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
-  /*
-  //need review
+
   {
     Property property(0);
     property.setName(settingsConfig.getSuperscriptText());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(superscriptText, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
-  */
-  /*
-  //need review
+
   {
     Property property(0);
     property.setName(settingsConfig.getLneVrtDisplacement());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(lneVrtDisplacement, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
-  */
-  /*
-  //need review
+
   {
     Property property(0);
     property.setName(settingsConfig.getLneHrzDisplacement());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(lneHrzDisplacement, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
-  */
+
   {
     Property property(0);
     property.setName(settingsConfig.getBottomText());
