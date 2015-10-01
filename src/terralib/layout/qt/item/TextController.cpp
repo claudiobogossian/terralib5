@@ -69,7 +69,8 @@ QSizeF te::layout::TextController::updateView()
     qft.setUnderline(ft.isUnderline());
 
     //we need to set the font size from PT to MM
-    double ptSize = 0.352777778; //size of 1 pt in mm  
+    //double ptSize = 0.352777778; //size of 1 pt in mm, considering 72 DPI 
+    double ptSize = 0.2645833333; //size of 1 pt in mm, considering 96 DPI 
     qft.setPointSizeF(ft.getPointSize() * ptSize);
 
 
