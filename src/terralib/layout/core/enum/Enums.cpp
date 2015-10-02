@@ -47,6 +47,12 @@ te::layout::Enums::~Enums()
     delete m_toolType;
     m_toolType = 0;
   }
+
+  if (m_objType)
+  {
+    delete m_objType;
+    m_objType = 0;
+  }
 }
 
 void te::layout::Enums::setEnumDataType( EnumDataType* type )
