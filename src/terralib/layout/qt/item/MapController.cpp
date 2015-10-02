@@ -134,6 +134,10 @@ void te::layout::MapController::setProperties(const te::layout::Properties& prop
       if(syncMapDisplayProperty(property) == true)
       {
         wasSync = true;
+        if (property.getName() == "layers")
+        {
+          propertiesCopy.addProperty(property);
+        }
       }
     }
     else
@@ -377,6 +381,13 @@ bool te::layout::MapController::syncLayersToItem(const std::list<te::map::Abstra
       mapDisplay->setSRID(srid, false);
       mapDisplay->refresh();
       mapDisplay->setExtent(envelope, false);
+      m_ignoreExtentChangedEvent = false;
+    }
+    else
+    {
+      //this refresh need to be done in order to correctly initialize the mapDisplay. We should review this later
+      m_ignoreExtentChangedEvent = true;
+      mapDisplay->setLayerList(layerList);
       m_ignoreExtentChangedEvent = false;
     }
 

@@ -76,41 +76,43 @@ void te::layout::MapLayerChoiceOutside::init()
 
   // Layers From Map Items
   std::list<te::map::AbstractLayerPtr> selectedLayers = model->getSelectedLayers();
+  std::list<te::map::AbstractLayerPtr>::iterator itSelected = selectedLayers.begin();
   
   // All Layers from Project
 
   std::list<te::map::AbstractLayerPtr> layers = model->getLayers();
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
 
-  std::vector <std::string> names;
+  std::vector <std::string> namesToInput;
+  std::vector <std::string> namesToOutput;
+  bool hasTheSameId = false;
   while(it != layers.end())
   {
     te::map::AbstractLayerPtr layer = it->get();
-
-    if(std::find(selectedLayers.begin(), selectedLayers.end(), layer) != selectedLayers.end())
+    while(itSelected != selectedLayers.end())
+    {
+      te::map::AbstractLayerPtr layerSelected = itSelected->get();
+      if (layerSelected->getId() == layer->getId())
+      {
+        namesToOutput.push_back(layerSelected->getTitle());
+        hasTheSameId = true;
+        break;
+      }
+      ++itSelected;
+    }
+    if  (hasTheSameId)
     {
       ++it;
+      hasTheSameId = false;
       continue;
     }
-    
-    names.push_back(layer->getTitle());    
+    namesToInput.push_back(layer->getTitle());
+    itSelected = selectedLayers.begin();
     ++it;
   }
 
-  m_widget->setInputValues(names);      
-  
-  // Layers From Map Items
-  std::list<te::map::AbstractLayerPtr>::iterator itSelected = selectedLayers.begin();
-
-  names.clear();
-  while(itSelected != selectedLayers.end())
-  {
-    te::map::AbstractLayerPtr layer = itSelected->get();
-    names.push_back(layer->getTitle());
-    ++itSelected;
-  }
-
-  m_widget->setOutputValues(names);      
+  m_widget->setInputValues(namesToInput);
+  m_widget->setOutputValues(namesToOutput);
 }
 
 void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
