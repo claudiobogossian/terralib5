@@ -103,6 +103,8 @@ namespace te
 
         void storeFeature(te::edit::OperationType op);
 
+        void updateCursor();
+
     };
   }   // end namespace edit
 }     // end namespace te

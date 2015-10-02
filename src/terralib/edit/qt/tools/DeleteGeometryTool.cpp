@@ -50,7 +50,9 @@
 
 te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent)
-{}
+{
+  updateCursor();
+}
 
 te::edit::DeleteGeometryTool::~DeleteGeometryTool()
 {
@@ -125,5 +127,8 @@ void te::edit::DeleteGeometryTool::storeFeature(te::edit::OperationType op)
 
 }
 
-
+void te::edit::DeleteGeometryTool::updateCursor()
+{
+  m_display->setCursor(Qt::ArrowCursor);
+}
 
