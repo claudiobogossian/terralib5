@@ -906,13 +906,29 @@ void te::layout::View::setZoom(int newZoom)
   if(isLimitExceeded(newZoom) == true)
     return;
 
-  double rescale = (double)newZoom / (double)currentZoom;
+  Scene* scne = dynamic_cast<Scene*>(scene());
 
-  if(rescale > 0)
+  double currentHorizontalScale = this->viewportTransform().m11();
+  double currentVerticalScale = this->viewportTransform().m22();
+
+
+  double origHorizontalScale = scne->sceneTransform().m11();
+  double origVerticalScale = scne->sceneTransform().m22();
+
+
+  double hZoomScale = origHorizontalScale / (100./newZoom);
+  double vZoomScale = origVerticalScale / (100./newZoom);
+
+  double zoomScaleFactorH = hZoomScale / currentHorizontalScale;
+  double zoomScaleFactorV = vZoomScale / currentVerticalScale;
+
+
+  if((zoomScaleFactorH > 0)
+      && (zoomScaleFactorV > 0))
   {
     setCurrentZoom(newZoom);
 
-    applyScale(rescale);
+    applyScale(zoomScaleFactorH, zoomScaleFactorV);
 
     Scene* sce = dynamic_cast<Scene*>(scene());
     if(sce)
@@ -971,14 +987,14 @@ void te::layout::View::createItem(EnumType* itemType)
   viewport()->installEventFilter(m_currentTool);
 }
 
-void te::layout::View::applyScale(double newScale)
+void te::layout::View::applyScale(double horizontalScale, double verticalScale)
 {
-  if(newScale <= 0)
+  if((horizontalScale <= 0)||(verticalScale <= 0))
   {
     return;
   }
 
-  scale(newScale, newScale);
+  scale(horizontalScale, verticalScale);
 }
 
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )

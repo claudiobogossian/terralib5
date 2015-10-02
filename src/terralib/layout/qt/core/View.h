@@ -384,7 +384,7 @@ namespace te
         /*!
           \brief Apply the zoom in the QGraphicsView to the given value
           */
-        virtual void applyScale(double newScale);
+        virtual void applyScale(double horizontalScale, double verticalScale);
 
       protected:
 
