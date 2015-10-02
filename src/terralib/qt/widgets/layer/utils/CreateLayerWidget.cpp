@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-\file src/terraMobilePlugin/qt/CreateLayerDialog.cpp
+\file terralib/qt/widgets/layer/utils/CreateLayerWidget.cpp
 
 \brief This interface is used to create new layer operation.
 */
@@ -27,10 +27,10 @@
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../../../datatype/Utils.h"
 #include "../../../../qt/widgets/property/NewPropertyWidget.h"
-
-#include "CreateLayerDialog.h"
-#include "ui_CreateLayerDialogForm.h"
+#include "CreateLayerWidget.h"
+#include "ui_CreateLayerWidgetForm.h"
 
 // Qt
 #include <QFileDialog>
@@ -41,14 +41,12 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-
-te::qt::plugins::terramobile::CreateLayerDialog::CreateLayerDialog(QWidget* parent, Qt::WindowFlags f)
-  : QDialog(parent, f),
-  m_ui(new Ui::CreateLayerDialogForm)
+te::qt::widgets::CreateLayerWidget::CreateLayerWidget(QWidget* parent, Qt::WindowFlags f) 
+  : QWidget(parent, f),
+  m_ui(new Ui::CreateLayerWidgetForm)
 {
   // add controls
   m_ui->setupUi(this);
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("layer-new").pixmap(50, 50));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   //add new property widget
@@ -59,30 +57,56 @@ te::qt::plugins::terramobile::CreateLayerDialog::CreateLayerDialog(QWidget* pare
 
   layout->addWidget(m_newPropWidget);
 
+  //mapper initializer
+  m_removeMapper = new QSignalMapper(this);
+
   //connects
-  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_addPushButton, SIGNAL(clicked()), this, SLOT(onAddPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
+
+  connect(m_removeMapper, SIGNAL(mapped(int)), this, SLOT(onRemoveAttrExecuted(int)));
 }
 
-te::qt::plugins::terramobile::CreateLayerDialog::~CreateLayerDialog()
+te::qt::widgets::CreateLayerWidget::~CreateLayerWidget()
 {
-
 }
 
-void te::qt::plugins::terramobile::CreateLayerDialog::onOkPushButtonClicked()
+void te::qt::widgets::CreateLayerWidget::setDataSource(te::da::DataSourceInfoPtr dsInfo)
+{
+  m_outputDatasource = dsInfo;
+
+  m_newPropWidget->setDataSourceId(m_outputDatasource->getId());
+
+  m_ui->m_repositoryLineEdit->setText(m_outputDatasource->getTitle().c_str());
+
+  m_toFile = false;
+
+  m_ui->m_targetFileToolButton->setEnabled(false);
+  m_ui->m_targetDatasourceToolButton->setEnabled(false);
+
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
+}
+
+bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
 {
   if (!m_outputDatasource.get())
   {
-    QMessageBox::warning(this, tr("Warning"), tr("Define the data source first."));
-    return;
+    errorMessage = "Define the data source first.";
+    return false;
   }
 
   if (m_props.empty())
   {
-    QMessageBox::warning(this, tr("Warning"), tr("Define the properties first."));
-    return;
+    errorMessage = "Define the properties first.";
+    return false;
+  }
+
+  if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    errorMessage = "Layer name not defined.";
+    return false;
   }
 
   te::da::DataSourcePtr outputDataSource = te::da::DataSourceManager::getInstance().get(m_outputDatasource->getId(), m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
@@ -105,19 +129,19 @@ void te::qt::plugins::terramobile::CreateLayerDialog::onOkPushButtonClicked()
   }
   catch (const std::exception& ex)
   {
-    QMessageBox::warning(this, tr("Warning"), ex.what());
-    return;
+    errorMessage = ex.what();
+    return false;
   }
   catch (...)
   {
-    QMessageBox::warning(this, tr("Warning"), tr("Error creating layer."));
-    return;
+    errorMessage = "Error creating layer.";
+    return false;
   }
 
-  accept();
+  return true;
 }
 
-void te::qt::plugins::terramobile::CreateLayerDialog::onAddPushButtonClicked()
+void te::qt::widgets::CreateLayerWidget::onAddPushButtonClicked()
 {
   if (m_newPropWidget->buildProperty())
   {
@@ -126,22 +150,24 @@ void te::qt::plugins::terramobile::CreateLayerDialog::onAddPushButtonClicked()
 
     m_props.push_back(sp);
 
-    //set property info into table widget
-    int newrow = m_ui->m_tableWidget->rowCount();
+    QString msg = tr("<font color='green'>Property ");
+    msg.append(sp->getName().c_str());
+    msg.append(" created.</font>");
 
-    m_ui->m_tableWidget->insertRow(newrow);
+    m_ui->m_label->setText(msg);
 
-    //name
-    QTableWidgetItem* itemName = new QTableWidgetItem(sp->getName().c_str());
-    m_ui->m_tableWidget->setItem(newrow, 0, itemName);
+    if (m_outputDatasource.get())
+      m_newPropWidget->setDataSourceId(m_outputDatasource->getId());
 
-    //type
-    QTableWidgetItem* itemType = new QTableWidgetItem(QString::number(sp->getType()));
-    m_ui->m_tableWidget->setItem(newrow, 1, itemType);
+    listProperties();
+  }
+  else
+  {
+    m_ui->m_label->setText("<font color='red'>Error creating property.</font>");
   }
 }
 
-void te::qt::plugins::terramobile::CreateLayerDialog::onTargetDatasourceToolButtonPressed()
+void te::qt::widgets::CreateLayerWidget::onTargetDatasourceToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_newLayerNameLineEdit->setEnabled(true);
@@ -169,7 +195,7 @@ void te::qt::plugins::terramobile::CreateLayerDialog::onTargetDatasourceToolButt
   m_toFile = false;
 }
 
-void te::qt::plugins::terramobile::CreateLayerDialog::onTargetFileToolButtonPressed()
+void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
@@ -215,3 +241,45 @@ void te::qt::plugins::terramobile::CreateLayerDialog::onTargetFileToolButtonPres
 
   m_newPropWidget->setDataSourceId(m_outputDatasource->getId());
 }
+
+void te::qt::widgets::CreateLayerWidget::onRemoveAttrExecuted(int row)
+{
+  m_props.erase(m_props.begin() + row);
+
+  listProperties();
+}
+
+void te::qt::widgets::CreateLayerWidget::listProperties()
+{
+  m_ui->m_tableWidget->setRowCount(0);
+
+  for (std::size_t t = 0; t < m_props.size(); ++t)
+  {
+    te::dt::Property* p = m_props[t];
+
+    //set property info into table widget
+    int newrow = m_ui->m_tableWidget->rowCount();
+    m_ui->m_tableWidget->insertRow(newrow);
+
+    //name
+    QTableWidgetItem* itemName = new QTableWidgetItem(p->getName().c_str());
+    m_ui->m_tableWidget->setItem(newrow, 2, itemName);
+
+    //type
+    std::string propType = te::dt::ConvertDataTypeToString(p->getType());
+    QTableWidgetItem* itemType = new QTableWidgetItem(propType.c_str());
+    m_ui->m_tableWidget->setItem(newrow, 1, itemType);
+
+    //remove button
+    QToolButton* removeToolButton = new QToolButton(m_ui->m_tableWidget);
+    removeToolButton->setIcon(QIcon::fromTheme("list-remove"));
+    m_ui->m_tableWidget->setCellWidget(newrow, 0, removeToolButton);
+
+    m_removeMapper->setMapping(removeToolButton, newrow);
+    connect(removeToolButton, SIGNAL(pressed()), m_removeMapper, SLOT(map()));
+  }
+
+  m_ui->m_tableWidget->resizeColumnsToContents();
+  m_ui->m_tableWidget->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+}
+

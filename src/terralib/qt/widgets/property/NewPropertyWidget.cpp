@@ -69,6 +69,8 @@ void te::qt::widgets::NewPropertyWidget::setDataSourceId(std::string id)
   //clear combobox
   m_ui->m_dataTypeComboBox->clear();
 
+  m_ui->m_dataTypeComboBox->addItem("");
+
   if(ds.get())
   {
     //fill combobox type with supported types
@@ -137,10 +139,6 @@ void te::qt::widgets::NewPropertyWidget::setDataSourceId(std::string id)
 
     if(dataTypeCapabilities.supportsUInt64())
       m_ui->m_dataTypeComboBox->addItem(tr("U Int 64"), te::dt::UINT64_TYPE);
-  }
-  else
-  {
-    m_ui->m_dataTypeComboBox->addItem("");
   }
 
   onDataTypeComboBoxActivated(0);
@@ -266,6 +264,9 @@ void te::qt::widgets::NewPropertyWidget::onDataTypeComboBoxActivated(int index)
   m_ui->m_requiredCheckBox->setChecked(false);
   m_ui->m_requiredCheckBox->setEnabled(false);
 
+  delete m_spWidget;
+  m_spWidget = 0;
+
   //create the specific widget
   QVariant var = m_ui->m_dataTypeComboBox->itemData(index);
 
@@ -274,17 +275,11 @@ void te::qt::widgets::NewPropertyWidget::onDataTypeComboBoxActivated(int index)
 
   int dataType = var.toInt();
 
-  delete m_spWidget;
-
   if(te::qt::widgets::SimplePropertyWidgetFactory::find(dataType))
   {
     m_spWidget = te::qt::widgets::SimplePropertyWidgetFactory::make(dataType, m_ui->m_scrollArea);
     m_layout->addWidget(m_spWidget);
     m_spWidget->show();
-  }
-  else
-  {
-    m_spWidget = 0;
   }
 
   if(m_spWidget)
