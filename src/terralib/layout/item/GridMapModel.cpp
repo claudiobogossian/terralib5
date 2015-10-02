@@ -47,11 +47,7 @@ te::layout::GridMapModel::GridMapModel()
   double m_initialGridPointX = 0.; 
   double m_initialGridPointY = 0.;
 
-  //Just one is visible
-  EnumType* gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleContinuous();
-
   // Line
-  EnumType* lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleSolid();
   te::color::RGBAColor lineColor(0, 0, 0, 255);
   int lineWidth = 1;
 
@@ -133,19 +129,63 @@ te::layout::GridMapModel::GridMapModel()
 
   //Just one is visible
   {
+    EnumGridStyleType gridStyleType;
+    EnumType* currentGridStyle = gridStyleType.getStyleContinuous();
+
     Property property(0);
     property.setName(settingsConfig.getStyle());
     property.setComposeWidget(true);
-    property.setValue(gridStyle->getLabel(), dataType->getDataTypeString());
+    property.setVisible(false); //need review
+    property.setValue(currentGridStyle->getLabel(), dataType->getDataTypeStringList());
+
+    Variant v;
+    v.setValue(currentGridStyle->getLabel(), dataType->getDataTypeString());
+    property.addOption(v);
+    property.setOptionChoice(v);
+
+    for (int i = 0; i < gridStyleType.size(); ++i)
+    {
+      EnumType* enumType = gridStyleType.getEnum(i);
+
+      if (enumType == gridStyleType.getStyleNone() || enumType == currentGridStyle)
+        continue;
+
+      Variant v;
+      v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+      property.addOption(v);
+    }
+
     m_properties.addProperty(property);
   }
 
   // Line
   {
+    EnumLineStyleType lineStyleType;
+    EnumType* currentLineStyle = lineStyleType.getStyleSolid();
+
     Property property(0);
     property.setName(settingsConfig.getLineStyle());
     property.setComposeWidget(true);
-    property.setValue(lineStyle->getName(), dataType->getDataTypeString());
+    property.setVisible(false); //need review
+    property.setValue(currentLineStyle->getLabel(), dataType->getDataTypeStringList());
+
+    Variant v;
+    v.setValue(currentLineStyle->getLabel(), dataType->getDataTypeString());
+    property.addOption(v);
+    property.setOptionChoice(v);
+
+    for (int i = 0; i < lineStyleType.size(); ++i)
+    {
+      EnumType* enumType = lineStyleType.getEnum(i);
+
+      if (enumType == lineStyleType.getStyleNone() || enumType == currentLineStyle)
+        continue;
+
+      Variant v;
+      v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+      property.addOption(v);
+    }
+
     m_properties.addProperty(property);
   }
 
@@ -161,6 +201,7 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getLineWidth());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(lineWidth, dataType->getDataTypeInt());
     m_properties.addProperty(property);
   }
@@ -173,10 +214,12 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(pointTextSize, dataType->getDataTypeInt());
     m_properties.addProperty(property);
   }
+  
   {
     Property property(0);
     property.setName(settingsConfig.getFontText());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(fontFamily, dataType->getDataTypeString());
     m_properties.addProperty(property);
   }
@@ -196,27 +239,34 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(visibleAllTexts, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
+
   {
     Property property(0);
     property.setName(settingsConfig.getSuperscriptText());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(superscriptText, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
+
   {
     Property property(0);
     property.setName(settingsConfig.getLneVrtDisplacement());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(lneVrtDisplacement, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
+
   {
     Property property(0);
     property.setName(settingsConfig.getLneHrzDisplacement());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(lneHrzDisplacement, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
+
   {
     Property property(0);
     property.setName(settingsConfig.getBottomText());

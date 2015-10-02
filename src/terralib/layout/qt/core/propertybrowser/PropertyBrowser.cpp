@@ -268,6 +268,25 @@ QtProperty* te::layout::PropertyBrowser::addProperty( const Property& property )
   return vproperty;
 }
 
+QMap<QString, QtProperty*> te::layout::PropertyBrowser::addProperties(const Properties& properties)
+{
+  std::vector<Property> vecProperties = properties.getProperties();
+  foreach(Property prop, vecProperties)
+  {
+    if (!prop.isVisible())
+      continue;
+
+    addProperty(prop);
+  }
+
+  Properties props = properties;
+
+  m_variantPropertiesBrowser->setAllProperties(props);
+  m_dialogPropertiesBrowser->setAllProperties(props);
+
+  return m_idToProperty;
+}
+
 bool te::layout::PropertyBrowser::removeProperty( Property property )
 {
   QtProperty* removeProp = 0;

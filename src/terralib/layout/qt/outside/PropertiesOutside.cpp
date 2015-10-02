@@ -201,14 +201,20 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   m_nameLabel->setText(tr("Component::") + props.getObjectName().c_str());
   
   const std::vector<Property>& vecProperties = props.getProperties();
+
+  Properties newProperties(props);
+  newProperties.clear();
+
   foreach(Property prop, vecProperties)
   {
     if(!prop.isVisible())
       continue;
-
+    
     m_propUtils->checkDynamicProperty(prop, allItems);
-    m_layoutPropertyBrowser->addProperty(prop);
+    newProperties.addProperty(prop);
   }
+
+  m_layoutPropertyBrowser->addProperties(newProperties);
    
   update();
 }
@@ -356,7 +362,8 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
     Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
     if(lScene != 0)
     {
-      lScene->createItemGroup(listItemsToConnect);
+      QGraphicsItemGroup* group = lScene->createItemGroup(listItemsToConnect);
+      group->setSelected(true);
     }
   }
 }

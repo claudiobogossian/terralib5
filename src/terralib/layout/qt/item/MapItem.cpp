@@ -402,7 +402,7 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
     worldTileWidth = worldTileHeight;
   }
 
-  QRectF boundRect = this->getAdjustedBoundingRect(painter);
+  QRectF boundRect = boundingRect();
 
   double boundingTileWidth = boundRect.width() / (double)numTilesX;
   double boundingTileHeight = boundRect.height() / (double)numTilesY;
@@ -421,6 +421,8 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
   double extendHeight = m_mapDisplay->getExtent().getLowerLeftY();
     
   painter->save();
+
+  painter->setClipRect(boundRect);
 
   for (int i = 0; i < numTilesX; ++i)
   {

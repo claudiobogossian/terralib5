@@ -58,79 +58,11 @@ void te::layout::GridMapItem::drawItem( QPainter * painter, const QStyleOptionGr
   {
     drawGrid(painter);
   }
-  else
-  {
-    drawDefaultGrid(painter);
-  }
 }
 
 void te::layout::GridMapItem::drawGrid( QPainter* painter )
 {
 
-}
-
-void te::layout::GridMapItem::drawDefaultGrid( QPainter* painter )
-{
-  GridSettingsConfigProperties settingsConfig;
-
-  //gets the properties
-  const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
-  const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
-
-  std::string fontFamily = pFontFamily.getValue().toString();
-  double pointTextSize = pTextPointSize.getValue().toDouble();
-
-  painter->save();
-
-  QRectF parentBound = boundingRect();
-  
-  QPainterPath gridMapPath;
-  gridMapPath.setFillRule(Qt::WindingFill);
-
-  int heightRect = (int)parentBound.height();
-  int widgetRect = (int)parentBound.width();
-
-  ItemUtils::ConfigurePainterForTexts(painter, fontFamily, pointTextSize);
-
-  // PostScript to mm
-  QFont ft(fontFamily.c_str(), pointTextSize);
-  m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
-
-  QString text = "GRID";
-
-  for (int i = 0; i <= heightRect; i+=10)
-  {
-    QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
-
-    configTextPainter(painter);
-
-    QPointF pointInit(parentBound.topLeft().x(), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //left
-    drawText(pointInit, painter, text.toStdString(), true);
-    QPointF pointFinal(parentBound.topRight().x(), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //right
-    drawText(pointFinal, painter, text.toStdString());
-
-    configPainter(painter);
-
-    painter->drawLine(lineOne);
-
-    for (int j = 0; j <= widgetRect; j+=10)
-    {
-      QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
-
-      configTextPainter(painter);
-
-      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y() + (m_maxHeigthTextMM)); //lower
-      drawText(pointInit, painter, text.toStdString(), true);
-      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y()); //upper
-      drawText(pointFinal, painter, text.toStdString());
-
-      configPainter(painter);
-
-      painter->drawLine(lineTwo);
-    }    
-  }
-
-  painter->restore();
 }
 
 void te::layout::GridMapItem::drawText( const QPointF& point, QPainter* painter, const std::string& text, bool displacementLeft, bool displacementRight )

@@ -84,12 +84,7 @@ namespace te
           \brief Draws the grid
         */
         virtual void drawGrid(QPainter* painter);
-
-        /*!
-          \brief Draws the default grid
-        */
-        virtual void drawDefaultGrid(QPainter* painter);
-
+        
         virtual void drawText( const QPointF& point, QPainter* painter, const std::string& text, bool displacementLeft = false, bool displacementRight = false);
 
         virtual void configPainter(QPainter* painter);
