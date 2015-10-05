@@ -32,6 +32,7 @@
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../gdal/Utils.h"
+#include "../../../../gdal/DataSetsManager.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../widgets/utils/DoubleListWidget.h"
@@ -46,6 +47,7 @@
 // Qt
 #include <QMessageBox>
 
+//Boost
 #include <boost/lexical_cast.hpp>
 
 te::qt::plugins::terramobile::GeoPackageBuilderWizard::GeoPackageBuilderWizard(QWidget* parent, Qt::WindowFlags f)
@@ -75,33 +77,44 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map
     std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> raster = dataset->getRaster(rpos);
 
-    //int inputSRID = raster->getSRID();
-    //if (inputSRID != 4326)
-    //{
-    //  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+    int inputSRID = raster->getSRID();
+    int bandType = raster->getBandDataType(0);
 
-    //  // Gets the URI
-    //  const std::string& id = dsLayer->getDataSourceId();
-    //  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
-    //  std::map<std::string, std::string>  connInfo = info->getConnInfo();
-    //  std::string uri = connInfo["SOURCE"];
+    //Adjusting the output raster to tconform with mobile app needs
+    if ((inputSRID != 4326) || (bandType != te::dt::UCHAR_TYPE))
+    {
+      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
 
-    //  if (boost::filesystem::is_directory(uri))
-    //    uri += ("/" + dsLayer->getDataSetName());
+      // Gets the URI
+      const std::string& id = dsLayer->getDataSourceId();
+      te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
+      std::map<std::string, std::string>  connInfo = info->getConnInfo();
+      std::string uri = connInfo["SOURCE"];
 
-    //  std::map<std::string, std::string> rinfo;
-    //  rinfo["SOURCE"] = uri;
-    //  rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(raster->getNumberOfRows());
-    //  rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(raster->getNumberOfColumns());
-    //  rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(raster->getBandDataType(0));
-    //  rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(raster->getNumberOfBands());
+      if (boost::filesystem::is_directory(uri))
+        uri += ("/" + dsLayer->getDataSetName());
 
-    //  te::rst::Raster* transformedRaster = raster->transform(4326, rinfo);
-    //  te::gdal::copyToGeopackage(transformedRaster, outFileName);
-    //  delete transformedRaster;
-    //}
-    //else
-      te::gdal::copyToGeopackage(raster.get(), outFileName);
+      std::map<std::string, std::string> rinfo;
+      rinfo["SOURCE"] = uri;
+      rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(raster->getNumberOfRows());
+      rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(raster->getNumberOfColumns());
+      rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(raster->getBandDataType(0));
+      rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(raster->getNumberOfBands());
+     
+      if (bandType != te::dt::UCHAR_TYPE)
+      {
+        raster = te::gdal::NormalizeRaster(raster.get(), raster->getBand(0)->getMinValue().real(), raster->getBand(0)->getMaxValue().real(), 0, 255, rinfo, "GDAL");
+        te::gdal::DataSetsManager::getInstance().decrementUseCounter(uri);
+      }
+
+      if (inputSRID != 4326)
+      {
+         raster.reset(raster->transform(4326, rinfo));
+         te::gdal::DataSetsManager::getInstance().decrementUseCounter(uri);
+      }
+    }
+
+    te::gdal::copyToGeopackage(raster.get(), outFileName);
   }
   else
   {
