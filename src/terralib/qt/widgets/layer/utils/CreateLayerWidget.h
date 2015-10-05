@@ -74,6 +74,8 @@ namespace te
 
           bool createLayer(std::string& errorMessage);
 
+          te::map::AbstractLayerPtr getLayer();
+
         protected slots:
 
           void onAddPushButtonClicked();

@@ -24,11 +24,14 @@
 */
 
 // TerraLib
+#include "../../../../common/STLUtils.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../../../datatype/Utils.h"
 #include "../../../../qt/widgets/property/NewPropertyWidget.h"
+#include "../../layer/utils/DataSet2Layer.h"
 #include "CreateLayerWidget.h"
 #include "ui_CreateLayerWidgetForm.h"
 
@@ -70,6 +73,8 @@ te::qt::widgets::CreateLayerWidget::CreateLayerWidget(QWidget* parent, Qt::Windo
 
 te::qt::widgets::CreateLayerWidget::~CreateLayerWidget()
 {
+  te::common::FreeContents(m_props);
+  m_props.clear();
 }
 
 void te::qt::widgets::CreateLayerWidget::setDataSource(te::da::DataSourceInfoPtr dsInfo)
@@ -117,7 +122,7 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
 
   for (std::size_t t = 0; t < m_props.size(); ++t)
   {
-    dsType->add(m_props[t]);
+    dsType->add(m_props[t]->clone());
   }
 
   //create
@@ -139,6 +144,49 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
   }
 
   return true;
+}
+
+te::map::AbstractLayerPtr te::qt::widgets::CreateLayerWidget::getLayer()
+{
+  std::string driverName = m_outputDatasource->getType();
+  std::map<std::string, std::string> connInfo = m_outputDatasource->getConnInfo();
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  te::map::AbstractLayerPtr layer;
+
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+
+  boost::uuids::uuid valU = gen();
+  std::string id = boost::uuids::to_string(valU);
+
+  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName));
+  ds->setConnectionInfo(connInfo);
+  ds->open();
+
+  //add ds info
+  te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
+  dsInfoPtr->setConnInfo(connInfo);
+  dsInfoPtr->setId(id);
+  dsInfoPtr->setTitle(dataSetName);
+  dsInfoPtr->setAccessDriver(driverName);
+  dsInfoPtr->setType(driverName);
+
+  te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
+
+  //add ds
+  te::da::DataSourcePtr dsPtr(ds.release());
+  dsPtr->setId(id);
+
+  te::da::DataSourceManager::getInstance().insert(dsPtr);
+
+  //create layer
+  te::da::DataSetTypePtr dsType(dsPtr->getDataSetType(dataSetName).release());
+
+  te::qt::widgets::DataSet2Layer ds2l(dsPtr->getId());
+
+  layer = ds2l(dsType);
+
+  return layer;
 }
 
 void te::qt::widgets::CreateLayerWidget::onAddPushButtonClicked()

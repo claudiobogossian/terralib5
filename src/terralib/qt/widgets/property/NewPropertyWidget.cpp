@@ -174,17 +174,9 @@ bool te::qt::widgets::NewPropertyWidget::buildProperty()
     defaultValue = m_ui->m_defaultValueLineEdit->text().toStdString();
   }
 
-  bool isRequired = false;
-  if(m_ui->m_requiredCheckBox->isEnabled())
-  {
-    isRequired = m_ui->m_requiredCheckBox->isChecked();
-  }
+  bool isRequired = m_ui->m_requiredCheckBox->isChecked();
 
-  bool isAutoNumber = false;
-  if(m_ui->m_autoNumberCheckBox->isEnabled())
-  {
-    isAutoNumber = m_ui->m_autoNumberCheckBox->isChecked();
-  }
+  bool isAutoNumber = m_ui->m_autoNumberCheckBox->isChecked();
 
   //build property
   delete m_simpleProperty;
@@ -206,33 +198,50 @@ bool te::qt::widgets::NewPropertyWidget::buildProperty()
     case te::dt::UINT32_TYPE:
     case te::dt::UINT64_TYPE:
     {
-      m_simpleProperty = new te::dt::SimpleProperty(name, dataType, isRequired, new std::string(defaultValue));
+      if (defaultValue.empty())
+        m_simpleProperty = new te::dt::SimpleProperty(name, dataType, isRequired);
+      else
+        m_simpleProperty = new te::dt::SimpleProperty(name, dataType, isRequired, new std::string(defaultValue));
+
       m_simpleProperty->setAutoNumber(isAutoNumber);
       break;
     }
 
     case te::dt::STRING_TYPE:
     {
-      m_simpleProperty = new te::dt::StringProperty(name, te::dt::STRING, 0, isRequired, new std::string(defaultValue));
+      if (defaultValue.empty())
+        m_simpleProperty = new te::dt::StringProperty(name, te::dt::STRING, 0, isRequired);
+      else
+        m_simpleProperty = new te::dt::StringProperty(name, te::dt::STRING, 0, isRequired, new std::string(defaultValue));
       break;
     }
 
     case te::dt::NUMERIC_TYPE:
     {
-      m_simpleProperty = new te::dt::NumericProperty(name, 0, 0, isRequired, new std::string(defaultValue));
+      if (defaultValue.empty())
+        m_simpleProperty = new te::dt::NumericProperty(name, 0, 0, isRequired);
+      else
+        m_simpleProperty = new te::dt::NumericProperty(name, 0, 0, isRequired, new std::string(defaultValue));
+
       m_simpleProperty->setAutoNumber(isAutoNumber);
       break;
     }
 
     case te::dt::DATETIME_TYPE:
     {
-      m_simpleProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, isRequired, new std::string(defaultValue));
+      if (defaultValue.empty())
+        m_simpleProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, isRequired);
+      else
+        m_simpleProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, isRequired, new std::string(defaultValue));
       break;
     }
         
     case te::dt::GEOMETRY_TYPE:
     {
-      m_simpleProperty = new te::gm::GeometryProperty(name, isRequired, new std::string(defaultValue));
+      if (defaultValue.empty())
+        m_simpleProperty = new te::gm::GeometryProperty(name, isRequired);
+      else
+        m_simpleProperty = new te::gm::GeometryProperty(name, isRequired, new std::string(defaultValue));
       break;
     }
 
@@ -256,13 +265,13 @@ void te::qt::widgets::NewPropertyWidget::onDataTypeComboBoxActivated(int index)
   m_ui->m_nameLineEdit->clear();
 
   m_ui->m_defaultValueLineEdit->clear();
-  m_ui->m_defaultValueLineEdit->setEnabled(false);
+  m_ui->m_defaultValueLineEdit->setEnabled(true);
 
   m_ui->m_autoNumberCheckBox->setChecked(false);
-  m_ui->m_autoNumberCheckBox->setEnabled(false);
+  m_ui->m_autoNumberCheckBox->setEnabled(true);
 
   m_ui->m_requiredCheckBox->setChecked(false);
-  m_ui->m_requiredCheckBox->setEnabled(false);
+  m_ui->m_requiredCheckBox->setEnabled(true);
 
   delete m_spWidget;
   m_spWidget = 0;
@@ -280,12 +289,5 @@ void te::qt::widgets::NewPropertyWidget::onDataTypeComboBoxActivated(int index)
     m_spWidget = te::qt::widgets::SimplePropertyWidgetFactory::make(dataType, m_ui->m_scrollArea);
     m_layout->addWidget(m_spWidget);
     m_spWidget->show();
-  }
-
-  if(m_spWidget)
-  {
-    m_ui->m_defaultValueLineEdit->setEnabled(m_spWidget->hasAttributeDefaultValue());
-    m_ui->m_autoNumberCheckBox->setEnabled(m_spWidget->hasAttributeAutoNumber());
-    m_ui->m_requiredCheckBox->setEnabled(m_spWidget->hasAttributeRequired());
   }
 }
