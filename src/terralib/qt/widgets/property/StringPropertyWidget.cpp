@@ -37,10 +37,10 @@ te::qt::widgets::StringPropertyWidget::StringPropertyWidget(QWidget* parent)
   m_ui->setupUi(this);
 
   //fill combo box 
+  m_ui->m_typeComboBox->addItem(tr("Var String"), te::dt::VAR_STRING);
   m_ui->m_typeComboBox->addItem(tr("String"), te::dt::STRING);
   m_ui->m_typeComboBox->addItem(tr("Fixed String"), te::dt::FIXED_STRING);
-  m_ui->m_typeComboBox->addItem(tr("Var String"), te::dt::VAR_STRING);
-}  
+}
 
 te::qt::widgets::StringPropertyWidget::~StringPropertyWidget()
 {

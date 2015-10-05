@@ -1013,10 +1013,56 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
 
   char **papszOptions = NULL;
   papszOptions = CSLSetNameValue(papszOptions, "APPEND_SUBDATASET", "YES");
-  
+
   te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
+
   GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
 
   CSLDestroy(papszOptions);
   GDALClose((GDALDatasetH)poDstDS);
+}
+
+std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inraster, double min, double max, double nmin, double nmax,
+std::map<std::string, std::string> rInfo, std::string type)
+{
+  //create raster out
+  std::vector<te::rst::BandProperty*> bandsProperties;
+  te::rst::BandProperty* bandProp = new te::rst::BandProperty(0, te::dt::UCHAR_TYPE);
+  bandsProperties.push_back(bandProp);
+
+  te::rst::Grid* grid = new te::rst::Grid(*(inraster->getGrid()));
+
+  te::rst::Raster* rasterNormalized = te::rst::RasterFactory::make(type, grid, bandsProperties, rInfo);
+
+  //start Normalize operation
+  std::size_t nRows = inraster->getNumberOfRows();
+  std::size_t nCols = inraster->getNumberOfColumns();
+
+  double gain = (double)(nmax - nmin) / (max - min);
+  double offset = -1 * gain*min + nmin;
+
+  double value;
+
+  for (std::size_t t = 0; t < nRows; ++t)
+  {
+    for (std::size_t q = 0; q < nCols; ++q)
+    {
+      try
+      {
+        inraster->getValue(q, t, value, 0);
+
+        double normalizeValue = (value * gain + offset);
+
+        rasterNormalized->setValue(q, t, normalizeValue, 0);
+      }
+      catch (...)
+      {
+        continue;
+      }
+    }
+  }
+
+  std::auto_ptr<te::rst::Raster> rOut(rasterNormalized);
+
+  return rOut;
 }
