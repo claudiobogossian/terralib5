@@ -253,7 +253,6 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getLneVrtDisplacement());
     property.setComposeWidget(true);
-    property.setVisible(false); //need review
     property.setValue(lneVrtDisplacement, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
@@ -262,7 +261,6 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getLneHrzDisplacement());
     property.setComposeWidget(true);
-    property.setVisible(false); //need review
     property.setValue(lneHrzDisplacement, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }

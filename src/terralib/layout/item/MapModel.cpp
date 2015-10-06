@@ -46,9 +46,6 @@ te::layout::MapModel::MapModel()
   std::list<te::map::AbstractLayerPtr> layerList;
   double width = 120.;
   double height = 120.;
-  //double mapDisplacementX = 0.;
-  //double mapDisplacementY = 0.;
-
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 

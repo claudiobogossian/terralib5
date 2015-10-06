@@ -125,11 +125,13 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
   const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
   const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
+  const Property& pVerticalDisplacement = m_controller->getProperty(settingsConfig.getLneVrtDisplacement());
   const Property& pUnit = m_controller->getProperty(settingsConfig.getUnit());
 
   std::string fontFamily = pFontFamily.getValue().toString();
   int textPointSize = pTextPointSize.getValue().toInt();
   double verticalGap = pVerticalGap.getValue().toDouble();
+  double verticalDisplacement = pVerticalDisplacement.getValue().toDouble();
   LayoutUnit unit = (LayoutUnit)pUnit.getValue().toInt();
 
 
@@ -171,12 +173,14 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
     wtxt = rectF.width();
     htxt = rectF.height();
 
+    double yReference = y - rectF.y() - (rectF.height() / 2.);
+
     // text left
-    QPointF ptLeft(llx - wtxt, y);
+    QPointF ptLeft(llx - wtxt - verticalDisplacement, yReference);
     m_leftTexts[convert.toStdString()] = ptLeft;
 
     // text right
-    QPointF ptRight(urx, y);
+    QPointF ptRight(urx + verticalDisplacement, yReference);
     m_rightTexts[convert.toStdString()] = ptRight;
 
     te::gm::Envelope leftTextBox(ptLeft.x(), ptLeft.y(), ptLeft.x() + wtxt, ptLeft.y() + htxt);
@@ -194,11 +198,13 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
   const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
   const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
+  const Property& pHorizontalDisplacement = m_controller->getProperty(settingsConfig.getLneHrzDisplacement());
   const Property& pUnit = m_controller->getProperty(settingsConfig.getUnit());
 
   std::string fontFamily = pFontFamily.getValue().toString();
   int textPointSize = pTextPointSize.getValue().toInt();
   double horizontalGap = pHorizontalGap.getValue().toDouble();
+  double horizontalDisplacement = pHorizontalDisplacement.getValue().toDouble();
   LayoutUnit unit = (LayoutUnit)pUnit.getValue().toInt();
 
   Utils* utils = Context::getInstance().getUtils();
@@ -251,11 +257,11 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
     htxt = rectF.height();
 
     // text bottom
-    QPointF ptBottom(x - (wtxt/2.), lly - htxt);
+    QPointF ptBottom(x - (wtxt / 2.), lly - htxt - horizontalDisplacement - rectF.y());
     m_bottomTexts[convert.toStdString()] = ptBottom;
 
     // text top
-    QPointF ptTop(x - (wtxt/2.), ury);
+    QPointF ptTop(x - (wtxt / 2.), ury + horizontalDisplacement - rectF.y());
     m_topTexts[convert.toStdString()] = ptTop;
 
     te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y(), ptBottom.x() + wtxt, ptBottom.y() + htxt);
