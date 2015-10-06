@@ -219,7 +219,19 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
 
   sc->deselectAllItems();
 
+
+  QGraphicsItem* paperItem = sc->getPaperItem();
+  paperItem->setVisible(false);
+
+  QColor newBackgroundColor(255, 255, 255, 255);
+  QBrush newBrush(newBackgroundColor);
+  QBrush copyBackgroundColor = m_scene->backgroundBrush();
+
+  m_scene->setBackgroundBrush(newBrush);//transparent
   m_scene->render(newPainter, pxTargetRect, mmSourceRect); 
+  m_scene->setBackgroundBrush(copyBackgroundColor);
+
+  paperItem->setVisible(true);
 }
 
 void te::layout::PrintScene::print()
