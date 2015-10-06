@@ -27,8 +27,6 @@
 #define __TERRALIB_STATISTICAL_INTERNAL_STATISTICSDIALOG_H
 
 // TerraLib
-#include "../../dataaccess/dataset/DataSet.h"
-#include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 #include "../core/Enums.h"
 
@@ -44,6 +42,14 @@ namespace Ui { class StatisticsDialogForm; }
 
 // Forward declarations
 class QTableView;
+
+namespace te
+{
+  namespace da
+  {
+    class DataSet;
+  }
+}
 
 namespace te
 {

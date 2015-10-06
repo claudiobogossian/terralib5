@@ -37,7 +37,7 @@
 #include <cassert>
 #include <fstream>
 #include <vector>
-
+#include <iostream>
 // Boost
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>

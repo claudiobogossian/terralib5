@@ -375,8 +375,6 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
     return;
   }
   
-  te::gm::Envelope originalExtent = m_mapDisplay->getExtent();
-
   int numTilesX = (int)std::ceil(m_mapDisplay->getWidth() / 4000.);
   int numTilesY = (int)std::ceil(m_mapDisplay->getHeight() / 4000.);
 
@@ -414,12 +412,15 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
   {
     boundingTileWidth = boundingTileHeight;
   }
-
-  m_mapDisplay->resize(tileWidth, tileHeight);
-
+  
   double extentWidth = m_mapDisplay->getExtent().getLowerLeftX();
   double extendHeight = m_mapDisplay->getExtent().getLowerLeftY();
     
+  //we read the current layer list from the model because mapDisplay does not have the getLayers function
+  const Property& property = m_controller->getProperty("layers");
+  const GenericVariant& gv = property.getValue().toGenericVariant();
+  const std::list<te::map::AbstractLayerPtr>& currentLayerList = gv.toLayerList();
+
   painter->save();
 
   painter->setClipRect(boundRect);
@@ -428,18 +429,27 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
   {
     for (int j = 0; j < numTilesY; ++j)
     {
+      //New map display
+      te::qt::widgets::MapDisplay* tileMapDisplay = new te::qt::widgets::MapDisplay();
+      tileMapDisplay->setBackgroundColor(Qt::transparent);
+      tileMapDisplay->setResizeInterval(0);
+
+      tileMapDisplay->setLayerList(currentLayerList);
+      tileMapDisplay->setSRID(m_mapDisplay->getSRID(), false);
+
       double baseWorldX = extentWidth + (i * worldTileWidth);
       double baseWorldY = extendHeight + (j * worldTileHeight);
 
       te::gm::Envelope currentWorldBox(baseWorldX, baseWorldY, baseWorldX + worldTileWidth, baseWorldY + worldTileHeight);
 
-      m_mapDisplay->setExtent(currentWorldBox);
+      tileMapDisplay->setExtent(currentWorldBox, false);
+      tileMapDisplay->resize(tileWidth, tileHeight); // resize to tile size
       
-      QPixmap pixmap(m_mapDisplay->width(), m_mapDisplay->height());
+      QPixmap pixmap(tileMapDisplay->width(), tileMapDisplay->height());
       pixmap.fill(Qt::transparent);
 
       QPainter localPainter(&pixmap);
-      m_mapDisplay->render(&localPainter, QPoint(), QRegion(), QWidget::DrawChildren);
+      tileMapDisplay->render(&localPainter, QPoint(), QRegion(), QWidget::DrawChildren);
       localPainter.end();
 
       QImage image = pixmap.toImage();
@@ -452,12 +462,16 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
       QRectF currentBoundingBox(baseBoundingX, baseBoundingY, boundingTileWidth, boundingTileHeight);
      
       painter->drawPixmap(currentBoundingBox, pixmap, pixmap.rect());
+
+      if (tileMapDisplay)
+      {
+        delete tileMapDisplay;
+        tileMapDisplay = 0;
+      }
     }
   }
 
   painter->restore();
-
-  m_mapDisplay->setExtent(originalExtent); //restore original extent
 }
 
 
