@@ -480,7 +480,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
                 if (pType != te::dt::STRING_TYPE)
                 {
-                  std::string sql = "select max(" + oidPropertyNames[j] + ") + " + boost::lexical_cast<std::string>(i + 1) + " as " + oidPropertyNames[j] + " from " + schema.get()->getName();
+                  //TODO: temporary
+                  std::string sql = "SELECT MAX(" + oidPropertyNames[j] + ") + " + boost::lexical_cast<std::string>(i + 1) + " AS " + oidPropertyNames[j] + " FROM " + schema.get()->getName();
                   std::auto_ptr<te::da::DataSet> dsMax = dsource->query(sql);
 
                   if (dsMax.get())
@@ -671,7 +672,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
+  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0,true), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
