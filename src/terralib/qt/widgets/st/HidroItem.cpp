@@ -153,7 +153,7 @@ void te::qt::widgets::HidroItem::loadCurrentImage()
     {
       QRect r = getRect();
       m_image = new QImage(r.size(), QImage::Format_ARGB32);
-      m_image->fill(QColor(0, 0, 255, 100));
+      m_image->fill(QColor(0, 0, 255, 100).rgba());
       QPainter p(m_image);
       p.setPen(QPen(QColor(255, 0, 0)));
 
