@@ -37,6 +37,7 @@
 #include "StatisticsDialog.h"
 #include "ui_StatisticsDialogForm.h"
 
+
 // Qt
 #include <QListWidget>
 #include <QMessageBox>
