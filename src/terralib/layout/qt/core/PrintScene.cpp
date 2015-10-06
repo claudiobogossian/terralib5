@@ -219,11 +219,10 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
 
   sc->deselectAllItems();
 
-
   QGraphicsItem* paperItem = sc->getPaperItem();
   paperItem->setVisible(false);
 
-  QColor newBackgroundColor(255, 255, 255, 255);
+  QColor newBackgroundColor(255, 255, 255, 0);
   QBrush newBrush(newBackgroundColor);
   QBrush copyBackgroundColor = m_scene->backgroundBrush();
 
