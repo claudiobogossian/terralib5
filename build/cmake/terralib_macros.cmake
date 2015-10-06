@@ -43,7 +43,7 @@ ENDMACRO(TeInstallPlugins)
 
 
 MACRO(TeInstallQt5Plugins)
-  find_package(Qt5 COMPONENTS Sql Svg)
+  find_package(Qt5 COMPONENTS Sql Svg PrintSupport)
 
 # Installing image plugins
   set(_plugins Qt5::QGifPlugin Qt5::QICOPlugin Qt5::QJpegPlugin Qt5::QMngPlugin Qt5::QTiffPlugin)
@@ -56,6 +56,12 @@ MACRO(TeInstallQt5Plugins)
 # Installing sql plugins
   set(_plugins Qt5::QSQLiteDriverPlugin)
   TeInstallPlugins("${_plugins}" "sqldrivers")
+
+# Installing printer support plugin
+  if(WIN32)
+    set(_plugins Qt5::QWindowsPrinterSupportPlugin)
+    TeInstallPlugins("${_plugins}" "printsupport")
+  endif()
   
 # Installing platform plugins
   if(WIN32)
