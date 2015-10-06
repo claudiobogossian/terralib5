@@ -41,9 +41,10 @@
 #include <QListWidget>
 #include <QMessageBox>
 
-// Boost
-#include <boost/lexical_cast.hpp>
-
+#ifndef Q_MOC_RUN
+  // Boost
+  #include <boost/lexical_cast.hpp>
+#endif
 te::stat::StatisticsDialog::StatisticsDialog(QWidget* parent, Qt::WindowFlags f)
   :QDialog(parent, f),
   m_ui(new Ui::StatisticsDialogForm),
