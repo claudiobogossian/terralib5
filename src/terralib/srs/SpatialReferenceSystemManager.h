@@ -238,7 +238,12 @@ namespace te
        \return True if the SRS with a given id refers to a geographic spatial reference system or false if not or not founded in the Manager.
        */
       bool isGeographic(unsigned int id, const std::string& authName="EPSG");
-      
+
+      /*!
+       \brief Checks if the System Manager is already initialized.
+       */
+      bool isInitialized();
+
     protected:
       
       /*! \brief Constructor. */

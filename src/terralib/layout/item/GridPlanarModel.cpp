@@ -202,6 +202,11 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
 
 double te::layout::GridPlanarModel::getInitialCoord(double initialCoord, double distance, double& gap)
 {
+  if (distance <= 0)
+  {
+    gap = 0;
+    return 0;
+  }
   unsigned const int size = 25;
   int gaps[size] = { 1000, 1500, 2000, 2500, 5000, 7500, 10000, 12500, 15000, 20000, 25000, 50000, 100000, 125000, 150000, 175000, 200000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 1750000, 2000000 };
   int numberOfIntervals = 5;
