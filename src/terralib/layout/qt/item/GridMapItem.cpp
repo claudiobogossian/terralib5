@@ -37,6 +37,7 @@ te::layout::GridMapItem::GridMapItem(AbstractItemController* controller, bool in
   , m_maxHeigthTextMM(0)
   , m_onePointMM(0.3527777778)
   , m_changeSize(false)
+  , m_showDebugDrawings(false)
 {  
   //The text size or length that exceeds the sides will be cut
   setFlag(QGraphicsItem::ItemClipsToShape);
@@ -131,7 +132,7 @@ void te::layout::GridMapItem::configPainter( QPainter* painter )
 
   QColor clrLine(lineColor.getRed(), lineColor.getGreen(), lineColor.getBlue(), lineColor.getAlpha());
   pen.setColor(clrLine);
-  pen.setWidth(0);
+  pen.setWidthF(lineWidth);
 
   painter->setPen(pen);
 }
@@ -190,6 +191,10 @@ void te::layout::GridMapItem::drawVerticalLines( QPainter* painter )
   {
     QLineF line = (*it);
     painter->drawLine(line);
+    
+#ifdef _DEBUG
+    debugDrawLineEdges(painter, line);
+#endif
   }
 }
 
@@ -200,6 +205,11 @@ void te::layout::GridMapItem::drawHorizontalLines( QPainter* painter )
   {
     QLineF line = (*it);
     painter->drawLine(line);
+
+#ifdef _DEBUG
+    debugDrawLineEdges(painter, line);
+#endif
+    
   }
 }
 
@@ -259,6 +269,10 @@ void te::layout::GridMapItem::drawTopTexts( QPainter* painter )
     std::string txt = it->first;
     QPointF pt = it->second;
     drawText(pt, painter, txt);
+
+#ifdef _DEBUG
+    debugDrawTextRect(painter, pt, txt);
+#endif
   }
 }
 
@@ -270,28 +284,28 @@ void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
     std::string txt = it->first;
     QPointF pt = it->second;
     drawText(pt, painter, txt);
+
+#ifdef _DEBUG
+    debugDrawTextRect(painter, pt, txt);
+#endif
   }
 }
 
 void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
 {
-  double width = 0;
-  double height = 0;
-
-  QFont ft = painter->font();
-
   std::map<std::string, QPointF>::iterator it = m_leftTexts.begin();
   for( ; it != m_leftTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;
 
-    //checkMaxMapDisplacement(ft, txt, width, height);
-
     drawText(pt, painter, txt);
-  }
 
-  //changeMapDisplacement(width, height);
+#ifdef _DEBUG
+    debugDrawTextRect(painter, pt, txt);
+#endif
+
+  }
 }
 
 void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
@@ -302,6 +316,10 @@ void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
     std::string txt = it->first;
     QPointF pt = it->second;  
     drawText(pt, painter, txt);
+
+#ifdef _DEBUG
+    debugDrawTextRect(painter, pt, txt);
+#endif
   }
 }
 
@@ -406,3 +424,68 @@ bool te::layout::GridMapItem::drawCrossIntersectMapBorder( QLineF vrt, QLineF hr
 
   return result;
 }
+
+void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF& point, const std::string& text)
+{
+  if (m_showDebugDrawings == false)
+  {
+    return;
+  }
+
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
+  const Property& pTextFontFamily = m_controller->getProperty(settingsConfig.getFontText());
+
+  int textPointSize = pTextPointSize.getValue().toInt();
+  const std::string& fontFamily = pTextFontFamily.getValue().toString();
+
+  QPointF pointCopy = point;
+
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+
+ //creates the rect
+  QRectF rectF = itemUtils->getTextBoundary(fontFamily, textPointSize, text);
+
+//puts the rect in the correct position
+  pointCopy.setY(pointCopy.y() + rectF.y());
+  rectF.moveTo(pointCopy);
+
+//draws the rect
+  painter->save();
+
+  QPen pen;
+  pen.setWidth(0);
+  pen.setColor(QColor(255, 0, 0));
+
+  painter->setPen(pen);
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(rectF);
+
+  painter->restore();
+}
+
+void te::layout::GridMapItem::debugDrawLineEdges(QPainter* painter, const QLineF& line)
+{
+  if (m_showDebugDrawings == false)
+  {
+    return;
+  }
+
+  QPointF p1(line.p1());
+  QPointF p2(line.p2());
+
+  painter->save();
+
+  QPen linepen(Qt::red);
+  linepen.setCapStyle(Qt::RoundCap);
+  linepen.setWidth(1);
+  painter->setRenderHint(QPainter::Antialiasing, true);
+  painter->setPen(linepen);
+
+  painter->drawPoint(p1);
+  painter->drawPoint(p2);
+
+  painter->restore();
+}
+
