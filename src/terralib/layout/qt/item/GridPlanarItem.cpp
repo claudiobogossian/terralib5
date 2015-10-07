@@ -51,7 +51,7 @@ void te::layout::GridPlanarItem::drawGrid(QPainter* painter)
 
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
   
-  const std::string& style = pStyle.getValue().toString();
+  const std::string& style = pStyle.getOptionByCurrentChoice().toString();
   EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
   if (currentStyle != 0)
   {
@@ -89,20 +89,12 @@ void te::layout::GridPlanarItem::calculateGrid()
   const Property& pPlanarBox = m_controller->getProperty("planar_box");
   const Property& pWidth = m_controller->getProperty("width");
   const Property& pHeight = m_controller->getProperty("height");
-  const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
   const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
 
   const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
   double width = pWidth.getValue().toDouble();
   double height = pHeight.getValue().toDouble();
   double frameThickness = pFrameThickness.getValue().toDouble();
-
-  const std::string& style = pStyle.getValue().toString();
-  EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
-  if (currentStyle != 0)
-  {
-    currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
-  }
 
   te::gm::Envelope referenceBoxMM(0, 0, width, height);
 

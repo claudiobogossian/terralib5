@@ -95,7 +95,7 @@ void te::layout::GridMapItem::configPainter( QPainter* painter )
   const Property& pLineColor = m_controller->getProperty(settingsConfig.getLineColor());
   const Property& pLineWidth = m_controller->getProperty(settingsConfig.getLineWidth());
 
-  const std::string& lineStyleName = pLineStyle.getValue().toString();
+  const std::string& lineStyleName = pLineStyle.getOptionByCurrentChoice().toString();
   const te::color::RGBAColor& lineColor = pLineColor.getValue().toColor();
   double lineWidth = pLineWidth.getValue().toDouble();
 
@@ -414,13 +414,13 @@ bool te::layout::GridMapItem::drawCrossIntersectMapBorder( QLineF vrt, QLineF hr
 
   painter->drawRect(recWithOffSet);
 
+  painter->restore();
+
   bool resultMapLneTop = boxWithOffSet.touches(lneHrz);
   if(!resultMapLneTop)
   {
     return true;
   }
-
-  painter->restore();
 
   return result;
 }

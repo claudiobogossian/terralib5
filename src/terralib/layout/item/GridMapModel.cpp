@@ -135,7 +135,6 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getStyle());
     property.setComposeWidget(true);
-    property.setVisible(false); //need review
     property.setValue(currentGridStyle->getLabel(), dataType->getDataTypeStringList());
 
     Variant v;
@@ -166,7 +165,6 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getLineStyle());
     property.setComposeWidget(true);
-    property.setVisible(false); //need review
     property.setValue(currentLineStyle->getLabel(), dataType->getDataTypeStringList());
 
     Variant v;
