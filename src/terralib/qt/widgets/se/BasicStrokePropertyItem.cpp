@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../raster/Utils.h"
 #include "../../../se/Config.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
@@ -127,7 +128,9 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
   updateUiStrokeColor();
 
   // Opacity
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, m_color.alphaF() * 100);
+  int opacity = te::rst::Round((m_color.alpha() / 255.) * 100);
+
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, opacity);
 
   // Width
   const te::se::SvgParameter* width = m_stroke->getWidth();
@@ -214,9 +217,11 @@ void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, int v
 
   if(p == m_opacityProperty)
   {
-    double opacity = value / 100.0;
+    double opacity = value / 100.;
 
-    m_color.setAlpha(opacity * 255);
+    int alpha = te::rst::Round(opacity * 255);
+
+    m_color.setAlpha(alpha);
     updateUiStrokeColor();
 
     // Updating stroke opacity
@@ -279,7 +284,7 @@ void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, const
     // The new stroke color
     m_color.setRgb(value.red(), value.green(), value.blue(), value.alpha());
 
-    int opacity = (value.alpha() / 255.) * 100.;
+    int opacity = (value.alpha() / 255) * 100;
 
     te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, opacity);
 

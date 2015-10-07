@@ -24,6 +24,7 @@
 */
 
 #include "../../../color.h"
+#include "../../../raster/Utils.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Utils.h"
 #include "../propertybrowser/AbstractPropertyManager.h"
@@ -72,9 +73,11 @@ void te::qt::widgets::BasicFillPropertyItem::valueChanged(QtProperty *p, int val
   if(p == m_opacityProperty && m_update)
   {
     m_update = false;
-    double opacity = value / 100.0;
+    double opacity = value / 100.;
 
-    m_color.setAlpha(opacity * 255);
+    int alpha = te::rst::Round(opacity * 255);
+
+    m_color.setAlpha(alpha);
     updateUiFillColor();
 
     // Updating fill opacity
@@ -95,7 +98,7 @@ void te::qt::widgets::BasicFillPropertyItem::valueChanged(QtProperty *p, const Q
   // The new fill color
     m_color.setRgb(value.red(), value.green(), value.blue(), value.alpha());
 
-    int opacity = (value.alpha() / 255.) * 100.;
+    int opacity = (value.alpha() / 255) * 100;
 
     te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, opacity);
 
@@ -144,7 +147,9 @@ void te::qt::widgets::BasicFillPropertyItem::updateUi()
   
 
   // Opacity
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, m_color.alphaF() * 100);
+  int opacity = te::rst::Round((m_color.alpha() / 255.) * 100);
+
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, opacity);
 }
 
 void te::qt::widgets::BasicFillPropertyItem::updateUiFillColor()
