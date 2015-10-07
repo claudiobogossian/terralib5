@@ -85,7 +85,7 @@ namespace te
         */
         virtual void drawGrid(QPainter* painter);
         
-        virtual void drawText( const QPointF& point, QPainter* painter, const std::string& text, bool displacementLeft = false, bool displacementRight = false);
+        virtual void drawText( const QPointF& point, QPainter* painter, const std::string& text, int rotate = 0, bool displacementLeft = false, bool displacementRight = false);
 
         virtual void configPainter(QPainter* painter);
 

@@ -65,7 +65,7 @@ void te::layout::GridMapItem::drawGrid( QPainter* painter )
 
 }
 
-void te::layout::GridMapItem::drawText( const QPointF& point, QPainter* painter, const std::string& text, bool displacementLeft, bool displacementRight )
+void te::layout::GridMapItem::drawText(const QPointF& point, QPainter* painter, const std::string& text, int rotate, bool displacementLeft, bool displacementRight)
 {
   const QFont& font = painter->font();
 
@@ -83,7 +83,7 @@ void te::layout::GridMapItem::drawText( const QPointF& point, QPainter* painter,
     newPoint.setX(newPoint.x() + rectF.width());
   }
 
-  AbstractItem<QGraphicsItem>::drawText(newPoint, painter, text);
+  AbstractItem<QGraphicsItem>::drawText(newPoint, painter, text, rotate, rectF);
 }
 
 void te::layout::GridMapItem::configPainter( QPainter* painter )
@@ -253,28 +253,55 @@ void te::layout::GridMapItem::drawTexts( QPainter* painter )
 
 void te::layout::GridMapItem::drawTopTexts( QPainter* painter )
 {
+  GridSettingsConfigProperties settingsConfig;
+  const Property& pTopRotateText = m_controller->getProperty(settingsConfig.getTopRotateText());
+  bool bRotate = pTopRotateText.getValue().toBool();
+  int iRotate = 0;
+  if (bRotate)
+  {
+    iRotate = 90;
+  }
+
   std::map<std::string, QPointF>::iterator it = m_topTexts.begin();
   for( ; it != m_topTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;
-    drawText(pt, painter, txt);
+    drawText(pt, painter, txt, iRotate);
   }
 }
 
 void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
 {
+  GridSettingsConfigProperties settingsConfig;
+  const Property& pBottomRotateText = m_controller->getProperty(settingsConfig.getBottomRotateText());
+  bool bRotate = pBottomRotateText.getValue().toBool();
+  int iRotate = 0;
+  if (bRotate)
+  {
+    iRotate = 90;
+  }
+
   std::map<std::string, QPointF>::iterator it = m_bottomTexts.begin();
   for( ; it != m_bottomTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;
-    drawText(pt, painter, txt);
+    drawText(pt, painter, txt, iRotate);
   }
 }
 
 void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
 {
+  GridSettingsConfigProperties settingsConfig;
+  const Property& pLeftRotateText = m_controller->getProperty(settingsConfig.getLeftRotateText());
+  bool bRotate = pLeftRotateText.getValue().toBool();
+  int iRotate = 0;
+  if (bRotate)
+  {
+    iRotate = 90;
+  }
+
   double width = 0;
   double height = 0;
 
@@ -285,23 +312,27 @@ void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
   {
     std::string txt = it->first;
     QPointF pt = it->second;
-
-    //checkMaxMapDisplacement(ft, txt, width, height);
-
-    drawText(pt, painter, txt);
+    drawText(pt, painter, txt, iRotate);
   }
-
-  //changeMapDisplacement(width, height);
 }
 
 void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
 {
+  GridSettingsConfigProperties settingsConfig;
+  const Property& pRightRotateText = m_controller->getProperty(settingsConfig.getRightRotateText());
+  bool bRotate = pRightRotateText.getValue().toBool();
+  int iRotate = 0;
+  if (bRotate)
+  {
+    iRotate = 90;
+  }
+
   std::map<std::string, QPointF>::iterator it = m_rightTexts.begin();
   for( ; it != m_rightTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;  
-    drawText(pt, painter, txt);
+    drawText(pt, painter, txt, iRotate);
   }
 }
 
