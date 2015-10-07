@@ -75,6 +75,8 @@ namespace te
 
       void toolDeleted();
 
+      void endSelectCell(const std::string& objectId, const std::size_t& cellCount);
+
     protected:
 
       virtual void saveGeometry(te::gm::Geometry* gm, const int& op);
