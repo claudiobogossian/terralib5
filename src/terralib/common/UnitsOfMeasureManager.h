@@ -194,7 +194,11 @@ namespace te
        \return The number of units in the manager.
        */
       std::size_t size() const;
-      
+      /*
+      \brief Checks if the Manager is already initialized.
+      */
+     bool isInitialized();
+
     protected:
       
       /*! \brief It initializes the Singleton. */
