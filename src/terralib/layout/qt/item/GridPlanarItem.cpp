@@ -90,10 +90,12 @@ void te::layout::GridPlanarItem::calculateGrid()
   const Property& pWidth = m_controller->getProperty("width");
   const Property& pHeight = m_controller->getProperty("height");
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
+  const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
 
   const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
   double width = pWidth.getValue().toDouble();
   double height = pHeight.getValue().toDouble();
+  double frameThickness = pFrameThickness.getValue().toDouble();
 
   const std::string& style = pStyle.getValue().toString();
   EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
@@ -114,6 +116,8 @@ void te::layout::GridPlanarItem::calculateGrid()
   
   calculateVertical(planarBox, referenceBoxMM);
   calculateHorizontal(planarBox, referenceBoxMM);
+
+  m_boundingBox = te::gm::Envelope(m_boundingBox.getLowerLeftX() - frameThickness, m_boundingBox.getLowerLeftY() - frameThickness, m_boundingBox.getUpperRightX() + frameThickness, m_boundingBox.getUpperRightY() + frameThickness);
 
   prepareGeometryChange();
 }
@@ -264,8 +268,8 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
     QPointF ptTop(x - (wtxt / 2.), ury + horizontalDisplacement - rectF.y());
     m_topTexts[convert.toStdString()] = ptTop;
 
-    te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y(), ptBottom.x() + wtxt, ptBottom.y() + htxt);
-    te::gm::Envelope topTextBox(ptTop.x(), ptTop.y(), ptTop.x() + wtxt, ptTop.y() + htxt);
+    te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y() + rectF.y(), ptBottom.x() + wtxt, ptBottom.y() + htxt);
+    te::gm::Envelope topTextBox(ptTop.x(), ptTop.y() + rectF.y(), ptTop.x() + wtxt, ptTop.y() + htxt + rectF.y());
 
     m_boundingBox.Union(bottomTextBox);
     m_boundingBox.Union(topTextBox);
