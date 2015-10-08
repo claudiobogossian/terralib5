@@ -70,7 +70,7 @@ te::layout::GridMapModel::GridMapModel()
   bool rightRotateText = false;
   bool topRotateText = false;
 
-  double crossOffSet = 4.;
+  double crossOffSet = 2.;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
