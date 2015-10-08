@@ -82,6 +82,8 @@ namespace te
 
     TEEDITQTEXPORT te::gm::Geometry* convertGeomType(const te::map::AbstractLayerPtr& layer, te::gm::Geometry* geom);
 
+    void saveGeometries(te::map::AbstractLayerPtr layer);
+
   } // end namespace edit
 }   // end namespace te
 
