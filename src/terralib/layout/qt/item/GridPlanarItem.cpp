@@ -131,13 +131,16 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
   const Property& pVerticalDisplacement = m_controller->getProperty(settingsConfig.getLneVrtDisplacement());
   const Property& pUnit = m_controller->getProperty(settingsConfig.getUnit());
+  const Property& pLeftRotate = m_controller->getProperty(settingsConfig.getLeftRotateText());
+  const Property& pRightRotate = m_controller->getProperty(settingsConfig.getRightRotateText());
 
   std::string fontFamily = pFontFamily.getValue().toString();
   int textPointSize = pTextPointSize.getValue().toInt();
   double verticalGap = pVerticalGap.getValue().toDouble();
   double verticalDisplacement = pVerticalDisplacement.getValue().toDouble();
   LayoutUnit unit = (LayoutUnit)pUnit.getValue().toInt();
-
+  bool bLeftRotate = pLeftRotate.getValue().toBool();
+  bool bRightRotate = pRightRotate.getValue().toBool();
 
   Utils* utils = Context::getInstance().getUtils();
   ItemUtils* itemUtils = Context::getInstance().getItemUtils();
@@ -149,8 +152,10 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
 
   double y1 = initVerticalLines(geoBox);
 
-  double wtxt = 0;
-  double htxt = 0;
+  double rightWtxt = 0;
+  double rightHtxt = 0;
+  double leftWtxt = 0;
+  double leftHtxt = 0;
 
   m_boundingBox.Union(boxMM);
   
@@ -174,21 +179,49 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
     QString convert = QString::number(number, 'f', 0);
 
     QRectF rectF = itemUtils->getTextBoundary(fontFamily, textPointSize, convert.toStdString());
-    wtxt = rectF.width();
-    htxt = rectF.height();
+    rightWtxt = rectF.width();
+    rightHtxt = rectF.height();
+    leftWtxt = rectF.width();
+    leftHtxt = rectF.height();
 
-    double yReference = y - rectF.y() - (rectF.height() / 2.);
+    double yLeftReference = y - rectF.y() - (rectF.height() / 2.);
+    double yRightReference = y - rectF.y() - (rectF.height() / 2.);
+
+    if (bLeftRotate)
+    {
+      leftWtxt = rectF.height();
+      leftHtxt = rectF.width();
+      llx += leftWtxt;
+      yLeftReference += leftHtxt/2.;
+    }
+    if (bRightRotate)
+    {
+      rightWtxt = rectF.height();
+      rightHtxt = rectF.width();
+      urx += rightWtxt;
+      yRightReference += rightHtxt/2.;
+    }
 
     // text left
-    QPointF ptLeft(llx - wtxt - verticalDisplacement, yReference);
+    QPointF ptLeft(llx - leftWtxt - verticalDisplacement, yLeftReference);
     m_leftTexts[convert.toStdString()] = ptLeft;
 
     // text right
-    QPointF ptRight(urx + verticalDisplacement, yReference);
+    QPointF ptRight(urx + verticalDisplacement, yRightReference);
     m_rightTexts[convert.toStdString()] = ptRight;
 
-    te::gm::Envelope leftTextBox(ptLeft.x(), ptLeft.y(), ptLeft.x() + wtxt, ptLeft.y() + htxt);
-    te::gm::Envelope rightTextBox(ptRight.x(), ptRight.y(), ptRight.x() + wtxt, ptRight.y() + htxt);
+    if (bLeftRotate)
+    {
+      llx -= leftWtxt;
+    }
+
+    if (bRightRotate)
+    {
+      urx -= rightWtxt;
+    }
+
+    te::gm::Envelope leftTextBox(llx - leftWtxt - verticalDisplacement, ptLeft.y(), (llx - leftWtxt - verticalDisplacement) + leftWtxt, ptLeft.y() + leftHtxt);
+    te::gm::Envelope rightTextBox(urx + verticalDisplacement, ptRight.y(), (urx + verticalDisplacement) + rightWtxt, ptRight.y() + rightHtxt);
 
     m_boundingBox.Union(leftTextBox);
     m_boundingBox.Union(rightTextBox);
@@ -204,12 +237,16 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
   const Property& pHorizontalDisplacement = m_controller->getProperty(settingsConfig.getLneHrzDisplacement());
   const Property& pUnit = m_controller->getProperty(settingsConfig.getUnit());
+  const Property& pTopRotate = m_controller->getProperty(settingsConfig.getTopRotateText());
+  const Property& pBottomRotate = m_controller->getProperty(settingsConfig.getBottomRotateText());
 
   std::string fontFamily = pFontFamily.getValue().toString();
   int textPointSize = pTextPointSize.getValue().toInt();
   double horizontalGap = pHorizontalGap.getValue().toDouble();
   double horizontalDisplacement = pHorizontalDisplacement.getValue().toDouble();
   LayoutUnit unit = (LayoutUnit)pUnit.getValue().toInt();
+  bool bTopRotate = pTopRotate.getValue().toBool();
+  bool bBottomRotate = pBottomRotate.getValue().toBool();
 
   Utils* utils = Context::getInstance().getUtils();
   ItemUtils* itemUtils = Context::getInstance().getItemUtils();
@@ -223,8 +260,10 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
 
   utils = Context::getInstance().getUtils();
 
-  double wtxt = 0;
-  double htxt = 0;
+  double topWtxt = 0;
+  double toptHtxt = 0;
+  double bottomWtxt = 0;
+  double bottomHtxt = 0;
 
   m_boundingBox.Union(boxMM);
   
@@ -257,19 +296,40 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
     QString convert = QString::number(number, 'f', 0);
 
     QRectF rectF = itemUtils->getTextBoundary(fontFamily, textPointSize, convert.toStdString());
-    wtxt = rectF.width();
-    htxt = rectF.height();
+    topWtxt = rectF.width();
+    toptHtxt = rectF.height();
+    bottomWtxt = rectF.width();
+    bottomHtxt = rectF.height();
+    
+    if (bTopRotate)
+    {
+      topWtxt = rectF.height();
+      toptHtxt = rectF.width();
+      x += topWtxt / 2.;
+    }
+    if (bBottomRotate)
+    {
+      bottomWtxt = rectF.height();
+      bottomHtxt = rectF.width();
+      lly -= horizontalDisplacement;
+      x += bottomWtxt / 2.;
+    }
 
     // text bottom
-    QPointF ptBottom(x - (wtxt / 2.), lly - htxt - horizontalDisplacement - rectF.y());
+    QPointF ptBottom(x - (bottomWtxt / 2.), lly - bottomHtxt - horizontalDisplacement - rectF.y());
     m_bottomTexts[convert.toStdString()] = ptBottom;
 
     // text top
-    QPointF ptTop(x - (wtxt / 2.), ury + horizontalDisplacement - rectF.y());
+    QPointF ptTop(x - (topWtxt / 2.), ury + horizontalDisplacement - rectF.y());
     m_topTexts[convert.toStdString()] = ptTop;
 
-    te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y() + rectF.y(), ptBottom.x() + wtxt, ptBottom.y() + htxt);
-    te::gm::Envelope topTextBox(ptTop.x(), ptTop.y() + rectF.y(), ptTop.x() + wtxt, ptTop.y() + htxt + rectF.y());
+    if (bTopRotate)
+    {
+      ury += toptHtxt;
+    }
+
+    te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y() + rectF.y(), ptBottom.x() + bottomWtxt, ptBottom.y() + bottomHtxt);
+    te::gm::Envelope topTextBox(ptTop.x(), (ury + horizontalDisplacement - rectF.y()) + rectF.y(), ptTop.x() + topWtxt, (ury + horizontalDisplacement - rectF.y()) + toptHtxt + rectF.y());
 
     m_boundingBox.Union(bottomTextBox);
     m_boundingBox.Union(topTextBox);

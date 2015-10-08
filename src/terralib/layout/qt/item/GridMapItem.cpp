@@ -37,6 +37,7 @@ te::layout::GridMapItem::GridMapItem(AbstractItemController* controller, bool in
   , m_maxHeigthTextMM(0)
   , m_onePointMM(0.3527777778)
   , m_changeSize(false)
+  , m_defaultRotate(90)
 {  
   //The text size or length that exceeds the sides will be cut
   setFlag(QGraphicsItem::ItemClipsToShape);
@@ -63,27 +64,6 @@ void te::layout::GridMapItem::drawItem( QPainter * painter, const QStyleOptionGr
 void te::layout::GridMapItem::drawGrid( QPainter* painter )
 {
 
-}
-
-void te::layout::GridMapItem::drawText(const QPointF& point, QPainter* painter, const std::string& text, int rotate, bool displacementLeft, bool displacementRight)
-{
-  const QFont& font = painter->font();
-
-  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
-  QRectF rectF = itemUtils->getTextBoundary(font.family().toStdString(), font.pixelSize(), text);
-
-  QPointF newPoint (point);
-  if(displacementLeft)
-  {
-    newPoint.setX(newPoint.x() - rectF.width());
-  }
-
-  if(displacementRight)
-  {
-    newPoint.setX(newPoint.x() + rectF.width());
-  }
-
-  AbstractItem<QGraphicsItem>::drawText(newPoint, painter, text, rotate, rectF);
 }
 
 void te::layout::GridMapItem::configPainter( QPainter* painter )
@@ -259,7 +239,7 @@ void te::layout::GridMapItem::drawTopTexts( QPainter* painter )
   int iRotate = 0;
   if (bRotate)
   {
-    iRotate = 90;
+    iRotate = m_defaultRotate;
   }
 
   std::map<std::string, QPointF>::iterator it = m_topTexts.begin();
@@ -279,7 +259,7 @@ void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
   int iRotate = 0;
   if (bRotate)
   {
-    iRotate = 90;
+    iRotate = m_defaultRotate;
   }
 
   std::map<std::string, QPointF>::iterator it = m_bottomTexts.begin();
@@ -299,7 +279,7 @@ void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
   int iRotate = 0;
   if (bRotate)
   {
-    iRotate = 90;
+    iRotate = m_defaultRotate;
   }
 
   double width = 0;
@@ -324,7 +304,7 @@ void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
   int iRotate = 0;
   if (bRotate)
   {
-    iRotate = 90;
+    iRotate = m_defaultRotate;
   }
 
   std::map<std::string, QPointF>::iterator it = m_rightTexts.begin();

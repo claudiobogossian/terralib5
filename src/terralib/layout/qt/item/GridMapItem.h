@@ -85,8 +85,6 @@ namespace te
         */
         virtual void drawGrid(QPainter* painter);
         
-        virtual void drawText( const QPointF& point, QPainter* painter, const std::string& text, int rotate = 0, bool displacementLeft = false, bool displacementRight = false);
-
         virtual void configPainter(QPainter* painter);
 
         virtual void configTextPainter(QPainter* painter);
@@ -113,22 +111,23 @@ namespace te
 
         virtual bool drawCrossIntersectMapBorder(QLineF vrt, QLineF hrz, QPainter* painter);
 
-    protected:
+      protected:
 
-        double                    m_maxWidthTextMM;
-        double                    m_maxHeigthTextMM;
-        double                    m_onePointMM;
-        bool                      m_changeSize;
+        double                          m_maxWidthTextMM;
+        double                          m_maxHeigthTextMM;
+        double                          m_onePointMM;
+        bool                            m_changeSize;
 
-        QList<QLineF>             m_verticalLines;
-        QList<QLineF>             m_horizontalLines;
+        QList<QLineF>                   m_verticalLines;
+        QList<QLineF>                   m_horizontalLines;
 
-        std::map<std::string, QPointF>    m_topTexts;
-        std::map<std::string, QPointF>    m_bottomTexts;
-        std::map<std::string, QPointF>    m_rightTexts;
-        std::map<std::string, QPointF>    m_leftTexts;
+        std::map<std::string, QPointF>  m_topTexts;
+        std::map<std::string, QPointF>  m_bottomTexts;
+        std::map<std::string, QPointF>  m_rightTexts;
+        std::map<std::string, QPointF>  m_leftTexts;
 
-        te::gm::Envelope          m_boundingBox;
+        te::gm::Envelope                m_boundingBox;
+        int                             m_defaultRotate;
     };
   }
 }
