@@ -1206,7 +1206,7 @@ void te::layout::Scene::setContext(ContextObject context)
 
     contextUpdated();
 
-    emit contextUpdated();
+    emit updateAllItemsContext();
   }
 }
 
