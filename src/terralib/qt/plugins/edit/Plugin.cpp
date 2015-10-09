@@ -112,6 +112,10 @@ void te::qt::plugins::edit::Plugin::startup()
   // Register the application framework listener
   te::qt::af::AppCtrlSingleton::getInstance().addListener(this);
 
+  // Blocks the edit toolbar in TerraAmazon project
+  if (te::qt::af::AppCtrlSingleton::getInstance().getAppName().compare("TerraAmazon", Qt::CaseInsensitive) == 0)
+    return;
+
   updateDelegate(true);
 
   connect(m_toolbar, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
