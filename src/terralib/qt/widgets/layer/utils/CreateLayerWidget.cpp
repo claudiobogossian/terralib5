@@ -73,8 +73,7 @@ te::qt::widgets::CreateLayerWidget::CreateLayerWidget(QWidget* parent, Qt::Windo
 
 te::qt::widgets::CreateLayerWidget::~CreateLayerWidget()
 {
-  te::common::FreeContents(m_props);
-  m_props.clear();
+  clear();
 }
 
 void te::qt::widgets::CreateLayerWidget::setDataSource(te::da::DataSourceInfoPtr dsInfo)
@@ -187,6 +186,14 @@ te::map::AbstractLayerPtr te::qt::widgets::CreateLayerWidget::getLayer()
   layer = ds2l(dsType);
 
   return layer;
+}
+
+void te::qt::widgets::CreateLayerWidget::clear()
+{
+  te::common::FreeContents(m_props);
+  m_props.clear();
+
+  listProperties();
 }
 
 void te::qt::widgets::CreateLayerWidget::onAddPushButtonClicked()
