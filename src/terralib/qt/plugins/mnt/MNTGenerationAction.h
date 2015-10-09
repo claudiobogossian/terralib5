@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/mnt/TINGenerationAction.h
+  \file terralib/qt/plugins/mnt/MNTGenerationAction.h
 
-  \brief This file defines the TIN Generation class
+  \brief This file defines the REgular Grid Generation class
 */
 
-#ifndef __TE_QT_PLUGINS_MNT_INTERNAL_TINGENERATIONACTION_H
-#define __TE_QT_PLUGINS_MNT_INTERNAL_TINGENERATIONACTION_H
+#ifndef __TE_QT_PLUGINS_MNT_INTERNAL_MNTGENERATIONACTION_H
+#define __TE_QT_PLUGINS_MNT_INTERNAL_MNTGENERATIONACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -39,20 +39,20 @@ namespace te
       namespace mnt
       {
         /*!
-          \class TINGenerationAction
+          \class MNTGenerationAction
 
-          \brief This class register the Triangular Grid generation action into MNT Plugin.
+          \brief This class register the regular grid generation action into MNT Plugin.
 
         */
-        class TINGenerationAction : public te::qt::plugins::mnt::AbstractAction
+        class MNTGenerationAction : public te::qt::plugins::mnt::AbstractAction
         {
           Q_OBJECT
 
           public:
 
-            TINGenerationAction(QMenu* menu);
+            MNTGenerationAction(QMenu* menu);
 
-            virtual ~TINGenerationAction();
+            virtual ~MNTGenerationAction();
 
           protected slots:
 
@@ -64,4 +64,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_MNT_INTERNAL_TINGENERATIONACTION_H
+#endif //__TE_QT_PLUGINS_MNT_INTERNAL_MNTGENERATIONACTION_H

@@ -10,6 +10,7 @@ Adapted from SPRING
 
 // Terralib Includes
 #include "Config.h"
+#include "Enums.h"
 
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -27,34 +28,6 @@ namespace te
 {
   namespace mnt
   {
-
-    /*!
-    \enum LType
-    \brief Line types.
-    */
-    enum Ltype{
-      Deletedline,
-      Normalline,
-      Isoline,
-      Breakline
-    };
-
-    /*!
-    \enum NType
-    \brief Node types.
-    */
-    enum Ntype
-    {
-      Deletednode,
-      Normalnode,
-      First,
-      Last,
-      Breaklinenormal,
-      Breaklinefirst,
-      Breaklinelast,
-      Sample
-    };
-
     class TinTriang
     {
     public:
@@ -561,6 +534,32 @@ namespace te
       */
       int32_t FindLine(int32_t fnid, int32_t snid);
 
+      /*!
+      \brief Method that evaluates Z values for pt1 and pt2 using the Akima polynomium fitted in a triangle
+      \param triid is the triangle identificator number
+      \param pt1 is a pointer to a Point3d object
+      \param pt2 is a pointer to a Point3d object
+      \return TRUE always
+      */
+      bool CalcZvalueAkima(int32_t triid, te::gm::PointZ &pt1, te::gm::PointZ &pt2);
+
+      /*!
+      \brief Method that defines the coefficients of the Akima polynomium fitted in a given triangle
+      \param triid is the triangle identification number
+      \param coef is a pointer to a double vector containing the polynomium coefficients
+      \return TRUE if the coefficients are determined with no errors or FALSE otherwise
+      */
+      bool DefineAkimaCoeficients(int32_t triid, double *coef);
+
+      /*!
+      \brief Method that defines the coefficients of the Akima polynomium fitted in a given triangle
+      \param triid is the triangle identification number
+      \param nodesid is the list of triangle nodes identification
+      \param p3d is a pointer to a Point3d object
+      \param coef is a pointer to a double vector containing the polynomium coefficients
+      \return TRUE if the coefficients are determined with no errors or FALSE otherwise
+      */
+      bool DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef);
 
       int m_srid;                                  //!< Attribute with spatial reference information
 

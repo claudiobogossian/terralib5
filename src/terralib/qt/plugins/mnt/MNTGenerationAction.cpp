@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/plugins/mnt/TINGenerationAction.cpp
+  \file terralib/qt/plugins/mnt/MNTGenerationAction.cpp
 
-  \brief This file defines the TIN Generation class
+  \brief This file defines the Regular Grid Generation class
 */
 
 // Terralib
-#include "../../../mnt/qt/TINGenerationDialog.h"
+#include "../../../mnt/qt/MNTGenerationDialog.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/ApplicationController.h"
-#include "TINGenerationAction.h"
+#include "MNTGenerationAction.h"
 
 // Qt
 #include <QObject>
@@ -36,21 +36,21 @@
 // STL
 #include <memory>
 
-te::qt::plugins::mnt::TINGenerationAction::TINGenerationAction(QMenu* menu)
+te::qt::plugins::mnt::MNTGenerationAction::MNTGenerationAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("TIN Generation...").toStdString(), "mnt-processing-tin");
-  m_action->setObjectName("Processing.DTM Processing.TIN");
+  createAction(tr("DTM Generation...").toStdString(), "mnt-processing-dtm");
+  m_action->setObjectName("Processing.DTM Processing.REGULAR GRID");
 }
 
-te::qt::plugins::mnt::TINGenerationAction::~TINGenerationAction()
+te::qt::plugins::mnt::MNTGenerationAction::~MNTGenerationAction()
 {
 }
 
-void te::qt::plugins::mnt::TINGenerationAction::onActionActivated(bool)
+void te::qt::plugins::mnt::MNTGenerationAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
-  te::mnt::TINGenerationDialog dlg(parent);
+  te::mnt::MNTGenerationDialog dlg(parent);
 
   // get the list of layers from current project
   dlg.setLayers(getLayers());
@@ -63,7 +63,7 @@ void te::qt::plugins::mnt::TINGenerationAction::onActionActivated(bool)
   if(!layer)
     return;
 
-  int reply = QMessageBox::question(0, tr("TIN Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+  int reply = QMessageBox::question(0, tr("Regular Grid Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
 
   if(reply == QMessageBox::Yes)
     addNewLayer(layer);

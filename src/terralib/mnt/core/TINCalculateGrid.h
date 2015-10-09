@@ -23,13 +23,6 @@ namespace te
 {
   namespace mnt
   {
-    enum GridType
-    {
-      Linear,
-      QuinticoBrkLine,
-      Quintico
-    };
-
 
     /*!
     \class TINCalculateGrid
@@ -43,16 +36,31 @@ namespace te
     {
     public:
       TINCalculateGrid(){};
+      ~TINCalculateGrid();
 
       bool run();
-
+      
+      /*!
+      \brief It sets the Datasource that is being used to generate TIN.
+      \param inDsrc The datasource being used.
+      \param inDsetName datasource name
+      \param inDsetType input DataSetType
+      */
       void setInput(te::da::DataSourcePtr inDsrc,
         std::string inDsetName,
         std::auto_ptr<te::da::DataSetType> inDsetType);
 
-      void setOutput(std::map<std::string, std::string> &tgrInfo, std::string dsname);
+      /*!
+      \brief It sets the Datasource that is being used to save TIN.
+      */
+      void setOutput(std::map<std::string, std::string> &dsinfo);
 
-      void setParams(double resx, double resy, GridType gt);
+      /*!
+      \brief It sets the parameters that is being used to save TIN.
+      \param resx, resy resolution X and Y.
+      \param gt interpolator
+      */
+      void setParams(double resx, double resy, Interpolator gt);
 
     protected:
 
@@ -62,17 +70,26 @@ namespace te
 
       bool FillGridLinear(int32_t triid, te::gm::PointZ *p3da, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol);
 
-     // bool DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef);
+      /*!
+      \brief Method that fills the grid locations, inside a triangle, with a zvalue evaluated by a quintic polynomium
+      \param grid is a pointer to a grid object
+      \param triid is the triangle identification number
+      \param p3da is a pointer to a Point3d object, vector with 3D samples (not used in this method)
+      \param flin and llin are the first and the last lines (rows) of the grid
+      \param fcol and lcol are the first and the last columns of the grid
+      \param zvalue is the z value to be stored in the grid inside the triangle region
+      \return TRUE always
+      */
+      bool FillGridQuintic(int32_t triid, te::gm::PointZ *p3da, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double *coef);
 
       te::da::DataSourcePtr m_inDsrc;
       std::string m_inDsetName;
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
 
-      std::map<std::string, std::string> m_tgrInfo;
-      std::string m_outDsetName;
+      std::map<std::string, std::string> m_dsinfo;
 
       double m_resx, m_resy;
-      GridType m_gridtype;
+      Interpolator m_gridtype;
 
       te::rst::Raster* m_rst;
     };

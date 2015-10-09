@@ -1,8 +1,25 @@
-#include "../../geometry/Coord2D.h"
-#include "../../geometry/LineString.h"
-#include "../../geometry/PointZ.h"
+
+/*!
+\file terralib/mnt/core/Utils.h
+
+\brief Utility functions for MNT support.
+*/
+
+#ifndef __TERRALIB_MNT_INTERNAL_UTILS_H
+#define __TERRALIB_MNT_INTERNAL_UTILS_H
 
 #include "Config.h"
+
+
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
+
+#include "../../geometry/Coord2D.h"
+#include "../../geometry/LineString.h"
+#include "../../geometry/MultiLineString.h"
+#include "../../geometry/MultiPoint.h"
+#include "../../geometry/PointZ.h"
 
 
 #ifndef MIN
@@ -18,6 +35,10 @@ namespace te
 {
   namespace mnt
   {
+    size_t ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, te::gm::MultiPoint &mpt, std::string &geostype, te::gm::Envelope &env);
+
+    size_t ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, double max, bool spline, te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype, te::gm::Envelope &env);
+
     double Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2);
     bool Equal(te::gm::PointZ &p1, te::gm::PointZ &p2, double &tol);
 
@@ -69,3 +90,5 @@ namespace te
 
   }
 }
+
+#endif

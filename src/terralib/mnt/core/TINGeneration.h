@@ -26,16 +26,6 @@ namespace te
 {
   namespace mnt
   {
-    
-    /*!
-    \enum InputType
-    \brief Input types.
-    */
-    enum InputType
-    {
-      Isolines,
-      Samples
-    };
     /*!
     \class TINGeneration
 
@@ -112,12 +102,6 @@ namespace te
       void setMethod(int method) { m_method = method; }
 
     protected:
-      size_t ReadPoints(te::gm::MultiPoint &mpt, std::string &geostype);
-
-      size_t ReadSamples(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
-
-      size_t ReadBreakLines(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
-
       /*! Create the two initial triangles, based on box.*/
       bool CreateInitialTriangles(size_t nsamples);
 
@@ -301,9 +285,12 @@ namespace te
       \return TRUE if the angle is smaller than old triangles or FALSE otherwise
       */
       bool TestAngleBetweenNormals(int32_t triId, short nviz);
-      bool InsertBreakNodes(te::gm::MultiLineString &breaklines);
-      bool InsertBreakLines();
 
+      size_t ReadBreakLines(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
+
+      bool InsertBreakNodes(te::gm::MultiLineString &breaklines);
+
+      bool InsertBreakLines();
 
       /*!
       \brief Method fint the point that intersects two triangles containing points pf and pn
@@ -321,33 +308,6 @@ namespace te
       \return TRUE if the point is on the isoline segment or FALSE otherwise
       */
       bool OnIsolineSegment(int32_t linid, te::gm::PointZ &pt3d, bool &fixed);
-
-      /*!
-      \brief Method that evaluates Z values for pt1 and pt2 using the Akima polynomium fitted in a triangle
-      \param triid is the triangle identificator number
-      \param pt1 is a pointer to a Point3d object
-      \param pt2 is a pointer to a Point3d object
-      \return TRUE always
-      */
-      bool CalcZvalueAkima(int32_t triid, te::gm::PointZ &pt1, te::gm::PointZ &pt2);
-
-      /*!
-      \brief Method that defines the coefficients of the Akima polynomium fitted in a given triangle
-      \param triid is the triangle identification number
-      \param coef is a pointer to a double vector containing the polynomium coefficients
-      \return TRUE if the coefficients are determined with no errors or FALSE otherwise
-      */
-      bool DefineAkimaCoeficients(int32_t triid, double *coef);
-
-      /*!
-      \brief Method that defines the coefficients of the Akima polynomium fitted in a given triangle
-      \param triid is the triangle identification number
-      \param nodesid is the list of triangle nodes identification
-      \param p3d is a pointer to a Point3d object
-      \param coef is a pointer to a double vector containing the polynomium coefficients
-      \return TRUE if the coefficients are determined with no errors or FALSE otherwise
-      */
-      bool DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef);
 
       /*!
       \brief Method that order lines
@@ -370,6 +330,17 @@ namespace te
       \return TRUE if the triangulation is regenerated with no errors or False otherwise
       */
       bool ReGenerateDelaunay(int32_t nt, int32_t ntbase, int32_t contr);
+
+      /*!
+      \brief  Method that test if has flat triangles and regenerate them
+      */
+      bool TestFlatTriangles();
+
+      bool RegeneratewithNewPoints(std::vector<te::gm::PointZ> &p3dl, std::vector<bool> &fixed);
+
+      te::gm::Geometry* neigh_union(te::gm::Geometry* tri_union, int32_t tri, std::vector<int32_t> &used_tri_all, std::map<int32_t, te::gm::Polygon> &pol_tri);
+
+      bool borderUp();
 
     protected:
 

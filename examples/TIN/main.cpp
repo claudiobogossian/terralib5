@@ -40,6 +40,8 @@
 // STL
 #include "iostream"
 
+// Boost
+#include <boost/filesystem.hpp>
 
 //TESTES *********
 
@@ -468,24 +470,40 @@ void CalculateGrid()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
 
-  std::string file_result = ""TERRALIB_DATA_DIR"/mnt/TIN_GRD.tif";
+  boost::filesystem::path uri(""TERRALIB_DATA_DIR"/mnt/TIN_GRD_quint1.tif");
+  std::string dsName = "TIN_GRD_quint";
 
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = file_result;
+  if (boost::filesystem::exists(uri))
+  {
+    std::cout << "Output file already exists. Remove it or select a new name and try again.";
+    throw;
+  }
 
-  std::string outDS = "TIN_GRD";
+  std::map<std::string, std::string> dsinfo;
+  dsinfo["URI"] = uri.string();
+
+  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
+  dsOGR->setConnectionInfo(dsinfo);
+  dsOGR->open();
+  if (dsOGR->dataSetExists(dsName))
+  {
+    std::cout << "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.";
+    throw;
+  }
 
   te::mnt::TINCalculateGrid *Tin = new te::mnt::TINCalculateGrid();
 
   Tin->setInput(srcDs, inDsetName, inDsetType);
-  Tin->setOutput(tgrInfo, outDS);
+  Tin->setOutput(dsinfo);
   Tin->setSRID(SRID);
-  Tin->setParams(resx, resy, te::mnt::Linear);
+  Tin->setParams(resx, resy, te::mnt::Quintico);
 
   bool result = Tin->run();
 
   inDsetType.release();
   srcDs->close();
+  dsOGR->close();
+  delete Tin;
 
 }
 
@@ -502,9 +520,9 @@ int main(int /*argc*/, char** /*argv*/)
 
   //  GenerateTIN();
 
-    GenerateIso();
+  //  GenerateIso();
 
-  //  CalculateGrid();
+    CalculateGrid();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 
