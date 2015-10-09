@@ -275,6 +275,9 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
 
   m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
 
+  if (m_feature == 0)
+    return;
+
   for (std::size_t i = 0; i < m_geometries.size(); i++)
   {
     m_feature->setGeometry(m_geometries[i]);
