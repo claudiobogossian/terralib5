@@ -336,3 +336,12 @@ bool te::srs::SpatialReferenceSystemManager::isGeographic(unsigned int id, const
   std::string pjstr = getP4Txt(id,authName);
   return (pjstr.find("+proj=longlat")!=std::string::npos); 
 }
+
+bool te::srs::SpatialReferenceSystemManager::isInitialized()
+{
+  bool initialized = !m_set.empty();
+
+  return initialized;
+}
+
+

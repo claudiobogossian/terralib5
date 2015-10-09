@@ -242,4 +242,10 @@ void te::common::UnitsOfMeasureManager::init()
     insert(uom);
   }
 }
+bool te::common::UnitsOfMeasureManager::isInitialized()
+{
+  bool initialized = !m_uoms.empty();
+
+  return initialized;
+}
 

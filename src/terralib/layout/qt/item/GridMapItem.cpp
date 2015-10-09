@@ -37,6 +37,7 @@ te::layout::GridMapItem::GridMapItem(AbstractItemController* controller, bool in
   , m_maxHeigthTextMM(0)
   , m_onePointMM(0.3527777778)
   , m_changeSize(false)
+  , m_showDebugDrawings(false)
   , m_defaultRotate(90)
 {  
   //The text size or length that exceeds the sides will be cut
@@ -74,7 +75,7 @@ void te::layout::GridMapItem::configPainter( QPainter* painter )
   const Property& pLineColor = m_controller->getProperty(settingsConfig.getLineColor());
   const Property& pLineWidth = m_controller->getProperty(settingsConfig.getLineWidth());
 
-  const std::string& lineStyleName = pLineStyle.getValue().toString();
+  const std::string& lineStyleName = pLineStyle.getOptionByCurrentChoice().toString();
   const te::color::RGBAColor& lineColor = pLineColor.getValue().toColor();
   double lineWidth = pLineWidth.getValue().toDouble();
 
@@ -111,7 +112,7 @@ void te::layout::GridMapItem::configPainter( QPainter* painter )
 
   QColor clrLine(lineColor.getRed(), lineColor.getGreen(), lineColor.getBlue(), lineColor.getAlpha());
   pen.setColor(clrLine);
-  pen.setWidth(0);
+  pen.setWidthF(lineWidth);
 
   painter->setPen(pen);
 }
@@ -170,6 +171,10 @@ void te::layout::GridMapItem::drawVerticalLines( QPainter* painter )
   {
     QLineF line = (*it);
     painter->drawLine(line);
+    
+#ifdef _DEBUG
+    debugDrawLineEdges(painter, line);
+#endif
   }
 }
 
@@ -180,6 +185,11 @@ void te::layout::GridMapItem::drawHorizontalLines( QPainter* painter )
   {
     QLineF line = (*it);
     painter->drawLine(line);
+
+#ifdef _DEBUG
+    debugDrawLineEdges(painter, line);
+#endif
+    
   }
 }
 
@@ -248,6 +258,10 @@ void te::layout::GridMapItem::drawTopTexts( QPainter* painter )
     std::string txt = it->first;
     QPointF pt = it->second;
     drawText(pt, painter, txt, iRotate);
+
+#ifdef _DEBUG
+    debugDrawTextRect(painter, pt, txt, iRotate);
+#endif
   }
 }
 
@@ -268,6 +282,10 @@ void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
     std::string txt = it->first;
     QPointF pt = it->second;
     drawText(pt, painter, txt, iRotate);
+
+#ifdef _DEBUG
+    debugDrawTextRect(painter, pt, txt, iRotate);
+#endif
   }
 }
 
@@ -284,15 +302,18 @@ void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
 
   double width = 0;
   double height = 0;
-
-  QFont ft = painter->font();
-
+  
   std::map<std::string, QPointF>::iterator it = m_leftTexts.begin();
   for( ; it != m_leftTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;
     drawText(pt, painter, txt, iRotate);
+
+#ifdef _DEBUG
+    debugDrawTextRect(painter, pt, txt, iRotate);
+#endif
+
   }
 }
 
@@ -306,13 +327,17 @@ void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
   {
     iRotate = m_defaultRotate;
   }
-
+  
   std::map<std::string, QPointF>::iterator it = m_rightTexts.begin();
   for( ; it != m_rightTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;  
     drawText(pt, painter, txt, iRotate);
+
+#ifdef _DEBUG
+    debugDrawTextRect(painter, pt, txt, iRotate);
+#endif
   }
 }
 
@@ -407,13 +432,84 @@ bool te::layout::GridMapItem::drawCrossIntersectMapBorder( QLineF vrt, QLineF hr
 
   painter->drawRect(recWithOffSet);
 
+  painter->restore();
+
   bool resultMapLneTop = boxWithOffSet.touches(lneHrz);
   if(!resultMapLneTop)
   {
     return true;
   }
 
-  painter->restore();
-
   return result;
 }
+
+void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF& point, const std::string& text, int rotate)
+{
+  if (m_showDebugDrawings == false)
+  {
+    return;
+  }
+
+  GridSettingsConfigProperties settingsConfig;
+
+  const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
+  const Property& pTextFontFamily = m_controller->getProperty(settingsConfig.getFontText());
+
+  int textPointSize = pTextPointSize.getValue().toInt();
+  const std::string& fontFamily = pTextFontFamily.getValue().toString();
+  
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+
+ //creates the rect
+  QRectF rectF = itemUtils->getMinimumTextBoundary(fontFamily, textPointSize, text);
+
+//puts the rect in the correct position
+  rectF.moveTo(point);
+
+//draws the rect
+  painter->save();
+
+  QPen pen;
+  pen.setWidth(0);
+  pen.setColor(QColor(255, 0, 0));
+  painter->setPen(pen);
+  painter->setBrush(Qt::NoBrush);
+
+  if (rotate != 0)
+  {
+    QTransform trf = painter->transform();
+    trf.translate(point.x(), point.y());
+    trf.rotate(rotate);
+    trf.translate(-point.x(), -point.y());
+    painter->setTransform(trf);
+  }
+
+  painter->drawRect(rectF);
+
+  painter->restore();
+}
+
+void te::layout::GridMapItem::debugDrawLineEdges(QPainter* painter, const QLineF& line)
+{
+  if (m_showDebugDrawings == false)
+  {
+    return;
+  }
+
+  QPointF p1(line.p1());
+  QPointF p2(line.p2());
+
+  painter->save();
+
+  QPen linepen(Qt::red);
+  linepen.setCapStyle(Qt::RoundCap);
+  linepen.setWidth(1);
+  painter->setRenderHint(QPainter::Antialiasing, true);
+  painter->setPen(linepen);
+
+  painter->drawPoint(p1);
+  painter->drawPoint(p2);
+
+  painter->restore();
+}
+

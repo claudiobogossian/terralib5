@@ -724,6 +724,12 @@ void te::layout::Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
 void te::layout::Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
   QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
+
+  if (m_isEditionMode == true)
+  {
+    return;
+  }
+
   setEditionMode(true);
 }
 

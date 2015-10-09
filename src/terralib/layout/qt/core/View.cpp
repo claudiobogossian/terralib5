@@ -391,6 +391,7 @@ void te::layout::View::config()
 void te::layout::View::resizeEvent(QResizeEvent * event)
 {
   QGraphicsView::resizeEvent(event);
+  m_foreground = QPixmap();
 }
 
 void te::layout::View::onToolbarChangeMode( te::layout::EnumType* newMode )

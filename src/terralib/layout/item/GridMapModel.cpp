@@ -49,7 +49,7 @@ te::layout::GridMapModel::GridMapModel()
 
   // Line
   te::color::RGBAColor lineColor(0, 0, 0, 255);
-  int lineWidth = 1;
+  double lineWidth = 0.;
 
   // Text: Basic Configuration
   int pointTextSize = 6;
@@ -59,8 +59,8 @@ te::layout::GridMapModel::GridMapModel()
   // Text: Advanced configuration
   bool visibleAllTexts = true;
   bool superscriptText = false;
-  double lneVrtDisplacement = 1;
-  double lneHrzDisplacement = 1;
+  double lneVrtDisplacement = 1.;
+  double lneHrzDisplacement = 1.;
   bool bottomText = true;
   bool leftText = true;
   bool rightText = true;
@@ -135,7 +135,6 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getStyle());
     property.setComposeWidget(true);
-    property.setVisible(false); //need review
     property.setValue(currentGridStyle->getLabel(), dataType->getDataTypeStringList());
 
     Variant v;
@@ -166,7 +165,6 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getLineStyle());
     property.setComposeWidget(true);
-    property.setVisible(false); //need review
     property.setValue(currentLineStyle->getLabel(), dataType->getDataTypeStringList());
 
     Variant v;
@@ -201,8 +199,7 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getLineWidth());
     property.setComposeWidget(true);
-    property.setVisible(false); //need review
-    property.setValue(lineWidth, dataType->getDataTypeInt());
+    property.setValue(lineWidth, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
 

@@ -111,6 +111,10 @@ namespace te
 
         virtual bool drawCrossIntersectMapBorder(QLineF vrt, QLineF hrz, QPainter* painter);
 
+        virtual void debugDrawLineEdges(QPainter* painter, const QLineF& line);
+
+        virtual void debugDrawTextRect(QPainter* painter, const QPointF& point, const std::string& text, int rotate = 0);
+
       protected:
 
         double                          m_maxWidthTextMM;
@@ -128,6 +132,8 @@ namespace te
 
         te::gm::Envelope                m_boundingBox;
         int                             m_defaultRotate;
+
+        bool                            m_showDebugDrawings;
     };
   }
 }

@@ -482,9 +482,12 @@ namespace te
       
       QTransform transform;
 
-      transform.translate(point.x(), point.y());
-      transform.rotate(rotate);
-      transform.translate(-point.x(), -point.y());
+      if (rotate != 0)
+      {
+        transform.translate(point.x(), point.y());
+        transform.rotate(rotate);
+        transform.translate(-point.x(), -point.y());
+      }
 
       transform.translate(0., 2. * point.y());
       transform.scale(1., -1.);
