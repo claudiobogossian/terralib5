@@ -30,9 +30,13 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
+#include "../../mnt/core/CalculateGrid.h"
 #include "../../mnt/core/TINCalculateGrid.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
+#include "../../raster.h"
+#include "../../raster/Interpolator.h"
+#include "../../raster/RasterFactory.h"
 
 #include "MNTGenerationDialog.h"
 #include "ui_MNTGenerationDialogForm.h"
@@ -58,6 +62,10 @@ te::mnt::MNTGenerationDialog::MNTGenerationDialog(QWidget* parent , Qt::WindowFl
 
   //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
+  
+  connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
+
+  connect(m_ui->m_interpolatorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(oninterpolatorComboBoxChanged(int)));
 
   m_ui->m_dimLLineEdit->setValidator(new QIntValidator(this));
   m_ui->m_dimCLineEdit->setValidator(new QIntValidator(this));
@@ -74,6 +82,14 @@ te::mnt::MNTGenerationDialog::MNTGenerationDialog(QWidget* parent , Qt::WindowFl
 
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
+  for (int i = 2; i < 10; i++)
+    m_ui->m_powerComboBox->addItem(QString::number(i));
+
+  //Default Values
+  m_ui->m_tensionLineEdit->setText("40");
+  m_ui->m_smothLineEdit->setText("0.1");
+  m_ui->m_minPtsMitLineEdit->setText("50");
 
 }
 
@@ -103,6 +119,11 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 {
   m_ui->m_interpolatorComboBox->clear();
   m_inputLayer = 0;
+
+  m_ui->m_ZcomboBox->clear();
+  m_ui->m_ZcomboBox->hide();
+  m_ui->m_Zlabel->hide();
+
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
   while (it != m_layers.end())
@@ -115,11 +136,17 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
       {
         std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
 
+        m_ui->m_inputstackedWidget->setCurrentIndex(1);
+
         te::gm::GeomType gmType = geomProp->getGeometryType();
         if (gmType == te::gm::PointType || gmType == te::gm::MultiPointType ||
           gmType == te::gm::PointZType || gmType == te::gm::MultiPointZType ||
+          gmType == te::gm::PointMType || gmType == te::gm::MultiPointMType ||
+          gmType == te::gm::PointZMType || gmType == te::gm::MultiPointZMType ||
           gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType ||
-          gmType == te::gm::LineStringZType || gmType == te::gm::MultiLineStringZType) //samples
+          gmType == te::gm::LineStringZType || gmType == te::gm::MultiLineStringZType ||
+          gmType == te::gm::LineStringMType || gmType == te::gm::MultiLineStringMType ||
+          gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringZMType) //samples
         {
           m_inputType = SAMPLE;
           m_ui->m_interpolatorComboBox->addItem("Weighted Avg./Z Value/Quadrant");
@@ -128,8 +155,31 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           m_ui->m_interpolatorComboBox->addItem("Simple Average");
           m_ui->m_interpolatorComboBox->addItem("Nearest Neighbor");
           m_ui->m_interpolatorComboBox->addItem("Bilinear Spline");
-          m_ui->m_interpolatorComboBox->addItem("Bicubic Spline;");
-          m_ui->m_interpolatorComboBox->addItem("Mitasova Spline");
+          m_ui->m_interpolatorComboBox->addItem("Bicubic Spline");
+         // m_ui->m_interpolatorComboBox->addItem("Mitasova Spline"); Implementar depois
+
+          m_ui->m_ZcomboBox->show();
+          m_ui->m_Zlabel->show();
+
+          std::vector<te::dt::Property*> props = dsType->getProperties();
+          for (std::size_t i = 0; i < props.size(); ++i)
+          {
+            switch (props[i]->getType())
+            {
+            case te::dt::FLOAT_TYPE:
+            case te::dt::DOUBLE_TYPE:
+            case te::dt::INT16_TYPE:
+            case te::dt::INT32_TYPE:
+            case te::dt::INT64_TYPE:
+            case te::dt::UINT16_TYPE:
+            case te::dt::UINT32_TYPE:
+            case te::dt::UINT64_TYPE:
+            case te::dt::NUMERIC_TYPE:
+              m_ui->m_ZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
+              break;
+            }
+          }
+
         }
         if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
           gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
@@ -142,6 +192,7 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
       }
       if (dsType->hasRaster()) //GRID
       {
+        m_ui->m_inputstackedWidget->setCurrentIndex(0);
         m_inputType = GRID;
         m_ui->m_interpolatorComboBox->addItem("Bilinear");
         m_ui->m_interpolatorComboBox->addItem("Bicubic");
@@ -151,6 +202,66 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
       break;
     }
     it++;
+  }
+}
+
+
+void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
+{
+  m_ui->m_interparamStackedWidget->hide();
+
+  std::string inter = m_ui->m_interpolatorComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+
+  switch (m_inputType)
+  {
+  case SAMPLE:
+  {
+    m_ui->m_interparamStackedWidget->show();
+    double raio = std::sqrt(m_inputLayer->getExtent().getWidth() * m_inputLayer->getExtent().getWidth() +
+      m_inputLayer->getExtent().getHeight() * m_inputLayer->getExtent().getHeight()) / 5.;
+    m_ui->m_radiusLineEdit->setText(QString::number(raio, 'f', 4));
+
+    switch (index)
+    {
+    case 0: //Weighted Average/Z Value/Quadrant
+    case 1: //Weighted Average/Quadrant
+    case 2: //Weighted Average
+      m_ui->m_interparamStackedWidget->setCurrentIndex(0);
+      m_ui->m_powerLabel->show();
+      m_ui->m_powerComboBox->show();
+      break;
+    case 3: //Simple Average
+    case 4: //Nearest Neighbor
+      m_ui->m_interparamStackedWidget->setCurrentIndex(0);
+      m_ui->m_powerLabel->hide();
+      m_ui->m_powerComboBox->hide();
+      break;
+    case 5: //Bilinear Spline
+    case 6: //Bicubic Spline
+      m_ui->m_interparamStackedWidget->setCurrentIndex(1);
+      break;
+    case 7: //Mitasova Spline
+      m_ui->m_interparamStackedWidget->setCurrentIndex(2);
+      break;
+    }
+    break;
+  }
+    case TIN:
+      switch (index)
+      {
+      case 0:
+      case 1:
+      case 2:
+        break;
+      }
+      break;
+    case GRID:
+      switch (index)
+      {
+      case 0:
+      case 1:
+        break;
+      }
   }
 }
 
@@ -265,7 +376,8 @@ void te::mnt::MNTGenerationDialog::onTargetFileToolButtonPressed()
 }
 
 void te::mnt::MNTGenerationDialog::onHelpPushButtonClicked()
-{}
+{
+}
 
 void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 {
@@ -277,26 +389,26 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
     return;
   }
 
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
-  if (!dsLayer)
+  te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
+  if (!indsLayer)
   {
     QMessageBox::information(this, tr("DTM Generation"), tr("Can not execute this operation on this type of layer."));
     return;
   }
 
-  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
   if (!inDataSource.get())
   {
     QMessageBox::information(this, tr("DTM Generation"), tr("The selected input data source can not be accessed."));
     return;
   }
 
-  std::map<std::string, std::string> dsinfo;
+  std::map<std::string, std::string> outdsinfo;
 
   try
   {
-    std::string inDsetName = dsLayer->getDataSetName();
-    srid = dsLayer->getSRID();
+    std::string inDsetName = indsLayer->getDataSetName();
+    srid = indsLayer->getSRID();
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
     if (outputdataset.empty())
@@ -317,14 +429,82 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
     if (idx != std::string::npos)
       outputdataset = outputdataset.substr(0, idx);
 
-    dsinfo["URI"] = uri.string();
+    outdsinfo["URI"] = uri.string();
 
-    te::mnt::TINCalculateGrid *grid = new te::mnt::TINCalculateGrid();
+    double radius = m_ui->m_radiusLineEdit->text().toDouble();
+    int pow = m_ui->m_powerComboBox->currentText().toInt();
 
     switch (m_inputType)
     {
       case SAMPLE:
+      {
+        int inter_i = m_ui->m_interpolatorComboBox->currentIndex();
+        bool spline = false;
+        switch (inter_i)
+        {
+        case 0://Weighted Avg./Z Value/Quadrant
+          m_inter = MediaCotaQuad;
+          break;
+        case 1://Weighted Average/Quadrant
+          m_inter = MediaQuad;
+          break;
+        case 2://Weighted Average;
+          m_inter = MediaPonderada;
+          break;
+        case 3://Simple Average;
+          m_inter = Media;
+          break;
+        case 4://Nearest Neighbor
+          m_inter = Vizinho;
+          break;
+        case 5://Bilinear Spline
+          m_inter = SplineBilinear;
+          spline = true;
+          break;
+        case 6://Bicubic Spline
+          m_inter = SplineBicubico;
+          spline = true;
+          break;
+        case 7://Mitasova Spline
+          m_inter = Mitasova;
+          spline = true;
+          break;
+        }
+
+        if (!spline)
+        {
+          te::mnt::CalculateGrid *grid = new te::mnt::CalculateGrid();
+
+          grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
+          grid->setOutput(outdsinfo);
+          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), m_inter, radius, pow);
+          grid->setSRID(srid);
+
+          grid->run();
+
+          delete grid;
+        }
+        else
+        {
+          int px = m_ui->m_sepXSpinBox->text().toInt();
+          int py = m_ui->m_sepYSpinBox->text().toInt();
+          int mp = m_ui->m_minPtsSpinBox->text().toInt();
+          double ov = m_ui->m_overDoubleSpinBox->text().toDouble();
+
+          te::mnt::SplineInterpolationGrass *grid = new te::mnt::SplineInterpolationGrass(px, py, mp, ov);
+
+          grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
+          grid->setOutput(outdsinfo);
+          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), m_inter, radius, pow);
+          grid->setSRID(srid);
+
+          grid->generateGrid();
+
+          delete grid;
+
+        }
         break;
+      }
       case TIN:
       {
         int inter_i = m_ui->m_interpolatorComboBox->currentIndex();
@@ -340,8 +520,10 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
           m_inter = QuinticoBrkLine;
         }
 
+        te::mnt::TINCalculateGrid *grid = new te::mnt::TINCalculateGrid();
+
         grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
-        grid->setOutput(dsinfo);
+        grid->setOutput(outdsinfo);
         grid->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), m_inter);
         grid->setSRID(srid);
 
@@ -351,7 +533,83 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         break;
       }
       case GRID:
+      {
+        //get input raster
+        std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
+        std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
+        std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
+
+        std::vector< std::complex<double> > dummy;
+        if (m_ui->m_dummycheckBox->isChecked())
+          dummy.push_back(m_ui->m_dummylineEdit->text().toDouble());
+        else
+          dummy.push_back(inputRst.get()->getBand(0)->getProperty()->m_noDataValue);
+
+        int inter_i = m_ui->m_interpolatorComboBox->currentIndex();
+        int inter;
+        switch (inter_i)
+        {
+        case 0: //Bilinear
+          inter = te::rst::Bilinear;
+          break;
+        case 1: //Bicubico
+          inter = te::rst::Bicubic;
+          break;
+        }
+
+        te::rst::Interpolator interp(inputRst.get(), inter, dummy);
+
+        double resxo = m_ui->m_resXLineEdit->text().toDouble();
+        double resyo = m_ui->m_resYLineEdit->text().toDouble();
+        double resxi = inputRst.get()->getResolutionX();
+        double resyi = inputRst.get()->getResolutionY();
+        int outputWidth = m_ui->m_dimCLineEdit->text().toInt();
+        int outputHeight = m_ui->m_dimLLineEdit->text().toInt();
+        int X1 = inputRst.get()->getExtent()->getLowerLeftX();
+        int Y2 = inputRst.get()->getExtent()->getUpperRightY();
+        te::gm::Coord2D ulc(X1, Y2);
+        te::rst::Grid* grid = new te::rst::Grid(outputWidth, outputHeight, resxo, resyo, &ulc, inputRst.get()->getSRID());
+
+        std::vector<te::rst::BandProperty*> bands;
+        bands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "DTM GRID"));
+        bands[0]->m_nblocksx = 1;
+        bands[0]->m_nblocksy = outputHeight;
+        bands[0]->m_blkw = outputWidth;
+        bands[0]->m_blkh = 1;
+        bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
+       // bands[0]->m_noDataValue = dummy;
+
+        // create raster
+        std::auto_ptr<te::rst::Raster> outRst(te::rst::RasterFactory::make("GDAL", grid, bands, outdsinfo));
+        te::rst::Raster* out = outRst.get();
+
+        std::vector<std::complex<double> > value;
+        double xi, yi, xo, yo;
+
+        for (int l = 0; l < outputHeight; l++)
+        {
+          for (int c = 0; c < outputWidth; c++)
+          {
+            // Calculate the x and y coordinates of (l,c) corner of the output grid
+            xo = (X1 + c * resxo + resxo / 2.);
+            yo = (Y2 - l * resyo - resyo / 2.);
+
+            // Calculate position of point (xs,ys) in the input grid
+            xi = ((xo - (X1 + resxi / 2.)) / resxi);
+            yi = (((Y2 - resyi / 2.) - yo) / resyi);
+        
+            interp.getValues(xi, yi, value);
+            out->setValues(c, l, value);
+          }
+        }
+
+        outRst.release();
+        delete out;
+        inputRst.release();
+        inds.release();
+
         break;
+      }
       default:
         break;
     }
@@ -364,7 +622,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
     return;
   }
 
-  m_outputLayer = te::qt::widgets::createLayer("GDAL", dsinfo);
+  m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
 
   this->setCursor(Qt::ArrowCursor);
   accept();

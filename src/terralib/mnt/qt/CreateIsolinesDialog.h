@@ -18,46 +18,43 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file terralib/mnt/qt/MNTGenerationDialog.h
+\file terralib/mnt/qt/CreateIsolinesDialog.h
 
-\brief A dialog Retangular Grid generation
+\brief A dialog ISolines generation
 */
+#ifndef __TERRALIB_MNT_INTERNAL_CREATEISOLINESDIALOG_H
+#define __TERRALIB_MNT_INTERNAL_CREATEISOLINESDIALOG_H
 
-#ifndef __TERRALIB_MNT_INTERNAL_MNTGENERATIONDIALOG_H
-#define __TERRALIB_MNT_INTERNAL_MNTGENERATIONDIALOG_H
-
-// Terralib
+//terralib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
-#include "../../mnt/core/TINCalculateGrid.h"
 #include "../core/Config.h"
+#include "../core/Enums.h"
 
 // STL
 #include <list>
 #include <map>
+#include <memory>
 
 // Qt
 #include <QDialog>
 
-namespace Ui { class MNTGenerationDialogForm; }
+namespace Ui { class CreateIsolinesDialogForm; }
 
 namespace te
 {
   namespace mnt
   {
-    class TEMNTEXPORT MNTGenerationDialog : public QDialog
+    class TEMNTEXPORT CreateIsolinesDialog : public QDialog
     {
       Q_OBJECT
 
     public:
-      MNTGenerationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-      ~MNTGenerationDialog();
+      CreateIsolinesDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-      /*!
-      \brief Set the layer that can be used
-      \param layers   List of AbstractLayerPtr
-      */
+      ~CreateIsolinesDialog();
+
       void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
       te::map::AbstractLayerPtr getLayer();
@@ -65,11 +62,11 @@ namespace te
       protected slots:
 
       void onInputComboBoxChanged(int index);
-      void oninterpolatorComboBoxChanged(int index);
-      void onResXLineEditEditingFinished();
-      void onResYLineEditEditingFinished();
-      void onDimLLineEditEditingFinished();
-      void onDimCLineEditEditingFinished();
+      void onStepFixeEnabled(bool);
+      void on_stepVariableraEnabled(bool);
+      void oninsertpushButtonClicked();
+      void ondeletepushButtonClicked();
+      void ondeleteallpushButtonClicked();
       void onTargetDatasourceToolButtonPressed();
       void onTargetFileToolButtonPressed();
       void onHelpPushButtonClicked();
@@ -78,7 +75,7 @@ namespace te
 
     private:
 
-      std::auto_ptr<Ui::MNTGenerationDialogForm> m_ui;
+      std::auto_ptr<Ui::CreateIsolinesDialogForm> m_ui;
 
       te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
       std::string m_outputArchive;                                                      //!< Archive information.
@@ -87,11 +84,12 @@ namespace te
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
 
-      mntType m_inputType;  //!< Input type (SAMPLE, TIN, GRID)
-      Interpolator m_inter;
+      mntType m_inputType;  //!< Input type (TIN, GRID)
+      double m_min;
+      double m_max;
 
-    }; //class MNTGenerationDialog
+    };
   } //mnt
 } //te
 
-#endif
+#endif  //__TERRALIB_MNT_INTERNAL_CREATEISOLINESDIALOG_H

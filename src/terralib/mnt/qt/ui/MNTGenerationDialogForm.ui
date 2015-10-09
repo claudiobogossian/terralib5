@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>374</width>
-    <height>403</height>
+    <width>333</width>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Generate DTM</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_9">
    <item>
     <widget class="QLabel" name="m_MNTGenerationTitleLabel">
      <property name="font">
@@ -36,9 +36,72 @@
      <property name="title">
       <string>Input Layer</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <widget class="QLabel" name="m_layerLabel">
+        <property name="text">
+         <string>Layer Name:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="m_layersComboBox"/>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="m_inputstackedWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="page">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QCheckBox" name="m_dummycheckBox">
+              <property name="text">
+               <string>Dummy Value</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="m_dummylineEdit">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>9</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_2">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="m_Zlabel">
+            <property name="text">
+             <string>Quota Column:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="m_ZcomboBox"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -48,9 +111,169 @@
      <property name="title">
       <string>Interpolator</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_10">
       <item>
        <widget class="QComboBox" name="m_interpolatorComboBox"/>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="m_interparamStackedWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="m_averagePage">
+         <layout class="QFormLayout" name="formLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="m_powerLabel">
+            <property name="text">
+             <string>Power:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="m_radiusLabel">
+            <property name="text">
+             <string>Radius:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QComboBox" name="m_powerComboBox"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="m_radiusLineEdit"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="m_splinePage">
+         <layout class="QFormLayout" name="formLayout_2">
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QLabel" name="m_sepXLabel">
+              <property name="text">
+               <string>Separation in X:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="m_sepXSpinBox">
+              <property name="minimum">
+               <number>5</number>
+              </property>
+              <property name="maximum">
+               <number>1000</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QLabel" name="m_sepYLabel">
+              <property name="text">
+               <string>Separation in Y:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="m_sepYSpinBox">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>1000</number>
+              </property>
+              <property name="value">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QLabel" name="m_minPtsLabel">
+              <property name="text">
+               <string>Minimum Points:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="m_minPtsSpinBox">
+              <property name="minimum">
+               <number>5</number>
+              </property>
+              <property name="maximum">
+               <number>5000</number>
+              </property>
+              <property name="value">
+               <number>20</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="1">
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QLabel" name="m_overLabel">
+              <property name="text">
+               <string>Overlapping:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="m_overDoubleSpinBox">
+              <property name="value">
+               <double>5.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="m_mitasovaPage">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <layout class="QFormLayout" name="formLayout_3">
+            <item row="0" column="0">
+             <widget class="QLabel" name="m_tensionLabel">
+              <property name="text">
+               <string>Tension:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="m_tensionLineEdit"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="m_smothLabel">
+              <property name="text">
+               <string>Smothness:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="m_smothLineEdit"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="m_minPtsMitLabel">
+              <property name="text">
+               <string>Minimum Points:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="m_minPtsMitLineEdit"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -67,6 +290,58 @@
       <string>Output</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QGroupBox" name="m_rasterGroupBox">
+        <property name="title">
+         <string>Raster Parameters</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="m_resXLabel">
+           <property name="toolTipDuration">
+            <number>-1</number>
+           </property>
+           <property name="text">
+            <string>Resolution: X</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="m_resXLineEdit"/>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="m_resYLabel">
+           <property name="text">
+            <string>Y</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLineEdit" name="m_resYLineEdit"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="m_dimCLabel">
+           <property name="text">
+            <string>Dimension: C</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="m_dimCLineEdit"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="m_dimLLabel">
+           <property name="text">
+            <string>L</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLineEdit" name="m_dimLLineEdit"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item>
        <widget class="QLabel" name="m_repositoryLabel">
         <property name="text">
@@ -120,58 +395,6 @@
       </item>
       <item>
        <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="m_raterGroupBox">
-        <property name="title">
-         <string>Raster Parameters</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="m_resXLabel">
-           <property name="toolTipDuration">
-            <number>-1</number>
-           </property>
-           <property name="text">
-            <string>Resolution: X</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="m_resXLineEdit"/>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="m_resYLabel">
-           <property name="text">
-            <string>Y</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QLineEdit" name="m_resYLineEdit"/>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="m_dimCLabel">
-           <property name="text">
-            <string>Dimension: C</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="m_dimCLineEdit"/>
-         </item>
-         <item row="1" column="2">
-          <widget class="QLabel" name="m_dimLLabel">
-           <property name="text">
-            <string>L</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <widget class="QLineEdit" name="m_dimLLineEdit"/>
-         </item>
-        </layout>
-       </widget>
       </item>
      </layout>
     </widget>

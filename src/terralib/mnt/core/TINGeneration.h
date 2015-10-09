@@ -26,16 +26,6 @@ namespace te
 {
   namespace mnt
   {
-    
-    /*!
-    \enum InputType
-    \brief Input types.
-    */
-    enum InputType
-    {
-      Isolines,
-      Samples
-    };
     /*!
     \class TINGeneration
 
@@ -112,12 +102,6 @@ namespace te
       void setMethod(int method) { m_method = method; }
 
     protected:
-      size_t ReadPoints(te::gm::MultiPoint &mpt, std::string &geostype);
-
-      size_t ReadSamples(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
-
-      size_t ReadBreakLines(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
-
       /*! Create the two initial triangles, based on box.*/
       bool CreateInitialTriangles(size_t nsamples);
 
@@ -301,9 +285,12 @@ namespace te
       \return TRUE if the angle is smaller than old triangles or FALSE otherwise
       */
       bool TestAngleBetweenNormals(int32_t triId, short nviz);
-      bool InsertBreakNodes(te::gm::MultiLineString &breaklines);
-      bool InsertBreakLines();
 
+      size_t ReadBreakLines(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype);
+
+      bool InsertBreakNodes(te::gm::MultiLineString &breaklines);
+
+      bool InsertBreakLines();
 
       /*!
       \brief Method fint the point that intersects two triangles containing points pf and pn

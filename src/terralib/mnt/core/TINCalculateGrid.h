@@ -23,13 +23,6 @@ namespace te
 {
   namespace mnt
   {
-    enum Interpolator
-    {
-      Linear,
-      QuinticoBrkLine,
-      Quintico
-    };
-
 
     /*!
     \class TINCalculateGrid

@@ -10,6 +10,7 @@ Adapted from SPRING
 
 // Terralib Includes
 #include "Config.h"
+#include "Enums.h"
 
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -27,35 +28,6 @@ namespace te
 {
   namespace mnt
   {
-
-    /*!
-    \enum LType
-    \brief Line types.
-    */
-    enum Ltype{
-      Deletedline,
-      Normalline,
-      Isoline,
-      Breakline
-    };
-
-    /*!
-    \enum NType
-    \brief Node types.
-    */
-    enum Ntype
-    {
-      Deletednode,
-      Normalnode,
-      First,
-      Last,
-      Breaklinenormal,
-      Breaklinefirst,
-      Breaklinelast,
-      Sample,
-      Box
-    };
-
     class TinTriang
     {
     public:

@@ -159,14 +159,20 @@ void  te::mnt::TINGeneration::setParams(const double& tolerance,
 bool te::mnt::TINGeneration::run()
 {
   te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
+  te::gm::MultiPoint mptiso(0, te::gm::MultiPointZType, m_srid);
   te::gm::MultiLineString isolines_simp(0, te::gm::MultiLineStringZType, m_srid);
   std::string geostype;
 
   // Get samples
   size_t nsamples;
+  te::gm::Envelope env;
 
-  nsamples = ReadPoints(mpt, geostype);
-  nsamples = ReadSamples(mpt, isolines_simp, geostype);
+  nsamples = ReadPoints(m_inDsetName_point, m_inDsrc_point, m_atrZ_point, m_tolerance, mpt, geostype, env);
+  setEnvelope(env);
+
+  nsamples = ReadSamples(m_inDsetName_sample, m_inDsrc_sample, m_atrZ_sample, m_tolerance, m_maxdist, false, mptiso, isolines_simp, geostype, env);
+  setEnvelope(env);
+
 
   // Initialize triangulation process
   CreateInitialTriangles(nsamples);
@@ -196,7 +202,7 @@ bool te::mnt::TINGeneration::run()
   //if (!borderUp())
   //  return false;
 
-  TestFlatTriangles();
+  //TestFlatTriangles();
 
   // Save triangulation to datasource 
   SaveTin();
@@ -204,143 +210,6 @@ bool te::mnt::TINGeneration::run()
   return true;
 }
 
-size_t te::mnt::TINGeneration::ReadPoints(te::gm::MultiPoint &mpt, std::string &geostype)
-{
-  if (m_inDsetName_point.empty())
-    return 0;
-
-  std::auto_ptr<te::da::DataSet> inDset;
-  size_t nsamples = 0;
-
-  inDset = m_inDsrc_point->getDataSet(m_inDsetName_point);
-
-  std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
-
-  inDset->moveBeforeFirst();
-  std::size_t pos = 0;
-  double value;
-  while (inDset->moveNext())
-  {
-    std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
-    geostype = gin.get()->getGeometryType();
-
-    if (geostype == "MultiPoint")
-    {
-      te::gm::MultiPoint *g = dynamic_cast<te::gm::MultiPoint*>(gin.get());
-      std::size_t np = g->getNumGeometries();
-      if (!m_atrZ_point.empty())
-        value = inDset->getDouble(m_atrZ_point);
-      for (std::size_t i = 0; i < np; ++i)
-      {
-        te::gm::Point *p = dynamic_cast<te::gm::Point*>(g->getGeometryN(i));
-        if (m_atrZ_point.empty())
-          value = p->getZ();
-        te::gm::PointZ pz(p->getX(), p->getY(), value);
-        mpt.add(dynamic_cast<te::gm::Geometry*>(pz.clone()));
-        nsamples++;
-      }
-    }
-    if (geostype == "Point")
-    {
-      te::gm::Point *p = dynamic_cast<te::gm::Point*>(gin.get());
-      if (m_atrZ_point.empty())
-        value = p->getZ();
-      else
-        value = inDset->getDouble(m_atrZ_point);
-
-      te::gm::PointZ pz(p->getX(), p->getY(), value);
-      mpt.add(dynamic_cast<te::gm::Geometry*>(pz.clone()));
-      nsamples++;
-    }
-  }
-
-  std::auto_ptr<te::gm::Envelope> env = inDset->getExtent(geo_pos);
-  env->init((env->getLowerLeftX() - m_tolerance), (env->getLowerLeftY() - m_tolerance), (env->getUpperRightX() + m_tolerance), (env->getUpperRightY() + m_tolerance));
-
-  setEnvelope(*env);
-
-  return nsamples;
-}
-
-size_t te::mnt::TINGeneration::ReadSamples(te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype)
-{
-
-  if (m_inDsetName_sample.empty())
-    return 0;
-
-  std::auto_ptr<te::da::DataSet> inDset;
-  size_t nsamples = mpt.getNumGeometries();
-
- inDset = m_inDsrc_sample->getDataSet(m_inDsetName_sample);
-
-  const std::size_t np = inDset->getNumProperties();
-  const std::size_t ng = inDset->size();
-
-  //Read attributes
-  std::vector<std::string>pnames;
-  std::vector<int> ptypes;
-  for (std::size_t i = 0; i != np; ++i)
-  {
-    pnames.push_back(inDset->getPropertyName(i));
-    ptypes.push_back(inDset->getPropertyDataType(i));
-  }
-
-  std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
-
-  inDset->moveBeforeFirst();
-  std::size_t pos = 0;
-  double value;
-
-  while (inDset->moveNext())
-  {
-    std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
-    geostype = gin.get()->getGeometryType();
-
-    if (geostype == "LineString")
-    {
-      te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(gin.get());
-      if (m_atrZ_sample.empty())
-        value = *l->getZ();
-      else
-         value = inDset->getDouble(m_atrZ_sample);
-
-      te::gm::LineString *ls = pointListSimplify(l, m_tolerance, m_maxdist, value);
-      isolines.add(dynamic_cast<te::gm::Geometry*>(ls));
-      nsamples += ls->size();
-    }
-    if (geostype == "MultiLineString")
-    {
-      te::gm::MultiLineString *g = dynamic_cast<te::gm::MultiLineString*>(gin.get());
-      std::size_t np = g->getNumGeometries();
-      if (!m_atrZ_sample.empty())
-       value = inDset->getDouble(m_atrZ_sample);
-      for (std::size_t i = 0; i < np; ++i)
-      {
-        te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(g->getGeometryN(i));
-        te::gm::LineString *lz = new te::gm::LineString(l->size(), te::gm::LineStringZType, isolines.getSRID());
-        if (m_atrZ_sample.empty())
-          value = *l->getZ();
-
-        for (std::size_t il = 0; il < l->size(); il++)
-          lz->setPointZ(il, l->getX(il), l->getY(il), value);
-        l->setSRID(isolines.getSRID());
-        te::gm::LineString *ls = pointListSimplify(l, m_tolerance, m_maxdist, value);
-        if (ls->size())
-        {
-          isolines.add(dynamic_cast<te::gm::Geometry*>(ls));
-          nsamples += ls->size();
-        }
-      }
-    }
-  }
-
-  std::auto_ptr<te::gm::Envelope> env = inDset->getExtent(geo_pos);
-  env->init((env->getLowerLeftX() - m_tolerance), (env->getLowerLeftY() - m_tolerance), (env->getUpperRightX() + m_tolerance), (env->getUpperRightY() + m_tolerance));
-
-  setEnvelope(*env);
- 
-  return nsamples;
-}
 
 bool te::mnt::TINGeneration::SaveTin()
 {

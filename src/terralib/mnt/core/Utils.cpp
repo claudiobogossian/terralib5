@@ -1,10 +1,175 @@
+
+/*!
+\file terralib/mnt/core/Utils.cpp
+
+\brief Utility functions for MNT support.
+*/
+
 #include "Utils.h"
+#include "CalculateGrid.h"
+
+#include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/Point.h"
 
 #include <cmath>
 #include <limits>
 #include <stdint.h>
 
+
+size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, 
+  te::gm::MultiPoint &mpt, std::string &geostype, te::gm::Envelope &env)
+{
+  if (inDsetName.empty())
+    return 0;
+
+  std::auto_ptr<te::da::DataSet> inDset;
+  size_t nsamples = 0;
+
+  inDset = inDsrc->getDataSet(inDsetName);
+
+  std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+
+  inDset->moveBeforeFirst();
+  std::size_t pos = 0;
+  double value;
+  while (inDset->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+    geostype = gin.get()->getGeometryType();
+
+    if (geostype == "MultiPoint")
+    {
+      te::gm::MultiPoint *g = dynamic_cast<te::gm::MultiPoint*>(gin.get());
+      std::size_t np = g->getNumGeometries();
+      if (!atrZ.empty())
+        value = inDset->getDouble(atrZ);
+      for (std::size_t i = 0; i < np; ++i)
+      {
+        te::gm::Point *p = dynamic_cast<te::gm::Point*>(g->getGeometryN(i));
+        if (atrZ.empty())
+          value = p->getZ();
+        te::gm::PointZ pz(p->getX(), p->getY(), value);
+        mpt.add(dynamic_cast<te::gm::Geometry*>(pz.clone()));
+        nsamples++;
+      }
+    }
+    else if (geostype == "Point")
+    {
+      te::gm::Point *p = dynamic_cast<te::gm::Point*>(gin.get());
+      if (atrZ.empty())
+        value = p->getZ();
+      else
+        value = inDset->getDouble(atrZ);
+
+      te::gm::PointZ pz(p->getX(), p->getY(), value);
+      mpt.add(dynamic_cast<te::gm::Geometry*>(pz.clone()));
+      nsamples++;
+    }
+    else
+      return 0;
+  }
+
+  std::auto_ptr<te::gm::Envelope> e = inDset->getExtent(geo_pos);
+  env.init((e->getLowerLeftX() - tol), (e->getLowerLeftY() - tol), (e->getUpperRightX() + tol), (e->getUpperRightY() + tol));
+
+  return nsamples;
+}
+
+size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, double max, bool spline,
+  te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype, te::gm::Envelope &env)
+{
+
+  if (inDsetName.empty())
+    return 0;
+
+  std::auto_ptr<te::da::DataSet> inDset;
+  size_t nsamples = mpt.getNumGeometries();
+
+  inDset = inDsrc->getDataSet(inDsetName);
+
+  const std::size_t np = inDset->getNumProperties();
+  const std::size_t ng = inDset->size();
+
+  //Read attributes
+  std::vector<std::string>pnames;
+  std::vector<int> ptypes;
+  for (std::size_t i = 0; i != np; ++i)
+  {
+    pnames.push_back(inDset->getPropertyName(i));
+    ptypes.push_back(inDset->getPropertyDataType(i));
+  }
+
+  std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+
+  inDset->moveBeforeFirst();
+  std::size_t pos = 0;
+  double value;
+
+  while (inDset->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+    geostype = gin.get()->getGeometryType();
+
+    if (geostype == "LineString")
+    {
+      te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(gin.get());
+      if (atrZ.empty())
+        value = *l->getZ();
+      else
+        value = inDset->getDouble(atrZ);
+
+      te::gm::LineString *ls;
+      if (spline)
+        ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, max, value);
+      else
+        ls = pointListSimplify(l, tol, max, value); 
+      isolines.add(dynamic_cast<te::gm::Geometry*>(ls));
+      for (std::size_t p = 0; p < ls->size(); p++)
+      {
+        mpt.add(ls->getPointN(p));
+      }
+      nsamples += ls->size();
+    }
+    if (geostype == "MultiLineString")
+    {
+      te::gm::MultiLineString *g = dynamic_cast<te::gm::MultiLineString*>(gin.get());
+      std::size_t np = g->getNumGeometries();
+      if (!atrZ.empty())
+        value = inDset->getDouble(atrZ);
+      for (std::size_t i = 0; i < np; ++i)
+      {
+        te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(g->getGeometryN(i));
+        te::gm::LineString *lz = new te::gm::LineString(l->size(), te::gm::LineStringZType, isolines.getSRID());
+        if (atrZ.empty())
+          value = *l->getZ();
+
+        for (std::size_t il = 0; il < l->size(); il++)
+          lz->setPointZ(il, l->getX(il), l->getY(il), value);
+        l->setSRID(isolines.getSRID());
+        te::gm::LineString *ls;
+        if (spline)
+          ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, max, value);
+        else
+          ls = pointListSimplify(l, tol, max, value);
+        if (ls->size())
+        {
+          isolines.add(dynamic_cast<te::gm::Geometry*>(ls));
+          nsamples += ls->size();
+
+          for (std::size_t p = 0; p < ls->size(); p++)
+          {
+            mpt.add(ls->getPointN(p));
+          }
+        }
+      }
+    }
+  }
+
+  std::auto_ptr<te::gm::Envelope> e = inDset->getExtent(geo_pos);
+  env.init((e->getLowerLeftX() - tol), (e->getLowerLeftY() - tol), (e->getUpperRightX() + tol), (e->getUpperRightY() + tol));
+
+  return nsamples;
+}
 
 double te::mnt::Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2)
 {
@@ -55,7 +220,7 @@ te::gm::LineString* te::mnt::pointListSimplify(te::gm::LineString *ls, double sn
   te::gm::Coord2D* vxy = ls->getCoordinates();
 
   //  If line is too short do nothing
-  if (npts <= 3)
+  if (npts <= 3 || snap == 0.)
   {
     te::gm::LineString *ptlist = new te::gm::LineString(npts, te::gm::LineStringZType);
     for (size_t i = 0; i < npts; i++)
@@ -192,7 +357,6 @@ te::gm::LineString* te::mnt::pointListSimplify(te::gm::LineString *ls, double sn
   if (island)
     ptlist->setPointZ(npts, vxy[0].getX(), vxy[0].getY(), Zvalue);
 
-  // te::gm::Point *plast = ptlist->getEndPoint();
   return ptlist;
 }
 

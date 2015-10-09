@@ -6,7 +6,7 @@
 
 
 /*! Defines the attribute name Bayes used in Bayes operation*/
-#define TE_MNT_CREATEISOLINES_ATTR_NAME "CreateIsolines"
+//#define TE_MNT_CREATEISOLINES_ATTR_NAME "CreateIsolines"
 
 /** @name DLL/LIB Module
 *  Flags for building TerraLib as a DLL or as a Static Library

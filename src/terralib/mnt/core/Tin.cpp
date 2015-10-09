@@ -1241,7 +1241,7 @@ void te::mnt::Tin::Save(te::da::DataSource* source, te::da::DataSet* result, te:
       // copy from memory to output datasource
       result->moveBeforeFirst();
       std::string name = outDsType->getName();
-      source->add(outDsType->getName(), result, options);
+      source->add(name, result, options);
     }
     else
     {
@@ -1253,7 +1253,7 @@ void te::mnt::Tin::Save(te::da::DataSource* source, te::da::DataSet* result, te:
       // copy from memory to output datasource
       result->moveBeforeFirst();
       std::string name = outDsType->getName();
-      t->add(outDsType->getName(), result, options);
+      t->add(name, result, options);
 
       t->commit();
     }

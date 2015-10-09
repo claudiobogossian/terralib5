@@ -49,6 +49,7 @@ namespace te
     {
       namespace mnt
       {
+        class CreateIsolinesAction;
         class MNTGenerationAction;
         class TINGenerationAction;
 
@@ -89,6 +90,7 @@ namespace te
 
             QMenu* m_mntMenu;                                    //!< MNT Main Menu registered.
 
+            CreateIsolinesAction* m_ISOGeneration;    //!< Isoline Generation Action
             MNTGenerationAction* m_MNTGeneration;    //!< GRID Generation Action
             TINGenerationAction* m_TINGeneration;    //!< TIN Generation Action
         };
