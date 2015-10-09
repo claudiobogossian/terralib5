@@ -413,8 +413,32 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
     Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
     if(lScene != 0)
     {
+      changeZValueOrder(listItemsToConnect); //if need to change the order of the z value 
       QGraphicsItemGroup* group = lScene->createItemGroup(listItemsToConnect);
       group->setSelected(true);
+    }
+  }
+}
+
+void te::layout::PropertiesOutside::changeZValueOrder(QList<QGraphicsItem*> listItemsToConnect)
+{
+  if (listItemsToConnect.empty())
+  {
+    return;
+  }
+
+  QGraphicsItem* first = listItemsToConnect.first();
+  int minimumZValue = first->zValue();
+  foreach(QGraphicsItem* item, listItemsToConnect)
+  {
+    if (item)
+    {
+      if (minimumZValue > item->zValue())
+      {
+        first->setZValue(item->zValue());
+        item->setZValue(minimumZValue);
+        break;
+      }
     }
   }
 }

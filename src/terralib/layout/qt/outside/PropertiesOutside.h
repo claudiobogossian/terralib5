@@ -109,6 +109,8 @@ namespace te
 
         virtual void changeMapVisitable(Property property);
 
+        virtual void changeZValueOrder(QList<QGraphicsItem*> listItemsToConnect);
+
         virtual bool sendPropertyToItems(const Property& property, const QList<QGraphicsItem*>& items);
 
         virtual bool updateTree(QList<QGraphicsItem*> graphicsItems, Properties props );
