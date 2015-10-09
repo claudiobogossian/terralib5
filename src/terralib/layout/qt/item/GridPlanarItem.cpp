@@ -148,7 +148,7 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
   
   QFont ft(fontFamily.c_str(), textPointSize);
   
-  for( ; y1 < geoBox.getUpperRightY() ; y1 += verticalGap)
+  for( ; y1 <= geoBox.getUpperRightY() ; y1 += verticalGap)
   {
     if(y1 < geoBox.getLowerLeftY())
       continue;
@@ -222,7 +222,7 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
   
   QFont ft(fontFamily.c_str(), textPointSize);
 
-  for( ; x1 < geoBox.getUpperRightX() ; x1 += horizontalGap)
+  for( ; x1 <= geoBox.getUpperRightX() ; x1 += horizontalGap)
   {
     if(x1 < geoBox.getLowerLeftX())
       continue;

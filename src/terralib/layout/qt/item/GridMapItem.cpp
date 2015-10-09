@@ -352,24 +352,21 @@ void te::layout::GridMapItem::drawCrossLines(QPainter* painter)
   for( ; itv != m_verticalLines.end() ; ++itv )
   {
     QLineF vtrLine = (*itv);
-    te::gm::Envelope vertical(vtrLine.x1(), vtrLine.y1(), vtrLine.x2(), vtrLine.y2());
 
     QList<QLineF>::iterator ith = m_horizontalLines.begin();
     for( ; ith != m_horizontalLines.end() ; ++ith )
     {
       QLineF hrzLine = (*ith);
-      te::gm::Envelope horizontal(hrzLine.x1(), hrzLine.y1(), hrzLine.x2(), hrzLine.y2());
 
-      // check intersection between two lines
-      te::gm::Envelope result = vertical.intersection(horizontal);
-      if(result.isValid())
+      QPointF intersectonPoint;
+      QLineF::IntersectType intersectionType = vtrLine.intersect(hrzLine, &intersectonPoint);
+
+      if (intersectionType == QLineF::BoundedIntersection)
       {
-        QPointF pot(result.m_llx, result.m_lly);
-
-        QLineF lneHrz(pot.x() - crossOffSet, pot.y(), pot.x() + crossOffSet, pot.y());
-        QLineF lneVrt(pot.x(), pot.y() - crossOffSet, pot.x(), pot.y() + crossOffSet);
+        QLineF lneHrz(intersectonPoint.x() - crossOffSet, intersectonPoint.y(), intersectonPoint.x() + crossOffSet, intersectonPoint.y());
+        QLineF lneVrt(intersectonPoint.x(), intersectonPoint.y() - crossOffSet, intersectonPoint.x(), intersectonPoint.y() + crossOffSet);
         
-        if(drawCrossIntersectMapBorder(lneVrt, lneHrz, painter))
+        if(drawCrossIntersectMapBorder(lneVrt, lneHrz, painter) == true)
         {
           continue;
         }
@@ -401,28 +398,47 @@ bool te::layout::GridMapItem::drawCrossIntersectMapBorder( QLineF vrt, QLineF hr
 
   bool result = false;
 
-  painter->save();
-
+  //if the cross intersects the border of the reference rect, a line must be drawn instead of the cross
   te::gm::Envelope boxMM(0, 0, width, height);
 
-  te::gm::Envelope boxWithOffSet(boxMM.m_llx + crossOffSet, boxMM.m_lly + crossOffSet, boxMM.m_urx - crossOffSet, boxMM.m_ury - crossOffSet);
-  
-  te::gm::Envelope lneHrz(hrz.x1(), hrz.y1(), hrz.x2(), hrz.y2());
-  te::gm::Envelope lneVrt(vrt.x1(), vrt.y1(), vrt.x2(), vrt.y2());
+  QPointF intersectionPoint;
 
-  QRectF recWithOffSet(boxMM.m_llx, boxMM.m_lly, boxMM.m_urx, boxMM.m_ury);
+  QLineF bottomLine(boxMM.m_llx, boxMM.m_lly, boxMM.m_urx, boxMM.m_lly);
+  QLineF topLine(boxMM.m_llx, boxMM.m_ury, boxMM.m_urx, boxMM.m_ury);
+  QLineF leftLine(boxMM.m_llx, boxMM.m_lly, boxMM.m_llx, boxMM.m_ury);
+  QLineF rightLine(boxMM.m_urx, boxMM.m_lly, boxMM.m_urx, boxMM.m_ury);
 
-  painter->drawRect(recWithOffSet);
-
-  painter->restore();
-
-  bool resultMapLneTop = boxWithOffSet.touches(lneHrz);
-  if(!resultMapLneTop)
+  bool intersects = false;
+  if (bottomLine.intersect(vrt, &intersectionPoint) == QLineF::BoundedIntersection)
   {
-    return true;
+    QLineF borderLine(intersectionPoint.x(), intersectionPoint.y(), intersectionPoint.x(), intersectionPoint.y() + crossOffSet);
+    intersects = true;
+
+    painter->drawLine(borderLine);
+  }
+  if (topLine.intersect(vrt, &intersectionPoint) == QLineF::BoundedIntersection)
+  {
+    QLineF borderLine(intersectionPoint.x(), intersectionPoint.y(), intersectionPoint.x(), intersectionPoint.y() - crossOffSet);
+    intersects = true;
+
+    painter->drawLine(borderLine);
+  }
+  if (leftLine.intersect(hrz, &intersectionPoint) == QLineF::BoundedIntersection)
+  {
+    QLineF borderLine(intersectionPoint.x(), intersectionPoint.y(), intersectionPoint.x() + crossOffSet, intersectionPoint.y());
+    intersects = true;
+
+    painter->drawLine(borderLine);
+  }
+  if (rightLine.intersect(hrz, &intersectionPoint) == QLineF::BoundedIntersection)
+  {
+    QLineF borderLine(intersectionPoint.x(), intersectionPoint.y(), intersectionPoint.x() - crossOffSet, intersectionPoint.y());
+    intersects = true;
+
+    painter->drawLine(borderLine);
   }
 
-  return result;
+  return intersects;
 }
 
 void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF& point, const std::string& text)
