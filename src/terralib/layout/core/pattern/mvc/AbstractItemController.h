@@ -99,6 +99,11 @@ namespace te
         virtual void attach(AbstractItemController* controller);
 
         /*!
+        \brief Detaches the model of the given controller from the model of this instance
+        */
+        virtual void detach(AbstractItemController* controller);
+
+        /*!
           \brief Method called by the subject to inform changes in the model
         */ 
         virtual void update(const Subject* subject);

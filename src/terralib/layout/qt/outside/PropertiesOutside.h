@@ -109,7 +109,7 @@ namespace te
 
         virtual void changeMapVisitable(Property property);
 
-        virtual bool sendPropertyToSelectedItems(Property property);
+        virtual bool sendPropertyToItems(const Property& property, const QList<QGraphicsItem*>& items);
 
         virtual bool updateTree(QList<QGraphicsItem*> graphicsItems, Properties props );
 
