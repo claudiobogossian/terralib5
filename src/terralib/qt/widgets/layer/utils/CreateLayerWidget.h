@@ -76,6 +76,8 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer();
 
+          void clear();
+
         protected slots:
 
           void onAddPushButtonClicked();
