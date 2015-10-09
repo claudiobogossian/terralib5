@@ -75,7 +75,7 @@ namespace te
 
       void toolDeleted();
 
-      void endSelectCell(const std::string&, const std::size_t&);
+      void endSelectCell(const std::string&, const std::size_t&, std::size_t&);
 
     protected:
 
