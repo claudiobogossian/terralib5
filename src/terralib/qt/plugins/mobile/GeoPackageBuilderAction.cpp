@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../qt/af/ApplicationController.h"
 #include "../../../qt/af/BaseApplication.h"
-#include "qt/GeoPackageBuilderDialog.h"
 #include "qt/GeoPackageBuilderWizard.h"
 #include "GeoPackageBuilderAction.h"
 

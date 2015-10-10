@@ -47,9 +47,11 @@ namespace te
 
         std::string Write(te::qt::plugins::terramobile::Section* section);
 
-        std::string Write(const te::se::Style* style, std::string path = "style.xml");
-
         te::qt::plugins::terramobile::Section* Read(std::string ss);
+
+        std::string WriteStyle(const te::se::Style* style, std::string path = "style.xml");
+
+        std::auto_ptr<te::se::Style> ReadStyle(std::string xml);
 
       }   // end namespace thirdParty
     }     // end namespace plugins

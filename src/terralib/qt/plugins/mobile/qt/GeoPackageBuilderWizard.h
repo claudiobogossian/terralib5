@@ -38,6 +38,9 @@
 
 namespace te
 {
+  //Forward declaration
+  namespace da { class DataSource; }
+
   namespace qt
   {
     namespace plugins

@@ -27,6 +27,7 @@
 #include "../../../../common/StringUtils.h"
 #include "../../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
@@ -95,7 +96,7 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map
         uri += ("/" + dsLayer->getDataSetName());
 
       std::map<std::string, std::string> rinfo;
-      rinfo["SOURCE"] = uri;
+      rinfo["SOURCE"] = uri;      
       rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(raster->getNumberOfRows());
       rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(raster->getNumberOfColumns());
       rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(raster->getBandDataType(0));
@@ -103,7 +104,7 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map
      
       if (bandType != te::dt::UCHAR_TYPE)
       {
-        raster = te::gdal::NormalizeRaster(raster.get(), raster->getBand(0)->getMinValue().real(), raster->getBand(0)->getMaxValue().real(), 0, 255, rinfo, "GDAL");
+        raster = te::gdal::NormalizeRaster(raster.get(), 3, 0, 255, rinfo, "GDAL");
         te::gdal::DataSetsManager::getInstance().decrementUseCounter(uri);
       }
 
@@ -285,7 +286,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   {
     exportToGPKG(*it, dsGPKG.get(), gpkgName);
     std::string name = (*it)->getSchema()->getName();
-    std::string sldString = te::qt::plugins::terramobile::Write((*it)->getStyle(), (gpkgName + "-temp-style.xml"));
+    std::string sldString = te::qt::plugins::terramobile::WriteStyle((*it)->getStyle(), (gpkgName + "-temp-style.xml"));
     std::string insert = "INSERT INTO tm_style ('layer_name', 'sld_xml' )  values('" + name + "', '" + sldString + "');";  
     try
     {
@@ -302,7 +303,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   {
     exportToGPKG(*it, dsGPKG.get(), gpkgName);
     std::string name = (*it)->getSchema()->getName();
-    std::string sldString = te::qt::plugins::terramobile::Write((*it)->getStyle(), (gpkgName + "-temp-style.xml"));
+    std::string sldString = te::qt::plugins::terramobile::WriteStyle((*it)->getStyle(), (gpkgName + "-temp-style.xml"));
     std::string insert = "INSERT INTO tm_style ('layer_name', 'sld_xml' )  values('" + name + "', '" + sldString + "');";
     try
     {

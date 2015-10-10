@@ -27,6 +27,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../../../se/serialization/xml/Style.h"
 #include "../../../../../xml/AbstractWriter.h"
 #include "../../../../../xml/AbstractWriterFactory.h"
+#include "../../../../../xml/Reader.h"
+#include "../../../../../xml/ReaderFactory.h"
 #include "Serializer.h"
 
 #include "AbstractFormItem.h"
@@ -104,7 +106,14 @@ std::string te::qt::plugins::terramobile::Write(te::qt::plugins::terramobile::Se
   return ss.str();
 }
 
-std::string te::qt::plugins::terramobile::Write(const te::se::Style* style, std::string path)
+te::qt::plugins::terramobile::Section* te::qt::plugins::terramobile::Read(std::string filePath)
+{
+  te::qt::plugins::terramobile::Section* section = 0;
+
+  return section;
+}
+
+std::string te::qt::plugins::terramobile::WriteStyle(const te::se::Style* style, std::string path)
 {
   boost::filesystem::wpath file = boost::filesystem::absolute(path);
   std::string xml;
@@ -147,10 +156,44 @@ std::string te::qt::plugins::terramobile::Write(const te::se::Style* style, std:
   return xml;
 }
 
-te::qt::plugins::terramobile::Section* te::qt::plugins::terramobile::Read(std::string filePath)
+std::auto_ptr<te::se::Style> te::qt::plugins::terramobile::ReadStyle(std::string xml)
 {
-  te::qt::plugins::terramobile::Section* section = 0;
+  std::auto_ptr<te::se::Style> style;
+  {
+    std::ofstream ot("style.xml");
+    ot << xml;
+    ot.close();
+  }
 
-  return section;
+  boost::filesystem::wpath file = boost::filesystem::absolute("style.xml");
+  {
+    std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make());
+    reader->setValidationScheme(false);
+
+    reader->read(file.string());
+    reader->next();
+
+    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+      (reader->getElementLocalName() == "StyledLayerDescriptor"))
+      reader->next();
+
+    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+      (reader->getElementLocalName() == "NamedLayer"))
+      reader->next();
+
+    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+      (reader->getElementLocalName() == "UserStyle"))
+      reader->next();
+
+    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+      (reader->getElementLocalName() == "FeatureTypeStyle"))
+    {
+      if (reader->getNodeType() == te::xml::START_ELEMENT)
+        style.reset(te::se::serialize::Style::getInstance().read(*reader.get()));
+    }
+  }
+
+  boost::filesystem::remove(file);
+  return std::move(style);
 }
 

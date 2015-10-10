@@ -1022,42 +1022,88 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
   GDALClose((GDALDatasetH)poDstDS);
 }
 
-std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inraster, double min, double max, double nmin, double nmax,
-std::map<std::string, std::string> rInfo, std::string type)
+std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inraster, size_t bands, double nmin, double nmax, std::map<std::string, std::string> rInfo, std::string type)
 {
-  //create raster out
+  size_t col = 0;
+  size_t row = 0;
+  size_t bandIdx = 0;
+
+  double value = 0;
+  double minValue = std::numeric_limits< double >::max();
+  double maxValue = std::numeric_limits< double >::min();
+
+  const unsigned int inNRows = inraster->getNumberOfRows();
+  const unsigned int inNCols = inraster->getNumberOfColumns();
+
+  //Checking the min & max values from the raster bands
+  for (bandIdx = 0; bandIdx < bands; ++bandIdx)
+  {
+    te::rst::Band& band = *inraster->getBand(bandIdx);
+
+    const double noDataValue = band.getProperty()->m_noDataValue;
+
+    for (row = 0; row < inNRows; ++row)
+    {
+      for (col = 0; col < inNCols; ++col)
+      {
+        band.getValue(col, row, value);
+        if (value != noDataValue)
+        {
+          if (value < minValue)
+            minValue = value;
+
+          if (value > maxValue)
+            maxValue = value;
+        }
+      }
+    }
+  }
+
+  double gain = (double)(nmax - nmin) / (maxValue - minValue);
+  double offset = -1 * gain*minValue + nmin;
+
+  //Creating the output Raster file
   std::vector<te::rst::BandProperty*> bandsProperties;
-  te::rst::BandProperty* bandProp = new te::rst::BandProperty(0, te::dt::UCHAR_TYPE);
-  bandsProperties.push_back(bandProp);
+
+  for (bandIdx = 0; bandIdx < bands; ++bandIdx)
+  {
+    te::rst::BandProperty* bandProp = new te::rst::BandProperty(bandIdx, te::dt::UCHAR_TYPE);
+    bandsProperties.push_back(bandProp);
+  }
 
   te::rst::Grid* grid = new te::rst::Grid(*(inraster->getGrid()));
-
   te::rst::Raster* rasterNormalized = te::rst::RasterFactory::make(type, grid, bandsProperties, rInfo);
 
-  //start Normalize operation
-  std::size_t nRows = inraster->getNumberOfRows();
-  std::size_t nCols = inraster->getNumberOfColumns();
+  //Normalizing the values on the output Raster
 
-  double gain = (double)(nmax - nmin) / (max - min);
-  double offset = -1 * gain*min + nmin;
-
-  double value;
-
-  for (std::size_t t = 0; t < nRows; ++t)
+  for (bandIdx = 0; bandIdx < bands; ++bandIdx)
   {
-    for (std::size_t q = 0; q < nCols; ++q)
+    te::rst::Band& band = *inraster->getBand(bandIdx);
+
+    const double noDataValue = band.getProperty()->m_noDataValue;
+
+    for (row = 0; row < inNRows; ++row)
     {
-      try
+      for (col = 0; col < inNCols; ++col)
       {
-        inraster->getValue(q, t, value, 0);
+        try
+        {
+          band.getValue(col, row, value);
 
-        double normalizeValue = (value * gain + offset);
-
-        rasterNormalized->setValue(q, t, normalizeValue, 0);
-      }
-      catch (...)
-      {
-        continue;
+          if (value == noDataValue)
+          {
+            value = 0;
+          }
+          else
+          {
+            double normalizeValue = (value * gain + offset);
+            rasterNormalized->setValue(col, row, normalizeValue, bandIdx);
+          }
+        }
+        catch (...)
+        {
+          continue;
+        }
       }
     }
   }
