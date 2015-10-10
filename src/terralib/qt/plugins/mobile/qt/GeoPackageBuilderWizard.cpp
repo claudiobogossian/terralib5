@@ -36,6 +36,8 @@
 #include "../../../../gdal/DataSetsManager.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/DataSetLayer.h"
+#include "../../../../rp/Functions.h"
+#include "../../../../rp/RasterHandler.h"
 #include "../../../widgets/utils/DoubleListWidget.h"
 #include "../../../widgets/utils/ScopedCursor.h"
 #include "../core/form/Serializer.h"
@@ -75,8 +77,10 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map
   if (dsType->hasRaster())
   {
     std::auto_ptr<te::da::DataSet> dataset = layer->getData();
+    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
     std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> raster = dataset->getRaster(rpos);
+
 
     int inputSRID = raster->getSRID();
     int bandType = raster->getBandDataType(0);
@@ -84,9 +88,7 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map
     //Adjusting the output raster to tconform with mobile app needs
     if ((inputSRID != 4326) || (bandType != te::dt::UCHAR_TYPE))
     {
-      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
-
-      // Gets the URI
+      //Acquiring raster info
       const std::string& id = dsLayer->getDataSourceId();
       te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
       std::map<std::string, std::string>  connInfo = info->getConnInfo();
@@ -96,26 +98,44 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map
         uri += ("/" + dsLayer->getDataSetName());
 
       std::map<std::string, std::string> rinfo;
-      rinfo["SOURCE"] = uri;      
-      rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(raster->getNumberOfRows());
-      rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(raster->getNumberOfColumns());
-      rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(raster->getBandDataType(0));
-      rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(raster->getNumberOfBands());
-     
+      rinfo["SOURCE"] = uri;
+      rinfo["FORCE_MEM_DRIVER"] = "TRUE";
+
+      //Changing the raster to allow it to be exported, must be UCHAR_TYPE & the srid must be 4326
       if (bandType != te::dt::UCHAR_TYPE)
-      {
-        raster = te::gdal::NormalizeRaster(raster.get(), 3, 0, 255, rinfo, "GDAL");
-        te::gdal::DataSetsManager::getInstance().decrementUseCounter(uri);
-      }
+        raster = te::gdal::NormalizeRaster(raster.get(), 3, 0, 255, rinfo, "MEM");
 
       if (inputSRID != 4326)
-      {
-         raster.reset(raster->transform(4326, rinfo));
-         te::gdal::DataSetsManager::getInstance().decrementUseCounter(uri);
-      }
-    }
+        raster.reset(raster->transform(4326, rinfo));
 
-    te::gdal::copyToGeopackage(raster.get(), outFileName);
+      //Creating the raster to be exported
+      size_t bandIdx = 0;
+      size_t bands = raster->getNumberOfBands();
+
+      std::vector< te::rst::BandProperty* > bandsProperties;
+
+      for (bandIdx = 0; bandIdx < bands; ++bandIdx)
+      {
+        bandsProperties.push_back(new te::rst::BandProperty(
+
+          *(raster->getBand(bandIdx)->getProperty())));
+
+        bandsProperties[bandIdx]->m_type = te::dt::UCHAR_TYPE;
+      }
+
+      std::map<std::string, std::string> gpkgConnInfo = dsGPKG->getConnectionInfo();
+      std::string gpkgPath = gpkgConnInfo["URI"];
+      boost::filesystem::path dir = boost::filesystem::absolute(gpkgPath);
+      boost::filesystem::wpath file = boost::filesystem::absolute(dir.parent_path().string() + "/" + dsLayer->getDataSetName());
+      {
+        te::rp::RasterHandler outRasterHandler;
+        te::rp::CreateNewGdalRaster(*(raster->getGrid()), bandsProperties, file.string(), outRasterHandler);
+        te::gdal::copyToGeopackage(outRasterHandler.getRasterPtr(), outFileName);
+      }
+      boost::filesystem::remove(file);
+    }
+    else
+      te::gdal::copyToGeopackage(raster.get(), outFileName);
   }
   else
   {

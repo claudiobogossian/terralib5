@@ -25,6 +25,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 // TerraLib
 #include "../../../../../se/serialization/xml/Style.h"
+#include "../../../../../se/Style.h"
 #include "../../../../../xml/AbstractWriter.h"
 #include "../../../../../xml/AbstractWriterFactory.h"
 #include "../../../../../xml/Reader.h"
@@ -152,7 +153,7 @@ std::string te::qt::plugins::terramobile::WriteStyle(const te::se::Style* style,
     xml = buffer.str();
   }
 
-  bool tst = boost::filesystem::remove(file);
+  boost::filesystem::remove(file);
   return xml;
 }
 
