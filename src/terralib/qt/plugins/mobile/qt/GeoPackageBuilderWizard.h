@@ -38,9 +38,6 @@
 
 namespace te
 {
-  //Forward declaration
-  namespace da { class DataSource; }
-
   namespace qt
   {
     namespace plugins
@@ -69,8 +66,6 @@ namespace te
 
           public:
 
-            void exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName);
-
            void setLayerList(std::list<te::map::AbstractLayerPtr> list);
 
           protected:
@@ -94,7 +89,7 @@ namespace te
             std::auto_ptr<te::qt::plugins::terramobile::BuilderFormsWizardPage> m_formsPage;
             std::auto_ptr<te::qt::plugins::terramobile::BuilderOutputWizardPage> m_outputPage;
         }; 
-      }   // end namespace thirdParty
+      }   // end namespace terramobile
     }     // end namespace plugins
   }       // end namespace qt
 }         // end namespace te
