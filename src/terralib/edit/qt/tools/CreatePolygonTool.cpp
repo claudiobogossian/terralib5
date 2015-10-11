@@ -46,11 +46,10 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent, bool autosave)
+te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
-    m_autosave(autosave),
     m_addWatches(0),
     m_geometries(0)
 {
@@ -75,12 +74,6 @@ bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
 {
   if ((e->button() != Qt::LeftButton))
   {
-    if (m_autosave && m_feature && m_isFinished)
-    {
-      saveGeometries(m_layer);
-      m_display->refresh();
-    }
-
     return false;
   }
 

@@ -76,7 +76,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0, bool autosave = false);
+        CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~CreatePolygonTool();
