@@ -33,7 +33,6 @@
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../gdal/Utils.h"
-#include "../../../../gdal/DataSetsManager.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../../rp/Functions.h"
