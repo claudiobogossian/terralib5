@@ -57,7 +57,7 @@ namespace te
 // Forward declaration
       class Symbol;
 
-      class SymbologyPreview : public te::common::Static
+      class TEQTWIDGETSEXPORT SymbologyPreview : public te::common::Static
       {
         public:
 
