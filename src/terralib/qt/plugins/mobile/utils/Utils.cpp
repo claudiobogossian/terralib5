@@ -74,8 +74,8 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
   int bandType = raster->getBandDataType(0);
   int multiResLevel = raster->getMultiResLevelsCount();
 
-  //Adjusting the output raster to tconform with mobile app needs
-  if ((inputSRID != 4326) || (bandType != te::dt::UCHAR_TYPE))
+  //Adjusting the output raster to tconform with the mobile app needs
+  if ((inputSRID != 4326) || (bandType != te::dt::UCHAR_TYPE) || (multiResLevel > 0))
   {
     //Acquiring raster info
     const std::string& id = dsLayer->getDataSourceId();

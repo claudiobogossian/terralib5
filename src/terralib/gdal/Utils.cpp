@@ -59,6 +59,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/graph/graph_concepts.hpp>
+#include <boost/scoped_array.hpp>
 
 std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
@@ -1017,6 +1018,23 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
   te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
 
   GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
+  
+  unsigned int levels = gdalRaster->getMultiResLevelsCount();
+
+  if (levels > 0)
+  {
+    boost::scoped_array< int > overviewsIndexes(new int[levels]);
+    for (unsigned int overViewIdx = 1; overViewIdx <= levels; ++overViewIdx)
+    {
+      /*
+      Power of two overview factors(2, 4, 8, 16, ...) should be favored to be conformant
+      with the baseline GeoPackage specification as mentioned in gdal documentation.
+      */
+      unsigned int index = (unsigned int)std::pow(2, overViewIdx);
+      overviewsIndexes[(overViewIdx-1)] = index;
+    }
+    poDstDS->BuildOverviews("NEAREST", (int)levels, overviewsIndexes.get(), 0, NULL, NULL, NULL);
+  }
 
   CSLDestroy(papszOptions);
   GDALClose((GDALDatasetH)poDstDS);
