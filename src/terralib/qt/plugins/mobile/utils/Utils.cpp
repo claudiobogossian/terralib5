@@ -50,6 +50,9 @@ void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
 
   te::da::DataSetType* dsTypeResult = converter->getResult();
 
+  if (dsTypeResult->getProperty("FID"))
+    converter->remove("FID");
+
   dsTypeResult->setName(dataType->getName());
 
   //exporting
