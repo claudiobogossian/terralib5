@@ -672,7 +672,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0,true), e.m_display);
+  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
