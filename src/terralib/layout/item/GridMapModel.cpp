@@ -216,7 +216,6 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getFontText());
     property.setComposeWidget(true);
-    property.setVisible(false); //need review
     property.setValue(fontFamily, dataType->getDataTypeString());
     m_properties.addProperty(property);
   }
