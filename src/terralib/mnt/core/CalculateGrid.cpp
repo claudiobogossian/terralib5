@@ -171,7 +171,7 @@ void te::mnt::CalculateGrid::setOutput(std::map<std::string, std::string> &dsinf
 }
 
 
-void te::mnt::CalculateGrid::setParams(std::string &attr, double resx, double resy, Interpolator gt, double rd, int pow)
+void te::mnt::CalculateGrid::setParams(const std::string &attr, double resx, double resy, Interpolator gt, double rd, int pow)
 {
   m_resx = resx;
   m_resy = resy;
@@ -761,7 +761,7 @@ void te::mnt::SplineInterpolationGrass::nCorrectGrad()
 * \brief Tcholetsky decomposition -> T= Lower Triangular Matrix
 */
 
-bool te::mnt::SplineInterpolationGrass::tcholDec(std::vector<std::vector<double>> &T)
+bool te::mnt::SplineInterpolationGrass::tcholDec(std::vector< std::vector<double> > &T)
 {
   int i, j, k;
   double  somma;
@@ -894,7 +894,7 @@ double te::mnt::SplineInterpolationGrass::dataInterpolateBicubic(double x, doubl
 */
 bool te::mnt::SplineInterpolationGrass::tcholSolve()
 {
-  std::vector<std::vector<double>> T;
+  std::vector< std::vector<double> > T;
   int i, j;
 
   T = m_N;
