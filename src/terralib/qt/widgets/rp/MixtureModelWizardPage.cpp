@@ -542,7 +542,7 @@ void te::qt::widgets::MixtureModelWizardPage::drawMarks()
 {
   te::qt::widgets::MapDisplay* mapDisplay = m_navigatorDlg->getWidget()->getDisplay();
 
-  mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+  mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
 
   const te::gm::Envelope& mapExt = mapDisplay->getExtent();
 

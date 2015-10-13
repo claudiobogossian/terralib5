@@ -323,7 +323,7 @@ namespace te
         /*!
           \brief This function is called every time the context is updated. It will sign to all items that a change in the context had ocurred.
         */
-        virtual void contextUpdated();
+        virtual void updateAllItemsContext();
 
         virtual void applyPaperProportion(QSize oldPaper, QSize newPaper);
 
@@ -384,6 +384,10 @@ namespace te
           \brief Issued after entering on edition mode
           */
          void editionInitialized();
+         /*!
+          \brief Issued when the scene context changes, like Zoom and DPI
+          */
+         void contextUpdated();
 
         
       protected:

@@ -220,11 +220,6 @@ void te::layout::PropertiesUtils::mapNameDynamicProperty( Property& property, co
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
   std::vector<std::string> strList = iUtils->mapNameList();
 
-  if(std::find(strList.begin(), strList.end(), currentName) != strList.end())
-  {
-    std::vector<std::string>::iterator it = std::find(strList.begin(), strList.end(), currentName);
-    strList.erase(it);
-  }
 
   addDynamicOptions(property, strList);
 }

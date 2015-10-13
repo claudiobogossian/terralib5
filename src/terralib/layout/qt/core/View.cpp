@@ -68,7 +68,8 @@ te::layout::View::View( QWidget* widget) :
   m_height(-1),
   m_isMoving(false),
   m_movingItemGroup(0),
-  m_updateItemPos(false)
+  m_updateItemPos(false),
+  m_mouseEvent(false)
 {
   setDragMode(RubberBandDrag);
 
@@ -124,8 +125,10 @@ te::layout::View::~View()
 
 void te::layout::View::mousePressEvent( QMouseEvent * event )
 {
+  m_mouseEvent = true;
+
   QGraphicsView::mousePressEvent(event);
-  
+
   QPointF scenePos = mapToScene(event->pos());
   te::gm::Coord2D coord(scenePos.x(), scenePos.y());
 
@@ -163,6 +166,8 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 {
+  m_mouseEvent = true;
+
   if (event->modifiers() & Qt::ControlModifier)
   {
     return;
@@ -191,6 +196,8 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 
 void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 {
+  m_mouseEvent = false;
+
   QGraphicsView::mouseReleaseEvent(event);
 
   Scene* sc = dynamic_cast<Scene*>(scene());
@@ -384,6 +391,7 @@ void te::layout::View::config()
 void te::layout::View::resizeEvent(QResizeEvent * event)
 {
   QGraphicsView::resizeEvent(event);
+  m_foreground = QPixmap();
 }
 
 void te::layout::View::onToolbarChangeMode( te::layout::EnumType* newMode )
@@ -415,6 +423,8 @@ void te::layout::View::createItemGroup()
     If "enabled=false", QGraphicsItem Group will not block the child item's event 
     and let child item handle it own event.*/
     group->setHandlesChildEvents(true);
+    group->setSelected(true);
+    reload(); // load item group properties
   }
 }
 
@@ -624,11 +634,23 @@ void te::layout::View::onSystematicApply(double scale, SystematicScaleType type)
 
 void te::layout::View::onSelectionChanged()
 {
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if (!sc)
+    return;
+
   m_selectionChange = true;
 
   if(m_menuBuilder)
   {
     m_menuBuilder->closeAllWindows();
+  }
+
+  /* Scene isn't in edition mode and
+  mouse release yet happened, will happen the reload of the properties.
+  Otherwise, the reload will happen in double click event or in mouse release */
+  if (!sc->isEditionMode() && !m_mouseEvent)
+  {
+    reload();
   }
 }
 
@@ -811,8 +833,13 @@ void te::layout::View::recompose()
 {
   resetDefaultConfig();
 
-  int zoom = getDefaultZoom();
-  setZoom(zoom);
+  QRectF sceneRectV = sceneRect();
+
+  fitZoom(sceneRectV);
+
+  int zoom = getCurrentZoom();
+
+  setZoom(zoom*0.95);
 }
 
 void te::layout::View::arrowCursor()
@@ -880,13 +907,29 @@ void te::layout::View::setZoom(int newZoom)
   if(isLimitExceeded(newZoom) == true)
     return;
 
-  double rescale = (double)newZoom / (double)currentZoom;
+  Scene* scne = dynamic_cast<Scene*>(scene());
 
-  if(rescale > 0)
+  double currentHorizontalScale = this->viewportTransform().m11();
+  double currentVerticalScale = this->viewportTransform().m22();
+
+
+  double origHorizontalScale = scne->sceneTransform().m11();
+  double origVerticalScale = scne->sceneTransform().m22();
+
+
+  double hZoomScale = origHorizontalScale / (100./newZoom);
+  double vZoomScale = origVerticalScale / (100./newZoom);
+
+  double zoomScaleFactorH = hZoomScale / currentHorizontalScale;
+  double zoomScaleFactorV = vZoomScale / currentVerticalScale;
+
+
+  if((zoomScaleFactorH > 0)
+      && (zoomScaleFactorV > 0))
   {
     setCurrentZoom(newZoom);
 
-    applyScale(rescale);
+    applyScale(zoomScaleFactorH, zoomScaleFactorV);
 
     Scene* sce = dynamic_cast<Scene*>(scene());
     if(sce)
@@ -945,14 +988,14 @@ void te::layout::View::createItem(EnumType* itemType)
   viewport()->installEventFilter(m_currentTool);
 }
 
-void te::layout::View::applyScale(double newScale)
+void te::layout::View::applyScale(double horizontalScale, double verticalScale)
 {
-  if(newScale <= 0)
+  if((horizontalScale <= 0)||(verticalScale <= 0))
   {
     return;
   }
 
-  scale(newScale, newScale);
+  scale(horizontalScale, verticalScale);
 }
 
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )

@@ -156,11 +156,11 @@ namespace te
           \brief Draws the selection of the item
          */
         virtual void drawSelection(QPainter* painter);
-
+        
         /*!
-          \brief Draws the given text in the given localtion
-         */
-        virtual void drawText( const QPointF& point, QPainter* painter, const std::string& text );
+        \brief Draws the given text in the given localtion with rotation
+        */
+        virtual void drawText(const QPointF& point, QPainter* painter, const std::string& text, int rotate = 0);
 
         /*!
           \brief Reimplemented from QGraphicsItem to capture changes in the item
@@ -462,27 +462,36 @@ namespace te
 
       painter->restore();
     }
-
+    
     template <class T>
-    inline void te::layout::AbstractItem<T>::drawText( const QPointF& point, QPainter* painter, const std::string& text )
+    inline void te::layout::AbstractItem<T>::drawText(const QPointF& point, QPainter* painter, const std::string& text, int rotate)
     {
       QGraphicsScene* scene = T::scene();
-      if(scene == 0)
+      if (scene == 0)
       {
         return;
       }
 
       AbstractScene* myScene = dynamic_cast<AbstractScene*>(scene);
-      if(myScene == 0)
+      if (myScene == 0)
       {
         return;
       }
 
       painter->save();
-
+      
       QTransform transform;
+
+      if (rotate != 0)
+      {
+        transform.translate(point.x(), point.y());
+        transform.rotate(rotate);
+        transform.translate(-point.x(), -point.y());
+      }
+
       transform.translate(0., 2. * point.y());
       transform.scale(1., -1.);
+
       painter->setTransform(transform, true);
 
       painter->drawText(point, text.c_str());

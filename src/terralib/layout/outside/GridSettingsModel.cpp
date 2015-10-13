@@ -27,9 +27,6 @@
 
 // TerraLib
 #include "GridSettingsModel.h"
-#include "../core/property/Properties.h"
-#include "../core/property/PlanarGridSettingsConfigProperties.h"
-#include "../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../core/enum/Enums.h"
 
 te::layout::GridSettingsModel::GridSettingsModel() :
@@ -45,7 +42,7 @@ te::layout::GridSettingsModel::~GridSettingsModel()
 
 }
 
-void te::layout::GridSettingsModel::setProperties(std::vector<te::layout::Properties*> properties)
+void te::layout::GridSettingsModel::setGridProperties(te::layout::Properties properties)
 {
   m_properties = properties;
 }
@@ -54,60 +51,43 @@ te::layout::Property te::layout::GridSettingsModel::containsProperty( std::strin
 {
   Property prop;
 
-  Properties* props = containsGrid(enumType);
-  if(!props)
+  if (!containsGrid(enumType))
   {
     return prop;
   }
 
-  prop = props->getProperty(name);
+  prop = m_properties.getProperty(name);
   return prop;
 }
 
 bool te::layout::GridSettingsModel::updateProperty( Property prop, EnumType* enumType )
 {
-  Properties* props = containsGrid(enumType);
-
-  if(!props)
+  if (!containsGrid(enumType))
   {
     return false;
   }
   
-  bool result = props->contains(prop);
+  bool result = m_properties.contains(prop);
   if(!result)
   {
     return result;
   }
 
-  if(props->removeProperty(prop.getName()))
+  if(m_properties.removeProperty(prop.getName()))
   {
-    props->addProperty(prop);
+    m_properties.addProperty(prop);
   }
   return result;
 }
 
-te::layout::Properties* te::layout::GridSettingsModel::containsGrid(EnumType* enumType)
+bool te::layout::GridSettingsModel::containsGrid(EnumType* enumType)
 {
-  Properties* properties = 0;
-  
-  std::vector<Properties*>::iterator it;
-
-  for(it=m_properties.begin() ; it != m_properties.end() ; ++it)
+  bool result = false;
+  if (m_properties.getTypeObj() == enumType)
   {
-    Properties* props = (*it);
-    if(props)
-    {
-      if(props->getTypeObj() == enumType)
-      {
-        properties = props;
-        break;
-      }
-    }
+    result = true;
   }
-
-  return properties;
+  return result;
 }
-
-
 
 

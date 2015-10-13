@@ -62,6 +62,7 @@ void te::layout::PrintScene::printPreview()
     return;
 
   QPrinter* printer = createPrinter();
+  printer->setOutputFormat(QPrinter::NativeFormat);
 
   QPrintPreviewDialog *preview = new QPrintPreviewDialog(printer);
   connect(preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
@@ -218,7 +219,18 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
 
   sc->deselectAllItems();
 
+  QGraphicsItem* paperItem = sc->getPaperItem();
+  paperItem->setVisible(false);
+
+  QColor newBackgroundColor(255, 255, 255, 0);
+  QBrush newBrush(newBackgroundColor);
+  QBrush copyBackgroundColor = m_scene->backgroundBrush();
+
+  m_scene->setBackgroundBrush(newBrush);//transparent
   m_scene->render(newPainter, pxTargetRect, mmSourceRect); 
+  m_scene->setBackgroundBrush(copyBackgroundColor);
+
+  paperItem->setVisible(true);
 }
 
 void te::layout::PrintScene::print()
@@ -257,7 +269,10 @@ bool te::layout::PrintScene::exportToPDF()
   QPrinter* printer= createPrinter();
 
   printer->setOutputFormat(QPrinter::PdfFormat);
-  printer->setOutputFileName(fileName); 
+  printer->setOutputFileName(fileName);
+
+  //as the default parameter for the printer is High Resolution, we restrict the DPI of the PDF file to 600 to avoid print problems
+  printer->setResolution(600);
 
   m_printState = PrintingScene;
 

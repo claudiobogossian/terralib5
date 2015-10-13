@@ -33,6 +33,11 @@
 // TerraLib
 #include "GridMapItem.h"
 
+// Qt
+#include <QLineF>
+#include <QRectF>
+#include <QString>
+
 namespace te
 {
   namespace layout
@@ -73,6 +78,14 @@ namespace te
         virtual void calculateVertical(const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM);
 
         virtual void calculateHorizontal(const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM);
+
+        virtual te::gm::Envelope calculateRight(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement);
+
+        virtual te::gm::Envelope calculateLeft(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement);
+
+        virtual te::gm::Envelope calculateTop(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement);
+
+        virtual te::gm::Envelope calculateBottom(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement);
 
         virtual double initVerticalLines(const te::gm::Envelope& geoBox);
 

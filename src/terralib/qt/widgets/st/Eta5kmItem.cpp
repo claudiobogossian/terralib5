@@ -174,7 +174,7 @@ void te::qt::widgets::Eta5kmItem::loadCurrentImage()
     {
       QRect r = getRect();
       m_image = new QImage(r.size(), QImage::Format_ARGB32);
-      m_image->fill(QColor(0, 0, 255, 100));
+      m_image->fill(QColor(0, 0, 255, 100).rgba());
       QPainter p(m_image);
       p.setPen(QPen(QColor(255, 0, 0)));
 
@@ -216,7 +216,7 @@ void te::qt::widgets::Eta5kmItem::loadCurrentImage()
       pos = auxFile.indexOf("_");
       size_t pp = auxFile.indexOf(".bin");
       int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toStdString().c_str());
-      size_t fileSize = m_nlines * m_ncols * 4 + 8; // dado é float e desprepreza 4 bytes iniciais e 4 bytes finais
+      size_t fileSize = m_nlines * m_ncols * 4 + 8; // dado ï¿½ float e desprepreza 4 bytes iniciais e 4 bytes finais
       offset *= (int)fileSize;
       auxFile.remove((int)pos, auxFile.length() - (int)pos);
       auxFile = path + auxFile + m_suffix;

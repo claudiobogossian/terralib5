@@ -243,7 +243,7 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
         props.setHashCode(beforeProps.getHashCode());
         props.addProperty(property);
 
-        lItem->getController()->setProperties(props);
+        lItem->getController()->setProperty(property);
 
         Properties afterProps = lItem->getController()->getProperties();
         commandItems.push_back(item);

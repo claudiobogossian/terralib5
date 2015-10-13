@@ -29,10 +29,13 @@
 #include "GridGeodesicModel.h"
 
 #include "../core/pattern/singleton/Context.h"
-#include "../core/property/GridSettingsConfigProperties.h"
+#include "../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../../common/StringUtils.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
+
+// STL
+#include <string>
 
 te::layout::GridGeodesicModel::GridGeodesicModel() 
   : GridMapModel()
@@ -40,13 +43,14 @@ te::layout::GridGeodesicModel::GridGeodesicModel()
 {
   m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getGridGeodesicItem());
 
-  int srid = 0;
   te::gm::Envelope geographicBox(0, 0, 10000, 10000);
   bool showDegreesText = true;
   bool showMinutesText = false;
   bool showSecondsText = false;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  GeodesicGridSettingsConfigProperties settingsConfig;
 
   //adding properties
   // Reference Settings
@@ -57,14 +61,6 @@ te::layout::GridGeodesicModel::GridGeodesicModel()
     property.setValue(geographicBox, dataType->getDataTypeEnvelope());
     m_properties.addProperty(property);
   }
-  {
-    Property property(0);
-    property.setName("srid");
-    property.setLabel("Srid");
-    property.setValue(srid, dataType->getDataTypeInt());
-    m_properties.addProperty(property);
-  }
-
   {
     std::string emptyString;
 
@@ -80,21 +76,21 @@ te::layout::GridGeodesicModel::GridGeodesicModel()
   }
   {
     Property property(0);
-    property.setName("show_degrees_text");
+    property.setName(settingsConfig.getDegreesText());
     property.setLabel("Show Degrees Text");
     property.setValue(showDegreesText, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
   {
     Property property(0);
-    property.setName("show_minutes_text");
+    property.setName(settingsConfig.getMinutesText());
     property.setLabel("Show Minutes Text");
     property.setValue(showMinutesText, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
   {
     Property property(0);
-    property.setName("show_seconds_text");
+    property.setName(settingsConfig.getSecondsText());
     property.setLabel("Show Seconds Text");
     property.setValue(showSecondsText, dataType->getDataTypeBool());
     m_properties.addProperty(property);
@@ -123,7 +119,6 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
   const Property& pCurrentWidth = this->getProperty("width");
   const Property& pCurrentHeight = this->getProperty("height");
   const Property& pCurrentGeographicBox = this->getProperty("geographic_box");
-  const Property& pCurrentSrid = this->getProperty("srid");
 
   //new values
   double newWidth = pNewWidth.getValue().toDouble();
@@ -135,7 +130,6 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
   //current values
   double currentWidth = pCurrentWidth.getValue().toDouble();
   double currentHeight = pCurrentHeight.getValue().toDouble();
-  int currentSrid = pCurrentSrid.getValue().toInt();
   te::gm::Envelope currentGeographicBox = pCurrentGeographicBox.getValue().toEnvelope();
 
   bool doUpdate = false;
@@ -151,6 +145,7 @@ void te::layout::GridGeodesicModel::update(const Subject* subject)
   {
     doUpdate = true;
   }
+
 
   if(doUpdate == true)
   {
