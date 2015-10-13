@@ -425,10 +425,12 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
 
   painter->setClipRect(boundRect);
 
-  for (int i = 0; i < numTilesX; ++i)
+  //first draws all horizontally to each increment vertically
+
+  for (int j = 0; j < numTilesY; ++j) // row
   {
-    for (int j = 0; j < numTilesY; ++j)
-    {
+    for (int i = 0; i < numTilesX; ++i) // column
+    { 
       //New map display
       te::qt::widgets::MapDisplay* tileMapDisplay = new te::qt::widgets::MapDisplay();
       tileMapDisplay->setBackgroundColor(Qt::transparent);
