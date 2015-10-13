@@ -72,8 +72,11 @@ te::edit::CreatePolygonTool::~CreatePolygonTool()
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
 {
-  if ((e->button() != Qt::LeftButton))
+  if (e->button() != Qt::LeftButton)
   {
+    if (m_feature)
+      emit readyToSave();
+
     return false;
   }
 
@@ -127,8 +130,10 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  if(e->button() != Qt::LeftButton)
+  if (e->button() != Qt::LeftButton)
+  {
     return false;
+  }
 
   if(m_coords.size() < 3) // Can not stop yet...
     return false;
