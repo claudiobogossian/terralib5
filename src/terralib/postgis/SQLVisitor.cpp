@@ -63,3 +63,18 @@ void te::pgis::SQLVisitor::visit(const te::da::LiteralGeom& visited)
   assert(visited.getValue() != 0);
   Convert2PostGIS(m_conn, static_cast<te::gm::Geometry*>(visited.getValue()), m_sql);
 }
+
+void te::pgis::SQLVisitor::visitDistinct(const te::da::Distinct& visited)
+{
+  m_sql += "DISTINCT (";
+
+  for (std::size_t i = 0; i < visited.size(); ++i)
+  {
+    if (i != 0)
+      m_sql += ", ";
+
+    visited[i].accept(*this);
+  }
+
+  m_sql += ")";
+}
