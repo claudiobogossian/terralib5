@@ -31,6 +31,7 @@
 #include "../../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../geometry/GeometryProperty.h"
 #include "../../../../gdal/Utils.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../../raster/Interpolator.h"
@@ -39,7 +40,7 @@
 #include "../core/form/Serializer.h"
 #include "utils.h"
 
-void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, te::da::DataSetType* dataType, std::string outFileName)
+void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, te::da::DataSetType* dataType, std::auto_ptr<te::da::DataSet> dataset, std::string outFileName)
 {
   //SRID adaptation
   int inputSRID = layer->getSRID();
@@ -58,17 +59,14 @@ void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
   //exporting
   std::map<std::string, std::string> nopt;
 
-  std::auto_ptr<te::da::DataSet> dataset = layer->getData();
-
   std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
   if (dataset->moveBeforeFirst())
     te::da::Create(dsGPKG, dsTypeResult, dsAdapter.get());
 }
 
-void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName)
+void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::auto_ptr<te::da::DataSet> dataset, std::string outFileName)
 {
-  std::auto_ptr<te::da::DataSet> dataset = layer->getData();
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> raster = dataset->getRaster(rpos);
@@ -160,15 +158,39 @@ std::auto_ptr<te::da::DataSource> te::qt::plugins::terramobile::createGeopackage
 void te::qt::plugins::terramobile::exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName)
 {
   std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+  std::auto_ptr<te::da::DataSet> dataset = layer->getData();
 
   //Checking if the layer contains a raster property
   if (dsType->hasRaster())
   {
-    exportRastertoGPKG(layer, dsGPKG, outFileName);
+    exportRastertoGPKG(layer, dsGPKG, dataset, outFileName);
   }
   else
   {
-    exportVectortoGPKG(layer, dsGPKG, dsType.get(), outFileName);
+    exportVectortoGPKG(layer, dsGPKG, dsType.get(), dataset, outFileName);
+
+    std::string name = dsType->getName();
+    std::string sldString = te::qt::plugins::terramobile::WriteStyle(layer->getStyle(), (outFileName + "-temp-style.xml"));
+    std::string insert = "INSERT INTO tm_style ('layer_name', 'sld_xml' )  values('" + name + "', '" + sldString + "');";
+
+    queryGPKG(insert, dsGPKG);
+  }
+}
+
+void te::qt::plugins::terramobile::exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName, const te::gm::Envelope extent)
+{
+  std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+  
+  std::auto_ptr<te::da::DataSet> dataset = layer->getData(te::da::GetFirstGeomProperty(dsType.get())->getName(), &extent);
+
+  //Checking if the layer contains a raster property
+  if (dsType->hasRaster())
+  {
+    exportRastertoGPKG(layer, dsGPKG, dataset, outFileName);
+  }
+  else
+  {
+    exportVectortoGPKG(layer, dsGPKG, dsType.get(), dataset, outFileName);
 
     std::string name = dsType->getName();
     std::string sldString = te::qt::plugins::terramobile::WriteStyle(layer->getStyle(), (outFileName + "-temp-style.xml"));
