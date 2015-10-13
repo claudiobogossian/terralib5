@@ -180,9 +180,13 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
     assert(reader.getElementLocalName() == "Value");
     reader.next();
-    assert(reader.getNodeType() == te::xml::VALUE);
-    std::string paramValue = reader.getElementValue();
-    reader.next();
+    std::string paramValue;
+    if (reader.getNodeType() != te::xml::END_ELEMENT)
+    {
+      assert(reader.getNodeType() == te::xml::VALUE);
+      paramValue = reader.getElementValue();
+      reader.next();
+    }
     assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
     conninfo[paramName] = paramValue;

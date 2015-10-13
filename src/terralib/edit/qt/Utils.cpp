@@ -42,30 +42,6 @@
 // STL
 #include <cassert>
 
-//removing
-#include "../../common/Exception.h"
-#include "../../common/Translator.h"
-#include "../../dataaccess/dataset/ObjectId.h"
-#include "../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../dataaccess/utils/Utils.h"
-#include "../../datatype/SimpleData.h"
-#include "../../edit/Feature.h"
-#include "../../edit/Repository.h"
-#include "../../edit/RepositoryManager.h"
-#include "../../edit/qt/core/UndoStackManager.h"
-#include "../../geometry/GeometryProperty.h"
-#include "../../geometry/GeometryCollection.h"
-#include "../../maptools/DataSetLayer.h"
-#include "../../memory/DataSet.h"
-#include "../../memory/DataSetItem.h"
-#include "../../qt/widgets/canvas/MapDisplay.h"
-#include "../../qt/af/events/MapEvents.h"
-
-//#include "../af/ApplicationController.h"
-//#include "../af/events/LayerEvents.h"
-//#include "../af/events/MapEvents.h"
-
 // QT
 #include <QMessageBox>
 
