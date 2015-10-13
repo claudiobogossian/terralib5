@@ -355,13 +355,13 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
   //divide em x partes overlaping
   int nPartsX = m_nPartsX;
   int nPartsY = m_nPartsY;
-  double deltx = m_env.getWidth();
-  double delty = m_env.getHeight();
+  double deltx = m_env.getUpperRightX()-m_env.getLowerLeftX();// m_env.getWidth();
+  double delty = m_env.getUpperRightY()-m_env.getLowerLeftY();// m_env.getHeight();
 
   double ew_region = deltx / (double)nPartsX;
   double ns_region = delty / (double)nPartsY;
 
-  double percentageDist = m_overlapping;
+  double percentageDist = m_overlapping/100;
 
   int _minimoPontos = std::min(m_minpoints, (int)m_dataset.size());
   double imgzMin = std::numeric_limits<double>::max();
@@ -374,13 +374,13 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
   double zdummy = m_nodatavalue;
 
   double X1 = m_env.getLowerLeftX() + resX/2.;
-  double Y1 = m_env.getLowerLeftY() - resY/2.;
+  double Y1 = m_env.getUpperRightY() - resY/2.;
 
   //mensagem de auxilio
   for (int i = 0; i < m_nPartsY; i++)
   {
     double begin_y = Y1 + (i*ns_region);
-    double end_y = Y1 + ((i + 1)*ns_region);
+    double end_y = Y1 - ((i + 1)*ns_region);
 
     double disty = (end_y - begin_y) * percentageDist;
 
@@ -402,8 +402,8 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
         double overlapDistX = distx*nOverlaping;
         double overlapDistY = disty*nOverlaping;
 
-        int beginLine = std::max((int)((begin_y - Y1 - overlapDistY) / resY), 0);
-        int endLine = std::min((int)((end_y - Y1 + overlapDistY) / resY), NLines);
+        int beginLine = std::max((int)((Y1 - begin_y + overlapDistY) / resY), 0);
+        int endLine = std::min((int)((Y1 - end_y - overlapDistY) / resY), NLines);
 
         min_y = std::max(Y1, begin_y - overlapDistY);
         if (beginLine == 0)
@@ -454,8 +454,8 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
       /*--------------------------------------*/
 
       //calcula a grade
-      unsigned int firstLine = std::max((int)((begin_y - Y1) / resY), 0);
-      unsigned int lastLine = std::min((int)((end_y - Y1) / resY), NLines);
+      unsigned int firstLine = std::max((int)((Y1 - begin_y) / resY), 0);
+      unsigned int lastLine = std::min((int)((Y1 - end_y) / resY), NLines);
 
       unsigned int firstCol = std::max((int)((begin_x - X1) / resX), 0);
       unsigned int lastCol = std::min((int)((end_x - X1) / resX), NCols);
@@ -467,7 +467,7 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
       {
         for (c = firstCol; c <= lastCol; c++)
         {
-          te::gm::PointZ pg((X1 + (double)(c*m_resx)),(Y1 + (double)(l*m_resy)), m_nodatavalue);
+          te::gm::PointZ pg((X1 + (double)(c*m_resx)),(Y1 - (double)(l*m_resy)), m_nodatavalue);
 
           double interpolation = 0;
           bool doInterpolation;
@@ -486,9 +486,9 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
 
           pg.setZ(interpolation);
 
-          unsigned int nl = (NLines - l);
-          if (nl >= 0 && nl < m_rst->getNumberOfRows() && c >= 0 && c < m_rst->getNumberOfColumns())
-            m_rst->setValue(c, nl, pg.getZ());
+        //  unsigned int nl = (NLines - l);
+        //  if (nl >= 0 && nl < m_rst->getNumberOfRows() && c >= 0 && c < m_rst->getNumberOfColumns())
+            m_rst->setValue(c, l, pg.getZ());
         }
       }
       m_parVect.clear();
