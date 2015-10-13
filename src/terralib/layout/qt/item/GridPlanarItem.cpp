@@ -30,7 +30,7 @@
 
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "../../core/property/GridSettingsConfigProperties.h"
+#include "../../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../../core/WorldTransformer.h"
 #include "../../core/Utils.h"
 
@@ -47,10 +47,11 @@ te::layout::GridPlanarItem::~GridPlanarItem()
 
 void te::layout::GridPlanarItem::drawGrid(QPainter* painter)
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
+
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
   
-  const std::string& style = pStyle.getValue().toString();
+  const std::string& style = pStyle.getOptionByCurrentChoice().toString();
   EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
   if (currentStyle != 0)
   {
@@ -83,23 +84,17 @@ void te::layout::GridPlanarItem::drawGrid(QPainter* painter)
 
 void te::layout::GridPlanarItem::calculateGrid()
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pPlanarBox = m_controller->getProperty("planar_box");
   const Property& pWidth = m_controller->getProperty("width");
   const Property& pHeight = m_controller->getProperty("height");
-  const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
+  const Property& pFrameThickness = m_controller->getProperty("frame_thickness");
 
   const te::gm::Envelope& planarBox = pPlanarBox.getValue().toEnvelope();
   double width = pWidth.getValue().toDouble();
   double height = pHeight.getValue().toDouble();
-
-  const std::string& style = pStyle.getValue().toString();
-  EnumType* currentStyle = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
-  if (currentStyle != 0)
-  {
-    currentStyle = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
-  }
+  double frameThickness = pFrameThickness.getValue().toDouble();
 
   te::gm::Envelope referenceBoxMM(0, 0, width, height);
 
@@ -114,23 +109,30 @@ void te::layout::GridPlanarItem::calculateGrid()
   calculateVertical(planarBox, referenceBoxMM);
   calculateHorizontal(planarBox, referenceBoxMM);
 
+  m_boundingBox = te::gm::Envelope(m_boundingBox.getLowerLeftX() - frameThickness, m_boundingBox.getLowerLeftY() - frameThickness, m_boundingBox.getUpperRightX() + frameThickness, m_boundingBox.getUpperRightY() + frameThickness);
+
   prepareGeometryChange();
 }
 
 void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
   const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
-  const Property& pUnit = m_controller->getProperty("unit");
+  const Property& pVerticalDisplacement = m_controller->getProperty(settingsConfig.getLneVrtDisplacement());
+  const Property& pUnit = m_controller->getProperty(settingsConfig.getUnit());
+  const Property& pLeftRotate = m_controller->getProperty(settingsConfig.getLeftRotateText());
+  const Property& pRightRotate = m_controller->getProperty(settingsConfig.getRightRotateText());
 
   std::string fontFamily = pFontFamily.getValue().toString();
   int textPointSize = pTextPointSize.getValue().toInt();
   double verticalGap = pVerticalGap.getValue().toDouble();
+  double verticalDisplacement = pVerticalDisplacement.getValue().toDouble();
   LayoutUnit unit = (LayoutUnit)pUnit.getValue().toInt();
-
+  bool bLeftRotate = pLeftRotate.getValue().toBool();
+  bool bRightRotate = pRightRotate.getValue().toBool();
 
   Utils* utils = Context::getInstance().getUtils();
   ItemUtils* itemUtils = Context::getInstance().getItemUtils();
@@ -141,15 +143,12 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
   transf.setMirroring(false);
 
   double y1 = initVerticalLines(geoBox);
-
-  double wtxt = 0;
-  double htxt = 0;
-
+  
   m_boundingBox.Union(boxMM);
   
   QFont ft(fontFamily.c_str(), textPointSize);
   
-  for( ; y1 < geoBox.getUpperRightY() ; y1 += verticalGap)
+  for( ; y1 <= geoBox.getUpperRightY() ; y1 += verticalGap)
   {
     if(y1 < geoBox.getLowerLeftY())
       continue;
@@ -166,39 +165,96 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
     double number = y1 / (double)unit;
     QString convert = QString::number(number, 'f', 0);
 
-    QRectF rectF = itemUtils->getTextBoundary(fontFamily, textPointSize, convert.toStdString());
-    wtxt = rectF.width();
-    htxt = rectF.height();
+    QRectF rectF = itemUtils->getMinimumTextBoundary(fontFamily, textPointSize, convert.toStdString());
 
-    // text left
-    QPointF ptLeft(llx - wtxt, y);
-    m_leftTexts[convert.toStdString()] = ptLeft;
-
-    // text right
-    QPointF ptRight(urx, y);
-    m_rightTexts[convert.toStdString()] = ptRight;
-
-    te::gm::Envelope leftTextBox(ptLeft.x(), ptLeft.y(), ptLeft.x() + wtxt, ptLeft.y() + htxt);
-    te::gm::Envelope rightTextBox(ptRight.x(), ptRight.y(), ptRight.x() + wtxt, ptRight.y() + htxt);
-
-    m_boundingBox.Union(leftTextBox);
-    m_boundingBox.Union(rightTextBox);
+    calculateLeft(line, rectF, convert, bLeftRotate, verticalDisplacement);
+    calculateRight(line, rectF, convert, bRightRotate, verticalDisplacement);
   }
+}
+
+te::gm::Envelope te::layout::GridPlanarItem::calculateRight(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement)
+{
+  double rightWtxt = textBoundingRect.width();
+  double rightHtxt = textBoundingRect.height();
+
+  double urx = line.p2().x();
+  double y = line.p2().y();
+
+  double yReference = y - textBoundingRect.y() - (textBoundingRect.height() / 2.);
+
+  if (rotate)
+  {
+    rightWtxt = textBoundingRect.height();
+    rightHtxt = textBoundingRect.width();
+    urx += rightWtxt;
+  }
+
+  // text right
+  QPointF ptRight(urx + verticalDisplacement, yReference);
+  m_rightTexts[text.toStdString()] = ptRight;
+
+  if (rotate)
+  {
+    ptRight.setX(ptRight.x() - rightWtxt);
+  }
+
+  te::gm::Envelope rightTextBox(ptRight.x(), ptRight.y(), ptRight.x() + rightWtxt, ptRight.y() + rightHtxt);
+  m_boundingBox.Union(rightTextBox);
+
+  return rightTextBox;
+}
+
+te::gm::Envelope te::layout::GridPlanarItem::calculateLeft(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement)
+{
+  double leftWtxt = textBoundingRect.width();
+  double leftHtxt = textBoundingRect.height();
+
+  double llx = line.p1().x();
+  double y = line.p1().y();
+
+  double yReference = y - textBoundingRect.y() - (textBoundingRect.height() / 2.);
+
+  if (rotate)
+  {
+    leftWtxt = textBoundingRect.height();
+    leftHtxt = textBoundingRect.width();
+    llx += leftWtxt;
+  }
+
+  // text left
+  QPointF ptLeft(llx - leftWtxt - verticalDisplacement, yReference);
+  m_leftTexts[text.toStdString()] = ptLeft;
+
+  if (rotate)
+  {
+    ptLeft.setX(ptLeft.x() - leftWtxt);
+  }
+
+  te::gm::Envelope leftTextBox(ptLeft.x(), ptLeft.y(), ptLeft.x() + leftWtxt, ptLeft.y() + leftHtxt);
+  m_boundingBox.Union(leftTextBox);
+
+  return leftTextBox;
 }
 
 void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pFontFamily = m_controller->getProperty(settingsConfig.getFontText());
   const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
-  const Property& pUnit = m_controller->getProperty("unit");
+  const Property& pHorizontalDisplacement = m_controller->getProperty(settingsConfig.getLneHrzDisplacement());
+  const Property& pUnit = m_controller->getProperty(settingsConfig.getUnit());
+  const Property& pTopRotate = m_controller->getProperty(settingsConfig.getTopRotateText());
+  const Property& pBottomRotate = m_controller->getProperty(settingsConfig.getBottomRotateText());
 
   std::string fontFamily = pFontFamily.getValue().toString();
   int textPointSize = pTextPointSize.getValue().toInt();
   double horizontalGap = pHorizontalGap.getValue().toDouble();
+  double horizontalDisplacement = pHorizontalDisplacement.getValue().toDouble();
   LayoutUnit unit = (LayoutUnit)pUnit.getValue().toInt();
+  bool bTopRotate = pTopRotate.getValue().toBool();
+  bool bBottomRotate = pBottomRotate.getValue().toBool();
 
   Utils* utils = Context::getInstance().getUtils();
   ItemUtils* itemUtils = Context::getInstance().getItemUtils();
@@ -211,15 +267,12 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
   double x1 = initHorizontalLines(geoBox);
 
   utils = Context::getInstance().getUtils();
-
-  double wtxt = 0;
-  double htxt = 0;
-
+  
   m_boundingBox.Union(boxMM);
   
   QFont ft(fontFamily.c_str(), textPointSize);
 
-  for( ; x1 < geoBox.getUpperRightX() ; x1 += horizontalGap)
+  for( ; x1 <= geoBox.getUpperRightX() ; x1 += horizontalGap)
   {
     if(x1 < geoBox.getLowerLeftX())
       continue;
@@ -245,29 +298,71 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
     double number = x1 / (double)unit;
     QString convert = QString::number(number, 'f', 0);
 
-    QRectF rectF = itemUtils->getTextBoundary(fontFamily, textPointSize, convert.toStdString());
-    wtxt = rectF.width();
-    htxt = rectF.height();
-
-    // text bottom
-    QPointF ptBottom(x - (wtxt/2.), lly - htxt);
-    m_bottomTexts[convert.toStdString()] = ptBottom;
-
-    // text top
-    QPointF ptTop(x - (wtxt/2.), ury);
-    m_topTexts[convert.toStdString()] = ptTop;
-
-    te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y(), ptBottom.x() + wtxt, ptBottom.y() + htxt);
-    te::gm::Envelope topTextBox(ptTop.x(), ptTop.y(), ptTop.x() + wtxt, ptTop.y() + htxt);
-
-    m_boundingBox.Union(bottomTextBox);
-    m_boundingBox.Union(topTextBox);
+    QRectF rectF = itemUtils->getMinimumTextBoundary(fontFamily, textPointSize, convert.toStdString());
+    
+    calculateTop(line, rectF, convert, bTopRotate, horizontalDisplacement);
+    calculateBottom(line, rectF, convert, bBottomRotate, horizontalDisplacement);
   }
+}
+
+te::gm::Envelope te::layout::GridPlanarItem::calculateTop(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement)
+{
+  double topWtxt = textBoundingRect.width();
+  double toptHtxt = textBoundingRect.height();
+
+  double x = line.p2().x();
+  double ury = line.p2().y();
+
+  if (rotate)
+  {
+    topWtxt = textBoundingRect.height();
+    toptHtxt = textBoundingRect.width();
+    x += topWtxt / 2.;
+  }
+  
+  // text top
+  QPointF ptTop(x - (topWtxt / 2.), ury + horizontalDisplacement);
+  m_topTexts[text.toStdString()] = ptTop;
+
+  if (rotate)
+  {
+    ury += toptHtxt;
+  }
+
+  te::gm::Envelope topTextBox(ptTop.x(), ptTop.y(), ptTop.x() + topWtxt, ptTop.y() + toptHtxt);
+  m_boundingBox.Union(topTextBox);
+
+  return topTextBox;
+}
+
+te::gm::Envelope te::layout::GridPlanarItem::calculateBottom(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement)
+{
+  double bottomWtxt = textBoundingRect.width();
+  double bottomHtxt = textBoundingRect.height();
+
+  double x = line.p1().x();
+  double lly = line.p1().y();
+
+  if (rotate)
+  {
+    bottomWtxt = textBoundingRect.height();
+    bottomHtxt = textBoundingRect.width();
+    x += bottomWtxt / 2.;
+  }
+
+  // text bottom
+  QPointF ptBottom(x - (bottomWtxt / 2.), lly - bottomHtxt - horizontalDisplacement);
+  m_bottomTexts[text.toStdString()] = ptBottom;
+
+  te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y(), ptBottom.x() + bottomWtxt, ptBottom.y() + bottomHtxt);
+  m_boundingBox.Union(bottomTextBox);
+
+  return bottomTextBox;
 }
 
 double te::layout::GridPlanarItem::initVerticalLines( const te::gm::Envelope& geoBox )
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pInitialGridPointY = m_controller->getProperty(settingsConfig.getInitialGridPointY());
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
@@ -295,7 +390,7 @@ double te::layout::GridPlanarItem::initVerticalLines( const te::gm::Envelope& ge
 
 double te::layout::GridPlanarItem::initHorizontalLines( const te::gm::Envelope& geoBox )
 {
-  GridSettingsConfigProperties settingsConfig;
+  PlanarGridSettingsConfigProperties settingsConfig;
 
   const Property& pInitialGridPointX = m_controller->getProperty(settingsConfig.getInitialGridPointX());
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());

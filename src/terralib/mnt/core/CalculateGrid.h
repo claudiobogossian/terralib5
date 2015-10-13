@@ -68,7 +68,7 @@ namespace te
       \param resx, resy resolution X and Y.
       \param gt interpolator
       */
-      void setParams(std::string &attr, double resx, double resy, Interpolator gt, double rad, int pow);
+      void setParams( const std::string &attr, double resx, double resy, Interpolator gt, double rad, int pow);
 
       /*! Function used to set the Spatial Reference System ID  */
       void setSRID(int srid);
@@ -228,7 +228,7 @@ namespace te
 
       /*tcholBand*/
       bool tcholSolve();
-      bool tcholDec(std::vector<std::vector<double>> &);
+      bool tcholDec(std::vector< std::vector<double> > &);
 
       /*interpSpline*/
       void nCorrectGrad();
@@ -260,7 +260,7 @@ namespace te
       double m_passoWidth, m_passoHeight, m_lambda;
       std::vector<te::gm::PointZ> m_obsVect; //!< Interpolation and least-square vectors
       std::vector<double> m_TN, m_parVect; //!< Interpolating and least-square vectors
-      std::vector<std::vector<double>> m_N; //!< Interpolation and least-square matrix
+      std::vector< std::vector<double> > m_N; //!< Interpolation and least-square matrix
 
 
     }; // class SplineInterpolationGrass

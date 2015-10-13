@@ -66,6 +66,7 @@ void te::layout::AbstractPropertiesBrowser::clearAll()
 {
   m_propertyToId.clear();
   m_idToProperty.clear();
+  m_allProperties.clear();
 }
 
 QVariant te::layout::AbstractPropertiesBrowser::findPropertyValue( const std::string& name )
@@ -146,7 +147,10 @@ bool te::layout::AbstractPropertiesBrowser::removeProperty( QtProperty* prop )
   return true;
 }
 
-
+void te::layout::AbstractPropertiesBrowser::setAllProperties(Properties properties)
+{
+  m_allProperties = properties;
+}
 
 
 

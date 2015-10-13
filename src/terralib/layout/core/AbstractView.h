@@ -142,7 +142,7 @@ namespace te
 
       protected:
 
-        virtual void applyScale(double newScale) = 0;
+        virtual void applyScale(double horizontalScale, double verticalScale) = 0;
 
         virtual bool isLimitExceeded(int newZoom);
 

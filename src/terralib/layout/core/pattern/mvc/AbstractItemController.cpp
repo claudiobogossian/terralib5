@@ -86,6 +86,17 @@ void te::layout::AbstractItemController::attach(te::layout::AbstractItemControll
   this->getModel()->attach(observer);
 }
 
+void te::layout::AbstractItemController::detach(AbstractItemController* controller)
+{
+  Observer* observer = dynamic_cast<Observer*>(controller->getModel());
+  if (observer == 0)
+  {
+    return;
+  }
+
+  this->getModel()->detach(observer);
+}
+
 void te::layout::AbstractItemController::update(const te::layout::Subject* subject)
 {
   if (!m_view)

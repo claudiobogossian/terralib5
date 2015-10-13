@@ -26,7 +26,7 @@
 // Terralib
 #include "../../../qt/af/ApplicationController.h"
 #include "../../../qt/af/BaseApplication.h"
-#include "qt/GeoPackageBuilderDialog.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "qt/GeoPackageBuilderWizard.h"
 #include "GeoPackageBuilderAction.h"
 
@@ -52,11 +52,13 @@ void te::qt::plugins::terramobile::GeoPackageBuilderAction::onActionActivated(bo
 
   //get display extent
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  const te::gm::Envelope extent = ba->getMapDisplay()->getExtent();
 
   //show interface
   te::qt::plugins::terramobile::GeoPackageBuilderWizard dlg(ba);
 
   dlg.setLayerList(list);
+  dlg.setExtent(extent);
 
   if(dlg.exec() == QDialog::Accepted)
   {

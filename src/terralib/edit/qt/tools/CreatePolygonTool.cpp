@@ -46,11 +46,10 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent, bool autosave)
+te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
-    m_autosave(autosave),
     m_addWatches(0),
     m_geometries(0)
 {
@@ -73,13 +72,10 @@ te::edit::CreatePolygonTool::~CreatePolygonTool()
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
 {
-  if ((e->button() != Qt::LeftButton))
+  if (e->button() != Qt::LeftButton)
   {
-    if (m_autosave && m_feature && m_isFinished)
-    {
-      saveGeometries(m_layer);
-      m_display->refresh();
-    }
+    if (m_feature)
+      emit readyToSave();
 
     return false;
   }
@@ -134,8 +130,10 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  if(e->button() != Qt::LeftButton)
+  if (e->button() != Qt::LeftButton)
+  {
     return false;
+  }
 
   if(m_coords.size() < 3) // Can not stop yet...
     return false;
@@ -274,6 +272,9 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
 {
 
   m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
+
+  if (m_feature == 0)
+    return;
 
   for (std::size_t i = 0; i < m_geometries.size(); i++)
   {

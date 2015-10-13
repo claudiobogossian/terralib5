@@ -25,19 +25,12 @@
 
 // TerraLib
 #include "../../../../common/StringUtils.h"
-#include "../../../../dataaccess/dataset/DataSetAdapter.h"
-#include "../../../../dataaccess/dataset/DataSetTypeConverter.h"
-#include "../../../../dataaccess/datasource/DataSourceFactory.h"
-#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
-#include "../../../../gdal/Utils.h"
-#include "../../../../gdal/DataSetsManager.h"
 #include "../../../../geometry/GeometryProperty.h"
-#include "../../../../maptools/DataSetLayer.h"
 #include "../../../widgets/utils/DoubleListWidget.h"
 #include "../../../widgets/utils/ScopedCursor.h"
 #include "../core/form/Serializer.h"
+#include "../utils/Utils.h"
 #include "BuilderGatheringLayersWizardPage.h"
 #include "BuilderInputLayersWizardPage.h"
 #include "BuilderFormsWizardPage.h"
@@ -46,9 +39,6 @@
 
 // Qt
 #include <QMessageBox>
-
-//Boost
-#include <boost/lexical_cast.hpp>
 
 te::qt::plugins::terramobile::GeoPackageBuilderWizard::GeoPackageBuilderWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f)
@@ -64,81 +54,6 @@ te::qt::plugins::terramobile::GeoPackageBuilderWizard::GeoPackageBuilderWizard(Q
 te::qt::plugins::terramobile::GeoPackageBuilderWizard::~GeoPackageBuilderWizard()
 {
 
-}
-
-void te::qt::plugins::terramobile::GeoPackageBuilderWizard::exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName)
-{
-  std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
-
-  //Checking if the layer contains a raster property
-  if (dsType->hasRaster())
-  {
-    std::auto_ptr<te::da::DataSet> dataset = layer->getData();
-    std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
-    std::auto_ptr<te::rst::Raster> raster = dataset->getRaster(rpos);
-
-    int inputSRID = raster->getSRID();
-    int bandType = raster->getBandDataType(0);
-
-    //Adjusting the output raster to tconform with mobile app needs
-    if ((inputSRID != 4326) || (bandType != te::dt::UCHAR_TYPE))
-    {
-      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
-
-      // Gets the URI
-      const std::string& id = dsLayer->getDataSourceId();
-      te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
-      std::map<std::string, std::string>  connInfo = info->getConnInfo();
-      std::string uri = connInfo["SOURCE"];
-
-      if (boost::filesystem::is_directory(uri))
-        uri += ("/" + dsLayer->getDataSetName());
-
-      std::map<std::string, std::string> rinfo;
-      rinfo["SOURCE"] = uri;
-      rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(raster->getNumberOfRows());
-      rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(raster->getNumberOfColumns());
-      rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(raster->getBandDataType(0));
-      rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(raster->getNumberOfBands());
-     
-      if (bandType != te::dt::UCHAR_TYPE)
-      {
-        raster = te::gdal::NormalizeRaster(raster.get(), raster->getBand(0)->getMinValue().real(), raster->getBand(0)->getMaxValue().real(), 0, 255, rinfo, "GDAL");
-        te::gdal::DataSetsManager::getInstance().decrementUseCounter(uri);
-      }
-
-      if (inputSRID != 4326)
-      {
-         raster.reset(raster->transform(4326, rinfo));
-         te::gdal::DataSetsManager::getInstance().decrementUseCounter(uri);
-      }
-    }
-
-    te::gdal::copyToGeopackage(raster.get(), outFileName);
-  }
-  else
-  {
-    //SRID adaptation
-    int inputSRID = layer->getSRID();
-    int outputSRID = 4326;
-
-    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsGPKG->getCapabilities(), dsGPKG->getEncoding());
-    te::da::AssociateDataSetTypeConverterSRID(converter, inputSRID, outputSRID);
-
-    te::da::DataSetType* dsTypeResult = converter->getResult();
-
-    dsTypeResult->setName(dsType->getName());
-
-    //exporting
-    std::map<std::string, std::string> nopt;
-
-    std::auto_ptr<te::da::DataSet> dataset = layer->getData();
-
-    std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
-
-    if (dataset->moveBeforeFirst())
-      te::da::Create(dsGPKG, dsTypeResult, dsAdapter.get());
-  }
 }
 
 void te::qt::plugins::terramobile::GeoPackageBuilderWizard::setLayerList(std::list<te::map::AbstractLayerPtr> list)
@@ -189,6 +104,11 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::setLayerList(std::li
 
   m_inputLayersPage->getWidget()->setInputValues(inputLayerNames);
   m_gatheringLayersPage->getWidget()->setInputValues(gatheringLayerNames);
+}
+
+void te::qt::plugins::terramobile::GeoPackageBuilderWizard::setExtent(const te::gm::Envelope& extent)
+{
+  m_extent = extent;
 }
 
 bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::validateCurrentPage()
@@ -249,32 +169,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   //get forms
   std::map<std::string, Section*> sectionsMap = m_formsPage->getSections();
 
-  te::gdal::createGeopackage(gpkgName);
-
-  //create data source
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = gpkgName;
-
-  std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("OGR");
-  dsGPKG->setConnectionInfo(connInfo);
-  dsGPKG->open();
-
-  std::string sql1 = "CREATE TABLE IF NOT EXISTS tm_style(layer_name TEXT PRIMARY KEY NOT NULL, sld_xml TEXT); ";
-  std::string sql2 = "CREATE TABLE IF NOT EXISTS tm_layer_form ";
-  sql2 += "(tm_conf_id INTEGER PRIMARY KEY AUTOINCREMENT, gpkg_layer_identify TEXT NOT NULL, tm_form TEXT, ";
-  sql2 += "CONSTRAINT fk_layer_identify_id FOREIGN KEY (gpkg_layer_identify) REFERENCES gpkg_contents(table_name));";
-  
-  std::auto_ptr<te::da::DataSourceTransactor> transactor = dsGPKG->getTransactor();
-
-  try
-  {
-    transactor->execute(sql1);
-    transactor->execute(sql2);
-  }
-  catch (...)
-  {
-    throw;
-  }
+  std::auto_ptr<te::da::DataSource> dsGPKG = te::qt::plugins::terramobile::createGeopackage(gpkgName);
 
   std::list<te::map::AbstractLayerPtr> inputLayers = getInputLayers();
   std::list<te::map::AbstractLayerPtr> gatheringLayers = getGatheringLayers();
@@ -283,36 +178,18 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   for (it = inputLayers.begin(); it != inputLayers.end(); ++it)
   {
-    exportToGPKG(*it, dsGPKG.get(), gpkgName);
-    std::string name = (*it)->getSchema()->getName();
-    std::string sldString = te::qt::plugins::terramobile::Write((*it)->getStyle(), (gpkgName + "-temp-style.xml"));
-    std::string insert = "INSERT INTO tm_style ('layer_name', 'sld_xml' )  values('" + name + "', '" + sldString + "');";  
-    try
-    {
-      transactor->execute(insert);
-    }
-    catch (...)
-    {
-      transactor->rollBack();
-      throw;
-    }
+    if (m_outputPage->useVisibleArea())
+      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
+    else
+      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName);
   }
 
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
-    exportToGPKG(*it, dsGPKG.get(), gpkgName);
-    std::string name = (*it)->getSchema()->getName();
-    std::string sldString = te::qt::plugins::terramobile::Write((*it)->getStyle(), (gpkgName + "-temp-style.xml"));
-    std::string insert = "INSERT INTO tm_style ('layer_name', 'sld_xml' )  values('" + name + "', '" + sldString + "');";
-    try
-    {
-      transactor->execute(insert);
-    }
-    catch (...)
-    {
-      transactor->rollBack();
-      throw;
-    }
+    if (m_outputPage->useVisibleArea())
+      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
+    else
+      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName);
   }
 
   std::map<std::string, Section*>::iterator itb = sectionsMap.begin();
@@ -323,16 +200,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     std::string jsonStr = te::qt::plugins::terramobile::Write(itb->second);
 
     std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form' )  values('" + itb->first + "', '" + jsonStr + "');";
-
-    try
-    {
-      transactor->execute(insert);
-    }
-    catch (...)
-    {
-      transactor->rollBack();
-      throw;
-    }
+    te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++itb;
   }
 

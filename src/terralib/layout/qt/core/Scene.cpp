@@ -724,6 +724,12 @@ void te::layout::Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
 void te::layout::Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
   QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
+
+  if (m_isEditionMode == true)
+  {
+    return;
+  }
+
   setEditionMode(true);
 }
 
@@ -1065,7 +1071,7 @@ const te::layout::ContextObject& te::layout::Scene::getContext() const
   return m_context;
 }
 
-void te::layout::Scene::contextUpdated()
+void te::layout::Scene::updateAllItemsContext()
 {
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems)
@@ -1197,7 +1203,10 @@ void te::layout::Scene::setContext(ContextObject context)
   if (context.isValid())
   {
     m_context = context;
+
     contextUpdated();
+
+    emit updateAllItemsContext();
   }
 }
 

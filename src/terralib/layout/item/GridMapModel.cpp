@@ -47,13 +47,9 @@ te::layout::GridMapModel::GridMapModel()
   double m_initialGridPointX = 0.; 
   double m_initialGridPointY = 0.;
 
-  //Just one is visible
-  EnumType* gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleContinuous();
-
   // Line
-  EnumType* lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleSolid();
   te::color::RGBAColor lineColor(0, 0, 0, 255);
-  int lineWidth = 1;
+  double lineWidth = 0.;
 
   // Text: Basic Configuration
   int pointTextSize = 6;
@@ -63,8 +59,8 @@ te::layout::GridMapModel::GridMapModel()
   // Text: Advanced configuration
   bool visibleAllTexts = true;
   bool superscriptText = false;
-  double lneVrtDisplacement = 1;
-  double lneHrzDisplacement = 1;
+  double lneVrtDisplacement = 1.;
+  double lneHrzDisplacement = 1.;
   bool bottomText = true;
   bool leftText = true;
   bool rightText = true;
@@ -74,7 +70,7 @@ te::layout::GridMapModel::GridMapModel()
   bool rightRotateText = false;
   bool topRotateText = false;
 
-  double crossOffSet = 4.;
+  double crossOffSet = 2.;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -133,19 +129,61 @@ te::layout::GridMapModel::GridMapModel()
 
   //Just one is visible
   {
+    EnumGridStyleType gridStyleType;
+    EnumType* currentGridStyle = gridStyleType.getStyleContinuous();
+
     Property property(0);
     property.setName(settingsConfig.getStyle());
     property.setComposeWidget(true);
-    property.setValue(gridStyle->getLabel(), dataType->getDataTypeString());
+    property.setValue(currentGridStyle->getLabel(), dataType->getDataTypeStringList());
+
+    Variant v;
+    v.setValue(currentGridStyle->getLabel(), dataType->getDataTypeString());
+    property.addOption(v);
+    property.setOptionChoice(v);
+
+    for (int i = 0; i < gridStyleType.size(); ++i)
+    {
+      EnumType* enumType = gridStyleType.getEnum(i);
+
+      if (enumType == gridStyleType.getStyleNone() || enumType == currentGridStyle)
+        continue;
+
+      Variant v;
+      v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+      property.addOption(v);
+    }
+
     m_properties.addProperty(property);
   }
 
   // Line
   {
+    EnumLineStyleType lineStyleType;
+    EnumType* currentLineStyle = lineStyleType.getStyleSolid();
+
     Property property(0);
     property.setName(settingsConfig.getLineStyle());
     property.setComposeWidget(true);
-    property.setValue(lineStyle->getName(), dataType->getDataTypeString());
+    property.setValue(currentLineStyle->getLabel(), dataType->getDataTypeStringList());
+
+    Variant v;
+    v.setValue(currentLineStyle->getLabel(), dataType->getDataTypeString());
+    property.addOption(v);
+    property.setOptionChoice(v);
+
+    for (int i = 0; i < lineStyleType.size(); ++i)
+    {
+      EnumType* enumType = lineStyleType.getEnum(i);
+
+      if (enumType == lineStyleType.getStyleNone() || enumType == currentLineStyle)
+        continue;
+
+      Variant v;
+      v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+      property.addOption(v);
+    }
+
     m_properties.addProperty(property);
   }
 
@@ -161,7 +199,7 @@ te::layout::GridMapModel::GridMapModel()
     Property property(0);
     property.setName(settingsConfig.getLineWidth());
     property.setComposeWidget(true);
-    property.setValue(lineWidth, dataType->getDataTypeInt());
+    property.setValue(lineWidth, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
 
@@ -173,6 +211,7 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(pointTextSize, dataType->getDataTypeInt());
     m_properties.addProperty(property);
   }
+  
   {
     Property property(0);
     property.setName(settingsConfig.getFontText());
@@ -196,13 +235,16 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(visibleAllTexts, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
+
   {
     Property property(0);
     property.setName(settingsConfig.getSuperscriptText());
     property.setComposeWidget(true);
+    property.setVisible(false); //need review
     property.setValue(superscriptText, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
+
   {
     Property property(0);
     property.setName(settingsConfig.getLneVrtDisplacement());
@@ -210,6 +252,7 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(lneVrtDisplacement, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
+
   {
     Property property(0);
     property.setName(settingsConfig.getLneHrzDisplacement());
@@ -217,6 +260,7 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(lneHrzDisplacement, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
+
   {
     Property property(0);
     property.setName(settingsConfig.getBottomText());

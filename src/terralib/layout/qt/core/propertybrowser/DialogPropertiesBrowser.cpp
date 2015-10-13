@@ -70,6 +70,9 @@
 #include <QtPropertyBrowser/QtStringPropertyManager>
 #include <QtPropertyBrowser/qteditorfactory.h>
 #include <QtPropertyBrowser/QtProperty>
+#include "../../item/GridMapItem.h"
+#include "../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../core/pattern/mvc/AbstractItemController.h"
 
 te::layout::DialogPropertiesBrowser::DialogPropertiesBrowser(QObject* parent) :
   AbstractPropertiesBrowser(parent),
@@ -326,15 +329,7 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
     return;
   }
 
-  ItemUtils* utils = Context::getInstance().getItemUtils();
-  if(!utils)
-  {
-    return;
-  }
-
-  std::vector<te::layout::Properties*> props = utils->getGridMapProperties();
-
-  model->setProperties(props);
+  model->setGridProperties(m_allProperties);
   
   gridSettings->load();
   gridSettings->show(); // modeless dialog

@@ -30,6 +30,7 @@
 #include "../../../core/property/Properties.h"
 #include "../../../core/enum/Enums.h"
 #include "VariantPropertiesBrowser.h"
+#include "DialogPropertiesBrowser.h"
 
 // Qt
 #include <QRegExpValidator>
@@ -49,8 +50,6 @@
 
 // STL
 #include <algorithm>    // std::find
-#include "VariantPropertiesBrowser.h"
-#include "DialogPropertiesBrowser.h"
 
 te::layout::PropertyBrowser::PropertyBrowser(QObject* parent) :
   QObject(parent),
@@ -101,7 +100,6 @@ void te::layout::PropertyBrowser::createManager()
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(Property)), this, SLOT(onChangeDlgProperty(Property)));
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(std::vector<Property>)), this, SLOT(onChangeDlgProperty(std::vector<Property>)));
   
-
   m_propertyEditor->setFactoryForManager(m_dialogPropertiesBrowser->getStringPropertyManager(), m_dialogPropertiesBrowser->getDlgEditorFactory());
   m_propertyEditor->setFactoryForManager(m_variantPropertiesBrowser->getVariantPropertyManager(), m_variantPropertiesBrowser->getVariantEditorFactory());
   m_propertyEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -268,6 +266,25 @@ QtProperty* te::layout::PropertyBrowser::addProperty( const Property& property )
   }
   m_changeQtPropertyVariantValue = false;
   return vproperty;
+}
+
+QMap<QString, QtProperty*> te::layout::PropertyBrowser::addProperties(const Properties& properties)
+{
+  std::vector<Property> vecProperties = properties.getProperties();
+  foreach(Property prop, vecProperties)
+  {
+    if (!prop.isVisible())
+      continue;
+
+    addProperty(prop);
+  }
+
+  Properties props = properties;
+
+  m_variantPropertiesBrowser->setAllProperties(props);
+  m_dialogPropertiesBrowser->setAllProperties(props);
+
+  return m_idToProperty;
 }
 
 bool te::layout::PropertyBrowser::removeProperty( Property property )

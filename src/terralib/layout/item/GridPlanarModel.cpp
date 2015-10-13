@@ -30,27 +30,32 @@
 
 #include "../core/pattern/singleton/Context.h"
 #include "../core/property/GridSettingsConfigProperties.h"
+#include "../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../../common/StringUtils.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../maptools/Utils.h"
+
+// STL
+#include <string>
 
 te::layout::GridPlanarModel::GridPlanarModel()
   : GridMapModel()
   , Observer()
 {
   LayoutUnit unit(StyleKilometer);
-  int srid = 0;
   te::gm::Envelope planarBox(0, 0, 10000, 10000);
 
   m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getGridPlanarItem());
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
+  PlanarGridSettingsConfigProperties settingsConfig;
+
   //adding properties
   {
     Property property(0);
-    property.setName("unit");
+    property.setName(settingsConfig.getUnit());
     property.setLabel("Unit");
     property.setValue((int)unit, dataType->getDataTypeInt());
     m_properties.addProperty(property);
@@ -64,14 +69,6 @@ te::layout::GridPlanarModel::GridPlanarModel()
     property.setValue(planarBox, dataType->getDataTypeEnvelope());
     m_properties.addProperty(property);
   }
-  {
-    Property property(0);
-    property.setName("srid");
-    property.setLabel("Srid");
-    property.setValue(srid, dataType->getDataTypeInt());
-    m_properties.addProperty(property);
-  }
-
   {
     std::string emptyString;
 
@@ -110,7 +107,6 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   const Property& pCurrentWidth = this->getProperty("width");
   const Property& pCurrentHeight = this->getProperty("height");
   const Property& pCurrentPlanarBox = this->getProperty("planar_box");
-  const Property& pCurrentSrid = this->getProperty("srid");
 
   //new values
   double newWidth = pNewWidth.getValue().toDouble();
@@ -128,7 +124,6 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
   //current values
   double currentWidth = pCurrentWidth.getValue().toDouble();
   double currentHeight = pCurrentHeight.getValue().toDouble();
-  int currentSrid = pCurrentSrid.getValue().toInt();
   te::gm::Envelope currentPlanarBox = pCurrentPlanarBox.getValue().toEnvelope();
 
   bool doUpdate = false;
@@ -153,11 +148,16 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
     Properties properties("");
     properties.addProperty(pNewWidth);
     properties.addProperty(pNewHeight);
-
     {
       Property property(0);
       property.setName("planar_box");
       property.setValue(newPlanarBox, dataType->getDataTypeEnvelope());
+      properties.addProperty(property);
+    }
+    {
+      Property property(0);
+      property.setName("srid");
+      property.setValue(newSrid, dataType->getDataTypeInt());
       properties.addProperty(property);
     }
 
@@ -202,6 +202,11 @@ void te::layout::GridPlanarModel::update(const Subject* subject)
 
 double te::layout::GridPlanarModel::getInitialCoord(double initialCoord, double distance, double& gap)
 {
+  if (distance <= 0)
+  {
+    gap = 0;
+    return 0;
+  }
   unsigned const int size = 25;
   int gaps[size] = { 1000, 1500, 2000, 2500, 5000, 7500, 10000, 12500, 15000, 20000, 25000, 50000, 100000, 125000, 150000, 175000, 200000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 1750000, 2000000 };
   int numberOfIntervals = 5;

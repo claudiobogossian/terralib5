@@ -75,6 +75,7 @@ namespace te
         void visit(const te::da::LiteralDateTime& visited);
         void visit(const te::da::LiteralEnvelope& visited);
         void visit(const te::da::LiteralGeom& visited);
+        void visitDistinct(const te::da::Distinct& visited);
 
         //@}
 

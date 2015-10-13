@@ -84,14 +84,7 @@ namespace te
           \brief Draws the grid
         */
         virtual void drawGrid(QPainter* painter);
-
-        /*!
-          \brief Draws the default grid
-        */
-        virtual void drawDefaultGrid(QPainter* painter);
-
-        virtual void drawText( const QPointF& point, QPainter* painter, const std::string& text, bool displacementLeft = false, bool displacementRight = false);
-
+        
         virtual void configPainter(QPainter* painter);
 
         virtual void configTextPainter(QPainter* painter);
@@ -118,22 +111,29 @@ namespace te
 
         virtual bool drawCrossIntersectMapBorder(QLineF vrt, QLineF hrz, QPainter* painter);
 
-    protected:
+        virtual void debugDrawLineEdges(QPainter* painter, const QLineF& line);
 
-        double                    m_maxWidthTextMM;
-        double                    m_maxHeigthTextMM;
-        double                    m_onePointMM;
-        bool                      m_changeSize;
+        virtual void debugDrawTextRect(QPainter* painter, const QPointF& point, const std::string& text, int rotate = 0);
 
-        QList<QLineF>             m_verticalLines;
-        QList<QLineF>             m_horizontalLines;
+      protected:
 
-        std::map<std::string, QPointF>    m_topTexts;
-        std::map<std::string, QPointF>    m_bottomTexts;
-        std::map<std::string, QPointF>    m_rightTexts;
-        std::map<std::string, QPointF>    m_leftTexts;
+        double                          m_maxWidthTextMM;
+        double                          m_maxHeigthTextMM;
+        double                          m_onePointMM;
+        bool                            m_changeSize;
 
-        te::gm::Envelope          m_boundingBox;
+        QList<QLineF>                   m_verticalLines;
+        QList<QLineF>                   m_horizontalLines;
+
+        std::map<std::string, QPointF>  m_topTexts;
+        std::map<std::string, QPointF>  m_bottomTexts;
+        std::map<std::string, QPointF>  m_rightTexts;
+        std::map<std::string, QPointF>  m_leftTexts;
+
+        te::gm::Envelope                m_boundingBox;
+        int                             m_defaultRotate;
+
+        bool                            m_showDebugDrawings;
     };
   }
 }

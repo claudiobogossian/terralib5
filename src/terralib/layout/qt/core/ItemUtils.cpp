@@ -554,8 +554,49 @@ QRectF te::layout::ItemUtils::getTextBoundary( const std::string& fontName, int 
   double heightMM = utils->pixel2mm(height);
   double descendMM = utils->pixel2mm(descend);
 
-   QRectF textBoundingRect(0, - descendMM, widthMM, heightMM);
+   QRectF textBoundingRect(0, -descendMM, widthMM, heightMM);
    return textBoundingRect;
+}
+
+QRectF te::layout::ItemUtils::getMinimumTextBoundary(const std::string& fontName, int fontSize, const std::string& text) const
+{
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if (abScene == 0)
+  {
+    return QRectF();
+  }
+
+  Scene* scene = dynamic_cast<Scene*>(abScene);
+  if (scene == 0)
+  {
+    return QRectF();
+  }
+
+  Utils* utils = Context::getInstance().getUtils();
+  if (utils == 0)
+  {
+    return QRectF();
+  }
+
+  const ContextObject& context = scene->getContext();
+
+  double correctionFactorY = context.getDpiY() / 72.;
+
+  QFont font(fontName.c_str());
+  font.setPixelSize(fontSize * correctionFactorY);
+
+  QFontMetrics fontMetrics(font);
+  QRect rect = fontMetrics.tightBoundingRect(text.c_str());
+  int width = rect.width();
+  int height = rect.height();
+  int descend = fontMetrics.descent();
+
+  double widthMM = utils->pixel2mm(width);
+  double heightMM = utils->pixel2mm(height);
+  double descendMM = utils->pixel2mm(descend);
+
+  QRectF textBoundingRect(0, -descendMM, widthMM, heightMM);
+  return textBoundingRect;
 }
 
 void te::layout::ItemUtils::changeViewMode( EnumType* mode )
@@ -580,6 +621,34 @@ void te::layout::ItemUtils::changeViewMode( EnumType* mode )
   }
 
   view->changeMode(mode);
+}
+
+te::layout::AbstractItemView* te::layout::ItemUtils::getSelectedItem()
+{
+  AbstractItemView* abstractItem = 0;
+
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if (abScene == 0)
+  {
+    return abstractItem;
+  }
+
+  Scene* myScene = dynamic_cast<Scene*>(abScene);
+  if (myScene == 0)
+  {
+    return abstractItem;
+  }
+
+  QList<QGraphicsItem*> items = myScene->items();
+  QGraphicsItem* item = items.first();
+
+  if (!item)
+  {
+    return abstractItem;
+  }
+
+  abstractItem = dynamic_cast<AbstractItemView*>(item);
+  return abstractItem;
 }
 
 void te::layout::ItemUtils::ConfigurePainterForTexts(QPainter* painter, const std::string& fontFamily, int fontSize)

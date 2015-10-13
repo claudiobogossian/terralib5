@@ -42,6 +42,7 @@
 // OGR
 #include <ogrsf_frmts.h>
 #include <ogr_core.h>
+#include <gdal_priv.h>
 
 // STL
 #include <cassert>

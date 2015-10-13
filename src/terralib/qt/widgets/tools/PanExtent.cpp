@@ -106,7 +106,7 @@ void te::qt::widgets::PanExtent::setCurrentExtent(const te::gm::Envelope& e)
 
 void te::qt::widgets::PanExtent::drawCurrentExtent()
 {
-  m_display->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+  m_display->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
   te::qt::widgets::Canvas canvasInstance(m_display->getDraftPixmap());
   const te::gm::Envelope& mapExt = m_display->getExtent();
   canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);

@@ -66,9 +66,9 @@ namespace te
 
           public:
 
-            void exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName);
-
            void setLayerList(std::list<te::map::AbstractLayerPtr> list);
+
+           void setExtent(const te::gm::Envelope& extent);
 
           protected:
 
@@ -85,13 +85,14 @@ namespace te
           private:
 
             std::list<te::map::AbstractLayerPtr> m_list;
+            te::gm::Envelope m_extent;
 
             std::auto_ptr<te::qt::plugins::terramobile::BuilderInputLayersWizardPage> m_inputLayersPage;
             std::auto_ptr<te::qt::plugins::terramobile::BuilderGatheringLayersWizardPage> m_gatheringLayersPage;
             std::auto_ptr<te::qt::plugins::terramobile::BuilderFormsWizardPage> m_formsPage;
             std::auto_ptr<te::qt::plugins::terramobile::BuilderOutputWizardPage> m_outputPage;
         }; 
-      }   // end namespace thirdParty
+      }   // end namespace terramobile
     }     // end namespace plugins
   }       // end namespace qt
 }         // end namespace te

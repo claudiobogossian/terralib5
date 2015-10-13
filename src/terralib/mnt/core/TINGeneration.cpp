@@ -31,6 +31,8 @@
 #include "../../memory/DataSetItem.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 
+#include <memory>
+
 void SavePointsSHP(std::string dir, std::string out, te::gm::MultiPoint& mpt)
 {
 
@@ -74,7 +76,7 @@ void SavePointsSHP(std::string dir, std::string out, te::gm::MultiPoint& mpt)
   connInfo["URI"] = filename;
   connInfo["DRIVER"] = "ESRI Shapefile";
 
-  te::da::DataSourcePtr datasource = te::da::DataSourceFactory::make("OGR");
+  std::auto_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR");
   datasource->setConnectionInfo(connInfo);
   datasource->open();
 
