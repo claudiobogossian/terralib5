@@ -51,6 +51,7 @@ te::layout::MapItem::MapItem(AbstractItemController* controller, bool invertedMa
   , m_mapDisplay(0)
   , m_pan(0)
   , m_zoomWheel(0)
+  , m_tileSize(2048)
 {
   this->setAcceptDrops(true);
 
@@ -101,7 +102,7 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
 
 void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  if (m_mapDisplay->getWidth() > 4000. || m_mapDisplay->getHeight() > 4000.)
+  if (m_mapDisplay->getWidth() > (unsigned int)m_tileSize || m_mapDisplay->getHeight() > (unsigned int)m_tileSize)
   {
     drawTilesMap(painter);
     return;
@@ -375,8 +376,8 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
     return;
   }
   
-  int numTilesX = (int)std::ceil(m_mapDisplay->getWidth() / 4000.);
-  int numTilesY = (int)std::ceil(m_mapDisplay->getHeight() / 4000.);
+  int numTilesX = (int)std::ceil(m_mapDisplay->getWidth() / m_tileSize);
+  int numTilesY = (int)std::ceil(m_mapDisplay->getHeight() / m_tileSize);
 
   int tileWidth = std::ceil(m_mapDisplay->getWidth() / (double)numTilesX);
   int tileHeight = std::ceil(m_mapDisplay->getHeight() / (double)numTilesY);
@@ -424,7 +425,7 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
   painter->save();
 
   painter->setClipRect(boundRect);
-
+  
   //first draws all horizontally to each increment vertically
 
   for (int j = 0; j < numTilesY; ++j) // row
