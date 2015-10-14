@@ -42,8 +42,6 @@ namespace te
       {
         std::auto_ptr<te::da::DataSource> createGeopackage(std::string gpkgName);
 
-        void exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName);
-
         void exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName, const te::gm::Envelope extent);
 
         void queryGPKG(std::string query, te::da::DataSource* dsGPKG);
