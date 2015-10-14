@@ -20,78 +20,6 @@
 
 #include <limits>
 
-#include <geos.h>
-#include <geos/geom/Triangle.h>
-#include <geos/operation/union/CascadedPolygonUnion.h>
-
-///TESTE - TIRAR DEPOIS
-#include "../../geometry/GeometryProperty.h"
-#include "../../datatype/SimpleProperty.h"
-#include "../../memory/DataSet.h"
-#include "../../memory/DataSetItem.h"
-#include "../../dataaccess/datasource/DataSourceFactory.h"
-
-#include <memory>
-
-void SavePointsSHP(std::string dir, std::string out, te::gm::MultiPoint& mpt)
-{
-
-  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(out));
-  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("ID", te::dt::INT32_TYPE);
-  prop0->setAutoNumber(true);
-  te::dt::SimpleProperty* prop00 = new te::dt::SimpleProperty("Z", te::dt::DOUBLE_TYPE);
-  te::gm::GeometryProperty* prop1 = new te::gm::GeometryProperty("pt", 0, te::gm::PointZType, true);
-  prop1->setSRID(mpt.getSRID());
-  dt->add(prop0);
-  dt->add(prop00);
-  dt->add(prop1);
-  if (mpt.getGeomTypeId() == te::gm::MultiPointZMType)
-  {
-    te::dt::SimpleProperty* propm = new te::dt::SimpleProperty("M", te::dt::DOUBLE_TYPE);
-    dt->add(propm);
-  }
-
-  te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
-  te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
-
-  for (unsigned int id = 0; id < mpt.getNumGeometries(); ++id)
-  {
-    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
-    te::gm::Point* gout = dynamic_cast<te::gm::Point*>(mpt.getGeometryN(id));
-    te::gm::PointZ pz(gout->getX(), gout->getY(), gout->getZ());
-    pz.setSRID(mpt.getSRID());
-    dataSetItem->setGeometry("pt", (te::gm::Geometry*)pz.clone());
-    dataSetItem->setDouble("Z", gout->getZ());
-    if (mpt.getGeomTypeId() == te::gm::MultiPointZMType)
-    {
-      dataSetItem->setDouble("M", gout->getM());
-    }
-    ds->add(dataSetItem);
-  }
-
-  std::map<std::string, std::string> connInfo;
-  std::string filename(dir);
-  filename.append(out);
-  filename.append(".shp");
-  connInfo["URI"] = filename;
-  connInfo["DRIVER"] = "ESRI Shapefile";
-
-  std::auto_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR");
-  datasource->setConnectionInfo(connInfo);
-  datasource->open();
-
-  ds->moveBeforeFirst();
-
-  te::da::Create(datasource.get(), dt.get(), ds);
-
-  datasource->close();
-  connInfo.clear();
-  dt.release();
-
-}
-
-
-/////
 
 te::mnt::TINGeneration::TINGeneration()
 {
@@ -108,9 +36,6 @@ te::mnt::TINGeneration::TINGeneration()
 
 te::mnt::TINGeneration::~TINGeneration()
 {
-  //m_inDsetType.release();
-  //m_inDsrc.reset();
-
 }
 
 void te::mnt::TINGeneration::setInput(te::da::DataSourcePtr inDsrc,
