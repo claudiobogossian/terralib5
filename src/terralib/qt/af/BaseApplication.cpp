@@ -125,6 +125,11 @@ te::qt::af::DataSetTableDockWidget* te::qt::af::BaseApplication::getLayerDock(co
   return 0;
 }
 
+QDockWidget* te::qt::af::BaseApplication::getLayerExplorerDock()
+{
+  return m_ui->dockWidget;
+}
+
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
   switch (e->m_id)

@@ -87,6 +87,8 @@ namespace te
 
         te::qt::af::DataSetTableDockWidget* getLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs);
 
+        QDockWidget* getLayerExplorerDock();
+
       public slots:
 
         virtual void onApplicationTriggered(te::qt::af::evt::Event* e);
