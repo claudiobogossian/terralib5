@@ -178,15 +178,6 @@ namespace te
 
         ~PolygonIterator();
 
-        /*!
-          \brief Decomponse one geometry collection in a vector of basic components (line, point).
-
-          \param g The input geometry collection.
-
-          \return A vector of geometries.
-        */
-        std::vector<te::gm::LineString*> decompose(te::gm::Geometry* g);
-
         void setNextLine(bool updatecurrline = true);
 
         const std::vector<T> operator*() const;
@@ -232,6 +223,21 @@ namespace te
         int m_nintersections;                              //!< The number number of intersected lines in current line of the iterator.
         mutable double m_operatorBrackets_value;                   //!< Used by the operator[] method.
         mutable std::complex< double > m_operatorParenthesis_value;     //!< Used by the operator() method.
+        
+        /*!
+          \brief Decomponse one geometry collection in a vector of basic components (line, point).
+
+          \param g The input geometry collection.
+
+          \param decomposedGeoms The output geometries will be appended to this vector.
+          
+          \note The caller of this method must take the ownership of the returned objects.
+        */
+        void decompose(te::gm::Geometry const * const g,
+          std::vector<te::gm::LineString*>& decomposedGeoms ) const;
+
+        /*! \brief Clear all internal allocated objects and reset back to the initial state. */        
+        void clear();
 
     };
 
@@ -433,7 +439,7 @@ namespace te
     {
       if( r->getSRID() != p->getSRID() )
       {
-        throw Exception( TE_TR("Invalid polygon SRID") );
+        throw te::rst::Exception( TE_TR("Invalid polygon SRID") );
       }
       
       te::gm::Coord2D ll = m_polygon->getMBR()->getLowerLeft();
@@ -475,60 +481,50 @@ namespace te
     }
 
     template<class T> te::rst::PolygonIterator<T>::PolygonIterator(const PolygonIterator<T>& rhs)
-      : AbstractPositionIterator<T>(rhs),
-        m_polygon(rhs.m_polygon),
-        m_intersections(rhs.m_intersections),
-        m_currline(rhs.m_currline),
-        m_column(rhs.m_column),
-        m_row(rhs.m_row),
-        m_startingcolumn(rhs.m_startingcolumn),
-        m_endingcolumn(rhs.m_endingcolumn),
-        m_startingrow(rhs.m_startingrow),
-        m_endingrow(rhs.m_endingrow),
-        m_maxcolumns(rhs.m_maxcolumns),
-        m_maxrows(rhs.m_maxrows),
-        m_actualintersection(rhs.m_actualintersection),
-        m_nintersections(rhs.m_nintersections)
+      : AbstractPositionIterator<T>(rhs)
     {
+      operator=( rhs );
     }
 
     template<class T> te::rst::PolygonIterator<T>::~PolygonIterator()
     {
-      m_intersections.clear();
+      clear();
     }
 
-    template<class T> std::vector<te::gm::LineString*> te::rst::PolygonIterator<T>::decompose(te::gm::Geometry* g)
+    template<class T> 
+    void te::rst::PolygonIterator<T>::decompose(
+      te::gm::Geometry const * const g,
+      std::vector<te::gm::LineString*>& decomposedGeoms ) const
     {
-      std::vector<te::gm::LineString*> lines;
-
-      te::gm::Geometry* ing = g;
-      te::gm::GeometryCollection* gc = static_cast<te::gm::GeometryCollection*> (g);
+      te::gm::Geometry const * ing = g;
+      te::gm::GeometryCollection const* gc = 
+        static_cast<te::gm::GeometryCollection const*> (g);
       if (gc->getNumGeometries() == 1)
         ing = gc->getGeometryN(0);
 
 // check if the geometry is a multi line string
       if (ing->getGeomTypeId() == te::gm::MultiLineStringType)
       {
-        te::gm::MultiLineString* mls = static_cast<te::gm::MultiLineString*> (ing);
+        te::gm::MultiLineString const* mls = 
+          static_cast<te::gm::MultiLineString const*> (
+          ing);
 
         for (unsigned int i = 0; i < mls->getNumGeometries(); i++)
         {
-          te::gm::LineString* ls = static_cast<te::gm::LineString*> (mls->getGeometryN(i));
-
-          lines.push_back(ls);
+          decomposedGeoms.push_back(static_cast<te::gm::LineString*> (
+            mls->getGeometryN(i)->clone() ));
         }
       }
 // check if the geometry is a line
       else if (ing->getGeomTypeId() == te::gm::LineStringType)
       {
-        te::gm::LineString* ls = static_cast<te::gm::LineString*> (ing);
-
-        lines.push_back(ls);
+        decomposedGeoms.push_back((te::gm::LineString*)ing->clone());
       }
 // check if the geometry is a multi point
       else if (ing->getGeomTypeId() == te::gm::MultiPointType)
       {
-        te::gm::MultiPoint* mp = static_cast<te::gm::MultiPoint*> (ing);
+        te::gm::MultiPoint const* mp = static_cast<te::gm::MultiPoint const*> (
+          ing);
 
         for (unsigned int i = 0; i < mp->getNumGeometries(); i++)
         {
@@ -540,13 +536,13 @@ namespace te
           lineinter->setX(1, pointinter->getX());
           lineinter->setY(1, pointinter->getY());
 
-          lines.push_back(lineinter);
+          decomposedGeoms.push_back(lineinter);
         }
       }
 // check if the geometry is a point
       else if (ing->getGeomTypeId() == te::gm::PointType)
       {
-        te::gm::Point* p = static_cast<te::gm::Point*> (ing);
+        te::gm::Point const* p = static_cast<te::gm::Point const*> (ing);
 
         te::gm::LineString* lineinter = new te::gm::LineString(2, te::gm::LineStringType, g->getSRID());
 
@@ -555,31 +551,26 @@ namespace te
         lineinter->setX(1, p->getX());
         lineinter->setY(1, p->getY());
 
-        lines.push_back(lineinter);
+        decomposedGeoms.push_back(lineinter);
       }
 // check if the geometry is a geometry collection
       else if (ing->getGeomTypeId() == te::gm::GeometryCollectionType)
       {
         for (unsigned int i = 0; i < gc->getNumGeometries(); i++)
         {
-          std::vector<te::gm::LineString*> vg = decompose(gc->getGeometryN(i));
-
-          for (unsigned int j = 0; j < vg.size(); j++)
-            lines.push_back(vg[j]);
+          decompose(gc->getGeometryN(i), decomposedGeoms);
         }
       }
 // throw exception when other types?
       else
       {
-        std::string message = "An exception has occurred in Polygon Iterator, with geometry " + g->toString();
-
-        throw(message.c_str());
+        throw te::rst::Exception( TE_TR(
+          "An exception has occurred in Polygon Iterator, with geometry " + 
+          g->toString()) );
       }
 
 // clean up (?)
 //      delete g;
-
-      return lines;
     }
 
     template<class T> void te::rst::PolygonIterator<T>::setNextLine(bool updatecurrline)
@@ -642,8 +633,9 @@ namespace te
         m_actualintersection = 0;
 
         m_intersections.clear();
-
-        m_intersections = decompose(intersections);
+        decompose(intersections,m_intersections);
+        
+        delete intersections;
 
         m_nintersections = m_intersections.size();
       }
@@ -756,13 +748,40 @@ namespace te
       }
     }
 
-    template<class T> te::rst::PolygonIterator<T>& te::rst::PolygonIterator<T>::operator=(const te::rst::PolygonIterator<T>& rhs)
+    template<class T> 
+    te::rst::PolygonIterator<T>& te::rst::PolygonIterator<T>::operator=(
+      const te::rst::PolygonIterator<T>& rhs)
     {
+      clear();
+      
       if (this != &rhs)
       {
         te::rst::AbstractPositionIterator<T>::operator=(rhs);
 
         m_polygon = rhs.m_polygon;
+        
+        for( unsigned int intersectionsIdx = 0 ; intersectionsIdx <
+          rhs.m_intersections.size() ; ++intersectionsIdx )
+        {
+          m_intersections.push_back( (te::gm::LineString*)
+            rhs.m_intersections[ intersectionsIdx ]->clone() );
+        }
+        
+        if( rhs.m_currline )
+        {
+          m_currline = (te::gm::Line*)rhs.m_currline->clone();
+        }
+        
+        m_column = rhs.m_column;
+        m_row = rhs.m_row;
+        m_startingcolumn = rhs.m_startingcolumn;
+        m_endingcolumn = rhs.m_endingcolumn;
+        m_startingrow = rhs.m_startingrow;
+        m_endingrow = rhs.m_endingrow;
+        m_maxcolumns = rhs.m_maxcolumns;
+        m_maxrows = rhs.m_maxrows;
+        m_actualintersection = rhs.m_actualintersection;
+        m_nintersections = rhs.m_nintersections;
       }
 
       return *this;
@@ -793,6 +812,35 @@ namespace te
     {
       return ( (this->m_row != rhs.m_row) && (this->m_column != rhs.m_column));
     }
+    
+    template<class T> void te::rst::PolygonIterator<T>::clear()
+    {
+      m_polygon = 0;
+      
+      for( unsigned int intersectionsIdx = 0 ; intersectionsIdx <
+        m_intersections.size() ; ++intersectionsIdx )
+      {
+        delete m_intersections[ intersectionsIdx ];
+      }
+      m_intersections.clear();
+      
+      if( m_currline )
+      {
+        delete m_currline;
+        m_currline = 0;
+      }
+      
+      m_column = -1;
+      m_row = -1;
+      m_startingcolumn = 0;
+      m_endingcolumn = 0;
+      m_startingrow = 0;
+      m_endingrow = 0;
+      m_maxcolumns = 0;
+      m_maxrows = 0;
+      m_actualintersection = -1;
+      m_nintersections = 0;
+    }    
 
 // implementation of iteration strategy bounded by a line
     template<class T> te::rst::LineIterator<T>::LineIterator()
@@ -809,6 +857,11 @@ namespace te
         m_currentpixelindex(0),
         m_pixelsinline(0)
     {
+      if( r->getSRID() != l->getSRID() )
+      {
+        throw te::rst::Exception( TE_TR("Invalid line SRID") );
+      }
+      
       int srid = this->m_raster->getSRID();
 
 // make intersection between line and band's envelope
@@ -975,23 +1028,30 @@ namespace te
         m_pixelsinpointset(p),
         m_currentpixelindex(0)
     {
-      int srid = this->m_raster->getSRID();
+      const int rasterSRID = this->m_raster->getSRID();
 
       const te::gm::Envelope* rasterbox = r->getExtent();
-      te::gm::Geometry* rasterboxgeometry = GetGeomFromEnvelope(rasterbox, srid);
+      te::gm::Geometry* rasterboxgeometry = GetGeomFromEnvelope(rasterbox, rasterSRID);
 
 // remove points that are not inside the band's envelope
       std::vector<te::gm::Point*> inside_points;
       double column;
       double row;
       for (unsigned int i = 0; i < m_pixelsinpointset.size(); i++)
+      {
+        if( rasterSRID != m_pixelsinpointset[i]->getSRID() )
+        {
+          throw te::rst::Exception( TE_TR("Invalid point SRID") );
+        }        
+        
         if (te::gm::SatisfySpatialRelation(m_pixelsinpointset[i], rasterboxgeometry, te::gm::INTERSECTS))
         {
           this->m_raster->getGrid()->geoToGrid(m_pixelsinpointset[i]->getX(), m_pixelsinpointset[i]->getY(), column, row);
 
           inside_points.push_back(new te::gm::Point(column, row));
         }
-
+      }
+      
       m_pixelsinpointset.clear();
       m_pixelsinpointset = inside_points;
 
