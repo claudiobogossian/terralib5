@@ -26,6 +26,7 @@
 #include "../../../color.h"
 #include "../../../raster/Utils.h"
 #include "../../../se/Fill.h"
+#include "../../../se/SvgParameter.h"
 #include "../../../se/Utils.h"
 #include "../propertybrowser/AbstractPropertyManager.h"
 #include "BasicFillPropertyItem.h"
@@ -141,7 +142,10 @@ void te::qt::widgets::BasicFillPropertyItem::updateUi()
   te::color::RGBAColor rgba(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE);
   te::se::GetColor(m_fill, rgba);
   m_color = QColor(rgba.getRgba());
-  m_color.setAlpha(rgba.getAlpha());
+
+  double alpha = te::se::GetDouble(m_fill->getOpacity()) * 255;
+
+  m_color.setAlpha(alpha);
 
   te::qt::widgets::AbstractPropertyManager::getInstance().m_colorManager->setValue(m_colorProperty, m_color);
   
