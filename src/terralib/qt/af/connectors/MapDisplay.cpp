@@ -80,7 +80,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt:
   m_display->installEventFilter(coordTracking);
 
   // Zoom Wheel tool
-  m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, 2.0, this));
+  m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, 1.5, false, this));
 
   // Signals & slots
   connect(m_display, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
