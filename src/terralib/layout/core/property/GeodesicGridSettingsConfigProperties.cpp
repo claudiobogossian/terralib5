@@ -57,31 +57,7 @@ te::layout::GeodesicGridSettingsConfigProperties::GeodesicGridSettingsConfigProp
   m_lneY3("grid_lneY3_geodesic"),
   m_lneY4("grid_lneY4_geodesic")
 {
-  m_name = "grid_name_geodesic";
-  m_visible = "grid_visible_geodesic";
-  m_lneHrzGap = "grid_lneHrzGap_geodesic";
-  m_lneVrtGap = "grid_lneVrtGap_geodesic";
-  m_initialGridPointX = "grid_initialGridPointX_geodesic";
-  m_initialGridPointY = "grid_initialGridPointY_geodesic";
-  m_style = "grid_style_geodesic";
-  m_lineStyle = "grid_lineStyle_geodesic";
-  m_lineColor = "grid_lineColor_geodesic";
-  m_lineWidth = "grid_lineWidth_geodesic";
-  m_pointTextSize = "grid_pointTextSize_geodesic";
-  m_fontText = "grid_fontText_geodesic";
-  m_textColor = "grid_textColor_geodesic";
-  m_visibleAllTexts = "grid_visibleAllTexts_geodesic";
-  m_superscriptText = "grid_superscriptText_geodesic";
-  m_lneVrtDisplacement = "grid_lneVrtDisplacement_geodesic";
-  m_lneHrzDisplacement = "grid_lneHrzDisplacement_geodesic";
-  m_bottomText = "grid_bottomText_geodesic";
-  m_leftText = "grid_leftText_geodesic";
-  m_rightText = "grid_rightText_geodesic";
-  m_topText = "grid_topText_geodesic";
-  m_bottomRotateText = "grid_bottomRotateText_geodesic";
-  m_leftRotateText = "grid_leftRotateText_geodesic";
-  m_rightRotateText = "grid_rightRotateText_geodesic";
-  m_topRotateText = "grid_topRotateText_geodesic";
+  
 }
 
 te::layout::GeodesicGridSettingsConfigProperties::~GeodesicGridSettingsConfigProperties( void )

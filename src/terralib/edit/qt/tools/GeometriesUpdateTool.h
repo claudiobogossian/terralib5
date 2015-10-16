@@ -59,6 +59,7 @@ namespace te
       Q_OBJECT
 
     public:
+
       GeometriesUpdateTool(te::qt::widgets::MapDisplay* display, te::map::AbstractLayer* layer, QObject* parent = 0);
 
       virtual ~GeometriesUpdateTool();
@@ -76,6 +77,8 @@ namespace te
       void toolDeleted();
 
       void endSelectCell(const std::string&, const std::size_t&, std::size_t&);
+
+      void readyToSave();
 
     protected:
 

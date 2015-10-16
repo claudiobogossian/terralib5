@@ -27,14 +27,10 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H
 
 // TerraLib
-#include "terralib/geometry/Coord2D.h"
 #include "../../../../../../common/ParameterizedAbstractFactory.h"
 #include "../../../../../core/Config.h"
 #include "../../../../../core/pattern/mvc/AbstractItemView.h"
 #include "ItemFactoryParamsCreate.h"
-
-// Qt
-#include <QGraphicsItem>
 
 namespace te
 {

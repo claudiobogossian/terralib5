@@ -15,49 +15,70 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
- */
+    */
 
-/*!
-  \file GridSettingsModel.h
-   
-  \brief 
+    /*!
+    \file FileEdit.h
 
-  \ingroup layout
+    \brief 
+
+    \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_FILE_EDIT_H 
+#define __TERRALIB_LAYOUT_INTERNAL_FILE_EDIT_H
 
-// TerraLib
-#include "../core/pattern/mvc/AbstractOutsideModel.h"
-#include "../core/Config.h"
-#include "../core/property/Property.h"
-#include "../core/property/Properties.h"
+// Qt
+#include <QWidget>
+#include <QLineEdit>
+#include <QString>
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT GridSettingsModel : public AbstractOutsideModel
+    class FileEdit : public QWidget
     {
-    public:
+      Q_OBJECT
 
-      GridSettingsModel();
+      public:
 
-      virtual ~GridSettingsModel();
+        FileEdit(QWidget *parent = 0);
 
-      virtual void setGridProperties(te::layout::Properties properties);
-            
-      virtual bool containsGrid(EnumType* enumType);
+        virtual ~FileEdit();
 
-      virtual te::layout::Property containsProperty( std::string name, EnumType* enumType );
-      
-      virtual bool updateProperty(Property prop, EnumType* enumType);
+        void setFilePath(const QString &filePath);
 
-    protected:
+        QString filePath() const;
 
-      te::layout::Properties m_properties;
+        void setFilter(const QString &filter);
+
+        QString filter();
+
+      signals:
+
+        void filePathChanged(const QString &filePath);
+
+      protected:
+
+        void focusInEvent(QFocusEvent *e);
+
+        void focusOutEvent(QFocusEvent *e);
+
+        void keyPressEvent(QKeyEvent *e);
+
+        void keyReleaseEvent(QKeyEvent *e);
+
+      private slots:
+
+        void buttonClicked();
+
+      private:
+        
+        QLineEdit* m_lineEdit;
+        QString    m_filter;
     };
+
   }
 }
 

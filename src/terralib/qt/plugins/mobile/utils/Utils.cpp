@@ -65,12 +65,13 @@ void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
     te::da::Create(dsGPKG, dsTypeResult, dsAdapter.get());
 }
 
-void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::auto_ptr<te::da::DataSet> dataset, std::string outFileName)
+void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::auto_ptr<te::da::DataSet> dataset, std::string outFileName, const te::gm::Envelope extent)
 {
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> raster = dataset->getRaster(rpos);
 
+  bool extValid = extent.isValid();
   int inputSRID = raster->getSRID();
   int bandType = raster->getBandDataType(0);
   int multiResLevel = raster->getMultiResLevelsCount();
@@ -95,8 +96,13 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
     if (bandType != te::dt::UCHAR_TYPE)
       raster = te::gdal::NormalizeRaster(raster.get(), 3, 0, 255, rinfo, "MEM");
 
-    if (inputSRID != 4326)
-      raster.reset(raster->transform(4326, rinfo));
+    if (inputSRID != 4326 || extValid)
+    {
+      if (extValid && (inputSRID != 4326))
+        raster.reset(raster->transform(4326, extent.getLowerLeftX(), extent.getLowerLeftY(), extent.getUpperRightX(), extent.getUpperRightY(), rinfo));
+      else
+        raster.reset(raster->transform(4326, rinfo));
+    }
 
     //Creating the raster to be exported
     size_t bandIdx = 0;
@@ -155,38 +161,24 @@ std::auto_ptr<te::da::DataSource> te::qt::plugins::terramobile::createGeopackage
   return dsGPKG;
 }
 
-void te::qt::plugins::terramobile::exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName)
-{
-  std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
-  std::auto_ptr<te::da::DataSet> dataset = layer->getData();
-
-  //Checking if the layer contains a raster property
-  if (dsType->hasRaster())
-  {
-    exportRastertoGPKG(layer, dsGPKG, dataset, outFileName);
-  }
-  else
-  {
-    exportVectortoGPKG(layer, dsGPKG, dsType.get(), dataset, outFileName);
-
-    std::string name = dsType->getName();
-    std::string sldString = te::qt::plugins::terramobile::WriteStyle(layer->getStyle(), (outFileName + "-temp-style.xml"));
-    std::string insert = "INSERT INTO tm_style ('layer_name', 'sld_xml' )  values('" + name + "', '" + sldString + "');";
-
-    queryGPKG(insert, dsGPKG);
-  }
-}
-
 void te::qt::plugins::terramobile::exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName, const te::gm::Envelope extent)
 {
   std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
-  
-  std::auto_ptr<te::da::DataSet> dataset = layer->getData(te::da::GetFirstGeomProperty(dsType.get())->getName(), &extent);
+  std::auto_ptr<te::da::DataSet> dataset;
+  bool extValid = extent.isValid();
+
+  if (extValid)
+    dataset = layer->getData(te::da::GetFirstGeomProperty(dsType.get())->getName(), &extent);
+  else
+    dataset = layer->getData();
 
   //Checking if the layer contains a raster property
   if (dsType->hasRaster())
   {
-    exportRastertoGPKG(layer, dsGPKG, dataset, outFileName);
+    if (extValid)
+      exportRastertoGPKG(layer, dsGPKG, dataset, outFileName, extent);
+    else
+      exportRastertoGPKG(layer, dsGPKG, dataset, outFileName, te::gm::Envelope());
   }
   else
   {

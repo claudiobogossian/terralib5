@@ -31,7 +31,7 @@
 #include "../core/ItemUtils.h"
 #include "../../core/WorldTransformer.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "../../core/property/GridSettingsConfigProperties.h"
+#include "../../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../../../maptools/Utils.h"
 
 te::layout::GridGeodesicItem::GridGeodesicItem(AbstractItemController* controller, bool invertedMatrix)
@@ -47,7 +47,7 @@ te::layout::GridGeodesicItem::~GridGeodesicItem()
 
 void te::layout::GridGeodesicItem::drawGrid(QPainter* painter)
 {
-  GridSettingsConfigProperties settingsConfig;
+  GeodesicGridSettingsConfigProperties settingsConfig;
 
   const Property& pGeographicBox = m_controller->getProperty("geographic_box");
   const Property& pStyle = m_controller->getProperty(settingsConfig.getStyle());
@@ -91,7 +91,7 @@ void te::layout::GridGeodesicItem::drawGrid(QPainter* painter)
 
 void te::layout::GridGeodesicItem::calculateGrid()
 {
-  GridSettingsConfigProperties settingsConfig;
+  GeodesicGridSettingsConfigProperties settingsConfig;
 
   const Property& pGeographicBox = m_controller->getProperty("geographic_box");
   const Property& pWidth = m_controller->getProperty("width");
@@ -133,7 +133,7 @@ void te::layout::GridGeodesicItem::calculateGrid()
 
 double te::layout::GridGeodesicItem::initVerticalLines( const te::gm::Envelope& geoBox )
 {
-  GridSettingsConfigProperties settingsConfig;
+  GeodesicGridSettingsConfigProperties settingsConfig;
 
   const Property& pInitialGridPointY = m_controller->getProperty(settingsConfig.getInitialGridPointY());
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
@@ -160,7 +160,7 @@ double te::layout::GridGeodesicItem::initVerticalLines( const te::gm::Envelope& 
 
 double te::layout::GridGeodesicItem::initHorizontalLines( const te::gm::Envelope& geoBox )
 {
-  GridSettingsConfigProperties settingsConfig;
+  GeodesicGridSettingsConfigProperties settingsConfig;
 
   const Property& pInitialGridPointX = m_controller->getProperty(settingsConfig.getInitialGridPointX());
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
@@ -188,12 +188,12 @@ double te::layout::GridGeodesicItem::initHorizontalLines( const te::gm::Envelope
 
 void te::layout::GridGeodesicItem::calculateVertical(const te::gm::Envelope& geoBox, const te::gm::Envelope& planarBox, const te::gm::Envelope& boxMM )
 {
-  GridSettingsConfigProperties settingsConfig;
+  GeodesicGridSettingsConfigProperties settingsConfig;
 
   const Property& pVerticalGap = m_controller->getProperty(settingsConfig.getLneVrtGap());
-  const Property& pShowDegreesText = m_controller->getProperty("show_degrees_text");
-  const Property& pShowMinutesText = m_controller->getProperty("show_minutes_text");
-  const Property& pShowSecondsText = m_controller->getProperty("show_seconds_text");
+  const Property& pShowDegreesText = m_controller->getProperty(settingsConfig.getDegreesText());
+  const Property& pShowMinutesText = m_controller->getProperty(settingsConfig.getMinutesText());
+  const Property& pShowSecondsText = m_controller->getProperty(settingsConfig.getSecondsText());
   const Property& pHorizontalDisplacement = m_controller->getProperty(settingsConfig.getLneHrzDisplacement());
 
   double verticalGap = pVerticalGap.getValue().toDouble();
@@ -257,12 +257,12 @@ void te::layout::GridGeodesicItem::calculateVertical(const te::gm::Envelope& geo
 
 void te::layout::GridGeodesicItem::calculateHorizontal( const te::gm::Envelope& geoBox, const te::gm::Envelope& planarBox, const te::gm::Envelope& boxMM )
 {
-  GridSettingsConfigProperties settingsConfig;
+  GeodesicGridSettingsConfigProperties settingsConfig;
 
   const Property& pHorizontalGap = m_controller->getProperty(settingsConfig.getLneHrzGap());
-  const Property& pShowDegreesText = m_controller->getProperty("show_degrees_text");
-  const Property& pShowMinutesText = m_controller->getProperty("show_minutes_text");
-  const Property& pShowSecondsText = m_controller->getProperty("show_seconds_text");
+  const Property& pShowDegreesText = m_controller->getProperty(settingsConfig.getDegreesText());
+  const Property& pShowMinutesText = m_controller->getProperty(settingsConfig.getMinutesText());
+  const Property& pShowSecondsText = m_controller->getProperty(settingsConfig.getSecondsText());
   const Property& pVerticalDisplacement = m_controller->getProperty(settingsConfig.getLneVrtDisplacement());
   
   double horizontalGap = pHorizontalGap.getValue().toDouble();

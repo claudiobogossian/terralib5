@@ -181,7 +181,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     if (m_outputPage->useVisibleArea())
       te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
     else
-      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName);
+      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, te::gm::Envelope());
   }
 
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
@@ -189,7 +189,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     if (m_outputPage->useVisibleArea())
       te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
     else
-      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName);
+      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, te::gm::Envelope());
   }
 
   std::map<std::string, Section*>::iterator itb = sectionsMap.begin();

@@ -27,6 +27,9 @@
 // OGR
 #include <ogrsf_frmts.h>
 #include <ogr_core.h>
+#include <gdal_priv.h>
+#include <ogr_api.h>
+#include <gdal.h>
 
 // Boost
 #include <boost/filesystem/operations.hpp>

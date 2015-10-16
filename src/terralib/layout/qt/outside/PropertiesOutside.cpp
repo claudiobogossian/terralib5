@@ -201,14 +201,20 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   m_nameLabel->setText(tr("Component::") + props.getObjectName().c_str());
   
   const std::vector<Property>& vecProperties = props.getProperties();
+
+  Properties newProperties(props);
+  newProperties.clear();
+
   foreach(Property prop, vecProperties)
   {
     if(!prop.isVisible())
       continue;
-
+    
     m_propUtils->checkDynamicProperty(prop, allItems);
-    m_layoutPropertyBrowser->addProperty(prop);
+    newProperties.addProperty(prop);
   }
+
+  m_layoutPropertyBrowser->addProperties(newProperties);
    
   update();
 }
@@ -222,9 +228,12 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
 
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
 
-  sendPropertyToSelectedItems(property);
+  QList<QGraphicsItem*> currentSelectionList = m_graphicsItems;
 
   changeMapVisitable(property);
+
+  sendPropertyToItems(property, currentSelectionList);
+
   lScene->update();
 }
 
@@ -238,16 +247,15 @@ void te::layout::PropertiesOutside::onChangePropertyValue( std::vector<Property>
   }
 }
 
-bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property property )
+bool te::layout::PropertiesOutside::sendPropertyToItems(const Property& property, const QList<QGraphicsItem*>& items)
 {
-  bool result = true;
-  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+  bool result = true; 
 
   std::vector<QGraphicsItem*> commandItems;
   std::vector<Properties> commandOld;
   std::vector<Properties> commandNew;
 
-  foreach(QGraphicsItem* item, m_graphicsItems)
+  foreach(QGraphicsItem* item, items)
   {
     if (item)
     {
@@ -278,10 +286,15 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
       }
    }
 
-  if(!m_graphicsItems.isEmpty())
+  if (!items.isEmpty())
   {
     QUndoCommand* command = new ChangePropertyCommand(commandItems, commandOld, commandNew, this);
-    lScene->addUndoStack(command);
+
+    Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene());
+    if (lScene != 0)
+    {
+      lScene->addUndoStack(command);
+    }    
   }
   return result;
 }
@@ -297,18 +310,62 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
   if(property.getName().compare(m_sharedProps->getMapName()) != 0)
     return;
 
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if (!iUtils)
+    return;  
+
+  //we first removed any association, if exists
+  foreach(QGraphicsItem* selectedItem, m_graphicsItems)
+  {
+    if (selectedItem)
+    {
+      AbstractItemView* selectedAbsView = dynamic_cast<AbstractItemView*>(selectedItem);
+      if (selectedAbsView != 0)
+      {
+        const Property& pOldMapName = selectedAbsView->getController()->getProperty(m_sharedProps->getMapName());
+        if (pOldMapName.isNull() == true)
+        {
+          continue;
+        }
+
+        const std::string oldMapName = pOldMapName.getOptionByCurrentChoice().toString();
+        if (oldMapName.empty() == true)
+        {
+          continue;
+        }
+
+        MapItem* oldMapItem = iUtils->getMapItem(oldMapName);
+        if (!oldMapItem)
+          return;
+        
+
+        oldMapItem->getController()->detach(selectedAbsView->getController());
+
+        Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene());
+        if (lScene != 0)
+        {
+          //checks if the map item is already in a group
+          QGraphicsItemGroup* group = oldMapItem->group();
+          if (group != 0)
+          {
+            lScene->destroyItemGroup(group);
+          }          
+        }
+      }
+    }
+  }
+
   std::string name = property.getValue().toString();
-  if(name.compare("") == 0)
+  if (name.compare("") == 0)
   {
     name = property.getOptionByCurrentChoice().toString();
   }
 
-  if(name.compare("") == 0)
+  if (name.compare("") == 0)
+  {
     return;
-
-  ItemUtils* iUtils = Context::getInstance().getItemUtils();
-  if(!iUtils)
-    return;
+  }
 
   MapItem* mapItem = iUtils->getMapItem(name);
   if(!mapItem)
@@ -356,7 +413,32 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
     Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
     if(lScene != 0)
     {
-      lScene->createItemGroup(listItemsToConnect);
+      changeZValueOrder(listItemsToConnect); //if need to change the order of the z value 
+      QGraphicsItemGroup* group = lScene->createItemGroup(listItemsToConnect);
+      group->setSelected(true);
+    }
+  }
+}
+
+void te::layout::PropertiesOutside::changeZValueOrder(QList<QGraphicsItem*> listItemsToConnect)
+{
+  if (listItemsToConnect.empty())
+  {
+    return;
+  }
+
+  QGraphicsItem* first = listItemsToConnect.first();
+  int minimumZValue = first->zValue();
+  foreach(QGraphicsItem* item, listItemsToConnect)
+  {
+    if (item)
+    {
+      if (minimumZValue > item->zValue())
+      {
+        first->setZValue(item->zValue());
+        item->setZValue(minimumZValue);
+        break;
+      }
     }
   }
 }
@@ -371,7 +453,22 @@ void te::layout::PropertiesOutside::refreshOutside()
   if(props.getProperties().empty())
     return;
 
-  updatePropertyBrowser(props);
+
+  const std::vector<Property>& vecProperties = props.getProperties();
+
+  Properties newProperties(props);
+  newProperties.clear();
+
+  foreach(Property prop, vecProperties)
+  {
+    if (!prop.isVisible())
+      continue;
+
+    m_propUtils->checkDynamicProperty(prop, m_allItems);
+    newProperties.addProperty(prop);
+  }
+
+  updatePropertyBrowser(newProperties);
 }
 
 void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )

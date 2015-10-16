@@ -184,7 +184,7 @@ void te::qt::widgets::ROIManagerWidget::drawROISet()
 
   te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
 
-  mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+  mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
 
   const te::gm::Envelope& mapExt = mapDisplay->getExtent();
 
@@ -288,7 +288,7 @@ void te::qt::widgets::ROIManagerWidget::onOpenLayerROIToolButtonClicked()
 
     //update roi set tree
     QPixmap pix(16,16);
-    pix.fill(QColor(roi->getColor().c_str()));
+    pix.fill(QColor(roi->getColor().c_str()).rgba());
     QIcon icon(pix);
 
     QTreeWidgetItem* item = new QTreeWidgetItem(m_ui->m_roiSetTreeWidget, ROI_TREE_ITEM);
