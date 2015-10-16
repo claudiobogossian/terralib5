@@ -125,7 +125,10 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
   te::se::GetColor(m_stroke, rgba);
   m_color = QColor(rgba.getRgba());
 
-  double alpha = te::se::GetDouble(m_stroke->getOpacity()) * 255;
+  double alpha = 1.;
+  
+  if (m_stroke->getOpacity())
+    alpha = te::se::GetDouble(m_stroke->getOpacity()) * 255;
 
   m_color.setAlpha(alpha);
   updateUiStrokeColor();
