@@ -27,12 +27,44 @@
 #include "../Config.h"
 
 #include <terralib/raster/RasterIterator.h>
+#include <terralib/raster/PositionIterator.h>
+#include <terralib/geometry/Utils.h>
 
 //#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
 #include <boost/shared_ptr.hpp>
 
+#include <memory>
+
 CPPUNIT_TEST_SUITE_REGISTRATION( TsRasterIterator );
+
+void TsRasterIterator::CreateTestRaster( unsigned int nBands, unsigned int nLines, 
+  unsigned int nCols, boost::shared_ptr< te::rst::Raster >& rasterPointer )
+{
+  std::vector< te::rst::BandProperty * > bandsProps;
+  for( unsigned int bandsPropsIdx = 0 ; bandsPropsIdx < nBands ; ++bandsPropsIdx )
+  {
+    bandsProps.push_back( new te::rst::BandProperty( bandsPropsIdx, 
+      te::dt::UINT32_TYPE ) );    
+  }
+  
+  rasterPointer.reset( te::rst::RasterFactory::make( "MEM", 
+    new te::rst::Grid( nCols, nLines ), bandsProps, 
+    std::map< std::string, std::string >(), 0, 0 ) );
+    
+  unsigned int band = 0;
+  unsigned int line = 0;
+  unsigned int col = 0;
+  double pixelValue = 0;
+  
+  for( band = 0 ; band < nBands ; ++band )
+    for( line = 0 ; line < nLines ; ++line )
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        rasterPointer->setValue( col, line, pixelValue, band );
+        ++pixelValue;
+      }
+}
 
 void TsRasterIterator::tcRasterIteratorConstructor1()
 {
@@ -52,4 +84,36 @@ void TsRasterIterator::tcRasterIteratorGetRow()
 
 void TsRasterIterator::tcRasterIteratorGetCol()
 {
+}
+
+void TsRasterIterator::PolygonIteratorTest1()
+{
+  boost::shared_ptr< te::rst::Raster > rasterPointer;
+  CreateTestRaster( 3, 3, 3, rasterPointer );
+  
+  std::auto_ptr< te::gm::Polygon > polPtr( (te::gm::Polygon*)
+    te::gm::GetGeomFromEnvelope( rasterPointer->getGrid()->getExtent(),
+      rasterPointer->getGrid()->getSRID() ) );
+    
+  double pixelValueCounter = 0;
+
+  for( unsigned int band = 0 ; band < rasterPointer->getNumberOfBands() ; 
+    ++band )
+  {    
+    te::rst::PolygonIterator< double > it = 
+      te::rst::PolygonIterator< double >::begin( rasterPointer.get(),
+      polPtr.get() );
+    const te::rst::PolygonIterator< double > itEnd = 
+      te::rst::PolygonIterator< double >::end( rasterPointer.get(),
+      polPtr.get() );      
+      
+    while( it != itEnd )
+    {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( pixelValueCounter, it[ band ], 
+        0.0000000001 );
+      
+      ++pixelValueCounter;
+      ++it;
+    }
+  }
 }
