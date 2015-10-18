@@ -1018,9 +1018,8 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
   te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
 
   GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
-  
-  unsigned int levels = gdalRaster->getMultiResLevelsCount();
 
+  unsigned int levels = gdalRaster->getMultiResLevelsCount();
   if (levels > 0)
   {
     boost::scoped_array< int > overviewsIndexes(new int[levels]);
@@ -1040,7 +1039,7 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
   GDALClose((GDALDatasetH)poDstDS);
 }
 
-std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inraster, size_t bands, double nmin, double nmax, std::map<std::string, std::string> rInfo, std::string type)
+std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inraster, double nmin, double nmax, std::map<std::string, std::string> rInfo, std::string type)
 {
   size_t col = 0;
   size_t row = 0;
@@ -1053,13 +1052,27 @@ std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inrast
   const unsigned int inNRows = inraster->getNumberOfRows();
   const unsigned int inNCols = inraster->getNumberOfColumns();
 
-  //Checking the min & max values from the raster bands
+  size_t bands = inraster->getNumberOfBands();
+  std::vector<size_t> colorbands;
+
   for (bandIdx = 0; bandIdx < bands; ++bandIdx)
   {
     te::rst::Band& band = *inraster->getBand(bandIdx);
+    te::rst::ColorInterp color = band.getProperty()->m_colorInterp;
+    if (color == te::rst::RedCInt ||
+      color == te::rst::GreenCInt ||
+      color == te::rst::BlueCInt ||
+      color == te::rst::AlphaCInt || 
+      color == te::rst::GrayIdxCInt)
+      colorbands.push_back(bandIdx);
+  }
 
+  //Checking the min & max values from the raster bands
+  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
+  {
+    te::rst::Band& band = *inraster->getBand(colorbands[bandIdx]);
     const double noDataValue = band.getProperty()->m_noDataValue;
-
+    
     for (row = 0; row < inNRows; ++row)
     {
       for (col = 0; col < inNCols; ++col)
@@ -1083,9 +1096,15 @@ std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inrast
   //Creating the output Raster file
   std::vector<te::rst::BandProperty*> bandsProperties;
 
-  for (bandIdx = 0; bandIdx < bands; ++bandIdx)
+  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
   {
-    te::rst::BandProperty* bandProp = new te::rst::BandProperty(bandIdx, te::dt::UCHAR_TYPE);
+    te::rst::BandProperty* bandProp = new te::rst::BandProperty(colorbands[bandIdx], te::dt::UCHAR_TYPE);
+    te::rst::Band& inBand = *inraster->getBand(colorbands[bandIdx]);
+    bandProp->m_colorInterp = inBand.getProperty()->m_colorInterp;
+    bandProp->m_blkh = inBand.getProperty()->m_blkh;
+    bandProp->m_blkw = inBand.getProperty()->m_blkw;
+    bandProp->m_nblocksx = inBand.getProperty()->m_nblocksx;
+    bandProp->m_nblocksy = inBand.getProperty()->m_nblocksy;
     bandsProperties.push_back(bandProp);
   }
 
@@ -1094,9 +1113,9 @@ std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inrast
 
   //Normalizing the values on the output Raster
 
-  for (bandIdx = 0; bandIdx < bands; ++bandIdx)
+  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
   {
-    te::rst::Band& band = *inraster->getBand(bandIdx);
+    te::rst::Band& band = *inraster->getBand(colorbands[bandIdx]);
 
     const double noDataValue = band.getProperty()->m_noDataValue;
 
