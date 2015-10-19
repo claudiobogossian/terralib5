@@ -59,8 +59,6 @@ te::qt::widgets::StyleExplorer::~StyleExplorer()
 
 void te::qt::widgets::StyleExplorer::setStyle(te::se::Style* style)
 {
-  assert(style);
-
   m_style = style;
 
   updateStyleTree();
