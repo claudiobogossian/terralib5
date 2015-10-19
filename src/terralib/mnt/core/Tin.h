@@ -561,6 +561,8 @@ namespace te
       */
       bool DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef);
 
+      bool FillGridValue(te::rst::Raster *rst, int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double zvalue);
+
       int m_srid;                                  //!< Attribute with spatial reference information
 
       te::gm::Envelope m_env;                      //!< Attribute used to restrict the area to generate the samples.

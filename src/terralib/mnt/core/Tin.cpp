@@ -16,6 +16,7 @@
 #include "../../datatype/StringProperty.h"
 
 #include "../../geometry/GeometryProperty.h"
+#include "../../geometry/Line.h"
 #include "../../geometry/MultiPolygon.h"
 
 #include "../../memory/DataSet.h"
@@ -1327,8 +1328,10 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   typedef te::sam::kdtree::Index<KD_NODE> KD_TREE;
   te::gm::Envelope e;
   KD_TREE nodetree(e);
-  KD_TREE linetree(e);
-  std::vector<KD_NODE*> reports;
+  std::vector<KD_NODE*> reportsnode;
+ // KD_TREE linetree(e); ///<<<< Usar rtree com coordenadas ao inves de kdtree com ids. (Está estourando a pilha
+  te::sam::rtree::Index<std::size_t> linetree;
+  std::vector<std::size_t> reportline;
 
   while (inDset->moveNext())
   {
@@ -1375,29 +1378,29 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
       nd.Init(p->getX(), p->getY(), val[j], type[j]);
 
       te::gm::Envelope ept(*p->getMBR());
-      nodetree.search(ept, reports);
+      nodetree.search(ept, reportsnode);
       size_t kn = 0;
-      for (kn = 0; kn < reports.size(); kn++)
+      for (kn = 0; kn < reportsnode.size(); kn++)
       {
-        te::gm::Coord2D ind = reports[kn]->getKey();
+        te::gm::Coord2D ind = reportsnode[kn]->getKey();
         if (ind.getX() == p->getX() && ind.getY() == p->getY())
         {
-          no[j] = reports[kn]->getData();
+          no[j] = reportsnode[kn]->getData();
           break;
         }
       }
-      if (kn == reports.size())
+      if (kn == reportsnode.size())
       {
         no[j] = (int32_t)m_node.size();
         m_node.push_back(nd);
         te::gm::Coord2D coord(p->getX(), p->getY());
         nodetree.insert(coord, no[j]);
       }
-      reports.clear();
+      reportsnode.clear();
 
       if (m_fbnode == 0 && nd.getType() == Breaklinefirst)
         m_fbnode = no[j];
-    }
+    } //nodes
 
     if (first)
     {
@@ -1411,46 +1414,34 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
     tl[0] = TinLine(no[0], no[1], left[0], right[0], Normalline);
     tl[1] = TinLine(no[1], no[2], left[1], right[1], Normalline);
     tl[2] = TinLine(no[2], no[0], left[2], right[2], Normalline);
+    lid[0] = lid[1] = lid[2] = -1;
 
     for (int j = 0; j < 3; j++)
     {
-      te::gm::Coord2D coord0((double)tl[j].getNodeFrom(), (double)tl[j].getNodeTo());
-      te::gm::Coord2D coord1((double)tl[j].getNodeTo(), (double)tl[j].getNodeFrom());
-      te::gm::Envelope ept0(coord0.getX(), coord0.getY(), coord0.getX(), coord0.getY());
-      te::gm::Envelope ept1(coord1.getX(), coord1.getY(), coord1.getX(), coord1.getY());
-      linetree.search(ept0, reports);
+      double x0 = m_node[tl[j].getNodeFrom()].getX();
+      double y0 = m_node[tl[j].getNodeFrom()].getY();
+      double x1 = m_node[tl[j].getNodeTo()].getX();
+      double y1 = m_node[tl[j].getNodeTo()].getY();
+      te::gm::Envelope e(std::min(x0, x1), std::min(y0, y1), std::max(x0, x1), std::max(y0, y1));
+      linetree.search(e, reportline);
       size_t kl = 0;
-      for (kl = 0; kl < reports.size(); kl++)
+      for (kl = 0; kl < reportline.size(); kl++)
       {
-        te::gm::Coord2D ind = reports[kl]->getKey();
-        if (ind.getX() == coord0.getX() && ind.getY() == coord0.getY())
+        int nd0 = m_line[reportline[kl]].getNodeFrom();
+        int nd1 = m_line[reportline[kl]].getNodeTo();
+        if ((nd0 == tl[j].getNodeFrom() && nd1 == tl[j].getNodeTo()) || (nd1 == tl[j].getNodeFrom() && nd0 == tl[j].getNodeTo()))
         {
-          lid[j] = reports[kl]->getData();
+          lid[j] = (int32_t)reportline[kl];
           break;
         }
       }
-      if (kl == reports.size())
+      if (kl == reportline.size())
       {
-        reports.clear();
-        linetree.search(ept1, reports);
-        size_t kl = 0;
-        for (kl = 0; kl < reports.size(); kl++)
-        {
-          te::gm::Coord2D ind = reports[kl]->getKey();
-          if (ind.getX() == coord1.getX() && ind.getY() == coord1.getY())
-          {
-            lid[j] = reports[kl]->getData();
-            break;
-          }
-        }
-        if (kl == reports.size())
-        {
-          lid[j] = (int32_t)m_line.size();
-          m_line.push_back(tl[j]);
-          linetree.insert(coord0, lid[j]);
-        }
+        lid[j] = (int32_t)m_line.size();
+        m_line.push_back(tl[j]);
+        linetree.insert(e, lid[j]);
       }
-      reports.clear();
+      reportline.clear();
     }
 
     while (id >= m_triang.size())
@@ -3028,5 +3019,37 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
   coef[21] = ap; coef[22] = bp; coef[23] = cp; coef[24] = dp;
   coef[25] = p3d[0].getX(); coef[26] = p3d[0].getY();
 
+  return true;
+}
+
+
+/*!
+\brief Method that fills the grid locations, inside a triangle, with a zvalue
+\param grid is a pointer to a grid object
+\param triid is the triangle identification number
+\param flin and llin are the first and the last lines (rows) of the grid
+\param fcol and lcol are the first and the last columns of the grid
+\param zvalue is the z value to be stored in the grid inside the triangle region
+\return TRUE always
+*/
+bool te::mnt::Tin::FillGridValue(te::rst::Raster *rst, int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double zvalue)
+{
+  int32_t  nlin, ncol;
+  double  rx1, ry2;
+  te::gm::PointZ pg;
+
+  rx1 = rst->getExtent()->getLowerLeftX() + (rst->getResolutionX() / 2.);
+  ry2 = rst->getExtent()->getUpperRightY() - (rst->getResolutionY() / 2.);
+
+  for (nlin = flin; nlin <= llin; nlin++){
+    for (ncol = fcol; ncol <= lcol; ncol++){
+      pg.setX(rx1 + (float)ncol*rst->getResolutionX());
+      pg.setY(ry2 - (float)nlin*rst->getResolutionY());
+      if (!(ContainsPoint(triid, pg)))
+        continue;
+      rst->setValue(ncol, nlin, zvalue);
+    }
+  }
+  
   return true;
 }

@@ -98,11 +98,11 @@ bool te::mnt::TINCalculateGrid::run()
       (p3da[1].getZ() == dummyvalue) ||
       (p3da[2].getZ() == dummyvalue))
     {
-       FillGridValue(i, flin, llin, fcol, lcol, dummyvalue);
+       FillGridValue(m_rst, i, flin, llin, fcol, lcol, dummyvalue);
     }
     else if ((p3da[0].getZ() == p3da[1].getZ()) &&
       (p3da[0].getZ() == p3da[2].getZ()) && (m_gridtype == Linear))
-      FillGridValue(i, flin, llin, fcol, lcol, p3da[0].getZ());
+      FillGridValue(m_rst, i, flin, llin, fcol, lcol, p3da[0].getZ());
     else if ((m_gridtype == Quintico) || (m_gridtype == QuinticoBrkLine))
     {
       NeighborsId(i, neighsid);
@@ -115,7 +115,7 @@ bool te::mnt::TINCalculateGrid::run()
          FillGridQuintic(i, p3da, flin, llin, fcol, lcol, coef);
       }
       else
-        FillGridValue(i, flin, llin, fcol, lcol, m_nodatavalue);
+        FillGridValue(m_rst, i, flin, llin, fcol, lcol, m_nodatavalue);
     }
     else
       FillGridLinear(i, p3da, flin, llin, fcol, lcol);
@@ -196,39 +196,6 @@ bool te::mnt::TINCalculateGrid::DefineInterLinesColumns(int32_t *nodesid, int32_
   return true;
 }
 
-
-/*!
-\brief Method that fills the grid locations, inside a triangle, with a zvalue
-\param grid is a pointer to a grid object
-\param triid is the triangle identification number
-\param flin and llin are the first and the last lines (rows) of the grid
-\param fcol and lcol are the first and the last columns of the grid
-\param zvalue is the z value to be stored in the grid inside the triangle region
-\return TRUE always
-*/
-bool te::mnt::TINCalculateGrid::FillGridValue(int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double zvalue)
-{
-  int32_t  nlin, ncol;
-  double  rx1, ry2;
-  te::gm::PointZ pg;
-  double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
-
-  rx1 = m_rst->getExtent()->getLowerLeftX() + (m_resx/2.);
-  ry2 = m_rst->getExtent()->getUpperRightY() - (m_resy/2.);
-
-  for (nlin = flin; nlin <= llin; nlin++){
-    for (ncol = fcol; ncol <= lcol; ncol++){
-      pg.setX(rx1 + (float)ncol*m_resx);
-      pg.setY(ry2 - (float)nlin*m_resy);
-      if (!(ContainsPoint(triid, pg)))
-        continue;
-        m_rst->setValue(ncol, nlin, zvalue);
-    }
-  }
-
-
-  return true;
-}
 
 
 /*!

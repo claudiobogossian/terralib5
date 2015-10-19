@@ -114,6 +114,50 @@ void te::mnt::CreateIsolinesDialog::setLayers(std::list<te::map::AbstractLayerPt
   }
 }
 
+std::vector<double> GetNumericData(te::da::DataSet* dataSet, std::vector<std::string>& propName)
+{
+  std::vector<double> result;
+  double numval;
+
+  size_t index = 0;
+  std::vector<size_t> index_selected;
+  std::vector<std::size_t> type;
+  for (index = 0; index < dataSet->getNumProperties(); ++index)
+    for (size_t p = 0; p < propName.size(); ++p)
+      if (dataSet->getPropertyName(index) == propName[p])
+      {
+        index_selected.push_back(index);
+        type.push_back(dataSet->getPropertyDataType(index));
+      }
+
+  dataSet->moveFirst();
+  do
+  {
+    for (size_t i = 0; i < index_selected.size(); ++i)
+    {
+      index = index_selected[i];
+      if (!dataSet->isNull(propName[i]))
+      {
+        if (type[i] == te::dt::INT16_TYPE)
+          numval = dataSet->getInt16(index);
+        else if (type[i] == te::dt::INT32_TYPE)
+          numval = dataSet->getInt32(index);
+        else if (type[i] == te::dt::INT64_TYPE)
+          numval = (double)dataSet->getInt64(index);
+        else if (type[i] == te::dt::FLOAT_TYPE)
+          numval = dataSet->getFloat(index);
+        else if (type[i] == te::dt::DOUBLE_TYPE)
+          numval = dataSet->getDouble(index);
+        else if (type[i] == te::dt::NUMERIC_TYPE)
+          numval = boost::lexical_cast<double>(dataSet->getNumeric(index));
+        result.push_back(numval);
+      }
+    }
+  } while (dataSet->moveNext());
+
+  return result;
+}
+
 void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
 {
   m_inputLayer = 0;
@@ -129,14 +173,14 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
       if (dsType->hasGeom())
       {
         m_inputType = TIN;
-        std::vector<double> values1 = te::stat::GetNumericData(inds.get(), "val1");
-        std::vector<double> values2 = te::stat::GetNumericData(inds.get(), "val2");
-        std::vector<double> values3 = te::stat::GetNumericData(inds.get(), "val3");
-        std::sort(values1.begin(), values1.end());
-        std::sort(values2.begin(), values2.end());
-        std::sort(values3.begin(), values3.end());
-        m_min = std::min(*values1.begin(), std::min(*values2.begin(), *values3.begin()));
-        m_max = std::max(values1[values1.size() - 1], std::max(values2[values2.size() - 1], values3[values3.size() - 1]));
+        std::vector<std::string> attrs;
+        attrs.push_back("val1");
+        attrs.push_back("val2");
+        attrs.push_back("val3");
+        std::vector<double> values = GetNumericData(inds.get(), attrs);
+        std::sort(values.begin(), values.end());
+        m_min = *values.begin();
+        m_max = values[values.size() - 1];
       }
       if (dsType->hasRaster())
       {
@@ -167,6 +211,7 @@ void te::mnt::CreateIsolinesDialog::onStepFixeEnabled(bool)
   m_ui->m_vminlabel->setEnabled(true);
   m_ui->m_steplabel->setEnabled(true);
   m_ui->m_valuelabel->setEnabled(false);
+  m_ui->m_guidelinescheckBox->setEnabled(true);
 }
 
 void te::mnt::CreateIsolinesDialog::on_stepVariableraEnabled(bool)
@@ -179,6 +224,8 @@ void te::mnt::CreateIsolinesDialog::on_stepVariableraEnabled(bool)
   m_ui->m_vminlabel->setEnabled(false);
   m_ui->m_steplabel->setEnabled(false);
   m_ui->m_valuelabel->setEnabled(true);
+  m_ui->m_guidelinescheckBox->setChecked(false);
+  m_ui->m_guidelinescheckBox->setEnabled(false);
 }
 
 void te::mnt::CreateIsolinesDialog::oninsertpushButtonClicked()
@@ -188,6 +235,12 @@ void te::mnt::CreateIsolinesDialog::oninsertpushButtonClicked()
     double min = m_ui->m_vminlineEdit->text().toDouble();
     double max = m_ui->m_vmaxlineEdit->text().toDouble();
     double step = m_ui->m_steplineEdit->text().toDouble();
+    if (step <= 0)
+    {
+      QMessageBox::information(this, tr("Create Isolines"), tr("Step value is invalid!"));
+      return;
+    }
+
     for (double val = min; val <= max; val += step)
     {
       m_ui->m_isolineslistWidget->addItem(QString::number(val));
@@ -297,12 +350,20 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
   std::string inDsetName = indsLayer->getDataSetName();
   std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
 
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-  if (outputdataset.empty())
+  // Checking consistency of output paramenters
+  if (m_ui->m_repositoryLineEdit->text().isEmpty())
   {
-    QMessageBox::information(this, tr("Create Isolines"), tr("The selected output datasource is empty!"));
+    QMessageBox::information(this, tr("Create Isolines"), tr("Select a repository for the resulting layer."));
     return;
   }
+
+  if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Create Isolines"), tr("Define a name for the resulting layer."));
+    return;
+  }
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
   std::map<std::string, std::string> outdsinfo;
   boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
@@ -321,10 +382,24 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
     outdsinfo["URI"] = uri.string();
   }
 
+  this->setCursor(Qt::WaitCursor);
+
   std::vector<double> val;
+  std::vector<double> guideval;
+  double step = m_ui->m_steplineEdit->text().toDouble();
+  double gLineValue = m_ui->m_isolineslistWidget->item(0)->text().toDouble() + step * 5;
+
   for (int i = 0; i < m_ui->m_isolineslistWidget->count(); i++)
   {
     val.push_back(m_ui->m_isolineslistWidget->item(i)->text().toDouble());
+    if (m_ui->m_guidelinescheckBox->isChecked())
+    {
+      if (val[i] == gLineValue)
+      {
+        guideval.push_back(gLineValue);
+        gLineValue += (step * 5);
+      }
+    }
   }
 
   if (m_inputType == GRID)
@@ -371,9 +446,12 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
     }
 
     Tin->setSRID(m_inputLayer->getSRID());
-    Tin->setParams(val, tol);
+    Tin->setParams(val, guideval, tol);
 
     bool result = Tin->run();
+
+    delete Tin;
+
     if (m_toFile)
     {
       // let's include the new datasource in the managers
@@ -404,6 +482,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
     m_outputLayer = converter(dt);
   }
 
+  this->setCursor(Qt::ArrowCursor);
   accept();
 
 }

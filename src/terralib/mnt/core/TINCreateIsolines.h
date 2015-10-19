@@ -43,7 +43,7 @@ namespace te
 
         void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
-        void setParams(std::vector<double> &val, double tol);
+        void setParams(std::vector<double> &val, std::vector<double> &gval, double tol);
 
         bool SaveIso();
 
@@ -57,6 +57,7 @@ namespace te
         std::string m_outDsetName;
 
         std::vector<double> m_values;
+        std::vector<double> m_guidevalues;
 
         std::vector<te::gm::LineString> m_isolist;
 
