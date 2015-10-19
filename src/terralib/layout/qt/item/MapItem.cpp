@@ -376,8 +376,8 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
     return;
   }
   
-  int numTilesX = (int)std::ceil(m_mapDisplay->getWidth() / m_tileSize);
-  int numTilesY = (int)std::ceil(m_mapDisplay->getHeight() / m_tileSize);
+  int numTilesX = (int)std::ceil(float (m_mapDisplay->getWidth() / m_tileSize));
+  int numTilesY = (int)std::ceil(float (m_mapDisplay->getHeight() / m_tileSize));
 
   int tileWidth = (int) std::ceil(float (m_mapDisplay->getWidth() / (double)numTilesX));
   int tileHeight = (int) std::ceil(float (m_mapDisplay->getHeight() / (double)numTilesY));
