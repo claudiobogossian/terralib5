@@ -35,11 +35,13 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
 
 // TerraLib
+#include "../core/ItemUtils.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/AbstractScene.h"
 #include "../../core/property/Property.h"
 #include "../../core/pattern/singleton/Context.h"
+
 
 //Qt
 #include <QPainter>
@@ -478,23 +480,21 @@ namespace te
         return;
       }
 
+      ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+      QPainterPath textObject = itemUtils->textToVector(text.c_str(), painter->font(), myScene->getContext().getDpiX(), point, rotate);
+
+      QPen pen;
+      pen.setWidthF(0);
+
+      QBrush brush = painter->brush();
+      brush.setStyle(Qt::SolidPattern);
+
+
       painter->save();
-      
-      QTransform transform;
 
-      if (rotate != 0)
-      {
-        transform.translate(point.x(), point.y());
-        transform.rotate(rotate);
-        transform.translate(-point.x(), -point.y());
-      }
-
-      transform.translate(0., 2. * point.y());
-      transform.scale(1., -1.);
-
-      painter->setTransform(transform, true);
-
-      painter->drawText(point, text.c_str());
+      painter->setPen(pen);
+      painter->setRenderHint(QPainter::Antialiasing, true);
+      painter->fillPath(textObject, brush);
 
       painter->restore();
     }

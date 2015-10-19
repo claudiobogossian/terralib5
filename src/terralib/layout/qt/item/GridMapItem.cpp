@@ -35,7 +35,6 @@ te::layout::GridMapItem::GridMapItem(AbstractItemController* controller, bool in
   : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
   , m_maxWidthTextMM(0)
   , m_maxHeigthTextMM(0)
-  , m_onePointMM(0.3527777778)
   , m_changeSize(false)
   , m_showDebugDrawings(false)
   , m_defaultRotate(90)
@@ -466,6 +465,17 @@ void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF
     return;
   }
 
+  if (scene() == 0)
+  {
+    return;
+  }
+
+  AbstractScene* myScene = dynamic_cast<AbstractScene*>(scene());
+  if (myScene == 0)
+  {
+    return;
+  }
+
   GridSettingsConfigProperties settingsConfig;
 
   const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
@@ -477,10 +487,7 @@ void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF
   ItemUtils* itemUtils = Context::getInstance().getItemUtils();
 
  //creates the rect
-  QRectF rectF = itemUtils->getMinimumTextBoundary(fontFamily, textPointSize, text);
-
-//puts the rect in the correct position
-  rectF.moveTo(point);
+  QPainterPath textObject = itemUtils->textToVector(text.c_str(), painter->font(), myScene->getContext().getDpiX(), point, rotate);
 
 //draws the rect
   painter->save();
@@ -491,16 +498,7 @@ void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF
   painter->setPen(pen);
   painter->setBrush(Qt::NoBrush);
 
-  if (rotate != 0)
-  {
-    QTransform trf = painter->transform();
-    trf.translate(point.x(), point.y());
-    trf.rotate(rotate);
-    trf.translate(-point.x(), -point.y());
-    painter->setTransform(trf);
-  }
-
-  painter->drawRect(rectF);
+  painter->drawRect(textObject.boundingRect());
 
   painter->restore();
 }
