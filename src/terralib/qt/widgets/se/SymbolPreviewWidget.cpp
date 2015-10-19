@@ -76,3 +76,11 @@ void te::qt::widgets::SymbolPreviewWidget::updatePreview(te::se::Symbolizer* sym
 {
   m_previewLabel->setPixmap(te::qt::widgets::SymbologyPreview::build(symbolizer, m_size));
 }
+
+void te::qt::widgets::SymbolPreviewWidget::clear()
+{
+  QPixmap pix(m_size);
+  pix.fill(Qt::transparent);
+
+  m_previewLabel->setPixmap(pix);
+}

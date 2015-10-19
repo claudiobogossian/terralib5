@@ -109,6 +109,11 @@ namespace te
           */
           void updatePreview(te::se::Symbolizer* symbolizer);
 
+          /*!
+            \brief Clear the preview symbolizer.
+          */
+          void clear();
+
         private:
 
           QLabel* m_previewLabel;       //!< Qt element that will be used to visualize preview result.
