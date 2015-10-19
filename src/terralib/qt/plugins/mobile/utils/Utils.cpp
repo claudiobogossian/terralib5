@@ -35,6 +35,7 @@
 #include "../../../../gdal/Utils.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../../raster/Interpolator.h"
+#include "../../../../raster/RasterFactory.h"
 #include "../../../../rp/Functions.h"
 #include "../../../../rp/RasterHandler.h"
 #include "../core/form/Serializer.h"
@@ -126,11 +127,44 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
     {
       te::rp::RasterHandler outRasterHandler;
       te::rp::CreateNewGdalRaster(*(raster->getGrid()), bandsProperties, file.string(), outRasterHandler);
+      te::rst::Raster* outRaster (outRasterHandler.getRasterPtr());
+
+      //Adjusting the result data on the raster to be exported
+      size_t col = 0;
+      size_t row = 0;
+      size_t bandIdx = 0;
+
+      double value = 0;
+      const unsigned int inNRows = raster->getNumberOfRows();
+      const unsigned int inNCols = raster->getNumberOfColumns();
+
+      for (bandIdx = 0; bandIdx < bandsProperties.size(); ++bandIdx)
+      {
+        te::rst::Band& band = *raster->getBand(bandIdx);
+        const double noDataValue = band.getProperty()->m_noDataValue;
+
+        for (row = 0; row < inNRows; ++row)
+        {
+          for (col = 0; col < inNCols; ++col)
+          {
+            try
+            {
+              band.getValue(col, row, value);
+              outRaster->setValue(col, row, value, bandIdx);
+
+            }
+            catch (...)
+            {
+              continue;
+            }
+          }
+        }
+      }
 
       if (multiResLevel > 0)
-        outRasterHandler.getRasterPtr()->createMultiResolution(multiResLevel, te::rst::NearestNeighbor);
-
-      te::gdal::copyToGeopackage(outRasterHandler.getRasterPtr(), outFileName);
+        outRaster->createMultiResolution(multiResLevel, te::rst::NearestNeighbor);
+      
+      te::gdal::copyToGeopackage(outRaster, outFileName);
     }
      boost::filesystem::remove(file);
   }
