@@ -93,9 +93,6 @@ namespace te
           /*! \brief Updates the widget form based on internal stroke element. */
           void updateUi();
 
-          /*! \brief Updates the widget form element used to visualize the stroke color. */
-          void updateUiStrokeColor();
-
           QMap<int, QIcon> getDashIcons();
           QMap<int, QIcon> getJoinIcons();
           QMap<int, QIcon> getCapIcons();

@@ -79,9 +79,6 @@ namespace te
           /*! \brief Updates the widget form based on internal fill element. */
           void updateUi();
 
-          /*! \brief Updates the widget form element used to visualize the fill color. */
-          void updateUiFillColor();
-
         public slots:
 
           virtual void valueChanged(QtProperty* p, int value);
