@@ -104,7 +104,7 @@ std::string te::qt::plugins::terramobile::Write(te::qt::plugins::terramobile::Se
 
   boost::property_tree::json_parser::write_json(ss, sec);
 
-  return ss.str();
+    return "[" + ss.str() + "]";
 }
 
 te::qt::plugins::terramobile::Section* te::qt::plugins::terramobile::Read(std::string filePath)
@@ -133,7 +133,7 @@ std::string te::qt::plugins::terramobile::WriteStyle(const te::se::Style* style,
     writer->writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
     writer->writeAttribute("xsi:schemaLocation", "http://www.opengis.net/sld StyledLayerDescriptor.xsd");
 
-    writer->writeAttribute("version", "1.0");
+    writer->writeAttribute("version", style->getVersion());
 
     writer->writeStartElement("NamedLayer");
     writer->writeStartElement("UserStyle");

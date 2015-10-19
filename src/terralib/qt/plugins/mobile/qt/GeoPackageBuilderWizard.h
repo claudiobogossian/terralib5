@@ -70,6 +70,8 @@ namespace te
 
            void setExtent(const te::gm::Envelope& extent);
 
+           void setSRID(int srid = 0);
+
           protected:
 
             virtual bool validateCurrentPage();
@@ -86,6 +88,7 @@ namespace te
 
             std::list<te::map::AbstractLayerPtr> m_list;
             te::gm::Envelope m_extent;
+            int m_srid;
 
             std::auto_ptr<te::qt::plugins::terramobile::BuilderInputLayersWizardPage> m_inputLayersPage;
             std::auto_ptr<te::qt::plugins::terramobile::BuilderGatheringLayersWizardPage> m_gatheringLayersPage;

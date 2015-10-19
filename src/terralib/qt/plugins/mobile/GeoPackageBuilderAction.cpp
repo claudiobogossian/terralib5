@@ -53,15 +53,15 @@ void te::qt::plugins::terramobile::GeoPackageBuilderAction::onActionActivated(bo
   //get display extent
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
   const te::gm::Envelope extent = ba->getMapDisplay()->getExtent();
+  int srid = ba->getMapDisplay()->getSRID();
 
   //show interface
-  te::qt::plugins::terramobile::GeoPackageBuilderWizard dlg(ba);
+  te::qt::plugins::terramobile::GeoPackageBuilderWizard wiz(ba);
 
-  dlg.setLayerList(list);
-  dlg.setExtent(extent);
+  wiz.setLayerList(list);
+  wiz.setExtent(extent);
+  if (srid != 0)
+    wiz.setSRID(srid);
 
-  if(dlg.exec() == QDialog::Accepted)
-  {
-
-  }
+  wiz.exec();
 }

@@ -31,7 +31,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define DOUBLEFORMITEMTYPE "double"
 #define INTFORMITEMTYPE "integer"
 #define LABELFORMITEMTYPE "label"
-#define PICTUREFORMITEMTYPE "picture"
+#define PICTUREFORMITEMTYPE "pictures"
 #define STRINGCOMBOFORMITEMTYPE "stringcombo"
 #define STRINGFORMITEMTYPE "string"
 #define TIMEFORMITEMTYPE "time"

@@ -40,6 +40,9 @@
 // Qt
 #include <QMessageBox>
 
+//Boost
+#include <boost/lexical_cast.hpp>
+
 te::qt::plugins::terramobile::GeoPackageBuilderWizard::GeoPackageBuilderWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f)
 {
@@ -111,6 +114,11 @@ void te::qt::plugins::terramobile::GeoPackageBuilderWizard::setExtent(const te::
   m_extent = extent;
 }
 
+void te::qt::plugins::terramobile::GeoPackageBuilderWizard::setSRID(int srid)
+{
+  m_srid = srid;
+}
+
 bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::validateCurrentPage()
 {
   if (currentPage() == m_inputLayersPage.get())
@@ -171,12 +179,12 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   std::auto_ptr<te::da::DataSource> dsGPKG = te::qt::plugins::terramobile::createGeopackage(gpkgName);
 
-  std::list<te::map::AbstractLayerPtr> inputLayers = getInputLayers();
   std::list<te::map::AbstractLayerPtr> gatheringLayers = getGatheringLayers();
+  std::list<te::map::AbstractLayerPtr> inputLayers = getInputLayers();
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
 
-  for (it = inputLayers.begin(); it != inputLayers.end(); ++it)
+  for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
     if (m_outputPage->useVisibleArea())
       te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
@@ -184,8 +192,10 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
       te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, te::gm::Envelope());
   }
 
-  for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
+  for (it = inputLayers.begin(); it != inputLayers.end(); ++it)
   {
+    bool visible = (*it)->getVisibility();
+
     if (m_outputPage->useVisibleArea())
       te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
     else
@@ -199,9 +209,34 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   {
     std::string jsonStr = te::qt::plugins::terramobile::Write(itb->second);
 
-    std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form' )  values('" + itb->first + "', '" + jsonStr + "');";
+    std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form', 'tm_media_table' )  values('" + itb->first + "', '" + jsonStr + "', '" + "" + "');";
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++itb;
+  }
+
+  if (m_outputPage->useVisibleArea() && m_extent.isValid() && m_srid != 0)
+  {
+    //Settings
+    std::string sqlCreate1 = "CREATE TABLE IF NOT EXISTS tm_settings(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, key TEXT, value TEXT); ";
+
+    m_extent.transform(m_srid, 4326);
+
+    std::string minX, minY, maxX, maxY;
+    minX = boost::lexical_cast<std::string>(m_extent.getLowerLeftX());
+    minY = boost::lexical_cast<std::string>(m_extent.getLowerLeftY());
+    maxX = boost::lexical_cast<std::string>(m_extent.getUpperRightX());
+    maxY = boost::lexical_cast<std::string>(m_extent.getUpperRightY());
+
+    std::string insert1 = "INSERT INTO tm_settings ('key', 'value') values ('default_xmin', '" + minX + "');";
+    std::string insert2 = "INSERT INTO tm_settings ('key', 'value') values ('default_ymin', '" + minY + "');";
+    std::string insert3 = "INSERT INTO tm_settings ('key', 'value') values ('default_xmax', '" + maxX + "');";
+    std::string insert4 = "INSERT INTO tm_settings ('key', 'value') values ('default_ymax', '" + maxY + "');";
+
+    te::qt::plugins::terramobile::queryGPKG(sqlCreate1, dsGPKG.get());
+    te::qt::plugins::terramobile::queryGPKG(insert1, dsGPKG.get());
+    te::qt::plugins::terramobile::queryGPKG(insert2, dsGPKG.get());
+    te::qt::plugins::terramobile::queryGPKG(insert3, dsGPKG.get());
+    te::qt::plugins::terramobile::queryGPKG(insert4, dsGPKG.get());
   }
 
   return true;
