@@ -119,7 +119,6 @@ namespace te
 
         double                          m_maxWidthTextMM;
         double                          m_maxHeigthTextMM;
-        double                          m_onePointMM;
         bool                            m_changeSize;
 
         QList<QLineF>                   m_verticalLines;
@@ -129,6 +128,8 @@ namespace te
         std::map<std::string, QPointF>  m_bottomTexts;
         std::map<std::string, QPointF>  m_rightTexts;
         std::map<std::string, QPointF>  m_leftTexts;
+
+        std::vector<QPainterPath>       m_leftTexts1;
 
         te::gm::Envelope                m_boundingBox;
         int                             m_defaultRotate;

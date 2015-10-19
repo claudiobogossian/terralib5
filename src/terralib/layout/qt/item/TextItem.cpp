@@ -53,11 +53,19 @@ te::layout::TextItem::TextItem(AbstractItemController* controller)
   setAcceptHoverEvents(false);
   setCursor(Qt::ArrowCursor); // default cursor
 
+
+  double ptSizeInches = 1. / 72.; //The size of 1 point, in inches
+  double ptSizeMM = ptSizeInches * 25.4; //The size of 1 point, in millimeters
+
+  double correctionFactor = 72. / 96.;
+
+  ptSizeMM = ptSizeMM * correctionFactor;
+
   QTransform trans;
-  trans.scale(1, -1);
+  trans.scale(ptSizeMM, -ptSizeMM); //here we scale the item so the text size to be considered will be points and not millimeters
   trans.translate(0, -boundingRect().height());
 
-  this->setTransform(trans, true);
+  this->setTransform(trans);
 
   connect(document(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateGeometry(int, int, int)));
 }
