@@ -57,7 +57,7 @@ te::layout::TextItem::TextItem(AbstractItemController* controller)
   double ptSizeInches = 1. / 72.; //The size of 1 point, in inches
   double ptSizeMM = ptSizeInches * 25.4; //The size of 1 point, in millimeters
 
-  double correctionFactor = 72. / 95.849056603;
+  double correctionFactor = 72. / 96.;
 
   ptSizeMM = ptSizeMM * correctionFactor;
 
