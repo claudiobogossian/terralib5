@@ -40,7 +40,6 @@ namespace te
     typedef Matrix< SegmenterSegmentsBlock::SegmentIdDataType >
       SegmentsIdsMatrixT;
 
-
     /*!
       \brief Type for dissimilarity.
     */
@@ -51,7 +50,7 @@ namespace te
       \brief Abstract class for the segments merger.
     */        
     template< typename FeatureDataTypeT >
-    class TERPEXPORT SegmenterRegionGrowingMerger {
+    class SegmenterRegionGrowingMerger {
       public:
         virtual ~SegmenterRegionGrowingMerger()
         {
