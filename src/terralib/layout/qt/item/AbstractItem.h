@@ -160,9 +160,19 @@ namespace te
         virtual void drawSelection(QPainter* painter);
         
         /*!
-        \brief Draws the given text in the given localtion with rotation
+        \brief Draws the given text in the given location with rotation
         */
         virtual void drawText(const QPointF& point, QPainter* painter, const std::string& text, int rotate = 0);
+
+        /*!
+        \brief Draws the given image in the given location
+        */
+        virtual void drawImage(const QRectF& rect, QPainter* painter, const QImage& image);
+
+        /*!
+        \brief Draws the given pixmap in the given location
+        */
+        virtual void drawPixmap(const QRectF& rect, QPainter* painter, const QPixmap& pixmap);
 
         /*!
           \brief Reimplemented from QGraphicsItem to capture changes in the item
@@ -495,6 +505,36 @@ namespace te
       painter->setPen(pen);
       painter->setRenderHint(QPainter::Antialiasing, true);
       painter->fillPath(textObject, brush);
+
+      painter->restore();
+    }
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::drawImage(const QRectF& rect, QPainter* painter, const QImage& image)
+    {
+      painter->save();
+
+      QTransform transform;
+      transform.translate(0., rect.height());
+      transform.scale(1., -1.);
+            
+      painter->setTransform(transform, true);
+      painter->drawImage(rect, image, image.rect());
+
+      painter->restore();
+    }
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::drawPixmap(const QRectF& rect, QPainter* painter, const QPixmap& pixmap)
+    {
+      painter->save();
+
+      QTransform transform;
+      transform.translate(0., rect.height());
+      transform.scale(1., -1.);
+
+      painter->setTransform(transform, true);
+      painter->drawPixmap(rect, pixmap, pixmap.rect());
 
       painter->restore();
     }
