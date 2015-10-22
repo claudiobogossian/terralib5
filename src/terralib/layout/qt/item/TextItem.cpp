@@ -53,20 +53,6 @@ te::layout::TextItem::TextItem(AbstractItemController* controller)
   setAcceptHoverEvents(false);
   setCursor(Qt::ArrowCursor); // default cursor
 
-
-  double ptSizeInches = 1. / 72.; //The size of 1 point, in inches
-  double ptSizeMM = ptSizeInches * 25.4; //The size of 1 point, in millimeters
-
-  double correctionFactor = 72. / 96.;
-
-  ptSizeMM = ptSizeMM * correctionFactor;
-
-  QTransform trans;
-  trans.scale(ptSizeMM, -ptSizeMM); //here we scale the item so the text size to be considered will be points and not millimeters
-  trans.translate(0, -boundingRect().height());
-
-  this->setTransform(trans);
-
   connect(document(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateGeometry(int, int, int)));
 }
 
@@ -80,6 +66,32 @@ void te::layout::TextItem::drawItem( QPainter * painter, const QStyleOptionGraph
   //asks the item to paint itself
   QGraphicsTextItem::paint(painter, option, widget);
 }
+
+QVariant te::layout::TextItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant & value)
+{
+  if (change == QGraphicsItem::ItemSceneHasChanged)
+  {
+    Scene* myScene = dynamic_cast<Scene*>(this->scene());
+    if (myScene != 0)
+    {
+      //we first calculate the correction factor to be use in the case that the given DPI is not 72.
+      double correctionFactor = myScene->getContext().getDpiX() / 72.;
+
+      //as we are in a CS based in millimeters, we calculate the relation between the millimeters CS and the device CS
+      double ptSizeInches = 1. / 72.; //The size of 1 point, in inches
+      double ptSizeMM = ptSizeInches * 25.4; //The size of 1 point, in millimeters
+      double scale = ptSizeMM * (1. / correctionFactor); //for the calculation of the scale, we consider the pixel size in millimeters and the inverse of the correction factor
+
+      QTransform trans;
+      trans.scale(scale, -scale); //here we scale the item so the text size to be considered will be points and not millimeters
+      trans.translate(0, -boundingRect().height());
+
+      this->setTransform(trans);
+    }
+  }
+  return AbstractItem<QGraphicsTextItem>::itemChange(change, value);
+}
+
 
 void te::layout::TextItem::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
@@ -154,4 +166,3 @@ void te::layout::TextItem::updateGeometry(int position, int charsRemoved, int ch
     controller->textChanged();
   }
 }
-
