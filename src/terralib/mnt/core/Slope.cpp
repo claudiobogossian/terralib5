@@ -65,8 +65,8 @@ bool te::mnt::Slope::run()
   }
 
   //Create greater box 1/2 resolution
-  double rx1 = m_env.getLowerLeftX() - m_resx / 2.;
-  double ry2 = m_env.getUpperRightY() + m_resy / 2.;
+  double rx1 = m_env.getLowerLeftX();
+  double ry2 = m_env.getUpperRightY();
 
   int outputWidth = (int)ceil(m_env.getWidth() / m_resx);
   int outputHeight = (int)ceil(m_env.getHeight() / m_resy);
@@ -103,7 +103,7 @@ bool te::mnt::Slope::run()
     {
       // Find Triangle Box
       NodesId(i, nodesid);
-      if (!DefineInterLinesColuns(nodesid, flin, llin, fcol, lcol))
+      if (!DefineInterLinesColumns(nodesid, flin, llin, fcol, lcol))
         continue;
 
       //Special cases
@@ -117,12 +117,12 @@ bool te::mnt::Slope::run()
         (m_node[nodesid[2]].getY() - m_node[nodesid[0]].getY());
 
       if (fabs(m1 - m2) < m_tol)
-        FillGridValue(m_rst, i, flin, llin, fcol, lcol, m_nodatavalue);
+        FillGridValue(i, flin, llin, fcol, lcol, m_nodatavalue);
       else
       {
         // Calculate gradient of triangle
         double decvalue = TriangleGradient(nodesid, m_gradtype, m_slopetype);
-        FillGridValue(m_rst, i, flin, llin, fcol, lcol, decvalue);
+        FillGridValue(i, flin, llin, fcol, lcol, decvalue);
       }
     }
   }
@@ -130,48 +130,6 @@ bool te::mnt::Slope::run()
   return true;
 }
 
-
-bool te::mnt::Slope::DefineInterLinesColuns(int32_t *nodesid, int32_t &flin, int32_t &llin, int32_t &fcol, int32_t &lcol)
-{
-  te::gm::PointZ p3da[3];
-  double rx1, ry2;
-
-  rx1 = m_env.getLowerLeftX() + m_resx / 2.;
-  ry2 = m_env.getUpperRightY() - m_resy / 2.;
-
-  double llx = std::numeric_limits<double>::max();
-  double lly = std::numeric_limits<double>::max();
-  double urx = -std::numeric_limits<double>::max();
-  double ury = -std::numeric_limits<double>::max();
-  for (int j = 0; j < 3; j++)
-  {
-    llx = std::min(m_node[nodesid[j]].getX(), llx);
-    lly = std::min(m_node[nodesid[j]].getY(), lly);
-    urx = std::max(m_node[nodesid[j]].getX(), urx);
-    ury = std::max(m_node[nodesid[j]].getY(), ury);
-  }
-
-  // Calculate lines and coluns intercepted
-  fcol = int32_t((llx - rx1) / m_resx);
-  lcol = int32_t((urx - rx1) / m_resx);
-  flin = int32_t((ry2 - ury) / m_resy);
-  llin = int32_t((ry2 - lly) / m_resy);
-
-  if ((m_rst->getNumberOfColumns() <= (unsigned)fcol) || (lcol < 0) ||
-    (m_rst->getNumberOfRows() <= (unsigned)flin) || (llin < 0))
-    return false;
-
-  if (fcol < 0)
-    fcol = 0;
-  if (flin < 0)
-    flin = 0;
-  if (m_rst->getNumberOfColumns() <= (unsigned)lcol)
-    lcol = m_rst->getNumberOfColumns() - 1;
-  if (m_rst->getNumberOfRows() <= (unsigned)llin)
-    llin = m_rst->getNumberOfRows() - 1;
-
-  return true;
-}
 
 double te::mnt::Slope::TriangleGradient(int32_t *nodesid, char gradtype, char slopetype)
 {

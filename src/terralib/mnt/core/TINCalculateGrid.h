@@ -64,8 +64,6 @@ namespace te
 
     protected:
 
-      bool DefineInterLinesColumns(int32_t *nodesid, int32_t &flin, int32_t &llin, int32_t &fcol, int32_t &lcol);
-
       bool FillGridLinear(int32_t triid, te::gm::PointZ *p3da, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol);
 
       /*!
@@ -86,10 +84,7 @@ namespace te
 
       std::map<std::string, std::string> m_dsinfo;
 
-      double m_resx, m_resy;
       Interpolator m_gridtype;
-
-      te::rst::Raster* m_rst;
     };
   }
 }

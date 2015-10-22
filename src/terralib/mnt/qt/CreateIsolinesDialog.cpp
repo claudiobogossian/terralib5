@@ -158,6 +158,22 @@ std::vector<double> GetNumericData(te::da::DataSet* dataSet, std::vector<std::st
   return result;
 }
 
+void te::mnt::CreateIsolinesDialog::getMinMax(te::map::AbstractLayerPtr inputLayer, double &vmin, double &vmax)
+{
+  std::auto_ptr<te::da::DataSet> dataquery;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(inputLayer->getDataSourceId());
+  vmin = std::numeric_limits<double>::max();
+  vmax = -vmin;
+  std::string qry("select min(val1), min(val2), min(val3), max(val1), max(val2), max(val3) from ");
+  qry += inputLayer->getTitle();
+  //qry += " where val1 is not NULL and val2 is not NULL and val3 is not NULL";
+  dataquery = ds->query(qry);
+  dataquery->moveFirst();
+  vmin = std::min(std::min(dataquery->getDouble(0), dataquery->getDouble(1)), dataquery->getDouble(2));
+  vmax = std::max(std::max(dataquery->getDouble(3), dataquery->getDouble(4)), dataquery->getDouble(5));
+  dataquery.release();
+}
+
 void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
 {
   m_inputLayer = 0;
@@ -173,14 +189,7 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
       if (dsType->hasGeom())
       {
         m_inputType = TIN;
-        std::vector<std::string> attrs;
-        attrs.push_back("val1");
-        attrs.push_back("val2");
-        attrs.push_back("val3");
-        std::vector<double> values = GetNumericData(inds.get(), attrs);
-        std::sort(values.begin(), values.end());
-        m_min = *values.begin();
-        m_max = values[values.size() - 1];
+        getMinMax(m_inputLayer, m_min, m_max);
       }
       if (dsType->hasRaster())
       {

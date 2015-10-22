@@ -41,17 +41,6 @@ namespace te
     private:
 
       /*!
-      \brief Method that calculates the lines and the columns intercepted by a triangle
-      \param grid is a pointer to a grid object that will be created
-      \param nodesid is a vector with nodes identification of the current triangle
-      \param flin and llin are the first and the last lines (rows) of the grid
-      \param fcol and lcol are the first and the last columns of the grid
-      \return true if the gradient grid is filled or false otherwise
-      */
-      bool DefineInterLinesColuns(int32_t *nodesid, int32_t &flin, int32_t &llin, int32_t &fcol, int32_t &lcol);
-
-
-      /*!
       \brief Method that calculates a gradient value (slope or aspect) in a given triangle
       \param nodesid is a pointer to the triangle node identifications
       \param gradtype is the type of gradient ('s' slope or 'a' aspect)
@@ -67,12 +56,9 @@ namespace te
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
 
       std::map<std::string, std::string> m_dsinfo;
-      double m_resx, m_resy;
       char m_gradtype, m_slopetype;
   
       mntType m_inputType;  //!< Input type (TIN, GRID)
-
-      te::rst::Raster* m_rst;
 
       double m_tol = 0.000001;
     };

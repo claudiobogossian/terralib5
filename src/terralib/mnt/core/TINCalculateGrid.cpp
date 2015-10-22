@@ -98,11 +98,11 @@ bool te::mnt::TINCalculateGrid::run()
       (p3da[1].getZ() == dummyvalue) ||
       (p3da[2].getZ() == dummyvalue))
     {
-       FillGridValue(m_rst, i, flin, llin, fcol, lcol, dummyvalue);
+       FillGridValue(i, flin, llin, fcol, lcol, dummyvalue);
     }
     else if ((p3da[0].getZ() == p3da[1].getZ()) &&
       (p3da[0].getZ() == p3da[2].getZ()) && (m_gridtype == Linear))
-      FillGridValue(m_rst, i, flin, llin, fcol, lcol, p3da[0].getZ());
+      FillGridValue(i, flin, llin, fcol, lcol, p3da[0].getZ());
     else if ((m_gridtype == Quintico) || (m_gridtype == QuinticoBrkLine))
     {
       NeighborsId(i, neighsid);
@@ -115,7 +115,7 @@ bool te::mnt::TINCalculateGrid::run()
          FillGridQuintic(i, p3da, flin, llin, fcol, lcol, coef);
       }
       else
-        FillGridValue(m_rst, i, flin, llin, fcol, lcol, m_nodatavalue);
+        FillGridValue(i, flin, llin, fcol, lcol, m_nodatavalue);
     }
     else
       FillGridLinear(i, p3da, flin, llin, fcol, lcol);
@@ -151,50 +151,6 @@ void te::mnt::TINCalculateGrid::setParams(double resx, double resy, Interpolator
   m_gridtype = gt;
 }
 
-
-/*!
-\brief Method that calculates the lines and the columns intercepted by a triangle
-\param grid is a pointer to a grid object that will be created
-\param nodesid is a vector with nodes identification of the current triangle
-\param flin and llin are the first and the last lines (rows) of the grid
-\param fcol and lcol are the first and the last columns of the grid
-\return TRUE if the gradient grid is filled or FALSE otherwise
-*/
-
-bool te::mnt::TINCalculateGrid::DefineInterLinesColumns(int32_t *nodesid, int32_t &flin, int32_t &llin, int32_t &fcol, int32_t &lcol)
-{
-  double rx1 = m_rst->getExtent()->getLowerLeftX();
-  double ry2 = m_rst->getExtent()->getUpperRightY();
-
-  te::gm::Point llpt(std::numeric_limits< float >::max(), std::numeric_limits< float >::max());
-  te::gm::Point urpt(-std::numeric_limits< float >::max(), -std::numeric_limits< float >::max());
-  for (size_t j = 0; j < 3; j++)
-  {
-    llpt = Min(llpt, m_node[nodesid[j]].getNPoint());
-    urpt = Max(urpt, m_node[nodesid[j]].getNPoint());
-  }
-
-  //  Calculate lines and coluns intercepted
-  fcol = (int32_t)((llpt.getX() - rx1) / m_resx);
-  lcol = (int32_t)((urpt.getX() - rx1) / m_resx);
-  flin = (int32_t)((ry2 - urpt.getY()) / m_resy);
-  llin = (int32_t)((ry2 - llpt.getY()) / m_resy);
-
-  if (((int32_t)m_rst->getNumberOfColumns() <= fcol) || (lcol < 0) ||
-    ((int32_t)m_rst->getNumberOfRows() <= flin) || (llin < 0))
-    return false;
-
-  if (fcol < 0)
-    fcol = 0;
-  if (flin < 0)
-    flin = 0;
-  if ((int32_t)m_rst->getNumberOfColumns() <= lcol)
-    lcol = m_rst->getNumberOfColumns() - 1;
-  if ((int32_t)m_rst->getNumberOfRows() <= llin)
-    llin = m_rst->getNumberOfRows() - 1;
-
-  return true;
-}
 
 
 

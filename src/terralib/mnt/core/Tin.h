@@ -561,7 +561,18 @@ namespace te
       */
       bool DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::gm::PointZ *p3d, double *coef);
 
-      bool FillGridValue(te::rst::Raster *rst, int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double zvalue);
+      bool FillGridValue(int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double zvalue);
+
+      /*!
+      \brief Method that calculates the lines and the columns intercepted by a triangle
+      \param grid is a pointer to a grid object that will be created
+      \param nodesid is a vector with nodes identification of the current triangle
+      \param flin and llin are the first and the last lines (rows) of the grid
+      \param fcol and lcol are the first and the last columns of the grid
+      \return TRUE if the gradient grid is filled or FALSE otherwise
+      */
+      bool DefineInterLinesColumns(int32_t *nodesid, int32_t &flin, int32_t &llin, int32_t &fcol, int32_t &lcol);
+
 
       int m_srid;                                  //!< Attribute with spatial reference information
 
@@ -592,6 +603,10 @@ namespace te
       double m_nodatavalue;
       double m_max;
       double m_min;
+
+      te::rst::Raster* m_rst;
+      double m_resx, m_resy;
+
     };
 
   } // end namespace mnt
