@@ -515,8 +515,9 @@ namespace te
       painter->save();
 
       QTransform transform;
-      transform.translate(0., rect.height());
+      transform.translate(0., rect.y() + rect.height());
       transform.scale(1., -1.);
+      transform.translate(0., -rect.y());
             
       painter->setTransform(transform, true);
       painter->drawImage(rect, image, image.rect());
@@ -530,8 +531,9 @@ namespace te
       painter->save();
 
       QTransform transform;
-      transform.translate(0., rect.height());
+      transform.translate(0., rect.y() + rect.height());
       transform.scale(1., -1.);
+      transform.translate(0., -rect.y());
 
       painter->setTransform(transform, true);
       painter->drawPixmap(rect, pixmap, pixmap.rect());

@@ -102,28 +102,22 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
 
 void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  if (m_mapDisplay->getWidth() > (unsigned int)m_tileSize || m_mapDisplay->getHeight() > (unsigned int)m_tileSize)
+  //due to problems in QT, which is generating lines between the tiles, we are temporarely disabling the tiles algorithm
+  /*if (m_mapDisplay->getWidth() > (unsigned int)m_tileSize || m_mapDisplay->getHeight() > (unsigned int)m_tileSize)
   {
     drawTilesMap(painter);
     return;
-  }
+  }*/
 
-  QPixmap pixmap(m_mapDisplay->width(), m_mapDisplay->height());
-  pixmap.fill(Qt::transparent);
 
-  QPainter localPainter(&pixmap);
+  QImage image(m_mapDisplay->width(), m_mapDisplay->height(), QImage::Format_ARGB32);
+  image.fill(Qt::transparent);
+
+  QPainter localPainter(&image);
   m_mapDisplay->render(&localPainter, QPoint(), QRegion(), QWidget::DrawChildren);
   localPainter.end();
 
-  QImage image = pixmap.toImage();
-  image = image.mirrored();
-  pixmap = QPixmap::fromImage(image);
-
-  painter->save();
-
-  painter->drawPixmap(this->getAdjustedBoundingRect(painter), pixmap, pixmap.rect());
-
-  painter->restore();
+  drawImage(this->getAdjustedBoundingRect(painter), painter, image);
 }
 
 QVariant te::layout::MapItem::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
@@ -375,9 +369,18 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
   {
     return;
   }
+
+  Scene* myScene = dynamic_cast<Scene*>(scene());
+  if (myScene == 0)
+  {
+    return;
+  }
+
+  const ContextObject& context = myScene->getContext();
+
   
-  int numTilesX = (int)std::ceil(m_mapDisplay->getWidth() / m_tileSize);
-  int numTilesY = (int)std::ceil(m_mapDisplay->getHeight() / m_tileSize);
+  int numTilesX = (int)std::ceil(m_mapDisplay->getWidth() / (double)m_tileSize);
+  int numTilesY = (int)std::ceil(m_mapDisplay->getHeight() / (double)m_tileSize);
 
   int tileWidth = std::ceil(m_mapDisplay->getWidth() / (double)numTilesX);
   int tileHeight = std::ceil(m_mapDisplay->getHeight() / (double)numTilesY);
@@ -427,8 +430,8 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
   painter->setClipRect(boundRect);
   
   //first draws all horizontally to each increment vertically
-
-  for (int j = 0; j < numTilesY; ++j) // row
+  //as the current CS orientation is botton-top, we must invert the order that the tiles are drawn
+  for (int j = numTilesY-1; j >= 0 ; --j) // row
   {
     for (int i = 0; i < numTilesX; ++i) // column
     { 
@@ -448,23 +451,21 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
       tileMapDisplay->setExtent(currentWorldBox, false);
       tileMapDisplay->resize(tileWidth, tileHeight); // resize to tile size
       
-      QPixmap pixmap(tileMapDisplay->width(), tileMapDisplay->height());
-      pixmap.fill(Qt::transparent);
+      QImage image(tileMapDisplay->width(), tileMapDisplay->height(), QImage::Format_ARGB32);
+      image.fill(Qt::transparent);
+      image.setDotsPerMeterX(context.getDpiX() / 25.4 * 1000);
+      image.setDotsPerMeterY(context.getDpiY() / 25.4 * 1000);
 
-      QPainter localPainter(&pixmap);
+      QPainter localPainter(&image);
       tileMapDisplay->render(&localPainter, QPoint(), QRegion(), QWidget::DrawChildren);
       localPainter.end();
-
-      QImage image = pixmap.toImage();
-      image = image.mirrored();
-      pixmap = QPixmap::fromImage(image);
 
       double baseBoundingX = i * boundingTileWidth;
       double baseBoundingY = j * boundingTileHeight;
       
       QRectF currentBoundingBox(baseBoundingX, baseBoundingY, boundingTileWidth, boundingTileHeight);
      
-      painter->drawPixmap(currentBoundingBox, pixmap, pixmap.rect());
+      drawImage(currentBoundingBox, painter, image);
 
       if (tileMapDisplay)
       {
@@ -476,5 +477,3 @@ void te::layout::MapItem::drawTilesMap(QPainter* painter)
 
   painter->restore();
 }
-
-
