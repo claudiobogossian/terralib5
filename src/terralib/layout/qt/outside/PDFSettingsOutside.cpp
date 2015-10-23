@@ -92,8 +92,7 @@ void te::layout::PDFSettingsOutside::onCancelPushButtonPressed()
 
 void te::layout::PDFSettingsOutside::onSaveAsClicked()
 {
-  QWidget* wg = (QWidget*)QApplication::desktop();
-  QString fileName = QFileDialog::getSaveFileName(wg, tr("Save Image File"), QDir::currentPath(), tr("PDF Files (*.pdf)"));
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image File"), QDir::currentPath(), tr("PDF Files (*.pdf)"));
 
   if (!fileName.isEmpty())
   {
