@@ -369,12 +369,19 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       Tin->setBreakLine(inDataSource, inDsetNamebreakline, inDataSource->getDataSetType(inDsetNamebreakline), m_breaktol);
     }
 
-    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-    if (outputdataset.empty())
+    // Checking consistency of output paramenters
+    if (m_ui->m_repositoryLineEdit->text().isEmpty())
     {
-      QMessageBox::information(this, tr("TIN Generation"), tr("The selected output datasource is empty."));
+      QMessageBox::information(this, tr("TIN Generation"), tr("Select a repository for the resulting layer."));
       return;
     }
+
+    if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+    {
+      QMessageBox::information(this, tr("TIN Generation"), tr("Define a name for the resulting layer."));
+      return;
+    }
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
     std::map<std::string, std::string> dsinfo;
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
@@ -421,24 +428,27 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       Tin->setOutput(aux, outputdataset);
     }
 
+    this->setCursor(Qt::WaitCursor);
+
     Tin->setSRID(srid);
 
-    te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid);
-    te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
-
-    if (unitin->getId() != te::common::UOM_Metre)
+    if (srid)
     {
-      convertPlanarToAngle(m_tol, unitout);
-      convertPlanarToAngle(m_distance, unitout);
-      convertPlanarToAngle(m_edgeSize, unitout);
+      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid);
+      te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+      if (unitin->getId() != te::common::UOM_Metre)
+      {
+        convertPlanarToAngle(m_tol, unitout);
+        convertPlanarToAngle(m_distance, unitout);
+        convertPlanarToAngle(m_edgeSize, unitout);
+      }
     }
 
     Tin->setParams(m_tol, m_distance, m_edgeSize, m_ui->m_isolinesZcomboBox->currentText().toStdString(), m_ui->m_samplesZcomboBox->currentText().toStdString());
 
     int method =  m_ui->m_typecomboBox->currentIndex();
     Tin->setMethod(method);
-
-    this->setCursor(Qt::WaitCursor);
 
     bool result = Tin->run();
 

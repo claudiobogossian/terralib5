@@ -43,15 +43,15 @@ void TsRasterVectorizer::tcRasterVectorizer()
 {
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = "D:\\TL5\\dados\\Areas_Risco.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/pattern1.tif";
   std::auto_ptr< te::rst::Raster > inrasterPtr( te::rst::RasterFactory::open(rinfo) );
 
   std::vector<te::gm::Geometry*> polygons;
   inrasterPtr->vectorize(polygons, 0);
 
- /* std::cout << "vectorizer created " << polygons.size() << " polygons" << std::endl;
+  std::cout << "vectorizer created " << polygons.size() << " polygons" << std::endl;
   for (unsigned int i = 0; i < polygons.size(); i++)
-    std::cout << "  polygon " << i << ": " << polygons[i]->toString() << std::endl;*/
+    std::cout << "  polygon " << i << ": " << polygons[i]->toString() << std::endl;
   
   // creating a dataset in memory
   
@@ -62,7 +62,7 @@ void TsRasterVectorizer::tcRasterVectorizer()
     
     te::gm::GeometryProperty* propPtr = new te::gm::GeometryProperty("polygon", 0, 
       te::gm::PolygonType, true);
-	propPtr->setSRID(TE_SRS_SAD69_UTM_ZONE_23S/* inrasterPtr->getSRID()*/);
+    propPtr->setSRID( inrasterPtr->getSRID() );
     dataSetTypePtr->add( propPtr );  
     
     memDataSetPtr.reset( new te::mem::DataSet( dataSetTypePtr.get()) );
@@ -83,11 +83,11 @@ void TsRasterVectorizer::tcRasterVectorizer()
     
     te::gm::GeometryProperty* propPtr = new te::gm::GeometryProperty("polygon", 0, 
       te::gm::PolygonType, true);
-	propPtr->setSRID(TE_SRS_SAD69_UTM_ZONE_23S/*inrasterPtr->getSRID()*/);
+    propPtr->setSRID( inrasterPtr->getSRID() );
     dataSetTypePtr->add( propPtr );  
     
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = "D:\\TL5\\dados\\Areas_Risco_POL";
+    connInfo["URI"] = "./RasterVectorizerTestPolygons";
     connInfo["DRIVER"] = "ESRI Shapefile";
     
     std::auto_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR") );

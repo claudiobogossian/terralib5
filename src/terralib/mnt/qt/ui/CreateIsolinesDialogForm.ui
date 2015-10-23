@@ -253,7 +253,11 @@
          </layout>
         </item>
         <item>
-         <widget class="QListWidget" name="m_isolineslistWidget"/>
+         <widget class="QListWidget" name="m_isolineslistWidget">
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

@@ -390,6 +390,7 @@ void GenerateIso()
   double tol = 2;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
 
   std::vector<double> val;
+  std::vector<double> gval;
   for (double n = 1010; n <= 1180; n += 10)
     val.push_back(n);
 
@@ -434,7 +435,7 @@ void GenerateIso()
   Tin->setInput(srcDs, inDsetName, inDsetType);
   Tin->setOutput(trgDs, outDS);
   Tin->setSRID(SRID);
-  Tin->setParams(val, tol);
+  Tin->setParams(val, gval, tol);
 
   bool result = Tin->run();
 

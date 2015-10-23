@@ -18,14 +18,15 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file terralib/mnt/qt/CreateIsolinesDialog.h
+\file terralib/mnt/qt/SlopeDialog.h
 
-\brief A dialog ISolines generation
+\brief A dialog Slope Grid generation
 */
-#ifndef __TERRALIB_MNT_INTERNAL_CREATEISOLINESDIALOG_H
-#define __TERRALIB_MNT_INTERNAL_CREATEISOLINESDIALOG_H
 
-//terralib
+#ifndef __TERRALIB_MNT_INTERNAL_SLOPEDIALOG_H
+#define __TERRALIB_MNT_INTERNAL_SLOPEDIALOG_H
+
+// Terralib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
@@ -34,41 +35,42 @@ TerraLib Team at <terralib-team@terralib.org>.
 // STL
 #include <list>
 #include <map>
-#include <memory>
 
 // Qt
 #include <QDialog>
 
-namespace Ui { class CreateIsolinesDialogForm; }
+namespace Ui { class SlopeDialogForm; }
 
 namespace te
 {
   namespace mnt
   {
-    class TEMNTEXPORT CreateIsolinesDialog : public QDialog
+    class TEMNTEXPORT SlopeDialog : public QDialog
     {
       Q_OBJECT
 
     public:
+      SlopeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-      CreateIsolinesDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+      ~SlopeDialog();
 
-      ~CreateIsolinesDialog();
-
+      /*!
+      \brief Set the layer that can be used
+      \param layers   List of AbstractLayerPtr
+      */
       void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
       te::map::AbstractLayerPtr getLayer();
 
-      void getMinMax(te::map::AbstractLayerPtr inputLayer, double &min, double &max);
-
       protected slots:
 
       void onInputComboBoxChanged(int index);
-      void onStepFixeEnabled(bool);
-      void on_stepVariableraEnabled(bool);
-      void oninsertpushButtonClicked();
-      void ondeletepushButtonClicked();
-      void ondeleteallpushButtonClicked();
+      void onSlopeToggled();
+      void onAspectToggled();
+      void onResXLineEditEditingFinished();
+      void onResYLineEditEditingFinished();
+      void onDimLLineEditEditingFinished();
+      void onDimCLineEditEditingFinished();
       void onTargetDatasourceToolButtonPressed();
       void onTargetFileToolButtonPressed();
       void onHelpPushButtonClicked();
@@ -77,7 +79,7 @@ namespace te
 
     private:
 
-      std::auto_ptr<Ui::CreateIsolinesDialogForm> m_ui;
+      std::auto_ptr<Ui::SlopeDialogForm> m_ui;
 
       te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
       std::string m_outputArchive;                                                      //!< Archive information.
@@ -86,12 +88,8 @@ namespace te
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
 
-      mntType m_inputType;  //!< Input type (TIN, GRID)
-      double m_min;
-      double m_max;
-
-    };
+    }; //class SlopeDialog
   } //mnt
 } //te
 
-#endif  //__TERRALIB_MNT_INTERNAL_CREATEISOLINESDIALOG_H
+#endif //__TERRALIB_MNT_INTERNAL_SLOPEDIALOG_H

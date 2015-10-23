@@ -97,7 +97,7 @@ bool te::mnt::TINGeneration::run()
   nsamples = ReadPoints(m_inDsetName_point, m_inDsrc_point, m_atrZ_point, m_tolerance, mpt, geostype, env);
   setEnvelope(env);
 
-  nsamples = ReadSamples(m_inDsetName_sample, m_inDsrc_sample, m_atrZ_sample, m_tolerance, m_maxdist, false, mptiso, isolines_simp, geostype, env);
+  nsamples += ReadSamples(m_inDsetName_sample, m_inDsrc_sample, m_atrZ_sample, m_tolerance, m_maxdist, false, mptiso, isolines_simp, geostype, env);
   setEnvelope(env);
 
 
@@ -145,28 +145,27 @@ bool te::mnt::TINGeneration::SaveTin()
 
 bool te::mnt::TINGeneration::CreateInitialTriangles(size_t nsamples)
 {
-
   m_nodesize = nsamples + 6;
   m_triangsize = 2 * (nsamples + 6) - 5;  // ntri = 2n-5
   m_linesize = (3 * (nsamples + 5));    // nlin = (n-1)*3
   m_ltriang = 0;
-  m_lnode = 0;
+  m_lnode = -1;
   m_lline = 0;
 
   size_t i;
-  for (i = 0; i < m_nodesize + 1; i++)
+  for (i = 0; i < m_nodesize; i++)
   {
     TinNode tn;
     m_node.push_back(tn);
   }
 
-  for (i = 0; i < m_triangsize + 1; i++)
+  for (i = 0; i < m_triangsize; i++)
   {
     TinTriang tt;
     m_triang.push_back(tt);
   }
 
-  for (i = 0; i < m_linesize + 1; i++)
+  for (i = 0; i < m_linesize; i++)
   {
     TinLine tl;
     m_line.push_back(tl);
@@ -192,7 +191,7 @@ bool te::mnt::TINGeneration::CreateInitialTriangles(size_t nsamples)
   int32_t node;
   for (i = 0; i < 4; i++)
   {
-    node = m_lnode++;
+    node = ++m_lnode;
     nodelist[i] = node;
     if (nodelist[i] >(int32_t)m_nodesize)
       return false;
@@ -248,7 +247,7 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
   for (size_t id = 0; id < mpt.getNumGeometries(); ++id)
   {
     te::gm::PointZ* pto3d = dynamic_cast<te::gm::PointZ*>(mpt.getGeometryN(id));
-    node = m_lnode++;
+    node = ++m_lnode;
     if (node > (int32_t) m_nodesize)
       return false;
     m_node[node].Init(*pto3d, Sample);
@@ -260,18 +259,20 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
 
   double PRECISAO = 0.000001;
 
-  for (unsigned int id = 0; id < mls.getNumGeometries(); ++id)
+  size_t mlsize = mls.getNumGeometries();
+  for (unsigned int id = 0; id < mlsize; ++id)
   {
     te::gm::LineString* gout = dynamic_cast<te::gm::LineString*>(mls.getGeometryN(id));
     double *zvalue = gout->getZ();
     nflag = true;
 
-    for (std::size_t j = 0; j < gout->getNPoints(); ++j)
+    size_t gnp = gout->getNPoints();
+    for (size_t j = 0; j < gnp; ++j)
     {
       te::gm::Point *p = gout->getPointN(j);
       te::gm::PointZ pz(p->getX(), p->getY(), p->getZ());
       // Test if new point is equal to inserted
-      for (i = 0; i < m_lnode; i++)
+      for (i = 0; i <m_lnode; i++)
       {
         if (Equal(m_node[i].getNPoint(), pz, PRECISAO))
           break;
@@ -280,7 +281,7 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
         continue;
 
       // for each point, create and insert node
-      node = m_lnode++;
+      node = ++m_lnode;
       if (node > (int32_t)m_nodesize)
         return false;
 
@@ -564,7 +565,7 @@ bool te::mnt::TINGeneration::DeleteNode(int32_t node)
   {
     nidaux = NextNode(node);
 
-    if (nidaux == m_lnode - 1)
+    if (nidaux == m_lnode)
       break;
 
     if (m_node[nidaux].getType() == Breaklinenormal)
@@ -585,7 +586,7 @@ bool te::mnt::TINGeneration::DeleteNode(int32_t node)
   {
     nidaux = NextNode(node);
 
-    if (nidaux == m_lnode - 1)
+    if (nidaux == m_lnode)
     {
       m_node[nidaux].setType(Breaklinefirst);
       break;
@@ -1331,7 +1332,7 @@ bool te::mnt::TINGeneration::ModifyBoundTriangles()
   short  i, j, modified;
 
   i = 0;
-  for (nid = 1; nid < m_lnode; nid++)
+  for (nid = 1; nid < m_node.size(); nid++)
   {
     if (m_node[nid].getType() != Box &&
       m_node[nid].getType() != Deletednode &&
@@ -1457,7 +1458,7 @@ bool te::mnt::TINGeneration::TestIsolines()
   }
 
   modified = false;
-  for (nid0 = 1; nid0 < m_lnode; nid0++)
+  for (nid0 = 0; nid0 < m_lnode; nid0++)
   {
     if ((m_node[nid0].getType() == Deletednode) ||
       (m_node[nid0].getType() > First))
@@ -1636,7 +1637,7 @@ bool te::mnt::TINGeneration::TestIsolines()
   for (size_t ii = 0; ii < p3dl.size(); ii++)
   {
     ptaux = p3dl[ii];
-    node = m_lnode++;
+    node = ++m_lnode;
     if (node > m_nodesize)
       return false;
 
@@ -2368,7 +2369,7 @@ bool te::mnt::TINGeneration::OrderLines()
   short j;
 
   // To all breakline nodes
-  for (i = m_fbnode; i < m_lnode - 1; i++)
+  for (i = m_fbnode; i < m_node.size() - 1; i++)
   {
     if ((m_node[i].getType() > Breaklinefirst) ||
       (m_node[i].getType() == Deletednode))
@@ -2666,7 +2667,7 @@ bool te::mnt::TINGeneration::RegeneratewithNewPoints(std::vector<te::gm::PointZ>
         return false;
       continue;
     }
-    node = m_lnode++;
+    node = ++m_lnode;
     if (node > m_nodesize)
       return false;
     m_node[node].setNPoint(p3d);

@@ -32,6 +32,7 @@
 #include "../../af/Utils.h"
 #include "CreateIsolinesAction.h"
 #include "MNTGenerationAction.h"
+#include "SlopeAction.h"
 #include "TINGenerationAction.h"
 #include "Plugin.h"
 
@@ -153,6 +154,10 @@ void te::qt::plugins::mnt::Plugin::registerActions()
   m_ISOGeneration = new te::qt::plugins::mnt::CreateIsolinesAction(m_mntMenu);
   connect(m_ISOGeneration, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_ISOGeneration->getAction());
+
+  m_Slope = new te::qt::plugins::mnt::SlopeAction(m_mntMenu);
+  connect(m_Slope, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Slope->getAction());
 }
 
 void  te::qt::plugins::mnt::Plugin::unRegisterActions()
@@ -160,6 +165,7 @@ void  te::qt::plugins::mnt::Plugin::unRegisterActions()
   delete m_TINGeneration;
   delete m_MNTGeneration;
   delete m_ISOGeneration;
+  delete m_Slope;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::mnt::Plugin)

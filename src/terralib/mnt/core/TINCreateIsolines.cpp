@@ -87,9 +87,10 @@ void te::mnt::TINCreateIsolines::setOutput(te::da::DataSourcePtr outDsrc, std::s
 
 }
 
-void te::mnt::TINCreateIsolines::setParams(std::vector<double> &val, double tol)
+void te::mnt::TINCreateIsolines::setParams(std::vector<double> &val, std::vector<double> &gval,  double tol)
 {
   m_values = val;
+  m_guidevalues = gval;
   m_tol = tol;
 }
 
@@ -101,10 +102,12 @@ bool te::mnt::TINCreateIsolines::SaveIso()
   te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("ID", te::dt::INT32_TYPE);
   prop0->setAutoNumber(true);
   te::dt::SimpleProperty* prop1 = new te::dt::SimpleProperty("Z", te::dt::DOUBLE_TYPE);
-  te::gm::GeometryProperty* prop2 = new te::gm::GeometryProperty("iso", 0, te::gm::LineStringType, true);
+  te::dt::SimpleProperty* prop11 = new te::dt::SimpleProperty("type", te::dt::STRING_TYPE);
+  te::gm::GeometryProperty* prop2 = new te::gm::GeometryProperty("iso", 0, te::gm::LineStringZType, true);
   prop2->setSRID(m_srid);
   dt->add(prop0);
   dt->add(prop1);
+  dt->add(prop11);
   dt->add(prop2);
 
   te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
@@ -119,8 +122,13 @@ bool te::mnt::TINCreateIsolines::SaveIso()
     te::gm::LineString gout = m_isolist[Idx];
     double *zvalue = gout.getZ();
     dataSetItem->setInt32("ID", id++);
-    if (zvalue)
+    if (zvalue){
       dataSetItem->setDouble("Z", zvalue[0]);
+      if (std::find(m_guidevalues.begin(), m_guidevalues.end(), zvalue[0]) != m_guidevalues.end())
+        dataSetItem->setString("type","GUIDELINE");
+      else
+        dataSetItem->setString("type","NORMAL");
+    }
     dataSetItem->setGeometry("iso", (te::gm::Geometry*)gout.clone());
 
     ds->add(dataSetItem);

@@ -12,6 +12,7 @@
 #include "../../geometry/Point.h"
 
 #include <cmath>
+#include <iostream>
 #include <limits>
 #include <stdint.h>
 
@@ -87,13 +88,13 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
   inDset = inDsrc->getDataSet(inDsetName);
 
-  const std::size_t np = inDset->getNumProperties();
+  const std::size_t npr = inDset->getNumProperties();
   const std::size_t ng = inDset->size();
 
   //Read attributes
   std::vector<std::string>pnames;
   std::vector<int> ptypes;
-  for (std::size_t i = 0; i != np; ++i)
+  for (std::size_t i = 0; i != npr; ++i)
   {
     pnames.push_back(inDset->getPropertyName(i));
     ptypes.push_back(inDset->getPropertyDataType(i));
@@ -103,7 +104,7 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
   inDset->moveBeforeFirst();
   std::size_t pos = 0;
-  double value;
+  double value = std::numeric_limits<double>::max();
 
   while (inDset->moveNext())
   {
@@ -707,36 +708,36 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
   std::vector<te::gm::PointZ>::iterator it, itf, itn;
   short borda; // borda = 1 no boundary reached, 2 one boundary reached.
 
-  std::ofstream ofs("d:\\teste\\Extract.txt", std::ofstream::out | std::ofstream::app);
-  ofs.precision(8);
+  //std::ofstream ofs("d:\\teste\\Extract.txt", std::ofstream::out | std::ofstream::app);
+  //ofs.precision(8);
 
   initLineVector(pline, velin);
   borda = 1;
-  ofs << "velin.size " << velin.size() << std::endl;
-  for (size_t vv = 0; vv < velin.size(); vv++)
-    ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+  //ofs << "velin.size " << velin.size() << std::endl;
+  //for (size_t vv = 0; vv < velin.size(); vv++)
+  //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
 
   //index pindex to the current point of old line
   it = itf = pline.begin();
   itn = ++it;
   te::gm::PointZ ptf(*itf);
   te::gm::PointZ ptn(*itn);
-  ofs << "pline.size " << pline.size() << std::endl;
+  //ofs << "pline.size " << pline.size() << std::endl;
   while (it != pline.end())
   {
     ptf = *itf;
     ptn = *itn;
     pt = velin[velin.size()-1];
-    ofs << "ptf " << ptf.getX() << " " << ptf.getY() << " ptn " << ptn.getX() << " " << ptn.getY() << " pt " << pt.getX() << " " << pt.getY() << std::endl;
+    //ofs << "ptf " << ptf.getX() << " " << ptf.getY() << " ptn " << ptn.getX() << " " << ptn.getY() << " pt " << pt.getX() << " " << pt.getY() << std::endl;
     if (equalFptSpt(ptf, pt, scale))
     {// conection on ptf
       velin.push_back(ptn);
       --it;
       it = itf = pline.erase(it);
       itn = pline.erase(it);
-      ofs << "velin.size " << velin.size() << std::endl;
-      for (size_t vv = 0; vv < velin.size(); vv++)
-        ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+      //ofs << "velin.size " << velin.size() << std::endl;
+      //for (size_t vv = 0; vv < velin.size(); vv++)
+      //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
     }
     else if (equalFptSpt(ptn, pt, scale))
     {// conection on ptn
@@ -744,9 +745,9 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
       --it;
       it = itf = pline.erase(it);
       itn = pline.erase(it);
-      ofs << "velin.size " << velin.size() << std::endl;
-      for (size_t vv = 0; vv < velin.size(); vv++)
-        ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+      //ofs << "velin.size " << velin.size() << std::endl;
+      //for (size_t vv = 0; vv < velin.size(); vv++)
+      //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
     }
     else
     {
@@ -759,17 +760,17 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
         {// If first point is on boundary -> open contour
           assembLine(clinlist, velin);
           initLineVector(pline, velin); //SSL0296
-          ofs << "velin.size " << velin.size() << std::endl;
-          for (size_t vv = 0; vv < velin.size(); vv++)
-            ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+          //ofs << "velin.size " << velin.size() << std::endl;
+          //for (size_t vv = 0; vv < velin.size(); vv++)
+          //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
           borda = 1;
         }
         else
         {// If not on boundary, invert line points
           std::reverse(velin.begin(), velin.end());
-          ofs << " Reverse velin.size " << velin.size() << std::endl;
-          for (size_t vv = 0; vv < velin.size(); vv++)
-            ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
+          //ofs << " Reverse velin.size " << velin.size() << std::endl;
+          //for (size_t vv = 0; vv < velin.size(); vv++)
+          //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
           borda = 2;
         }
         it = itf = pline.begin();
@@ -794,7 +795,7 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
   }
 
   assembLine(clinlist, velin);
-  ofs.close();
+  //ofs.close();
 
   return true;
 }
@@ -1032,104 +1033,121 @@ bool te::mnt::point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<b
   npts = 0;
   nptsmax = 0;
 
-  double vectd[200];
-  double vectz[200];
-  double vectx[200];
-  double vecty[200];
-  double fvectz[200];
-  short ptype[200];
-  te::gm::PointZ p3dlaux[200];
-
-  npts = 0;
-  for (size_t pp = 0; pp < p3dl.size(); pp++)
+  try
   {
-    p3d = p3dl[pp];
-    if ((p3d.getX() >= std::numeric_limits< float >::max()) || (npts > 199))
+    double *vectd = new double[200];
+    double *vectz = new double[200];
+    double *vectx = new double[200];
+    double *vecty = new double[200];
+    double *fvectz = new double[200];
+    short *ptype = new short[200];
+    te::gm::PointZ* p3dlaux = new te::gm::PointZ[200];
+
+    npts = 0;
+    for (size_t pp = 0; pp < p3dl.size(); pp++)
     {
-      // If last point of a line
-      maxdiff = std::numeric_limits< float >::max();
-      maxfixptdiff = std::numeric_limits< float >::max();
-      j = 4;
-      while ((maxdiff > tol) && (maxfixptdiff > tol) &&
-        (j > 3) && (npts > 3))
+      p3d = p3dl[pp];
+      if ((p3d.getX() >= std::numeric_limits< float >::max()) || (npts > 199))
       {
-        j = 0;
-        for (i = 0; i < npts; i++)
+        // If last point of a line
+        maxdiff = std::numeric_limits< float >::max();
+        maxfixptdiff = std::numeric_limits< float >::max();
+        j = 4;
+        while ((maxdiff > tol) && (maxfixptdiff > tol) &&
+          (j > 3) && (npts > 3))
         {
-          if (ptype[i] == 0)
-            continue;
-          vectx[j] = vectd[i];
-          vecty[j++] = vectz[i];
-        }
-        if (j < 3)
-          break;
-        if (j < 5)
-          degree = 1;
-        else if (j < 8)
-          degree = 2; //6 is minimum npts for 3rd degree
-        else
-          degree = 3;	//8 is minimum npts for 3rd degree
-        Least_square_fitting(vectx, vecty, (short)j, degree, coef);
-        for (i = 0; i < npts; i++)
-        {
-          fvectz[i] = coef[0];
-          for (j = 1; j <= degree; j++)
-            fvectz[i] += coef[j] * pow(vectd[i], (double)j);
-        }
-        maxfixptdiff = 0.;
-        for (i = 0; i < npts; i++)
-        {
-          if ((ptype[i] == 0) || (ptype[i] == 1))
-            continue;
-          if (fabs(fvectz[i] - vectz[i]) > maxfixptdiff)
-            maxfixptdiff = (float)fabs(fvectz[i] - vectz[i]);
-        }
-        maxdiff = 0.;
-        for (i = 0; i < npts; i++)
-        {
-          if ((ptype[i] == 0) || (ptype[i] == 2))
-            continue;
-          if (fabs(fvectz[i] - vectz[i]) > maxdiff)
+          j = 0;
+          for (i = 0; i < npts; i++)
           {
-            maxdiff = (float)fabs(fvectz[i] - vectz[i]);
-            maxdiffindex = i;
+            if (ptype[i] == 0)
+              continue;
+            vectx[j] = vectd[i];
+            vecty[j++] = vectz[i];
           }
+          if (j < 3)
+            break;
+          if (j < 5)
+            degree = 1;
+          else if (j < 8)
+            degree = 2; //6 is minimum npts for 3rd degree
+          else
+            degree = 3;	//8 is minimum npts for 3rd degree
+          Least_square_fitting(vectx, vecty, (short)j, degree, coef);
+          for (i = 0; i < npts; i++)
+          {
+            fvectz[i] = coef[0];
+            for (j = 1; j <= degree; j++)
+              fvectz[i] += coef[j] * pow(vectd[i], (double)j);
+          }
+          maxfixptdiff = 0.;
+          for (i = 0; i < npts; i++)
+          {
+            if ((ptype[i] == 0) || (ptype[i] == 1))
+              continue;
+            if (fabs(fvectz[i] - vectz[i]) > maxfixptdiff)
+              maxfixptdiff = (float)fabs(fvectz[i] - vectz[i]);
+          }
+          maxdiff = 0.;
+          for (i = 0; i < npts; i++)
+          {
+            if ((ptype[i] == 0) || (ptype[i] == 2))
+              continue;
+            if (fabs(fvectz[i] - vectz[i]) > maxdiff)
+            {
+              maxdiff = (float)fabs(fvectz[i] - vectz[i]);
+              maxdiffindex = i;
+            }
+          }
+          if (i == 0)
+            break;
+          ptype[maxdiffindex] = 0;
         }
-        if (i == 0)
-          break;
-        ptype[maxdiffindex] = 0;
+
+        for (i = 0; i < npts; i++)
+        {
+          p3d = p3dlaux[i];
+          p3d.setZ(fvectz[i]);
+          z0 = p3d.getZ();
+        }
+        npts = 0;
+        continue;
+      }
+      if (npts == 0)
+      {
+        x0 = p3d.getX();
+        y0 = p3d.getY();
       }
 
-      for (i = 0; i < npts; i++)
-      {
-        p3d = p3dlaux[i];
-        p3d.setZ(fvectz[i]);
-        z0 = p3d.getZ();
-      }
-      npts = 0;
-      continue;
-    }
-    if (npts == 0)
-    {
+      p3dlaux[npts] = p3d;
+      vectd[npts] = sqrt((p3d.getX() - x0)*(p3d.getX() - x0) +
+        (p3d.getY() - y0)*(p3d.getY() - y0));
+      if (npts > 0)
+        vectd[npts] += vectd[npts - 1];
+      if (p3d.getZ() < std::numeric_limits< float >::max())
+        ptype[npts] = 1;
+      else
+        ptype[npts] = 0;
+      if (!fixed[pp])
+        ptype[npts] = 2;
+      vectz[npts] = p3d.getZ();
+      fvectz[npts++] = p3d.getZ();
       x0 = p3d.getX();
       y0 = p3d.getY();
     }
 
-    p3dlaux[npts] = p3d;
-    vectd[npts] = sqrt((p3d.getX() - x0)*(p3d.getX() - x0) +
-      (p3d.getY() - y0)*(p3d.getY() - y0));
-    if (npts > 0)
-      vectd[npts] += vectd[npts - 1];
-    if (p3d.getZ() < std::numeric_limits< float >::max())
-      ptype[npts] = 1;
-    else
-      ptype[npts] = 0;
-    if (!fixed[pp])
-      ptype[npts] = 2;
-    vectz[npts] = p3d.getZ();
-    fvectz[npts++] = p3d.getZ();
-    x0 = p3d.getX();
-    y0 = p3d.getY();
+    delete[] vectd;
+    delete[] vectz;
+    delete[] vectx;
+    delete[] vecty;
+    delete[] fvectz;
+    delete[] ptype;
+    delete[] p3dlaux;
+
+  }
+  catch (std::bad_alloc& ba)
+  {
+    std::cerr << "bad_alloc caught: " << ba.what() << '\n';
+    return false;
   }
 
   return true;
@@ -1148,12 +1166,24 @@ bool te::mnt::Least_square_fitting(double *vectx, double *vecty, short np, short
 {
   short  i, j, m, n;
   double matx[6][6];
-  double powx[200],
-    sumpow[200],
-    fx[200];
+  double *powx,
+    *sumpow,
+    *fx;
 
   if (np > 200)
     return false;
+
+  try
+  {
+    powx = new double[np];
+    sumpow = new double[200];
+    fx = new double[np];
+  }
+  catch (std::bad_alloc& ba)
+  {
+    std::cerr << "bad_alloc caught: " << ba.what() << '\n';
+    return false;
+  }
 
   // initialization 
   for (i = 0; i<np; i++)
@@ -1201,6 +1231,10 @@ bool te::mnt::Least_square_fitting(double *vectx, double *vecty, short np, short
   // perform Gaussian elimination
   m = deg + 1;
   n = 1;
+
+  delete[] powx;
+  delete[] sumpow;
+  delete[] fx;
 
   if (!Gauss_elimination(m, n, matx))
   {

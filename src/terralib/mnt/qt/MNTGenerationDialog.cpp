@@ -410,13 +410,21 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
     std::string inDsetName = indsLayer->getDataSetName();
     srid = indsLayer->getSRID();
 
-    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-    if (outputdataset.empty())
+
+    // Checking consistency of output paramenters
+    if (m_ui->m_repositoryLineEdit->text().isEmpty())
     {
-      QMessageBox::information(this, tr("DTM Generation"), tr("The selected output datasource is empty."));
+      QMessageBox::information(this, tr("DTM Generation"), tr("Select a repository for the resulting layer."));
       return;
     }
 
+    if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+    {
+      QMessageBox::information(this, tr("DTM Generation"), tr("Define a name for the resulting layer."));
+      return;
+    }
+
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
     if (boost::filesystem::exists(uri))
@@ -433,6 +441,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
     double radius = m_ui->m_radiusLineEdit->text().toDouble();
     int pow = m_ui->m_powerComboBox->currentText().toInt();
+
+    this->setCursor(Qt::WaitCursor);
 
     switch (m_inputType)
     {

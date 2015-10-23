@@ -1101,10 +1101,6 @@ std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inrast
     te::rst::BandProperty* bandProp = new te::rst::BandProperty(colorbands[bandIdx], te::dt::UCHAR_TYPE);
     te::rst::Band& inBand = *inraster->getBand(colorbands[bandIdx]);
     bandProp->m_colorInterp = inBand.getProperty()->m_colorInterp;
-    bandProp->m_blkh = inBand.getProperty()->m_blkh;
-    bandProp->m_blkw = inBand.getProperty()->m_blkw;
-    bandProp->m_nblocksx = inBand.getProperty()->m_nblocksx;
-    bandProp->m_nblocksy = inBand.getProperty()->m_nblocksy;
     bandsProperties.push_back(bandProp);
   }
 

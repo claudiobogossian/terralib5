@@ -412,7 +412,6 @@ namespace te
     template<class T> te::rst::PolygonIterator<T>::PolygonIterator()
       : AbstractPositionIterator<T>(),
         m_polygon(0),
-        m_intersections(0),
         m_currline(0),
         m_column(-1),
         m_row(-1),
@@ -430,8 +429,13 @@ namespace te
     template<class T> te::rst::PolygonIterator<T>::PolygonIterator(const te::rst::Raster* r, const te::gm::Polygon* p)
       : AbstractPositionIterator<T>(r),
         m_polygon(p),
-        m_intersections(0),
+        m_currline(0),
         m_column(0),
+        m_row(-1),
+        m_startingcolumn(0),
+        m_endingcolumn(0),
+        m_startingrow(0),
+        m_endingrow(0),
         m_maxcolumns(r->getNumberOfColumns()),
         m_maxrows(r->getNumberOfRows()),
         m_actualintersection(-1),
@@ -481,7 +485,19 @@ namespace te
     }
 
     template<class T> te::rst::PolygonIterator<T>::PolygonIterator(const PolygonIterator<T>& rhs)
-      : AbstractPositionIterator<T>(rhs)
+      : AbstractPositionIterator<T>(rhs),
+        m_polygon(0),
+        m_currline(0),
+        m_column(-1),
+        m_row(-1),
+        m_startingcolumn(0),
+        m_endingcolumn(0),
+        m_startingrow(0),
+        m_endingrow(0),
+        m_maxcolumns(0),
+        m_maxrows(0),
+        m_actualintersection(-1),
+        m_nintersections(0)      
     {
       operator=( rhs );
     }
