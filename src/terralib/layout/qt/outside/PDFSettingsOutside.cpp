@@ -114,7 +114,14 @@ void te::layout::PDFSettingsOutside::onCurrentIndexChanged(const QString & text)
     palette.setBrush(QPalette::Active, QPalette::WindowText, brushRed);
 
     m_ui->lblDPIInformation->clear();
-    m_ui->lblDPIInformation->setText("The DPI chosen is too high. Can cause very large files.");
+    if (dpi < 900)
+    {
+      m_ui->lblDPIInformation->setText("The DPI chosen is high. Can cause very large files.");
+    }
+    else
+    {
+      m_ui->lblDPIInformation->setText("The DPI chosen is too high. Can cause very large files.");
+    }
   }
   else
   {
