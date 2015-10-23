@@ -151,7 +151,7 @@ int main(int argc, char** argv)
   }
   catch(const std::exception& e)
   {
-    QMessageBox::warning(0, "test", e.what());
+    QMessageBox::warning(0, "TerraView", e.what());
     return EXIT_FAILURE;
   }
   catch(...)

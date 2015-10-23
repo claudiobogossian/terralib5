@@ -59,6 +59,8 @@ namespace te
 
       te::map::AbstractLayerPtr getLayer();
 
+      void getMinMax(te::map::AbstractLayerPtr inputLayer, double &min, double &max);
+
       protected slots:
 
       void onInputComboBoxChanged(int index);

@@ -22,6 +22,9 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 
+#include "../../raster/Grid.h"
+#include "../../raster/Utils.h"
+
 #include "../../sam.h"
 
 #include <limits>
@@ -1698,7 +1701,7 @@ bool te::mnt::Tin::NodeFirstDeriv()
   }
 
   // To each node
-  for (i = 0; i < m_lnode; i++)
+  for (i = 0; i < m_node.size(); i++)
   {
     // Special cases
     if (m_node[i].getZ() >= m_nodatavalue)
@@ -1736,7 +1739,7 @@ bool te::mnt::Tin::NodeSecondDeriv()
     m_nsderiv[i].Init(0., 0., 0.);
   }
 
-  for (i = 0; i < m_lnode; i++)
+  for (i = 0; i < m_node.size(); i++)
   {
     // Special cases
     if (m_node[i].getZ() >= m_nodatavalue)
@@ -2075,7 +2078,7 @@ bool ::te::mnt::Tin::BreakNodeFirstDeriv()
   }
 
   // To each break node
-  for (i = m_fbnode ; i < m_lnode - 1; i++)
+  for (i = m_fbnode; i < m_node.size() - 1; i++)
   {
     // Special cases
     if ((m_node[i].getZ() >= m_nodatavalue) ||
@@ -2139,7 +2142,7 @@ bool te::mnt::Tin::BreakTriangleSecondDeriv()
     return false;
 
   // To each break node except first and last
-  for (i = m_fbnode; i < m_lnode - 1; i++)
+  for (i = m_fbnode; i < m_node.size() - 1; i++)
   {
     if (m_node[i].getZ() >- m_nodatavalue)
       continue;
@@ -2489,7 +2492,7 @@ bool te::mnt::Tin::BreakNodeSecondDeriv()
   }
 
   // To each break node
-  for (i = m_fbnode; i < m_lnode - 1; i++)
+  for (i = m_fbnode; i < m_node.size() - 1; i++)
   {
     // Special cases
     if ((m_node[i].getZ() >= m_nodatavalue) ||
@@ -3025,31 +3028,66 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
 
 /*!
 \brief Method that fills the grid locations, inside a triangle, with a zvalue
-\param grid is a pointer to a grid object
 \param triid is the triangle identification number
 \param flin and llin are the first and the last lines (rows) of the grid
 \param fcol and lcol are the first and the last columns of the grid
 \param zvalue is the z value to be stored in the grid inside the triangle region
-\return TRUE always
+\return true always
 */
-bool te::mnt::Tin::FillGridValue(te::rst::Raster *rst, int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double zvalue)
+bool te::mnt::Tin::FillGridValue(int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double zvalue)
 {
   int32_t  nlin, ncol;
-  double  rx1, ry2;
   te::gm::PointZ pg;
-
-  rx1 = rst->getExtent()->getLowerLeftX() + (rst->getResolutionX() / 2.);
-  ry2 = rst->getExtent()->getUpperRightY() - (rst->getResolutionY() / 2.);
+  te::gm::Coord2D cg;
 
   for (nlin = flin; nlin <= llin; nlin++){
     for (ncol = fcol; ncol <= lcol; ncol++){
-      pg.setX(rx1 + (float)ncol*rst->getResolutionX());
-      pg.setY(ry2 - (float)nlin*rst->getResolutionY());
+      cg = m_rst->getGrid()->gridToGeo(ncol, nlin);
+      pg.setX(cg.getX());
+      pg.setY(cg.getY());
       if (!(ContainsPoint(triid, pg)))
         continue;
-      rst->setValue(ncol, nlin, zvalue);
+      m_rst->setValue(ncol, nlin, zvalue);
     }
   }
   
   return true;
 }
+
+
+bool te::mnt::Tin::DefineInterLinesColumns(int32_t *nodesid, int32_t &flin, int32_t &llin, int32_t &fcol, int32_t &lcol)
+{
+  te::gm::Coord2D cg;
+
+  te::gm::Point llpt(std::numeric_limits< float >::max(), std::numeric_limits< float >::max());
+  te::gm::Point urpt(-std::numeric_limits< float >::max(), -std::numeric_limits< float >::max());
+  for (size_t j = 0; j < 3; j++)
+  {
+    llpt = Min(llpt, m_node[nodesid[j]].getNPoint());
+    urpt = Max(urpt, m_node[nodesid[j]].getNPoint());
+  }
+
+  //  Calculate lines and coluns intercepted
+  cg = m_rst->getGrid()->geoToGrid(llpt.getX(), llpt.getY());
+  fcol = te::rst::Round(cg.getX());
+  llin = te::rst::Round(cg.getY());
+  cg = m_rst->getGrid()->geoToGrid(urpt.getX(), urpt.getY());
+  lcol = te::rst::Round(cg.getX());
+  flin = te::rst::Round(cg.getY());
+
+  if (((int32_t)m_rst->getNumberOfColumns() <= fcol) || (lcol < 0) ||
+    ((int32_t)m_rst->getNumberOfRows() <= flin) || (llin < 0))
+    return false;
+
+  if (fcol < 0)
+    fcol = 0;
+  if (flin < 0)
+    flin = 0;
+  if ((int32_t)m_rst->getNumberOfColumns() <= lcol)
+    lcol = m_rst->getNumberOfColumns() - 1;
+  if ((int32_t)m_rst->getNumberOfRows() <= llin)
+    llin = m_rst->getNumberOfRows() - 1;
+
+  return true;
+}
+
