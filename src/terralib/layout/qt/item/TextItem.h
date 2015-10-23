@@ -81,6 +81,11 @@ namespace te
         virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
+        \brief Reimplemented from QGraphicsItem to capture changes in the item
+        */
+        virtual QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant & value);
+
+        /*!
           \brief Reimplemented from QGraphicsItem
         */
         virtual QRectF boundingRect() const;
