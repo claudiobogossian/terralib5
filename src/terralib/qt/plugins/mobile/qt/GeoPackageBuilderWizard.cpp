@@ -52,6 +52,7 @@ te::qt::plugins::terramobile::GeoPackageBuilderWizard::GeoPackageBuilderWizard(Q
   this->setWindowTitle(tr("GeoPackage Builder Wizard"));
 
   addPages();
+  m_extent.makeInvalid();
 }
 
 te::qt::plugins::terramobile::GeoPackageBuilderWizard::~GeoPackageBuilderWizard()
@@ -186,20 +187,12 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
-    if (m_outputPage->useVisibleArea())
-      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
-    else
-      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, te::gm::Envelope());
+    te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
   }
 
   for (it = inputLayers.begin(); it != inputLayers.end(); ++it)
   {
-    bool visible = (*it)->getVisibility();
-
-    if (m_outputPage->useVisibleArea())
-      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
-    else
-      te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, te::gm::Envelope());
+    te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
   }
 
   std::map<std::string, Section*>::iterator itb = sectionsMap.begin();
