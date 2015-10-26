@@ -1014,9 +1014,10 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
 
   char **papszOptions = NULL;
   papszOptions = CSLSetNameValue(papszOptions, "APPEND_SUBDATASET", "YES");
+  papszOptions = CSLSetNameValue(papszOptions, "TILING_SCHEME", "InspireCRS84Quad");
+  papszOptions = CSLSetNameValue(papszOptions, "ZOOM_LEVEL_STRATEGY", "LOWER");
 
   te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
-
   GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
 
   unsigned int levels = gdalRaster->getMultiResLevelsCount();

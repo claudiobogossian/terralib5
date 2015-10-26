@@ -307,8 +307,9 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   task.useTimer(true);
   
   std::string timeResult = "Aggregation - Start.";
+#ifdef TERRALIB_LOGGER_ENABLED
   te::common::Logger::logDebug("vp", timeResult.c_str());
-
+#endif
   itg = groups.begin();
   while(itg != groups.end())
   {
@@ -382,8 +383,9 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   }
 
   timeResult = "Aggregation - End.";
+#ifdef TERRALIB_LOGGER_ENABLED
   te::common::Logger::logDebug("vp", timeResult.c_str());
-
+#endif
   te::vp::Save(m_outDsrc.get(), outDataset.get(), outDsType.get());
   return true;
 }
