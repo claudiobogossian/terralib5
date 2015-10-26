@@ -179,6 +179,7 @@ int te::layout::PDFSettingsOutside::getDPI()
 void te::layout::PDFSettingsOutside::setCurrentDPI(int dpi)
 {
   QString txt = QString::number(dpi);
-  m_ui->cmbDPI->setCurrentText(txt);
+  int index = m_ui->cmbDPI->findText(txt);
+  m_ui->cmbDPI->setCurrentIndex(index);
 }
 
