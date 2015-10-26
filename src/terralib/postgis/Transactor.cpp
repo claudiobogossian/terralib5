@@ -1839,12 +1839,12 @@ void te::pgis::Transactor::update(const std::string& datasetName,
       if (j>0)
         id += " AND ";
 
-      id += dataset->getPropertyName(j) += "=";
+      id += dataset->getPropertyName(ids[j]) += "=";
 
-      if (dataset->getPropertyDataType(j) == te::dt::STRING_TYPE)
-        id += "\'" + dataset->getAsString(j) + "\'";
+      if (dataset->getPropertyDataType(ids[j]) == te::dt::STRING_TYPE)
+        id += "\'" + dataset->getAsString(ids[j]) + "\'";
       else
-        id += dataset->getAsString(j);
+        id += dataset->getAsString(ids[j]);
     }
 
     // create a prepared statement
