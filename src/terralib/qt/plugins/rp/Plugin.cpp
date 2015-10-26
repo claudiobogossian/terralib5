@@ -72,6 +72,10 @@
   #include "MosaicAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_RASTERIZATION
+  #include "RasterizationAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
   #include "SegmenterAction.h"
 #endif
@@ -222,6 +226,12 @@ void te::qt::plugins::rp::Plugin::registerActions()
   connect(m_mosaic, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_RASTERIZATION
+  m_raster = new te::qt::plugins::rp::RasterizationAction(m_rpMenu, m_rpPopupMenu);
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_raster->getAction());
+  connect(m_raster, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
   m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu, m_rpPopupMenu);
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_register->getAction());
@@ -281,6 +291,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
 
     #ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
     delete m_mosaic;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_RASTERIZATION
+    delete m_raster;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER

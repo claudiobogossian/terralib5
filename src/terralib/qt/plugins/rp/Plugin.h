@@ -59,6 +59,7 @@ namespace te
         class FusionAction;
         class MixtureModelAction;
         class MosaicAction;
+        class RasterizationAction;
         class SegmenterAction;
         class RegisterAction;
         class VectorizationAction;
@@ -112,8 +113,9 @@ namespace te
             te::qt::plugins::rp::MixtureModelAction* m_mixtureModel;  //!< Mixture Model Process Action
             te::qt::plugins::rp::MosaicAction* m_mosaic;              //!< Mosaic Process Action
             te::qt::plugins::rp::SegmenterAction* m_segmenter;        //!< Segmenter Process Action
+            te::qt::plugins::rp::RasterizationAction* m_raster;       //!< Rasterization Process Action
             te::qt::plugins::rp::RegisterAction* m_register;          //!< Register Process Action
-            te::qt::plugins::rp::VectorizationAction* m_vector;          //!< Vectorization Process Action
+            te::qt::plugins::rp::VectorizationAction* m_vector;       //!< Vectorization Process Action
         };
 
       } // end namespace rp
