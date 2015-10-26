@@ -81,6 +81,8 @@ void te::da::Module::finalize()
   ConnectionPoolManager::getInstance().stop();
 #endif
 
+  AttributeConverterManager::getInstance().clear();
+
   TE_LOG_TRACE(TE_TR("TerraLib Data Access module finalized!"));
 }
 

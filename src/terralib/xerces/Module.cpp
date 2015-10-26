@@ -104,7 +104,7 @@ void te::xerces::Module::shutdown()
 
   TE_LOG_TRACE(TE_TR("TerraLib Xerces driver shutdown!"));
   
-  m_initialized = true;
+  m_initialized = false;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::xerces::Module)

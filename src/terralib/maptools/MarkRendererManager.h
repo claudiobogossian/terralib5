@@ -109,6 +109,12 @@ namespace te
         */
         void add(const std::string& key, AbstractMarkRenderer* renderer);
 
+        /*!
+        \brief It clears the marks renderers of the manager.
+
+        */
+        void clear();
+
      protected:
 
         /*! \brief It initializes the singleton instance of the mark renderer manager. */

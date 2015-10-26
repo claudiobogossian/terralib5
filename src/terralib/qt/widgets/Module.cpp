@@ -112,9 +112,20 @@ void te::qt::widgets::Module::initialize()
 
 void te::qt::widgets::Module::finalize()
 {
+
+#ifdef TERRALIB_MOD_DATAACCESS_ENABLED
+  // It initializes the property widgets factories
+  te::qt::widgets::DateTimePropertyWidgetFactory::finalize();
+  te::qt::widgets::GeometryPropertyWidgetFactory::finalize();
+  te::qt::widgets::NumericPropertyWidgetFactory::finalize();
+  te::qt::widgets::StringPropertyWidgetFactory::finalize();
+#endif
+
 #ifdef TERRALIB_MOD_MAPTOOLS_ENABLED
 // It finalizes the layer item factory
 //  AbstractTreeItemFactory::finalize();
+
+  te::map::MarkRendererManager::getInstance().clear();
 
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();

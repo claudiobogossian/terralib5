@@ -151,6 +151,11 @@ void te::edit::SnapManager::reg(const std::string& name, const SnapStrategyFnctT
   m_snapStrategies[name] = builder;
 }
 
+void te::edit::SnapManager::clearStrategies()
+{
+  m_snapStrategies.clear();
+}
+
 te::edit::SnapManager::SnapManager()
 {
 }
