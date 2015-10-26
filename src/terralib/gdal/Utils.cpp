@@ -1014,15 +1014,18 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
 
   char **papszOptions = NULL;
   papszOptions = CSLSetNameValue(papszOptions, "APPEND_SUBDATASET", "YES");
-  papszOptions = CSLSetNameValue(papszOptions, "TILING_SCHEME", "InspireCRS84Quad");
-  papszOptions = CSLSetNameValue(papszOptions, "ZOOM_LEVEL_STRATEGY", "LOWER");
 
   te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
-  GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
+  GDALDataset *poDstDS;
 
   unsigned int levels = gdalRaster->getMultiResLevelsCount();
   if (levels > 0)
   {
+    papszOptions = CSLSetNameValue(papszOptions, "TILING_SCHEME", "InspireCRS84Quad");
+    papszOptions = CSLSetNameValue(papszOptions, "ZOOM_LEVEL_STRATEGY", "LOWER");
+
+    poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
+
     boost::scoped_array< int > overviewsIndexes(new int[levels]);
     for (unsigned int overViewIdx = 1; overViewIdx <= levels; ++overViewIdx)
     {
@@ -1035,6 +1038,9 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
     }
     poDstDS->BuildOverviews("NEAREST", (int)levels, overviewsIndexes.get(), 0, NULL, NULL, NULL);
   }
+  else
+    poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
+
 
   CSLDestroy(papszOptions);
   GDALClose((GDALDatasetH)poDstDS);
