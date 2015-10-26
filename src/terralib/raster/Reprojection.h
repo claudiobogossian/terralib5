@@ -89,8 +89,8 @@ namespace te
       \param lly        Lower-left Y-coordinate of the portion to be reprojected (in the original SRS).
       \param urx        Upper-Right X-coordinate of the portion to be reprojected (in the original SRS).
       \param ury        Upper-Right Y-coordinate of the portion to be reprojected (in the original SRS).
-      \param resx       The output x resolution (in units of the target SRS).
-      \param resx       The output y resolution (in units of the target SRS).
+      \param resx       The output x resolution (in units of the target SRS - if resx=0 the number of columns will be kept the same).
+      \param resy       The output y resolution (in units of the target SRS - if resy=0 the number of rows will be kept the same).
       \param routinfo   The basic parameters necessary to create the reprojected raster.
       \param m          The method of interpolation to apply. \sa te::rst::Interpolator
 
