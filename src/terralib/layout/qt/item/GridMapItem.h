@@ -40,8 +40,9 @@ namespace te
   {
     class Observable;
     class AbstractItemController;
+
     /*!
-    \brief Class that represents a graphic GridMap. 
+      \brief Class that represents a graphic GridMap. 
         Its coordinate system is the same of scene (millimeters). 
         He is also the son of ItemObserver and AbstractItem, so it can become observer of a model (Observable). 
     
@@ -51,6 +52,10 @@ namespace te
     */
     class TELAYOUTEXPORT GridMapItem : public AbstractItem<QGraphicsItem>
     {
+      protected:
+        typedef std::pair<std::string, QPointF> TextPosition;
+
+
       public:
 
         /*!
@@ -115,6 +120,14 @@ namespace te
 
         virtual void debugDrawTextRect(QPainter* painter, const QPointF& point, const std::string& text, int rotate = 0);
 
+        virtual te::gm::Envelope calculateTop(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement);
+
+        virtual te::gm::Envelope calculateBottom(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement);
+
+        virtual te::gm::Envelope calculateRight(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement);
+
+        virtual te::gm::Envelope calculateLeft(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement);
+
       protected:
 
         double                          m_maxWidthTextMM;
@@ -124,12 +137,10 @@ namespace te
         QList<QLineF>                   m_verticalLines;
         QList<QLineF>                   m_horizontalLines;
 
-        std::map<std::string, QPointF>  m_topTexts;
-        std::map<std::string, QPointF>  m_bottomTexts;
-        std::map<std::string, QPointF>  m_rightTexts;
-        std::map<std::string, QPointF>  m_leftTexts;
-
-        std::vector<QPainterPath>       m_leftTexts1;
+        std::vector<TextPosition>       m_topTexts;
+        std::vector<TextPosition>       m_bottomTexts;
+        std::vector<TextPosition>       m_rightTexts;
+        std::vector<TextPosition>       m_leftTexts;
 
         te::gm::Envelope                m_boundingBox;
         int                             m_defaultRotate;
