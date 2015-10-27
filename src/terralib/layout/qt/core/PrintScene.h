@@ -95,8 +95,9 @@ namespace te
 
         virtual ContextObject createNewContext(QPrinter* printer);
 
-        QGraphicsScene* m_scene;
-        te::layout::PrinterScene m_printState;
+        QGraphicsScene*           m_scene;
+        te::layout::PrinterScene  m_printState;
+        int                       m_currentPdfDpi;
     };
   }
 }

@@ -67,7 +67,8 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_fontDialog(0),
   m_legendChoice(0),
   m_starItem(0),
-  m_svgItem(0)
+  m_svgItem(0),
+  m_pdfSettingsDialog(0)
 {
   init();
 }
@@ -301,6 +302,12 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_svgItem;
     m_svgItem = 0;
   } 
+
+  if (m_pdfSettingsDialog)
+  {
+    delete m_pdfSettingsDialog;
+    m_pdfSettingsDialog = 0;
+  }
 }
 
 void te::layout::EnumObjectType::init()
@@ -386,6 +393,8 @@ void te::layout::EnumObjectType::init()
   m_starItem = createEnum("Star_Item", this);
 
   m_svgItem = createEnum("SVG_Item", this);
+
+  m_pdfSettingsDialog = createEnum("PDF_Settings", this);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
@@ -594,5 +603,9 @@ te::layout::EnumType* te::layout::EnumObjectType::getSVGDialog() const
   return m_svgDialog;
 }
 
+te::layout::EnumType* te::layout::EnumObjectType::getPDFSettingsDialog() const
+{
+  return m_pdfSettingsDialog;
+}
 
 

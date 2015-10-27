@@ -599,6 +599,66 @@ QRectF te::layout::ItemUtils::getMinimumTextBoundary(const std::string& fontName
   return textBoundingRect;
 }
 
+QPainterPath te::layout::ItemUtils::textToVector(const QString& text, const QFont& font, double dpi, const QPointF& referencePoint, double rotationAngle)
+{
+  //we first calculate the correction factor to be use in the case that the given DPI is not 72.
+  double correctionFactor = dpi / 72.;
+  
+  //as we are in a CS based in millimeters, we calculate the relation between the millimeters CS and the device CS
+  double ptSizeInches = 1. / 72.; //The size of 1 point, in inches
+  double ptSizeMM = ptSizeInches * 25.4; //The size of 1 point, in millimeters
+  double scale = ptSizeMM * (1. / correctionFactor); //for the calculation of the scale, we consider the pixel size in millimeters and the inverse of the correction factor
+
+  //Now we vectorize the text by addind it to a painter path
+
+  QFont fontCopy(font);
+  if (font.pixelSize() > 0)
+  {
+    fontCopy.setPixelSize(font.pixelSize() * correctionFactor);
+  }
+  if (font.pointSize() > 0)
+  {
+    fontCopy.setPointSize(font.pointSize());
+  }
+  if (font.pointSizeF() > 0)
+  {
+    fontCopy.setPointSizeF(font.pointSizeF());
+  }
+
+  QPainterPath painterPath;
+  painterPath.addText(0, 0, font, text);
+
+  //Then we apply the [optional] rotation
+  if(rotationAngle != 0)
+  {
+    double textWidth = painterPath.boundingRect().width();
+    double textHeight = painterPath.boundingRect().height();
+
+    QTransform transform;
+    transform.rotate(-rotationAngle);
+
+    painterPath = transform.map(painterPath);
+    //painterPath.moveTo(0., 0.);
+    painterPath.translate(-painterPath.boundingRect().x(), -painterPath.boundingRect().y());
+  }
+
+  
+
+  //and scale, so the vectorized text size can be compatible to the device
+  QTransform transform;
+  transform.scale(scale, -scale); //here we scale the item so the text size to be considered will be points and not millimeters
+
+  //after the transformation is set, we apply it to the painter path
+  painterPath = transform.map(painterPath);
+  painterPath.translate(-painterPath.boundingRect().x(), -painterPath.boundingRect().y());
+ 
+  //we [optionally] translate the painter path to the given reference coordinate
+  painterPath.translate(referencePoint);
+
+  //and return it
+  return painterPath;
+}
+
 void te::layout::ItemUtils::changeViewMode( EnumType* mode )
 {
   AbstractScene* abScene = Context::getInstance().getScene();
@@ -653,34 +713,9 @@ te::layout::AbstractItemView* te::layout::ItemUtils::getSelectedItem()
 
 void te::layout::ItemUtils::ConfigurePainterForTexts(QPainter* painter, const std::string& fontFamily, int fontSize)
 {
-  AbstractScene* abScene = Context::getInstance().getScene();
-  if(abScene == 0)
-  {
-    return;
-  }
-
-  Scene* myScene = dynamic_cast<Scene*>(abScene);
-  if(myScene == 0)
-  {
-    return;
-  }
-
-  Utils* utils = Context::getInstance().getUtils();
-  if(utils == 0)
-  {
-    return;
-  }
-
-  const ContextObject& context = myScene->getContext();
-  double correctionFactorY = context.getDpiY() / 72.;
-  double pixelInMM = 1. / context.getDpiY() * 25.4;
-
   QFont fontCopy = painter->font();
   fontCopy.setFamily(fontFamily.c_str());
-  fontCopy.setPixelSize(fontSize * correctionFactorY * pixelInMM);
+  fontCopy.setPointSize(fontSize);
 
   painter->setFont(fontCopy);
 }
-
-
-

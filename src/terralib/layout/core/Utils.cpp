@@ -353,10 +353,13 @@ std::string te::layout::Utils::convertDecimalToDegree( const double& value, bool
 {
   std::string    degreeValue;
   double      dbValue;
+  double      degree;
   double      sec;
   double      min;
 
-  dbValue = std::fabs(180.* value/(4.*atan(1.)));
+  degree = (int)value;
+  dbValue = value - degree;
+
   min = std::fabs((dbValue-(int)dbValue)*60.);
   sec = std::fabs(std::fabs((min-int(min))*60.));
   
@@ -376,7 +379,7 @@ std::string te::layout::Utils::convertDecimalToDegree( const double& value, bool
   char n = (char)-80;
 
   if(bDegrees)
-    degreeValue = convertNumberToString(std::floor(dbValue), 0);
+    degreeValue = convertNumberToString(std::floor(degree), 0);
   if(bMinutes)
     degreeValue += n + convertNumberToString(std::floor(min), 0);
   if(bSeconds)
