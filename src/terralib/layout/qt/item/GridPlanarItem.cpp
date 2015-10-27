@@ -137,6 +137,16 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
   Utils* utils = Context::getInstance().getUtils();
   ItemUtils* itemUtils = Context::getInstance().getItemUtils();
 
+  int dpi = 72.;
+  if (scene() != 0)
+  {
+    AbstractScene* myScene = dynamic_cast<AbstractScene*>(scene());
+    if (myScene != 0)
+    {
+      dpi = myScene->getContext().getDpiX();
+    }
+  }
+  
   // Draw a horizontal line and the y coordinate change(vertical)
 
   WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
@@ -165,75 +175,13 @@ void te::layout::GridPlanarItem::calculateVertical( const te::gm::Envelope& geoB
     double number = y1 / (double)unit;
     QString convert = QString::number(number, 'f', 0);
 
-    QRectF rectF = itemUtils->getMinimumTextBoundary(fontFamily, textPointSize, convert.toStdString());
+    QPainterPath textObject = itemUtils->textToVector(convert, ft, dpi, QPointF(), 0);
+
+    QRectF rectF(textObject.boundingRect());
 
     calculateLeft(line, rectF, convert, bLeftRotate, verticalDisplacement);
     calculateRight(line, rectF, convert, bRightRotate, verticalDisplacement);
   }
-}
-
-te::gm::Envelope te::layout::GridPlanarItem::calculateRight(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement)
-{
-  double rightWtxt = textBoundingRect.width();
-  double rightHtxt = textBoundingRect.height();
-
-  double urx = line.p2().x();
-  double y = line.p2().y();
-
-  double yReference = y - textBoundingRect.y() - (textBoundingRect.height() / 2.);
-
-  if (rotate)
-  {
-    rightWtxt = textBoundingRect.height();
-    rightHtxt = textBoundingRect.width();
-    urx += rightWtxt;
-  }
-
-  // text right
-  QPointF ptRight(urx + verticalDisplacement, yReference);
-  m_rightTexts[text.toStdString()] = ptRight;
-
-  if (rotate)
-  {
-    ptRight.setX(ptRight.x() - rightWtxt);
-  }
-
-  te::gm::Envelope rightTextBox(ptRight.x(), ptRight.y(), ptRight.x() + rightWtxt, ptRight.y() + rightHtxt);
-  m_boundingBox.Union(rightTextBox);
-
-  return rightTextBox;
-}
-
-te::gm::Envelope te::layout::GridPlanarItem::calculateLeft(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement)
-{
-  double leftWtxt = textBoundingRect.width();
-  double leftHtxt = textBoundingRect.height();
-
-  double llx = line.p1().x();
-  double y = line.p1().y();
-
-  double yReference = y - textBoundingRect.y() - (textBoundingRect.height() / 2.);
-
-  if (rotate)
-  {
-    leftWtxt = textBoundingRect.height();
-    leftHtxt = textBoundingRect.width();
-    llx += leftWtxt;
-  }
-
-  // text left
-  QPointF ptLeft(llx - leftWtxt - verticalDisplacement, yReference);
-  m_leftTexts[text.toStdString()] = ptLeft;
-
-  if (rotate)
-  {
-    ptLeft.setX(ptLeft.x() - leftWtxt);
-  }
-
-  te::gm::Envelope leftTextBox(ptLeft.x(), ptLeft.y(), ptLeft.x() + leftWtxt, ptLeft.y() + leftHtxt);
-  m_boundingBox.Union(leftTextBox);
-
-  return leftTextBox;
 }
 
 void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM )
@@ -258,6 +206,16 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
 
   Utils* utils = Context::getInstance().getUtils();
   ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+
+  int dpi = 72.;
+  if (scene() != 0)
+  {
+    AbstractScene* myScene = dynamic_cast<AbstractScene*>(scene());
+    if (myScene != 0)
+    {
+      dpi = myScene->getContext().getDpiX();
+    }
+  }
 
   // Draw a vertical line and the x coordinate change(horizontal)
 
@@ -298,66 +256,12 @@ void te::layout::GridPlanarItem::calculateHorizontal( const te::gm::Envelope& ge
     double number = x1 / (double)unit;
     QString convert = QString::number(number, 'f', 0);
 
-    QRectF rectF = itemUtils->getMinimumTextBoundary(fontFamily, textPointSize, convert.toStdString());
+    QPainterPath textObject = itemUtils->textToVector(convert, ft, dpi, QPointF(), 0);
+    QRectF rectF(textObject.boundingRect());
     
     calculateTop(line, rectF, convert, bTopRotate, horizontalDisplacement);
     calculateBottom(line, rectF, convert, bBottomRotate, horizontalDisplacement);
   }
-}
-
-te::gm::Envelope te::layout::GridPlanarItem::calculateTop(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement)
-{
-  double topWtxt = textBoundingRect.width();
-  double toptHtxt = textBoundingRect.height();
-
-  double x = line.p2().x();
-  double ury = line.p2().y();
-
-  if (rotate)
-  {
-    topWtxt = textBoundingRect.height();
-    toptHtxt = textBoundingRect.width();
-    x += topWtxt / 2.;
-  }
-  
-  // text top
-  QPointF ptTop(x - (topWtxt / 2.), ury + horizontalDisplacement);
-  m_topTexts[text.toStdString()] = ptTop;
-
-  if (rotate)
-  {
-    ury += toptHtxt;
-  }
-
-  te::gm::Envelope topTextBox(ptTop.x(), ptTop.y(), ptTop.x() + topWtxt, ptTop.y() + toptHtxt);
-  m_boundingBox.Union(topTextBox);
-
-  return topTextBox;
-}
-
-te::gm::Envelope te::layout::GridPlanarItem::calculateBottom(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement)
-{
-  double bottomWtxt = textBoundingRect.width();
-  double bottomHtxt = textBoundingRect.height();
-
-  double x = line.p1().x();
-  double lly = line.p1().y();
-
-  if (rotate)
-  {
-    bottomWtxt = textBoundingRect.height();
-    bottomHtxt = textBoundingRect.width();
-    x += bottomWtxt / 2.;
-  }
-
-  // text bottom
-  QPointF ptBottom(x - (bottomWtxt / 2.), lly - bottomHtxt - horizontalDisplacement);
-  m_bottomTexts[text.toStdString()] = ptBottom;
-
-  te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y(), ptBottom.x() + bottomWtxt, ptBottom.y() + bottomHtxt);
-  m_boundingBox.Union(bottomTextBox);
-
-  return bottomTextBox;
 }
 
 double te::layout::GridPlanarItem::initVerticalLines( const te::gm::Envelope& geoBox )
