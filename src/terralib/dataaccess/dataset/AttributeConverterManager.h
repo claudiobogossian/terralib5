@@ -54,6 +54,8 @@ namespace te
 
           void getConverters(std::vector<std::string>& names) const;
 
+          void clear();
+
         private:
 
           std::map<std::string, AttributeConverter> m_converters;

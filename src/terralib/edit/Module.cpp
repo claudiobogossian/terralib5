@@ -58,5 +58,7 @@ void te::edit::Module::initialize()
 
 void te::edit::Module::finalize()
 {
+  SnapManager::getInstance().clearStrategies();
+
   TE_LOG_TRACE(TE_TR("TerraLib Edit module Finalized!"));
 }

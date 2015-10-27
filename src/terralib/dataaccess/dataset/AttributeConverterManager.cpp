@@ -63,3 +63,8 @@ void te::da::AttributeConverterManager::getConverters(std::vector<std::string>& 
     ++it;
   }
 }
+
+void te::da::AttributeConverterManager::clear()
+{
+  m_converters.clear();
+}

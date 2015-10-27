@@ -3040,8 +3040,10 @@ bool te::mnt::Tin::FillGridValue(int32_t triid, int32_t flin, int32_t llin, int3
   te::gm::PointZ pg;
   te::gm::Coord2D cg;
 
-  for (nlin = flin; nlin <= llin; nlin++){
-    for (ncol = fcol; ncol <= lcol; ncol++){
+  for (nlin = flin; nlin <= llin; nlin++)
+  {
+    for (ncol = fcol; ncol <= lcol; ncol++)
+    {
       cg = m_rst->getGrid()->gridToGeo(ncol, nlin);
       pg.setX(cg.getX());
       pg.setY(cg.getY());

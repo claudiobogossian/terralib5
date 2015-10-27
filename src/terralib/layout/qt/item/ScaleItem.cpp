@@ -149,6 +149,7 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
     painter->setPen(QPen(textColor));
     QPointF coordText(x1, newBoxSecond.topLeft().y() - 5);
 
+    painter->setBrush(QBrush(textColor));
     drawText(coordText, painter, ss_value.str());
 
     changeColor = firstRect;
@@ -169,6 +170,7 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   painter->setPen(QPen(textColor));
     
   QPointF coordText(centerX, boundRect.topLeft().y() + 1);
+  painter->setBrush(QBrush(textColor));
   drawText(coordText, painter, strUnit);
 
   painter->restore();
@@ -254,6 +256,7 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
     painter->setPen(pn);
     QPointF coordText(x1, newBoxSecond.topLeft().y() - 5);
 
+    painter->setBrush(QBrush(textColor));
     drawText(coordText, painter, ss_value.str());
 
     changeColor = firstRect;
@@ -274,6 +277,7 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   painter->setPen(QPen(textColor));
   
   QPointF coordText(centerX, boundRect.topLeft().y() + 1);
+  painter->setBrush(QBrush(textColor));
   drawText(coordText, painter, strUnit);
 
   painter->restore();
@@ -364,6 +368,7 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
     painter->setPen(QPen(textColor));
     QPointF coordText(x1, newBoxSecond.topLeft().y() - 5);
 
+    painter->setBrush(QBrush(textColor));
     drawText(coordText, painter, ss_value.str());
 
     changeColor = firstRect;
@@ -383,6 +388,7 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   painter->setPen(QPen(textColor));
 
   QPointF coordText(centerX, boundRect.topLeft().y() + 1);
+  painter->setBrush(QBrush(textColor));
   drawText(coordText, painter, strUnit);
 
   painter->restore();

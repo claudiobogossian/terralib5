@@ -35,13 +35,10 @@ te::layout::GridMapItem::GridMapItem(AbstractItemController* controller, bool in
   : AbstractItem<QGraphicsItem>(controller, invertedMatrix)
   , m_maxWidthTextMM(0)
   , m_maxHeigthTextMM(0)
-  , m_onePointMM(0.3527777778)
   , m_changeSize(false)
   , m_showDebugDrawings(false)
   , m_defaultRotate(90)
 {  
-  //The text size or length that exceeds the sides will be cut
-  setFlag(QGraphicsItem::ItemClipsToShape);
 }
 
 te::layout::GridMapItem::~GridMapItem()
@@ -252,7 +249,7 @@ void te::layout::GridMapItem::drawTopTexts( QPainter* painter )
     iRotate = m_defaultRotate;
   }
 
-  std::map<std::string, QPointF>::iterator it = m_topTexts.begin();
+  std::vector<TextPosition>::iterator it = m_topTexts.begin();
   for( ; it != m_topTexts.end() ; ++it )
   {
     std::string txt = it->first;
@@ -276,7 +273,7 @@ void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
     iRotate = m_defaultRotate;
   }
 
-  std::map<std::string, QPointF>::iterator it = m_bottomTexts.begin();
+  std::vector<TextPosition>::iterator it = m_bottomTexts.begin();
   for( ; it != m_bottomTexts.end() ; ++it )
   {
     std::string txt = it->first;
@@ -303,7 +300,7 @@ void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
   double width = 0;
   double height = 0;
   
-  std::map<std::string, QPointF>::iterator it = m_leftTexts.begin();
+  std::vector<TextPosition>::iterator it = m_leftTexts.begin();
   for( ; it != m_leftTexts.end() ; ++it )
   {
     std::string txt = it->first;
@@ -328,7 +325,7 @@ void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
     iRotate = m_defaultRotate;
   }
   
-  std::map<std::string, QPointF>::iterator it = m_rightTexts.begin();
+  std::vector<TextPosition>::iterator it = m_rightTexts.begin();
   for( ; it != m_rightTexts.end() ; ++it )
   {
     std::string txt = it->first;
@@ -466,6 +463,17 @@ void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF
     return;
   }
 
+  if (scene() == 0)
+  {
+    return;
+  }
+
+  AbstractScene* myScene = dynamic_cast<AbstractScene*>(scene());
+  if (myScene == 0)
+  {
+    return;
+  }
+
   GridSettingsConfigProperties settingsConfig;
 
   const Property& pTextPointSize = m_controller->getProperty(settingsConfig.getPointTextSize());
@@ -477,10 +485,7 @@ void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF
   ItemUtils* itemUtils = Context::getInstance().getItemUtils();
 
  //creates the rect
-  QRectF rectF = itemUtils->getMinimumTextBoundary(fontFamily, textPointSize, text);
-
-//puts the rect in the correct position
-  rectF.moveTo(point);
+  QPainterPath textObject = itemUtils->textToVector(text.c_str(), painter->font(), myScene->getContext().getDpiX(), point, rotate);
 
 //draws the rect
   painter->save();
@@ -491,16 +496,7 @@ void te::layout::GridMapItem::debugDrawTextRect(QPainter* painter, const QPointF
   painter->setPen(pen);
   painter->setBrush(Qt::NoBrush);
 
-  if (rotate != 0)
-  {
-    QTransform trf = painter->transform();
-    trf.translate(point.x(), point.y());
-    trf.rotate(rotate);
-    trf.translate(-point.x(), -point.y());
-    painter->setTransform(trf);
-  }
-
-  painter->drawRect(rectF);
+  painter->drawRect(textObject.boundingRect());
 
   painter->restore();
 }
@@ -529,3 +525,121 @@ void te::layout::GridMapItem::debugDrawLineEdges(QPainter* painter, const QLineF
   painter->restore();
 }
 
+te::gm::Envelope te::layout::GridMapItem::calculateTop(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement)
+{
+  double textX = textBoundingRect.x();
+  double textY = textBoundingRect.y();
+  double textWidth = textBoundingRect.width();
+  double textHeight = textBoundingRect.height();
+
+  //if the 90 degrees rotation was applied, we transpose the bounding rect
+  if (rotate)
+  {
+    textX = textBoundingRect.y();
+    textY = textBoundingRect.x();
+    textWidth = textBoundingRect.height();
+    textHeight = textBoundingRect.width();
+  }
+
+  double x = line.p2().x();
+  double ury = line.p2().y();
+
+  // text top
+  QPointF ptTop(x - (textWidth / 2.), ury + horizontalDisplacement);
+  m_topTexts.push_back(TextPosition(text.toStdString(), ptTop));
+
+  te::gm::Envelope topTextBox(ptTop.x(), ptTop.y(), ptTop.x() + textWidth, ptTop.y() + textHeight);
+  m_boundingBox.Union(topTextBox);
+
+  return topTextBox;
+}
+
+te::gm::Envelope te::layout::GridMapItem::calculateBottom(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double horizontalDisplacement)
+{
+  double textX = textBoundingRect.x();
+  double textY = textBoundingRect.y();
+  double textWidth = textBoundingRect.width();
+  double textHeight = textBoundingRect.height();
+
+  //if the 90 degrees rotation was applied, we transpose the bounding rect
+  if (rotate)
+  {
+    textX = textBoundingRect.y();
+    textY = textBoundingRect.x();
+    textWidth = textBoundingRect.height();
+    textHeight = textBoundingRect.width();
+  }
+
+  double x = line.p1().x();
+  double lly = line.p1().y();
+
+  // text bottom
+  QPointF ptBottom(x - (textWidth / 2.), lly - textHeight - horizontalDisplacement);
+  m_bottomTexts.push_back(TextPosition(text.toStdString(), ptBottom));
+
+  te::gm::Envelope bottomTextBox(ptBottom.x(), ptBottom.y(), ptBottom.x() + textWidth, ptBottom.y() + textHeight);
+  m_boundingBox.Union(bottomTextBox);
+
+  return bottomTextBox;
+}
+
+te::gm::Envelope te::layout::GridMapItem::calculateRight(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement)
+{
+  double textX = textBoundingRect.x();
+  double textY = textBoundingRect.y();
+  double textWidth = textBoundingRect.width();
+  double textHeight = textBoundingRect.height();
+
+  double urx = line.p2().x();
+  double y = line.p2().y();
+
+  if (rotate)
+  {
+    textX = textBoundingRect.y();
+    textY = textBoundingRect.x();
+    textWidth = textBoundingRect.height();
+    textHeight = textBoundingRect.width();
+  }
+
+  double yReference = y + textY - (textHeight / 2.);
+
+  // text right
+  QPointF ptRight(urx + verticalDisplacement, yReference);
+  m_rightTexts.push_back(TextPosition(text.toStdString(), ptRight));
+
+  te::gm::Envelope rightTextBox(ptRight.x(), ptRight.y(), ptRight.x() + textWidth, ptRight.y() + textHeight);
+  m_boundingBox.Union(rightTextBox);
+
+  return rightTextBox;
+}
+
+te::gm::Envelope te::layout::GridMapItem::calculateLeft(QLineF line, QRectF textBoundingRect, QString text, bool rotate, double verticalDisplacement)
+{
+  double textX = textBoundingRect.x();
+  double textY = textBoundingRect.y();
+  double textWidth = textBoundingRect.width();
+  double textHeight = textBoundingRect.height();
+
+  //if the 90 degrees rotation was applied, we transpose the bounding rect
+  if (rotate)
+  {
+    textX = textBoundingRect.y();
+    textY = textBoundingRect.x();
+    textWidth = textBoundingRect.height();
+    textHeight = textBoundingRect.width();
+  }
+
+  double llx = line.p1().x();
+  double y = line.p1().y();
+
+  double yReference = y + textY - (textHeight / 2.);
+
+  // text left
+  QPointF ptLeft(llx - textX - textWidth - verticalDisplacement, yReference);
+  m_leftTexts.push_back(TextPosition(text.toStdString(), ptLeft));
+
+  te::gm::Envelope leftTextBox(ptLeft.x(), ptLeft.y(), ptLeft.x() + textWidth, ptLeft.y() + textHeight);
+  m_boundingBox.Union(leftTextBox);
+
+  return leftTextBox;
+}

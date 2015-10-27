@@ -35,11 +35,13 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
 
 // TerraLib
+#include "../core/ItemUtils.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/AbstractScene.h"
 #include "../../core/property/Property.h"
 #include "../../core/pattern/singleton/Context.h"
+
 
 //Qt
 #include <QPainter>
@@ -158,9 +160,19 @@ namespace te
         virtual void drawSelection(QPainter* painter);
         
         /*!
-        \brief Draws the given text in the given localtion with rotation
+        \brief Draws the given text in the given location with rotation
         */
         virtual void drawText(const QPointF& point, QPainter* painter, const std::string& text, int rotate = 0);
+
+        /*!
+        \brief Draws the given image in the given location
+        */
+        virtual void drawImage(const QRectF& rect, QPainter* painter, const QImage& image);
+
+        /*!
+        \brief Draws the given pixmap in the given location
+        */
+        virtual void drawPixmap(const QRectF& rect, QPainter* painter, const QPixmap& pixmap);
 
         /*!
           \brief Reimplemented from QGraphicsItem to capture changes in the item
@@ -478,23 +490,53 @@ namespace te
         return;
       }
 
+      ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+      QPainterPath textObject = itemUtils->textToVector(text.c_str(), painter->font(), myScene->getContext().getDpiX(), point, rotate);
+
+      QPen pen;
+      pen.setWidthF(0);
+
+      QBrush brush = painter->brush();
+      brush.setStyle(Qt::SolidPattern);
+
+
       painter->save();
-      
+
+      painter->setPen(pen);
+      painter->setRenderHint(QPainter::Antialiasing, true);
+      painter->fillPath(textObject, brush);
+
+      painter->restore();
+    }
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::drawImage(const QRectF& rect, QPainter* painter, const QImage& image)
+    {
+      painter->save();
+
       QTransform transform;
-
-      if (rotate != 0)
-      {
-        transform.translate(point.x(), point.y());
-        transform.rotate(rotate);
-        transform.translate(-point.x(), -point.y());
-      }
-
-      transform.translate(0., 2. * point.y());
+      transform.translate(0., rect.y() + rect.height());
       transform.scale(1., -1.);
+      transform.translate(0., -rect.y());
+            
+      painter->setTransform(transform, true);
+      painter->drawImage(rect, image, image.rect());
+
+      painter->restore();
+    }
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::drawPixmap(const QRectF& rect, QPainter* painter, const QPixmap& pixmap)
+    {
+      painter->save();
+
+      QTransform transform;
+      transform.translate(0., rect.y() + rect.height());
+      transform.scale(1., -1.);
+      transform.translate(0., -rect.y());
 
       painter->setTransform(transform, true);
-
-      painter->drawText(point, text.c_str());
+      painter->drawPixmap(rect, pixmap, pixmap.rect());
 
       painter->restore();
     }

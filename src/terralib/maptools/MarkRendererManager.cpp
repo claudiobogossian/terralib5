@@ -45,7 +45,7 @@ te::map::MarkRendererManager::MarkRendererManager()
 
 te::map::MarkRendererManager::~MarkRendererManager()
 {
-  te::common::FreeContents(m_renderers);
+  clear();
 }
 
 te::color::RGBAColor** te::map::MarkRendererManager::render(const te::se::Mark* mark, std::size_t size)
@@ -98,4 +98,10 @@ void te::map::MarkRendererManager::add(const std::string& key, AbstractMarkRende
     throw Exception((boost::format(TE_TR("There is already a mark renderer registered with the given key %1%.")) % key).str());
 
   m_renderers[key] = renderer;
+}
+
+void te::map::MarkRendererManager::clear()
+{
+  te::common::FreeContents(m_renderers);
+  m_renderers.clear();
 }

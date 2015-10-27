@@ -185,9 +185,16 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
         {
           m_inputType = TIN;
+          std::auto_ptr<te::da::DataSet> dataquery;
+          te::da::DataSourcePtr ds = te::da::GetDataSource(m_inputLayer->getDataSourceId());
+          std::string qry("Select type1, type2, type3 from ");
+          qry += m_inputLayer->getTitle();
+          qry += " where (type1 > 3 and type1 < 7) or (type2 > 3 and type2 < 7) or (type3 > 3 and type3 < 7)";
+          dataquery = ds->query(qry);
           m_ui->m_interpolatorComboBox->addItem("Linear");
           m_ui->m_interpolatorComboBox->addItem("Quintic without breaklines");
-          m_ui->m_interpolatorComboBox->addItem("Quintic with breaklines");
+          if (!dataquery->isEmpty())
+            m_ui->m_interpolatorComboBox->addItem("Quintic with breaklines");
         }
       }
       if (dsType->hasRaster()) //GRID
