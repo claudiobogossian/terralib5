@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>323</width>
-    <height>479</height>
+    <width>337</width>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Slope</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QLabel" name="m_slopeTitleLabel">
      <property name="font">
@@ -36,7 +36,7 @@
      <property name="title">
       <string>Input Layer</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QLabel" name="m_layerLabel">
         <property name="text">
@@ -46,6 +46,24 @@
       </item>
       <item>
        <widget class="QComboBox" name="m_layersComboBox"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QCheckBox" name="m_dummycheckBox">
+          <property name="text">
+           <string>Dummy Value</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_dummylineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

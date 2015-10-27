@@ -64,6 +64,7 @@ namespace te
       protected slots:
 
       void onInputComboBoxChanged(int index);
+      void onDummyLineEditEditingFinished();
       void onStepFixeEnabled(bool);
       void on_stepVariableraEnabled(bool);
       void oninsertpushButtonClicked();
