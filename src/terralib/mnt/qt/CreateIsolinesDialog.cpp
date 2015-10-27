@@ -62,6 +62,9 @@ te::mnt::CreateIsolinesDialog::CreateIsolinesDialog(QWidget* parent, Qt::WindowF
   //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
 
+  connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
+  connect(m_ui->m_dummylineEdit, SIGNAL(editingFinished()), this, SLOT(onDummyLineEditEditingFinished()));
+
   connect(m_ui->m_stepFixedradioButton, SIGNAL(toggled(bool)), this, SLOT(onStepFixeEnabled(bool)));
   connect(m_ui->m_stepVariableradioButton, SIGNAL(toggled(bool)), this, SLOT(on_stepVariableraEnabled(bool)));
 
@@ -190,14 +193,19 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
       {
         m_inputType = TIN;
         getMinMax(m_inputLayer, m_min, m_max);
+        m_ui->m_dummycheckBox->setVisible(false);
+        m_ui->m_dummylineEdit->setVisible(false);
       }
       if (dsType->hasRaster())
       {
         m_inputType = GRID;
         std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
         std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
-        m_min = inputRst.get()->getBand(0)->getMinValue().real();
-        m_max = inputRst.get()->getBand(0)->getMaxValue().real();
+        m_min = inputRst.get()->getBand(0)->getMinValue(true, 0, 0, inputRst->getNumberOfRows()-1, inputRst->getNumberOfColumns()-1).real();
+        m_max = inputRst.get()->getBand(0)->getMaxValue(true, 0, 0, inputRst->getNumberOfRows()-1, inputRst->getNumberOfColumns()-1).real();
+        m_ui->m_dummycheckBox->setVisible(true);
+        m_ui->m_dummylineEdit->setVisible(true);
+        m_ui->m_dummylineEdit->setText(QString::number(inputRst->getBand(0)->getProperty()->m_noDataValue));
         inputRst.release();
       }
       dsType.release();
@@ -208,6 +216,23 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
   m_ui->m_vminrasterlineEdit->setText(QString::number(m_min));
   m_ui->m_vmaxrasterlineEdit->setText(QString::number(m_max));
 
+}
+
+void te::mnt::CreateIsolinesDialog::onDummyLineEditEditingFinished()
+{
+  double dummy = m_ui->m_dummylineEdit->text().toDouble();
+  if (m_inputType == GRID)
+  {
+    std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
+    std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
+    std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
+    inputRst->getBand(0)->getProperty()->m_noDataValue = dummy;
+    m_min = inputRst.get()->getBand(0)->getMinValue(true, 0, 0, inputRst->getNumberOfRows() - 1, inputRst->getNumberOfColumns() - 1).real();
+    m_max = inputRst.get()->getBand(0)->getMaxValue(true, 0, 0, inputRst->getNumberOfRows() - 1, inputRst->getNumberOfColumns() - 1).real();
+    m_ui->m_vminrasterlineEdit->setText(QString::number(m_min));
+    m_ui->m_vmaxrasterlineEdit->setText(QString::number(m_max));
+    inputRst.release();
+  }
 }
 
 void te::mnt::CreateIsolinesDialog::onStepFixeEnabled(bool)

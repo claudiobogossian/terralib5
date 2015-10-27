@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>385</width>
-    <height>566</height>
+    <width>347</width>
+    <height>579</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,6 +46,24 @@
       </item>
       <item>
        <widget class="QComboBox" name="m_layersComboBox"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QCheckBox" name="m_dummycheckBox">
+          <property name="text">
+           <string>Dummy Value</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_dummylineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

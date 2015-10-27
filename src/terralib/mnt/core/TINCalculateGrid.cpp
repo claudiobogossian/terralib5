@@ -153,7 +153,6 @@ void te::mnt::TINCalculateGrid::setParams(double resx, double resy, Interpolator
 
 
 
-
 /*!
 \brief Method that fills the grid locations, inside a triangle, with a zvalue linearly evaluated
 \param grid is a pointer to a grid object
@@ -167,15 +166,12 @@ void te::mnt::TINCalculateGrid::setParams(double resx, double resy, Interpolator
 bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3da, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol)
 {
   te::gm::PointZ pg;
+  te::gm::Coord2D cg;
   double x1_x0, x2_x0, y1_y0, y2_y0, z1_z0, z2_z0,
     detx, dety, detz;
-  double rx1, ry2;
   double zvalue;
   int32_t nlin, ncol;
   double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
-
-  rx1 = m_rst->getExtent()->getLowerLeftX() + (m_resx / 2.); 
-  ry2 = m_rst->getExtent()->getUpperRightY() - (m_resy / 2.);
 
   x1_x0 = p3da[1].getX() - p3da[0].getX();
   x2_x0 = p3da[2].getX() - p3da[0].getX();
@@ -185,8 +181,9 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
   z2_z0 = (double)(p3da[2].getZ() - p3da[0].getZ());
   for (nlin = flin; nlin <= llin; nlin++){
     for (ncol = fcol; ncol <= lcol; ncol++){
-      pg.setX(rx1 + (float)ncol*m_resx);
-      pg.setY(ry2 - (float)nlin*m_resy);
+      cg = m_rst->getGrid()->gridToGeo(ncol, nlin);
+      pg.setX(cg.getX());
+      pg.setY(cg.getY());
       if (!(ContainsPoint(triid, pg)))
         continue;
       detx = ((y1_y0 * z2_z0) - (y2_y0 * z1_z0)) *
@@ -224,6 +221,7 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
 bool te::mnt::TINCalculateGrid::FillGridQuintic(int32_t triid, te::gm::PointZ *p3da, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double *coef)
 {
   te::gm::PointZ pg;
+  te::gm::Coord2D cg;
   double u, v, ap, bp, cp, dp, x0, y0,
     p00, p01, p02, p03, p04, p05,
     p10, p11, p12, p13, p14,
@@ -231,12 +229,8 @@ bool te::mnt::TINCalculateGrid::FillGridQuintic(int32_t triid, te::gm::PointZ *p
     p30, p31, p32,
     p40, p41, p50,
     p0, p1, p2, p3, p4;
-  double rx1, ry2;
   double zvalue;
   int32_t nlin, ncol;
-
-  rx1 = m_env.getLowerLeftX() + (m_resx / 2.);
-  ry2 = m_env.getUpperRightY() - (m_resy / 2.);
 
   // Polynomial coefficients
   p00 = coef[0]; p01 = coef[1]; p02 = coef[2]; p03 = coef[3]; p04 = coef[4]; p05 = coef[5];
@@ -254,8 +248,9 @@ bool te::mnt::TINCalculateGrid::FillGridQuintic(int32_t triid, te::gm::PointZ *p
   {
     for (ncol = fcol; ncol <= lcol; ncol++)
     {
-      pg.setX(rx1 + ncol*m_resx);
-      pg.setY(ry2 - nlin*m_resy);
+      cg = m_rst->getGrid()->gridToGeo(ncol, nlin);
+      pg.setX(cg.getX());
+      pg.setY(cg.getY());
       if (!(ContainsPoint(triid, pg)))
         continue;
       // Converts point from XY to UV
