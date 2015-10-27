@@ -52,6 +52,7 @@ namespace te
         class CreateIsolinesAction;
         class MNTGenerationAction;
         class SlopeAction;
+        class SmoothAction;
         class TINGenerationAction;
 
         class Plugin : public QObject, public te::plugin::Plugin
@@ -94,6 +95,7 @@ namespace te
             CreateIsolinesAction* m_ISOGeneration;    //!< Isoline Generation Action
             MNTGenerationAction*  m_MNTGeneration;    //!< GRID Generation Action
             SlopeAction*          m_Slope;            //!< Slope Generation Action
+            SmoothAction*         m_Smooth;           //!< Smooth Isolines Action
             TINGenerationAction*  m_TINGeneration;    //!< TIN Generation Action
         };
       } // end namespace mnt
