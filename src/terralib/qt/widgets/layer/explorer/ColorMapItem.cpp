@@ -92,15 +92,17 @@ void AddSliceItems(te::qt::widgets::ColorMapItem* item, const te::se::ColorMap* 
     for (std::size_t i = 0; i < mItems.size(); ++i)
     {
       double data = mItems[i]->getData();
-      std::string colorName = te::se::GetString(mItems[i]->getValue());      
+      std::string colorName = te::se::GetString(mItems[i]->getValue());
+      std::string title = mItems[i]->getTitle();
 
-      QString title = QString::number(data);
+      if (title.empty())
+        title = QString::number(data).toStdString();
 
       te::color::RGBAColor color(colorName);
 
       QColor qC(color.getRed(), color.getGreen(), color.getBlue());
 
-      item->addChild(new te::qt::widgets::ColorMapSliceItem(title.toStdString(), qC));
+      item->addChild(new te::qt::widgets::ColorMapSliceItem(title, qC));
     }
   }
 }

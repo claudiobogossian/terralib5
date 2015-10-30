@@ -29,16 +29,19 @@
 
 te::se::MapItem::MapItem()
   : m_data(0.0),
-    m_value(0)
+    m_value(0),
+    m_title("")
 {
 }
 
 te::se::MapItem::MapItem(const MapItem& rhs)
   : m_data(0),
-    m_value(0)
+    m_value(0),
+    m_title("")
 {
   m_data = rhs.m_data;
   m_value = rhs.m_value->clone();
+  m_title = rhs.m_title;
 }
 
 te::se::MapItem::~MapItem()
@@ -70,4 +73,14 @@ double te::se::MapItem::getData()
 te::se::ParameterValue* te::se::MapItem::getValue()
 {
   return m_value;
+}
+
+std::string te::se::MapItem::getTitle()
+{
+  return m_title;
+}
+
+void te::se::MapItem::setTitle(const std::string& title)
+{
+  m_title = title;
 }

@@ -241,6 +241,7 @@ bool te::qt::widgets::RasterizationWizard::execute()
       te::se::MapItem* m = new te::se::MapItem();
       m->setValue(new te::se::ParameterValue(colorStr));
       m->setData(dataDouble);
+      m->setTitle(it->first);
 
       r->add(m);
     }
@@ -251,41 +252,10 @@ bool te::qt::widgets::RasterizationWizard::execute()
       cm->setInterpolate(0);
       cm->setRecode(r);
     }
-      //  QColor color;
-      //  color.setRed(it->second[1]);
-      //  color.setGreen(it->second[2]);
-      //  color.setBlue(it->second[3]);
 
-      //  std::string rangeStr = QString::number(it->second[0]).toStdString();//table->item(count, 0)->text().toStdString();
-      //  std::string colorStr = color.name().toStdString();
+      te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(m_outputLayer->getStyle());
 
-      //  c->addThreshold(new te::se::ParameterValue(rangeStr));
-      //  c->addValue(new te::se::ParameterValue(colorStr));
-
-      //  if (count == table->rowCount() - 1)
-      //  {
-      //    rangeStr = table->item(count, 0)->text().toStdString();
-      //    c->addThreshold(new te::se::ParameterValue(rangeStr));
-      //  }
-
-      //  items[count]->setTitle(it->first);
-
-      //  ++count;
-      //}
-
-      //c->addValue(new te::se::ParameterValue(colorWhiteStr));
-
-      //c->setThresholdsBelongTo(te::se::Categorize::SUCCEEDING);
-
-      //if (cm)
-      //{
-      //  cm->setCategorize(c);
-      //  cm->setInterpolate(0);
-      //}
-
-      //te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(m_outputLayer->getStyle());
-
-      //rs->setColorMap(cm);
+      rs->setColorMap(cm);
 
   }
   catch (const std::exception& e)

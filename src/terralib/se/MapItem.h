@@ -30,6 +30,9 @@
 #include "../fe/Expression.h"
 #include "Config.h"
 
+// STL
+#include <string>
+
 namespace te
 {
   namespace se
@@ -80,11 +83,17 @@ namespace te
          */
         //@{
 
+        double getData();
+        
         void setData(const double& d);
+
+        ParameterValue* getValue();
+
         void setValue(ParameterValue* v);
 
-        double getData();
-        ParameterValue* getValue();
+        std::string getTitle();
+
+        void setTitle(const std::string& title);
 
         //@}
 
@@ -110,6 +119,7 @@ namespace te
 
         double m_data;             //!< Mandatory.
         ParameterValue* m_value;   //!< Mandatory. 
+        std::string m_title;
     };
 
   } // end namespace se
