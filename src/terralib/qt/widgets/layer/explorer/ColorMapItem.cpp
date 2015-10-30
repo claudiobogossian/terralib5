@@ -4,7 +4,9 @@
 #include "../../../../se/ColorMap.h"
 #include "../../../../se/Interpolate.h"
 #include "../../../../se/InterpolationPoint.h"
+#include "../../../../se/MapItem.h"
 #include "../../../../se/RasterSymbolizer.h"
+#include "../../../../se/Recode.h"
 #include "../../../../se/Utils.h"
 
 #include "ColorMapSliceItem.h"
@@ -82,6 +84,25 @@ void AddSliceItems(te::qt::widgets::ColorMapItem* item, const te::se::ColorMap* 
       item->addChild(new te::qt::widgets::ColorMapSliceItem(title.toStdString(), qBeg, qEnd));
     }
   }
+  else if (cMap->getRecode())
+  {
+    te::se::Recode* r = cMap->getRecode();
+    std::vector<te::se::MapItem*> mItems = r->getMapItems();
+
+    for (std::size_t i = 0; i < mItems.size(); ++i)
+    {
+      double data = mItems[i]->getData();
+      std::string colorName = te::se::GetString(mItems[i]->getValue());      
+
+      QString title = QString::number(data);
+
+      te::color::RGBAColor color(colorName);
+
+      QColor qC(color.getRed(), color.getGreen(), color.getBlue());
+
+      item->addChild(new te::qt::widgets::ColorMapSliceItem(title.toStdString(), qC));
+    }
+  }
 }
 
 te::qt::widgets::ColorMapItem::ColorMapItem(const te::se::ColorMap* map) :
@@ -94,6 +115,8 @@ te::qt::widgets::ColorMapItem::ColorMapItem(const te::se::ColorMap* map) :
     type = QObject::tr("Categorization");
   else if(map->getInterpolate())
     type = QObject::tr("Interpolation");
+  else if (map->getRecode())
+    type = QObject::tr("Recode");
 
   m_label = (QObject::tr("Classification by") + " " + type).toStdString();
 

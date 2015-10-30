@@ -851,7 +851,7 @@ std::map<std::string, std::vector<int> > te::qt::widgets::RasterizationWizardPag
   for (std::size_t i = 0; i < m_ui->m_tableWidget->rowCount(); ++i)
   {
     std::vector<int> v;
-    v.push_back((int)i);
+    v.push_back((int)i+1);
     v.push_back(m_ui->m_tableWidget->item(i, 1)->text().toInt());
     v.push_back(m_ui->m_tableWidget->item(i, 2)->text().toInt());
     v.push_back(m_ui->m_tableWidget->item(i, 3)->text().toInt());

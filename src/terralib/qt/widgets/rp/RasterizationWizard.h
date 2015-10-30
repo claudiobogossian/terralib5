@@ -37,6 +37,7 @@ namespace te
   //forward declarations
   namespace da  { class DataSetType; }
   namespace mem { class DataSet; }
+  namespace rst { class BandProperty; }
 
   namespace qt 
   {
@@ -74,6 +75,10 @@ namespace te
 
           /*! Function used to save the output dataset */
           void saveDataSet(te::mem::DataSet* dataSet, te::da::DataSetType* dsType, te::da::DataSourcePtr ds, std::string dataSetName);
+
+          void setDummy(te::rst::Raster* rst, const double dummyValue);
+
+          te::rst::BandProperty* createBandProperty(const std::size_t size);
 
         private:
 

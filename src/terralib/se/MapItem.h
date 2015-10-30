@@ -61,6 +61,20 @@ namespace te
 
         //@}
 
+        /*!
+        \brief It returns a clone of this object.
+
+        \return A clone of this object.
+        */
+        virtual MapItem* clone() const;
+
+        /*!
+        \brief No copy constructor allowed.
+
+        \param rhs The other MapItem.
+        */
+        MapItem(const MapItem& rhs);
+
         /** @name Accessor methods
          *  Methods used to get or set properties.
          */
@@ -68,6 +82,9 @@ namespace te
 
         void setData(const double& d);
         void setValue(ParameterValue* v);
+
+        double getData();
+        ParameterValue* getValue();
 
         //@}
 
@@ -77,13 +94,6 @@ namespace te
          *  No copy allowed. 
          */
         //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other MapItem.
-        */
-        MapItem(const MapItem& rhs);
 
         /*!
           \brief No assignment operator allowed.

@@ -87,6 +87,20 @@ namespace te
         /*! \brief Destructor. */
         ~Recode();
 
+        /*!
+        \brief Copy constructor.
+
+        \param rhs The other Categorize.
+        */
+        Recode(const Recode& rhs);
+
+        /*!
+        \brief It returns a clone of this object.
+
+        \return A clone of this object.
+        */
+        virtual Recode* clone() const;
+
         //@}
 
         /** @name Initializer Methods
@@ -96,6 +110,8 @@ namespace te
 
         void setLookupValue(ParameterValue* v);
         void add(MapItem* m);
+
+        std::vector<MapItem*> getMapItems();
 
         //@}
 

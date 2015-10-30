@@ -117,11 +117,15 @@ namespace te
 
           void buildRecodingMap();
 
+          std::vector<std::string> getValues();
+
         protected slots:
 
           void onApplyPushButtonClicked();
 
           void onBandSelected(QString value);
+
+          void onTransformComboBoxCurrentIndexChanged(int index);
 
           void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
 
