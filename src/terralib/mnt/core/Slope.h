@@ -57,7 +57,7 @@ namespace te
       \return true when the gradient is evaluated
       \return false when the gradient could not be evaluated
       */
-      bool te::mnt::Slope::CalcGradientRst(std::auto_ptr<te::rst::Raster> &raster, unsigned l, unsigned c, double& dzdx, double& dzdy);
+      bool CalcGradientRst(std::auto_ptr<te::rst::Raster> &raster, unsigned l, unsigned c, double& dzdx, double& dzdy);
 
     protected:
 

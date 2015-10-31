@@ -27,16 +27,19 @@
 #include "Categorize.h"
 #include "ColorMap.h"
 #include "Interpolate.h"
+#include "Recode.h"
 
 te::se::ColorMap::ColorMap()
   : m_categorize(0),
-    m_interpolate(0)
+    m_interpolate(0),
+    m_recode(0)
 {
 }
 
 te::se::ColorMap::ColorMap(const ColorMap& rhs)
   : m_categorize(0),
-    m_interpolate(0)
+    m_interpolate(0),
+    m_recode(0)
 {
   if(rhs.m_categorize)
   {
@@ -47,12 +50,18 @@ te::se::ColorMap::ColorMap(const ColorMap& rhs)
   {
     m_interpolate = rhs.m_interpolate->clone();
   }
+
+  if (rhs.m_recode)
+  {
+    m_recode = rhs.m_recode->clone();
+  }
 }
 
 te::se::ColorMap::~ColorMap()
 {
   delete m_categorize;
   delete m_interpolate;
+  delete m_recode;
 }
 
 void te::se::ColorMap::setCategorize(Categorize* c)
@@ -75,6 +84,17 @@ void te::se::ColorMap::setInterpolate(Interpolate* i)
 te::se::Interpolate* te::se::ColorMap::getInterpolate() const
 {
   return m_interpolate;
+}
+
+void te::se::ColorMap::setRecode(Recode* i)
+{
+  delete m_recode;
+  m_recode = i;
+}
+
+te::se::Recode* te::se::ColorMap::getRecode() const
+{
+  return m_recode;
 }
 
 te::se::ColorMap* te::se::ColorMap::clone() const

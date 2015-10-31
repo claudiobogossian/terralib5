@@ -200,11 +200,6 @@
                   <height>0</height>
                  </size>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>Equal Steps</string>
-                 </property>
-                </item>
                </widget>
               </item>
               <item row="4" column="2">
@@ -272,7 +267,6 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <zorder>groupBox</zorder>
              </widget>
             </item>
             <item row="2" column="0">

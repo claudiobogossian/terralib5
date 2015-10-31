@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SmoothIsolinesDialogForm</class>
+ <widget class="QDialog" name="SmoothIsolinesDialogForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>309</width>
+    <height>552</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Smooth Isolines</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_4">
+   <item>
+    <widget class="QLabel" name="m_SmoothIsolinesTitleLabel">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+     <property name="text">
+      <string>Allows to smooth isolines.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_inputGroupBox">
+     <property name="title">
+      <string>Input Layer</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="m_layerLabel">
+        <property name="text">
+         <string>Layer Name:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="m_layersComboBox"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_simplParamsGroupBox">
+     <property name="title">
+      <string>Simplification Parameters</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QGroupBox" name="m_defaultGroupBox">
+        <property name="title">
+         <string>Get Default Values</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="m_scaleLabel">
+           <property name="text">
+            <string>Target Scale: 1/</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="m_scaleLineEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_scalePushButton">
+           <property name="text">
+            <string>OK</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="m_factorLabel">
+          <property name="text">
+           <string>Simplification Factor (m):</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="m_distanceLabel">
+          <property name="text">
+           <string>Maximum Distance (m):</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="m_factorLineEdit"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="m_distanceLineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_simploutCheckBox">
+        <property name="text">
+         <string>Simplify Output</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_outputGroupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Output</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QLabel" name="m_repositoryLabel">
+        <property name="text">
+         <string>Repository:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLineEdit" name="m_repositoryLineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_targetFileToolButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_targetDatasourceToolButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>BD</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="m_layerNameLabel">
+        <property name="text">
+         <string>Layer Name:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_joinCheckBox">
+        <property name="text">
+         <string>Join Lines</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="m_joinGroupBox">
+        <property name="title">
+         <string>Join Lines Parameters</string>
+        </property>
+        <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="m_quotaLabel">
+           <property name="text">
+            <string>Quota Column:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="m_distanceJoinLabel">
+           <property name="text">
+            <string>Maximum Distance (m):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QComboBox" name="m_quotaComboBox"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="m_distanceJoinLineEdit"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
+       <property name="text">
+        <string>Help</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_okPushButton">
+       <property name="text">
+        <string>&amp;Ok</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_cancelPushButton">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
