@@ -55,6 +55,8 @@ void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
   if (dsTypeResult->getProperty("FID"))
     converter->remove("FID");
 
+  dsTypeResult->clearIndexes();
+
   dsTypeResult->setName(dataType->getName());
 
   //exporting
@@ -95,7 +97,7 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
 
     //Changing the raster to allow it to be exported, must be UCHAR_TYPE & the srid must be 4326
     if (bandType != te::dt::UCHAR_TYPE)
-      raster = te::gdal::NormalizeRaster(raster.get(), 0, 255, rinfo, "MEM");
+      raster = te::qt::plugins::terramobile::NormalizeRaster(raster.get(), 0, 255, rinfo, "MEM");
 
     if (inputSRID != 4326 || extValid)
     {
@@ -163,10 +165,10 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
 
       if (multiResLevel > 0)
         outRaster->createMultiResolution(multiResLevel, te::rst::NearestNeighbor);
-      
+
       te::gdal::copyToGeopackage(outRaster, outFileName);
     }
-     boost::filesystem::remove(file);
+    boost::filesystem::remove(file);
   }
   else
     te::gdal::copyToGeopackage(raster.get(), outFileName);
@@ -199,7 +201,7 @@ std::auto_ptr<te::da::DataSource> te::qt::plugins::terramobile::createGeopackage
   sql3 += "(tm_conf_id INTEGER PRIMARY KEY AUTOINCREMENT, gpkg_layer_identify TEXT NOT NULL, tm_form TEXT, tm_media_table TEXT,";
   sql3 += "CONSTRAINT fk_layer_identify_id FOREIGN KEY (gpkg_layer_identify) REFERENCES gpkg_contents(table_name));";
   
-  //queryGPKG(sql1, dsGPKG.get());
+  queryGPKG(sql1, dsGPKG.get());
   queryGPKG(sql2, dsGPKG.get());
   queryGPKG(sql3, dsGPKG.get());
 
@@ -237,9 +239,117 @@ void te::qt::plugins::terramobile::exportToGPKG(te::map::AbstractLayerPtr layer,
   }
 }
 
+std::auto_ptr<te::rst::Raster> te::qt::plugins::terramobile::NormalizeRaster(te::rst::Raster* inraster, double nmin, double nmax, std::map<std::string, std::string> rInfo, std::string type)
+{
+  size_t col = 0;
+  size_t row = 0;
+  size_t bandIdx = 0;
+
+  double value = 0;
+  double minValue = std::numeric_limits< double >::max();
+  double maxValue = std::numeric_limits< double >::min();
+
+  const unsigned int inNRows = inraster->getNumberOfRows();
+  const unsigned int inNCols = inraster->getNumberOfColumns();
+
+  size_t bands = inraster->getNumberOfBands();
+  std::vector<size_t> colorbands;
+
+  for (bandIdx = 0; bandIdx < bands; ++bandIdx)
+  {
+    te::rst::Band& band = *inraster->getBand(bandIdx);
+    te::rst::ColorInterp color = band.getProperty()->m_colorInterp;
+    if (color == te::rst::RedCInt ||
+      color == te::rst::GreenCInt ||
+      color == te::rst::BlueCInt ||
+      color == te::rst::AlphaCInt ||
+      color == te::rst::GrayIdxCInt)
+      colorbands.push_back(bandIdx);
+  }
+
+  //Checking the min & max values from the raster bands
+  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
+  {
+    te::rst::Band& band = *inraster->getBand(colorbands[bandIdx]);
+    const double noDataValue = band.getProperty()->m_noDataValue;
+
+    for (row = 0; row < inNRows; ++row)
+    {
+      for (col = 0; col < inNCols; ++col)
+      {
+        band.getValue(col, row, value);
+        if (value != noDataValue)
+        {
+          if (value < minValue)
+            minValue = value;
+
+          if (value > maxValue)
+            maxValue = value;
+        }
+      }
+    }
+  }
+
+  double gain = (double)(nmax - nmin) / (maxValue - minValue);
+  double offset = -1 * gain*minValue + nmin;
+
+  //Creating the output Raster file
+  std::vector<te::rst::BandProperty*> bandsProperties;
+
+  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
+  {
+    te::rst::BandProperty* bandProp = new te::rst::BandProperty(colorbands[bandIdx], te::dt::UCHAR_TYPE);
+    te::rst::Band& inBand = *inraster->getBand(colorbands[bandIdx]);
+    bandProp->m_colorInterp = inBand.getProperty()->m_colorInterp;
+    bandsProperties.push_back(bandProp);
+  }
+
+  te::rst::Grid* grid = new te::rst::Grid(*(inraster->getGrid()));
+  te::rst::Raster* rasterNormalized = te::rst::RasterFactory::make(type, grid, bandsProperties, rInfo);
+
+  //Normalizing the values on the output Raster
+
+  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
+  {
+    te::rst::Band& band = *inraster->getBand(colorbands[bandIdx]);
+
+    const double noDataValue = band.getProperty()->m_noDataValue;
+
+    for (row = 0; row < inNRows; ++row)
+    {
+      for (col = 0; col < inNCols; ++col)
+      {
+        try
+        {
+          band.getValue(col, row, value);
+
+          if (value == noDataValue)
+          {
+            value = 0;
+          }
+          else
+          {
+            double normalizeValue = (value * gain + offset);
+            rasterNormalized->setValue(col, row, normalizeValue, bandIdx);
+          }
+        }
+        catch (...)
+        {
+          continue;
+        }
+      }
+    }
+  }
+
+  std::auto_ptr<te::rst::Raster> rOut(rasterNormalized);
+
+  return rOut;
+}
+
 void te::qt::plugins::terramobile::queryGPKG(std::string query, te::da::DataSource* dsGPKG)
 {
   std::auto_ptr<te::da::DataSourceTransactor> transactor = dsGPKG->getTransactor();
+
   try
   {
     transactor->execute(query);
@@ -250,3 +360,29 @@ void te::qt::plugins::terramobile::queryGPKG(std::string query, te::da::DataSour
     throw;
   }
 }
+
+std::vector<std::string> te::qt::plugins::terramobile::getItemNames(std::string type, te::da::DataSource* dsGPKG)
+{
+  std::auto_ptr<te::da::DataSourceTransactor> transactor = dsGPKG->getTransactor();
+  std::vector<std::string> names;
+
+  std::string select = "SELECT name FROM sqlite_master WHERE type = '" + type + "' AND name LIKE 'rtree%'; ";
+
+  std::auto_ptr<te::da::DataSet> tupleNames;
+
+  tupleNames = transactor->query(select);
+
+  tupleNames->moveBeforeFirst();
+
+  while (tupleNames->moveNext())
+  {
+    std::string trigger = tupleNames->getString("name");
+    names.push_back(trigger);
+  }
+
+  return names;
+}
+
+
+
+
