@@ -83,15 +83,15 @@ namespace te
          */
         //@{
 
-        double getData();
+        double getData() const;
         
         void setData(const double& d);
 
-        ParameterValue* getValue();
+        ParameterValue* getValue() const;
 
         void setValue(ParameterValue* v);
 
-        std::string getTitle();
+        std::string getTitle() const;
 
         void setTitle(const std::string& title);
 

@@ -734,11 +734,7 @@ void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
     }
     else if (transType == te::se::RECODE_TRANSFORMATION)
     {
-      QColor color;
-      //if (t == colorVec.size())
-        //color.setRgb(255,255,255,255);
-      //else
-        color.setRgb(colorVec[t].getRed(), colorVec[t].getGreen(), colorVec[t].getBlue(), colorVec[t].getAlpha());
+      QColor color(colorVec[t].getRed(), colorVec[t].getGreen(), colorVec[t].getBlue(), colorVec[t].getAlpha());
 
       QPixmap pix(24, 24);
       QPainter p(&pix);

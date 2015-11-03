@@ -48,10 +48,12 @@
 #include "../../InterpolationPoint.h"
 #include "../../LabelPlacement.h"
 #include "../../LinePlacement.h"
+#include "../../MapItem.h"
 #include "../../Mark.h"
 #include "../../ParameterValue.h"
 #include "../../PointPlacement.h"
 #include "../../RasterSymbolizer.h"
+#include "../../Recode.h"
 #include "../../Rule.h"
 #include "../../SelectedChannel.h"
 #include "../../ShadedRelief.h"
@@ -299,8 +301,10 @@ te::se::ColorMap* te::se::serialize::ReadColorMap(te::xml::Reader& reader)
 
   if(reader.getElementLocalName() == "Categorize")
     cm->setCategorize(ReadCategorize(reader));
-  else // Interpolate
+  else if (reader.getElementLocalName() == "Interpolate")
     cm->setInterpolate(ReadInterpolate(reader));
+  else
+    cm->setRecode(ReadRecode(reader));
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();
@@ -316,13 +320,18 @@ void te::se::serialize::Save(const te::se::ColorMap* cm, te::xml::AbstractWriter
   writer.writeStartElement("se:ColorMap");
 
   te::se::Categorize* categorize = cm->getCategorize();
+  te::se::Interpolate* interpolate = cm->getInterpolate();
+  te::se::Recode* recode = cm->getRecode();
   if(categorize)
     Save(categorize, writer);
-  else
+  else if (interpolate)
   {
-    te::se::Interpolate* interpolate = cm->getInterpolate();
     assert(interpolate);
     Save(interpolate, writer);
+  }
+  else if (recode)
+  {
+    Save(recode, writer);
   }
 
   writer.writeEndElement("se:ColorMap");
@@ -1130,6 +1139,81 @@ void te::se::serialize::Save(const te::se::LinePlacement* lp, te::xml::AbstractW
   writer.writeEndElement("se:LinePlacement");
 }
 
+te::se::MapItem* te::se::serialize::ReadMapItem(te::xml::Reader& reader)
+{
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "MapItem");
+
+  reader.next();
+
+  std::auto_ptr<te::se::MapItem> mapItem(new te::se::MapItem);
+
+  if (reader.getElementLocalName() == "Data")
+  {
+    reader.next();
+
+    double data = reader.getElementValueAsDouble();
+    mapItem->setData(data);
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+    reader.next();
+  }
+
+  if (reader.getElementLocalName() == "Value")
+  {
+    reader.next();
+
+    te::se::ParameterValue* value = ReadParameterValue(reader);
+
+    mapItem->setValue(value);
+
+  }
+
+  if (reader.getElementLocalName() == "Title")
+  {
+    reader.next();
+
+    if (reader.getNodeType() != te::xml::END_ELEMENT)
+    {
+      std::string title = reader.getElementValue();
+      mapItem->setTitle(title);
+
+      reader.next();
+    }
+
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  reader.next();
+
+  return mapItem.release();
+}
+
+void te::se::serialize::Save(const te::se::MapItem* mapItem, te::xml::AbstractWriter& writer)
+{
+  if (!mapItem)
+    return;
+
+  double data = mapItem->getData();
+  te::se::ParameterValue* value = mapItem->getValue();
+  std::string title = mapItem->getTitle();
+
+  writer.writeStartElement("se:MapItem");
+
+  writer.writeElement("Data", data);
+  writer.writeStartElement("Value");
+  Save(value, writer);
+  writer.writeEndElement("Value");
+  writer.writeElement("Title", title);
+
+  writer.writeEndElement("se:MapItem");
+}
+
 te::se::Mark* te::se::serialize::ReadMark(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -1334,6 +1418,75 @@ void te::se::serialize::Save(const te::se::PointPlacement* pp, te::xml::Abstract
   WriteParameterValuePtrHelper("se:Rotation", pp->getRotation(), writer);
 
   writer.writeEndElement("se:PointPlacement");
+}
+
+te::se::Recode* te::se::serialize::ReadRecode(te::xml::Reader& reader)
+{
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Recode");
+
+  std::auto_ptr<te::se::Recode> recode(new te::se::Recode);
+
+  reader.next();
+
+  if (reader.getNodeType() == te::xml::END_ELEMENT && reader.getElementLocalName() == "Recode")
+    return 0;
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "fallbackValue");
+
+  reader.next();
+
+  if (reader.getNodeType() == te::xml::VALUE)
+  {
+    recode->setFallbackValue(reader.getElementValue());
+
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "fallbackValue");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "MapItem");
+
+  while (reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "MapItem")
+  {
+
+    te::se::MapItem* mapItem = ReadMapItem(reader);
+
+    recode->add(mapItem);
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "Recode");
+
+  reader.next();
+
+  return recode.release();
+}
+
+void te::se::serialize::Save(const te::se::Recode* recode, te::xml::AbstractWriter& writer)
+{
+  if (!recode)
+    return;
+
+  writer.writeStartElement("se:Recode");
+
+  std::string fallbackValue = recode->getFallbackValue();
+
+  writer.writeElement("fallbackValue", fallbackValue);
+
+  std::vector<te::se::MapItem*> items = recode->getMapItems();
+
+  for (std::size_t i = 0; i < items.size(); ++i)
+  {
+    Save(items[i], writer);
+  }
+
+  writer.writeEndElement("se:Recode");
 }
 
 te::se::Rule* te::se::serialize::ReadRule(te::xml::Reader& reader)

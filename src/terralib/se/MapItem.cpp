@@ -65,17 +65,17 @@ void te::se::MapItem::setValue(ParameterValue* v)
   m_value = v;
 }
 
-double te::se::MapItem::getData()
+double te::se::MapItem::getData() const
 {
   return m_data;
 }
 
-te::se::ParameterValue* te::se::MapItem::getValue()
+te::se::ParameterValue* te::se::MapItem::getValue() const
 {
   return m_value;
 }
 
-std::string te::se::MapItem::getTitle()
+std::string te::se::MapItem::getTitle() const
 {
   return m_title;
 }

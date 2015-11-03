@@ -70,7 +70,7 @@ void te::se::Recode::add(MapItem* m)
   m_mapItems.push_back(m);
 }
 
-std::vector<te::se::MapItem*> te::se::Recode::getMapItems()
+std::vector<te::se::MapItem*> te::se::Recode::getMapItems() const
 {
   return m_mapItems;
 }
