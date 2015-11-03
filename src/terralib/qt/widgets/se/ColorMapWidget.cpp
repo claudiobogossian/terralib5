@@ -706,7 +706,8 @@ void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
   }
   else if (type == "Unique Value")
   {
-    te::map::GroupingByUniqueValues(getValues(), te::dt::STRING_TYPE, legVec, m_ui->m_precisionSpinBox->value());
+    std::vector<std::string> values = getValues();
+    te::map::GroupingByUniqueValues(values, te::dt::STRING_TYPE, legVec, m_ui->m_precisionSpinBox->value());
   }
 
   m_ui->m_tableWidget->setRowCount(legVec.size());
