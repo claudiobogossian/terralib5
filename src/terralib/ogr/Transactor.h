@@ -241,6 +241,7 @@ namespace te
         protected:
 
           DataSource* m_ogrDs;
+          long int      m_fid;
     };
   }
 }
