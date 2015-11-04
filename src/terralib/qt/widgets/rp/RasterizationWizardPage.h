@@ -131,8 +131,10 @@ namespace te
           void onTableWidgetItemChanged(QTableWidgetItem* item);
 
           void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
-
+          
           void onLoadPushButtonClicked();
+          
+          void onSavePushButtonClicked();
 
           void onResXLineEditEditingFinished();
 
