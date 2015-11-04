@@ -40,7 +40,6 @@
 #include "../../../raster/RasterSummaryManager.h"
 #include "../../../se/ColorMap.h"
 #include "../../../se/Categorize.h"
-#include "../../../se/Enums.h"
 #include "../../../se/Interpolate.h"
 #include "../../../se/InterpolationPoint.h"
 #include "../../../se/MapItem.h"
@@ -190,6 +189,8 @@ void te::qt::widgets::ColorMapWidget::updateUi(bool loadColorBar)
 
   if(m_cm->getCategorize())
   {
+    updateTableHeader(te::se::CATEGORIZE_TRANSFORMATION);
+
     for(int i = 0; i < m_ui->m_transformComboBox->count(); ++i)
     {
       if(m_ui->m_transformComboBox->itemData(i).toInt() == te::se::CATEGORIZE_TRANSFORMATION)
@@ -289,6 +290,8 @@ void te::qt::widgets::ColorMapWidget::updateUi(bool loadColorBar)
   }
   else if(m_cm->getInterpolate())
   {
+    updateTableHeader(te::se::INTERPOLATE_TRANSFORMATION);
+
     for(int i = 0; i < m_ui->m_transformComboBox->count(); ++i)
     {
       if(m_ui->m_transformComboBox->itemData(i).toInt() == te::se::INTERPOLATE_TRANSFORMATION)
@@ -378,6 +381,82 @@ void te::qt::widgets::ColorMapWidget::updateUi(bool loadColorBar)
       //itemRangeStr->setText(valStr);
       //itemRangeStr->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
       //m_ui->m_tableWidget->setItem(i, 3, itemRangeStr);
+    }
+  }
+  else if (m_cm->getRecode())
+  {
+    updateTableHeader(te::se::RECODE_TRANSFORMATION);
+
+    for (int i = 0; i < m_ui->m_transformComboBox->count(); ++i)
+    {
+      if (m_ui->m_transformComboBox->itemData(i).toInt() == te::se::RECODE_TRANSFORMATION)
+        m_ui->m_transformComboBox->setCurrentIndex(i);
+    }
+
+    if (loadColorBar)
+      cb = new te::color::ColorBar;
+
+    te::se::Recode* rec = m_cm->getRecode();
+
+    std::vector<te::se::MapItem*> items = rec->getMapItems();
+
+    m_ui->m_tableWidget->setRowCount(items.size());
+
+    int count = 0;
+
+    for (std::size_t i = 0; i < items.size(); ++i)
+    {
+      std::string title = items[i]->getTitle();
+      double data = items[i]->getData();
+      te::se::ParameterValue* value = items[i]->getValue();
+
+      if (loadColorBar)
+      {
+        te::color::RGBAColor color(te::se::GetString(value).c_str());
+
+        if (count == 0)
+          cb->addColor(color, 0);
+        else if (count == items.size()-1)
+          cb->addColor(color, 1);
+        else
+        {
+          double pos = (1. / (items.size() - 2)) * count;
+
+          cb->addColor(color, pos);
+        }
+      }
+
+      ++count;
+
+      QColor color;
+      color.setNamedColor(te::se::GetString(value).c_str());
+
+      //color
+      QPixmap pix(24, 24);
+      QPainter p(&pix);
+
+      p.fillRect(0, 0, 24, 24, color);
+      p.setBrush(Qt::transparent);
+      p.setPen(Qt::black);
+      p.drawRect(0, 0, 23, 23);
+
+      QIcon icon(pix);
+
+      QTableWidgetItem* item = new QTableWidgetItem(pix, "");
+      item->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_tableWidget->setItem(i, 0, item);
+
+      // Data
+      QTableWidgetItem* itemData = new QTableWidgetItem();
+      itemData->setText(QString::number(data));
+      itemData->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);// | Qt::ItemIsEditable);
+      m_ui->m_tableWidget->setItem(i, 1, itemData);
+
+      // Title
+      QTableWidgetItem* itemTitle = new QTableWidgetItem();
+      itemTitle->setText(title.c_str());
+      itemTitle->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+      m_ui->m_tableWidget->setItem(i, 2, itemTitle);
     }
   }
 
@@ -642,10 +721,12 @@ void te::qt::widgets::ColorMapWidget::buildRecodingMap()
 
     double data = m_ui->m_tableWidget->item(i, 1)->text().toDouble();
     std::string colorStr = color.name().toLatin1().data();
+    std::string title = m_ui->m_tableWidget->item(i, 2)->text().toStdString();
 
     te::se::MapItem* m = new te::se::MapItem();
     m->setData(data);
     m->setValue(new te::se::ParameterValue(colorStr));
+    m->setTitle(title);
 
     r->add(m);
   }
@@ -672,7 +753,9 @@ void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
   int index = m_ui->m_transformComboBox->currentIndex();
 
   int transType = m_ui->m_transformComboBox->itemData(index).toInt();
-  
+
+  updateTableHeader((te::se::ColorMapTransformationType)transType);
+
   if (transType == te::se::CATEGORIZE_TRANSFORMATION)
   {
     colorVec = m_cb->getSlices(sliceValue);
@@ -684,12 +767,6 @@ void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
   else if (transType == te::se::RECODE_TRANSFORMATION)
   {
     colorVec = m_cb->getSlices(getValues().size());
-
-    QStringList list;
-    list.push_back(tr("Color"));
-    list.push_back(tr("Value"));
-
-    m_ui->m_tableWidget->setHorizontalHeaderLabels(list);
   }
 
   std::vector<te::map::GroupingItem*> legVec;
@@ -707,7 +784,19 @@ void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
   else if (type == "Unique Value")
   {
     std::vector<std::string> values = getValues();
-    te::map::GroupingByUniqueValues(values, te::dt::STRING_TYPE, legVec, m_ui->m_precisionSpinBox->value());
+    std::vector<std::string> valuesAux;
+
+    for (std::size_t i = 0; i < values.size(); ++i)
+    {
+      double val = boost::lexical_cast<double>(values[i]);
+
+      if (val >= m_ui->m_minValueLineEdit->text().toDouble() && val <= m_ui->m_maxValueLineEdit->text().toDouble())
+      {
+        valuesAux.push_back(values[i]);
+      }
+    }
+
+    te::map::GroupingByUniqueValues(valuesAux, te::dt::STRING_TYPE, legVec, m_ui->m_precisionSpinBox->value());
   }
 
   m_ui->m_tableWidget->setRowCount(legVec.size());
@@ -777,11 +866,17 @@ void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
     {
       //value lower
       std::string value = legVec[t]->getValue();
+      std::string title = legVec[t]->getTitle();
 
       QTableWidgetItem* itemValue = new QTableWidgetItem();
       itemValue->setText(value.c_str());
       itemValue->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
       m_ui->m_tableWidget->setItem(t, 1, itemValue);
+
+      QTableWidgetItem* itemTitle = new QTableWidgetItem();
+      itemTitle->setText(title.c_str());
+      itemTitle->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+      m_ui->m_tableWidget->setItem(t, 2, itemTitle);
     }
     else
     {
@@ -858,7 +953,7 @@ void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidge
 
   if(curCol == 0)
   {
-    if(type == te::se::CATEGORIZE_TRANSFORMATION)
+    if (type == te::se::CATEGORIZE_TRANSFORMATION || type == te::se::RECODE_TRANSFORMATION)
     {
       QColor bgColor = QColor::fromRgb(item->icon().pixmap(24, 24).toImage().pixel(1,1));
 
@@ -1053,6 +1148,22 @@ void te::qt::widgets::ColorMapWidget::onTransformComboBoxCurrentIndexChanged(int
     m_ui->m_precisionSpinBox->setEnabled(true);
 
     m_ui->m_typeComboBox->setCurrentIndex(0); // Equal Steps
-    m_ui->m_typeComboBox->setEnabled(true);
+    m_ui->m_typeComboBox->setEnabled(false);
+  }
+}
+
+void te::qt::widgets::ColorMapWidget::updateTableHeader(te::se::ColorMapTransformationType type)
+{
+  if (type == te::se::RECODE_TRANSFORMATION)
+  {
+    m_ui->m_tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Color")));
+    m_ui->m_tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Value")));
+    m_ui->m_tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Title")));
+  }
+  else
+  {
+    m_ui->m_tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Color")));
+    m_ui->m_tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("From")));
+    m_ui->m_tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("To")));
   }
 }
