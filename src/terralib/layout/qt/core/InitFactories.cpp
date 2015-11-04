@@ -66,6 +66,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "pattern/factory/outside/SystematicScaleOutsideFactory.h"
 #include "pattern/factory/outside/TextGridSettingsOutsideFactory.h"
 #include "pattern/factory/outside/ToolbarOutsideFactory.h"
+#include "pattern/factory/outside/PDFSettingsOutsideFactory.h"
 
 namespace te
 {
@@ -102,6 +103,7 @@ namespace te
         static SystematicScaleOutsideFactory SystematicScaleOutsideFactory_instance;
         static TextGridSettingsOutsideFactory TextGridSettingsOutsideFactory_instance;
         static ToolbarOutsideFactory ToolbarOutsideFactory_instance;
+        static PDFSettingsOutsideFactory PDFSettingsOutsideFactory_instance;
       }
     }
 

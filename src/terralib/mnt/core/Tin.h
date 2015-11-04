@@ -184,7 +184,7 @@ namespace te
     {
 
     public:
-      TinNode() : m_type(Deletednode), m_edge(-1), m_point(-1, -1, -1) {}
+      TinNode() : m_type(Deletednode), m_edge(-1), m_point(0, 0, 0) {}
 
       TinNode(const TinNode &rhs){ m_type = rhs.m_type; m_edge = rhs.m_edge; m_point = rhs.m_point; }
 

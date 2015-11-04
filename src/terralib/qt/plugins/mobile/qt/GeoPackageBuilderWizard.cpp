@@ -185,16 +185,47 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
 
+  //Exporting the selected input and gathering layers
+  size_t pos = 1;
+
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
+    bool visible = (*it)->getVisibility();
+
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
+
+    std::auto_ptr<te::da::DataSetType> dsType = (*it)->getSchema();
+
+    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position') values('" + dsType->getName() + "', " + boost::lexical_cast<std::string>(visible)+", " + boost::lexical_cast<std::string>(pos)+"); ";
+    te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
+    ++pos;
   }
 
   for (it = inputLayers.begin(); it != inputLayers.end(); ++it)
   {
+    bool visible = (*it)->getVisibility();
+    
+    std::auto_ptr<te::da::DataSetType> dsType = (*it)->getSchema();
+    std::string name = dsType->getName();
+
+    //Checking if the layer contains a raster property to adjust it's name removing the extension
+    if (dsType->hasRaster())
+    {
+      std::vector<std::string> values;
+      te::common::Tokenize(name, values, ".");
+      name = "";
+      for (size_t i = 0; i < values.size() - 1; ++i)
+        name += values[i];
+    }
+
+    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position') values('" + name + "', " + boost::lexical_cast<std::string>(visible)+", " + boost::lexical_cast<std::string>(pos)+"); ";
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
+    te::qt::plugins::terramobile::queryGPKG("select * from sqlite_master", dsGPKG.get());
+    te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
+    ++pos;
   }
 
+  //Exporting the forms used to collect data on the field
   std::map<std::string, Section*>::iterator itb = sectionsMap.begin();
   std::map<std::string, Section*>::iterator ite = sectionsMap.end();
 
@@ -207,9 +238,9 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     ++itb;
   }
 
+  //Settings - Exporting the visible area if it is valid
   if (m_outputPage->useVisibleArea() && m_extent.isValid() && m_srid != 0)
   {
-    //Settings
     std::string sqlCreate1 = "CREATE TABLE IF NOT EXISTS tm_settings(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, key TEXT, value TEXT); ";
 
     m_extent.transform(m_srid, 4326);
@@ -230,6 +261,23 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     te::qt::plugins::terramobile::queryGPKG(insert2, dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert3, dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert4, dsGPKG.get());
+  }
+
+  //Removing trigggers and tables that could generate problems on the mobile application
+  std::vector<std::string> triggers = te::qt::plugins::terramobile::getItemNames("trigger", dsGPKG.get());
+
+  for (size_t i = 0; i < triggers.size(); ++i)
+  {
+    std::string drop = "drop trigger " + triggers[i] + ";";
+    te::qt::plugins::terramobile::queryGPKG(drop, dsGPKG.get());
+  }
+
+  std::vector<std::string> tables = te::qt::plugins::terramobile::getItemNames("table", dsGPKG.get());
+
+  for (size_t i = 0; i < tables.size(); ++i)
+  {
+    std::string drop = "drop table " + tables[i] + ";";
+    te::qt::plugins::terramobile::queryGPKG(drop, dsGPKG.get());
   }
 
   return true;

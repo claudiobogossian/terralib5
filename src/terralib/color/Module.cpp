@@ -60,6 +60,8 @@ void te::color::Module::initialize()
 
 void te::color::Module::finalize()
 {
+  te::color::ColorSchemeCatalogManager::getInstance().clear();
+
   TE_LOG_TRACE(TE_TR("TerraLib Color module finalized!"));
 }
 

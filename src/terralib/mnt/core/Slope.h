@@ -34,7 +34,7 @@ namespace te
 
       void setOutput(std::map<std::string, std::string> &dsinfo);
 
-      void setParams(double resx, double resy, char gradtype, char slopetype);
+      void setParams(double resx, double resy, char gradtype, char slopetype, int srid, double dummy);
 
       bool run();
 
@@ -49,6 +49,16 @@ namespace te
       */
       double TriangleGradient(int32_t *nodesid, char gradtype, char slopetype);
 
+      /*!
+      \brief METHOD TO CALCULATE GRADIENT VECTOR COMPONENTS IN THE POINT L,C OF THE GRID
+      \param raster input grid
+      \param l and c are the line and column of the input grid
+      \param dzdx and dzdy are values of the first derivatives of z in the x and y directions at location l,c
+      \return true when the gradient is evaluated
+      \return false when the gradient could not be evaluated
+      */
+      bool CalcGradientRst(std::auto_ptr<te::rst::Raster> &raster, unsigned l, unsigned c, double& dzdx, double& dzdy);
+
     protected:
 
       te::da::DataSourcePtr m_inDsrc;
@@ -61,6 +71,9 @@ namespace te
       mntType m_inputType;  //!< Input type (TIN, GRID)
 
       double m_tol = 0.000001;
+      double m_min, m_max;
+      double m_dx, m_dy;
+      double m_dummy;
     };
   }
 }

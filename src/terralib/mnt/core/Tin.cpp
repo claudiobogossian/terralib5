@@ -2810,8 +2810,8 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
     zu[3], zv[3], zuu[3], zvv[3], zuv[3];
   short i, bside;
   int32_t lids[3], nodid;
-  std::vector<te::gm::PointZ> fderiv;
-  std::vector<TinNode> sderiv;
+  std::vector<te::gm::PointZ>* fderiv;
+  std::vector<TinNode> *sderiv;
 
   // Coeficients of conversion from UV to XY coordinates
   a = p3d[1].getX() - p3d[0].getX();
@@ -2877,37 +2877,37 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
       ((m_fbnode > 0) && (nodesid[i] < m_fbnode)))
     {
       nodid = nodesid[i];
-      fderiv = m_nfderiv;
-      sderiv = m_nsderiv;
+      fderiv = &m_nfderiv;
+      sderiv = &m_nsderiv;
     }
     else if (bside == 1)
     {
       nodid = nodesid[i] - m_fbnode;
-      fderiv = m_nbrfderiv;
-      sderiv = m_nbrsderiv;
+      fderiv = &m_nbrfderiv;
+      sderiv = &m_nbrsderiv;
     }
     else if (bside == 2)
     {
       nodid = nodesid[i] - m_fbnode;
-      fderiv = m_nblfderiv;
-      sderiv = m_nbrsderiv;
+      fderiv = &m_nblfderiv;
+      sderiv = &m_nbrsderiv;
     }
     else{
       return false;
     }
 
-    if (fderiv[nodid].getY() >= m_nodatavalue)
+    if ((*fderiv)[nodid].getY() >= m_nodatavalue)
     {
       zu[i] = 0.; zv[i] = 0.;
     }
     else
     {
-      zu[i] = a * fderiv[nodid].getX() +
-        c * fderiv[nodid].getY();
-      zv[i] = b * fderiv[nodid].getX() +
-        d * fderiv[nodid].getY();
+      zu[i] = a * (*fderiv)[nodid].getX() +
+        c * (*fderiv)[nodid].getY();
+      zv[i] = b * (*fderiv)[nodid].getX() +
+        d * (*fderiv)[nodid].getY();
     }
-    if (sderiv[nodid].getZ() >= m_nodatavalue)
+    if ((*sderiv)[nodid].getZ() >= m_nodatavalue)
     {
       zuu[i] = 0.;
       zuv[i] = 0.;
@@ -2915,15 +2915,15 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
     }
     else
     {
-      zuu[i] = aa * sderiv[nodid].getX() +
-        2.*a*c * (double)sderiv[nodid].getZ() +
-        cc * sderiv[nodid].getY();
-      zuv[i] = a*b * sderiv[nodid].getX() +
-        (ad + bc) * (double)sderiv[nodid].getZ() +
-        c*d * sderiv[nodid].getY();
-      zvv[i] = bb * sderiv[nodid].getX() +
-        2.*b*d * (double)sderiv[nodid].getZ() +
-        dd * sderiv[nodid].getY();
+      zuu[i] = aa * (*sderiv)[nodid].getX() +
+        2.*a*c * (double)(*sderiv)[nodid].getZ() +
+        cc * (*sderiv)[nodid].getY();
+      zuv[i] = a*b * (*sderiv)[nodid].getX() +
+        (ad + bc) * (double)(*sderiv)[nodid].getZ() +
+        c*d * (*sderiv)[nodid].getY();
+      zvv[i] = bb * (*sderiv)[nodid].getX() +
+        2.*b*d * (double)(*sderiv)[nodid].getZ() +
+        dd * (*sderiv)[nodid].getY();
     }
   }
 
@@ -3040,8 +3040,10 @@ bool te::mnt::Tin::FillGridValue(int32_t triid, int32_t flin, int32_t llin, int3
   te::gm::PointZ pg;
   te::gm::Coord2D cg;
 
-  for (nlin = flin; nlin <= llin; nlin++){
-    for (ncol = fcol; ncol <= lcol; ncol++){
+  for (nlin = flin; nlin <= llin; nlin++)
+  {
+    for (ncol = fcol; ncol <= lcol; ncol++)
+    {
       cg = m_rst->getGrid()->gridToGeo(ncol, nlin);
       pg.setX(cg.getX());
       pg.setY(cg.getY());

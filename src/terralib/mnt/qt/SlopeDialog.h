@@ -88,6 +88,9 @@ namespace te
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
 
+      mntType m_inputType;  //!< Input type (TIN, GRID)
+
+
     }; //class SlopeDialog
   } //mnt
 } //te

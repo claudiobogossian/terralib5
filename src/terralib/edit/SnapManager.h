@@ -95,6 +95,8 @@ namespace te
 
         void reg(const std::string& name, const SnapStrategyFnctType& strategy);
 
+        void clearStrategies();
+
       protected:
 
         /*! \brief It initializes the singleton instance of the snap manager. */

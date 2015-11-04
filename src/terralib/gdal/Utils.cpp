@@ -1008,6 +1008,8 @@ void te::gdal::createGeopackage(std::string outFileName)
 
 void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName)
 {
+  te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
+
   const char *gpkgFormat = "GPKG";
   GDALDriver *gpkgDriver;
   gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
@@ -1017,8 +1019,7 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
   papszOptions = CSLSetNameValue(papszOptions, "TILING_SCHEME", "InspireCRS84Quad");
   papszOptions = CSLSetNameValue(papszOptions, "ZOOM_LEVEL_STRATEGY", "LOWER");
 
-  te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
-  GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);
+  GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);;
 
   unsigned int levels = gdalRaster->getMultiResLevelsCount();
   if (levels > 0)
@@ -1040,109 +1041,3 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
   GDALClose((GDALDatasetH)poDstDS);
 }
 
-std::auto_ptr<te::rst::Raster> te::gdal::NormalizeRaster(te::rst::Raster* inraster, double nmin, double nmax, std::map<std::string, std::string> rInfo, std::string type)
-{
-  size_t col = 0;
-  size_t row = 0;
-  size_t bandIdx = 0;
-
-  double value = 0;
-  double minValue = std::numeric_limits< double >::max();
-  double maxValue = std::numeric_limits< double >::min();
-
-  const unsigned int inNRows = inraster->getNumberOfRows();
-  const unsigned int inNCols = inraster->getNumberOfColumns();
-
-  size_t bands = inraster->getNumberOfBands();
-  std::vector<size_t> colorbands;
-
-  for (bandIdx = 0; bandIdx < bands; ++bandIdx)
-  {
-    te::rst::Band& band = *inraster->getBand(bandIdx);
-    te::rst::ColorInterp color = band.getProperty()->m_colorInterp;
-    if (color == te::rst::RedCInt ||
-      color == te::rst::GreenCInt ||
-      color == te::rst::BlueCInt ||
-      color == te::rst::AlphaCInt || 
-      color == te::rst::GrayIdxCInt)
-      colorbands.push_back(bandIdx);
-  }
-
-  //Checking the min & max values from the raster bands
-  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
-  {
-    te::rst::Band& band = *inraster->getBand(colorbands[bandIdx]);
-    const double noDataValue = band.getProperty()->m_noDataValue;
-    
-    for (row = 0; row < inNRows; ++row)
-    {
-      for (col = 0; col < inNCols; ++col)
-      {
-        band.getValue(col, row, value);
-        if (value != noDataValue)
-        {
-          if (value < minValue)
-            minValue = value;
-
-          if (value > maxValue)
-            maxValue = value;
-        }
-      }
-    }
-  }
-
-  double gain = (double)(nmax - nmin) / (maxValue - minValue);
-  double offset = -1 * gain*minValue + nmin;
-
-  //Creating the output Raster file
-  std::vector<te::rst::BandProperty*> bandsProperties;
-
-  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
-  {
-    te::rst::BandProperty* bandProp = new te::rst::BandProperty(colorbands[bandIdx], te::dt::UCHAR_TYPE);
-    te::rst::Band& inBand = *inraster->getBand(colorbands[bandIdx]);
-    bandProp->m_colorInterp = inBand.getProperty()->m_colorInterp;
-    bandsProperties.push_back(bandProp);
-  }
-
-  te::rst::Grid* grid = new te::rst::Grid(*(inraster->getGrid()));
-  te::rst::Raster* rasterNormalized = te::rst::RasterFactory::make(type, grid, bandsProperties, rInfo);
-
-  //Normalizing the values on the output Raster
-
-  for (bandIdx = 0; bandIdx < colorbands.size(); ++bandIdx)
-  {
-    te::rst::Band& band = *inraster->getBand(colorbands[bandIdx]);
-
-    const double noDataValue = band.getProperty()->m_noDataValue;
-
-    for (row = 0; row < inNRows; ++row)
-    {
-      for (col = 0; col < inNCols; ++col)
-      {
-        try
-        {
-          band.getValue(col, row, value);
-
-          if (value == noDataValue)
-          {
-            value = 0;
-          }
-          else
-          {
-            double normalizeValue = (value * gain + offset);
-            rasterNormalized->setValue(col, row, normalizeValue, bandIdx);
-          }
-        }
-        catch (...)
-        {
-          continue;
-        }
-      }
-    }
-  }
-
-  std::auto_ptr<te::rst::Raster> rOut(rasterNormalized);
-
-  return rOut;
-}

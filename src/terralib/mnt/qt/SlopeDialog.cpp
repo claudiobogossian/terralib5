@@ -65,6 +65,8 @@ te::mnt::SlopeDialog::SlopeDialog(QWidget* parent, Qt::WindowFlags f)
   //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
 
+  connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
+
   connect(m_ui->m_sloperadioButton, SIGNAL(toggled(bool)), this, SLOT(onSlopeToggled()));
   connect(m_ui->m_aspectradioButton, SIGNAL(toggled(bool)), this, SLOT(onAspectToggled()));
 
@@ -124,6 +126,39 @@ void te::mnt::SlopeDialog::onInputComboBoxChanged(int index)
     if (layerID == it->get()->getId().c_str())
     {
       m_inputLayer = it->get();
+      std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
+      if (dsType->hasRaster()) //GRID
+      {
+        te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(dsType.get());
+        te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
+        te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
+        std::auto_ptr<te::da::DataSet> dsRaster = inDataSource->getDataSet(indsLayer->getDataSetName());
+        std::auto_ptr<te::rst::Raster> in_raster = dsRaster->getRaster(rasterProp->getName());
+        m_ui->m_resXLineEdit->setText(QString::number(in_raster->getResolutionX()));
+        m_ui->m_resYLineEdit->setText(QString::number(in_raster->getResolutionY()));
+        m_ui->m_dimCLineEdit->setText(QString::number(in_raster->getNumberOfColumns()));
+        m_ui->m_dimLLineEdit->setText(QString::number(in_raster->getNumberOfRows()));
+        m_ui->m_resXLineEdit->setEnabled(false);
+        m_ui->m_resYLineEdit->setEnabled(false);
+        m_ui->m_dimCLineEdit->setEnabled(false);
+        m_ui->m_dimLLineEdit->setEnabled(false);
+        m_ui->m_dummycheckBox->setVisible(true);
+        m_ui->m_dummylineEdit->setVisible(true);
+        m_ui->m_dummylineEdit->setText(QString::number(in_raster->getBand(0)->getProperty()->m_noDataValue));
+        in_raster.release();
+        dsRaster.release();
+        m_inputType = GRID;
+      }
+      else
+      {
+        m_ui->m_dummycheckBox->setVisible(false);
+        m_ui->m_dummylineEdit->setVisible(false);
+        m_ui->m_resXLineEdit->setEnabled(true);
+        m_ui->m_resYLineEdit->setEnabled(true);
+        m_ui->m_dimCLineEdit->setEnabled(true);
+        m_ui->m_dimLLineEdit->setEnabled(true);
+        m_inputType = TIN;
+      }
       break;
     }
     ++it;
@@ -336,7 +371,9 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
   else
     slope = 'p';
 
-  decl->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), grad, slope);
+  double dummy = m_ui->m_dummylineEdit->text().toDouble();
+
+  decl->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), grad, slope, m_inputLayer->getSRID(), dummy);
 
   decl->run();
 

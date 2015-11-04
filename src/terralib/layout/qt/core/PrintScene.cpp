@@ -29,6 +29,8 @@
 #include "PrintScene.h"
 #include "../../core/PaperConfig.h"
 #include "../../core/enum/Enums.h"
+#include "BuildGraphicsOutside.h"
+#include "../outside/PDFSettingsOutside.h"
 #include "Scene.h"
 
 // STL
@@ -46,7 +48,8 @@
 
 te::layout::PrintScene::PrintScene( QGraphicsScene* scene ):
   m_scene(scene),
-  m_printState(te::layout::NoPrinter)
+  m_printState(te::layout::NoPrinter),
+  m_currentPdfDpi(150)
 {
  
 }
@@ -258,10 +261,35 @@ void te::layout::PrintScene::print()
 
 bool te::layout::PrintScene::exportToPDF()
 { 
-  QWidget* wg = (QWidget*)QApplication::desktop();
-  QString fileName = QFileDialog::getSaveFileName(wg, tr("Save Image File"), QDir::currentPath(), tr("PDF Files (*.pdf)"));
+  BuildGraphicsOutside build;
+  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+  QWidget* outside = build.createOuside(type->getPDFSettingsDialog());
+  PDFSettingsOutside* pdfSettings = dynamic_cast<PDFSettingsOutside*>(outside);
+  pdfSettings->setCurrentDPI(m_currentPdfDpi);
+    
+  QString fileName;
+  bool    willExport = true;
+  
+  int result = pdfSettings->exec();  
+        
+  if (result == QDialog::Accepted)
+  {
+    std::string txt = pdfSettings->getFilePath();
+    fileName = QString::fromStdString(txt);
+    m_currentPdfDpi = pdfSettings->getDPI();
+  }
+  else if (result == QDialog::Rejected)
+  {
+    willExport = false;
+  }
+      
+  if (pdfSettings)
+  {
+    delete pdfSettings;
+    pdfSettings = 0;
+  }
 
-  if(fileName.isEmpty())
+  if (!willExport || fileName.isEmpty())
   {
     return false;
   }
@@ -271,8 +299,7 @@ bool te::layout::PrintScene::exportToPDF()
   printer->setOutputFormat(QPrinter::PdfFormat);
   printer->setOutputFileName(fileName);
 
-  //as the default parameter for the printer is High Resolution, we restrict the DPI of the PDF file to 600 to avoid print problems
-  printer->setResolution(600);
+  printer->setResolution(m_currentPdfDpi);
 
   m_printState = PrintingScene;
 

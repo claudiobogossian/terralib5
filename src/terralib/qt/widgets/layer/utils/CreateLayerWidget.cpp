@@ -335,6 +335,8 @@ void te::qt::widgets::CreateLayerWidget::listProperties()
   }
 
   m_ui->m_tableWidget->resizeColumnsToContents();
+  #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
   m_ui->m_tableWidget->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+  #endif
 }
 

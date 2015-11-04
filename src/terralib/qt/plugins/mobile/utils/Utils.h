@@ -43,8 +43,14 @@ namespace te
         std::auto_ptr<te::da::DataSource> createGeopackage(std::string gpkgName);
 
         void exportToGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, std::string outFileName, const te::gm::Envelope extent);
+        
+        std::auto_ptr<te::rst::Raster> NormalizeRaster(te::rst::Raster* inraster, double nmin, double nmax,
+          std::map<std::string, std::string> rInfo, std::string type);
 
         void queryGPKG(std::string query, te::da::DataSource* dsGPKG);
+
+        std::vector<std::string> getItemNames(std::string type, te::da::DataSource* dsGPKG);
+
       }   // end namespace terramobile
     }     // end namespace plugins
   }       // end namespace qt

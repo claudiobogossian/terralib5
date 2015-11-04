@@ -27,6 +27,7 @@
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
+#include "AbstractPlugin.h"
 #include "CppPluginEngineFactory.h"
 #include "Module.h"
 #include "PluginInfo.h"
@@ -85,7 +86,7 @@ void te::plugin::Module::finalize()
 #if TE_AUTOMATICALLY_LOAD_DEFAULT_XML_PLUGIN
   if(sg_xercesPlugins)
   {
-    te::plugin::PluginManager::getInstance().unload(sg_xercesPlugins);
+    sg_xercesPlugins->shutdown();
   }
 #endif
 

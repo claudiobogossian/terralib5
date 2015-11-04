@@ -70,6 +70,7 @@ namespace te
 
         typedef std::map<RasterThreshold, te::color::RGBAColor> CategorizedMap;
         typedef std::map<RasterThreshold, te::color::ColorBar> InterpolatedMap;
+        typedef std::map<int, te::color::RGBAColor> RecodedMap;
 
         //! The three channels of a display
         enum RGBChannels 
@@ -91,8 +92,9 @@ namespace te
           BLUE2THREE_TRANSF=5,
           CATEGORIZE_TRANSF=6,
           INTERPOLATE_TRANSF=7,
-          BAND2BAND_TRANSF=8,
-          EXTRACT2RGBA_TRANSF,
+          RECODE_TRANSF = 8,
+          BAND2BAND_TRANSF=9,
+          EXTRACT2RGBA_TRANSF
         };
 
       public:
@@ -194,6 +196,12 @@ namespace te
         /*! Gets the categorize map information */
         InterpolatedMap& getInterpolatedMap() { return m_interpolateMap; }
 
+        /*! Sets the recode map information */
+        void setRecodedMap(RecodedMap map) { m_recodeMap = map; }
+
+        /*! Gets the recode map information */
+        RecodedMap& getRecodedMap() { return m_recodeMap; }
+
         /*! 
           \brief Set parameters of linear transformation
         
@@ -272,6 +280,12 @@ namespace te
         /*! This transformation get the value of the selected band in input  and get the interpolated value */
         te::color::RGBAColor getInterpolate(double icol, double ilin);
 
+        /*! This transformation get the value of the selected band in input  and set the recoded value in output bands of the output */
+        void setRecode(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation get the value of the selected band in input  and get the recoded value */
+        te::color::RGBAColor getRecode(double icol, double ilin);
+
         /*! This transformation repeats the value of the n band in input to b band in output */
         void setBand2Band(double icol, double ilin, double ocol, double olin);
 
@@ -291,6 +305,9 @@ namespace te
 
         /*! Function used to get the categorized color given a pixel value */
         te::color::RGBAColor getCategorizedColor(double value);
+
+        /*! Function used to get the recoded color given a pixel value */
+        te::color::RGBAColor getRecodedColor(double value);
 
       private:
 
@@ -316,6 +333,7 @@ namespace te
 
         CategorizedMap m_categorizeMap;           //!< Attribute to define the categorized transformation.
         InterpolatedMap m_interpolateMap;         //!< Attribute to define the interpolated transformation.
+        RecodedMap m_recodeMap;                  //!< Attribute to define the recoded transformation.
     };
 
   } // end namespace map

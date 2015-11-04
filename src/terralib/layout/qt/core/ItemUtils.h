@@ -182,6 +182,17 @@ namespace te
           */
         virtual QRectF getMinimumTextBoundary(const std::string& fontName, int fontSize, const std::string& text) const;
 
+        /*!
+        \brief Vectorizes a text by creating a painter path that contains it
+        \param text The text to be vectorizes
+        \param font The font properties
+        \param dpi The [optional] current DPI. If DPI is different from 72., than the resulting text point size will be ajusted to the given DPI
+        \param referencePoint The [optional] reference point where the painter path must be traslated
+        \param rotationAngle The [optional] rotation angle
+        
+        */
+        virtual QPainterPath textToVector(const QString& text, const QFont& font, double dpi = 72., const QPointF& referencePoint = QPointF(), double rotationAngle = 0.);
+
         void changeViewMode(EnumType* mode);
 
         virtual AbstractItemView* getSelectedItem();

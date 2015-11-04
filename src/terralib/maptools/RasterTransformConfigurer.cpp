@@ -247,6 +247,12 @@ void te::map::RasterTransformConfigurer::getColorMapInformation()
 
     getInterpolatedMap(m_rstSymbolizer->getColorMap()->getInterpolate());
   }
+  else if (m_rstSymbolizer->getColorMap()->getRecode())
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::RECODE_TRANSF);
+    
+    getRecodedMap(m_rstSymbolizer->getColorMap()->getRecode());
+  }
   else
   {
     m_rstTransform->setTransfFunction(te::map::RasterTransform::NO_TRANSF);
@@ -318,4 +324,22 @@ void te::map::RasterTransformConfigurer::getCategorizedMap(te::se::Categorize* c
   }
 
   m_rstTransform->setCategorizedMap(map);
+}
+
+void te::map::RasterTransformConfigurer::getRecodedMap(te::se::Recode* recode)
+{
+  te::map::RasterTransform::RecodedMap map;
+
+  std::vector<te::se::MapItem*> mItems = recode->getMapItems();
+
+  for (std::size_t i = 0; i < mItems.size(); ++i)
+  {
+    std::string colorName = te::se::GetString(mItems[i]->getValue());
+    te::color::RGBAColor color(colorName);
+    color.setColor(color.getRed(), color.getGreen(), color.getBlue());
+
+    map.insert(te::map::RasterTransform::RecodedMap::value_type(mItems[i]->getData(), color));
+  }
+
+  m_rstTransform->setRecodedMap(map);
 }

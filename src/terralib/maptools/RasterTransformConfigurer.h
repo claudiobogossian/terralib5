@@ -43,6 +43,7 @@ namespace te
     class SelectedChannel;
     class Interpolate;
     class Categorize;
+    class Recode;
   }
   
   namespace rst 
@@ -111,6 +112,9 @@ namespace te
 
         /*! Function used to get the color map Categorized information */
         void getCategorizedMap(te::se::Categorize* caterogize);
+
+        /*! Function used to get the color map Recoded information */
+        void getRecodedMap(te::se::Recode* recode);
 
 
       private:
