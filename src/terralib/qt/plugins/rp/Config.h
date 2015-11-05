@@ -108,7 +108,7 @@
 
 \brief It defines if the RP Qt Plugin has the rasterization operation.
 */
-//#define TE_QT_PLUGIN_RP_HAVE_RASTERIZATION
+#define TE_QT_PLUGIN_RP_HAVE_RASTERIZATION
 
 /*!
   \def TE_QT_PLUGIN_RP_HAVE_REGISTER

@@ -65,7 +65,10 @@
 
 te::qt::widgets::RasterizationWizardPage::RasterizationWizardPage(QWidget *parent)
   : QWizardPage(parent),
-    m_cb(0)
+    m_cb(0),
+    m_colorBar(0),
+    m_toFile(true),
+    m_manual(false)
 {
   m_ui.reset(new Ui::RasterizationWizardPageForm);
 
@@ -306,6 +309,8 @@ void te::qt::widgets::RasterizationWizardPage::onTableWidgetItemDoubleClicked(QT
     m_ui->m_tableWidget->setItem(curRow, 0, newItem);
 
     delete dialog;
+
+    m_manual = true;
 
     updateUi(true);
 
