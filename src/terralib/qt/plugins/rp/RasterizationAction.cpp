@@ -20,6 +20,8 @@
 
 #include "RasterizationAction.h"
 
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/af/ApplicationController.h"
 #include "../../../qt/widgets/rp/RasterizationWizard.h"
 
@@ -41,7 +43,30 @@ void te::qt::plugins::rp::RasterizationAction::onActionActivated(bool checked)
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  dlg.setList( layersList );
+  std::list<te::map::AbstractLayerPtr> utils;
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = layersList.begin();
+
+  while (it != layersList.end())
+  {
+    std::auto_ptr<te::da::DataSetType> type = (*it)->getSchema();
+
+    if (type->hasRaster())
+    {
+      ++it;
+      continue;
+    }
+
+    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(type.get());
+    if (gp->getGeometryType() == te::gm::PolygonType || gp->getGeometryType() == te::gm::MultiPolygonType)
+    {
+      utils.push_back(*it);
+    }
+
+    ++it;
+  }
+
+  dlg.setList(utils);
 
   if(dlg.exec() == QDialog::Accepted)
   {

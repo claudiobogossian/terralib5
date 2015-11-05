@@ -110,7 +110,6 @@ bool te::qt::widgets::RasterizationWizard::validateCurrentPage()
 void te::qt::widgets::RasterizationWizard::setList(std::list<te::map::AbstractLayerPtr> &layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
-  m_layerSearchPage->getSearchWidget()->filterOnlyByGeom();
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::RasterizationWizard::getOutputLayer()
