@@ -31,6 +31,7 @@
 #include "../../../memory/DataSet.h"
 #include "../../../memory/DataSetItem.h"
 #include "../../../raster/BandProperty.h"
+#include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../qt/widgets/rp/Utils.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/RasterFactory.h"
@@ -142,12 +143,20 @@ void te::qt::widgets::RasterizationWizard::setDummy(te::rst::Raster* rst, const 
 
 bool te::qt::widgets::RasterizationWizard::execute()
 {
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     m_vectorPage->validate();
   }
   catch (const te::common::Exception& e)
   {
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this, tr("Rasterization"), e.what());
     return false;
   }
@@ -170,6 +179,8 @@ bool te::qt::widgets::RasterizationWizard::execute()
 
   if (infos.empty())
   {
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this, tr("Rasterization"), tr("None legend was created!"));
     return false;
   }
@@ -204,6 +215,10 @@ bool te::qt::widgets::RasterizationWizard::execute()
     std::vector<te::gm::Geometry*> geoms;
     std::vector<double> values;
   
+    te::common::TaskProgress task;
+    task.setMessage(TE_TR("Preparing..."));
+    task.setTotalSteps((int)data->size());
+    
     while (data->moveNext())
     {
       std::string classItem = data->getValue(attrName)->toString();
@@ -218,6 +233,8 @@ bool te::qt::widgets::RasterizationWizard::execute()
         geoms.push_back(geom.release());
         values.push_back(infos[classItem][0]);
       }
+
+      task.pulse();
     }
 
     rst->rasterize(geoms, values, 0);
@@ -269,9 +286,9 @@ bool te::qt::widgets::RasterizationWizard::execute()
   }
   catch (const std::exception& e)
   {
-    std::string aaa = e.what();
-    std::string vvvv = "";
-
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    QApplication::restoreOverrideCursor();
+    QMessageBox::warning(this, tr("Rasterization"), e.what());
     return false;
   }
 
