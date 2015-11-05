@@ -76,7 +76,8 @@ OGRFieldType GetOGRType(int te_type)
 
 te::ogr::Transactor::Transactor(DataSource* ds)
   : te::da::DataSourceTransactor(),
-    m_ogrDs(ds)
+    m_ogrDs(ds),
+    m_fid(0)
 {
 }
 
@@ -281,7 +282,7 @@ void te::ogr::Transactor::cancel()
 
 boost::int64_t te::ogr::Transactor::getLastGeneratedId()
 {
-  return 0;
+  return m_fid;
 }
 
 std::string te::ogr::Transactor::escape(const std::string& value)
@@ -1098,6 +1099,8 @@ void te::ogr::Transactor::add(const std::string& datasetName,
         OGRFeature::DestroyFeature(feat);
         throw Exception(TE_TR("Fail to insert dataset item."));
       }
+
+      m_fid = feat->GetFID();
 
       OGRFeature::DestroyFeature(feat);
       nProcessedRows++;

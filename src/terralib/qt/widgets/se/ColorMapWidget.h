@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../se/Enums.h"
 #include "../Config.h"
 
 // Qt
@@ -118,6 +119,8 @@ namespace te
           void buildRecodingMap();
 
           std::vector<std::string> getValues();
+
+          void updateTableHeader(te::se::ColorMapTransformationType type);
 
         protected slots:
 

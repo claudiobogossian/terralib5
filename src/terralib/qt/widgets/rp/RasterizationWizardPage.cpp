@@ -17,6 +17,9 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
+// Boost - Don't change the this include order
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 //Terralib
 #include "../../../color/ColorBar.h"
@@ -48,11 +51,13 @@
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QPainter>
 
 // BOOST
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 //#define MAX_SLICES 200
 //#define PRECISION 15
@@ -85,6 +90,7 @@ te::qt::widgets::RasterizationWizardPage::RasterizationWizardPage(QWidget *paren
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
   connect(m_ui->m_loadPushButton, SIGNAL(clicked()), this, SLOT(onLoadPushButtonClicked()));
+  connect(m_ui->m_savePushButton, SIGNAL(clicked()), this, SLOT(onSavePushButtonClicked()));
   connect(m_ui->m_selectAllPushButton, SIGNAL(clicked()), this, SLOT(onSelectAllPushButtonClicked()));
   connect(m_ui->m_unselectAllPushButton, SIGNAL(clicked()), this, SLOT(onUnselectAllPushButtonClicked()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
@@ -309,7 +315,122 @@ void te::qt::widgets::RasterizationWizardPage::onTableWidgetItemDoubleClicked(QT
 
 void te::qt::widgets::RasterizationWizardPage::onLoadPushButtonClicked()
 {
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open..."),
+    QString(), tr("LEG (*.leg *.LEG);;"), 0, QFileDialog::DontConfirmOverwrite);
 
+  if (fileName.isEmpty())
+    return;
+
+  m_ui->m_tableWidget->setRowCount(0);
+
+  boost::property_tree::ptree pt;
+  boost::property_tree::json_parser::read_json(fileName.toStdString(), pt);
+
+  boost::property_tree::ptree legend = pt.get_child("Legend");
+
+  std::string attrName = legend.get<std::string>("Attribute");
+  std::string precision = legend.get<std::string>("Precision");
+
+  m_ui->m_attrComboBox->setCurrentText(attrName.c_str());
+  m_ui->m_precSpinBox->setValue(boost::lexical_cast<double>(precision));
+
+  std::vector<std::vector<std::string> > items;
+
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v, legend.get_child("Items"))
+  {
+    std::vector<std::string> item;
+    item.push_back(v.second.get<std::string>("ClassName"));
+    item.push_back(v.second.get<std::string>("Red"));
+    item.push_back(v.second.get<std::string>("Green"));
+    item.push_back(v.second.get<std::string>("Blue"));
+
+    items.push_back(item);
+  }
+
+  m_ui->m_tableWidget->setRowCount(items.size());
+
+  for (std::size_t i = 0; i < items.size(); ++i)
+  {
+    m_ui->m_tableWidget->setItem(i, 0, new QTableWidgetItem(items[i][0].c_str()));
+    m_ui->m_tableWidget->setItem(i, 1, new QTableWidgetItem(items[i][1].c_str()));
+    m_ui->m_tableWidget->setItem(i, 2, new QTableWidgetItem(items[i][2].c_str()));
+    m_ui->m_tableWidget->setItem(i, 3, new QTableWidgetItem(items[i][3].c_str()));
+
+    QColor color;
+    color.setRgb(boost::lexical_cast<int>(items[i][1]), boost::lexical_cast<int>(items[i][2]), boost::lexical_cast<int>(items[i][3]));
+
+    QPixmap pix(24, 24);
+    QPainter p(&pix);
+
+    p.fillRect(0, 0, 12, 24, color);
+    p.fillRect(12, 0, 12, 24, color);
+    p.setBrush(Qt::transparent);
+    p.setPen(Qt::black);
+    p.drawRect(0, 0, 23, 23);
+
+    QIcon icon(pix);
+
+    QTableWidgetItem* item = new QTableWidgetItem(icon, "");
+    //item->setBackgroundColor(color);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_ui->m_tableWidget->setItem(i, 4, item);
+
+    {
+      QTableWidgetItem* item = new QTableWidgetItem();
+      item->setCheckState(Qt::Checked);
+      m_ui->m_tableWidget->setItem(i, 5, item);
+    }
+
+  }
+
+}
+
+void te::qt::widgets::RasterizationWizardPage::onSavePushButtonClicked()
+{
+  int rowCount = m_ui->m_tableWidget->rowCount();
+
+  if (rowCount < 1)
+    return;
+
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+    QString(), tr("LEG (*.leg *.LEG);;"), 0, QFileDialog::DontConfirmOverwrite);
+
+  if (fileName.isEmpty())
+    return;
+
+  boost::property_tree::ptree pt;
+  boost::property_tree::ptree legend;
+
+  std::string attrName = m_ui->m_attrComboBox->currentText().toStdString();
+  std::string precision = m_ui->m_precSpinBox->text().toStdString();
+
+  legend.add("Attribute", attrName);
+  legend.add("Precision", precision);
+
+  boost::property_tree::ptree items;
+
+  for (std::size_t i = 0; i < m_ui->m_tableWidget->rowCount(); ++i)
+  {
+    std::string idx = boost::lexical_cast<std::string>(i + 1);
+    std::string className = m_ui->m_tableWidget->item(i, 0)->text().toStdString();
+    std::string r = m_ui->m_tableWidget->item(i, 1)->text().toStdString();
+    std::string g = m_ui->m_tableWidget->item(i, 2)->text().toStdString();
+    std::string b = m_ui->m_tableWidget->item(i, 3)->text().toStdString();
+
+    boost::property_tree::ptree item;
+    item.add("ClassName", className);
+    item.add("Red", r);
+    item.add("Green", g);
+    item.add("Blue", b);
+
+    items.add_child("Item", item);
+  }
+
+  legend.add_child("Items", items);
+
+  pt.add_child("Legend", legend);
+
+  boost::property_tree::write_json(fileName.toStdString(), pt);
 }
 
 void te::qt::widgets::RasterizationWizardPage::getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues)
@@ -850,6 +971,9 @@ std::map<std::string, std::vector<int> > te::qt::widgets::RasterizationWizardPag
 
   for (std::size_t i = 0; i < m_ui->m_tableWidget->rowCount(); ++i)
   {
+    if (m_ui->m_tableWidget->item(i, 5)->checkState() != Qt::Checked)
+      continue;
+
     std::vector<int> v;
     v.push_back((int)i+1);
     v.push_back(m_ui->m_tableWidget->item(i, 1)->text().toInt());

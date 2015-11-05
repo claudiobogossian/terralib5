@@ -168,12 +168,18 @@ bool te::qt::widgets::RasterizationWizard::execute()
 
   std::map<std::string, std::vector<int> > infos = m_vectorPage->getInformations();
 
+  if (infos.empty())
+  {
+    QMessageBox::warning(this, tr("Rasterization"), tr("None legend was created!"));
+    return false;
+  }
+
   te::rst::Grid* grid = new te::rst::Grid(resX, resY, env, srid);
 
   // create bands
   std::vector<te::rst::BandProperty*> vecBandProp;
 
-  te::rst::BandProperty* bProp = createBandProperty(infos.size());// new te::rst::BandProperty(0, te::dt::INT32_TYPE, "");
+  te::rst::BandProperty* bProp = createBandProperty(infos.size());
   bProp->m_noDataValue = 0;
 
   vecBandProp.push_back(bProp); 
@@ -200,12 +206,15 @@ bool te::qt::widgets::RasterizationWizard::execute()
   
     while (data->moveNext())
     {
-      std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
       std::string classItem = data->getValue(attrName)->toString();
+
+      if (infos.find(classItem) == infos.end())
+        continue;
+
+      std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
 
       if (geom->isValid())
       {
-
         geoms.push_back(geom.release());
         values.push_back(infos[classItem][0]);
       }

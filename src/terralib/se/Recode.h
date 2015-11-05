@@ -111,7 +111,7 @@ namespace te
         void setLookupValue(ParameterValue* v);
         void add(MapItem* m);
 
-        std::vector<MapItem*> getMapItems();
+        std::vector<MapItem*> getMapItems() const;
 
         //@}
 
