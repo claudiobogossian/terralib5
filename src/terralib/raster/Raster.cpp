@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/progress/TaskProgress.h"
 #include "../common/STLUtils.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
@@ -703,6 +704,9 @@ void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<do
     }
   }
 
+  te::common::TaskProgress task;
+  task.setTotalSteps(g.size());
+
   for (unsigned int i = 0; i < g.size(); i++)
   {
     te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (g[i]);
@@ -716,5 +720,7 @@ void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<do
 
       ++it;
     }
+
+    task.pulse();
   }
 }
