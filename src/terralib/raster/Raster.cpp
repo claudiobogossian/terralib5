@@ -706,8 +706,7 @@ void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<do
 
   te::common::TaskProgress task;
   task.setTotalSteps(g.size());
-
-  std::string cancelMessage = TE_TR("Rasterize operation canceled!");
+  task.setMessage(TE_TR("Rasterizing..."));
 
   for (unsigned int i = 0; i < g.size(); i++)
   {
@@ -724,7 +723,7 @@ void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<do
     }
 
     if (!task.isActive())
-      throw te::common::Exception(TE_TR(cancelMessage));
+      throw te::common::Exception(TE_TR("Rasterize operation canceled!"));
 
     task.pulse();
   }

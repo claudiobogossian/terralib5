@@ -97,6 +97,8 @@ namespace te
 
           QTableWidget* getTableWidget();
 
+          void saveLegend(const std::string& path);
+
         private:
 
           /*! \brief Updates the widget form based on internal fill element. */

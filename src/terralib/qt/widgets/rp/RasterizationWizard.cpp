@@ -283,9 +283,13 @@ bool te::qt::widgets::RasterizationWizard::execute()
       cm->setRecode(r);
     }
 
-      te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(m_outputLayer->getStyle());
+    te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(m_outputLayer->getStyle());
+    rs->setColorMap(cm);
 
-      rs->setColorMap(cm);
+    boost::filesystem::path p(uri);
+    p.replace_extension("leg");
+
+    m_vectorPage->saveLegend(p.string());
 
   }
   catch (const std::exception& e)
