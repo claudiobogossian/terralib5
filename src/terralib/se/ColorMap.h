@@ -39,6 +39,7 @@ namespace te
 // Forward declarations
     class Categorize;
     class Interpolate;
+    class Recode;
 
     /*!
       \class ColorMap
@@ -94,6 +95,10 @@ namespace te
 
         Interpolate* getInterpolate() const;
 
+        void setRecode(Recode* i);
+
+        Recode* getRecode() const;
+
         //@}
 
         ColorMap* clone() const;
@@ -102,6 +107,7 @@ namespace te
 
         Categorize*  m_categorize;  //!< Categorize function. (Mandatory if interpolate_ is not defined or empty otherwise)
         Interpolate* m_interpolate; //!< Interpolate function. (Mandatory if categorize_ is not defined or empty otherwise)
+        Recode*      m_recode; //!< Recode function.
     };
 
   } // end namespace se

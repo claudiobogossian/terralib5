@@ -33,6 +33,7 @@
 #include "CreateIsolinesAction.h"
 #include "MNTGenerationAction.h"
 #include "SlopeAction.h"
+#include "SmoothAction.h"
 #include "TINGenerationAction.h"
 #include "Plugin.h"
 
@@ -155,9 +156,14 @@ void te::qt::plugins::mnt::Plugin::registerActions()
   connect(m_ISOGeneration, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_ISOGeneration->getAction());
 
+  m_Smooth = new te::qt::plugins::mnt::SmoothAction(m_mntMenu);
+  connect(m_Smooth, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Smooth->getAction());
+
   m_Slope = new te::qt::plugins::mnt::SlopeAction(m_mntMenu);
   connect(m_Slope, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Slope->getAction());
+
 }
 
 void  te::qt::plugins::mnt::Plugin::unRegisterActions()
@@ -166,6 +172,7 @@ void  te::qt::plugins::mnt::Plugin::unRegisterActions()
   delete m_MNTGeneration;
   delete m_ISOGeneration;
   delete m_Slope;
+  delete m_Smooth;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::mnt::Plugin)

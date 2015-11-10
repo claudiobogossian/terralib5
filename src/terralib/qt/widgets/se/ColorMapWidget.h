@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../se/Enums.h"
 #include "../Config.h"
 
 // Qt
@@ -117,11 +118,17 @@ namespace te
 
           void buildRecodingMap();
 
+          std::vector<std::string> getValues();
+
+          void updateTableHeader(te::se::ColorMapTransformationType type);
+
         protected slots:
 
           void onApplyPushButtonClicked();
 
           void onBandSelected(QString value);
+
+          void onTransformComboBoxCurrentIndexChanged(int index);
 
           void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
 

@@ -34,10 +34,29 @@ te::se::Recode::Recode()
 {
 }
 
+te::se::Recode::Recode(const Recode& rhs)
+  : m_lookupValue(0)
+{
+  if (rhs.m_lookupValue)
+  {
+    m_lookupValue = rhs.m_lookupValue->clone();
+  }
+
+  for (std::size_t i = 0; i < rhs.m_mapItems.size(); ++i)
+  {
+    add(rhs.m_mapItems[i]->clone());
+  }
+}
+
 te::se::Recode::~Recode()
 {
   delete m_lookupValue;
   te::common::FreeContents(m_mapItems);
+}
+
+te::se::Recode* te::se::Recode::clone() const
+{
+  return new Recode(*this);
 }
 
 void te::se::Recode::setLookupValue(ParameterValue* v)
@@ -49,4 +68,9 @@ void te::se::Recode::setLookupValue(ParameterValue* v)
 void te::se::Recode::add(MapItem* m)
 {
   m_mapItems.push_back(m);
+}
+
+std::vector<te::se::MapItem*> te::se::Recode::getMapItems() const
+{
+  return m_mapItems;
 }

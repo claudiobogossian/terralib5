@@ -59,6 +59,7 @@ te::map::RasterTransform::~RasterTransform()
 {
   m_categorizeMap.clear();
   m_interpolateMap.clear();
+  m_recodeMap.clear();
   m_rgbMap.clear();
 }
 
@@ -150,6 +151,11 @@ te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTra
   {
     return INTERPOLATE_TRANSF;
   }
+  else  if (m_transfFuncPtr == &RasterTransform::setRecode &&
+    m_RGBAFuncPtr == &RasterTransform::getRecode)
+  {
+    return RECODE_TRANSF;
+  }
   else  if (m_transfFuncPtr == &RasterTransform::setBand2Band)
   {
     return BAND2BAND_TRANSF;
@@ -196,6 +202,11 @@ void te::map::RasterTransform::setTransfFunction(RasterTransfFunctions func)
   {
     m_transfFuncPtr = &RasterTransform::setInterpolate;
     m_RGBAFuncPtr = &RasterTransform::getInterpolate;
+  }
+  else if (func == RECODE_TRANSF)
+  {
+    m_transfFuncPtr = &RasterTransform::setRecode;
+    m_RGBAFuncPtr = &RasterTransform::getRecode;
   }
   else if (func == BAND2BAND_TRANSF)
   {
@@ -563,6 +574,34 @@ te::color::RGBAColor te::map::RasterTransform::getInterpolate(double icol, doubl
   return te::color::RGBAColor();
 }
 
+void te::map::RasterTransform::setRecode(double icol, double ilin, double ocol, double olin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
+
+  te::color::RGBAColor c = getRecodedColor(val);
+
+  std::vector<double> vecValues;
+  vecValues.push_back(c.getRed());
+  vecValues.push_back(c.getGreen());
+  vecValues.push_back(c.getBlue());
+
+  m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+}
+
+te::color::RGBAColor te::map::RasterTransform::getRecode(double icol, double ilin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
+
+  if (checkNoValue(val, m_monoBand) == false)
+    return getRecodedColor(val);
+
+  return te::color::RGBAColor();
+}
+
 void te::map::RasterTransform::setBand2Band(double icol, double ilin, double ocol, double olin)
 {
  double val;
@@ -651,4 +690,9 @@ te::color::RGBAColor te::map::RasterTransform::getCategorizedColor(double value)
   }
 
   return te::color::RGBAColor();
+}
+
+te::color::RGBAColor te::map::RasterTransform::getRecodedColor(double value)
+{
+  return m_recodeMap[(int)value];
 }

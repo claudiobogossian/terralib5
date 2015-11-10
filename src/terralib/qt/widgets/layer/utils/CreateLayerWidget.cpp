@@ -51,6 +51,7 @@ te::qt::widgets::CreateLayerWidget::CreateLayerWidget(QWidget* parent, Qt::Windo
   // add controls
   m_ui->setupUi(this);
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_addToolButton->setIcon(QIcon::fromTheme("list-add"));
 
   //add new property widget
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
@@ -64,7 +65,7 @@ te::qt::widgets::CreateLayerWidget::CreateLayerWidget(QWidget* parent, Qt::Windo
   m_removeMapper = new QSignalMapper(this);
 
   //connects
-  connect(m_ui->m_addPushButton, SIGNAL(clicked()), this, SLOT(onAddPushButtonClicked()));
+  connect(m_ui->m_addToolButton, SIGNAL(pressed()), this, SLOT(onAddPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
@@ -205,20 +206,10 @@ void te::qt::widgets::CreateLayerWidget::onAddPushButtonClicked()
 
     m_props.push_back(sp);
 
-    QString msg = tr("<font color='green'>Property ");
-    msg.append(sp->getName().c_str());
-    msg.append(" created.</font>");
-
-    m_ui->m_label->setText(msg);
-
     if (m_outputDatasource.get())
       m_newPropWidget->setDataSourceId(m_outputDatasource->getId());
 
     listProperties();
-  }
-  else
-  {
-    m_ui->m_label->setText("<font color='red'>Error creating property.</font>");
   }
 }
 

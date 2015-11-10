@@ -60,9 +60,11 @@ namespace te
     class InterpolationPoint;
     class LabelPlacement;
     class LinePlacement;
+    class MapItem;
     class Mark;
     class ParameterValue;
     class PointPlacement;
+    class Recode;
     class Rule;
     class SelectedChannel;
     class ShadedRelief;
@@ -149,6 +151,10 @@ namespace te
 
       TESEEXPORT void Save(const te::se::LinePlacement* lp, te::xml::AbstractWriter& writer);
 
+      TESEEXPORT te::se::MapItem* ReadMapItem(te::xml::Reader& reader);
+
+      TESEEXPORT void Save(const te::se::MapItem* mapItem, te::xml::AbstractWriter& writer);
+
       TESEEXPORT te::se::Mark* ReadMark(te::xml::Reader& reader);
 
       TESEEXPORT void Save(const te::se::Mark* mark, te::xml::AbstractWriter& writer);
@@ -164,6 +170,10 @@ namespace te
       TESEEXPORT te::se::PointPlacement* ReadPointPlacement(te::xml::Reader& reader);
 
       TESEEXPORT void Save(const te::se::PointPlacement* pp, te::xml::AbstractWriter& writer);
+
+      TESEEXPORT te::se::Recode* ReadRecode(te::xml::Reader& reader);
+
+      TESEEXPORT void Save(const te::se::Recode* rule, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Rule* ReadRule(te::xml::Reader& reader);
 

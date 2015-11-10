@@ -31,13 +31,16 @@
 #include "../../../memory/DataSet.h"
 #include "../../../memory/DataSetItem.h"
 #include "../../../raster/BandProperty.h"
+#include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../qt/widgets/rp/Utils.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/RasterFactory.h"
 #include "../../../se/Categorize.h"
 #include "../../../se/ColorMap.h"
+#include "../../../se/MapItem.h"
 #include "../../../se/ParameterValue.h"
 #include "../../../se/RasterSymbolizer.h"
+#include "../../../se/Recode.h"
 #include "../../../se/Utils.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
@@ -107,7 +110,6 @@ bool te::qt::widgets::RasterizationWizard::validateCurrentPage()
 void te::qt::widgets::RasterizationWizard::setList(std::list<te::map::AbstractLayerPtr> &layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
-  m_layerSearchPage->getSearchWidget()->filterOnlyByGeom();
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::RasterizationWizard::getOutputLayer()
@@ -124,14 +126,33 @@ void te::qt::widgets::RasterizationWizard::addPages()
   addPage(m_vectorPage.get());
 }
 
+void te::qt::widgets::RasterizationWizard::setDummy(te::rst::Raster* rst, const double dummyValue)
+{
+  int rows = rst->getNumberOfRows();
+  int cols = rst->getNumberOfColumns();
+
+  for (int r = 0; r < rows; ++r)
+  {
+    for (int c = 0; c < cols; ++c)
+    {
+      rst->setValue(c, r, dummyValue);
+    }
+  }
+}
+
 bool te::qt::widgets::RasterizationWizard::execute()
 {
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     m_vectorPage->validate();
   }
   catch (const te::common::Exception& e)
   {
+    te::common::ProgressManager::getInstance().removeViewer(id);
     QMessageBox::warning(this, tr("Rasterization"), e.what());
     return false;
   }
@@ -144,21 +165,30 @@ bool te::qt::widgets::RasterizationWizard::execute()
   double resY = m_vectorPage->getResY();
   int srid = m_vectorPage->getSrid();
 
+  std::string uriStr = m_vectorPage->getRepositoryName();
+
+  boost::filesystem::path uri(uriStr);
+
+  std::string attrName = m_vectorPage->getAttributeName();
+
+  std::map<std::string, std::vector<int> > infos = m_vectorPage->getInformations();
+
+  if (infos.empty())
+  {
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    QMessageBox::warning(this, tr("Rasterization"), tr("None legend was created!"));
+    return false;
+  }
+
   te::rst::Grid* grid = new te::rst::Grid(resX, resY, env, srid);
 
   // create bands
   std::vector<te::rst::BandProperty*> vecBandProp;
 
-  te::rst::BandProperty* bProp = new te::rst::BandProperty(0, te::dt::INT32_TYPE, "");
-
-  //if (m_setDummy == true)
-    //bProp->m_noDataValue = m_dummy;
+  te::rst::BandProperty* bProp = createBandProperty(infos.size());
+  bProp->m_noDataValue = 0;
 
   vecBandProp.push_back(bProp); 
-
-  std::string uriStr = m_vectorPage->getRepositoryName();
-
-  boost::filesystem::path uri(uriStr);
 
   std::map<std::string, std::string> dsinfo;
   dsinfo["URI"] = uri.string();
@@ -168,30 +198,46 @@ bool te::qt::widgets::RasterizationWizard::execute()
     // create raster
     std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", grid, vecBandProp, dsinfo));
 
+    setDummy(rst.get(), 0);
+
     std::auto_ptr<te::da::DataSetType> schema = m_inputLayer->getSchema();
     std::auto_ptr<te::da::DataSet> data = m_inputLayer->getData();
 
     std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(data.get());
 
-    std::string attrName = m_vectorPage->getAttributeName();
-
-    std::map<std::string, std::vector<int> > infos = m_vectorPage->getInformations();
-
     data->moveBeforeFirst();
 
     std::vector<te::gm::Geometry*> geoms;
     std::vector<double> values;
-  
-    while (data->moveNext())
+
     {
-      std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
-      std::string classItem = data->getValue(attrName)->toString();
+      te::common::TaskProgress task;
+      task.setMessage(TE_TR("Preparing..."));
+      task.setTotalSteps((int)data->size());
 
-      if (geom->isValid())
+      while (data->moveNext())
       {
+        std::string classItem = data->getValue(attrName)->toString();
 
-        geoms.push_back(geom.release());
-        values.push_back(infos[classItem][0]);
+        if (infos.find(classItem) == infos.end())
+          continue;
+
+        std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
+
+        if (geom->isValid())
+        {
+          geoms.push_back(geom.release());
+          values.push_back(infos[classItem][0]);
+        }
+
+        if (!task.isActive())
+        {
+          te::common::ProgressManager::getInstance().removeViewer(id);
+          QMessageBox::warning(this, tr("Rasterize"), tr("Rasterize operation canceled!"));
+          return false;
+        }
+
+        task.pulse();
       }
     }
 
@@ -203,17 +249,11 @@ bool te::qt::widgets::RasterizationWizard::execute()
 
     std::vector<te::map::GroupingItem*> items = m_vectorPage->getGroupingItems();
 
-    te::se::Categorize* c = new te::se::Categorize();
-    c->setFallbackValue("#000000");
-    c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
+    te::se::Recode* r = new te::se::Recode();
+    r->setFallbackValue("#000000");
+    r->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
     te::se::ColorMap* cm = new te::se::ColorMap;
-
-    QColor cWhite(Qt::white);
-    std::string colorWhiteStr = cWhite.name().toLatin1().data();
-
-    //added dummy color for values < than min values...
-    c->addValue(new te::se::ParameterValue(colorWhiteStr));
 
     QTableWidget* table = m_vectorPage->getTableWidget();
 
@@ -223,50 +263,43 @@ bool te::qt::widgets::RasterizationWizard::execute()
     for (it = infos.begin(); it != infos.end(); ++it)
     {
       QColor color;
-      color.setRed(it->second[1]);
-      color.setGreen(it->second[2]);
-      color.setBlue(it->second[3]);
+      color.setRgb(it->second[1], it->second[2], it->second[3]);
 
-      std::string rangeStr = QString::number(it->second[0]).toStdString();//table->item(count, 0)->text().toStdString();
+      double dataDouble = it->second[0];
       std::string colorStr = color.name().toStdString();
 
-      c->addThreshold(new te::se::ParameterValue(rangeStr));
-      c->addValue(new te::se::ParameterValue(colorStr));
+      te::se::MapItem* m = new te::se::MapItem();
+      m->setValue(new te::se::ParameterValue(colorStr));
+      m->setData(dataDouble);
+      m->setTitle(it->first);
 
-      if (count == table->rowCount() - 1)
-      {
-        rangeStr = table->item(count, 0)->text().toStdString();
-        c->addThreshold(new te::se::ParameterValue(rangeStr));
-      }
-
-      items[count]->setTitle(it->first);
-
-      ++count;
+      r->add(m);
     }
-
-    c->addValue(new te::se::ParameterValue(colorWhiteStr));
-
-    c->setThresholdsBelongTo(te::se::Categorize::SUCCEEDING);
 
     if (cm)
     {
-      cm->setCategorize(c);
+      cm->setCategorize(0);
       cm->setInterpolate(0);
+      cm->setRecode(r);
     }
 
     te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(m_outputLayer->getStyle());
-
     rs->setColorMap(cm);
 
-    
+    boost::filesystem::path p(uri);
+    p.replace_extension("leg");
+
+    m_vectorPage->saveLegend(p.string());
+
   }
   catch (const std::exception& e)
   {
-    std::string aaa = e.what();
-    std::string vvvv = "";
-
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    QMessageBox::warning(this, tr("Rasterization"), e.what());
     return false;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   return true;
 }
@@ -325,3 +358,16 @@ void te::qt::widgets::RasterizationWizard::saveDataSet(te::mem::DataSet* dataSet
   ds->add(dataSetName, dataSet, options);
 }
 
+te::rst::BandProperty* te::qt::widgets::RasterizationWizard::createBandProperty(const std::size_t size)
+{
+  int nbytes = std::ceil((log(size) / log(2.)) / 8);
+
+  if (nbytes <= 1)
+    return new te::rst::BandProperty(0, te::dt::CHAR_TYPE, "");
+  else if (nbytes <= 2)
+    return new te::rst::BandProperty(0, te::dt::INT16_TYPE, "");
+  else if (nbytes <= 4)
+    return new te::rst::BandProperty(0, te::dt::INT32_TYPE, "");
+  else
+    return new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "");
+}
