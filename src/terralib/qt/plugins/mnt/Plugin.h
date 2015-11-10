@@ -45,12 +45,18 @@ namespace te
       }
     }
 
+    namespace widgets
+    {
+      class LayerItemView;
+    }
+
     namespace plugins
     {
       namespace mnt
       {
         class CreateIsolinesAction;
         class MNTGenerationAction;
+        class ShowValuesAction;
         class SlopeAction;
         class SmoothAction;
         class TINGenerationAction;
@@ -69,6 +75,9 @@ namespace te
 
             void shutdown();
 
+            protected slots:
+            void onApplicationTriggered(te::qt::af::evt::Event* e);
+
           protected:
 
             /*!
@@ -83,6 +92,8 @@ namespace te
             */
             void unRegisterActions();
 
+            te::qt::widgets::LayerItemView* getLayerExplorer();
+
           Q_SIGNALS:
 
             void triggered(te::qt::af::evt::Event* e);
@@ -94,6 +105,7 @@ namespace te
 
             CreateIsolinesAction* m_ISOGeneration;    //!< Isoline Generation Action
             MNTGenerationAction*  m_MNTGeneration;    //!< GRID Generation Action
+            ShowValuesAction*     m_ShowValue;
             SlopeAction*          m_Slope;            //!< Slope Generation Action
             SmoothAction*         m_Smooth;           //!< Smooth Isolines Action
             TINGenerationAction*  m_TINGeneration;    //!< TIN Generation Action

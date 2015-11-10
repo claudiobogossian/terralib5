@@ -39,7 +39,7 @@
 te::qt::plugins::mnt::SmoothAction::SmoothAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("Smooth Isoline...").toStdString(), "mnt-processing-smooth isoline");
+  createAction(tr("Isolines Smooth ...").toStdString(), "mnt-processing-isolines smooth");
   m_action->setObjectName("Processing.DTM Processing.SMOOTH");
 }
 
