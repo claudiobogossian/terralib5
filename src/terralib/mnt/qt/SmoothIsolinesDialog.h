@@ -65,6 +65,7 @@ namespace te
       protected slots:
 
       void onInputComboBoxChanged(int index);
+      void onScalePushButtonClicked();
       void onTargetDatasourceToolButtonPressed();
       void onTargetFileToolButtonPressed();
       void onHelpPushButtonClicked();
@@ -82,7 +83,9 @@ namespace te
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
 
-      mntType m_inputType;  //!< Input type (TIN, GRID)
+      double m_scale;
+      double m_factor;
+      double m_maxdist;
     }; //class SmoothIsolinesDialog
   } //mnt
 } //te

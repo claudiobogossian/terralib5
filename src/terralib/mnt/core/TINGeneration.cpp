@@ -97,7 +97,7 @@ bool te::mnt::TINGeneration::run()
   nsamples = ReadPoints(m_inDsetName_point, m_inDsrc_point, m_atrZ_point, m_tolerance, mpt, geostype, env);
   setEnvelope(env);
 
-  nsamples += ReadSamples(m_inDsetName_sample, m_inDsrc_sample, m_atrZ_sample, m_tolerance, m_maxdist, false, mptiso, isolines_simp, geostype, env);
+  nsamples += ReadSamples(m_inDsetName_sample, m_inDsrc_sample, m_atrZ_sample, m_tolerance, m_maxdist, AccumulatedDistance, mptiso, isolines_simp, geostype, env);
   setEnvelope(env);
 
 
@@ -1113,11 +1113,18 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
     m_line[ai].setNodeTo(vn);
     m_line[ai].setNodeFrom(vk); // this is vi
   }
-
-  if (m_node[vi].getEdge() == ai)
-    m_node[vi].setEdge(ak);
-  if (m_node[vj].getEdge() == ai)
-    m_node[vj].setEdge(aj);
+  std::vector<int32_t> edge_vi = m_node[vi].getEdge();
+  for (size_t i_vi = 0; i_vi < edge_vi.size(); i_vi++)
+  {
+    if (edge_vi[i_vi] == ai)
+      m_node[vi].setEdge(edge_vi[i_vi]);
+  }
+  std::vector<int32_t> edge_vj = m_node[vj].getEdge();
+  for (size_t i_vj = 0; i_vj < edge_vj.size(); i_vj++)
+  {
+    if (edge_vj[i_vj] == ai)
+      m_node[vj].setEdge(aj);
+  }
 
   //    1.2. Troque na aresta an o triângulo tv pelo triângulo t.
   if (m_line[an].getRightPolygon() == tv)
@@ -1986,7 +1993,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
           minpt.setX(pf.getX());
           minpt.setY(pf.getY());
         }
-        if (onSameSide(pf, pn, pt1, pt2) != 1)
+        if (onSameSide(te::gm::Coord2D(pf.getX(), pf.getY()), te::gm::Coord2D(pn.getX(), pn.getY()), te::gm::Coord2D(pt1.getX(), pt1.getY()), te::gm::Coord2D(pt2.getX(), pt2.getY())) != 1)
         {
           pt.setX(pf.getX());
           pt.setY(pf.getY());
@@ -2003,7 +2010,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
           minpt.setX(pn.getX());
           minpt.setY(pn.getY());
         }
-        if (onSameSide(pf, pn, pt1, pt2) != 1)
+        if (onSameSide(te::gm::Coord2D(pf.getX(), pf.getY()), te::gm::Coord2D(pn.getX(), pn.getY()), te::gm::Coord2D(pt1.getX(), pt1.getY()), te::gm::Coord2D(pt2.getX(), pt2.getY())) != 1)
         {
           pt.setX(pn.getX());
           pt.setY(pn.getY());
@@ -2020,7 +2027,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
           minpt.setX(pt1.getX());
           minpt.setY(pt1.getY());
         }
-        if (onSameSide(pf, pn, pt1, pt2) != 1)
+        if (onSameSide(te::gm::Coord2D(pf.getX(), pf.getY()), te::gm::Coord2D(pn.getX(), pn.getY()), te::gm::Coord2D(pt1.getX(), pt1.getY()), te::gm::Coord2D(pt2.getX(), pt2.getY())) != 1)
         {
           pt.setX(pt1.getX());
           pt.setY(pt1.getY());
@@ -2037,7 +2044,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
           minpt.setX(pt2.getX());
           minpt.setY(pt2.getY());
         }
-        if (onSameSide(pf, pn, pt1, pt2) != 1)
+        if (onSameSide(te::gm::Coord2D(pf.getX(), pf.getY()), te::gm::Coord2D(pn.getX(), pn.getY()), te::gm::Coord2D(pt1.getX(), pt1.getY()), te::gm::Coord2D(pt2.getX(), pt2.getY())) != 1)
         {
           pt.setX(pt2.getX());
           pt.setY(pt2.getY());
@@ -2151,7 +2158,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
             minpt.setX(pf.getX());
             minpt.setY(pf.getY());
           }
-          if (onSameSide(pf, pn, pt1, pt2) != 1)
+          if (onSameSide(te::gm::Coord2D(pf.getX(), pf.getY()), te::gm::Coord2D(pn.getX(), pn.getY()), te::gm::Coord2D(pt1.getX(), pt1.getY()), te::gm::Coord2D(pt2.getX(), pt2.getY())) != 1)
           {
             pt.setX(pf.getX());
             pt.setY(pf.getY());
@@ -2168,7 +2175,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
             minpt.setX(pn.getX());
             minpt.setY(pn.getY());
           }
-          if (onSameSide(pf, pn, pt1, pt2) != 1)
+          if (onSameSide(te::gm::Coord2D(pf.getX(), pf.getY()), te::gm::Coord2D(pn.getX(), pn.getY()), te::gm::Coord2D(pt1.getX(), pt1.getY()), te::gm::Coord2D(pt2.getX(), pt2.getY())) != 1)
           {
             pt.setX(pn.getX());
             pt.setY(pn.getY());
@@ -2185,7 +2192,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
             minpt.setX(pt1.getX());
             minpt.setY(pt1.getY());
           }
-          if (onSameSide(pf, pn, pt1, pt2) != 1)
+          if (onSameSide(te::gm::Coord2D(pf.getX(), pf.getY()), te::gm::Coord2D(pn.getX(), pn.getY()), te::gm::Coord2D(pt1.getX(), pt1.getY()), te::gm::Coord2D(pt2.getX(), pt2.getY())) != 1)
           {
             pt.setX(pt1.getX());
             pt.setY(pt1.getY());
@@ -2202,7 +2209,7 @@ bool te::mnt::TINGeneration::FindInterPoints(te::gm::PointZ &pf, te::gm::PointZ 
             minpt.setX(pt2.getX());
             minpt.setY(pt2.getY());
           }
-          if (onSameSide(pf, pn, pt1, pt2) != 1)
+          if (onSameSide(te::gm::Coord2D(pf.getX(), pf.getY()), te::gm::Coord2D(pn.getX(), pn.getY()), te::gm::Coord2D(pt1.getX(), pt1.getY()), te::gm::Coord2D(pt2.getX(), pt2.getY())) != 1)
           {
             pt.setX(pt2.getX());
             pt.setY(pt2.getY());
@@ -2761,15 +2768,19 @@ bool te::mnt::TINGeneration::borderUp()
         //If, there is the reference, changes it to another adjacent edge.
         if (from != -1)
         {
-          if (m_node[from].getEdge() == lii)//vertex from
+          std::vector<int32_t> edge = m_node[from].getEdge();
+          for (size_t i_e = 0; i_e < edge.size(); i_e++)
           {
-            NodeLines(from, edgesadj);
-            for (size_t iAdj = 0; iAdj < edgesadj.size(); iAdj++)
+            if (edge[i_e] == lii)//vertex from
             {
-              if (edgesadj[iAdj] != -1 && edgesadj[iAdj] != lii)
+              NodeLines(from, edgesadj);
+              for (size_t iAdj = 0; iAdj < edgesadj.size(); iAdj++)
               {
-                m_node[from].setEdge(edgesadj[iAdj]);
-                break;
+                if (edgesadj[iAdj] != -1 && edgesadj[iAdj] != lii)
+                {
+                  m_node[from].setEdge(edgesadj[iAdj]);
+                  break;
+                }
               }
             }
           }
@@ -2777,15 +2788,19 @@ bool te::mnt::TINGeneration::borderUp()
 
         if (to != -1)
         {
-          if (m_node[to].getEdge() == lii)//vertex to
+          std::vector<int32_t> edge = m_node[to].getEdge();
+          for (size_t i_e = 0; i_e < edge.size(); i_e++)
           {
-            NodeLines(to, edgesadj);
-            for (size_t iAdj = 0; iAdj < edgesadj.size(); iAdj++)
+            if (edge[i_e] == lii)//vertex to
             {
-              if (edgesadj[iAdj] != -1 && edgesadj[iAdj] != lii)
+              NodeLines(to, edgesadj);
+              for (size_t iAdj = 0; iAdj < edgesadj.size(); iAdj++)
               {
-                m_node[to].setEdge(edgesadj[iAdj]);
-                break;
+                if (edgesadj[iAdj] != -1 && edgesadj[iAdj] != lii)
+                {
+                  m_node[to].setEdge(edgesadj[iAdj]);
+                  break;
+                }
               }
             }
           }

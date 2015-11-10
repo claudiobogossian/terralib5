@@ -33,6 +33,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../mnt/core/TINGeneration.h"
+#include "../../mnt/core/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
@@ -502,21 +503,3 @@ te::map::AbstractLayerPtr te::mnt::TINGenerationDialog::getLayer()
   return m_outputLayer;
 }
 
-bool te::mnt::TINGenerationDialog::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit)
-{
-  switch (unit->getId())
-  {
-  case te::common::UOM_Metre:
-    val /= 111000;            // 1 degree = 111.000 meters
-    break;
-  case te::common::UOM_Kilometre:
-    val /= 111;               // 1 degree = 111 kilometers
-    break;
-  case te::common::UOM_Foot:
-    val /= 364173.24;        //  1 feet  = 3.28084 meters
-    break;
-  default:
-    return false;
-  }
-  return true;
-}

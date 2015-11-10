@@ -38,6 +38,12 @@ std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, i
   te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
   te::gm::MultiLineString isolines_simp(0, te::gm::MultiLineStringZType, m_srid);
   std::string geostype;
+  Simplify alg;
+
+  if (spline)
+    alg = Spline;
+  else
+    alg = AccumulatedDistance;
 
   // Get samples
   size_t nsamples;
@@ -45,7 +51,7 @@ std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, i
 
   nsamples = ReadPoints(m_inDsetName, m_inDsrc, m_attrZ, m_tolerance, mpt, geostype, env);
   if (!nsamples)
-    nsamples = ReadSamples(m_inDsetName, m_inDsrc, m_attrZ, m_tolerance, m_tolerance, spline, mpt, isolines_simp, geostype, env);
+    nsamples = ReadSamples(m_inDsetName, m_inDsrc, m_attrZ, m_tolerance, m_tolerance, alg, mpt, isolines_simp, geostype, env);
   setEnvelope(env);
 
   //Create greater box 1/2 resolution

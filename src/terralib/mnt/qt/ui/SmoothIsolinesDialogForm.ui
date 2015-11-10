@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>309</width>
-    <height>552</height>
+    <height>494</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,6 +47,16 @@
       <item>
        <widget class="QComboBox" name="m_layersComboBox"/>
       </item>
+      <item>
+       <widget class="QLabel" name="m_Zlabel">
+        <property name="text">
+         <string>Quota Column:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="m_ZcomboBox"/>
+      </item>
      </layout>
     </widget>
    </item>
@@ -74,6 +84,24 @@
          </item>
          <item>
           <widget class="QPushButton" name="m_scalePushButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="text">
             <string>OK</string>
            </property>
@@ -181,42 +209,6 @@
       </item>
       <item>
        <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="m_joinCheckBox">
-        <property name="text">
-         <string>Join Lines</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="m_joinGroupBox">
-        <property name="title">
-         <string>Join Lines Parameters</string>
-        </property>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="m_quotaLabel">
-           <property name="text">
-            <string>Quota Column:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="m_distanceJoinLabel">
-           <property name="text">
-            <string>Maximum Distance (m):</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QComboBox" name="m_quotaComboBox"/>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="m_distanceJoinLineEdit"/>
-         </item>
-        </layout>
-       </widget>
       </item>
      </layout>
     </widget>

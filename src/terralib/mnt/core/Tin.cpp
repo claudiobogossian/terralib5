@@ -8,7 +8,6 @@
 #include "Tin.h"
 #include "Utils.h"
 
-#include "../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../dataaccess/utils/Utils.h"
 
 #include "../../datatype/Property.h"
@@ -148,6 +147,16 @@ bool te::mnt::TinNode::operator< (const TinNode &rhs) const
   else
     return false;
 }
+
+bool te::mnt::TinNode::setEdge(int32_t edge) 
+{
+  if (std::find(m_edge.begin(), m_edge.end(), edge) == m_edge.end()) {
+    m_edge.push_back(edge);
+    return true;
+  }
+  return false;
+}
+
 
 void te::mnt::Tin::setSRID(int srid)
 {
@@ -308,7 +317,8 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
               // As arestas a1 e a2 são as arestas diferentes de ai do triângulo t,
               if (lids[j] != ai)
               {
-                aam.push_back(lids[j]);
+                if (std::find(aam.begin(), aam.end(), lids[j]) == aam.end())
+                  aam.push_back(lids[j]);
               }
             }
 
@@ -466,103 +476,126 @@ bool te::mnt::Tin::ContainsPoint(int32_t triangId, te::gm::PointZ &pt)
 
 bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
 {
-  int32_t td, te, a, ai, ti, aaux, taux,
+  int32_t td, te, ai, ti, aaux, taux,
     ao,
     lids[3];
   short j;
+  std::vector<int32_t> a;
 
   //  Find one line that contains node
   a = FindLine(v);
-  if (a == -1)
+  if (!a.size())
     return false;
 
-  // 1. Defina td como sendo o triângulo que está à direita da 
-  // aresta a e te como sendo o triângulo que está à esquerda de a,
-  td = m_line[a].getRightPolygon();
-  te = m_line[a].getLeftPolygon();
-
-  // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
-  ai = a;
-  ti = td;
-
-  // 3. Se o triângulo ti não for nulo, insira aresta ao de ti 
-  // que não é diretamente conectado a v no conjunto A,
-  if (ti != -1)
+  for (size_t i = 0; i < a.size(); i++)
   {
-    ao = OppositeEdge(ti, v);
-    if (ao == -1)
-      return false;
-    linids.push_back(ao); // A = lines
-  }
+    if (a[i] == -1) continue;
+    // 1. Defina td como sendo o triângulo que está à direita da 
+    // aresta a e te como sendo o triângulo que está à esquerda de a,
+    td = m_line[a[i]].getRightPolygon();
+    te = m_line[a[i]].getLeftPolygon();
 
-  // 4. Enquanto ti for diferente do triângulo te,
-  while (ti != te)
-  {
-    // 4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
-    if (ti == -1)
-    {
-      // 4.1.1. Defina ti como sendo o triângulo te,
-      ti = te;
-      // 4.1.2. Defina te como sendo nulo,
-      te = -1;
-      // 4.1.3. Defina ai como sendo aresta a,
-      ai = a;
-      // 4.1.4. Se o triângulo ti não for nulo, insira aresta ao 
-      // de ti que não é diretamente conectado a v no conjunto A,
-      if (ti != -1)
-      {
-        ao = OppositeEdge(ti, v);
-        if (ao == -1)
-          return false;
-        linids.push_back(ao); // A = lines
-      }
+    // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
+    ai = a[i];
+    ti = td;
 
-      // 4.1.5. Returns to 4.
-      continue;
-    }
-
-    // 4.2. Defines edge aaux of ti triangle that conects the v vertex and is different of ai 
-    if (!m_triang[ti].LinesId(lids))
-      return false;
-
-    for (j = 0; j < 3; j++)
-    {
-      if (lids[j] == ai)
-        continue;
-      if ((m_line[lids[j]].getNodeFrom() == v) ||
-        (m_line[lids[j]].getNodeTo() == v))
-        break;
-    }
-    if (j == 3){
-      return false;
-    }
-
-    aaux = lids[j];
-
-    // 4.3. Defines taux as the triangle that shares the aaux edge with ti 
-    if (m_line[aaux].getRightPolygon() == ti)
-      taux = m_line[aaux].getLeftPolygon();
-    else if (m_line[aaux].getLeftPolygon() == ti)
-      taux = m_line[aaux].getRightPolygon();
-    else{
-      return false;
-    }
-
-    // 4.4. Defines ti as taux triangle and ai as aaux edge
-    ti = taux;
-    ai = aaux;
-
-    // 4.5. If ti triangle isn't NULL, insert ao edge of ti that isn't directly connected to v in A set 
+    // 3. Se o triângulo ti não for nulo, insira aresta ao de ti 
+    // que não é diretamente conectado a v no conjunto A,
     if (ti != -1)
     {
       ao = OppositeEdge(ti, v);
       if (ao == -1)
-        return false;
-      linids.push_back(ao); // A = lines
+        //return false;
+        continue;
+      if (std::find(linids.begin(), linids.end(), ao) == linids.end())
+        linids.push_back(ao); // A = lines
+      else
+        continue;
     }
 
-    // 4.6. Returns to 4.
+    // 4. Enquanto ti for diferente do triângulo te,
+    while (ti != te)
+    {
+      // 4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
+      if (ti == -1)
+      {
+        // 4.1.1. Defina ti como sendo o triângulo te,
+        ti = te;
+        // 4.1.2. Defina te como sendo nulo,
+        te = -1;
+        // 4.1.3. Defina ai como sendo aresta a,
+        ai = a[i];
+        // 4.1.4. Se o triângulo ti não for nulo, insira aresta ao 
+        // de ti que não é diretamente conectado a v no conjunto A,
+        if (ti != -1)
+        {
+          ao = OppositeEdge(ti, v);
+          if (ao == -1)
+            //return false;
+            break;
+          if (std::find(linids.begin(), linids.end(), ao) == linids.end())
+            linids.push_back(ao); // A = lines
+          else
+            break;
+        }
+
+        // 4.1.5. Returns to 4.
+        continue;
+      }
+
+      // 4.2. Defines edge aaux of ti triangle that conects the v vertex and is different of ai 
+      if (!m_triang[ti].LinesId(lids))
+        //return false;
+        break;
+
+      for (j = 0; j < 3; j++)
+      {
+        if (lids[j] == ai)
+          continue;
+        if ((m_line[lids[j]].getNodeFrom() == v) ||
+          (m_line[lids[j]].getNodeTo() == v))
+          break;
+      }
+      if (j == 3){
+        //return false;
+        break;
+      }
+
+      aaux = lids[j];
+
+      // 4.3. Defines taux as the triangle that shares the aaux edge with ti 
+      if (m_line[aaux].getRightPolygon() == ti)
+        taux = m_line[aaux].getLeftPolygon();
+      else if (m_line[aaux].getLeftPolygon() == ti)
+        taux = m_line[aaux].getRightPolygon();
+      else{
+       // return false;
+        break;
+      }
+
+      // 4.4. Defines ti as taux triangle and ai as aaux edge
+      ti = taux;
+      ai = aaux;
+
+      // 4.5. If ti triangle isn't NULL, insert ao edge of ti that isn't directly connected to v in A set 
+      if (ti != -1)
+      {
+        ao = OppositeEdge(ti, v);
+        if (ao == -1)
+          //return false;
+          break;
+        if (std::find(linids.begin(), linids.end(), ao) == linids.end())
+          linids.push_back(ao); // A = lines
+        else
+          break;
+      }
+
+      // 4.6. Returns to 4.
+    }
   }
+  if (!linids.size())
+    return false;
+
   return true;
 }
 
@@ -589,15 +622,19 @@ int32_t te::mnt::Tin::OppositeEdge(int32_t triangId, int32_t nodeId)
   return lids[j];
 }
 
-int32_t te::mnt::Tin::FindLine(int32_t nid)
+std::vector<int32_t> te::mnt::Tin::FindLine(int32_t nid)
 {
-  int32_t linid = m_node[nid].getEdge();
+  std::vector<int32_t> linid = m_node[nid].getEdge();
 
   // Test to make sure there is no wrong index
-  if (linid != -1)
-    if ((m_line[linid].getNodeTo() == nid) ||
-      (m_line[linid].getNodeFrom() == nid))
-      return linid;
+  for (size_t i = 0; i < linid.size(); i++)
+  {
+    if (linid[i] == -1 || (m_line[linid[i]].getNodeTo() != nid) &&
+      (m_line[linid[i]].getNodeFrom() != nid))
+      linid.erase(linid.begin()+i);
+  }
+  if (linid.size())
+    return linid;
 
   static int32_t oldtri = 1;
   int32_t i, j, k, lids[3];
@@ -610,14 +647,90 @@ int32_t te::mnt::Tin::FindLine(int32_t nid)
     for (i = 0; i < m_ltriang; i++)
     {
       if (!m_triang[i].LinesId(lids))
-        return -1;
+        return linid;
       for (m = 0; m < 3; m++)
       {
         if ((m_line[lids[m]].getNodeFrom() == nid) ||
           (m_line[lids[m]].getNodeTo() == nid))
         {
           oldtri = i;
-          m_node[nid].setEdge(lids[m]);
+          if (m_node[nid].setEdge(lids[m]))
+            linid.push_back(lids[m]);
+        }
+      }
+    }
+    return linid;
+  }
+  j = oldtri;
+  k = oldtri + 1;
+  while ((j > 0) || (k < m_ltriang))
+  {
+    if (j > 0)
+    {
+      if (!m_triang[j].LinesId(lids))
+        return linid;
+      for (m = 0; m < 3; m++)
+      {
+        if ((m_line[lids[m]].getNodeFrom() == nid) ||
+          (m_line[lids[m]].getNodeTo() == nid))
+        {
+          oldtri = j;
+          if (m_node[nid].setEdge(lids[m]))
+            linid.push_back(lids[m]);
+        }
+      }
+      j--;
+    }
+    if (k < m_ltriang)
+    {
+      if (!m_triang[k].LinesId(lids))
+        return linid;
+      for (m = 0; m < 3; m++)
+      {
+        if ((m_line[lids[m]].getNodeFrom() == nid) ||
+          (m_line[lids[m]].getNodeTo() == nid))
+        {
+          oldtri = k;
+          if (m_node[nid].setEdge(lids[m]))
+            linid.push_back(lids[m]);
+        }
+      }
+      k++;
+    }
+  }
+  oldtri = 1;
+  return linid;
+
+}
+
+
+int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
+{
+  static int32_t oldtri = 1;
+  int32_t i, j, k, lids[3];
+  short m;
+
+  if ((oldtri < 0) || (oldtri >= m_ltriang))
+    oldtri = 0;
+  if (oldtri == 0)
+  {
+    for (i = 0; i < m_ltriang; i++)
+    {
+      if (!m_triang[i].LinesId(lids))
+        return -1;
+
+      for (m = 0; m < 3; m++)
+      {
+        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
+          (m_line[lids[m]].getNodeTo() == snid))
+        {
+          oldtri = i;
+          return lids[m];
+        }
+        if ((m_line[lids[m]].getNodeTo() == fnid) &&
+          (m_line[lids[m]].getNodeFrom() == snid))
+        {
+          oldtri = i;
           return lids[m];
         }
       }
@@ -632,13 +745,19 @@ int32_t te::mnt::Tin::FindLine(int32_t nid)
     {
       if (!m_triang[j].LinesId(lids))
         return -1;
+
       for (m = 0; m < 3; m++)
       {
-        if ((m_line[lids[m]].getNodeFrom() == nid) ||
-          (m_line[lids[m]].getNodeTo() == nid))
+        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
+          (m_line[lids[m]].getNodeTo() == snid))
         {
           oldtri = j;
-          m_node[nid].setEdge(lids[m]);
+          return lids[m];
+        }
+        if ((m_line[lids[m]].getNodeTo() == fnid) &&
+          (m_line[lids[m]].getNodeFrom() == snid))
+        {
+          oldtri = j;
           return lids[m];
         }
       }
@@ -648,13 +767,19 @@ int32_t te::mnt::Tin::FindLine(int32_t nid)
     {
       if (!m_triang[k].LinesId(lids))
         return -1;
+
       for (m = 0; m < 3; m++)
       {
-        if ((m_line[lids[m]].getNodeFrom() == nid) ||
-          (m_line[lids[m]].getNodeTo() == nid))
+        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
+          (m_line[lids[m]].getNodeTo() == snid))
         {
           oldtri = k;
-          m_node[nid].setEdge(lids[m]);
+          return lids[m];
+        }
+        if ((m_line[lids[m]].getNodeTo() == fnid) &&
+          (m_line[lids[m]].getNodeFrom() == snid))
+        {
+          oldtri = k;
           return lids[m];
         }
       }
@@ -663,86 +788,104 @@ int32_t te::mnt::Tin::FindLine(int32_t nid)
   }
   oldtri = 1;
   return -1;
-
 }
+
 
 bool te::mnt::Tin::NodeLines(int32_t v, std::vector<int32_t> &linids)
 {
-  int32_t td, te, a, ai, ti, aaux, taux = 0,
+  int32_t td, te, ai, ti, aaux, taux = 0,
     lids[3];
   short j;
+  std::vector<int32_t> a;
 
   // Find one line that contains node
   a = FindLine(v);
-  if (a == -1)
+  if (!a.size())
     return false;
 
-  // 1. Defina td como sendo o triângulo que está à direita da aresta a 
-  // e te como sendo o triângulo que está à esquerda de a,
-  td = m_line[a].getRightPolygon();
-  te = m_line[a].getLeftPolygon();
-
-  // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
-  ai = a;
-  ti = td;
-
-  // 3. Insira a aresta ai no conjunto A,
-  linids.push_back(ai); // A = linids
-
-  // 4. Enquanto ti for diferente do triângulo te,
-  while (ti != te)
+  for (size_t i = 0; i < a.size(); i++)
   {
-    //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
-    if (ti == -1)
-    {
-      //      4.1.1. Defina ti como sendo o triângulo te,
-      ti = te;
-      //      4.1.2. Defina te como sendo nulo,
-      te = -1;
-      //      4.1.3. Defina ai como sendo aresta a,
-      ai = a;
-      //      4.1.4. Retorne a 4.
+    if (a[i] == -1)
       continue;
-    }
+    // 1. Defina td como sendo o triângulo que está à direita da aresta a 
+    // e te como sendo o triângulo que está à esquerda de a,
+    td = m_line[a[i]].getRightPolygon();
+    te = m_line[a[i]].getLeftPolygon();
 
-    //    4.2. Defina a aresta aaux do triângulo ti que conecta o 
-    //    vértice v e é diferente de ai,
-    if (!m_triang[ti].LinesId(lids))
-      return false;
-    for (j = 0; j < 3; j++)
+    // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
+    ai = a[i];
+    ti = td;
+
+    // 3. Insira a aresta ai no conjunto A,
+    if (std::find(linids.begin(), linids.end(), ai) == linids.end())
+      linids.push_back(ai); // A = linids
+    else
+      continue;
+
+    // 4. Enquanto ti for diferente do triângulo te,
+    while (ti != te)
     {
-      if (lids[j] == ai)
+      //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
+      if (ti == -1)
+      {
+        //      4.1.1. Defina ti como sendo o triângulo te,
+        ti = te;
+        //      4.1.2. Defina te como sendo nulo,
+        te = -1;
+        //      4.1.3. Defina ai como sendo aresta a,
+        ai = a[i];
+        //      4.1.4. Retorne a 4.
         continue;
-      if ((m_line[lids[j]].getNodeFrom() == v) ||
-        (m_line[lids[j]].getNodeTo() == v))
+      }
+
+      //    4.2. Defina a aresta aaux do triângulo ti que conecta o 
+      //    vértice v e é diferente de ai,
+      if (!m_triang[ti].LinesId(lids))
+        //return false;
         break;
+      for (j = 0; j < 3; j++)
+      {
+        if (lids[j] == ai)
+          continue;
+        if ((m_line[lids[j]].getNodeFrom() == v) ||
+          (m_line[lids[j]].getNodeTo() == v))
+          break;
+      }
+      if (j == 3){
+       // return false;
+        break;
+      }
+
+      aaux = lids[j];
+
+      //    4.3. Defina taux como sendo o triângulo que compartilha a 
+      //    aresta aaux com ti,
+      if (m_line[aaux].getRightPolygon() == ti)
+        taux = m_line[aaux].getLeftPolygon();
+      else if (m_line[aaux].getLeftPolygon() == ti)
+        taux = m_line[aaux].getRightPolygon();
+      else{
+       // return false;
+        break;
+      }
+
+      //    4.4. Defina ti como sendo o triângulo taux e ai como 
+      //    sendo aresta aaux,
+      ti = taux;
+      ai = aaux;
+
+      //    4.5. 3. Insira a aresta ai no conjunto A,
+      if (std::find(linids.begin(), linids.end(), ai) == linids.end())
+        linids.push_back(ai); // A = linids
+      else
+        break;
+
+      //  4.6. Retorne a 4.
     }
-    if (j == 3){
-      return false;
-    }
-
-    aaux = lids[j];
-
-    //    4.3. Defina taux como sendo o triângulo que compartilha a 
-    //    aresta aaux com ti,
-    if (m_line[aaux].getRightPolygon() == ti)
-      taux = m_line[aaux].getLeftPolygon();
-    else if (m_line[aaux].getLeftPolygon() == ti)
-      taux = m_line[aaux].getRightPolygon();
-    else{
-      return false;
-    }
-
-    //    4.4. Defina ti como sendo o triângulo taux e ai como 
-    //    sendo aresta aaux,
-    ti = taux;
-    ai = aaux;
-
-    //    4.5. 3. Insira a aresta ai no conjunto A,
-    linids.push_back(ai); // A = linids
-
-    //  4.6. Retorne a 4.
   }
+  if (!linids.size())
+    return false;
+
   return true;
 }
 
@@ -876,88 +1019,99 @@ int32_t te::mnt::Tin::PreviousNode(int32_t nodeId)
 
 bool te::mnt::Tin::NodeNodes(int32_t v, std::vector<int32_t>& nodids)
 {
-  int32_t  td, te, a, ai, ti, aaux, taux = 0,
+  int32_t  td, te, ai, ti, aaux, taux = 0,
     nodeid,
     lids[3];
   short  j;
+  std::vector<int32_t> a;
 
   //  Find one line that contains node
   a = FindLine(v);
-  if (a == -1)
+  if (!a.size())
     return false;
 
-  //  1. Defina td como sendo o triângulo que está à direita da aresta a 
-  //    e te como sendo o triângulo que está à esquerda de a,
-  td = m_line[a].getRightPolygon();
-  te = m_line[a].getLeftPolygon();
-
-  //  2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
-  ai = a;
-  ti = td;
-
-  //  3. Insira o vértice diferente de v conectado à aresta ai
-  //    no conjunto V,
-  nodeid = m_line[ai].getNodeFrom();
-  if (nodeid == v)
-    nodeid = m_line[ai].getNodeTo();
-  nodids.push_back(nodeid); // V = nodids
-
-  //  4. Enquanto ti for diferente do triângulo te,
-  while (ti != te)
+  for (size_t i = 0; i < a.size(); i++)
   {
-    //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
-    if (ti == -1)
-    {
-      //      4.1.1. Defina ti como sendo o triângulo te,
-      ti = te;
-      //      4.1.2. Defina te como sendo nulo,
-      te = -1;
-      //      4.1.3. Defina ai como sendo aresta a,
-      ai = a;
-      //      4.1.4. Retorne a 4.
+    if (a[i] == -1)
       continue;
-    }
+    //  1. Defina td como sendo o triângulo que está à direita da aresta a 
+    //    e te como sendo o triângulo que está à esquerda de a,
+    td = m_line[a[i]].getRightPolygon();
+    te = m_line[a[i]].getLeftPolygon();
 
-    //    4.2. Defina a aresta aaux do triângulo ti que conecta o 
-    //    vértice v e é diferente de ai,
-    m_triang[ti].LinesId(lids);
-    for (j = 0; j < 3; j++)
-    {
-      if (lids[j] == ai)
-        continue;
-      if ((m_line[lids[j]].getNodeFrom() == v) ||
-        (m_line[lids[j]].getNodeTo() == v))
-        break;
-    }
-    if (j == 3){
-      return false;
-    }
+    //  2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
+    ai = a[i];
+    ti = td;
 
-    aaux = lids[j];
-
-    //    4.3. Defina taux como sendo o triângulo que compartilha a 
-    //    aresta aaux com ti,
-    if (m_line[aaux].getRightPolygon() == ti)
-      taux = m_line[aaux].getLeftPolygon();
-    else if (m_line[aaux].getLeftPolygon() == ti)
-      taux = m_line[aaux].getRightPolygon();
-    else{
-      return false;
-    }
-
-    //    4.4. Defina ti como sendo o triângulo taux e ai como 
-    //    sendo aresta aaux,
-    ti = taux;
-    ai = aaux;
-
-    //    4.5. Insira o vértice diferente de v conectado à aresta ai
+    //  3. Insira o vértice diferente de v conectado à aresta ai
     //    no conjunto V,
     nodeid = m_line[ai].getNodeFrom();
     if (nodeid == v)
       nodeid = m_line[ai].getNodeTo();
-    nodids.push_back(nodeid);
+    if (std::find(nodids.begin(), nodids.end(), nodeid) == nodids.end())
+      nodids.push_back(nodeid); // V = nodids
+    else
+      continue;
 
-    //  4.6. Retorne a 4.
+    //  4. Enquanto ti for diferente do triângulo te,
+    while (ti != te)
+    {
+      //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
+      if (ti == -1)
+      {
+        //      4.1.1. Defina ti como sendo o triângulo te,
+        ti = te;
+        //      4.1.2. Defina te como sendo nulo,
+        te = -1;
+        //      4.1.3. Defina ai como sendo aresta a,
+        ai = a[i];
+        //      4.1.4. Retorne a 4.
+        break;
+      }
+
+      //    4.2. Defina a aresta aaux do triângulo ti que conecta o 
+      //    vértice v e é diferente de ai,
+      m_triang[ti].LinesId(lids);
+      for (j = 0; j < 3; j++)
+      {
+        if (lids[j] == ai)
+          continue;
+        if ((m_line[lids[j]].getNodeFrom() == v) ||
+          (m_line[lids[j]].getNodeTo() == v))
+          break;
+      }
+      if (j == 3){
+        break;
+      }
+
+      aaux = lids[j];
+
+      //    4.3. Defina taux como sendo o triângulo que compartilha a 
+      //    aresta aaux com ti,
+      if (m_line[aaux].getRightPolygon() == ti)
+        taux = m_line[aaux].getLeftPolygon();
+      else if (m_line[aaux].getLeftPolygon() == ti)
+        taux = m_line[aaux].getRightPolygon();
+      else{
+       break;
+      }
+
+      //    4.4. Defina ti como sendo o triângulo taux e ai como 
+      //    sendo aresta aaux,
+      ti = taux;
+      ai = aaux;
+
+      //    4.5. Insira o vértice diferente de v conectado à aresta ai
+      //    no conjunto V,
+      nodeid = m_line[ai].getNodeFrom();
+      if (nodeid == v)
+        nodeid = m_line[ai].getNodeTo();
+      if (std::find(nodids.begin(), nodids.end(), nodeid) == nodids.end())
+        nodids.push_back(nodeid);
+      else
+        break;
+      //  4.6. Retorne a 4.
+    }
   }
   return true;
 }
@@ -967,107 +1121,126 @@ bool te::mnt::Tin::NodeNodes(int32_t v, std::vector<int32_t>& nodids)
 int32_t te::mnt::Tin::NodeTriangle(int32_t v)
 {
   //  Find one line that contains node
-  int32_t a = FindLine(v);
-  if (a == -1)
+  std::vector<int32_t> a = FindLine(v);
+  if (!a.size())
     return -1;
-
-  int32_t td = m_line[a].getRightPolygon();
-  if (td == -1)
-    return m_line[a].getLeftPolygon();
-  else
-    return td;
+  for (size_t i = 0; i < a.size(); i++)
+  {
+    if (a[i] == -1)
+      continue;
+    int32_t td = m_line[a[i]].getRightPolygon();
+    if (td == -1)
+      return m_line[a[i]].getLeftPolygon();
+    else
+      return td;
+  }
+  return -1;
 }
 
 
 
 bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
 {
-  int32_t  td, te, a, ai, ti, aaux, taux = 0,
+  int32_t  td, te, ai, ti, aaux, taux = 0,
     lids[3];
   short  j;
-
+  std::vector<int32_t> a;
   //  Find one line that contains node
   a = FindLine(v);
-  if (a == -1)
+  if (!a.size())
     return false;
 
-  // 1. Defina td como sendo o triângulo que está à direita da 
-  //  aresta a e te como sendo o triângulo que está à esquerda de a,
-  td = m_line[a].getRightPolygon();
-  te = m_line[a].getLeftPolygon();
-
-  // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
-  ai = a;
-  ti = td;
-
-  // 3. Insira o triângulo ti no conjunto C se ele não for nulo,
-  if (ti != -1)
+  for (size_t i = 0; i < a.size(); i++)
   {
-    triangles.push_back(ti); // C = triangles
-  }
-
-  // 4. Enquanto ti for diferente do triângulo te,
-  while (ti != te)
-  {
-    //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
-    if (ti == -1)
-    {
-      //      4.1.1. Defina ti como sendo o triângulo te,
-      ti = te;
-      //      4.1.2. Defina te como sendo nulo,
-      te = -1;
-      //      4.1.3. Defina ai como sendo aresta a,
-      ai = a;
-      //      4.1.4. Insira o triângulo ti no conjunto C se 
-      //      ele não for nulo,
-      if (ti != -1)
-      {
-        triangles.push_back(ti); // C = triangles
-      }
-
-      //      4.1.5. Retorne a 4.
+    if (a[i] == -1)
       continue;
-    }
+    // 1. Defina td como sendo o triângulo que está à direita da 
+    //  aresta a e te como sendo o triângulo que está à esquerda de a,
+    td = m_line[a[i]].getRightPolygon();
+    te = m_line[a[i]].getLeftPolygon();
 
-    // 4.2. Defina a aresta aaux do triângulo ti que conecta o vértice v 
-    //    e é diferente de ai,
-    m_triang[ti].LinesId(lids);
-    for (j = 0; j < 3; j++)
-    {
-      if (lids[j] == ai)
-        continue;
-      if ((m_line[lids[j]].getNodeFrom() == v) ||
-        (m_line[lids[j]].getNodeTo() == v))
-        break;
-    }
-    if (j == 3){
-      return false;
-    }
+    // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
+    ai = a[i];
+    ti = td;
 
-    aaux = lids[j];
-
-    // 4.3. Defina taux como sendo o triângulo que compartilha a 
-    //    aresta aaux com ti,
-    if (m_line[aaux].getRightPolygon() == ti)
-      taux = m_line[aaux].getLeftPolygon();
-    else if (m_line[aaux].getLeftPolygon() == ti)
-      taux = m_line[aaux].getRightPolygon();
-    else{
-      return false;
-    }
-
-    // 4.4. Defina ti como sendo o triângulo taux e ai como sendo
-    //    aresta aaux,
-    ti = taux;
-    ai = aaux;
-
-    // 4.5. Insira o triângulo ti no conjunto C se ele não for nulo,
+    // 3. Insira o triângulo ti no conjunto C se ele não for nulo,
     if (ti != -1)
     {
-      triangles.push_back(ti); // C = triangles
+      if (std::find(triangles.begin(), triangles.end(), ti) == triangles.end())
+        triangles.push_back(ti); // C = triangles
+      else
+        continue;
     }
 
-    // 4.6. Retorne a 4.
+    // 4. Enquanto ti for diferente do triângulo te,
+    while (ti != te)
+    {
+      //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
+      if (ti == -1)
+      {
+        //      4.1.1. Defina ti como sendo o triângulo te,
+        ti = te;
+        //      4.1.2. Defina te como sendo nulo,
+        te = -1;
+        //      4.1.3. Defina ai como sendo aresta a,
+        ai = a[i];
+        //      4.1.4. Insira o triângulo ti no conjunto C se 
+        //      ele não for nulo,
+        if (ti != -1)
+        {
+          if (std::find(triangles.begin(), triangles.end(), ti) == triangles.end())
+            triangles.push_back(ti); // C = triangles
+          else
+            break;
+        }
+
+        //      4.1.5. Retorne a 4.
+        continue;
+      }
+
+      // 4.2. Defina a aresta aaux do triângulo ti que conecta o vértice v 
+      //    e é diferente de ai,
+      m_triang[ti].LinesId(lids);
+      for (j = 0; j < 3; j++)
+      {
+        if (lids[j] == ai)
+          continue;
+        if ((m_line[lids[j]].getNodeFrom() == v) ||
+          (m_line[lids[j]].getNodeTo() == v))
+          break;
+      }
+      if (j == 3){
+        break;
+      }
+
+      aaux = lids[j];
+
+      // 4.3. Defina taux como sendo o triângulo que compartilha a 
+      //    aresta aaux com ti,
+      if (m_line[aaux].getRightPolygon() == ti)
+        taux = m_line[aaux].getLeftPolygon();
+      else if (m_line[aaux].getLeftPolygon() == ti)
+        taux = m_line[aaux].getRightPolygon();
+      else{
+        break;
+      }
+
+      // 4.4. Defina ti como sendo o triângulo taux e ai como sendo
+      //    aresta aaux,
+      ti = taux;
+      ai = aaux;
+
+      // 4.5. Insira o triângulo ti no conjunto C se ele não for nulo,
+      if (ti != -1)
+      {
+        if (std::find(triangles.begin(), triangles.end(), ti) == triangles.end())
+          triangles.push_back(ti); // C = triangles
+        else
+          break;
+      }
+
+      // 4.6. Retorne a 4.
+    }
   }
 
   return true;
@@ -1224,59 +1397,6 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
   return true;
 }
 
-
-void te::mnt::Tin::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType)
-{
-  // do any adaptation necessary to persist the output dataset
-  //te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType, source->getCapabilities());
-  //te::da::DataSetType* dsTypeResult = converter->getResult();
-
-  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
-
-  std::map<std::string, std::string> options;
-
-  try
-  {
-    if (source->getType() == "OGR")
-    {
-      // create the dataset
-      source->createDataSet(outDsType, options);
-
-      // copy from memory to output datasource
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      source->add(name, result, options);
-    }
-    else
-    {
-      t->begin();
-
-      // create the dataset
-      t->createDataSet(outDsType, options);
-
-      // copy from memory to output datasource
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      t->add(name, result, options);
-
-      t->commit();
-    }
-
-  }
-  catch (te::common::Exception& e)
-  {
-    t->rollBack();
-    throw e;
-  }
-  catch (std::exception& e)
-  {
-    t->rollBack();
-    throw e;
-  }
-}
-
-
-
 bool fncomp(te::mnt::TinNode lhs, te::mnt::TinNode rhs) { return lhs<rhs; }
 
 struct nodecomp {
@@ -1285,6 +1405,9 @@ struct nodecomp {
     return lhs<rhs;
   }
 };
+
+#include <fstream>
+
 
 /*!
 \brief Method used to load a triangular network (TIN)
@@ -1435,12 +1558,16 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
         if ((nd0 == tl[j].getNodeFrom() && nd1 == tl[j].getNodeTo()) || (nd1 == tl[j].getNodeFrom() && nd0 == tl[j].getNodeTo()))
         {
           lid[j] = (int32_t)reportline[kl];
+          m_node[tl[j].getNodeFrom()].setEdge(lid[j]);
+          m_node[tl[j].getNodeTo()].setEdge(lid[j]);
           break;
         }
       }
       if (kl == reportline.size())
       {
         lid[j] = (int32_t)m_line.size();
+        m_node[tl[j].getNodeFrom()].setEdge(lid[j]);
+        m_node[tl[j].getNodeTo()].setEdge(lid[j]);
         m_line.push_back(tl[j]);
         linetree.insert(e, lid[j]);
       }
@@ -1459,31 +1586,91 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   m_triangsize = m_triang.size();
   m_ltriang = (int32_t)m_triangsize;
 
-  for (size_t l = 0; l < m_line.size(); l++)
+  //for (size_t l = 0; l < m_line.size(); l++)
+  //{
+  //  m_node[m_line[l].getNodeTo()].setEdge((int32_t)l);
+  //}
+
+  // ////TESTE
+  std::ofstream tinread("d:/TESTE/TIN_READ_TL.txt");
+  tinread << "N Triang " << m_triangsize << " N Lines " << m_linesize << " N Nodes " << m_nodesize << std::endl;
+  tinread << "TRIANGLES" << std::endl;
+  int32_t lids[3];
+  for (size_t i = 0; i < m_triangsize; i++)
   {
-    m_node[m_line[l].getNodeTo()].setEdge((int32_t)l);
+    m_triang[i].LinesId(lids);
+    tinread << i << " " << lids[0] << " " << lids[1] << " " << lids[2] << std::endl;
+  }
+  tinread << "Lines" << std::endl;
+  for (size_t i = 0; i < m_linesize; i++)
+  {
+    tinread << i << " " << m_line[i].getNodeFrom() << " " << m_line[i].getNodeTo() << " " << m_line[i].getLeftPolygon() << " " << m_line[i].getRightPolygon() << std::endl;
+  }
+  tinread << "Nodes" << std::endl;
+  for (size_t i = 0; i < m_nodesize; i++)
+  {
+    tinread << i << " " << m_node[i].getX() << " " << m_node[i].getY() << " " << m_node[i].getZ() << " ";
+    for (size_t j = 0; j < m_node[i].getEdge().size(); j++)
+      tinread << m_node[i].getEdge()[j] << " ";
+    tinread << std::endl;
   }
 
+  tinread.close();
+  //////TESTE
   return true;
 }
+
 
 bool te::mnt::Tin::NodeDerivatives()
 {
   // Calculate first derivatives on triangles
   if (!TriangleFirstDeriv())
     return false;
+  //////TESTE
+  std::ofstream tinread("d:/TESTE/TriangleFirstDeriv_TL.txt");
+  for (size_t i = 0; i < m_triangsize; i++)
+  {
+    tinread << i << " " << m_tfderiv[i].getX() << " " << m_tfderiv[i].getY() << std::endl;
+  }
+  tinread.close();
+  ////TESTE
 
   //Calculate first derivatives on nodes
   if (!NodeFirstDeriv())
     return false;
+  //////TESTE
+  std::ofstream tinread1("d:/TESTE/NodeFirstDeriv_TL.txt");
+  for (size_t i = 0; i < m_nodesize; i++)
+  {
+    tinread1 <<m_node[i].getX() << " " << m_node[i].getY() << " " << i << " " << m_nfderiv[i].getX() << " " << m_nfderiv[i].getY() << std::endl;
+  }
+  tinread1.close();
+  ////TESTE
 
   // Calculate second derivatives on triangles
   if (!TriangleSecondDeriv())
     return false;
+  //////TESTE
+  std::ofstream tinread2("d:/TESTE/TriangleSecondDeriv_TL.txt");
+  for (size_t i = 0; i < m_triangsize; i++)
+  {
+    tinread2 << i << " " << m_tsderiv[i].getX() << " " << m_tsderiv[i].getY() << " " << m_tsderiv[i].getZ() << std::endl;
+  }
+  tinread2.close();
+  ////TESTE
+
 
   // Calculate second derivatives on nodes
   if (!NodeSecondDeriv())
     return false;
+  //////TESTE
+  std::ofstream tinread3("d:/TESTE/NodeSecondDeriv_TL.txt");
+  for (size_t i = 0; i < m_nodesize; i++)
+  {
+    tinread3 << m_node[i].getX() << " " << m_node[i].getY() << " " << i << " " << m_nsderiv[i].getX() << " " << m_nsderiv[i].getY() << " " << m_nsderiv[i].getZ() << std::endl;
+  }
+  tinread3.close();
+  ////TESTE
 
   if (m_fbnode > 0)
   {
@@ -1700,6 +1887,9 @@ bool te::mnt::Tin::NodeFirstDeriv()
     m_nfderiv.push_back(te::gm::PointZ(0., 0., 0.));
   }
 
+ 
+  std::ofstream tinread("d:/TESTE/NFD_TL.txt"); //////TESTE
+
   // To each node
   for (i = 0; i < m_node.size(); i++)
   {
@@ -1713,8 +1903,18 @@ bool te::mnt::Tin::NodeFirstDeriv()
     // Look for closest points of the node
     if (!NodeClosestPoints((int32_t)i, clstnids))
       continue;
+    tinread << i << " " << m_node[i].getX() << " " << m_node[i].getY() << " " << m_node[i].getZ() << std::endl;  ////TESTE
+    for (int j = 0; j < CLNODES; j++)  ////TESTE
+    {
+      if (clstnids[j] == -1)
+        break;
+      tinread << j << " " << clstnids[j] << " " << m_node[clstnids[j]].getX() << " " << m_node[clstnids[j]].getY() << " " << m_node[clstnids[j]].getZ() << std::endl;
+    }  ////TESTE
     m_nfderiv[i] = CalcNodeFirstDeriv((int32_t)i, clstnids);
+    tinread << m_nfderiv[i].getX() << " " << m_nfderiv[i].getY() << std::endl << std::endl;  ////TESTE
   }
+
+  tinread.close();  ////TESTE
 
   return true;
 }
@@ -1763,18 +1963,17 @@ bool te::mnt::Tin::NodeSecondDeriv()
 
 bool te::mnt::Tin::NodeClosestPoints(int32_t nid, int32_t *clstNids, bool useBrNode)
 {
-  int32_t ltri, rtri,
-    flin,
-    lineid, lids[3];
+  int32_t
+    lineid;
   size_t j, k;
   double dist, distv[CLNODES];
   int32_t nodeid;
+ // std::vector<int32_t> used_line, used_rtri;
 
   // Find one line that contains node
-  lineid = FindLine(nid);
-  if (lineid == -1)
+  std::vector<int32_t> lineids = FindLine(nid);
+  if (!lineids.size())
     return false;
-  flin = lineid;
 
   for (j = 0; j < CLNODES; j++)
   {
@@ -1782,75 +1981,41 @@ bool te::mnt::Tin::NodeClosestPoints(int32_t nid, int32_t *clstNids, bool useBrN
     clstNids[j] = -1;
   }
 
-  // Find right and left triangle
-  rtri = m_line[lineid].getRightPolygon();
-  ltri = m_line[lineid].getLeftPolygon();
-  if (rtri == -1)
+  for (size_t i = 0; i < lineids.size(); i++)
   {
-    rtri = ltri;
-    ltri = -1;
-  }
-  while (rtri != ltri)
-  {
-    if (!m_triang[rtri].LinesId(lids))
-      return false;
+    lineid = lineids[i];
+    if (lineid == -1)
+      continue;
 
-    for (j = 0; j < 3; j++)
-    {
-      // Find line that contains node
-      if (lids[j] == lineid)
-        continue;
-      if ((m_line[lids[j]].getNodeFrom() == nid) ||
-        (m_line[lids[j]].getNodeTo() == nid))
-        break;
-    }
-    if (j == 3){
-      return false;
-    }
-
-    lineid = lids[j];
     if (m_line[lineid].getNodeFrom() == nid)
       nodeid = m_line[lineid].getNodeTo();
-    else
+    else if (m_line[lineid].getNodeTo() == nid)
       nodeid = m_line[lineid].getNodeFrom();
+    else
+      continue;
 
     if ((m_node[nodeid].getZ() < m_nodatavalue) && ((useBrNode) ||
-      ((useBrNode) && (nodeid < m_fbnode))))
+    ((useBrNode) && (nodeid < m_fbnode))))
     {
       dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
         (m_node[nid].getX() - m_node[nodeid].getX()) +
         (m_node[nid].getY() - m_node[nodeid].getY()) *
         (m_node[nid].getY() - m_node[nodeid].getY());
-      for (j = 0; j < CLNODES; j++)
-      {
-        if (dist < distv[j])
+        for (j = 0; j < CLNODES; j++)
         {
-          for (k = CLNODES - 1; k > j; k--)
+          if (dist < distv[j])
           {
-            distv[k] = distv[k - 1];
-            clstNids[k] = clstNids[k - 1];
+            for (k = CLNODES - 1; k > j; k--)
+            {
+              distv[k] = distv[k - 1];
+              clstNids[k] = clstNids[k - 1];
+            }
+            distv[j] = dist;
+            clstNids[j] = nodeid;
+            break;
           }
-          distv[j] = dist;
-          clstNids[j] = nodeid;
-          break;
         }
       }
-    }
-
-    // Find new right triangle
-    if (m_line[lineid].getRightPolygon() == rtri)
-      rtri = m_line[lineid].getLeftPolygon();
-    else if (m_line[lineid].getLeftPolygon() == rtri)
-      rtri = m_line[lineid].getRightPolygon();
-    else
-      return false;
-
-    if ((rtri == -1) && (ltri != -1))
-    {
-      rtri = ltri;
-      ltri = -1;
-      lineid = flin;
-    }
   }
 
   return true;
@@ -1934,8 +2099,8 @@ te::mnt::TinNode te::mnt::Tin::CalcNodeSecondDeriv(int32_t nodeId, int32_t clstN
   double tnxx, tnxy, tnxz, tnyx, tnyy, tnyz,
     nvector[3], m1, m2;
   double tol = .01;
-  short	j, k;
-  TinNode	sderiv;
+  short j, k;
+  TinNode sderiv;
 
   p3da[0].setX(m_node[nodeId].getNPoint().getX());
   p3da[0].setY(m_node[nodeId].getNPoint().getY());
@@ -2171,77 +2336,83 @@ bool te::mnt::Tin::BreakTriangleSecondDeriv()
 
 bool te::mnt::Tin::NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, std::vector<int32_t> &leftri)
 {
-  int32_t fline, linid, lids[3], rtri, ltri;
+  int32_t linid, lids[3], rtri, ltri;
   short k;
 
   // Find one line that contains node
-  fline = FindLine(nodeid);
-  if (fline == -1)
+ std::vector<int32_t> fline = FindLine(nodeid);
+  if (!fline.size())
     return false;
-  linid = fline;
 
-  ltri = m_line[linid].getLeftPolygon();
-  rtri = m_line[linid].getRightPolygon();
-  if (rtri == -1)
+  for (size_t i = 0; i < fline.size(); i++)
   {
-    rtri = ltri;
-    ltri = -1;
-  }
+    linid = fline[i];
+    if (linid == -1)
+      continue;
 
-  // While right side triangle different from left side<br>
-  while (rtri != ltri)
-  {
-    if (m_line[linid].getNodeTo() == nodeid)
-    {
-      rightri.push_back(m_line[linid].getRightPolygon());
-    }
-    else if (m_line[linid].getNodeFrom() == nodeid)
-    {
-      leftri.push_back(m_line[linid].getLeftPolygon());
-    }
-
-    // Find line that contains node in the right triangle
-    if (!m_triang[rtri].LinesId(lids))
-      return false;
-
-    for (k = 0; k < 3; k++)
-    {
-      if (lids[k] == linid)
-        continue;
-      if ((m_line[lids[k]].getNodeFrom() == nodeid) ||
-        (m_line[lids[k]].getNodeTo() == nodeid))
-        break;
-    }
-    if (k == 3){
-      return false;
-    }
-
-    // Make right triangle equal to the triangle at the
-    // other side
-    linid = lids[k];
-    if (m_line[linid].getRightPolygon() == rtri)
-      rtri = m_line[linid].getLeftPolygon();
-    else if (m_line[linid].getLeftPolygon() == rtri)
-      rtri = m_line[linid].getRightPolygon();
-    else
-      return false;
+    ltri = m_line[linid].getLeftPolygon();
+    rtri = m_line[linid].getRightPolygon();
     if (rtri == -1)
     {
       rtri = ltri;
       ltri = -1;
-      linid = fline;
     }
-  }
-  //	Insert left side triangle in triangle list
-  if (ltri != -1)
-  {
-    if (m_line[linid].getNodeTo() == nodeid)
+
+    // While right side triangle different from left side<br>
+    while (rtri != ltri)
     {
-      rightri.push_back(m_line[linid].getRightPolygon());
+      if (m_line[linid].getNodeTo() == nodeid)
+      {
+        rightri.push_back(m_line[linid].getRightPolygon());
+      }
+      else if (m_line[linid].getNodeFrom() == nodeid)
+      {
+        leftri.push_back(m_line[linid].getLeftPolygon());
+      }
+
+      // Find line that contains node in the right triangle
+      if (!m_triang[rtri].LinesId(lids))
+        break;
+
+      for (k = 0; k < 3; k++)
+      {
+        if (lids[k] == linid)
+          continue;
+        if ((m_line[lids[k]].getNodeFrom() == nodeid) ||
+          (m_line[lids[k]].getNodeTo() == nodeid))
+          break;
+      }
+      if (k == 3){
+        break;
+      }
+
+      // Make right triangle equal to the triangle at the
+      // other side
+      linid = lids[k];
+      if (m_line[linid].getRightPolygon() == rtri)
+        rtri = m_line[linid].getLeftPolygon();
+      else if (m_line[linid].getLeftPolygon() == rtri)
+        rtri = m_line[linid].getRightPolygon();
+      else
+        break;
+      if (rtri == -1)
+      {
+        rtri = ltri;
+        ltri = -1;
+        linid = fline[i];
+      }
     }
-    if (m_line[linid].getNodeFrom() == nodeid)
+    //	Insert left side triangle in triangle list
+    if (ltri != -1)
     {
-      leftri.push_back(m_line[linid].getLeftPolygon());
+      if (m_line[linid].getNodeTo() == nodeid)
+      {
+        rightri.push_back(m_line[linid].getRightPolygon());
+      }
+      if (m_line[linid].getNodeFrom() == nodeid)
+      {
+        leftri.push_back(m_line[linid].getLeftPolygon());
+      }
     }
   }
 
@@ -2254,119 +2425,122 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
 {
   int32_t ltri, rtri,
     flin,
-    lineid, lids[3];
+    lids[3];
   short j, k;
   double dist, rdistv[CLNODES], ldistv[CLNODES];
   int32_t nodeid;
 
   // Find one line that contains node
-  lineid = FindLine(nid);
-  if (lineid == -1)
+  std::vector<int32_t>lineid = FindLine(nid);
+  if (!lineid.size())
     return false;
-  flin = lineid;
 
-  for (j = 0; j < CLNODES; j++)
+  for (size_t i = 0; i < lineid.size(); i++)
   {
-    rdistv[j] = m_nodatavalue;
-    rClstNids[j] = -1;
+    flin = lineid[i];
 
-    ldistv[j] = m_nodatavalue;
-    lClstNids[j] = -1;
-  }
-
-  // Find right and left triangle
-  rtri = m_line[lineid].getRightPolygon();
-  ltri = m_line[lineid].getLeftPolygon();
-  if (rtri == -1)
-  {
-    rtri = ltri;
-    ltri = -1;
-  }
-  while (rtri != ltri)
-  {
-    if (!m_triang[rtri].LinesId(lids))
-      return false;
-
-    for (j = 0; j < 3; j++)
+    for (j = 0; j < CLNODES; j++)
     {
-      // Find line that contains node
-      if (lids[j] == lineid)
-        continue;
-      if ((m_line[lids[j]].getNodeFrom() == nid) ||
-        (m_line[lids[j]].getNodeTo() == nid))
-        break;
-    }
-    if (j == 3){
-      return false;
+      rdistv[j] = m_nodatavalue;
+      rClstNids[j] = -1;
+
+      ldistv[j] = m_nodatavalue;
+      lClstNids[j] = -1;
     }
 
-    lineid = lids[j];
-    if (m_line[lineid].getNodeFrom() == nid)
-    {
-      nodeid = m_line[lineid].getNodeTo();
-      if (nodeid < m_fbnode)
-      { //Node is a breakline node at right side of it
-        dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
-          (m_node[nid].getX() - m_node[nodeid].getX()) +
-          (m_node[nid].getY() - m_node[nodeid].getY()) *
-          (m_node[nid].getY() - m_node[nodeid].getY());
-        for (j = 0; j < CLNODES; j++)
-        {
-          if (dist < rdistv[j])
-          {
-            for (k = CLNODES - 1; k > j; k--)
-            {
-              rdistv[k] = rdistv[k - 1];
-              rClstNids[k] = rClstNids[k - 1];
-            }
-            rdistv[j] = dist;
-            rClstNids[j] = nodeid;
-            break;
-          }
-        }
-      }
-    }
-    else
-    {
-      nodeid = m_line[lineid].getNodeFrom();
-      if (nodeid < m_fbnode)
-      { //Node is a breakline node at left side of it
-        dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
-          (m_node[nid].getX() - m_node[nodeid].getX()) +
-          (m_node[nid].getY() - m_node[nodeid].getY()) *
-          (m_node[nid].getY() - m_node[nodeid].getY());
-        for (j = 0; j < CLNODES; j++)
-        {
-          if (dist < ldistv[j])
-          {
-            for (k = CLNODES - 1; k > j; k--)
-            {
-              ldistv[k] = ldistv[k - 1];
-              lClstNids[k] = lClstNids[k - 1];
-            }
-            ldistv[j] = dist;
-            lClstNids[j] = nodeid;
-            break;
-          }
-        }
-      }
-    }
-
-    // Find new right triangle
-    if (m_line[lineid].getRightPolygon() == rtri)
-      rtri = m_line[lineid].getLeftPolygon();
-    else if (m_line[lineid].getLeftPolygon() == rtri)
-      rtri = m_line[lineid].getRightPolygon();
-    else
-      return false;
-    if ((rtri == -1) && (ltri != -1))
+    // Find right and left triangle
+    rtri = m_line[lineid[i]].getRightPolygon();
+    ltri = m_line[lineid[i]].getLeftPolygon();
+    if (rtri == -1)
     {
       rtri = ltri;
       ltri = -1;
-      lineid = flin;
+    }
+    while (rtri != ltri)
+    {
+      if (!m_triang[rtri].LinesId(lids))
+        break;
+
+      for (j = 0; j < 3; j++)
+      {
+        // Find line that contains node
+        if (lids[j] == lineid[i])
+          continue;
+        if ((m_line[lids[j]].getNodeFrom() == nid) ||
+          (m_line[lids[j]].getNodeTo() == nid))
+          break;
+      }
+      if (j == 3){
+        break;
+      }
+
+      lineid[i] = lids[j];
+      if (m_line[lineid[i]].getNodeFrom() == nid)
+      {
+        nodeid = m_line[lineid[i]].getNodeTo();
+        if (nodeid < m_fbnode)
+        { //Node is a breakline node at right side of it
+          dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
+            (m_node[nid].getX() - m_node[nodeid].getX()) +
+            (m_node[nid].getY() - m_node[nodeid].getY()) *
+            (m_node[nid].getY() - m_node[nodeid].getY());
+          for (j = 0; j < CLNODES; j++)
+          {
+            if (dist < rdistv[j])
+            {
+              for (k = CLNODES - 1; k > j; k--)
+              {
+                rdistv[k] = rdistv[k - 1];
+                rClstNids[k] = rClstNids[k - 1];
+              }
+              rdistv[j] = dist;
+              rClstNids[j] = nodeid;
+              break;
+            }
+          }
+        }
+      }
+      else
+      {
+        nodeid = m_line[lineid[i]].getNodeFrom();
+        if (nodeid < m_fbnode)
+        { //Node is a breakline node at left side of it
+          dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
+            (m_node[nid].getX() - m_node[nodeid].getX()) +
+            (m_node[nid].getY() - m_node[nodeid].getY()) *
+            (m_node[nid].getY() - m_node[nodeid].getY());
+          for (j = 0; j < CLNODES; j++)
+          {
+            if (dist < ldistv[j])
+            {
+              for (k = CLNODES - 1; k > j; k--)
+              {
+                ldistv[k] = ldistv[k - 1];
+                lClstNids[k] = lClstNids[k - 1];
+              }
+              ldistv[j] = dist;
+              lClstNids[j] = nodeid;
+              break;
+            }
+          }
+        }
+      }
+
+      // Find new right triangle
+      if (m_line[lineid[i]].getRightPolygon() == rtri)
+        rtri = m_line[lineid[i]].getLeftPolygon();
+      else if (m_line[lineid[i]].getLeftPolygon() == rtri)
+        rtri = m_line[lineid[i]].getRightPolygon();
+      else
+        break;
+      if ((rtri == -1) && (ltri != -1))
+      {
+        rtri = ltri;
+        ltri = -1;
+        lineid[i] = flin;
+      }
     }
   }
-
   return true;
 }
 
@@ -2623,93 +2797,6 @@ bool te::mnt::Tin::CheckLines(int32_t trid)
   }
 
   return true;
-}
-
-
-int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
-{
-  static int32_t oldtri = 1;
-  int32_t i, j, k, lids[3];
-  short m;
-
-  if ((oldtri < 0) || (oldtri >= m_ltriang))
-    oldtri = 0;
-  if (oldtri == 0)
-  {
-    for (i = 0; i < m_ltriang; i++)
-    {
-      if (!m_triang[i].LinesId(lids))
-        return -1;
-
-      for (m = 0; m < 3; m++)
-      {
-        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
-          (m_line[lids[m]].getNodeTo() == snid))
-        {
-          oldtri = i;
-          return lids[m];
-        }
-        if ((m_line[lids[m]].getNodeTo() == fnid) &&
-          (m_line[lids[m]].getNodeFrom() == snid))
-        {
-          oldtri = i;
-          return lids[m];
-        }
-      }
-    }
-    return -1;
-  }
-  j = oldtri;
-  k = oldtri + 1;
-  while ((j > 0) || (k < m_ltriang))
-  {
-    if (j > 0)
-    {
-      if (!m_triang[j].LinesId(lids))
-        return -1;
-
-      for (m = 0; m < 3; m++)
-      {
-        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
-          (m_line[lids[m]].getNodeTo() == snid))
-        {
-          oldtri = j;
-          return lids[m];
-        }
-        if ((m_line[lids[m]].getNodeTo() == fnid) &&
-          (m_line[lids[m]].getNodeFrom() == snid))
-        {
-          oldtri = j;
-          return lids[m];
-        }
-      }
-      j--;
-    }
-    if (k < m_ltriang)
-    {
-      if (!m_triang[k].LinesId(lids))
-        return -1;
-
-      for (m = 0; m < 3; m++)
-      {
-        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
-          (m_line[lids[m]].getNodeTo() == snid))
-        {
-          oldtri = k;
-          return lids[m];
-        }
-        if ((m_line[lids[m]].getNodeTo() == fnid) &&
-          (m_line[lids[m]].getNodeFrom() == snid))
-        {
-          oldtri = k;
-          return lids[m];
-        }
-      }
-      k++;
-    }
-  }
-  oldtri = 1;
-  return -1;
 }
 
 
