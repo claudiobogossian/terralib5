@@ -75,13 +75,16 @@ namespace te
 
             void setDatasets(std::vector<std::string> layers,
                              std::vector<std::string> tables,
-                             std::vector<std::string> rasters);
+                             std::vector<std::string> rasters,
+                             std::vector<std::pair<std::string, std::string> > rasterFiles);
 
             void setTL4Layers(std::vector<std::string> layers);
 
             void setTL4Tables(std::vector<std::string> tables);
 
             void setTL4Rasters(std::vector<std::string> rasters);
+
+            void setTL4RasterFiles(std::vector<std::pair<std::string, std::string> > rasterFiles);
 
             std::vector<std::string> getChecked();
 

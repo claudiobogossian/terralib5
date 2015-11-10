@@ -74,13 +74,16 @@ te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::~TL4LayerSelectionWizar
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> layers,
                                                                           std::vector<std::string> tables,
-                                                                          std::vector<std::string> rasters)
+                                                                          std::vector<std::string> rasters,
+                                                                          std::vector<std::pair<std::string, std::string> > rasterFiles)
+
 {
   m_ui->m_layersListWidget->clear();
 
   setTL4Layers(layers);
   setTL4Tables(tables);
   setTL4Rasters(rasters);
+  setTL4RasterFiles(rasterFiles);
 }
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Layers(std::vector<std::string> layers)
@@ -89,6 +92,18 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Layers(std::
   {
     QListWidgetItem* item = new QListWidgetItem(getImage(LAYER), QString::fromLatin1(layers[i].c_str()), m_ui->m_layersListWidget, LAYER);
     item->setCheckState(Qt::Checked);
+    m_ui->m_layersListWidget->addItem(item);
+  }
+}
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4RasterFiles(std::vector<std::pair<std::string, std::string> > rasterFiles)
+{
+  for (std::size_t i = 0; i < rasterFiles.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(getImage(RASTER), QString::fromLatin1(rasterFiles[i].first.c_str()) + " (" + tr("Not supported") + "!)", m_ui->m_layersListWidget, RASTER);
+    item->setCheckState(Qt::Unchecked);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    item->setToolTip(QString::fromLatin1(rasterFiles[i].second.c_str()));
     m_ui->m_layersListWidget->addItem(item);
   }
 }

@@ -214,8 +214,10 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
     std::vector<std::string> layers = tl4Ds->getTL4Layers();
     std::vector<std::string> rasters = tl4Ds->getTL4Rasters();
     std::vector<std::string> tables = tl4Ds->getTL4Tables();
+    m_rasterFiles = tl4Ds->getTL4RasterFiles();
 
-    m_layerSelectionPage->setDatasets(layers, tables, rasters);
+    m_layerSelectionPage->setDatasets(layers, tables, rasters, m_rasterFiles);
+
 
   }
   else if(current_page_id == PAGE_LAYER_SELECTION)
@@ -534,12 +536,14 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getOriginalName(cons
 
   for(int i = 0; i < rowCount; ++i)
   {
+    QString originalNameInTable = m_resolveNameTableWidget->item(i, 1)->text();
     QString targetNameInTable = m_resolveNameTableWidget->item(i, 2)->text();
 
-    std::string aux = targetNameInTable.toLatin1();
+    std::string originalFromTable = originalNameInTable.toLatin1();
+    std::string targetFromTable = targetNameInTable.toLatin1();
 
-    if(targetName.c_str() == aux)
-      return aux;
+    if (targetFromTable == targetName)
+      return originalFromTable;
   }
 
   return "";
@@ -556,7 +560,8 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getNewName(const std
     std::string aux = oName.toLatin1();
 
     if(originalName.c_str() == aux)
-      return aux;
+      return m_resolveNameTableWidget->item(i, 2)->text().toStdString();
+
   }
 
   return "";
@@ -580,8 +585,20 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     return;
   }
 
-// validation successful => convert the source layers!
+// TeRasterFiles will not be converted -. put them at the problematics!
   std::vector<std::pair<std::string, std::string> > problematicDatasets;
+
+  for (std::size_t i = 0; i < m_rasterFiles.size(); ++i)
+  {
+    std::pair<std::string, std::string> dproblem;
+    dproblem.first = m_rasterFiles[i].first.c_str(); //"External raster (TeRasterFile) will not be converted.
+    dproblem.second = m_rasterFiles[i].second.c_str();
+
+    problematicDatasets.push_back(dproblem);
+  }
+
+// validation successful => convert the source layers!
+
   std::vector<std::string> successfulDatasets;
 
   te::da::DataSourcePtr tl5ds;
@@ -662,6 +679,17 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       {
 // no!
         input_dataset_type->setName(targetName);
+
+        if (input_dataset_type->size() == 1 && input_dataset_type->getProperty(0)->getName() == "spatial_data")
+        {
+          std::pair<std::string, std::string> dproblem;
+          dproblem.first = sourceName;
+          dproblem.second = TE_TR("Layer invalid: table without attributes!");
+
+          problematicDatasets.push_back(dproblem);
+
+          continue;
+        }
 
         std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(input_dataset_type.get(), tl5ds->getCapabilities()));
 
@@ -775,13 +803,17 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
   std::vector<::terralib4::ThemeInfo> themes = tl4Ds->getTL4Themes();
 
   std::vector<::terralib4::ThemeInfo> convertedThemes;
-  for(std::size_t i = 0; i < themes.size(); ++i)
+  for (std::size_t i = 0; i < successfulDatasets.size(); ++i)
   {
-    for(std::size_t j = 0; j < successfulDatasets.size(); ++j)
+    std::string originalLayerName = getOriginalName(successfulDatasets[i]);
+
+    for (std::size_t j = 0; j < themes.size(); ++j)
     {
-      if(themes[i].m_layerName == getOriginalName(successfulDatasets[j]))
+      std::string themeLayerName = themes[j].m_layerName;
+
+      if (themeLayerName == originalLayerName)
       {
-        convertedThemes.push_back(themes[i]);
+        convertedThemes.push_back(themes[j]);
       }
     }
   }
@@ -859,7 +891,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       std::string newName = getNewName(themes[i].m_layerName);
 
-      std::auto_ptr<te::da::DataSetType> sourceDt = m_tl4Database->getDataSetType(newName);
+      std::auto_ptr<te::da::DataSetType> sourceDt = m_tl4Database->getDataSetType(themes[i].m_layerName);
 
       ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
@@ -870,10 +902,10 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
       if(sourceDt->hasRaster())
       {
         std::map<std::string, std::string> connInfo;
-        connInfo["URI"] = m_rasterFolderPath + "/" + themes[i].m_name + ".tif";
+        connInfo["URI"] = m_rasterFolderPath + "/" + newName + ".tif";
 
         layer = te::qt::widgets::createLayer("GDAL", connInfo);
-
+        layer->setTitle(theme->name());
         style = Convert2TerraLib5(0, theme, true);
 
         te::se::RasterSymbolizer* symb = te::se::GetRasterSymbolizer(style);

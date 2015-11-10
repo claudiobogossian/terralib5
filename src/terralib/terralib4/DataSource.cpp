@@ -215,6 +215,18 @@ std::vector<std::string> terralib4::DataSource::getTL4Rasters()
   return rasters;
 }
 
+std::vector<std::pair<std::string, std::string> > terralib4::DataSource::getTL4RasterFiles()
+{
+  std::vector<std::pair<std::string, std::string> > rasters;
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
+
+  terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
+  rasters = t4t->getTL4RasterFiles();
+
+  return rasters;
+}
+
 std::vector<::terralib4::ThemeInfo> terralib4::DataSource::getTL4Themes()
 {
   std::vector<::terralib4::ThemeInfo> themes;
