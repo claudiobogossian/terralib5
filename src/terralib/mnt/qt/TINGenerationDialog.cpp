@@ -96,39 +96,48 @@ void te::mnt::TINGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
 
   while (it != m_layers.end())
   {
-    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if (dsType->hasGeom())
+    if (it->get())
     {
-      std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-      te::gm::GeomType gmType = geomProp->getGeometryType();
-      switch (gmType)
+      if (it->get()->isValid())
       {
-      case te::gm::PointType:
-      case te::gm::PointZType:
-      case te::gm::PointMType:
-      case te::gm::PointZMType:
-      case te::gm::MultiPointType:
-      case te::gm::MultiPointZType:
-      case te::gm::MultiPointMType:
-      case te::gm::MultiPointZMType:
-        m_ui->m_samplescomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-        break;
-      case te::gm::LineStringType:
-      case te::gm::LineStringZType:
-      case te::gm::LineStringMType:
-      case te::gm::LineStringZMType:
-      case te::gm::MultiLineStringType:
-      case te::gm::MultiLineStringZType:
-      case te::gm::MultiLineStringMType:
-      case te::gm::MultiLineStringZMType:
-        m_ui->m_isolinescomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-        m_ui->m_breaklinecomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-        break;
-      default:
-        break;
+        std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+        if (dsType.get())
+        {
+          if (dsType->hasGeom())
+          {
+            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+            te::gm::GeomType gmType = geomProp->getGeometryType();
+            switch (gmType)
+            {
+            case te::gm::PointType:
+            case te::gm::PointZType:
+            case te::gm::PointMType:
+            case te::gm::PointZMType:
+            case te::gm::MultiPointType:
+            case te::gm::MultiPointZType:
+            case te::gm::MultiPointMType:
+            case te::gm::MultiPointZMType:
+              m_ui->m_samplescomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+              break;
+            case te::gm::LineStringType:
+            case te::gm::LineStringZType:
+            case te::gm::LineStringMType:
+            case te::gm::LineStringZMType:
+            case te::gm::MultiLineStringType:
+            case te::gm::MultiLineStringZType:
+            case te::gm::MultiLineStringMType:
+            case te::gm::MultiLineStringZMType:
+              m_ui->m_isolinescomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+              m_ui->m_breaklinecomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+              break;
+            default:
+              break;
+            }
+          }
+          dsType.release();
+        }
       }
     }
-    dsType.release();
     ++it;
   }
 }

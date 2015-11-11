@@ -85,19 +85,28 @@ void te::mnt::SmoothIsolinesDialog::setLayers(std::list<te::map::AbstractLayerPt
 
   while (it != m_layers.end())
   {
-    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if (dsType->hasGeom())
+    if (it->get())
     {
-      std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-      te::gm::GeomType gmType = geomProp->getGeometryType();
-      if (gmType == te::gm::LineStringType || gmType == te::gm::LineStringZType || gmType == te::gm::LineStringMType ||
-        gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringType || gmType == te::gm::MultiLineStringZType ||
-        gmType == te::gm::MultiLineStringMType || gmType == te::gm::MultiLineStringZMType)
+      if (it->get()->isValid())
       {
-        m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+        std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+        if (dsType.get())
+        {
+          if (dsType->hasGeom())
+          {
+            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+            te::gm::GeomType gmType = geomProp->getGeometryType();
+            if (gmType == te::gm::LineStringType || gmType == te::gm::LineStringZType || gmType == te::gm::LineStringMType ||
+              gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringType || gmType == te::gm::MultiLineStringZType ||
+              gmType == te::gm::MultiLineStringMType || gmType == te::gm::MultiLineStringZMType)
+            {
+              m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+            }
+          }
+          dsType.release();
+        }
       }
     }
-    dsType.release();
     ++it;
   }
 }
