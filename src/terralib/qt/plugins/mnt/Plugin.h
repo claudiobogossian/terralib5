@@ -45,11 +45,6 @@ namespace te
       }
     }
 
-    namespace widgets
-    {
-      class LayerItemView;
-    }
-
     namespace plugins
     {
       namespace mnt
@@ -75,9 +70,6 @@ namespace te
 
             void shutdown();
 
-            protected slots:
-            void onApplicationTriggered(te::qt::af::evt::Event* e);
-
           protected:
 
             /*!
@@ -91,8 +83,6 @@ namespace te
 
             */
             void unRegisterActions();
-
-            te::qt::widgets::LayerItemView* getLayerExplorer();
 
           Q_SIGNALS:
 

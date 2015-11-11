@@ -28,15 +28,7 @@
 #include "../../../common/Config.h"
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
-#include "../../../qt/widgets/canvas/MapDisplay.h"
-#include "../../../qt/widgets/layer/explorer/LayerItem.h"
-#include "../../../qt/widgets/layer/explorer/LayerItemView.h"
-#include "../../../qt/widgets/layer/explorer/TreeItem.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/events/Enums.h"
-#include "../../af/events/ApplicationEvents.h"
-#include "../../af/events/LayerEvents.h"
-#include "../../af/events/MapEvents.h"
 #include "../../af/Utils.h"
 #include "CreateIsolinesAction.h"
 #include "MNTGenerationAction.h"
@@ -64,26 +56,9 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QString>
-#include <qtreeview.h>
 
 // STL
 #include <string>
-
-
-te::map::AbstractLayer* GetSelectedLayer(QTreeView* view)
-{
-  QModelIndexList idxs = view->selectionModel()->selectedIndexes();
-
-  if (idxs.isEmpty() || idxs.size() > 1)
-    return 0;
-
-  te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>((*idxs.begin()).internalPointer());
-
-  if (item->getType() != "LAYER")
-    return 0;
-
-  return ((te::qt::widgets::LayerItem*)item)->getLayer().get();
-}
 
 
 te::qt::plugins::mnt::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
@@ -192,8 +167,7 @@ void te::qt::plugins::mnt::Plugin::registerActions()
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Slope->getAction());
 
   m_ShowValue = new te::qt::plugins::mnt::ShowValuesAction(m_mntMenu);
- // connect(m_ShowValue, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
-  connect(m_ShowValue, SIGNAL(toggled(bool)), SLOT(onChecked(bool)));
+  connect(m_ShowValue, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_ShowValue->getAction());
 
 }
@@ -206,29 +180,6 @@ void  te::qt::plugins::mnt::Plugin::unRegisterActions()
   delete m_Slope;
   delete m_Smooth;
   delete m_ShowValue;
-}
-
-void te::qt::plugins::mnt::Plugin::onApplicationTriggered(te::qt::af::evt::Event* e)
-{
-  if (e->m_id == te::qt::af::evt::LAYER_SELECTED)
-  {
-    te::qt::af::evt::LayerSelected* evt = static_cast<te::qt::af::evt::LayerSelected*>(e);
-
-    te::map::AbstractLayer* l = GetSelectedLayer(getLayerExplorer());
-
-    te::qt::af::evt::GetMapDisplay de;
-    emit triggered(&de);
-  }
-}
-
-
-te::qt::widgets::LayerItemView*te::qt::plugins::mnt::Plugin::getLayerExplorer()
-{
-  te::qt::af::evt::GetLayerExplorer e;
-
-  emit triggered(&e);
-
-  return e.m_layerExplorer;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::mnt::Plugin)
