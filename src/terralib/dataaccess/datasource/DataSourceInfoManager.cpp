@@ -59,8 +59,10 @@ bool te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
       std::string dsConInfo = dsInfoIt->second->getConnInfoAsString();
 
       if (conInfo == dsConInfo)
+      {
+        ds->setId(dsInfoIt->second->getId());
         return false;
-
+      }
       ++dsInfoIt;
     }
     m_datasources[ds->getId()] = ds;

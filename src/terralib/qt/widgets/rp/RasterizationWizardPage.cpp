@@ -392,50 +392,10 @@ void te::qt::widgets::RasterizationWizardPage::onLoadPushButtonClicked()
 
 void te::qt::widgets::RasterizationWizardPage::onSavePushButtonClicked()
 {
-  int rowCount = m_ui->m_tableWidget->rowCount();
-
-  if (rowCount < 1)
-    return;
-
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
     QString(), tr("LEG (*.leg *.LEG);;"), 0, QFileDialog::DontConfirmOverwrite);
 
-  if (fileName.isEmpty())
-    return;
-
-  boost::property_tree::ptree pt;
-  boost::property_tree::ptree legend;
-
-  std::string attrName = m_ui->m_attrComboBox->currentText().toStdString();
-  std::string precision = m_ui->m_precSpinBox->text().toStdString();
-
-  legend.add("Attribute", attrName);
-  legend.add("Precision", precision);
-
-  boost::property_tree::ptree items;
-
-  for (std::size_t i = 0; i < m_ui->m_tableWidget->rowCount(); ++i)
-  {
-    std::string idx = boost::lexical_cast<std::string>(i + 1);
-    std::string className = m_ui->m_tableWidget->item(i, 0)->text().toStdString();
-    std::string r = m_ui->m_tableWidget->item(i, 1)->text().toStdString();
-    std::string g = m_ui->m_tableWidget->item(i, 2)->text().toStdString();
-    std::string b = m_ui->m_tableWidget->item(i, 3)->text().toStdString();
-
-    boost::property_tree::ptree item;
-    item.add("ClassName", className);
-    item.add("Red", r);
-    item.add("Green", g);
-    item.add("Blue", b);
-
-    items.add_child("Item", item);
-  }
-
-  legend.add_child("Items", items);
-
-  pt.add_child("Legend", legend);
-
-  boost::property_tree::write_json(fileName.toStdString(), pt);
+  saveLegend(fileName.toStdString());
 }
 
 void te::qt::widgets::RasterizationWizardPage::getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues)
@@ -1064,4 +1024,49 @@ std::vector<te::map::GroupingItem*> te::qt::widgets::RasterizationWizardPage::ge
 QTableWidget* te::qt::widgets::RasterizationWizardPage::getTableWidget()
 {
   return m_ui->m_tableWidget;
+}
+
+void te::qt::widgets::RasterizationWizardPage::saveLegend(const std::string& path)
+{
+  int rowCount = m_ui->m_tableWidget->rowCount();
+  
+  if (rowCount < 1)
+    return;
+
+  if (path.empty())
+    return;
+
+  boost::property_tree::ptree pt;
+  boost::property_tree::ptree legend;
+
+  std::string attrName = m_ui->m_attrComboBox->currentText().toStdString();
+  std::string precision = m_ui->m_precSpinBox->text().toStdString();
+
+  legend.add("Attribute", attrName);
+  legend.add("Precision", precision);
+
+  boost::property_tree::ptree items;
+
+  for (std::size_t i = 0; i < m_ui->m_tableWidget->rowCount(); ++i)
+  {
+    std::string idx = boost::lexical_cast<std::string>(i + 1);
+    std::string className = m_ui->m_tableWidget->item(i, 0)->text().toStdString();
+    std::string r = m_ui->m_tableWidget->item(i, 1)->text().toStdString();
+    std::string g = m_ui->m_tableWidget->item(i, 2)->text().toStdString();
+    std::string b = m_ui->m_tableWidget->item(i, 3)->text().toStdString();
+
+    boost::property_tree::ptree item;
+    item.add("ClassName", className);
+    item.add("Red", r);
+    item.add("Green", g);
+    item.add("Blue", b);
+
+    items.add_child("Item", item);
+  }
+
+  legend.add_child("Items", items);
+
+  pt.add_child("Legend", legend);
+
+  boost::property_tree::write_json(path, pt);
 }

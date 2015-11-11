@@ -142,8 +142,6 @@ void te::qt::widgets::RasterizationWizard::setDummy(te::rst::Raster* rst, const 
 
 bool te::qt::widgets::RasterizationWizard::execute()
 {
-  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
-
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -155,7 +153,6 @@ bool te::qt::widgets::RasterizationWizard::execute()
   catch (const te::common::Exception& e)
   {
     te::common::ProgressManager::getInstance().removeViewer(id);
-    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this, tr("Rasterization"), e.what());
     return false;
   }
@@ -179,7 +176,6 @@ bool te::qt::widgets::RasterizationWizard::execute()
   if (infos.empty())
   {
     te::common::ProgressManager::getInstance().removeViewer(id);
-    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this, tr("Rasterization"), tr("None legend was created!"));
     return false;
   }
@@ -213,27 +209,36 @@ bool te::qt::widgets::RasterizationWizard::execute()
 
     std::vector<te::gm::Geometry*> geoms;
     std::vector<double> values;
-  
-    te::common::TaskProgress task;
-    task.setMessage(TE_TR("Preparing..."));
-    task.setTotalSteps((int)data->size());
-    
-    while (data->moveNext())
+
     {
-      std::string classItem = data->getValue(attrName)->toString();
+      te::common::TaskProgress task;
+      task.setMessage(TE_TR("Preparing..."));
+      task.setTotalSteps((int)data->size());
 
-      if (infos.find(classItem) == infos.end())
-        continue;
-
-      std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
-
-      if (geom->isValid())
+      while (data->moveNext())
       {
-        geoms.push_back(geom.release());
-        values.push_back(infos[classItem][0]);
-      }
+        std::string classItem = data->getValue(attrName)->toString();
 
-      task.pulse();
+        if (infos.find(classItem) == infos.end())
+          continue;
+
+        std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
+
+        if (geom->isValid())
+        {
+          geoms.push_back(geom.release());
+          values.push_back(infos[classItem][0]);
+        }
+
+        if (!task.isActive())
+        {
+          te::common::ProgressManager::getInstance().removeViewer(id);
+          QMessageBox::warning(this, tr("Rasterize"), tr("Rasterize operation canceled!"));
+          return false;
+        }
+
+        task.pulse();
+      }
     }
 
     rst->rasterize(geoms, values, 0);
@@ -278,18 +283,23 @@ bool te::qt::widgets::RasterizationWizard::execute()
       cm->setRecode(r);
     }
 
-      te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(m_outputLayer->getStyle());
+    te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(m_outputLayer->getStyle());
+    rs->setColorMap(cm);
 
-      rs->setColorMap(cm);
+    boost::filesystem::path p(uri);
+    p.replace_extension("leg");
+
+    m_vectorPage->saveLegend(p.string());
 
   }
   catch (const std::exception& e)
   {
     te::common::ProgressManager::getInstance().removeViewer(id);
-    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this, tr("Rasterization"), e.what());
     return false;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   return true;
 }

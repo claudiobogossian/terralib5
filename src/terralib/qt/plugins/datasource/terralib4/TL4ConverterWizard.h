@@ -125,6 +125,7 @@ namespace te
             std::auto_ptr<te::da::DataSource> m_tl4Database;
 
             te::da::DataSourceInfoPtr m_targetDataSource;
+            std::vector<std::pair<std::string, std::string> > m_rasterFiles; //TeRasterFile is external and wíll not be converted
 
             std::auto_ptr<Ui::TL4ConverterWizardForm> m_ui;
             std::auto_ptr<TL4ConnectorWizardPage> m_connectorPage;
