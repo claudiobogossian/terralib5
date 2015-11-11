@@ -43,10 +43,13 @@ te::qt::plugins::mnt::ShowValuesAction::ShowValuesAction(QMenu* menu)
   createAction(tr("Show Values").toStdString(), "mnt-processing-show values");
   m_action->setObjectName("Processing.DTM Processing.SHOW VALUES");
   m_status = false;
+  m_readpixel = 0;
 }
 
 te::qt::plugins::mnt::ShowValuesAction::~ShowValuesAction()
 {
+  if (m_readpixel)
+    delete m_readpixel;
 }
 
 void te::qt::plugins::mnt::ShowValuesAction::onChecked(bool status)
@@ -84,6 +87,7 @@ void te::qt::plugins::mnt::ShowValuesAction::onActionActivated(bool )
     {
       m_app->getMapDisplay()->removeEventFilter(m_readpixel);
       delete m_readpixel;
+      m_readpixel = 0;
     }
     return;
   }
