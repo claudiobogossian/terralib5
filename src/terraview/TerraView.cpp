@@ -1890,16 +1890,21 @@ void TerraView::projectChanged()
   setWindowTitle(qApp->applicationName() + " - " + m_project->m_title + " *");
 }
 
-void TerraView::checkAndSaveProject()
+bool TerraView::checkAndSaveProject()
 {
   if(m_project->m_changed)
   {
     QString msg = tr("The current project has unsaved changes. Do you want to save them?");
     QMessageBox::StandardButton btn = QMessageBox::question(this, windowTitle(), msg, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
 
-    if(btn == QMessageBox::Save)
+    if (btn == QMessageBox::Save)
       onSaveProjectTriggered();
+
+    if (btn == QMessageBox::Cancel)
+      return false;
   }
+
+  return true;
 }
 
 void TerraView::openProject(const QString& prjFileName)
@@ -1926,12 +1931,13 @@ void TerraView::openProject(const QString& prjFileName)
     ResetProject(m_project);
   }
 }
-
+#include <QCloseEvent>
 void TerraView::closeEvent(QCloseEvent* event)
 {
-  checkAndSaveProject();
-
-  QMainWindow::close();
+  if(checkAndSaveProject())
+    QMainWindow::close();
+  else
+    event->ignore();
 }
 
 void TerraView::addActions(const QString& plgName, const QString& category, const QList<QAction*>& acts)
