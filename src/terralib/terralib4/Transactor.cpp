@@ -363,7 +363,8 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
     TeAttrTableVector tables;
     layer->getAttrTables(tables);
 
-    table = tables[0];
+    if (!tables.empty())
+      table = tables[0];
   }
 
   std::auto_ptr<te::da::DataSetType> mainDst(terralib4::Convert2T5(table));
@@ -813,7 +814,7 @@ std::vector<std::string> terralib4::Transactor::getTL4Layers()
 
   while(it != m_layerMap.end())
   {
-    if(!it->second->hasGeometry(TeRASTER))
+    if (!it->second->hasGeometry(TeRASTER) && !it->second->hasGeometry(TeRASTERFILE))
       layers.push_back(it->second->name());
 
     ++it;
@@ -846,6 +847,27 @@ std::vector<std::string> terralib4::Transactor::getTL4Rasters()
     if(it->second->hasGeometry(TeRASTER))
     {
       rasters.push_back(it->second->name());
+    }
+    ++it;
+  }
+
+  return rasters;
+}
+
+std::vector<std::pair<std::string, std::string> > terralib4::Transactor::getTL4RasterFiles()
+{
+  std::vector<std::pair<std::string, std::string> > rasters;
+
+  std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
+
+  while (it != m_layerMap.end())
+  {
+    if (it->second->hasGeometry(TeRASTERFILE))
+    {
+      std::pair<std::string, std::string> pair;
+      pair.first = it->second->name();
+      pair.second = it->second->raster()->params().fileName_;
+      rasters.push_back(pair);
     }
     ++it;
   }

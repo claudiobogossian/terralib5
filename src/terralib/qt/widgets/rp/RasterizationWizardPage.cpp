@@ -336,7 +336,7 @@ void te::qt::widgets::RasterizationWizardPage::onLoadPushButtonClicked()
   std::string attrName = legend.get<std::string>("Attribute");
   std::string precision = legend.get<std::string>("Precision");
 
-  m_ui->m_attrComboBox->setCurrentText(attrName.c_str());
+  m_ui->m_attrComboBox->setCurrentIndex(m_ui->m_attrComboBox->findText(attrName.c_str()));
   m_ui->m_precSpinBox->setValue(boost::lexical_cast<double>(precision));
 
   std::vector<std::vector<std::string> > items;

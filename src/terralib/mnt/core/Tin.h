@@ -184,7 +184,7 @@ namespace te
     {
 
     public:
-      TinNode() : m_type(Deletednode), m_edge(-1), m_point(0, 0, 0) {}
+      TinNode() : m_type(Deletednode), m_point(0, 0, 0) {}
 
       TinNode(const TinNode &rhs){ m_type = rhs.m_type; m_edge = rhs.m_edge; m_point = rhs.m_point; }
 
@@ -194,9 +194,9 @@ namespace te
 
       bool operator< (const TinNode &rhs) const;
 
-      void setEdge(int32_t edge) { m_edge = edge; }
+      bool setEdge(int32_t edge);
 
-      int32_t getEdge() { return m_edge; }
+      std::vector<int32_t> &getEdge() { return m_edge; }
 
       /*! Set node height value.*/
       void setZ(double zvalue) { m_point.setZ(zvalue); }
@@ -252,7 +252,7 @@ namespace te
     protected:
       te::gm::PointZ m_point; //!< Node point
       Ntype m_type; //!< node type
-      int32_t m_edge;
+      std::vector<int32_t> m_edge;
 
     };
 
@@ -285,8 +285,6 @@ namespace te
 
     protected:
       te::da::DataSetType* GetDataSetType(std::string &outDsetName);
-
-      void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
       /*!
       \brief Method that finds a triangle containing a given point
@@ -356,7 +354,15 @@ namespace te
       \param nid is the node identification number
       \return the number of the line if it was found with no errors or FALSE (-1L) otherwise
       */
-      int32_t FindLine(int32_t nid);
+      std::vector<int32_t> FindLine(int32_t nid);
+
+      /*!
+      \brief Method that find a line given two nodes identification
+      \param fnid is the first node identification number
+      \param snid is the second node identification number
+      \return the number of the line if it was found with no errors or FALSE (-1L) otherwise
+      */
+      int32_t FindLine(int32_t fnid, int32_t snid);
 
       /*!
       \brief Method that includes a node in the tin line list
@@ -500,12 +506,11 @@ namespace te
 
       /*!
       \brief Method that calculates the second derivatives in a node of a given triangle
-      \param nodeid is the node identification number
       \param triangles is a pointer to a list of triangle identificators (SIDList object)
       \param fderiv is a pointer to a Point object representing the first derivative in x and y directions
       \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
       */
-      bool CalcTriangleSecondDeriv(int32_t nodeid, std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv);
+      bool CalcTriangleSecondDeriv(std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv);
 
       /*!
       \brief Method that calculates the second derivative at all triangulation break nodes
@@ -524,15 +529,6 @@ namespace te
       \return TRUE if the lines was checked with no errors or FALSE otherwise
       */
       bool CheckLines(int32_t trid);
-
-
-      /*!
-      \brief Method that find a line given two nodes identification
-      \param fnid is the first node identification number
-      \param snid is the second node identification number
-      \return the number of the line if it was found with no errors or FALSE (-1L) otherwise
-      */
-      int32_t FindLine(int32_t fnid, int32_t snid);
 
       /*!
       \brief Method that evaluates Z values for pt1 and pt2 using the Akima polynomium fitted in a triangle

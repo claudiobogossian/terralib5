@@ -100,8 +100,6 @@ bool te::mnt::Slope::run()
 
   m_rst = rst.get();
 
-  double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
-
   if (m_inputType == TIN)
   {
     int32_t nodesid[3];

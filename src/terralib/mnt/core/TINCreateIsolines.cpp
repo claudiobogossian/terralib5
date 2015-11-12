@@ -8,11 +8,6 @@
 #include "TINCreateIsolines.h"
 #include "Utils.h"
 
-#include "../../datatype/SimpleProperty.h"
-#include "../../geometry/GeometryProperty.h"
-#include "../../memory/DataSet.h"
-#include "../../memory/DataSetItem.h"
-
 
 bool te::mnt::TINCreateIsolines::run()
 {
@@ -66,7 +61,7 @@ bool te::mnt::TINCreateIsolines::run()
     }
   }
 
-  SaveIso();
+  SaveIso(m_outDsetName, m_outDsrc, m_isolist, m_guidevalues, m_srid);
 
   return true;
 }
@@ -92,51 +87,5 @@ void te::mnt::TINCreateIsolines::setParams(std::vector<double> &val, std::vector
   m_values = val;
   m_guidevalues = gval;
   m_tol = tol;
-}
-
-bool te::mnt::TINCreateIsolines::SaveIso()
-{
-  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(m_outDsetName));
-
-  //Primary key
-  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("ID", te::dt::INT32_TYPE);
-  prop0->setAutoNumber(true);
-  te::dt::SimpleProperty* prop1 = new te::dt::SimpleProperty("Z", te::dt::DOUBLE_TYPE);
-  te::dt::SimpleProperty* prop11 = new te::dt::SimpleProperty("type", te::dt::STRING_TYPE);
-  te::gm::GeometryProperty* prop2 = new te::gm::GeometryProperty("iso", 0, te::gm::LineStringZType, true);
-  prop2->setSRID(m_srid);
-  dt->add(prop0);
-  dt->add(prop1);
-  dt->add(prop11);
-  dt->add(prop2);
-
-  te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
-  te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
-
-  std::size_t niso = m_isolist.size();
-  int id = 0;
-
-  for (unsigned int Idx = 0; Idx < m_isolist.size(); ++Idx)
-  {
-    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
-    te::gm::LineString gout = m_isolist[Idx];
-    double *zvalue = gout.getZ();
-    dataSetItem->setInt32("ID", id++);
-    if (zvalue){
-      dataSetItem->setDouble("Z", zvalue[0]);
-      if (std::find(m_guidevalues.begin(), m_guidevalues.end(), zvalue[0]) != m_guidevalues.end())
-        dataSetItem->setString("type","GUIDELINE");
-      else
-        dataSetItem->setString("type","NORMAL");
-    }
-    dataSetItem->setGeometry("iso", (te::gm::Geometry*)gout.clone());
-
-    ds->add(dataSetItem);
-  }
-
-  Save(m_outDsrc.get(), ds, dt.get());
-
-  return true;
-
 }
 

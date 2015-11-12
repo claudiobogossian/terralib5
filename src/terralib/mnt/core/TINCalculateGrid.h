@@ -76,7 +76,7 @@ namespace te
       \param zvalue is the z value to be stored in the grid inside the triangle region
       \return TRUE always
       */
-      bool FillGridQuintic(int32_t triid, te::gm::PointZ *p3da, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double *coef);
+      bool FillGridQuintic(int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double *coef);
 
       te::da::DataSourcePtr m_inDsrc;
       std::string m_inDsetName;

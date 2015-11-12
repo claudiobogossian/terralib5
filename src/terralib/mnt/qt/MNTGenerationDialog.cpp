@@ -105,7 +105,11 @@ void te::mnt::MNTGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
 
   while (it != m_layers.end())
   {
-    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    if (it->get())
+    {
+      if (it->get()->isValid())
+        m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    }
     ++it;
   }
 }

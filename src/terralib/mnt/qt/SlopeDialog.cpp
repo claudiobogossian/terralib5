@@ -96,22 +96,31 @@ void te::mnt::SlopeDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers
 
   while (it != m_layers.end())
   {
-    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if (dsType->hasGeom())
+    if (it->get())
     {
-      std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-      te::gm::GeomType gmType = geomProp->getGeometryType();
-      if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-        gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
+      if (it->get()->isValid())
       {
-        m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+        std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+        if (dsType.get())
+        {
+          if (dsType->hasGeom())
+          {
+            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+            te::gm::GeomType gmType = geomProp->getGeometryType();
+            if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
+              gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
+            {
+              m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+            }
+          }
+          if (dsType->hasRaster()) //GRID
+          {
+            m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+          }
+          dsType.release();
+        }
       }
     }
-    if (dsType->hasRaster()) //GRID
-    {
-      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-    }
-    dsType.release();
     ++it;
   }
 }

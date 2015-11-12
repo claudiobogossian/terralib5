@@ -75,7 +75,6 @@ namespace te
       void onHelpPushButtonClicked();
       void onOkPushButtonClicked();
       void onCancelPushButtonClicked();
-      bool convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit);
 
     private:
 

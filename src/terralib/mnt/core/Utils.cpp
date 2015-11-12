@@ -8,8 +8,17 @@
 #include "Utils.h"
 #include "CalculateGrid.h"
 
+#include "../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../dataaccess/utils/Utils.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../geometry/Point.h"
+#include "../../memory/DataSet.h"
+#include "../../memory/DataSetItem.h"
+
+//#include <geos.h>
+#include <geos/geom/Coordinate.h>
+#include <geos/simplify/DouglasPeuckerLineSimplifier.h>
 
 #include <cmath>
 #include <iostream>
@@ -31,7 +40,6 @@ size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsr
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
   inDset->moveBeforeFirst();
-  std::size_t pos = 0;
   double value;
   while (inDset->moveNext())
   {
@@ -76,7 +84,7 @@ size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsr
   return nsamples;
 }
 
-size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, double max, bool spline,
+size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, double max, Simplify alg,
   te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype, te::gm::Envelope &env)
 {
 
@@ -89,7 +97,6 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
   inDset = inDsrc->getDataSet(inDsetName);
 
   const std::size_t npr = inDset->getNumProperties();
-  const std::size_t ng = inDset->size();
 
   //Read attributes
   std::vector<std::string>pnames;
@@ -103,7 +110,6 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
   inDset->moveBeforeFirst();
-  std::size_t pos = 0;
   double value = std::numeric_limits<double>::max();
 
   while (inDset->moveNext())
@@ -120,10 +126,15 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
         value = inDset->getDouble(atrZ);
 
       te::gm::LineString *ls;
-      if (spline)
-        ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, max, value);
+      if (alg == Spline)
+        ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, value);
+      else if (alg == DouglasPeucker)
+        ls = GEOS_DouglasPeucker(l, tol, value);
+      else if (alg == None)
+        ls = dynamic_cast<te::gm::LineString*>(l->clone());
       else
-        ls = pointListSimplify(l, tol, max, value); 
+        ls = pointListSimplify(l, tol, max, value);
+
       isolines.add(dynamic_cast<te::gm::Geometry*>(ls));
       for (std::size_t p = 0; p < ls->size(); p++)
       {
@@ -148,8 +159,12 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
           lz->setPointZ(il, l->getX(il), l->getY(il), value);
         l->setSRID(isolines.getSRID());
         te::gm::LineString *ls;
-        if (spline)
-          ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, max, value);
+        if (alg == Spline)
+          ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, value);
+        else if (alg == DouglasPeucker)
+          ls = GEOS_DouglasPeucker(l, tol, value);
+        else if (alg == None)
+          ls = dynamic_cast<te::gm::LineString*>(l->clone());
         else
           ls = pointListSimplify(l, tol, max, value);
         if (ls->size())
@@ -211,6 +226,161 @@ bool te::mnt::equalFptSpt(te::gm::PointZ & fpt, te::gm::PointZ &spt, double scal
   if (fabs(fpt.getX() - spt.getX()) > delta) return false;
   if (fabs(fpt.getY() - spt.getY()) < delta) return true;
   return false;
+}
+
+double TePerpendicularDistance(const te::gm::Coord2D& first, const te::gm::Coord2D& last, const te::gm::Coord2D& pin, te::gm::Coord2D &pinter)
+{
+  double	d12, xmin, ymin;
+
+  double xi = first.getX();
+  double xf = last.getX();
+  double yi = first.getY();
+  double yf = last.getY();
+  double x = pin.getX();
+  double y = pin.getY();
+
+  double dx = xf - xi;
+  double dy = yf - yi;
+  double a2 = (y - yi) * dx - (x - xi)*dy;
+
+  if (dx == 0. && dy == 0.)
+  {
+    d12 = sqrt(((x - xi) * (x - xi)) + ((y - yi) * (y - yi)));
+    d12 *= d12;
+  }
+  else
+    d12 = a2 * a2 / (dx * dx + dy * dy);
+
+  if (dx == 0.)
+  {
+    xmin = xi;
+    ymin = y;
+  }
+  else if (dy == 0.)
+  {
+    xmin = x;
+    ymin = yi;
+  }
+  else
+  {
+    double alfa = dy / dx;
+    xmin = (x + alfa * (y - yi) + alfa * alfa * xi) / (1. + alfa * alfa);
+    ymin = (x - xmin) / alfa + y;
+  }
+
+  pinter.x = xmin;
+  pinter.y = ymin;
+
+  return (sqrt(d12));
+}
+
+te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double simpFactor, double Zvalue)
+{
+  te::gm::LineString *lineOut;
+
+  if (lineIn->size() <= 3)
+  {
+    lineOut = new te::gm::LineString(*lineIn);
+    return lineOut;
+  }
+
+  te::gm::LineString lringIn(*lineIn);
+
+  std::vector<te::gm::Point*> lringOut;
+  lringOut.push_back(lringIn.getPointN(0));
+
+  int initial = 0;
+  int final = 2;
+
+  while (initial < (int)(lringIn.size() - 2))
+  {
+    bool distIsGreater = false;
+
+    while (!distIsGreater)
+    {
+      for (int i = initial + 1; i < final; i++)
+      {
+        te::gm::Coord2D pInter;
+        if (TePerpendicularDistance(te::gm::Coord2D(lringIn.getX(initial), lringIn.getY(initial)), te::gm::Coord2D(lringIn.getX(final), lringIn.getY(final)), 
+          te::gm::Coord2D(lringIn.getX(i), lringIn.getY(i)), pInter) > simpFactor)
+        {//if distance is greater than maximum distance
+          lringOut.push_back(lringIn.getPointN(final - 1));
+
+          initial = final - 1;
+          final = initial + 2;
+
+          distIsGreater = true;
+
+          break;
+        }
+      }
+
+      if (!distIsGreater)
+      {
+        final++;
+
+        if ((final) >= (int)lringIn.size())
+        {
+          lringOut.push_back(lringIn.getPointN(final - 2));
+
+          initial = final;
+          distIsGreater = true;
+
+          break;
+        }
+      }
+      else
+        break;
+
+      if (final >= (int)lringIn.size())
+      {
+        initial = final;
+        distIsGreater = true;
+
+        break;
+      }
+    }
+  }
+
+  if (lringOut.size() <= 3)
+  {
+    lineOut = new te::gm::LineString(*lineIn);
+  }
+  else
+  {
+    lineOut = new te::gm::LineString(lringOut.size(), te::gm::LineStringZType);
+    for (int i = 0; i < lringOut.size(); i++)
+    {
+      lineOut->setPointN(i, *lringOut[i]);
+      lineOut->setZ(i, Zvalue);
+    }
+  }
+
+  return lineOut;
+}
+
+te::gm::LineString* te::mnt::GEOS_DouglasPeucker(te::gm::LineString *ls, double snap, double Zvalue)
+{
+  std::vector<geos::geom::Coordinate> coordpts;
+  for (std::size_t j = 0; j < ls->size(); ++j)
+  {
+    te::gm::Point *lpt = ls->getPointN(j);
+    geos::geom::Coordinate coo(lpt->getX(), lpt->getY());
+    coordpts.push_back(coo);
+  }
+  geos::simplify::DouglasPeuckerLineSimplifier douglas(coordpts);
+  douglas.setDistanceTolerance(snap); 
+  geos::simplify::DouglasPeuckerLineSimplifier::CoordsVectAutoPtr simplified = douglas.simplify();
+
+  te::gm::LineString* lsout = new te::gm::LineString(simplified->size(), te::gm::LineStringZType);
+
+  for (std::size_t j = 0; j < simplified->size(); ++j)
+  {
+    geos::geom::Coordinate c1 = simplified.get()->at(j);
+    lsout->setPointZ(j, c1.x, c1.y, Zvalue);
+  }
+
+  return lsout;
 }
 
 te::gm::LineString* te::mnt::pointListSimplify(te::gm::LineString *ls, double snap, double maxdist, double Zvalue)
@@ -993,7 +1163,7 @@ bool te::mnt::onSegment(te::gm::PointZ& pt, te::gm::PointZ& fseg, te::gm::PointZ
 }
 
 
-int te::mnt::onSameSide(te::gm::PointZ &pt1, te::gm::PointZ &pt2, te::gm::PointZ &fseg, te::gm::PointZ &lseg)
+int te::mnt::onSameSide(te::gm::Coord2D pt1, te::gm::Coord2D pt2, te::gm::Coord2D fseg, te::gm::Coord2D lseg)
 {
   double	a, b, c, ip, ipt;
 
@@ -1001,8 +1171,7 @@ int te::mnt::onSameSide(te::gm::PointZ &pt1, te::gm::PointZ &pt2, te::gm::PointZ
   b = fseg.getX() - lseg.getX();
   c = lseg.getX()*fseg.getY() - fseg.getX()*lseg.getY();
   ip = a*pt1.getX() + b*pt1.getY() + c;
-  if (ip == 0.)
-    // On segment
+  if (ip == 0.) // On segment
     return -1;
   ipt = a*pt2.getX() + b*pt2.getY() + c;
   if ((ip > 0.) && (ipt < 0.))
@@ -1348,3 +1517,116 @@ bool te::mnt::Gauss_elimination(short m, short n, double mat[6][6])
 }
 
 
+bool te::mnt::SaveIso(std::string& outDsetName, te::da::DataSourcePtr &outDsrc, std::vector<te::gm::LineString> &isolist, std::vector<double> &guidevalues, int srid)
+{
+  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(outDsetName));
+
+  //Primary key
+  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("ID", te::dt::INT32_TYPE);
+  prop0->setAutoNumber(true);
+  te::dt::SimpleProperty* prop1 = new te::dt::SimpleProperty("Z", te::dt::DOUBLE_TYPE);
+  te::dt::SimpleProperty* prop11 = new te::dt::SimpleProperty("type", te::dt::STRING_TYPE);
+  te::gm::GeometryProperty* prop2 = new te::gm::GeometryProperty("iso", 0, te::gm::LineStringZType, true);
+  prop2->setSRID(srid);
+  dt->add(prop0);
+  dt->add(prop1);
+  dt->add(prop11);
+  dt->add(prop2);
+
+  te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
+
+  int id = 0;
+
+  for (unsigned int Idx = 0; Idx < isolist.size(); ++Idx)
+  {
+    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
+    te::gm::LineString gout = isolist[Idx];
+    double *zvalue = gout.getZ();
+    dataSetItem->setInt32("ID", id++);
+    if (zvalue){
+      dataSetItem->setDouble("Z", zvalue[0]);
+      if (std::find(guidevalues.begin(), guidevalues.end(), zvalue[0]) != guidevalues.end())
+        dataSetItem->setString("type", "GUIDELINE");
+      else
+        dataSetItem->setString("type", "NORMAL");
+    }
+    dataSetItem->setGeometry("iso", (te::gm::Geometry*)gout.clone());
+
+    ds->add(dataSetItem);
+  }
+
+  Save(outDsrc.get(), ds, dt.get());
+
+  return true;
+
+}
+
+void te::mnt::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType)
+{
+  // do any adaptation necessary to persist the output dataset
+  //te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType, source->getCapabilities());
+  //te::da::DataSetType* dsTypeResult = converter->getResult();
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
+
+  std::map<std::string, std::string> options;
+
+  try
+  {
+    if (source->getType() == "OGR")
+    {
+      // create the dataset
+      source->createDataSet(outDsType, options);
+
+      // copy from memory to output datasource
+      result->moveBeforeFirst();
+      std::string name = outDsType->getName();
+      source->add(name, result, options);
+    }
+    else
+    {
+      t->begin();
+
+      // create the dataset
+      t->createDataSet(outDsType, options);
+
+      // copy from memory to output datasource
+      result->moveBeforeFirst();
+      std::string name = outDsType->getName();
+      t->add(name, result, options);
+
+      t->commit();
+    }
+
+  }
+  catch (te::common::Exception& e)
+  {
+    t->rollBack();
+    throw e;
+  }
+  catch (std::exception& e)
+  {
+    t->rollBack();
+    throw e;
+  }
+}
+
+
+bool te::mnt::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit)
+{
+  switch (unit->getId())
+  {
+  case te::common::UOM_Metre:
+    val /= 111000;            // 1 degree = 111.000 meters
+    break;
+  case te::common::UOM_Kilometre:
+    val /= 111;               // 1 degree = 111 kilometers
+    break;
+  case te::common::UOM_Foot:
+    val /= 364173.24;        //  1 feet  = 3.28084 meters
+    break;
+  default:
+    return false;
+  }
+  return true;
+}

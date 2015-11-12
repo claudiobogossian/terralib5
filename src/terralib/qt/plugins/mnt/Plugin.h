@@ -51,6 +51,7 @@ namespace te
       {
         class CreateIsolinesAction;
         class MNTGenerationAction;
+        class ShowValuesAction;
         class SlopeAction;
         class SmoothAction;
         class TINGenerationAction;
@@ -94,6 +95,7 @@ namespace te
 
             CreateIsolinesAction* m_ISOGeneration;    //!< Isoline Generation Action
             MNTGenerationAction*  m_MNTGeneration;    //!< GRID Generation Action
+            ShowValuesAction*     m_ShowValue;
             SlopeAction*          m_Slope;            //!< Slope Generation Action
             SmoothAction*         m_Smooth;           //!< Smooth Isolines Action
             TINGenerationAction*  m_TINGeneration;    //!< TIN Generation Action

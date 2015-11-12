@@ -62,13 +62,19 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driver
   dsInfoPtr->setAccessDriver(driverName);
   dsInfoPtr->setType(driverName);
 
-  te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
-
-  //add ds
   te::da::DataSourcePtr dsPtr(ds.release());
-  dsPtr->setId(id);
-  
-  te::da::DataSourceManager::getInstance().insert(dsPtr);
+
+  if (!te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr))
+  {
+    //Datasource already exist - use its id
+    dsInfoPtr = te::da::DataSourceInfoManager::getInstance().getByConnInfo(dsInfoPtr->getConnInfoAsString());
+    dsPtr->setId(dsInfoPtr->getId());
+  }
+  else
+  {
+    dsPtr->setId(id);
+    te::da::DataSourceManager::getInstance().insert(dsPtr);
+  }
 
   //create layer
   te::da::DataSetTypePtr dsType(dsPtr->getDataSetType(dsNames[0]).release());

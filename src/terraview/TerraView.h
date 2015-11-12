@@ -181,7 +181,7 @@ class TerraView : public te::qt::af::BaseApplication
 
     void projectChanged();
 
-    void checkAndSaveProject();
+    bool checkAndSaveProject();
 
     void openProject(const QString& prjFileName);
 

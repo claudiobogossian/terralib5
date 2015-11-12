@@ -82,6 +82,14 @@ namespace te
        GRID
      };
 
+     enum Simplify
+     {
+       AccumulatedDistance,
+       Spline,
+       DouglasPeucker,
+       None
+     };
+
   }
 }
 #endif

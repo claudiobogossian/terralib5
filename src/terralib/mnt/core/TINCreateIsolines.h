@@ -45,8 +45,6 @@ namespace te
 
         void setParams(std::vector<double> &val, std::vector<double> &gval, double tol);
 
-        bool SaveIso();
-
       protected:
 
         te::da::DataSourcePtr m_inDsrc;
