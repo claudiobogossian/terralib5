@@ -16,7 +16,8 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 
-#include <geos.h>
+//#include <geos.h>
+#include <geos/geom/Coordinate.h>
 #include <geos/simplify/DouglasPeuckerLineSimplifier.h>
 
 #include <cmath>
