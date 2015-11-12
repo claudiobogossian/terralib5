@@ -79,7 +79,6 @@ std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, i
   std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", grid, bands, m_dsinfo));
   m_rst = rst.get();
 
-  double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
   std::vector<std::pair<te::gm::Coord2D, te::gm::PointZ> > dataset1;
 
   for (int i = 0; i < mpt.getNumGeometries(); i++)
@@ -300,7 +299,7 @@ double te::mnt::CalculateGrid::Interpwqz(te::gm::PointZ& pg, std::vector<te::gm:
   double Ztotal = 0;
   double Wi, Wtotal = 0;
   int q1 = 0, q2 = 0, q3 = 0, q4 = 0; // quadrants
-  int npts = 0, j, i;
+  int j, i;
 
   int use_point = 1;
   for (i = 0; i < points.size(); i++)
@@ -370,13 +369,10 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
   double percentageDist = m_overlapping/100;
 
   int _minimoPontos = std::min(m_minpoints, (int)m_dataset.size());
-  double imgzMin = std::numeric_limits<double>::max();
-  double imgzMax = std::numeric_limits<double>::min();
 
   double resX = m_resx;
   double resY = m_resy;
 
-  double dummy = m_nodatavalue;
   double zdummy = m_nodatavalue;
 
   double X1 = m_env.getLowerLeftX() + resX/2.;
@@ -951,7 +947,7 @@ bool te::mnt::SplineInterpolationGrass::calculateGrid(double xMin, double yMin)
 }
 
 
-te::gm::LineString* te::mnt::SplineInterpolationGrass::pointListSimplify(te::gm::LineString *ls, double snap, double maxdist, double Zvalue)
+te::gm::LineString* te::mnt::SplineInterpolationGrass::pointListSimplify(te::gm::LineString *ls, double snap, double Zvalue)
 {
   size_t npts = ls->getNPoints();
   size_t npte = npts;
@@ -1088,7 +1084,6 @@ bool te::mnt::SplineInterpolationGrass::AdjustLinear(te::gm::LineString *ptol, d
   std::vector<te::gm::PointZ> pts;
 
   double xA, yA, xB, yB;
-  int pt1 = 0;
   for (std::size_t i = 0; i < npte - 1; i++)
   {
     xA = vxy[i].getX();

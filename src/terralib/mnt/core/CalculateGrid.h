@@ -169,7 +169,7 @@ namespace te
 
       double dataInterpolateBilin(double x, double y, double xMin, double yMin, bool &interp);
 
-      static te::gm::LineString* pointListSimplify(te::gm::LineString *ls, double snap, double maxdist, double Zvalue);
+      static te::gm::LineString* pointListSimplify(te::gm::LineString *ls, double snap, double Zvalue);
 
     private:
 

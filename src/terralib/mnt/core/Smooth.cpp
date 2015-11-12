@@ -60,7 +60,7 @@ bool te::mnt::Smooth::run()
   for (size_t i = 0; i < isolines_simp.getNumGeometries(); i++)
   {
     te::gm::LineString iso = *dynamic_cast<te::gm::LineString*>(isolines_simp.getGeometryN(i));
-    if (AdjustCatmullRom(iso, m_maxdist))
+    if (AdjustCatmullRom(iso))
     {
       if (m_simpl_out)
       {
@@ -78,7 +78,7 @@ bool te::mnt::Smooth::run()
   return true;
 }
 
-bool te::mnt::Smooth::AdjustCatmullRom(te::gm::LineString &iso, double snap)
+bool te::mnt::Smooth::AdjustCatmullRom(te::gm::LineString &iso)
 {
   size_t npts = iso.getNPoints();
   double valuez = iso.getZ(0);
@@ -147,19 +147,11 @@ bool te::mnt::Smooth::AdjustCatmullRom(te::gm::LineString &iso, double snap)
       {
         double dx1 = pxy.getX() - x;
         double dy1 = pxy.getY() - y;
-        double dx1B = xyA.getX() - x;
-        double dy1B = xyA.getY() - y;
-        double dx1C = xyC.getX() - x;
-        double dy1C = xyC.getY() - y;
 
         double segSize = sqrt(dx1 * dx1 + dy1 * dy1);
-        double segSizeB = sqrt(dx1B * dx1B + dy1B * dy1B);
-        double segSizeC = sqrt(dx1C * dx1C + dy1C * dy1C);
         double cost = (dx * dx1 + dy * dy1) / (stsize * segSize);
-        double costB = (dx * dx1B + dy * dy1B) / (stsize * segSizeB);
-        double costC = (dx * dx1C + dy * dy1C) / (stsize * segSizeC);
 
-        if (fabs(cost) < 0.7 /*|| (((costB > 0 && costC > 0) || (costB < 0 && costC < 0))/* && j > nsteps/2)*/)
+        if (fabs(cost) < 0.7)
         {
           repeatD = 1;
           getNext = 0;

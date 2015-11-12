@@ -112,7 +112,7 @@ bool te::mnt::TINCalculateGrid::run()
       if (j == 3)
       {
         if (DefineAkimaCoeficients(i, nodesid, p3da, coef))
-         FillGridQuintic(i, p3da, flin, llin, fcol, lcol, coef);
+         FillGridQuintic(i, flin, llin, fcol, lcol, coef);
       }
       else
         FillGridValue(i, flin, llin, fcol, lcol, m_nodatavalue);
@@ -218,7 +218,7 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
 \return TRUE always
 */
 
-bool te::mnt::TINCalculateGrid::FillGridQuintic(int32_t triid, te::gm::PointZ *p3da, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double *coef)
+bool te::mnt::TINCalculateGrid::FillGridQuintic(int32_t triid, int32_t flin, int32_t llin, int32_t fcol, int32_t lcol, double *coef)
 {
   te::gm::PointZ pg;
   te::gm::Coord2D cg;
