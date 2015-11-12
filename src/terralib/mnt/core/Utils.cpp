@@ -16,8 +16,8 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 
-#include "geos.h"
-#include "geos/simplify/DouglasPeuckerLineSimplifier.h"
+#include <geos.h>
+#include <geos/simplify/DouglasPeuckerLineSimplifier.h>
 
 #include <cmath>
 #include <iostream>
@@ -1165,7 +1165,7 @@ bool te::mnt::onSegment(te::gm::PointZ& pt, te::gm::PointZ& fseg, te::gm::PointZ
 }
 
 
-int te::mnt::onSameSide(te::gm::Coord2D &pt1, te::gm::Coord2D &pt2, te::gm::Coord2D &fseg, te::gm::Coord2D &lseg)
+int te::mnt::onSameSide(te::gm::Coord2D pt1, te::gm::Coord2D pt2, te::gm::Coord2D fseg, te::gm::Coord2D lseg)
 {
   double	a, b, c, ip, ipt;
 
