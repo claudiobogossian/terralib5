@@ -271,7 +271,7 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 void te::edit::CreatePolygonTool::storeUndoCommand()
 {
 
-  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
+  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), m_display->getSRID());
 
   if (m_feature == 0)
     return;
