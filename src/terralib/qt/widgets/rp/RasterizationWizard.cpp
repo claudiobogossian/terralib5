@@ -360,7 +360,7 @@ void te::qt::widgets::RasterizationWizard::saveDataSet(te::mem::DataSet* dataSet
 
 te::rst::BandProperty* te::qt::widgets::RasterizationWizard::createBandProperty(const std::size_t size)
 {
-  int nbytes = std::ceil((log(size) / log(2.)) / 8);
+  int nbytes = std::ceil((log((float) size) / log(2.)) / 8);
 
   if (nbytes <= 1)
     return new te::rst::BandProperty(0, te::dt::CHAR_TYPE, "");
