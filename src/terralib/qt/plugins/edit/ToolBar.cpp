@@ -507,6 +507,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         te::gm::Geometry* geom = features[i]->getGeometry();
         assert(geom);
 
+        if (geom->getSRID() != layer->getSRID())
+          geom->transform(layer->getSRID());
+
         // Set the geometry type
         item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
 
