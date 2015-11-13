@@ -242,7 +242,7 @@ void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillCo
 
 void te::edit::Renderer::setupDefaultStyle()
 {
-  m_polygonFillColor = QColor(0, 255, 0, 80);
+  m_polygonFillColor = QColor(0, 255, 0, 50);
   m_polygonContourColor = Qt::black;
   m_polygonContourWidth = 2;
 

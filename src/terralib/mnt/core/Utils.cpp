@@ -16,8 +16,9 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 
-#include "geos.h"
-#include "geos/simplify/DouglasPeuckerLineSimplifier.h"
+//#include <geos.h>
+#include <geos/geom/Coordinate.h>
+#include <geos/simplify/DouglasPeuckerLineSimplifier.h>
 
 #include <cmath>
 #include <iostream>
@@ -39,7 +40,6 @@ size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsr
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
   inDset->moveBeforeFirst();
-  std::size_t pos = 0;
   double value;
   while (inDset->moveNext())
   {
@@ -97,7 +97,6 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
   inDset = inDsrc->getDataSet(inDsetName);
 
   const std::size_t npr = inDset->getNumProperties();
-  const std::size_t ng = inDset->size();
 
   //Read attributes
   std::vector<std::string>pnames;
@@ -111,7 +110,6 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
   inDset->moveBeforeFirst();
-  std::size_t pos = 0;
   double value = std::numeric_limits<double>::max();
 
   while (inDset->moveNext())
@@ -129,7 +127,7 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
       te::gm::LineString *ls;
       if (alg == Spline)
-        ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, max, value);
+        ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, value);
       else if (alg == DouglasPeucker)
         ls = GEOS_DouglasPeucker(l, tol, value);
       else if (alg == None)
@@ -162,7 +160,7 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
         l->setSRID(isolines.getSRID());
         te::gm::LineString *ls;
         if (alg == Spline)
-          ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, max, value);
+          ls = te::mnt::SplineInterpolationGrass::pointListSimplify(l, tol, value);
         else if (alg == DouglasPeucker)
           ls = GEOS_DouglasPeucker(l, tol, value);
         else if (alg == None)
@@ -1165,7 +1163,7 @@ bool te::mnt::onSegment(te::gm::PointZ& pt, te::gm::PointZ& fseg, te::gm::PointZ
 }
 
 
-int te::mnt::onSameSide(te::gm::Coord2D &pt1, te::gm::Coord2D &pt2, te::gm::Coord2D &fseg, te::gm::Coord2D &lseg)
+int te::mnt::onSameSide(te::gm::Coord2D pt1, te::gm::Coord2D pt2, te::gm::Coord2D fseg, te::gm::Coord2D lseg)
 {
   double	a, b, c, ip, ipt;
 
@@ -1536,9 +1534,7 @@ bool te::mnt::SaveIso(std::string& outDsetName, te::da::DataSourcePtr &outDsrc, 
   dt->add(prop2);
 
   te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
-  te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
 
-  std::size_t niso = isolist.size();
   int id = 0;
 
   for (unsigned int Idx = 0; Idx < isolist.size(); ++Idx)

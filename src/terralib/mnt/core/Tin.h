@@ -506,12 +506,11 @@ namespace te
 
       /*!
       \brief Method that calculates the second derivatives in a node of a given triangle
-      \param nodeid is the node identification number
       \param triangles is a pointer to a list of triangle identificators (SIDList object)
       \param fderiv is a pointer to a Point object representing the first derivative in x and y directions
       \return TRUE if the derivatives are calculate with no errors or FALSE otherwise
       */
-      bool CalcTriangleSecondDeriv(int32_t nodeid, std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv);
+      bool CalcTriangleSecondDeriv(std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv);
 
       /*!
       \brief Method that calculates the second derivative at all triangulation break nodes

@@ -163,6 +163,7 @@ void te::edit::CreatePolygonTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
+  renderer.setPolygonStyle(QColor(0, 255, 0, 80), QColor(255, 0, 0), 2);
   renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if(!m_coords.empty())
@@ -271,7 +272,7 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 void te::edit::CreatePolygonTool::storeUndoCommand()
 {
 
-  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
+  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), m_display->getSRID());
 
   if (m_feature == 0)
     return;

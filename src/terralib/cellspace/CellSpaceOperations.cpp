@@ -87,6 +87,11 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
   {
+    if (!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled!"));
+    }
+
     y = env.m_lly+(lin*resY);
     for(int col = 0; col < maxcols; ++col)
     {
@@ -137,10 +142,6 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
     }
 
     task.pulse();
-    if (!task.isActive())
-    {
-      throw te::common::Exception(TE_TR("Operation canceled!"));
-    }
   }
 
   // Output

@@ -1327,8 +1327,6 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
   std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType(outDsetName));
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
 
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(outDSType.get());
-
   te::gm::PointZ vert[3];
   int32_t tEdges[3];
   int32_t nids[3];
@@ -1447,7 +1445,6 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
 
   inDset->moveBeforeFirst();
 
-  std::size_t pos = 0;
   bool first = true;
 
   typedef te::sam::kdtree::Node<te::gm::Coord2D, int32_t, int32_t> KD_NODE;
@@ -2322,10 +2319,10 @@ bool te::mnt::Tin::BreakTriangleSecondDeriv()
     NodeTriangles((int32_t)i, rightri, leftri);
 
     // Calculate second derivative of node using right side triangles
-    CalcTriangleSecondDeriv((int32_t)i, rightri, m_nbrfderiv);
+    CalcTriangleSecondDeriv(rightri, m_nbrfderiv);
 
     // Calculate second derivative of node using left side triangles
-    CalcTriangleSecondDeriv((int32_t)i, leftri, m_nblfderiv);
+    CalcTriangleSecondDeriv(leftri, m_nblfderiv);
 
     rightri.clear();
     leftri.clear();
@@ -2544,7 +2541,7 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
   return true;
 }
 
-bool te::mnt::Tin::CalcTriangleSecondDeriv(int32_t nodeid, std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv)
+bool te::mnt::Tin::CalcTriangleSecondDeriv(std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv)
 {
   short j;
   int32_t triid, nodesid[3];

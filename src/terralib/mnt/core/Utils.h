@@ -88,7 +88,7 @@ namespace te
 
     bool onSegment(te::gm::PointZ& pt, te::gm::PointZ& fseg, te::gm::PointZ& lseg, double tol);
 
-    int onSameSide(te::gm::Coord2D &pt1, te::gm::Coord2D &pt2, te::gm::Coord2D &fseg, te::gm::Coord2D &lseg);
+    int onSameSide(te::gm::Coord2D pt1, te::gm::Coord2D pt2, te::gm::Coord2D fseg, te::gm::Coord2D lseg);
 
     bool point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<bool> &fixed, double tol);
 

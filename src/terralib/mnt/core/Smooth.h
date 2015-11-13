@@ -40,7 +40,7 @@ namespace te
       bool run();
 
     private:
-      bool AdjustCatmullRom(te::gm::LineString &iso, double snap);
+      bool AdjustCatmullRom(te::gm::LineString &iso);
 
       bool middlePointWithSnap(te::gm::Coord2D &pfr, te::gm::Coord2D &pto, te::gm::Coord2D &pt0, te::gm::Coord2D &pt1, double d);
 
