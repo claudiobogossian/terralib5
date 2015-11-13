@@ -51,6 +51,12 @@ namespace te
           NODE* m_child;    //!< A pointer to the child node.
           DATATYPE m_data;  //!< An object-identifier (oid).
         };
+
+        Branch()
+        {
+          m_child = 0;
+        }
+
       };
 
     } // end namespace rtree

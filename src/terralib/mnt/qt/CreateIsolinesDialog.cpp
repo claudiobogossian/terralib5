@@ -30,6 +30,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../mnt/core/TINCreateIsolines.h"
+#include "../../mnt/core/CreateIsolinesCore.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../raster.h"
@@ -75,6 +76,7 @@ te::mnt::CreateIsolinesDialog::CreateIsolinesDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
@@ -216,6 +218,7 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
         m_ui->m_dummycheckBox->setVisible(true);
         m_ui->m_dummylineEdit->setVisible(true);
         m_ui->m_dummylineEdit->setText(QString::number(inputRst->getBand(0)->getProperty()->m_noDataValue));
+        m_dummy = inputRst->getBand(0)->getProperty()->m_noDataValue;
         inputRst.release();
       }
       dsType.release();
@@ -230,19 +233,20 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
 
 void te::mnt::CreateIsolinesDialog::onDummyLineEditEditingFinished()
 {
-  double dummy = m_ui->m_dummylineEdit->text().toDouble();
+  m_dummy = m_ui->m_dummylineEdit->text().toDouble();
   if (m_inputType == GRID)
   {
     std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
     std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
-    inputRst->getBand(0)->getProperty()->m_noDataValue = dummy;
+    inputRst->getBand(0)->getProperty()->m_noDataValue = m_dummy;
     m_min = inputRst.get()->getBand(0)->getMinValue(true, 0, 0, inputRst->getNumberOfRows() - 1, inputRst->getNumberOfColumns() - 1).real();
     m_max = inputRst.get()->getBand(0)->getMaxValue(true, 0, 0, inputRst->getNumberOfRows() - 1, inputRst->getNumberOfColumns() - 1).real();
     m_ui->m_vminrasterlineEdit->setText(QString::number(m_min));
     m_ui->m_vmaxrasterlineEdit->setText(QString::number(m_max));
     inputRst.release();
   }
+  m_hasDummy = true;
 }
 
 void te::mnt::CreateIsolinesDialog::onStepFixeEnabled(bool)
@@ -448,7 +452,24 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
 
   if (m_inputType == GRID)
   {
+    CreateIsolines* ci = new CreateIsolines();
+    ci->setInput(inDataSource, inDsetName, inDsetType);
 
+    te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
+    dsOGR->setConnectionInfo(outdsinfo);
+    dsOGR->open();
+
+    ci->setOutput(dsOGR, outputdataset);
+
+    if (m_ui->m_dummycheckBox->isChecked() == true)
+    {
+      //m_dummy = inputRst->getBand(0)->getProperty()->m_noDataValue;
+      m_hasDummy = true;
+    }
+
+    ci->setParams(val, guideval, m_max, m_min, m_dummy, m_hasDummy);
+    std::auto_ptr<te::rst::Raster> raster = ci->getPrepareRaster();
+    ci->run(raster);
   }
   else
   {
@@ -496,35 +517,36 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
 
     delete Tin;
 
-    if (m_toFile)
-    {
-      // let's include the new datasource in the managers
-      boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string id = boost::uuids::to_string(u);
-
-      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-      ds->setConnInfo(outdsinfo);
-      ds->setTitle(uri.stem().string());
-      ds->setAccessDriver("OGR");
-      ds->setType("OGR");
-      ds->setDescription(uri.string());
-      ds->setId(id);
-
-      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
-      newds->open();
-      te::da::DataSourceInfoManager::getInstance().add(ds);
-      m_outputDatasource = ds;
-    }
-
-    // creating a layer for the result
-    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
-
-    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
-
-    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
-    m_outputLayer = converter(dt);
   }
+
+  if (m_toFile)
+  {
+    // let's include the new datasource in the managers
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id = boost::uuids::to_string(u);
+
+    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+    ds->setConnInfo(outdsinfo);
+    ds->setTitle(uri.stem().string());
+    ds->setAccessDriver("OGR");
+    ds->setType("OGR");
+    ds->setDescription(uri.string());
+    ds->setId(id);
+
+    te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+    newds->open();
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    m_outputDatasource = ds;
+  }
+
+  // creating a layer for the result
+  te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+
+  te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+
+  te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+  m_outputLayer = converter(dt);
 
   this->setCursor(Qt::ArrowCursor);
   accept();

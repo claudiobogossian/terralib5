@@ -90,6 +90,8 @@ namespace te
       mntType m_inputType;  //!< Input type (TIN, GRID)
       double m_min;
       double m_max;
+      double m_dummy;
+      bool m_hasDummy = false;
 
     };
   } //mnt

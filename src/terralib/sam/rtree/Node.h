@@ -79,6 +79,11 @@ namespace te
           {
             m_count = 0;
             m_level = -1;
+            for(unsigned int i = 0; i < MAXNODES; ++i)
+            {
+              m_branch[i].m_child = 0;
+              m_branch[i].m_mbr = te::gm::Envelope();
+            }
           }
 
         private:
