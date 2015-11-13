@@ -316,7 +316,7 @@ bool te::mnt::CreateIsolines::generateSegmentsThreaded(GenerateSegmentsParams* p
   generateSegments(params->m_rasterPtr, params->m_nvals, params->m_vecSegments);
   return true;
 }
-bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> raster, std::vector<double> nvals, std::vector<std::vector<te::gm::LineString*>>& vecSegments)
+bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> raster, std::vector<double> nvals, std::vector< std::vector<te::gm::LineString*> >& vecSegments)
 {
   double quota;
 

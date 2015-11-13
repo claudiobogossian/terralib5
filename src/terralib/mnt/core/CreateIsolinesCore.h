@@ -89,7 +89,7 @@ class GenerateSegmentsParams
   public:
 
   std::auto_ptr<te::rst::Raster> m_rasterPtr;
-  std::vector<std::vector<te::gm::LineString*>> m_vecSegments;
+  std::vector< std::vector<te::gm::LineString*> > m_vecSegments;
   std::vector<double> m_nvals;
 };
 
@@ -128,7 +128,7 @@ namespace te
 
       bool run(std::auto_ptr<te::rst::Raster> raster);
       
-      static bool generateSegments(std::auto_ptr<te::rst::Raster> raster, std::vector<double> nvals, std::vector<std::vector<te::gm::LineString*>>& vecSegments);
+      static bool generateSegments(std::auto_ptr<te::rst::Raster> raster, std::vector<double> nvals, std::vector< std::vector<te::gm::LineString*> >& vecSegments);
 
       static bool connectLines(std::vector<te::gm::LineString*>  vec, int srid, std::vector<te::gm::LineString*>& lsOut);
 
@@ -141,7 +141,7 @@ namespace te
       static void firstCaseSpecial(double quota, double& lineSupLeft, double& lineSupRigth, double& lineInfLeft, double& lineInfRigth);
 
       static void segments(int idQuota,  te::gm::LineString* line, double quota, double ylg_sup, double xlg_ant, double xlg_pos, double ylg_inf,
-        double& lineSupLeft, double& lineSupRigth, double& lineInfLeft, double& lineInfRigth, std::vector<std::vector<te::gm::LineString*>>& vecSegments);
+        double& lineSupLeft, double& lineSupRigth, double& lineInfLeft, double& lineInfRigth, std::vector< std::vector<te::gm::LineString*> >& vecSegments);
 
       static bool generateSegmentsThreaded(GenerateSegmentsParams* params);
 
