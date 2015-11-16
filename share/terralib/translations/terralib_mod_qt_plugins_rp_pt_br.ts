@@ -113,6 +113,14 @@
     </message>
 </context>
 <context>
+    <name>te::qt::plugins::rp::RasterizationAction</name>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/rp/RasterizationAction.cpp" line="31"/>
+        <source>Rasterization...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>te::qt::plugins::rp::RegisterAction</name>
     <message>
         <location filename="../../../src/terralib/qt/plugins/rp/RegisterAction.cpp" line="39"/>

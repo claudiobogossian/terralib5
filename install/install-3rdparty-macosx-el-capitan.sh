@@ -42,7 +42,7 @@ sleep 1s
 # Usage: fixRPath <arg1>, where arg1 is a list of files (full path) to be fixed.
 # Note: used in build proccess of Boost and QWT packages.
 #
-function fixPRath()
+function fixRPath()
 {
   _FILES=$1 
   
@@ -641,7 +641,7 @@ if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libboost_thread.dylib" ]; then
 
   cd .. > /dev/null
   
-  fixRPath "`ls $TERRALIB_DEPENDENCIES_DIR/lib/libboost*`" > /dev/null
+  fixRPath "`ls $TERRALIB_DEPENDENCIES_DIR/lib/libboost*.dylib`" > /dev/null
 fi
 
 
