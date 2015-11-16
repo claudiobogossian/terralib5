@@ -137,7 +137,7 @@ if(WIN32)
     add_definitions(-DTE_MINGW -D_WIN32_WINNT=0x601 -fpermissive)
   endif()
 elseif(APPLE)
-  add_definitions(-ftemplate-depth-1024)
+  add_definitions(-ftemplate-depth-1024)  
 endif()
 
 # Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
@@ -757,7 +757,6 @@ if(TERRALIB_MOD_BINDING_LUA_ENABLED)
 endif()
 
 if(TERRALIB_MOD_BINDING_PYTHON_ENABLED)
-message ("python")
   add_subdirectory(terralib_mod_binding_python)
 endif()
 
