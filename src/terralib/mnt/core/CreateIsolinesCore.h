@@ -71,7 +71,8 @@ class ConnectLinesParams
 
   public:
 
-    int m_quota = 0, m_srid = 0;
+    int m_quota;
+    int m_srid;
     std::vector<te::gm::LineString*>  m_vecSegments;
     std::vector<te::gm::LineString*> m_lsOut;
 };
@@ -151,7 +152,7 @@ namespace te
 
       std::vector<RasterBlockSize> calculateBlocks(int numRows, int numThreads);
 
-      void rstMemoryBlock(std::auto_ptr<te::rst::Raster> raster, std::vector<RasterBlockSize> vecBlocks, std::vector<GenerateSegmentsParams>& vecGenerateParams);
+      void rstMemoryBlock(std::auto_ptr<te::rst::Raster> raster, std::vector<RasterBlockSize> vecBlocks, std::vector<GenerateSegmentsParams*>& vecGenerateParams);
 
 
       void createFileShp(std::auto_ptr<te::mem::DataSet> dataSet, te::da::DataSetType* dataSetType);
