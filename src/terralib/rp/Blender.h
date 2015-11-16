@@ -332,10 +332,11 @@ namespace te
           
         
         /*!
-          \brief Creater polygon tile indexers from the given geometry.
+          \brief Creater polygon tile indexers from the given geometry (only if it is a polygon or a collection of polygons).
           \param geometryPtr Input geometry.
           \param tileIndexers Created indexers (appended here).
           \return true if OK, false on errors.
+          \note No indexers will be returned for geometries other than polygons or collections of polygons.
         */        
         bool getTileIndexers( te::gm::Geometry const * const geometryPtr, 
           boost::ptr_vector< te::rst::TileIndexer >& tileIndexers ) const;          

@@ -758,11 +758,27 @@ namespace te
           TERP_TRUE_OR_RETURN_FALSE( unionMultiPolPtr.get(), "Invalid pointer" );
           unionMultiPolPtr->setSRID( mosaicBBoxesUnionPtr->getSRID() );
           
-          if( unionMultiPolPtr->getGeomTypeId() == te::gm::MultiPolygonType )
+          if(
+              ( unionMultiPolPtr->getGeomTypeId() == te::gm::MultiPolygonType )
+              ||
+              ( unionMultiPolPtr->getGeomTypeId() == te::gm::MultiPolygonZType )
+              ||
+              ( unionMultiPolPtr->getGeomTypeId() == te::gm::MultiPolygonMType )
+              ||
+              ( unionMultiPolPtr->getGeomTypeId() == te::gm::MultiPolygonZMType )
+            )
           {
             mosaicBBoxesUnionPtr.reset( (te::gm::MultiPolygon*)unionMultiPolPtr.release() );
           }
-          else if( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType )
+          else if(
+                   ( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType )
+                   ||
+                   ( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonZType )
+                   ||
+                   ( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonMType )
+                   ||
+                   ( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonZMType ) 
+                 )
           {
             te::gm::MultiPolygon* mPolPtr = new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType,
               unionMultiPolPtr->getSRID(), 0 );
@@ -771,7 +787,7 @@ namespace te
           }
           else
           {
-            TERP_LOG_AND_RETURN_FALSE( "Invalid union geometry type" );
+            TERP_LOGWARN( "Invalid union geometry type" );
           }
         }                
         
