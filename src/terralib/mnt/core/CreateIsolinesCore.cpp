@@ -154,7 +154,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   te::rst::Grid* grd = rstProp->getGrid();
   m_srid = grd->getSRID();
 
-  std::vector<std::vector<te::gm::LineString*>>   vecSegments;
+  std::vector<std::vector<te::gm::LineString*> >   vecSegments;
 
   for (int i = 0; i < m_values.size(); i++)
   {
@@ -175,7 +175,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   for (int vg = 0; vg < vecGenerateParams.size(); ++vg)
   {
     const GenerateSegmentsParams& currentBlock = vecGenerateParams[vg];
-    const std::vector<std::vector<te::gm::LineString*>>& allQuotas = currentBlock.m_vecSegments;
+    const std::vector<std::vector<te::gm::LineString*> >& allQuotas = currentBlock.m_vecSegments;
     
     for (size_t quota = 0; quota < allQuotas.size(); ++quota)
     {
@@ -500,7 +500,7 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
   return true;
 }
 
-ConnectLinesParams::ConnectLinesParams()
+ConnectLinesParams::ConnectLinesParams() : m_quota(0), m_srid(0)
 {
 }
 

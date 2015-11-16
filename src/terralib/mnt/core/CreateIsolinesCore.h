@@ -71,7 +71,8 @@ class ConnectLinesParams
 
   public:
 
-    int m_quota = 0, m_srid = 0;
+    int m_quota;
+    int m_srid;
     std::vector<te::gm::LineString*>  m_vecSegments;
     std::vector<te::gm::LineString*> m_lsOut;
 };
