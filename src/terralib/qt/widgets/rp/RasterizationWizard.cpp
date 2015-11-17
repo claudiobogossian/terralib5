@@ -254,10 +254,6 @@ bool te::qt::widgets::RasterizationWizard::execute()
     r->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
     te::se::ColorMap* cm = new te::se::ColorMap;
-
-    QTableWidget* table = m_vectorPage->getTableWidget();
-
-    std::size_t count = 0;
     
     std::map<std::string, std::vector<int> >::iterator it = infos.begin();
     for (it = infos.begin(); it != infos.end(); ++it)
