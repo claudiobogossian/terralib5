@@ -71,12 +71,7 @@ te::edit::CreateLineTool::~CreateLineTool()
 bool te::edit::CreateLineTool::mousePressEvent(QMouseEvent* e)
 {
   if (e->button() != Qt::LeftButton)
-  {
-    if (m_feature)
-      emit readyToSave();
-
     return false;
-  }
 
   if(m_isFinished) // Is Finished?! So, start again...
   {

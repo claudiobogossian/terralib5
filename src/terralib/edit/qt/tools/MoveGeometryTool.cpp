@@ -72,12 +72,7 @@ te::edit::MoveGeometryTool::~MoveGeometryTool()
 bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
 {
   if (e->button() != Qt::LeftButton)
-  {
-    if (m_feature)
-      emit readyToSave();
-
     return false;
-  }
 
   pickFeature(m_layer, GetPosition(e));
 

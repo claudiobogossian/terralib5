@@ -78,8 +78,6 @@ namespace te
 
       void endSelectCell(const std::string&, const std::size_t&, std::size_t&);
 
-      void readyToSave();
-
     protected:
 
       virtual void saveGeometry(te::gm::Geometry* gm, const int& op);
