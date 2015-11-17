@@ -88,12 +88,7 @@ te::edit::EditInfoTool::~EditInfoTool()
 bool te::edit::EditInfoTool::mousePressEvent(QMouseEvent* e)
 {
   if (e->button() != Qt::LeftButton)
-  {
-    if (m_feature)
-      emit readyToSave();
-
     return false;
-  }
 
   bool needRemap = false;
   m_forceSearch = false;

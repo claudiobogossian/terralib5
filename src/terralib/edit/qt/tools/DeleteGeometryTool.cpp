@@ -62,12 +62,7 @@ te::edit::DeleteGeometryTool::~DeleteGeometryTool()
 bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
 {
   if (e->button() != Qt::LeftButton)
-  {
-    if (m_feature)
-      emit readyToSave();
-
     return false;
-  }
 
   m_feature = PickFeature(m_layer, buildEnvelope(e->pos()), m_display->getSRID(), te::edit::GEOMETRY_DELETE);
 

@@ -78,12 +78,7 @@ te::edit::VertexTool::~VertexTool()
 bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
 {
   if (e->button() != Qt::LeftButton)
-  {
-    if (m_feature)
-      emit readyToSave();
-
     return false;
-  }
 
   Qt::KeyboardModifiers keys = e->modifiers();
 

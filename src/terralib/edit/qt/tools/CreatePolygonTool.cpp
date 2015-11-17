@@ -73,12 +73,7 @@ te::edit::CreatePolygonTool::~CreatePolygonTool()
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
 {
   if (e->button() != Qt::LeftButton)
-  {
-    if (m_feature)
-      emit readyToSave();
-
     return false;
-  }
 
   if(m_isFinished) // Is Finished?! So, start again...
   {
@@ -143,6 +138,9 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
   storeNewGeometry();
 
   storeUndoCommand();
+
+  if (m_feature)
+    emit closedPolygon();
 
   return true;
 }
