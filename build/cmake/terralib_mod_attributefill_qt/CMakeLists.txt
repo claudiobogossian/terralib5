@@ -73,7 +73,7 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/attributefill/qt/RasterToVectorDialog.h
                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/attributefill/qt/VectorToRasterDialog.h
-								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/attributefill/qt/VectorToVectorDialog.h)
+                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/attributefill/qt/VectorToVectorDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
@@ -94,7 +94,7 @@ set_target_properties(terralib_mod_attributefill_qt
 install(TARGETS terralib_mod_attributefill_qt
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}

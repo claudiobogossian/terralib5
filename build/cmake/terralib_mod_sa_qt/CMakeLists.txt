@@ -61,7 +61,7 @@ if(Qt5_FOUND)
   target_link_libraries(terralib_mod_sa_qt terralib_mod_sa_core
                                            terralib_mod_symbology
                                            terralib_mod_qt_widgets
-										   ${QWT_LIBRARY})
+                                           ${QWT_LIBRARY})
 
   qt5_use_modules(terralib_mod_sa_qt Widgets)
 
@@ -91,7 +91,7 @@ else()
                                            terralib_mod_qt_widgets
                                            terralib_mod_symbology
                                            ${QT_LIBRARIES}
-										   ${QWT_LIBRARY})
+                                           ${QWT_LIBRARY})
 
 endif() 
 
@@ -102,7 +102,7 @@ set_target_properties(terralib_mod_sa_qt
 install(TARGETS terralib_mod_sa_qt
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}

@@ -48,8 +48,8 @@ if(Qt5_FOUND)
   add_library(terralib_mod_qt_plugins_attributefill SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_attributefill  terralib_mod_attributefill_qt
-																terralib_mod_plugin
-																terralib_mod_qt_apf)
+                                terralib_mod_plugin
+                                terralib_mod_qt_apf)
 
   qt5_use_modules(terralib_mod_qt_plugins_attributefill Widgets)
 
@@ -63,7 +63,7 @@ else()
   set(TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/AbstractAction.h
                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/RasterToVectorAction.h
                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/VectorToRasterAction.h
-								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/VectorToVectorAction.h)
+                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/VectorToVectorAction.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
@@ -72,9 +72,9 @@ else()
   add_library(terralib_mod_qt_plugins_attributefill SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_attributefill  terralib_mod_attributefill_qt
-																terralib_mod_plugin
-																terralib_mod_qt_apf
-																${QT_LIBRARIES})
+                                                               terralib_mod_plugin
+                                                               terralib_mod_qt_apf
+                                                               ${QT_LIBRARIES})
 
 endif()
 
@@ -85,7 +85,7 @@ set_target_properties(terralib_mod_qt_plugins_attributefill
 install(TARGETS terralib_mod_qt_plugins_attributefill
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}

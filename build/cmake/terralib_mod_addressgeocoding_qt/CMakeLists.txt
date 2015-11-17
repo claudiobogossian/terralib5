@@ -61,7 +61,7 @@ if(Qt5_FOUND)
   add_library(terralib_mod_addressgeocoding_qt SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_addressgeocoding_qt  terralib_mod_addressgeocoding_core
-														terralib_mod_qt_widgets)
+                                                        terralib_mod_qt_widgets)
 
   qt5_use_modules(terralib_mod_addressgeocoding_qt Widgets)
 
@@ -72,10 +72,10 @@ else()
 
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ConfigInputAddressDialog.h
-								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ConfigInputLayerDialog.h
-								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ConfigNumberDialog.h
-								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ImportTableDialog.h
-								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/MainWindowDialog.h)
+                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ConfigInputLayerDialog.h
+                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ConfigNumberDialog.h
+                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ImportTableDialog.h
+                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/MainWindowDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
@@ -96,7 +96,7 @@ set_target_properties(terralib_mod_addressgeocoding_qt
 install(TARGETS terralib_mod_addressgeocoding_qt
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}

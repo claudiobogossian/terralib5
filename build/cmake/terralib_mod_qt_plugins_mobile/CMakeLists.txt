@@ -73,16 +73,16 @@ if(Qt5_FOUND)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
   set(TERRALIB_FILES     ${TERRALIB_SRC_FILES} 
-				         ${TERRALIB_HDR_FILES} 
-				         ${TERRALIB_CORE_SRC_FILES} 
-				         ${TERRALIB_CORE_HDR_FILES}
+                         ${TERRALIB_HDR_FILES} 
+                         ${TERRALIB_CORE_SRC_FILES} 
+                         ${TERRALIB_CORE_HDR_FILES}
                          ${TERRALIB_CORE_FORM_SRC_FILES} 
-				         ${TERRALIB_CORE_FORM_HDR_FILES}
-				         ${TERRALIB_QT_SRC_FILES} 
-				         ${TERRALIB_QT_HDR_FILES}
-						 ${TERRALIB_UTILS_SRC_FILES}
-						 ${TERRALIB_UTILS_HDR_FILES}
-				         ${TERRALIB_GEN_HDR_FILES})
+                         ${TERRALIB_CORE_FORM_HDR_FILES}
+                         ${TERRALIB_QT_SRC_FILES} 
+                         ${TERRALIB_QT_HDR_FILES}
+                         ${TERRALIB_UTILS_SRC_FILES}
+                         ${TERRALIB_UTILS_HDR_FILES}
+                         ${TERRALIB_GEN_HDR_FILES})
 
   add_library(terralib_mod_qt_plugins_mobile SHARED ${TERRALIB_FILES})
 
@@ -98,7 +98,7 @@ set_target_properties(terralib_mod_qt_plugins_mobile
 install(TARGETS terralib_mod_qt_plugins_mobile
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_CORE_HDR_FILES} ${TERRALIB_QT_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}

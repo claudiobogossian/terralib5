@@ -52,7 +52,7 @@ target_link_libraries(terralib_mod_sa_core terralib_mod_plugin
                                            terralib_mod_datatype
                                            terralib_mod_common
                                            terralib_mod_graph
-										   terralib_mod_raster)
+                                           terralib_mod_raster)
 
 set_target_properties(terralib_mod_sa_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
@@ -61,7 +61,7 @@ set_target_properties(terralib_mod_sa_core
 install(TARGETS terralib_mod_sa_core
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
