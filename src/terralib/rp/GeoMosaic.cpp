@@ -704,11 +704,27 @@ namespace te
         TERP_TRUE_OR_THROW( boxesUnionResultPtr.get(), "Invalid pointer" );
         boxesUnionResultPtr->setSRID( outputRasterPtr->getSRID() );
 
-        if( boxesUnionResultPtr->getGeomTypeId() == te::gm::MultiPolygonType )
+        if( 
+            ( boxesUnionResultPtr->getGeomTypeId() == te::gm::MultiPolygonType )
+            ||
+            ( boxesUnionResultPtr->getGeomTypeId() == te::gm::MultiPolygonZType )
+            ||
+            ( boxesUnionResultPtr->getGeomTypeId() == te::gm::MultiPolygonMType )
+            ||
+            ( boxesUnionResultPtr->getGeomTypeId() == te::gm::MultiPolygonZMType )
+          )
         {
           mosaicBBoxesUnionPtr.reset( (te::gm::MultiPolygon*)boxesUnionResultPtr.release() );
         }
-        else if( boxesUnionResultPtr->getGeomTypeId() == te::gm::PolygonType )
+        else if( 
+                 ( boxesUnionResultPtr->getGeomTypeId() == te::gm::PolygonType )
+                 ||
+                 ( boxesUnionResultPtr->getGeomTypeId() == te::gm::PolygonZType )
+                 ||
+                 ( boxesUnionResultPtr->getGeomTypeId() == te::gm::PolygonMType )
+                 ||
+                 ( boxesUnionResultPtr->getGeomTypeId() == te::gm::PolygonZMType )
+               )
         {
           // transforming it into a te::gm::MultiPolygon
           te::gm::MultiPolygon* auxMultiPol = new te::gm::MultiPolygon( 0,
@@ -719,7 +735,7 @@ namespace te
         }
         else
         {
-          TERP_LOG_AND_RETURN_FALSE( "Invalid union geometry type" );
+          TERP_LOGWARN( "Invalid union geometry type" );
         }
         
         // Reseting the input cache

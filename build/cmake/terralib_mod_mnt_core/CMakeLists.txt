@@ -37,8 +37,7 @@ target_link_libraries(terralib_mod_mnt_core terralib_mod_common terralib_mod_ras
 #
 set_target_properties(terralib_mod_mnt_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 INSTALL_NAME_DIR "@executable_path/../lib")
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
  
 #
 # Register module stuffs for installation.
@@ -46,7 +45,7 @@ set_target_properties(terralib_mod_mnt_core
 install(TARGETS terralib_mod_mnt_core
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP NAMELINK_SKIP
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
  
 install(FILES ${TERRALIB_HDR_FILES}

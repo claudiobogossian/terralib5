@@ -508,9 +508,6 @@ if(Qt5_FOUND)
   
   # end of Qt5 uic'ing
 
-  # Adding all external dependencies to rpath
-  addExternalLibrariesToRPATH(${TERRALIB_LIBRARIES_DEPENDENCIES})
-
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_widgets ${TERRALIB_LIBRARIES_DEPENDENCIES})
@@ -767,8 +764,8 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/RasterLayerDelegate.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ThemeViewDelegate.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LayerViewDelegate.h
-										 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/CreateLayerDialog.h
-										 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/CreateLayerWidget.h)
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/CreateLayerDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/CreateLayerWidget.h)
 
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.h)
 
@@ -779,7 +776,7 @@ else() # QT4_FOUND
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/AbstractLayerSelector.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/DataSetLayerSelector.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/HiddenDataSetLayerSelector.h)
-										 
+
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/CompositionModeDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/CompositionModeMenuWidget.h)
 
@@ -854,7 +851,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterHistogramWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterInfoWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterInfoWizardPage.h
-										 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterizationWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterizationWizardPage.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorWizardPage.h
@@ -976,8 +973,6 @@ else() # QT4_FOUND
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
-  addExternalLibrariesToRPATH("${TERRALIB_LIBRARIES_DEPENDENCIES}")
-
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES} ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 
   target_link_libraries(terralib_mod_qt_widgets ${TERRALIB_LIBRARIES_DEPENDENCIES}
@@ -987,122 +982,19 @@ endif()
 
 set_target_properties(terralib_mod_qt_widgets
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 INSTALL_NAME_DIR "@executable_path/../lib")
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
 install(TARGETS terralib_mod_qt_widgets
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
-install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets COMPONENT devel)
-
-install(FILES ${TERRALIB_CANVAS_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/canvas COMPONENT devel)
-
-install(FILES ${TERRALIB_CHARTS_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/charts COMPONENT devel)
-
-install(FILES ${TERRALIB_CLASSIFICATION_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/classification COMPONENT devel)
-
-install(FILES ${TERRALIB_COLORBAR_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/colorbar COMPONENT devel)
-
-install(FILES ${TERRALIB_DATASET_EXPLORER_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/dataset/explorer COMPONENT devel)
-
-install(FILES ${TERRALIB_DATASET_SELECTOR_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/dataset/selector COMPONENT devel)
-
-install(FILES ${TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/datasource/connector COMPONENT devel)
-
-install(FILES ${TERRALIB_DATASOURCE_CORE_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/datasource/core COMPONENT devel)
-
-install(FILES ${TERRALIB_DATASOURCE_EXPLORER_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/datasource/explorer COMPONENT devel)
-
-install(FILES ${TERRALIB_DATASOURCE_SELECTOR_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/datasource/selector COMPONENT devel)
-
-install(FILES ${TERRALIB_EXCHANGER_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/exchanger COMPONENT devel)
-
-install(FILES ${TERRALIB_EXTERNALTABLE_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/externaltable COMPONENT devel)
-
-install(FILES ${TERRALIB_HELP_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/help COMPONENT devel)
-
-install(FILES ${TERRALIB_LAYER_EXPLORER_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/explorer COMPONENT devel)
-
-install(FILES ${TERRALIB_LAYER_INFO_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/info COMPONENT devel)
-
-install(FILES ${TERRALIB_LAYER_SEARCH_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/search COMPONENT devel)
-
-install(FILES ${TERRALIB_LAYER_SELECTOR_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/selector COMPONENT devel)
-
-install(FILES ${TERRALIB_LAYER_UTILS_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/utils COMPONENT devel)
-
-install(FILES ${TERRALIB_MAPDISPLAY_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/mapdisplay COMPONENT devel)
-
-install(FILES ${TERRALIB_PLUGIN_BUILDER_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/plugin/builder COMPONENT devel)
-
-install(FILES ${TERRALIB_PLUGIN_MANAGER_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/plugin/manager COMPONENT devel)
-
-install(FILES ${TERRALIB_PROGRESS_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/progress COMPONENT devel)
-
-install(FILES ${TERRALIB_PROPERTY_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/property COMPONENT devel)
-
-install(FILES ${TERRALIB_PROPERTY_BROWSER_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/propertybrowser COMPONENT devel)
-
-install(FILES ${TERRALIB_QUERY_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/query COMPONENT devel)
-
-install(FILES ${TERRALIB_RASTER_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/raster COMPONENT devel)
-
-install(FILES ${TERRALIB_RP_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/rp COMPONENT devel)
-
-install(FILES ${TERRALIB_SE_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/se COMPONENT devel)
-
-install(FILES ${TERRALIB_SRS_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/srs COMPONENT devel)
-
-install(FILES ${TERRALIB_ST_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/st COMPONENT devel)
-
-install(FILES ${TERRALIB_TABLE_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/table COMPONENT devel)
-
-install(FILES ${TERRALIB_TEMPORAL_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/temporal COMPONENT devel)
-
-install(FILES ${TERRALIB_TOOLS_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/tools COMPONENT devel)
-
-install(FILES ${TERRALIB_UTILS_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/utils COMPONENT devel)
-
-install(FILES ${TERRALIB_VECTOR_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/vector COMPONENT devel)
+install(
+  DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets
+  DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt 
+  COMPONENT devel
+  FILES_MATCHING PATTERN "*.h"
+)
 
 export(TARGETS terralib_mod_qt_widgets APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
-

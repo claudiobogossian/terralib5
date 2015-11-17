@@ -120,19 +120,21 @@ endif()
 
 set_target_properties(terralib_mod_edit_qt
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 INSTALL_NAME_DIR "@executable_path/../lib")
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
 install(TARGETS terralib_mod_edit_qt
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP NAMELINK_SKIP
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
-install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/edit/qt COMPONENT devel)
-
-install(FILES ${TERRALIB_TOOLS_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/edit/qt/tools COMPONENT devel)
-
+install(
+  DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt 
+  DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/edit
+  COMPONENT devel
+  FILES_MATCHING PATTERN "*.h"
+  )
+  
 export(TARGETS terralib_mod_edit_qt APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
+  
+

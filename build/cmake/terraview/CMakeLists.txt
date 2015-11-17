@@ -150,11 +150,11 @@ else()
 
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/TerraView.h
-  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ProjectInfoDialog.h
-  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ProjectInfoWidget.h
-  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/TerraViewController.h
-  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/AboutDialog.h
-  								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/ProjectWidget.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ProjectInfoDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ProjectInfoWidget.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/TerraViewController.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/AboutDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/settings/ProjectWidget.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 

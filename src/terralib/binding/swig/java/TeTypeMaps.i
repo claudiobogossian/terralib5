@@ -48,20 +48,20 @@
  * Mapping C++ te::gm::Envelope -> Java java.awt.geom.Rectangle2D.Double object
  */
 
-%typemap(jni) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope & "jobject"
-%typemap(jtype) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope & "java.awt.geom.Rectangle2D.Double"
-%typemap(jstype) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope & "java.awt.geom.Rectangle2D.Double"
-%typemap(javain) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope & "te::gm::Envelope.getCPtr($javainput)"
-%typemap(javain) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope & "$javainput"
-%typemap(javaout) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope & {
+%typemap(jni) te::gm::Envelope, te::gm::Envelope&, const te::gm::Envelope&, te::gm::Envelope* "jobject"
+%typemap(jtype) te::gm::Envelope, te::gm::Envelope&, const te::gm::Envelope&, te::gm::Envelope* "java.awt.geom.Rectangle2D.Double"
+%typemap(jstype) te::gm::Envelope, te::gm::Envelope&, const te::gm::Envelope&, te::gm::Envelope* "java.awt.geom.Rectangle2D.Double"
+%typemap(javain) te::gm::Envelope, te::gm::Envelope&, const te::gm::Envelope&, te::gm::Envelope* "te::gm::Envelope.getCPtr($javainput)"
+%typemap(javain) te::gm::Envelope, te::gm::Envelope&, const te::gm::Envelope&, te::gm::Envelope* "$javainput"
+%typemap(javaout) te::gm::Envelope*, te::gm::Envelope&, const te::gm::Envelope& {
     return new te::gm::Envelope($jnicall, $owner);
-  }
-%typemap(javaout) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope &{
-	return $jnicall;
+}
+%typemap(javaout) te::gm::Envelope&, te::gm::Envelope*, const te::gm::Envelope& {
+  return $jnicall;
 };
 
 
-%typemap(in) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope & {
+%typemap(in) te::gm::Envelope, te::gm::Envelope&, const te::gm::Envelope& {
   jclass clazz = JCALL1(GetObjectClass, jenv, $input);
   jmethodID getX = JCALL3(GetMethodID, jenv, clazz, "getX", "()D");
   jmethodID getY = JCALL3(GetMethodID, jenv, clazz, "getY", "()D");
@@ -70,99 +70,83 @@
 
   double x = JCALL2(CallDoubleMethod, jenv, $input, getX),
     y = JCALL2(CallDoubleMethod, jenv, $input, getY),
-	w = JCALL2(CallDoubleMethod, jenv, $input, getW),
-	h = JCALL2(CallDoubleMethod, jenv, $input, getH);
+    w = JCALL2(CallDoubleMethod, jenv, $input, getW),
+    h = JCALL2(CallDoubleMethod, jenv, $input, getH);
 
- $1 = &te::gm::Envelope(x, y, x+w, y+h);
+ $1 = new te::gm::Envelope(x, y, x+w, y+h);
 }
 
-%typemap(out) te::gm::Envelope, const te::gm::Envelope &, te::gm::Envelope & {
+%typemap(out) te::gm::Envelope, te::gm::Envelope&, const te::gm::Envelope&, te::gm::Envelope* {
   double x = $1->getLowerLeftX(), 
-	  y = $1->getLowerLeftY(),
-	  w = $1->getWidth(),
-	  h = $1->getHeight();
+      y = $1->getLowerLeftY(),
+      w = $1->getWidth(),
+      h = $1->getHeight();
 
   jclass clazz = JCALL1(FindClass, jenv, "java/awt/geom/Rectangle2D$Double"); 
   jmethodID metId = JCALL3(GetMethodID, jenv, clazz, "<init>", "(DDDD)V");
 
   $result = JCALL6(NewObject, jenv, clazz, metId, x, y, w, h);
-}
+  
+  delete $1;
+}     
 
-%typemap(argout) (te::gm::Envelope & bbox) {
-	jclass clazz = jenv->GetObjectClass($input);
-	jmethodID setR = jenv->GetMethodID(clazz, "setRect", "(DDDD)V");
+%typemap(argout) te::gm::Envelope& {
+  jclass clazz = JCALL1(GetObjectClass, jenv, $input);
+  jmethodID metId = JCALL3(GetMethodID, jenv, clazz, "setRect", "(DDDD)V");
 
-	double x = $1->getLowerLeftX(), 
-		y = $1->getLowerLeftY(), 
-		w = $1->getWidth(), 
-		h = $1->getHeight();
-
-	jenv->CallVoidMethod($input, setR, x, y, w, h);
-}
-
-
-%typemap(jni) te::gm::Envelope* "jobject";
-%typemap(jtype) te::gm::Envelope* "java.awt.geom.Rectangle2D.Double"
-%typemap(jstype) te::gm::Envelope* "java.awt.geom.Rectangle2D.Double"
-%typemap(javaout) te::gm::Envelope* {
-    return new te::gm::Envelope($jnicall, $owner);
-  }
-%typemap(javaout) te::gm::Envelope* {
-	return $jnicall;
-};
-
-%typemap(out) (te::gm::Envelope*) {
   double x = $1->getLowerLeftX(), 
-	  y = $1->getLowerLeftY(),
-	  w = $1->getWidth(),
-	  h = $1->getHeight();
+		 y = $1->getLowerLeftY(), 
+		 w = $1->getWidth(), 
+		 h = $1->getHeight();
+		 
+  JCALL6(CallVoidMethod, jenv, $input, metId, x, y, w, h);
 
-  jclass clazz = JCALL1(FindClass, jenv, "java/awt/geom/Rectangle2D$Double"); 
-  jmethodID metId = JCALL3(GetMethodID, jenv, clazz, "<init>", "(DDDD)V");
-
-  $result = JCALL6(NewObject, jenv, clazz, metId, x, y, w, h);
+  delete $1;
 }
 
 /*
  * Mapping C++ QColor -> Java java.awt.Color object
  */
-%typemap(jni) QColor, const QColor & "jobject"
-%typemap(jtype) QColor, const QColor & "java.awt.Color"
-%typemap(jstype) QColor, const QColor & "java.awt.Color"
-%typemap(javain) QColor, const QColor & "QColor.getCPtr($javainput)"
-%typemap(javain) QColor, const QColor & "$javainput"
-%typemap(javaout) QColor, const QColor &  {
+%typemap(jni) QColor, const QColor& "jobject"
+%typemap(jtype) QColor, const QColor& "java.awt.Color"
+%typemap(jstype) QColor, const QColor& "java.awt.Color"
+%typemap(javain) QColor, const QColor& "QColor.getCPtr($javainput)"
+%typemap(javain) QColor, const QColor& "$javainput"
+%typemap(javaout) QColor, const QColor& {
     return new QColor($jnicall, $owner);
-  }
-%typemap(javaout) QColor, const QColor & {
-	return $jnicall;
+}
+%typemap(javaout) QColor, const QColor& {
+  return $jnicall;
 };
 
 
-%typemap(in) QColor, const QColor & {
+%typemap(in) QColor, const QColor& {
   jclass clazz = JCALL1(GetObjectClass, jenv, $input);
+  jmethodID getR = JCALL3(GetMethodID, jenv, clazz, "getRed", "()I");
+  jmethodID getG = JCALL3(GetMethodID, jenv, clazz, "getGreen", "()I");
+  jmethodID getB = JCALL3(GetMethodID, jenv, clazz, "getBlue", "()I");
+  jmethodID getA = JCALL3(GetMethodID, jenv, clazz, "getAlpha", "()I");
 
-  jmethodID red = JCALL3(GetMethodID, jenv, clazz, "getRed", "()I");
-  jmethodID green = JCALL3(GetMethodID, jenv, clazz, "getGreen", "()I");
-  jmethodID blue = JCALL3(GetMethodID, jenv, clazz, "getBlue", "()I");
+  int r = JCALL2(CallIntMethod, jenv, $input, getR),
+      g = JCALL2(CallIntMethod, jenv, $input, getG),
+      b = JCALL2(CallIntMethod, jenv, $input, getB),
+      a = JCALL2(CallIntMethod, jenv, $input, getA);
 
-  int r = JCALL2(CallIntMethod, jenv, $input, red),
-    g = JCALL2(CallIntMethod, jenv, $input, green),
-	b = JCALL2(CallIntMethod, jenv, $input, blue);
-
- $1 = &QColor(r, g, b);
+  $1 = new QColor(r, g, b, a);
 }
 
-%typemap(out) QColor, const QColor & {
-  int r = $1.red(), 
-	  g = $1.green(),
-	  b = $1.blue();
+%typemap(out) QColor, const QColor&  {
+  int r = $1->red(),
+      g = $1->green(),
+      b = $1->blue(),
+      a = $1->alpha();
 
-  jobject pt;
-  jclass clazz = JCALL1(FindClass, jenv, "java/awt/Color"); 
-  jmethodID metId = JCALL3(GetMethodID, jenv, clazz, "<init>", "(III)V");
+  jclass clazz = JCALL1(FindClass, jenv, "java/awt/Color");
+  jmethodID metId = JCALL3(GetMethodID, jenv, clazz, "<init>", "(IIII)V");
 
-  $result = JCALL5(NewObject, jenv, clazz, metId, r, g, b);
+  $result = JCALL6(NewObject, jenv, clazz, metId, r, g, b, a);
+
+  delete $1;
 }
 
 /*

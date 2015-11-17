@@ -154,7 +154,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   te::rst::Grid* grd = rstProp->getGrid();
   m_srid = grd->getSRID();
 
-  std::vector<std::vector<te::gm::LineString*>>   vecSegments;
+  std::vector<std::vector<te::gm::LineString*> >   vecSegments;
 
   for (int i = 0; i < m_values.size(); i++)
   {
@@ -166,16 +166,20 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   int numThreads = 8;
   std::vector<RasterBlockSize> vecBlocks = calculateBlocks(numRows, numThreads);
 
-  std::vector<GenerateSegmentsParams> vecGenerateParams;
-  vecGenerateParams.resize(numThreads);
+  std::vector<GenerateSegmentsParams*> vecGenerateParams;
+
+  for (int i = 0; i < numThreads; ++i)
+  {
+    vecGenerateParams.push_back(new GenerateSegmentsParams());
+  }
 
   rstMemoryBlock(raster, vecBlocks, vecGenerateParams);
  
 
   for (int vg = 0; vg < vecGenerateParams.size(); ++vg)
   {
-    const GenerateSegmentsParams& currentBlock = vecGenerateParams[vg];
-    const std::vector<std::vector<te::gm::LineString*>>& allQuotas = currentBlock.m_vecSegments;
+    GenerateSegmentsParams* currentBlock = vecGenerateParams[vg];
+    const std::vector<std::vector<te::gm::LineString*> >& allQuotas = currentBlock->m_vecSegments;
     
     for (size_t quota = 0; quota < allQuotas.size(); ++quota)
     {
@@ -186,6 +190,12 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
       }
     }
   }
+
+  for (int i = 0; i < numThreads; ++i)
+  {
+    delete vecGenerateParams[i];
+  }
+  vecGenerateParams.clear();
 
   std::vector<ConnectLinesParams> vecParams;
   vecParams.resize(m_values.size());
@@ -219,7 +229,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   
   return true;
 }
-void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> raster, std::vector<RasterBlockSize> vecBlocks, std::vector<GenerateSegmentsParams>& vecGenerateParams)
+void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> raster, std::vector<RasterBlockSize> vecBlocks, std::vector<GenerateSegmentsParams*>& vecGenerateParams)
 {
   boost::thread_group threadGenerateSegments;
 
@@ -262,11 +272,11 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
       }
     }
     std::auto_ptr<te::rst::Raster> rasterPtr(myraster);
-    vecGenerateParams[vb].m_nvals = m_values;
-    vecGenerateParams[vb].m_vecSegments.resize(m_values.size());
-    vecGenerateParams[vb].m_rasterPtr = rasterPtr;
+    vecGenerateParams[vb]->m_nvals = m_values;
+    vecGenerateParams[vb]->m_vecSegments.resize(m_values.size());
+    vecGenerateParams[vb]->m_rasterPtr = rasterPtr;
     
-    threadGenerateSegments.add_thread(new boost::thread(generateSegmentsThreaded, &vecGenerateParams[vb]));
+    threadGenerateSegments.add_thread(new boost::thread(generateSegmentsThreaded, vecGenerateParams[vb]));
   }
   threadGenerateSegments.join_all();
 }
@@ -330,16 +340,16 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
 
   te::gm::LineString* line = new te::gm::LineString(0, te::gm::LineStringZType);
   double lineSupLeft = 0, lineSupRigth = 0, lineInfLeft = 0, lineInfRigth = 0;
-  int numberColumns = raster->getNumberOfColumns();
-  int numberRows = raster->getNumberOfRows();
+  unsigned int numberColumns = raster->getNumberOfColumns();
+  unsigned int numberRows = raster->getNumberOfRows();
 
-  for (size_t nr = 1; nr < numberRows; ++nr)
+  for (unsigned int nr = 1; nr < numberRows; ++nr)
   {
     double ylg_sup = ylg_inf;
     ylg_inf = ymax - nr * resY;
     xlg_pos = xmin;
 
-    for (size_t nc = 0; nc < numberColumns - 1; ++nc)
+    for (unsigned int nc = 0; nc < numberColumns - 1; ++nc)
     {
       double xlg_ant = xlg_pos;
       xlg_pos = xmin + (nc + 1) * resX;
@@ -463,7 +473,7 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
               if (line->size() == 4)
               {
                 te::gm::LineString* line1 = new te::gm::LineString(2, te::gm::LineStringZType);
-                int n = line->size();
+                size_t n = line->size();
                 line1->setX(0, line->getPointN(0)->getX());
                 line1->setY(0, line->getPointN(0)->getY());
                 line1->setZ(0, line->getPointN(n - 1)->getZ());
@@ -500,7 +510,7 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
   return true;
 }
 
-ConnectLinesParams::ConnectLinesParams()
+ConnectLinesParams::ConnectLinesParams() : m_quota(0), m_srid(0)
 {
 }
 
@@ -569,7 +579,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
     te::gm::PointZ pe(currentSegment->getEndPoint()->getX(), currentSegment->getEndPoint()->getY(), currentSegment->getEndPoint()->getZ());
     vecPoints.push_back(pe);
 
-    int npts = vecPoints.size();
+    size_t npts = vecPoints.size();
 
     while (!segmentsTree.isEmpty())
     {

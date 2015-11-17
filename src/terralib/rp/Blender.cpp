@@ -421,18 +421,20 @@ namespace te
         {
           te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
             indexedDelimiter2Ptr->getGeometryN( polIdx ) );
-          TERP_DEBUG_TRUE_OR_THROW( polPtr, "Invalid geometry pointer" );        
-        
-          for( ringIdx = 0 ; ringIdx < polPtr->getNumRings() ;
-            ++ringIdx )
+          
+          if( polPtr )
           {
-            ringIntersectionPtr.reset( indexedDelimiter1Ptr->intersection( 
-              polPtr->getRingN( ringIdx ) ) );
-            
-            if( ringIntersectionPtr.get() != 0 ) 
+            for( ringIdx = 0 ; ringIdx < polPtr->getNumRings() ;
+              ++ringIdx )
             {
-              TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
-                m_r2IntersectionSegmentsPoints ), "Error getting intersection segments" );
+              ringIntersectionPtr.reset( indexedDelimiter1Ptr->intersection( 
+                polPtr->getRingN( ringIdx ) ) );
+              
+              if( ringIntersectionPtr.get() != 0 ) 
+              {
+                TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
+                  m_r2IntersectionSegmentsPoints ), "Error getting intersection segments" );
+              }
             }
           }
         }
@@ -442,20 +444,22 @@ namespace te
         {
           te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
             indexedDelimiter1Ptr->getGeometryN( polIdx ) );
-          TERP_DEBUG_TRUE_OR_THROW( polPtr, "Invalid geometry pointer" );         
-        
-          for( ringIdx = 0 ; ringIdx < polPtr->getNumRings() ;
-            ++ringIdx )
+          
+          if( polPtr )
           {
-            ringIntersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
-              polPtr->getRingN( ringIdx ) ) );
-            
-            if( ringIntersectionPtr.get() != 0 ) 
+            for( ringIdx = 0 ; ringIdx < polPtr->getNumRings() ;
+              ++ringIdx )
             {
-              TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
-                m_r1IntersectionSegmentsPoints ), "Error getting intersection segments" );
-            }
-          }    
+              ringIntersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
+                polPtr->getRingN( ringIdx ) ) );
+              
+              if( ringIntersectionPtr.get() != 0 ) 
+              {
+                TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
+                  m_r1IntersectionSegmentsPoints ), "Error getting intersection segments" );
+              }
+            }    
+          }
         }    
 
 /*        std::cout << std::endl;
@@ -1666,7 +1670,7 @@ namespace te
             return false;
           }
         }
-      }     
+      }
       
       return true;
     }    

@@ -137,7 +137,7 @@ if(WIN32)
     add_definitions(-DTE_MINGW -D_WIN32_WINNT=0x601 -fpermissive)
   endif()
 elseif(APPLE)
-  add_definitions(-ftemplate-depth-1024)
+  add_definitions(-ftemplate-depth-1024)  
 endif()
 
 # Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
@@ -181,6 +181,13 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic ")
+endif()
+
+if(APPLE)
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${TERRALIB_DESTINATION_LIBRARY}")
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
 endif()
 
 
@@ -757,7 +764,6 @@ if(TERRALIB_MOD_BINDING_LUA_ENABLED)
 endif()
 
 if(TERRALIB_MOD_BINDING_PYTHON_ENABLED)
-message ("python")
   add_subdirectory(terralib_mod_binding_python)
 endif()
 
