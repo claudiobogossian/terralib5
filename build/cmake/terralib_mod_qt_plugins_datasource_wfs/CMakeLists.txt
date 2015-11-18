@@ -50,7 +50,7 @@ if(Qt5_FOUND)
 
   target_link_libraries(terralib_mod_qt_plugins_datasource_wfs terralib_mod_qt_widgets
                                                                terralib_mod_qt_apf
-															   terralib_mod_wfs)
+                                                               terralib_mod_wfs)
 
   qt5_use_modules(terralib_mod_qt_plugins_datasource_wfs Widgets)
 
@@ -86,7 +86,7 @@ set_target_properties(terralib_mod_qt_plugins_datasource_wfs
 install(TARGETS terralib_mod_qt_plugins_datasource_wfs
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}

@@ -57,8 +57,8 @@ else()
 
   # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/Plugin.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/ToolBar.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/ApplicationListener.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/ToolBar.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/ApplicationListener.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
@@ -81,7 +81,7 @@ set_target_properties(terralib_mod_qt_plugins_edit
 install(TARGETS terralib_mod_qt_plugins_edit
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}

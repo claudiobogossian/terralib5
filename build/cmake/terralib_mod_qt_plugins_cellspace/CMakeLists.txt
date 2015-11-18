@@ -76,9 +76,9 @@ else()
   add_library(terralib_mod_qt_plugins_cellspace SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_cellspace terralib_mod_cellspace
-														  terralib_mod_plugin
-														  terralib_mod_qt_apf
-														  ${QT_LIBRARIES})
+                                                          terralib_mod_plugin
+                                                          terralib_mod_qt_apf
+                                                          ${QT_LIBRARIES})
 
 endif()
 
@@ -89,7 +89,7 @@ set_target_properties(terralib_mod_qt_plugins_cellspace
 install(TARGETS terralib_mod_qt_plugins_cellspace
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime NAMELINK_SKIP
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
