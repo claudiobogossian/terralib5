@@ -12876,7 +12876,7 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="69"/>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="156"/>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="179"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="298"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="294"/>
         <source>Rasterization</source>
         <translation type="unfinished"></translation>
     </message>
