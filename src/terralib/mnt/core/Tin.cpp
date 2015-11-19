@@ -1523,9 +1523,9 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
       m_env.Union(*lr->getMBR());
 
     TinLine tl[3];
-    tl[0] = TinLine((int32_t)no[0], (int32_t)no[1], left[0], right[0], Normalline);
-    tl[1] = TinLine((int32_t)no[1], (int32_t)no[2], left[1], right[1], Normalline);
-    tl[2] = TinLine((int32_t)no[2], (int32_t)no[0], left[2], right[2], Normalline);
+    tl[0] = TinLine(no[0], no[1], left[0], right[0], Normalline);
+    tl[1] = TinLine(no[1], no[2], left[1], right[1], Normalline);
+    tl[2] = TinLine(no[2], no[0], left[2], right[2], Normalline);
     lid[0] = lid[1] = lid[2] = -1;
 
     for (unsigned int j = 0; j < 3; j++)
