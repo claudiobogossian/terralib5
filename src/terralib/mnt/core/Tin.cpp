@@ -89,7 +89,6 @@ bool te::mnt::TinLine::ExchangeNode(int32_t oldNodeId, int32_t newNodeId)
   return true;
 }
 
-
 bool te::mnt::TinLine::SwapPolygon()
 {
   int32_t aux;
@@ -99,7 +98,6 @@ bool te::mnt::TinLine::SwapPolygon()
   m_leftpoly = aux;
   return true;
 }
-
 
 bool te::mnt::TinLine::SwapNode()
 {
@@ -118,8 +116,6 @@ bool te::mnt::TinLine::SwapNodePolygon()
   SwapPolygon();
   return true;
 }
-
-
 
 bool te::mnt::TinNode::operator== (const TinNode &rhs) const
 {
@@ -157,7 +153,6 @@ bool te::mnt::TinNode::setEdge(int32_t edge)
   return false;
 }
 
-
 void te::mnt::Tin::setSRID(int srid)
 {
   m_srid = srid;
@@ -173,13 +168,15 @@ void te::mnt::Tin::setEnvelope(te::gm::Envelope& env)
 
 int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
 {
-  //Be a vertex v T triangulation and p any point to which you want to know which triangle contains .
   int32_t v = -1;
-  int32_t i;
+  int i;
 
-  for (i = m_lline - 1; i >= 0; i--)
+  if (m_lline == 0)
+    return -1;
+
+  for (i = (int32_t)m_lline - 1; i >= 0; i--)
   {
-    if ((v = m_line[i].getNodeFrom()) != -1)
+    if ((v = m_line[(unsigned int)i].getNodeFrom()) != -1)
       break;
   }
   if (v == -1)
@@ -191,22 +188,21 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
 
   for (;;)
   {
-    //1. Defina o segmento de reta r que tem como pontos extremos o ponto p e o vértice v
-    te::gm::PointZ ptr2 = m_node[v].getNPoint();
+    //1. Set the segment line r whose endpoints point p and the vertice v
+    te::gm::PointZ ptr2 = m_node[(unsigned int)v].getNPoint();
 
-    //2. Defina a aresta auxiliar aaux como sendo nula,
+    //2. Set the edge assist aaux as null 
     int32_t aaux = -1;
 
-    //3. Seja m o número de arestas opostas a v. Defina o conjunto A={a1,   ., am} das arestas opostas a v,
+    //3. Be m be the number of edges opposite to v . Set the set A = { a1, . , Am } the opposite edges to v ,
     std::vector<int32_t> aam;
     if (!NodeOppositeLines(v, aam))
       return -1;
 
-    //4. Defina o vértice auxiliar vaux como sendo o vértice v,
-    int32_t vaux = v;
+    //4 . Set the vertice assist Vaux as the vertice v ,
+    int32_t vaux = (int32_t) v;
 
-    //5. Seja n o número de vértices vizinhos a v. Defina o conjunto V={v1,   ., vn} de todos os vértices
-    //  vizinhos a v,
+    //5. n is the number of neighboring vertices to v. Defines the set V = {v1,...,vn} of all neighboring vertices to v,
     std::vector<int32_t> vvn;
     if (!NodeNodes(v, vvn))
       return -1;
@@ -215,36 +211,33 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
     for (;;)
     {
       bool flag = false;
-      //6. Para cada vértice vi (i Î  {1,  .,n}) de V, faça:
+      //6. For each vertice vi (i Î  {1,  .,n}) of V, do:
       size_t iiv;
       for (iiv = 0; iiv < vvn.size(); iiv++)
       {
         vi = vvn[iiv];
-        if ((fabs(px - m_node[vi].getX()) < tol) && (fabs(py - m_node[vi].getY()) < tol))
+        if ((fabs(px - m_node[(unsigned int)vi].getX()) < tol) && (fabs(py - m_node[(unsigned int)vi].getY()) < tol))
         {
-          //6.1. Se vi é igual a p, o triângulo que contém p é um dos triângulos que compartilham vi.
-          // Escolha qualquer um dos triângulos e termine o algoritmo.
+          //6.1. If vi is equla p, the triangle that contains p is one of the triangles that sharing vi.
+          // choose eiher of trianglesand finish the algorithm.
           return NodeTriangle(vi);
         }
 
-        //6.2. Se vi é diferente de vaux e está sobre r, faça:
-        if (vaux != -1)
-        {
-          if ((vi == vaux) ||
-            ((fabs(m_node[vaux].getX() - m_node[vi].getX()) < tol) &&
-            (fabs(m_node[vaux].getY() - m_node[vi].getY()) < tol)))
-            continue;
-        }
+        //6.2. If vi is not equal vaux and is on r, do:
+        if ((vi == vaux) ||
+          ((fabs(m_node[(unsigned int)vaux].getX() - m_node[(unsigned int)vi].getX()) < tol) &&
+          (fabs(m_node[(unsigned int)vaux].getY() - m_node[(unsigned int)vi].getY()) < tol)))
+          continue;
 
-        te::gm::PointZ ptvi = m_node[vi].getNPoint();
+        te::gm::PointZ ptvi = m_node[(unsigned int)vi].getNPoint();
 
         double dist = pointToSegmentDistance(ptr1, ptr2, ptvi, NULL);
 
         if (dist < tol)
         {
-          //6.2.1. Defina v como sendo vi,
+          //6.2.1. Define v as vi,
           v = vi;
-          //6.2.2. Retorne a 2.;
+          //6.2.2. Return to 2.;
           flag = true;
           break;
         }
@@ -253,46 +246,47 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
         break;
 
       flag = false;
-      //7. Para cada aresta ai (i Î  {1,  .,m}) de A, faça:
+      //7. For each edge ai (i Î  {1,  .,m}) of A, do:
       size_t iia;
       for (iia = 0; iia < aam.size(); iia++)
       {
         int32_t ai = aam[iia];
         if (ai != aaux)
         {
-          //7.1. Se ai é diferente de aaux
-          te::gm::PointZ lfr = m_node[m_line[ai].getNodeFrom()].getNPoint();
-          te::gm::PointZ lto = m_node[m_line[ai].getNodeTo()].getNPoint();
+          //7.1. If ai is different aaux
+          te::gm::PointZ lfr = m_node[(unsigned int)m_line[(unsigned int)ai].getNodeFrom()].getNPoint();
+          te::gm::PointZ lto = m_node[(unsigned int)m_line[(unsigned int)ai].getNodeTo()].getNPoint();
           if (segIntersect(ptr1, ptr2, lfr, lto))
           {
-            //  e intersecta r, faça:
+            //  and intersects r, do:
             int32_t t;
-            int32_t taux = m_line[ai].getLeftPolygon();
-            if (vaux != -1)
+            int32_t taux = m_line[(unsigned int)ai].getLeftPolygon();
+            if (taux == -1)
+              continue;
+              //  7.1.1. If vaux is not NULL, do:
+              //   7.1.1.1. Defines the t triangle that sharing ai 
+              //    with the  taux triangle that contains the vaux vertex ,
+            if (OppositeNode(taux, ai) == vaux)
+              t = m_line[(unsigned int)ai].getRightPolygon();
+            else
+              t = m_line[(unsigned int)ai].getLeftPolygon();
+            if (aaux != -1)
             {
-              //  7.1.1. Se vaux não é nulo, faça:
-              //   7.1.1.1. Defina o triângulo t que compartilha ai 
-              //    com o triângulo taux que contém o vértice vaux,
-              if (OppositeNode(taux, ai) == vaux)
-                t = m_line[ai].getRightPolygon();
-              else
-                t = m_line[ai].getLeftPolygon();
-            }
-            else if (aaux != -1)
-            {
-              // 7.1.2. Senão, aaux não é nula, faça:
-              //  7.1.2.1. Defina o triângulo t que compartilha ai com 
-              //    o triângulo taux que contém aaux.
+              // 7.1.2. Else, aaux is not NULL, do:
+              //  7.1.2.1. Defines the t triangle that sharing ai with 
+              //    the taux triangle that constins aaux.
               int32_t lidsaux[3];
-              t = m_line[ai].getLeftPolygon();
-              if (!m_triang[t].LinesId(lidsaux))
+              t = m_line[(unsigned int)ai].getLeftPolygon();
+              if (t == -1)
+                return -1;
+              if (!m_triang[(unsigned int)t].LinesId(lidsaux))
                 return -1;
 
-              for (short j = 0; j < 3; j++)
+              for (unsigned int j = 0; j < 3; j++)
               {
                 if (lidsaux[j] == aaux)
                 {
-                  t = m_line[ai].getRightPolygon();
+                  t = m_line[(unsigned int)ai].getRightPolygon();
                   break;
                 }
               }
@@ -302,19 +296,21 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
               return -1;
             }
 
-            //7.1.3. Se o triângulo t contém o ponto p, termine o algoritmo.
+            //7.1.3. If the t traingle contains the p point, finish the algorihm.
             if (ContainsPoint(t, ptr1))
               return t;
 
-            //7.1.4. Redefina o conjunto A={a1, a2}.
+            //7.1.4. Redefines the set A={a1, a2}.
             aam.clear();
             int32_t lids[3];
-            if (!m_triang[t].LinesId(lids))
+            if (t == -1)
+              return -1;
+            if (!m_triang[(unsigned int)t].LinesId(lids))
               return -1;
 
-            for (short j = 0; j < 3; j++)
+            for (unsigned int j = 0; j < 3; j++)
             {
-              // As arestas a1 e a2 são as arestas diferentes de ai do triângulo t,
+              // The edges a1 e a2 are different edges of ai of t triangle,
               if (lids[j] != ai)
               {
                 if (std::find(aam.begin(), aam.end(), lids[j]) == aam.end())
@@ -322,24 +318,24 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
               }
             }
 
-            //7.1.5. Redefina o conjunto V={v1}.
+            //7.1.5. Redefines the set V={v1}.
             vvn.clear();
-            // O vértice v1 é o vértice do triângulo t que não está em nenhuma extremidade de ai,
+            // The v1 vertice is the t triangle vertice that is not in any border of ai,
             int32_t v1 = OppositeNode(t, ai);
-
-            if ((fabs(ptr2.getX() - m_node[v1].getX()) < tol) && (fabs(ptr2.getY() - m_node[v1].getY()) < tol))
-            {
-              flag = true;
-              break;
-            }
+            if (v1 > 0)
+              if ((fabs(ptr2.getX() - m_node[(unsigned int)v1].getX()) < tol) && (fabs(ptr2.getY() - m_node[(unsigned int)v1].getY()) < tol))
+              {
+                flag = true;
+                break;
+              }
 
             vvn.push_back(v1);
 
-            //7.1.6. Defina aaux como sendo ai,
+            //7.1.6. Defines aaux as ai,
             aaux = ai;
-            //7.1.7. Defina o vértice auxiliar vaux como sendo nulo
+            //7.1.7. Defines vaux auxiliar vertice as null
             vaux = -1;
-            //7.1.8. Retorne a 6.;
+            //7.1.8. Returns to 6.;
             flag = true;
             break;
           }
@@ -349,33 +345,36 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
       {
         for (i = i - 1; i >= 0; i--)
         {
-          if ((v = m_line[i].getNodeFrom()) != -1)
+          if (m_line[(unsigned int)i].getNodeFrom() != -1)
+          {
+            v = m_line[(unsigned int)i].getNodeFrom();
             break;
+          }
+          else
+            return -1;
         }
-        if (v == -1)
-          return -1;
         break;
       }
       if (iia != aam.size())
         continue;
-      //8. Se não há mais arestas em A, então:
-      //8.1. Seja k o número de triângulos que compartilham v. Defina o conjunto T={t1,   ., tk} de todos os triângulos que compartilham v,
+      //8. If no more edges in A, then:
+      //8.1. Be k the triangles number that sharing v. Defines the set T={t1,   ., tk} of all triangles that sharing v,
       std::vector<int32_t> ttk;
       if (!NodeTriangles(v, ttk))
         return -1;
 
-      //8.2. Para cada triângulo ti (i Î  {1,  .,k}) de T, faça:
+      //8.2. For each ti triangle (i Î  {1,  .,k}) of T, do:
       for (size_t iit = 0; iit < ttk.size(); iit++)
       {
         int32_t ti = ttk[iit];
 
-        //8.2.1. Se o triângulo ti contém o ponto p, termine o algoritmo.
+        //8.2.1. If ti triangle contains p point, finish the algorithm.
         if (ContainsPoint(ti, ptr1))
           return ti;
       }
       for (i = i - 1; i >= 0; i--)
       {
-        if ((v = m_line[i].getNodeFrom()) != -1)
+        if ((v = m_line[(unsigned int)i].getNodeFrom()) != -1)
           break;
       }
       if (v == -1)
@@ -385,60 +384,61 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
   }
 }
 
-
 bool te::mnt::Tin::TrianglePoints(int32_t triangId, te::gm::PointZ *vertex)
 {
-  int32_t  linesid[3];
-
-  if (!m_triang[triangId].LinesId(linesid))
+  int32_t linesid[3];
+  if (triangId == -1)
     return false;
-  if (m_line[linesid[0]].getNodeTo() == m_line[linesid[1]].getNodeTo())
+
+  if (!m_triang[(unsigned int)triangId].LinesId(linesid))
+    return false;
+  if (m_line[(unsigned int)linesid[0]].getNodeTo() == m_line[(unsigned int)linesid[1]].getNodeTo())
   {
-    vertex[0].setX(m_node[m_line[linesid[0]].getNodeFrom()].getX());
-    vertex[0].setY(m_node[m_line[linesid[0]].getNodeFrom()].getY());
-    vertex[0].setZ(m_node[m_line[linesid[0]].getNodeFrom()].getZ());
-    vertex[1].setX(m_node[m_line[linesid[0]].getNodeTo()].getX());
-    vertex[1].setY(m_node[m_line[linesid[0]].getNodeTo()].getY());
-    vertex[1].setZ(m_node[m_line[linesid[0]].getNodeTo()].getZ());
-    vertex[2].setX(m_node[m_line[linesid[1]].getNodeFrom()].getX());
-    vertex[2].setY(m_node[m_line[linesid[1]].getNodeFrom()].getY());
-    vertex[2].setZ(m_node[m_line[linesid[1]].getNodeFrom()].getZ());
+    vertex[0].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getX());
+    vertex[0].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getY());
+    vertex[0].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getZ());
+    vertex[1].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getX());
+    vertex[1].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getY());
+    vertex[1].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getZ());
+    vertex[2].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeFrom()].getX());
+    vertex[2].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeFrom()].getY());
+    vertex[2].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeFrom()].getZ());
   }
-  else if (m_line[linesid[0]].getNodeTo() == m_line[linesid[1]].getNodeFrom())
+  else if (m_line[(unsigned int)linesid[0]].getNodeTo() == m_line[(unsigned int)linesid[1]].getNodeFrom())
   {
-    vertex[0].setX(m_node[m_line[linesid[0]].getNodeFrom()].getX());
-    vertex[0].setY(m_node[m_line[linesid[0]].getNodeFrom()].getY());
-    vertex[0].setZ(m_node[m_line[linesid[0]].getNodeFrom()].getZ());
-    vertex[1].setX(m_node[m_line[linesid[0]].getNodeTo()].getX());
-    vertex[1].setY(m_node[m_line[linesid[0]].getNodeTo()].getY());
-    vertex[1].setZ(m_node[m_line[linesid[0]].getNodeTo()].getZ());
-    vertex[2].setX(m_node[m_line[linesid[1]].getNodeTo()].getX());
-    vertex[2].setY(m_node[m_line[linesid[1]].getNodeTo()].getY());
-    vertex[2].setZ(m_node[m_line[linesid[1]].getNodeTo()].getZ());
+    vertex[0].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getX());
+    vertex[0].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getY());
+    vertex[0].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getZ());
+    vertex[1].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getX());
+    vertex[1].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getY());
+    vertex[1].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getZ());
+    vertex[2].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeTo()].getX());
+    vertex[2].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeTo()].getY());
+    vertex[2].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeTo()].getZ());
   }
-  else if (m_line[linesid[0]].getNodeFrom() == m_line[linesid[1]].getNodeFrom())
+  else if (m_line[(unsigned int)linesid[0]].getNodeFrom() == m_line[(unsigned int)linesid[1]].getNodeFrom())
   {
-    vertex[0].setX(m_node[m_line[linesid[0]].getNodeTo()].getX());
-    vertex[0].setY(m_node[m_line[linesid[0]].getNodeTo()].getY());
-    vertex[0].setZ(m_node[m_line[linesid[0]].getNodeTo()].getZ());
-    vertex[1].setX(m_node[m_line[linesid[0]].getNodeFrom()].getX());
-    vertex[1].setY(m_node[m_line[linesid[0]].getNodeFrom()].getY());
-    vertex[1].setZ(m_node[m_line[linesid[0]].getNodeFrom()].getZ());
-    vertex[2].setX(m_node[m_line[linesid[1]].getNodeTo()].getX());
-    vertex[2].setY(m_node[m_line[linesid[1]].getNodeTo()].getY());
-    vertex[2].setZ(m_node[m_line[linesid[1]].getNodeTo()].getZ());
+    vertex[0].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getX());
+    vertex[0].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getY());
+    vertex[0].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getZ());
+    vertex[1].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getX());
+    vertex[1].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getY());
+    vertex[1].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getZ());
+    vertex[2].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeTo()].getX());
+    vertex[2].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeTo()].getY());
+    vertex[2].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeTo()].getZ());
   }
-  else if (m_line[linesid[0]].getNodeFrom() == m_line[linesid[1]].getNodeTo())
+  else if (m_line[(unsigned int)linesid[0]].getNodeFrom() == m_line[(unsigned int)linesid[1]].getNodeTo())
   {
-    vertex[0].setX(m_node[m_line[linesid[0]].getNodeTo()].getX());
-    vertex[0].setY(m_node[m_line[linesid[0]].getNodeTo()].getY());
-    vertex[0].setZ(m_node[m_line[linesid[0]].getNodeTo()].getZ());
-    vertex[1].setX(m_node[m_line[linesid[0]].getNodeFrom()].getX());
-    vertex[1].setY(m_node[m_line[linesid[0]].getNodeFrom()].getY());
-    vertex[1].setZ(m_node[m_line[linesid[0]].getNodeFrom()].getZ());
-    vertex[2].setX(m_node[m_line[linesid[1]].getNodeFrom()].getX());
-    vertex[2].setY(m_node[m_line[linesid[1]].getNodeFrom()].getY());
-    vertex[2].setZ(m_node[m_line[linesid[1]].getNodeFrom()].getZ());
+    vertex[0].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getX());
+    vertex[0].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getY());
+    vertex[0].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeTo()].getZ());
+    vertex[1].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getX());
+    vertex[1].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getY());
+    vertex[1].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[0]].getNodeFrom()].getZ());
+    vertex[2].setX(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeFrom()].getX());
+    vertex[2].setY(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeFrom()].getY());
+    vertex[2].setZ(m_node[(unsigned int)m_line[(unsigned int)linesid[1]].getNodeFrom()].getZ());
   }
   else
     return false;
@@ -476,10 +476,12 @@ bool te::mnt::Tin::ContainsPoint(int32_t triangId, te::gm::PointZ &pt)
 
 bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
 {
-  int32_t td, te, ai, ti, aaux, taux,
+  int32_t td, te, taux, ti;
+  int32_t  ai,
     ao,
     lids[3];
-  short j;
+  int32_t aaux;
+  unsigned short j;
   std::vector<int32_t> a;
 
   //  Find one line that contains node
@@ -490,17 +492,17 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
   for (size_t i = 0; i < a.size(); i++)
   {
     if (a[i] == -1) continue;
-    // 1. Defina td como sendo o triângulo que está à direita da 
-    // aresta a e te como sendo o triângulo que está à esquerda de a,
-    td = m_line[a[i]].getRightPolygon();
-    te = m_line[a[i]].getLeftPolygon();
+    // 1. Defines td as triangle that is right of 
+    // edge a and te as triangle is left of a,
+    td = m_line[(unsigned int)a[i]].getRightPolygon();
+    te = m_line[(unsigned int)a[i]].getLeftPolygon();
 
-    // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
+    // 2. Defines ai as edge a and ti as traingle td,
     ai = a[i];
     ti = td;
 
-    // 3. Se o triângulo ti não for nulo, insira aresta ao de ti 
-    // que não é diretamente conectado a v no conjunto A,
+    // 3. If the triangle ti is not null, insert the edge ao of ti 
+    // that is not directly connected to v in set A, 
     if (ti != -1)
     {
       ao = OppositeEdge(ti, v);
@@ -513,20 +515,20 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
         continue;
     }
 
-    // 4. Enquanto ti for diferente do triângulo te,
+    // 4. While ti is different of triangle te,
     while (ti != te)
     {
-      // 4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
+      // 4.1. If the triangle ti is null (is in border triangulation) do:
       if (ti == -1)
       {
-        // 4.1.1. Defina ti como sendo o triângulo te,
+        // 4.1.1. Defines ti as triangle te,
         ti = te;
-        // 4.1.2. Defina te como sendo nulo,
+        // 4.1.2. Defines te as null,
         te = -1;
-        // 4.1.3. Defina ai como sendo aresta a,
+        // 4.1.3. Defines ai as edge a,
         ai = a[i];
-        // 4.1.4. Se o triângulo ti não for nulo, insira aresta ao 
-        // de ti que não é diretamente conectado a v no conjunto A,
+        // 4.1.4. If triangle ti is not null, insert edge ao 
+        // of ti is not directly connected to v in set A,
         if (ti != -1)
         {
           ao = OppositeEdge(ti, v);
@@ -543,8 +545,8 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
         continue;
       }
 
-      // 4.2. Defines edge aaux of ti triangle that conects the v vertex and is different of ai 
-      if (!m_triang[ti].LinesId(lids))
+      // 4.2. Defines edge aaux of ti triangle that conects the v vertice and is different of ai 
+      if (!m_triang[(unsigned int)ti].LinesId(lids))
         //return false;
         break;
 
@@ -552,8 +554,8 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
       {
         if (lids[j] == ai)
           continue;
-        if ((m_line[lids[j]].getNodeFrom() == v) ||
-          (m_line[lids[j]].getNodeTo() == v))
+        if ((m_line[(unsigned int)lids[j]].getNodeFrom() == v) ||
+          (m_line[(unsigned int)lids[j]].getNodeTo() == v))
           break;
       }
       if (j == 3){
@@ -563,11 +565,11 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
 
       aaux = lids[j];
 
-      // 4.3. Defines taux as the triangle that shares the aaux edge with ti 
-      if (m_line[aaux].getRightPolygon() == ti)
-        taux = m_line[aaux].getLeftPolygon();
-      else if (m_line[aaux].getLeftPolygon() == ti)
-        taux = m_line[aaux].getRightPolygon();
+      // 4.3. Defines taux as the triangle that sharing the aaux edge with ti 
+      if (m_line[(unsigned int)aaux].getRightPolygon() == ti)
+        taux = m_line[(unsigned int)aaux].getLeftPolygon();
+      else if (m_line[(unsigned int)aaux].getLeftPolygon() == ti)
+        taux = m_line[(unsigned int)aaux].getRightPolygon();
       else{
        // return false;
         break;
@@ -599,19 +601,18 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
   return true;
 }
 
-
 int32_t te::mnt::Tin::OppositeEdge(int32_t triangId, int32_t nodeId)
 {
   int32_t lids[3];
-  short j;
+  unsigned short j;
 
-  if (!m_triang[triangId].LinesId(lids))
+  if (!m_triang[(unsigned int)triangId].LinesId(lids))
     return -1;
 
   for (j = 0; j < 3; j++)
   {
-    if ((m_line[lids[j]].getNodeFrom() != nodeId) &&
-      (m_line[lids[j]].getNodeTo() != nodeId))
+    if ((m_line[(unsigned int)lids[j]].getNodeFrom() != nodeId) &&
+      (m_line[(unsigned int)lids[j]].getNodeTo() != nodeId))
       break;
   }
   if (j == 3)
@@ -624,58 +625,60 @@ int32_t te::mnt::Tin::OppositeEdge(int32_t triangId, int32_t nodeId)
 
 std::vector<int32_t> te::mnt::Tin::FindLine(int32_t nid)
 {
-  std::vector<int32_t> linid = m_node[nid].getEdge();
+  std::vector<int32_t> linid = m_node[(unsigned int)nid].getEdge();
 
   // Test to make sure there is no wrong index
-  for (size_t i = 0; i < linid.size(); i++)
+  for (unsigned int i = 0; i < linid.size(); i++)
   {
-    if (linid[i] == -1 || (m_line[linid[i]].getNodeTo() != nid) &&
-      (m_line[linid[i]].getNodeFrom() != nid))
+    if ((m_line[(unsigned int)linid[i]].getNodeTo() != nid) &&
+      (m_line[(unsigned int)linid[i]].getNodeFrom() != nid))
       linid.erase(linid.begin()+i);
   }
   if (linid.size())
     return linid;
 
   static int32_t oldtri = 1;
-  int32_t i, j, k, lids[3];
-  short m;
+  int32_t j, k, lids[3];
+  unsigned short m;
+  unsigned int i;
 
   if ((oldtri < 0) || (oldtri >= m_ltriang))
     oldtri = 0;
   if (oldtri == 0)
   {
-    for (i = 0; i < m_ltriang; i++)
+    for (i = 0; i < (unsigned int)m_ltriang; i++)
     {
       if (!m_triang[i].LinesId(lids))
         return linid;
       for (m = 0; m < 3; m++)
       {
-        if ((m_line[lids[m]].getNodeFrom() == nid) ||
-          (m_line[lids[m]].getNodeTo() == nid))
+        if ((m_line[(unsigned int)lids[m]].getNodeFrom() == nid) ||
+          (m_line[(unsigned int)lids[m]].getNodeTo() == nid))
         {
-          oldtri = i;
-          if (m_node[nid].setEdge(lids[m]))
+          oldtri = (int32_t)i;
+          if (m_node[(unsigned int)nid].setEdge(lids[m]))
             linid.push_back(lids[m]);
         }
       }
     }
     return linid;
   }
+
   j = oldtri;
   k = oldtri + 1;
   while ((j > 0) || (k < m_ltriang))
   {
     if (j > 0)
     {
-      if (!m_triang[j].LinesId(lids))
+      if (!m_triang[(unsigned int)j].LinesId(lids))
         return linid;
       for (m = 0; m < 3; m++)
       {
-        if ((m_line[lids[m]].getNodeFrom() == nid) ||
-          (m_line[lids[m]].getNodeTo() == nid))
+        if ((m_line[(unsigned int)lids[m]].getNodeFrom() == nid) ||
+          (m_line[(unsigned int)lids[m]].getNodeTo() == nid))
         {
           oldtri = j;
-          if (m_node[nid].setEdge(lids[m]))
+          if (m_node[(unsigned int)nid].setEdge(lids[m]))
             linid.push_back(lids[m]);
         }
       }
@@ -683,15 +686,15 @@ std::vector<int32_t> te::mnt::Tin::FindLine(int32_t nid)
     }
     if (k < m_ltriang)
     {
-      if (!m_triang[k].LinesId(lids))
+      if (!m_triang[(unsigned int)k].LinesId(lids))
         return linid;
       for (m = 0; m < 3; m++)
       {
-        if ((m_line[lids[m]].getNodeFrom() == nid) ||
-          (m_line[lids[m]].getNodeTo() == nid))
+        if ((m_line[(unsigned int)lids[m]].getNodeFrom() == nid) ||
+          (m_line[(unsigned int)lids[m]].getNodeTo() == nid))
         {
           oldtri = k;
-          if (m_node[nid].setEdge(lids[m]))
+          if (m_node[(unsigned int)nid].setEdge(lids[m]))
             linid.push_back(lids[m]);
         }
       }
@@ -702,7 +705,6 @@ std::vector<int32_t> te::mnt::Tin::FindLine(int32_t nid)
   return linid;
 
 }
-
 
 int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
 {
@@ -716,19 +718,19 @@ int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
   {
     for (i = 0; i < m_ltriang; i++)
     {
-      if (!m_triang[i].LinesId(lids))
+      if (!m_triang[(unsigned int)i].LinesId(lids))
         return -1;
 
       for (m = 0; m < 3; m++)
       {
-        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
-          (m_line[lids[m]].getNodeTo() == snid))
+        if ((m_line[(unsigned int)lids[m]].getNodeFrom() == fnid) &&
+          (m_line[(unsigned int)lids[m]].getNodeTo() == snid))
         {
           oldtri = i;
           return lids[m];
         }
-        if ((m_line[lids[m]].getNodeTo() == fnid) &&
-          (m_line[lids[m]].getNodeFrom() == snid))
+        if ((m_line[(unsigned int)lids[m]].getNodeTo() == fnid) &&
+          (m_line[(unsigned int)lids[m]].getNodeFrom() == snid))
         {
           oldtri = i;
           return lids[m];
@@ -743,19 +745,19 @@ int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
   {
     if (j > 0)
     {
-      if (!m_triang[j].LinesId(lids))
+      if (!m_triang[(unsigned int)j].LinesId(lids))
         return -1;
 
       for (m = 0; m < 3; m++)
       {
-        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
-          (m_line[lids[m]].getNodeTo() == snid))
+        if ((m_line[(unsigned int)lids[m]].getNodeFrom() == fnid) &&
+          (m_line[(unsigned int)lids[m]].getNodeTo() == snid))
         {
           oldtri = j;
           return lids[m];
         }
-        if ((m_line[lids[m]].getNodeTo() == fnid) &&
-          (m_line[lids[m]].getNodeFrom() == snid))
+        if ((m_line[(unsigned int)lids[m]].getNodeTo() == fnid) &&
+          (m_line[(unsigned int)lids[m]].getNodeFrom() == snid))
         {
           oldtri = j;
           return lids[m];
@@ -765,19 +767,19 @@ int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
     }
     if (k < m_ltriang)
     {
-      if (!m_triang[k].LinesId(lids))
+      if (!m_triang[(unsigned int)k].LinesId(lids))
         return -1;
 
       for (m = 0; m < 3; m++)
       {
-        if ((m_line[lids[m]].getNodeFrom() == fnid) &&
-          (m_line[lids[m]].getNodeTo() == snid))
+        if ((m_line[(unsigned int)lids[m]].getNodeFrom() == fnid) &&
+          (m_line[(unsigned int)lids[m]].getNodeTo() == snid))
         {
           oldtri = k;
           return lids[m];
         }
-        if ((m_line[lids[m]].getNodeTo() == fnid) &&
-          (m_line[lids[m]].getNodeFrom() == snid))
+        if ((m_line[(unsigned int)lids[m]].getNodeTo() == fnid) &&
+          (m_line[(unsigned int)lids[m]].getNodeFrom() == snid))
         {
           oldtri = k;
           return lids[m];
@@ -790,12 +792,13 @@ int32_t te::mnt::Tin::FindLine(int32_t fnid, int32_t snid)
   return -1;
 }
 
-
 bool te::mnt::Tin::NodeLines(int32_t v, std::vector<int32_t> &linids)
 {
-  int32_t td, te, ai, ti, aaux, taux = 0,
+  int32_t  td, te, ti, taux = 0;
+  int32_t ai,
     lids[3];
-  short j;
+  int32_t aaux;
+  unsigned short j;
   std::vector<int32_t> a;
 
   // Find one line that contains node
@@ -805,82 +808,75 @@ bool te::mnt::Tin::NodeLines(int32_t v, std::vector<int32_t> &linids)
 
   for (size_t i = 0; i < a.size(); i++)
   {
-    if (a[i] == -1)
-      continue;
-    // 1. Defina td como sendo o triângulo que está à direita da aresta a 
-    // e te como sendo o triângulo que está à esquerda de a,
-    td = m_line[a[i]].getRightPolygon();
-    te = m_line[a[i]].getLeftPolygon();
+    // 1. Defines td as the triangle that is on the right edge a 
+    // and te as the triangle that is on the left of a,
+    td = m_line[(unsigned int)a[i]].getRightPolygon();
+    te = m_line[(unsigned int)a[i]].getLeftPolygon();
 
-    // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
+    // 2. Defines ai as edge a and ti as triangle td,
     ai = a[i];
     ti = td;
 
-    // 3. Insira a aresta ai no conjunto A,
+    // 3. Inserts edge ai in set A,
     if (std::find(linids.begin(), linids.end(), ai) == linids.end())
       linids.push_back(ai); // A = linids
     else
       continue;
 
-    // 4. Enquanto ti for diferente do triângulo te,
+    // 4. while ti is different of triangle te,
     while (ti != te)
     {
-      //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
+      //    4.1. If triangle ti is null (is on border of triangulation) do:
       if (ti == -1)
       {
-        //      4.1.1. Defina ti como sendo o triângulo te,
+        //      4.1.1. Defines ti as triangle te,
         ti = te;
-        //      4.1.2. Defina te como sendo nulo,
+        //      4.1.2. Defines te as null,
         te = -1;
-        //      4.1.3. Defina ai como sendo aresta a,
+        //      4.1.3. Defines ai as edge a,
         ai = a[i];
-        //      4.1.4. Retorne a 4.
+        //      4.1.4. Returns to 4.
         continue;
       }
 
-      //    4.2. Defina a aresta aaux do triângulo ti que conecta o 
-      //    vértice v e é diferente de ai,
-      if (!m_triang[ti].LinesId(lids))
-        //return false;
+      //    4.2. Defines edge aaux of traingle ti that conects 
+      //    vertice v and is different of ai,
+      if (!m_triang[(unsigned int)ti].LinesId(lids))
         break;
       for (j = 0; j < 3; j++)
       {
         if (lids[j] == ai)
           continue;
-        if ((m_line[lids[j]].getNodeFrom() == v) ||
-          (m_line[lids[j]].getNodeTo() == v))
+        if ((m_line[(unsigned int)lids[j]].getNodeFrom() == v) ||
+          (m_line[(unsigned int)lids[j]].getNodeTo() == v))
           break;
       }
       if (j == 3){
-       // return false;
         break;
       }
 
       aaux = lids[j];
 
-      //    4.3. Defina taux como sendo o triângulo que compartilha a 
-      //    aresta aaux com ti,
-      if (m_line[aaux].getRightPolygon() == ti)
-        taux = m_line[aaux].getLeftPolygon();
-      else if (m_line[aaux].getLeftPolygon() == ti)
-        taux = m_line[aaux].getRightPolygon();
+      //    4.3. Defines taux as triangle that sharing edge aaux with ti,
+      if (m_line[(unsigned int)aaux].getRightPolygon() == ti)
+        taux = m_line[(unsigned int)aaux].getLeftPolygon();
+      else if (m_line[(unsigned int)aaux].getLeftPolygon() == ti)
+        taux = m_line[(unsigned int)aaux].getRightPolygon();
       else{
-       // return false;
         break;
       }
 
-      //    4.4. Defina ti como sendo o triângulo taux e ai como 
-      //    sendo aresta aaux,
+      //    4.4. Defines ti as triangle taux and ai as edge aaux,
       ti = taux;
       ai = aaux;
 
-      //    4.5. 3. Insira a aresta ai no conjunto A,
+      //    4.5. 3. Inserta edge ai in set A,
       if (std::find(linids.begin(), linids.end(), ai) == linids.end())
         linids.push_back(ai); // A = linids
       else
         break;
 
-      //  4.6. Retorne a 4.
+      //  4.6. Returns to 4.
     }
   }
   if (!linids.size())
@@ -889,68 +885,71 @@ bool te::mnt::Tin::NodeLines(int32_t v, std::vector<int32_t> &linids)
   return true;
 }
 
-
 int32_t te::mnt::Tin::NodeId(int32_t triangId, short vertex)
 {
-  int32_t  nodeids[3];
-
-  NodesId(triangId, nodeids);
-
-  return nodeids[vertex];
+  int32_t nodeids[3];
+  if (!NodesId(triangId, nodeids))
+    return -1;
+  if (vertex == -1)
+    return -1;
+  return nodeids[(unsigned)vertex];
 }
 
 bool te::mnt::Tin::NodesId(int32_t triangId, int32_t *nodeIds)
 {
-  int32_t  linesid[3];
-
-  if (!m_triang[triangId].LinesId(linesid))
+  if (triangId == -1)
     return false;
-  if (m_line[linesid[0]].getNodeTo() == m_line[linesid[1]].getNodeTo())
+  int32_t linesid[3];
+
+  if (!m_triang[(unsigned int)triangId].LinesId(linesid))
+    return false;
+  if (m_line[(unsigned int)linesid[0]].getNodeTo() == m_line[(unsigned int)linesid[1]].getNodeTo())
   {
-    nodeIds[0] = m_line[linesid[0]].getNodeFrom();
-    nodeIds[1] = m_line[linesid[0]].getNodeTo();
-    nodeIds[2] = m_line[linesid[1]].getNodeFrom();
+    nodeIds[0] = m_line[(unsigned int)linesid[0]].getNodeFrom();
+    nodeIds[1] = m_line[(unsigned int)linesid[0]].getNodeTo();
+    nodeIds[2] = m_line[(unsigned int)linesid[1]].getNodeFrom();
   }
-  else if (m_line[linesid[0]].getNodeTo() == m_line[linesid[1]].getNodeFrom())
+  else if (m_line[(unsigned int)linesid[0]].getNodeTo() == m_line[(unsigned int)linesid[1]].getNodeFrom())
   {
-    nodeIds[0] = m_line[linesid[0]].getNodeFrom();
-    nodeIds[1] = m_line[linesid[0]].getNodeTo();
-    nodeIds[2] = m_line[linesid[1]].getNodeTo();
+    nodeIds[0] = m_line[(unsigned int)linesid[0]].getNodeFrom();
+    nodeIds[1] = m_line[(unsigned int)linesid[0]].getNodeTo();
+    nodeIds[2] = m_line[(unsigned int)linesid[1]].getNodeTo();
   }
-  else if (m_line[linesid[0]].getNodeFrom() == m_line[linesid[1]].getNodeFrom())
+  else if (m_line[(unsigned int)linesid[0]].getNodeFrom() == m_line[(unsigned int)linesid[1]].getNodeFrom())
   {
-    nodeIds[0] = m_line[linesid[0]].getNodeTo();
-    nodeIds[1] = m_line[linesid[0]].getNodeFrom();
-    nodeIds[2] = m_line[linesid[1]].getNodeTo();
+    nodeIds[0] = m_line[(unsigned int)linesid[0]].getNodeTo();
+    nodeIds[1] = m_line[(unsigned int)linesid[0]].getNodeFrom();
+    nodeIds[2] = m_line[(unsigned int)linesid[1]].getNodeTo();
   }
-  else if (m_line[linesid[0]].getNodeFrom() == m_line[linesid[1]].getNodeTo())
+  else if (m_line[(unsigned int)linesid[0]].getNodeFrom() == m_line[(unsigned int)linesid[1]].getNodeTo())
   {
-    nodeIds[0] = m_line[linesid[0]].getNodeTo();
-    nodeIds[1] = m_line[linesid[0]].getNodeFrom();
-    nodeIds[2] = m_line[linesid[1]].getNodeFrom();
+    nodeIds[0] = m_line[(unsigned int)linesid[0]].getNodeTo();
+    nodeIds[1] = m_line[(unsigned int)linesid[0]].getNodeFrom();
+    nodeIds[2] = m_line[(unsigned int)linesid[1]].getNodeFrom();
   }
   else
     return false;
   return true;
 }
 
-
-
 bool te::mnt::Tin::NeighborsId(int32_t triangId, int32_t *neighsId)
 {
-  int32_t  linesid[3];
-  short  i;
+  if (triangId == -1)
+    return false;
 
-  if (!m_triang[triangId].LinesId(linesid))
+  int32_t  linesid[3];
+  unsigned short  i;
+
+  if (!m_triang[(unsigned int)triangId].LinesId(linesid))
     return false;
   for (i = 0; i < 3; i++)
   {
-    if (linesid[i] >(int32_t)m_linesize)
+    if (linesid[i] < 0 || linesid[i] > (int32_t)m_linesize)
       return false;
-    if (m_line[linesid[i]].getLeftPolygon() == triangId)
-      neighsId[i] = m_line[linesid[i]].getRightPolygon();
-    else if (m_line[linesid[i]].getRightPolygon() == triangId)
-      neighsId[i] = m_line[linesid[i]].getLeftPolygon();
+    if (m_line[(unsigned int)linesid[i]].getLeftPolygon() == triangId)
+      neighsId[i] = m_line[(unsigned int)linesid[i]].getRightPolygon();
+    else if (m_line[(unsigned int)linesid[i]].getRightPolygon() == triangId)
+      neighsId[i] = m_line[(unsigned int)linesid[i]].getLeftPolygon();
     else
       return false;
   }
@@ -960,12 +959,14 @@ bool te::mnt::Tin::NeighborsId(int32_t triangId, int32_t *neighsId)
 
 int32_t te::mnt::Tin::OppositeNode(int32_t triangId, int32_t linId)
 {
-  int32_t  nodtoid, nodfrid, nodeids[3];
-  short  i;
+  int32_t  nodtoid, nodfrid;
+  int32_t  nodeids[3];
 
-  nodtoid = m_line[linId].getNodeTo();
-  nodfrid = m_line[linId].getNodeFrom();
-  NodesId(triangId, nodeids);
+  nodtoid = m_line[(unsigned int)linId].getNodeTo();
+  nodfrid = m_line[(unsigned int)linId].getNodeFrom();
+  if (!NodesId(triangId, nodeids))
+    return -1;
+  unsigned short i;
   for (i = 0; i < 3; i++)
   {
     if ((nodtoid == nodeids[i]) ||
@@ -974,23 +975,24 @@ int32_t te::mnt::Tin::OppositeNode(int32_t triangId, int32_t linId)
     break;
   }
   if (i == 3){
-    return 0;
+    return -1;
   }
 
   return nodeids[i];
 }
 
-
 int32_t te::mnt::Tin::NextNode(int32_t nodeId)
 {
+  if (nodeId == -1)
+    return -1;
   int32_t  j;
 
-  if (m_node[nodeId + 1].getType() != Deletednode)
+  if (m_node[(unsigned int)nodeId + 1].getType() != Deletednode)
     return nodeId + 1;
 
   //  Search next non-deleted point
   for (j = 2; nodeId + j < m_lnode; j++)
-    if (m_node[nodeId + j].getType() != Deletednode)
+    if (m_node[(unsigned int)nodeId + j].getType() != Deletednode)
       break;
   if (nodeId + j > m_lnode)
     return -1;
@@ -998,17 +1000,19 @@ int32_t te::mnt::Tin::NextNode(int32_t nodeId)
   return nodeId + j;
 }
 
-
 int32_t te::mnt::Tin::PreviousNode(int32_t nodeId)
 {
+  if (nodeId <= 0)
+    return -1;
+
   int32_t  j;
 
-  if (m_node[nodeId - 1].getType() != Deletednode)
+  if (m_node[(unsigned int)nodeId - 1].getType() != Deletednode)
     return nodeId - 1;
 
   //  Search next non-deleted point
   for (j = 2; nodeId - j >= 0; j++)
-    if (m_node[nodeId - j].getType() != Deletednode)
+    if (m_node[(unsigned int)nodeId - j].getType() != Deletednode)
       break;
   if (nodeId - j < 0)
     return -1;
@@ -1016,13 +1020,14 @@ int32_t te::mnt::Tin::PreviousNode(int32_t nodeId)
   return nodeId - j;
 }
 
-
 bool te::mnt::Tin::NodeNodes(int32_t v, std::vector<int32_t>& nodids)
 {
-  int32_t  td, te, ai, ti, aaux, taux = 0,
-    nodeid,
+  int32_t td, te, ti,
+    nodeid, taux = 0;
+  int32_t ai,
     lids[3];
-  short  j;
+  int32_t aaux;
+  unsigned short  j;
   std::vector<int32_t> a;
 
   //  Find one line that contains node
@@ -1032,52 +1037,53 @@ bool te::mnt::Tin::NodeNodes(int32_t v, std::vector<int32_t>& nodids)
 
   for (size_t i = 0; i < a.size(); i++)
   {
-    if (a[i] == -1)
-      continue;
-    //  1. Defina td como sendo o triângulo que está à direita da aresta a 
-    //    e te como sendo o triângulo que está à esquerda de a,
-    td = m_line[a[i]].getRightPolygon();
-    te = m_line[a[i]].getLeftPolygon();
+    // 1. Defines td as triangle that is right of 
+    // edge a and te as triangle is left of a,
+    td = m_line[(unsigned int)a[i]].getRightPolygon();
+    te = m_line[(unsigned int)a[i]].getLeftPolygon();
 
-    //  2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
+    // 2. Defines ai as edge a and ti as traingle td,
     ai = a[i];
     ti = td;
 
-    //  3. Insira o vértice diferente de v conectado à aresta ai
-    //    no conjunto V,
-    nodeid = m_line[ai].getNodeFrom();
-    if (nodeid == v)
-      nodeid = m_line[ai].getNodeTo();
-    if (std::find(nodids.begin(), nodids.end(), nodeid) == nodids.end())
-      nodids.push_back(nodeid); // V = nodids
-    else
-      continue;
+    //  3. Inserts the vertice is different of v conected to edge ai
+    //    in set V,
+    nodeid = m_line[(unsigned int)ai].getNodeFrom();
+    if (nodeid > 0)
+    {
+      if (nodeid == v)
+        nodeid = m_line[(unsigned int)ai].getNodeTo();
+      if (std::find(nodids.begin(), nodids.end(), nodeid) == nodids.end())
+        nodids.push_back(nodeid); // V = nodids
+      else
+        continue;
+    }
 
-    //  4. Enquanto ti for diferente do triângulo te,
+    //  4. While ti is different of triangle te,
     while (ti != te)
     {
-      //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
+      //    4.1. If the triangle ti is null (is in border triangulation) do:
       if (ti == -1)
       {
-        //      4.1.1. Defina ti como sendo o triângulo te,
+        //      4.1.1. Defines ti as triangle te,
         ti = te;
-        //      4.1.2. Defina te como sendo nulo,
+        //      4.1.2.Defines te as null,
         te = -1;
-        //      4.1.3. Defina ai como sendo aresta a,
+        //      4.1.3. Defines ai as edge a,
         ai = a[i];
         //      4.1.4. Retorne a 4.
         break;
       }
 
-      //    4.2. Defina a aresta aaux do triângulo ti que conecta o 
-      //    vértice v e é diferente de ai,
-      m_triang[ti].LinesId(lids);
+      //    4.2. Defines edge aaux of triangle ti that connects 
+      //   to vertice v and is different of ai,
+      m_triang[(unsigned int)ti].LinesId(lids);
       for (j = 0; j < 3; j++)
       {
         if (lids[j] == ai)
           continue;
-        if ((m_line[lids[j]].getNodeFrom() == v) ||
-          (m_line[lids[j]].getNodeTo() == v))
+        if ((m_line[(unsigned int)lids[j]].getNodeFrom() == v) ||
+          (m_line[(unsigned int)lids[j]].getNodeTo() == v))
           break;
       }
       if (j == 3){
@@ -1086,37 +1092,35 @@ bool te::mnt::Tin::NodeNodes(int32_t v, std::vector<int32_t>& nodids)
 
       aaux = lids[j];
 
-      //    4.3. Defina taux como sendo o triângulo que compartilha a 
-      //    aresta aaux com ti,
-      if (m_line[aaux].getRightPolygon() == ti)
-        taux = m_line[aaux].getLeftPolygon();
-      else if (m_line[aaux].getLeftPolygon() == ti)
-        taux = m_line[aaux].getRightPolygon();
+      //    4.3. Defines taux as triangle that sharing edge a with ti
+      if (m_line[(unsigned int)aaux].getRightPolygon() == ti)
+        taux = m_line[(unsigned int)aaux].getLeftPolygon();
+      else if (m_line[(unsigned int)aaux].getLeftPolygon() == ti)
+        taux = m_line[(unsigned int)aaux].getRightPolygon();
       else{
        break;
       }
 
-      //    4.4. Defina ti como sendo o triângulo taux e ai como 
-      //    sendo aresta aaux,
+      //    4.4. Defines ti as triangle taux and ai as edge aaux,
       ti = taux;
       ai = aaux;
 
-      //    4.5. Insira o vértice diferente de v conectado à aresta ai
-      //    no conjunto V,
-      nodeid = m_line[ai].getNodeFrom();
-      if (nodeid == v)
-        nodeid = m_line[ai].getNodeTo();
-      if (std::find(nodids.begin(), nodids.end(), nodeid) == nodids.end())
-        nodids.push_back(nodeid);
-      else
-        break;
-      //  4.6. Retorne a 4.
+      //    4.5. Inserts the vertice is different of v  connected to edge ai in set V,
+      nodeid = m_line[(unsigned int)ai].getNodeFrom();
+      if (nodeid > 0)
+      {
+        if (nodeid == v)
+          nodeid = m_line[(unsigned int)ai].getNodeTo();
+        if (std::find(nodids.begin(), nodids.end(), nodeid) == nodids.end())
+          nodids.push_back(nodeid);
+        else
+          break;
+      }
+      //  4.6. Returns to 4.
     }
   }
   return true;
 }
-
-
 
 int32_t te::mnt::Tin::NodeTriangle(int32_t v)
 {
@@ -1128,21 +1132,20 @@ int32_t te::mnt::Tin::NodeTriangle(int32_t v)
   {
     if (a[i] == -1)
       continue;
-    int32_t td = m_line[a[i]].getRightPolygon();
+    int32_t td = m_line[(unsigned int)a[i]].getRightPolygon();
     if (td == -1)
-      return m_line[a[i]].getLeftPolygon();
+      return m_line[(unsigned int)a[i]].getLeftPolygon();
     else
       return td;
   }
   return -1;
 }
 
-
-
 bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
 {
-  int32_t  td, te, ai, ti, aaux, taux = 0,
+  int32_t  td, te, ai, ti, taux = 0,
     lids[3];
+  int32_t aaux;
   short  j;
   std::vector<int32_t> a;
   //  Find one line that contains node
@@ -1154,16 +1157,16 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
   {
     if (a[i] == -1)
       continue;
-    // 1. Defina td como sendo o triângulo que está à direita da 
-    //  aresta a e te como sendo o triângulo que está à esquerda de a,
-    td = m_line[a[i]].getRightPolygon();
-    te = m_line[a[i]].getLeftPolygon();
+    // 1. Defines td as triangle that is right of 
+    //  edge a and te as troiangle that is left of a,
+    td = m_line[(unsigned int)a[i]].getRightPolygon();
+    te = m_line[(unsigned int)a[i]].getLeftPolygon();
 
-    // 2. Defina ai como sendo aresta a e ti como sendo o triângulo td,
+    // 2. Defines ai as a edge and ti as td triangle,
     ai = a[i];
     ti = td;
 
-    // 3. Insira o triângulo ti no conjunto C se ele não for nulo,
+    // 3. Insert triangle ti in set C if it is not null,
     if (ti != -1)
     {
       if (std::find(triangles.begin(), triangles.end(), ti) == triangles.end())
@@ -1172,20 +1175,20 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
         continue;
     }
 
-    // 4. Enquanto ti for diferente do triângulo te,
+    // 4. while ti is different of triangle te,
     while (ti != te)
     {
-      //    4.1. Se o triângulo ti é nulo (esta' na borda da triangulação) faça:
+      //    4.1. If triangle ti is null (is on border) do:
       if (ti == -1)
       {
-        //      4.1.1. Defina ti como sendo o triângulo te,
+        //      4.1.1. Defines ti as te,
         ti = te;
-        //      4.1.2. Defina te como sendo nulo,
+        //      4.1.2. Defines te as null,
         te = -1;
-        //      4.1.3. Defina ai como sendo aresta a,
+        //      4.1.3. Defines ai as edge a,
         ai = a[i];
-        //      4.1.4. Insira o triângulo ti no conjunto C se 
-        //      ele não for nulo,
+        //      4.1.4. Insert the trinagle ti in set C if 
+        //      it is not null,
         if (ti != -1)
         {
           if (std::find(triangles.begin(), triangles.end(), ti) == triangles.end())
@@ -1194,19 +1197,19 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
             break;
         }
 
-        //      4.1.5. Retorne a 4.
+        //      4.1.5. returns to 4.
         continue;
       }
 
-      // 4.2. Defina a aresta aaux do triângulo ti que conecta o vértice v 
-      //    e é diferente de ai,
-      m_triang[ti].LinesId(lids);
+      // 4.2. Defines the edge aaux of triangle ti that conects the vertice v 
+      //    and is different of ai,
+      m_triang[(unsigned int)ti].LinesId(lids);
       for (j = 0; j < 3; j++)
       {
         if (lids[j] == ai)
           continue;
-        if ((m_line[lids[j]].getNodeFrom() == v) ||
-          (m_line[lids[j]].getNodeTo() == v))
+        if ((m_line[(unsigned int)lids[j]].getNodeFrom() == v) ||
+          (m_line[(unsigned int)lids[j]].getNodeTo() == v))
           break;
       }
       if (j == 3){
@@ -1215,22 +1218,22 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
 
       aaux = lids[j];
 
-      // 4.3. Defina taux como sendo o triângulo que compartilha a 
-      //    aresta aaux com ti,
-      if (m_line[aaux].getRightPolygon() == ti)
-        taux = m_line[aaux].getLeftPolygon();
-      else if (m_line[aaux].getLeftPolygon() == ti)
-        taux = m_line[aaux].getRightPolygon();
+      // 4.3. Defines taux as triangle that sharing the 
+      //    edge aaux with ti,
+      if (m_line[(unsigned int)aaux].getRightPolygon() == ti)
+        taux = m_line[(unsigned int)aaux].getLeftPolygon();
+      else if (m_line[(unsigned int)aaux].getLeftPolygon() == ti)
+        taux = m_line[(unsigned int)aaux].getRightPolygon();
       else{
         break;
       }
 
-      // 4.4. Defina ti como sendo o triângulo taux e ai como sendo
-      //    aresta aaux,
+      // 4.4. Defines ti as triangle taux and ai as
+      //    edge aaux,
       ti = taux;
       ai = aaux;
 
-      // 4.5. Insira o triângulo ti no conjunto C se ele não for nulo,
+      // 4.5. Inserts the triangle ti in set C if it is not null,
       if (ti != -1)
       {
         if (std::find(triangles.begin(), triangles.end(), ti) == triangles.end())
@@ -1239,14 +1242,12 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
           break;
       }
 
-      // 4.6. Retorne a 4.
+      // 4.6. Returns to 4.
     }
   }
 
   return true;
 }
-
-
 
 bool te::mnt::Tin::ReallocateVectors(size_t nSize)
 {
@@ -1335,26 +1336,21 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
   Ntype type[3];
   double value[3];
 
-  for (int32_t tri = 0; tri < (int32_t)m_triangsize; tri++)
+  for (unsigned int tri = 0; tri < m_triangsize; tri++)
   {
     te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet.get());
     if (!m_triang[tri].LinesId(tEdges))
       continue;
-    TrianglePoints(tri, vert);
-    NodesId(tri, nids);
+    TrianglePoints((int32_t)tri, vert);
+    if (!NodesId((int32_t)tri, nids))
+      continue;
     for (size_t e = 0; e < 3; e++)
     {
       value[e] = vert[e].getZ();
-      left[e] = m_line[tEdges[e]].getLeftPolygon();
-      right[e] = m_line[tEdges[e]].getRightPolygon();
-      type[e] = m_node[nids[e]].getType();
+      left[e] = m_line[(unsigned int)tEdges[e]].getLeftPolygon();
+      right[e] = m_line[(unsigned int)tEdges[e]].getRightPolygon();
+      type[e] = m_node[(unsigned int)nids[e]].getType();
     }
-   // if (type[0] == Box || type[1] == Box || type[2] == Box)
-   //   continue;
-    //if (type[0] == Deletednode || type[1] == Deletednode || type[2] == Deletednode)
-    //  continue;
-    //if (value[0] == m_nodatavalue || value[1] == m_nodatavalue || value[2] == m_nodatavalue)
-    //  continue;
 
     std::auto_ptr<te::gm::Polygon> p(new te::gm::Polygon(0, te::gm::PolygonZType));
     std::auto_ptr<te::gm::LinearRing> s(new te::gm::LinearRing(4, te::gm::LineStringZType));
@@ -1404,8 +1400,6 @@ struct nodecomp {
   }
 };
 
-#include <fstream>
-
 
 /*!
 \brief Method used to load a triangular network (TIN)
@@ -1426,12 +1420,8 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   const std::size_t np = inDset->getNumProperties();
   m_triangsize = inDset->size();
 
-  //	Open tin nodes file for nodes data load
+  // Open tin nodes file for nodes data load
   m_fbnode = 0;
-
-  //// Create and set tin triangles vector
-  //for (i = 0; i < m_triangsize + 2; i++)
-  //  m_triang.push_back(TinTriang());
 
   std::vector<std::string>pnames;
   std::vector<int> ptypes;
@@ -1452,7 +1442,6 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   te::gm::Envelope e;
   KD_TREE nodetree(e);
   std::vector<KD_NODE*> reportsnode;
- // KD_TREE linetree(e); ///<<<< Usar rtree com coordenadas ao inves de kdtree com ids. (Está estourando a pilha
   te::sam::rtree::Index<std::size_t> linetree;
   std::vector<std::size_t> reportline;
 
@@ -1534,46 +1523,46 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
       m_env.Union(*lr->getMBR());
 
     TinLine tl[3];
-    tl[0] = TinLine(no[0], no[1], left[0], right[0], Normalline);
-    tl[1] = TinLine(no[1], no[2], left[1], right[1], Normalline);
-    tl[2] = TinLine(no[2], no[0], left[2], right[2], Normalline);
+    tl[0] = TinLine((int32_t)no[0], (int32_t)no[1], left[0], right[0], Normalline);
+    tl[1] = TinLine((int32_t)no[1], (int32_t)no[2], left[1], right[1], Normalline);
+    tl[2] = TinLine((int32_t)no[2], (int32_t)no[0], left[2], right[2], Normalline);
     lid[0] = lid[1] = lid[2] = -1;
 
-    for (int j = 0; j < 3; j++)
+    for (unsigned int j = 0; j < 3; j++)
     {
-      double x0 = m_node[tl[j].getNodeFrom()].getX();
-      double y0 = m_node[tl[j].getNodeFrom()].getY();
-      double x1 = m_node[tl[j].getNodeTo()].getX();
-      double y1 = m_node[tl[j].getNodeTo()].getY();
+      double x0 = m_node[(unsigned int)tl[j].getNodeFrom()].getX();
+      double y0 = m_node[(unsigned int)tl[j].getNodeFrom()].getY();
+      double x1 = m_node[(unsigned int)tl[j].getNodeTo()].getX();
+      double y1 = m_node[(unsigned int)tl[j].getNodeTo()].getY();
       te::gm::Envelope e(std::min(x0, x1), std::min(y0, y1), std::max(x0, x1), std::max(y0, y1));
       linetree.search(e, reportline);
       size_t kl = 0;
       for (kl = 0; kl < reportline.size(); kl++)
       {
-        int nd0 = m_line[reportline[kl]].getNodeFrom();
-        int nd1 = m_line[reportline[kl]].getNodeTo();
+        int32_t nd0 = m_line[reportline[kl]].getNodeFrom();
+        int32_t nd1 = m_line[reportline[kl]].getNodeTo();
         if ((nd0 == tl[j].getNodeFrom() && nd1 == tl[j].getNodeTo()) || (nd1 == tl[j].getNodeFrom() && nd0 == tl[j].getNodeTo()))
         {
-          lid[j] = (int32_t)reportline[kl];
-          m_node[tl[j].getNodeFrom()].setEdge(lid[j]);
-          m_node[tl[j].getNodeTo()].setEdge(lid[j]);
+         // lid[j] = (int32_t)reportline[kl];
+          m_node[(unsigned int)tl[j].getNodeFrom()].setEdge((int32_t)reportline[kl]);
+          m_node[(unsigned int)tl[j].getNodeTo()].setEdge((int32_t)reportline[kl]);
           break;
         }
       }
       if (kl == reportline.size())
       {
         lid[j] = (int32_t)m_line.size();
-        m_node[tl[j].getNodeFrom()].setEdge(lid[j]);
-        m_node[tl[j].getNodeTo()].setEdge(lid[j]);
+        m_node[(unsigned int)tl[j].getNodeFrom()].setEdge((int32_t)m_line.size());
+        m_node[(unsigned int)tl[j].getNodeTo()].setEdge((int32_t)m_line.size());
         m_line.push_back(tl[j]);
-        linetree.insert(e, lid[j]);
+        linetree.insert(e, m_line.size());
       }
       reportline.clear();
     }
 
-    while (id >= m_triang.size())
+    while (id >= (int32_t)m_triang.size())
       m_triang.push_back(TinTriang());
-    m_triang[id].setEdges(lid[0], lid[1], lid[2]);
+    m_triang[(unsigned int)id].setEdges(lid[0], lid[1], lid[2]);
   }
 
   m_nodesize = m_node.size();
@@ -1583,37 +1572,6 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   m_triangsize = m_triang.size();
   m_ltriang = (int32_t)m_triangsize;
 
-  //for (size_t l = 0; l < m_line.size(); l++)
-  //{
-  //  m_node[m_line[l].getNodeTo()].setEdge((int32_t)l);
-  //}
-
-  // ////TESTE
-  std::ofstream tinread("d:/TESTE/TIN_READ_TL.txt");
-  tinread << "N Triang " << m_triangsize << " N Lines " << m_linesize << " N Nodes " << m_nodesize << std::endl;
-  tinread << "TRIANGLES" << std::endl;
-  int32_t lids[3];
-  for (size_t i = 0; i < m_triangsize; i++)
-  {
-    m_triang[i].LinesId(lids);
-    tinread << i << " " << lids[0] << " " << lids[1] << " " << lids[2] << std::endl;
-  }
-  tinread << "Lines" << std::endl;
-  for (size_t i = 0; i < m_linesize; i++)
-  {
-    tinread << i << " " << m_line[i].getNodeFrom() << " " << m_line[i].getNodeTo() << " " << m_line[i].getLeftPolygon() << " " << m_line[i].getRightPolygon() << std::endl;
-  }
-  tinread << "Nodes" << std::endl;
-  for (size_t i = 0; i < m_nodesize; i++)
-  {
-    tinread << i << " " << m_node[i].getX() << " " << m_node[i].getY() << " " << m_node[i].getZ() << " ";
-    for (size_t j = 0; j < m_node[i].getEdge().size(); j++)
-      tinread << m_node[i].getEdge()[j] << " ";
-    tinread << std::endl;
-  }
-
-  tinread.close();
-  //////TESTE
   return true;
 }
 
@@ -1623,51 +1581,18 @@ bool te::mnt::Tin::NodeDerivatives()
   // Calculate first derivatives on triangles
   if (!TriangleFirstDeriv())
     return false;
-  //////TESTE
-  std::ofstream tinread("d:/TESTE/TriangleFirstDeriv_TL.txt");
-  for (size_t i = 0; i < m_triangsize; i++)
-  {
-    tinread << i << " " << m_tfderiv[i].getX() << " " << m_tfderiv[i].getY() << std::endl;
-  }
-  tinread.close();
-  ////TESTE
 
   //Calculate first derivatives on nodes
   if (!NodeFirstDeriv())
     return false;
-  //////TESTE
-  std::ofstream tinread1("d:/TESTE/NodeFirstDeriv_TL.txt");
-  for (size_t i = 0; i < m_nodesize; i++)
-  {
-    tinread1 <<m_node[i].getX() << " " << m_node[i].getY() << " " << i << " " << m_nfderiv[i].getX() << " " << m_nfderiv[i].getY() << std::endl;
-  }
-  tinread1.close();
-  ////TESTE
 
   // Calculate second derivatives on triangles
   if (!TriangleSecondDeriv())
     return false;
-  //////TESTE
-  std::ofstream tinread2("d:/TESTE/TriangleSecondDeriv_TL.txt");
-  for (size_t i = 0; i < m_triangsize; i++)
-  {
-    tinread2 << i << " " << m_tsderiv[i].getX() << " " << m_tsderiv[i].getY() << " " << m_tsderiv[i].getZ() << std::endl;
-  }
-  tinread2.close();
-  ////TESTE
-
 
   // Calculate second derivatives on nodes
   if (!NodeSecondDeriv())
     return false;
-  //////TESTE
-  std::ofstream tinread3("d:/TESTE/NodeSecondDeriv_TL.txt");
-  for (size_t i = 0; i < m_nodesize; i++)
-  {
-    tinread3 << m_node[i].getX() << " " << m_node[i].getY() << " " << i << " " << m_nsderiv[i].getX() << " " << m_nsderiv[i].getY() << " " << m_nsderiv[i].getZ() << std::endl;
-  }
-  tinread3.close();
-  ////TESTE
 
   if (m_fbnode > 0)
   {
@@ -1709,7 +1634,7 @@ bool te::mnt::Tin::TriangleFirstDeriv()
     m_tfderiv.push_back(te::gm::PointZ(m_nodatavalue, 0., 0.));
   }
 
-  for (i = 0; i < m_ltriang; i++)
+  for (i = 0; i <(unsigned int)m_ltriang; i++)
   {
     if (!NodesId((int32_t)i, nodesid))
     {
@@ -1719,9 +1644,9 @@ bool te::mnt::Tin::TriangleFirstDeriv()
 
     for (j = 0; j < 3; j++)
     {
-      p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
-      p3da[j].setY(m_node[nodesid[j]].getNPoint().getY());
-      p3da[j].setZ(m_node[nodesid[j]].getZ());
+      p3da[j].setX(m_node[(unsigned int)nodesid[j]].getNPoint().getX());
+      p3da[j].setY(m_node[(unsigned int)nodesid[j]].getNPoint().getY());
+      p3da[j].setZ(m_node[(unsigned int)nodesid[j]].getZ());
     }
 
     // Special cases
@@ -1789,7 +1714,7 @@ bool te::mnt::Tin::TriangleSecondDeriv()
     m_tsderiv[i].setNPoint(te::gm::PointZ(m_nodatavalue, m_nodatavalue, 0.));
   }
 
-  for (i = 0; i < m_ltriang; i++)
+  for (i = 0; i < (unsigned int)m_ltriang; i++)
   {
     if (!NodesId((int32_t)i, nodesid))
     {
@@ -1798,12 +1723,12 @@ bool te::mnt::Tin::TriangleSecondDeriv()
     }
 
     // Special case
-    if ((m_nfderiv[nodesid[0]].getX() >= m_nodatavalue) ||
-      (m_nfderiv[nodesid[1]].getX() >= m_nodatavalue) ||
-      (m_nfderiv[nodesid[2]].getX() >= m_nodatavalue) ||
-      (m_node[nodesid[0]].getZ() >= m_nodatavalue) ||
-      (m_node[nodesid[1]].getZ() >= m_nodatavalue) ||
-      (m_node[nodesid[2]].getZ() >= m_nodatavalue))
+    if ((m_nfderiv[(unsigned int)nodesid[0]].getX() >= m_nodatavalue) ||
+      (m_nfderiv[(unsigned int)nodesid[1]].getX() >= m_nodatavalue) ||
+      (m_nfderiv[(unsigned int)nodesid[2]].getX() >= m_nodatavalue) ||
+      (m_node[(unsigned int)nodesid[0]].getZ() >= m_nodatavalue) ||
+      (m_node[(unsigned int)nodesid[1]].getZ() >= m_nodatavalue) ||
+      (m_node[(unsigned int)nodesid[2]].getZ() >= m_nodatavalue))
     {
       // Triangle with DUMMY Value
       m_tsderiv[i].setZ(m_nodatavalue);
@@ -1812,13 +1737,13 @@ bool te::mnt::Tin::TriangleSecondDeriv()
 
     m1 = m2 = m_nodatavalue;
 
-    if ((m_nfderiv[nodesid[1]].getY() - m_nfderiv[nodesid[0]].getY()) != 0.0)
-      m1 = (m_nfderiv[nodesid[1]].getX() - m_nfderiv[nodesid[0]].getX()) /
-      (m_nfderiv[nodesid[1]].getY() - m_nfderiv[nodesid[0]].getY());
+    if ((m_nfderiv[(unsigned int)nodesid[1]].getY() - m_nfderiv[(unsigned int)nodesid[0]].getY()) != 0.0)
+      m1 = (m_nfderiv[(unsigned int)nodesid[1]].getX() - m_nfderiv[(unsigned int)nodesid[0]].getX()) /
+      (m_nfderiv[(unsigned int)nodesid[1]].getY() - m_nfderiv[(unsigned int)nodesid[0]].getY());
 
-    if ((m_nfderiv[nodesid[2]].getY() - m_nfderiv[nodesid[0]].getY()) != 0.0)
-      m2 = (m_nfderiv[nodesid[2]].getX() - m_nfderiv[nodesid[0]].getX()) /
-      (m_nfderiv[nodesid[2]].getY() - m_nfderiv[nodesid[0]].getY());
+    if ((m_nfderiv[(unsigned int)nodesid[2]].getY() - m_nfderiv[(unsigned int)nodesid[0]].getY()) != 0.0)
+      m2 = (m_nfderiv[(unsigned int)nodesid[2]].getX() - m_nfderiv[(unsigned int)nodesid[0]].getX()) /
+      (m_nfderiv[(unsigned int)nodesid[2]].getY() - m_nfderiv[(unsigned int)nodesid[0]].getY());
 
     if (fabs(m1 - m2) < tol)
     {
@@ -1828,11 +1753,11 @@ bool te::mnt::Tin::TriangleSecondDeriv()
     }
 
     //		Calculate using dx
-    for (short j = 0; j < 3; j++)
+    for (unsigned short j = 0; j < 3; j++)
     {
-      p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
-      p3da[j].setY(m_node[nodesid[j]].getNPoint().getY());
-      p3da[j].setZ(m_nfderiv[nodesid[j]].getX());
+      p3da[j].setX(m_node[(unsigned int)nodesid[j]].getNPoint().getX());
+      p3da[j].setY(m_node[(unsigned int)nodesid[j]].getNPoint().getY());
+      p3da[j].setZ(m_nfderiv[(unsigned int)nodesid[j]].getX());
     }
 
     if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
@@ -1848,8 +1773,8 @@ bool te::mnt::Tin::TriangleSecondDeriv()
     }
 
     // Calculate using dy
-    for (short j = 0; j < 3; j++)
-      p3da[j].setZ(m_nfderiv[nodesid[j]].getY());
+    for (unsigned int j = 0; j < 3; j++)
+      p3da[j].setZ(m_nfderiv[(unsigned int)nodesid[j]].getY());
 
     if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
     {
@@ -1884,9 +1809,6 @@ bool te::mnt::Tin::NodeFirstDeriv()
     m_nfderiv.push_back(te::gm::PointZ(0., 0., 0.));
   }
 
- 
-  std::ofstream tinread("d:/TESTE/NFD_TL.txt"); //////TESTE
-
   // To each node
   for (i = 0; i < m_node.size(); i++)
   {
@@ -1900,18 +1822,9 @@ bool te::mnt::Tin::NodeFirstDeriv()
     // Look for closest points of the node
     if (!NodeClosestPoints((int32_t)i, clstnids))
       continue;
-    tinread << i << " " << m_node[i].getX() << " " << m_node[i].getY() << " " << m_node[i].getZ() << std::endl;  ////TESTE
-    for (int j = 0; j < CLNODES; j++)  ////TESTE
-    {
-      if (clstnids[j] == -1)
-        break;
-      tinread << j << " " << clstnids[j] << " " << m_node[clstnids[j]].getX() << " " << m_node[clstnids[j]].getY() << " " << m_node[clstnids[j]].getZ() << std::endl;
-    }  ////TESTE
     m_nfderiv[i] = CalcNodeFirstDeriv((int32_t)i, clstnids);
-    tinread << m_nfderiv[i].getX() << " " << m_nfderiv[i].getY() << std::endl << std::endl;  ////TESTE
   }
 
-  tinread.close();  ////TESTE
 
   return true;
 }
@@ -1960,12 +1873,10 @@ bool te::mnt::Tin::NodeSecondDeriv()
 
 bool te::mnt::Tin::NodeClosestPoints(int32_t nid, int32_t *clstNids, bool useBrNode)
 {
-  int32_t
-    lineid;
+  int32_t lineid;
   size_t j, k;
   double dist, distv[CLNODES];
   int32_t nodeid;
- // std::vector<int32_t> used_line, used_rtri;
 
   // Find one line that contains node
   std::vector<int32_t> lineids = FindLine(nid);
@@ -1980,24 +1891,25 @@ bool te::mnt::Tin::NodeClosestPoints(int32_t nid, int32_t *clstNids, bool useBrN
 
   for (size_t i = 0; i < lineids.size(); i++)
   {
-    lineid = lineids[i];
-    if (lineid == -1)
+    if (lineids[i] == -1)
       continue;
 
-    if (m_line[lineid].getNodeFrom() == nid)
-      nodeid = m_line[lineid].getNodeTo();
-    else if (m_line[lineid].getNodeTo() == nid)
-      nodeid = m_line[lineid].getNodeFrom();
+    lineid = lineids[i];
+
+    if (m_line[(unsigned int)lineid].getNodeFrom() == nid)
+      nodeid = m_line[(unsigned int)lineid].getNodeTo();
+    else if (m_line[(unsigned int)lineid].getNodeTo() == nid)
+      nodeid = m_line[(unsigned int)lineid].getNodeFrom();
     else
       continue;
 
-    if ((m_node[nodeid].getZ() < m_nodatavalue) && ((useBrNode) ||
-    ((useBrNode) && (nodeid < m_fbnode))))
+    if ((m_node[(unsigned int)nodeid].getZ() < m_nodatavalue) && ((useBrNode) ||
+      ((useBrNode) && (nodeid < m_fbnode))))
     {
-      dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
-        (m_node[nid].getX() - m_node[nodeid].getX()) +
-        (m_node[nid].getY() - m_node[nodeid].getY()) *
-        (m_node[nid].getY() - m_node[nodeid].getY());
+      dist = (m_node[(unsigned int)nid].getX() - m_node[(unsigned int)nodeid].getX()) *
+        (m_node[(unsigned int)nid].getX() - m_node[(unsigned int)nodeid].getX()) +
+        (m_node[(unsigned int)nid].getY() - m_node[(unsigned int)nodeid].getY()) *
+        (m_node[(unsigned int)nid].getY() - m_node[(unsigned int)nodeid].getY());
         for (j = 0; j < CLNODES; j++)
         {
           if (dist < distv[j])
@@ -2027,9 +1939,9 @@ te::gm::PointZ te::mnt::Tin::CalcNodeFirstDeriv(int32_t nodeId, int32_t clstNode
   double	m1, m2;
   double tol = (double).01;
 
-  p3da[0].setX(m_node[nodeId].getNPoint().getX());
-  p3da[0].setY(m_node[nodeId].getNPoint().getY());
-  p3da[0].setZ(m_node[nodeId].getZ());
+  p3da[0].setX(m_node[(unsigned int)nodeId].getNPoint().getX());
+  p3da[0].setY(m_node[(unsigned int)nodeId].getNPoint().getY());
+  p3da[0].setZ(m_node[(unsigned int)nodeId].getZ());
 
   tnx = 0.;
   tny = 0.;
@@ -2038,16 +1950,16 @@ te::gm::PointZ te::mnt::Tin::CalcNodeFirstDeriv(int32_t nodeId, int32_t clstNode
   {
     if (clstNodes[j] == -1)
       break;
-    p3da[1].setX(m_node[clstNodes[j]].getNPoint().getX());
-    p3da[1].setY(m_node[clstNodes[j]].getNPoint().getY());
-    p3da[1].setZ(m_node[clstNodes[j]].getZ());
+    p3da[1].setX(m_node[(unsigned int)clstNodes[j]].getNPoint().getX());
+    p3da[1].setY(m_node[(unsigned int)clstNodes[j]].getNPoint().getY());
+    p3da[1].setZ(m_node[(unsigned int)clstNodes[j]].getZ());
     for (k = j + 1; k < CLNODES; k++)
     {
       if (clstNodes[k] == -1)
         break;
-      p3da[2].setX(m_node[clstNodes[k]].getNPoint().getX());
-      p3da[2].setY(m_node[clstNodes[k]].getNPoint().getY());
-      p3da[2].setZ(m_node[clstNodes[k]].getZ());
+      p3da[2].setX(m_node[(unsigned int)clstNodes[k]].getNPoint().getX());
+      p3da[2].setY(m_node[(unsigned int)clstNodes[k]].getNPoint().getY());
+      p3da[2].setZ(m_node[(unsigned int)clstNodes[k]].getZ());
 
       // Special cases
       m1 = m2 = m_nodatavalue;
@@ -2096,12 +2008,12 @@ te::mnt::TinNode te::mnt::Tin::CalcNodeSecondDeriv(int32_t nodeId, int32_t clstN
   double tnxx, tnxy, tnxz, tnyx, tnyy, tnyz,
     nvector[3], m1, m2;
   double tol = .01;
-  short j, k;
+  unsigned int j, k;
   TinNode sderiv;
 
-  p3da[0].setX(m_node[nodeId].getNPoint().getX());
-  p3da[0].setY(m_node[nodeId].getNPoint().getY());
-  p3da[0].setZ(m_nfderiv[nodeId].getX());
+  p3da[0].setX(m_node[(unsigned int)nodeId].getNPoint().getX());
+  p3da[0].setY(m_node[(unsigned int)nodeId].getNPoint().getY());
+  p3da[0].setZ(m_nfderiv[(unsigned int)nodeId].getX());
 
   tnxx = 0.;
   tnxy = 0.;
@@ -2110,20 +2022,20 @@ te::mnt::TinNode te::mnt::Tin::CalcNodeSecondDeriv(int32_t nodeId, int32_t clstN
   tnyy = 0.;
   tnyz = 0.;
 
-  for (j = 0; j < CLNODES; j++)
+  for (j = 0; j < (unsigned int)CLNODES; j++)
   {
     if (clstNIds[j] == -1)
       break;
-    p3da[1].setX(m_node[clstNIds[j]].getNPoint().getX());
-    p3da[1].setY(m_node[clstNIds[j]].getNPoint().getY());
-    p3da[1].setZ(m_nfderiv[clstNIds[j]].getX());
+    p3da[1].setX(m_node[(unsigned int)clstNIds[j]].getNPoint().getX());
+    p3da[1].setY(m_node[(unsigned int)clstNIds[j]].getNPoint().getY());
+    p3da[1].setZ(m_nfderiv[(unsigned int)clstNIds[j]].getX());
     for (k = j + 1; k < CLNODES; k++)
     {
       if (clstNIds[k] == -1)
         break;
-      p3da[2].setX(m_node[clstNIds[k]].getNPoint().getX());
-      p3da[2].setY(m_node[clstNIds[k]].getNPoint().getY());
-      p3da[2].setZ(m_nfderiv[clstNIds[k]].getX());
+      p3da[2].setX(m_node[(unsigned int)clstNIds[k]].getNPoint().getX());
+      p3da[2].setY(m_node[(unsigned int)clstNIds[k]].getNPoint().getY());
+      p3da[2].setZ(m_nfderiv[(unsigned int)clstNIds[k]].getX());
 
       m1 = m2 = m_nodatavalue;
 
@@ -2151,21 +2063,21 @@ te::mnt::TinNode te::mnt::Tin::CalcNodeSecondDeriv(int32_t nodeId, int32_t clstN
       tnxz += nvector[2];
     }
   }
-  p3da[0].setZ(m_nfderiv[nodeId].getY());
+  p3da[0].setZ(m_nfderiv[(unsigned int)nodeId].getY());
   for (j = 0; j < CLNODES; j++)
   {
     if (clstNIds[j] == -1)
       break;
-    p3da[1].setX(m_node[clstNIds[j]].getNPoint().getX());
-    p3da[1].setY(m_node[clstNIds[j]].getNPoint().getY());
-    p3da[1].setZ(m_nfderiv[clstNIds[j]].getY());
+    p3da[1].setX(m_node[(unsigned int)clstNIds[j]].getNPoint().getX());
+    p3da[1].setY(m_node[(unsigned int)clstNIds[j]].getNPoint().getY());
+    p3da[1].setZ(m_nfderiv[(unsigned int)clstNIds[j]].getY());
     for (k = j + 1; k < CLNODES; k++)
     {
       if (clstNIds[k] == -1)
         break;
-      p3da[2].setX(m_node[clstNIds[k]].getNPoint().getX());
-      p3da[2].setY(m_node[clstNIds[k]].getNPoint().getY());
-      p3da[2].setZ(m_nfderiv[clstNIds[k]].getY());
+      p3da[2].setX(m_node[(unsigned int)clstNIds[k]].getNPoint().getX());
+      p3da[2].setY(m_node[(unsigned int)clstNIds[k]].getNPoint().getY());
+      p3da[2].setZ(m_nfderiv[(unsigned int)clstNIds[k]].getY());
 
       m1 = m2 = m_nodatavalue;
 
@@ -2227,7 +2139,7 @@ bool ::te::mnt::Tin::BreakNodeFirstDeriv()
   if (!m_tfderiv.size())
     return false;
   // Create and Initialize first derivatives vector
-  bnodesize = m_lnode - m_fbnode;
+  bnodesize = (unsigned int)(m_lnode - m_fbnode);
   if (m_nbrfderiv.size())
   {
     m_nbrfderiv.clear();
@@ -2240,7 +2152,7 @@ bool ::te::mnt::Tin::BreakNodeFirstDeriv()
   }
 
   // To each break node
-  for (i = m_fbnode; i < m_node.size() - 1; i++)
+  for (i = (unsigned int)m_fbnode; i < m_node.size() - 1; i++)
   {
     // Special cases
     if ((m_node[i].getZ() >= m_nodatavalue) ||
@@ -2248,13 +2160,13 @@ bool ::te::mnt::Tin::BreakNodeFirstDeriv()
       (m_node[i].getType() > Breaklinenormal))
       continue;
 
-    // Look for triangles that share the node
+    // Look for triangles that sharing the node
     BreakNodeClosestPoints((int32_t)i, rclstnids, lclstnids);
     rderiv = CalcNodeFirstDeriv((int32_t)i, rclstnids);
     lderiv = CalcNodeFirstDeriv((int32_t)i, lclstnids);
 
-    node1 = NextNode((int32_t)i);
-    node2 = PreviousNode((int32_t)i);
+    node1 = (unsigned int)NextNode((int32_t)i);
+    node2 = (unsigned int)PreviousNode((int32_t)i);
 
     deltax = m_node[node1].getX() - m_node[node2].getX();
     deltay = m_node[node1].getY() - m_node[node2].getY();
@@ -2304,7 +2216,7 @@ bool te::mnt::Tin::BreakTriangleSecondDeriv()
     return false;
 
   // To each break node except first and last
-  for (i = m_fbnode; i < m_node.size() - 1; i++)
+  for (i = (unsigned int)m_fbnode; i < m_node.size() - 1; i++)
   {
     if (m_node[i].getZ() >- m_nodatavalue)
       continue;
@@ -2315,7 +2227,7 @@ bool te::mnt::Tin::BreakTriangleSecondDeriv()
       (m_node[i].getType() == Deletednode))
       continue;
 
-    // Look for triangles that share the node
+    // Look for triangles that sharing the node
     NodeTriangles((int32_t)i, rightri, leftri);
 
     // Calculate second derivative of node using right side triangles
@@ -2333,22 +2245,23 @@ bool te::mnt::Tin::BreakTriangleSecondDeriv()
 
 bool te::mnt::Tin::NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, std::vector<int32_t> &leftri)
 {
-  int32_t linid, lids[3], rtri, ltri;
+  int32_t rtri, ltri;
+  int32_t lids[3], linid;
   short k;
 
+  lids[0] = lids[1] = lids[2] = -1;
+
   // Find one line that contains node
- std::vector<int32_t> fline = FindLine(nodeid);
+  std::vector<int32_t> fline = FindLine(nodeid);
   if (!fline.size())
     return false;
 
   for (size_t i = 0; i < fline.size(); i++)
   {
     linid = fline[i];
-    if (linid == -1)
-      continue;
 
-    ltri = m_line[linid].getLeftPolygon();
-    rtri = m_line[linid].getRightPolygon();
+    ltri = m_line[(unsigned int)linid].getLeftPolygon();
+    rtri = m_line[(unsigned int)linid].getRightPolygon();
     if (rtri == -1)
     {
       rtri = ltri;
@@ -2358,25 +2271,26 @@ bool te::mnt::Tin::NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, 
     // While right side triangle different from left side<br>
     while (rtri != ltri)
     {
-      if (m_line[linid].getNodeTo() == nodeid)
+      if (m_line[(unsigned int)linid].getNodeTo() == nodeid)
       {
-        rightri.push_back(m_line[linid].getRightPolygon());
+        rightri.push_back(m_line[(unsigned int)linid].getRightPolygon());
       }
-      else if (m_line[linid].getNodeFrom() == nodeid)
+      else if (m_line[(unsigned int)linid].getNodeFrom() == nodeid)
       {
-        leftri.push_back(m_line[linid].getLeftPolygon());
+        leftri.push_back(m_line[(unsigned int)linid].getLeftPolygon());
       }
 
       // Find line that contains node in the right triangle
-      if (!m_triang[rtri].LinesId(lids))
+      if (rtri >= 0)
+       if (!m_triang[(unsigned int)rtri].LinesId(lids))
         break;
 
       for (k = 0; k < 3; k++)
       {
-        if (lids[k] == linid)
+        if (lids[k] == linid || lids[k] == -1)
           continue;
-        if ((m_line[lids[k]].getNodeFrom() == nodeid) ||
-          (m_line[lids[k]].getNodeTo() == nodeid))
+        if ((m_line[(unsigned int)lids[k]].getNodeFrom() == nodeid) ||
+          (m_line[(unsigned int)lids[k]].getNodeTo() == nodeid))
           break;
       }
       if (k == 3){
@@ -2386,10 +2300,10 @@ bool te::mnt::Tin::NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, 
       // Make right triangle equal to the triangle at the
       // other side
       linid = lids[k];
-      if (m_line[linid].getRightPolygon() == rtri)
-        rtri = m_line[linid].getLeftPolygon();
-      else if (m_line[linid].getLeftPolygon() == rtri)
-        rtri = m_line[linid].getRightPolygon();
+      if (m_line[(unsigned int)linid].getRightPolygon() == rtri)
+        rtri = m_line[(unsigned int)linid].getLeftPolygon();
+      else if (m_line[(unsigned int)linid].getLeftPolygon() == rtri)
+        rtri = m_line[(unsigned int)linid].getRightPolygon();
       else
         break;
       if (rtri == -1)
@@ -2402,13 +2316,13 @@ bool te::mnt::Tin::NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, 
     //	Insert left side triangle in triangle list
     if (ltri != -1)
     {
-      if (m_line[linid].getNodeTo() == nodeid)
+      if (m_line[(unsigned int)linid].getNodeTo() == nodeid)
       {
-        rightri.push_back(m_line[linid].getRightPolygon());
+        rightri.push_back(m_line[(unsigned int)linid].getRightPolygon());
       }
-      if (m_line[linid].getNodeFrom() == nodeid)
+      if (m_line[(unsigned int)linid].getNodeFrom() == nodeid)
       {
-        leftri.push_back(m_line[linid].getLeftPolygon());
+        leftri.push_back(m_line[(unsigned int)linid].getLeftPolygon());
       }
     }
   }
@@ -2416,17 +2330,15 @@ bool te::mnt::Tin::NodeTriangles(int32_t nodeid, std::vector<int32_t> &rightri, 
   return true;
 }
 
-
-
 bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32_t *lClstNids)
 {
-  int32_t ltri, rtri,
-    flin,
-    lids[3];
-  short j, k;
+  int32_t ltri, rtri;
+  int32_t lids[3],
+    flin;
   double dist, rdistv[CLNODES], ldistv[CLNODES];
   int32_t nodeid;
 
+  lids[0] = lids[1] = lids[2] = -1;
   // Find one line that contains node
   std::vector<int32_t>lineid = FindLine(nid);
   if (!lineid.size())
@@ -2436,7 +2348,7 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
   {
     flin = lineid[i];
 
-    for (j = 0; j < CLNODES; j++)
+    for (unsigned int j = 0; j < CLNODES; j++)
     {
       rdistv[j] = m_nodatavalue;
       rClstNids[j] = -1;
@@ -2446,8 +2358,8 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
     }
 
     // Find right and left triangle
-    rtri = m_line[lineid[i]].getRightPolygon();
-    ltri = m_line[lineid[i]].getLeftPolygon();
+    rtri = m_line[(unsigned int)lineid[i]].getRightPolygon();
+    ltri = m_line[(unsigned int)lineid[i]].getLeftPolygon();
     if (rtri == -1)
     {
       rtri = ltri;
@@ -2455,16 +2367,18 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
     }
     while (rtri != ltri)
     {
-      if (!m_triang[rtri].LinesId(lids))
-        break;
+      if (rtri >= 0)
+        if (!m_triang[(unsigned int)rtri].LinesId(lids))
+          break;
 
+      unsigned int j;
       for (j = 0; j < 3; j++)
       {
         // Find line that contains node
-        if (lids[j] == lineid[i])
+        if (lids[j] == lineid[i] || lids[j] == -1)
           continue;
-        if ((m_line[lids[j]].getNodeFrom() == nid) ||
-          (m_line[lids[j]].getNodeTo() == nid))
+        if ((m_line[(unsigned int)lids[j]].getNodeFrom() == nid) ||
+          (m_line[(unsigned int)lids[j]].getNodeTo() == nid))
           break;
       }
       if (j == 3){
@@ -2472,20 +2386,20 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
       }
 
       lineid[i] = lids[j];
-      if (m_line[lineid[i]].getNodeFrom() == nid)
+      if (m_line[(unsigned int)lineid[i]].getNodeFrom() == nid)
       {
-        nodeid = m_line[lineid[i]].getNodeTo();
+        nodeid = m_line[(unsigned int)lineid[i]].getNodeTo();
         if (nodeid < m_fbnode)
         { //Node is a breakline node at right side of it
-          dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
-            (m_node[nid].getX() - m_node[nodeid].getX()) +
-            (m_node[nid].getY() - m_node[nodeid].getY()) *
-            (m_node[nid].getY() - m_node[nodeid].getY());
+          dist = (m_node[(unsigned int)nid].getX() - m_node[(unsigned int)nodeid].getX()) *
+            (m_node[(unsigned int)nid].getX() - m_node[(unsigned int)nodeid].getX()) +
+            (m_node[(unsigned int)nid].getY() - m_node[(unsigned int)nodeid].getY()) *
+            (m_node[(unsigned int)nid].getY() - m_node[(unsigned int)nodeid].getY());
           for (j = 0; j < CLNODES; j++)
           {
             if (dist < rdistv[j])
             {
-              for (k = CLNODES - 1; k > j; k--)
+              for (unsigned int k = (unsigned int)CLNODES - 1; k > j; k--)
               {
                 rdistv[k] = rdistv[k - 1];
                 rClstNids[k] = rClstNids[k - 1];
@@ -2499,18 +2413,18 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
       }
       else
       {
-        nodeid = m_line[lineid[i]].getNodeFrom();
+        nodeid = m_line[(unsigned int)lineid[i]].getNodeFrom();
         if (nodeid < m_fbnode)
         { //Node is a breakline node at left side of it
-          dist = (m_node[nid].getX() - m_node[nodeid].getX()) *
-            (m_node[nid].getX() - m_node[nodeid].getX()) +
-            (m_node[nid].getY() - m_node[nodeid].getY()) *
-            (m_node[nid].getY() - m_node[nodeid].getY());
+          dist = (m_node[(unsigned int)nid].getX() - m_node[(unsigned int)nodeid].getX()) *
+            (m_node[(unsigned int)nid].getX() - m_node[(unsigned int)nodeid].getX()) +
+            (m_node[(unsigned int)nid].getY() - m_node[(unsigned int)nodeid].getY()) *
+            (m_node[(unsigned int)nid].getY() - m_node[(unsigned int)nodeid].getY());
           for (j = 0; j < CLNODES; j++)
           {
             if (dist < ldistv[j])
             {
-              for (k = CLNODES - 1; k > j; k--)
+              for (unsigned int k = (unsigned int)CLNODES - 1; k > j; k--)
               {
                 ldistv[k] = ldistv[k - 1];
                 lClstNids[k] = lClstNids[k - 1];
@@ -2524,10 +2438,10 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
       }
 
       // Find new right triangle
-      if (m_line[lineid[i]].getRightPolygon() == rtri)
-        rtri = m_line[lineid[i]].getLeftPolygon();
-      else if (m_line[lineid[i]].getLeftPolygon() == rtri)
-        rtri = m_line[lineid[i]].getRightPolygon();
+      if (m_line[(unsigned int)lineid[i]].getRightPolygon() == rtri)
+        rtri = m_line[(unsigned int)lineid[i]].getLeftPolygon();
+      else if (m_line[(unsigned int)lineid[i]].getLeftPolygon() == rtri)
+        rtri = m_line[(unsigned int)lineid[i]].getRightPolygon();
       else
         break;
       if ((rtri == -1) && (ltri != -1))
@@ -2543,91 +2457,93 @@ bool te::mnt::Tin::BreakNodeClosestPoints(int32_t nid, int32_t *rClstNids, int32
 
 bool te::mnt::Tin::CalcTriangleSecondDeriv(std::vector<int32_t> &triangles, std::vector<te::gm::PointZ> &fderiv)
 {
-  short j;
   int32_t triid, nodesid[3];
   te::gm::PointZ p3da[3];
   double nvector[3];
   double dxy, dyx;
   double m1, m2;
-  double tol = (double).01;
+  double tol = .01;
 
   for (size_t i = 0; i < triangles.size(); i++)
   {
+    if (triangles[i] == -1)
+      continue;
     triid = triangles[i];
-    NodesId(triid, nodesid);
+    if (!NodesId(triid, nodesid))
+      continue;
 
     // Special case
-    if ((m_node[nodesid[0]].getZ() >= m_nodatavalue) ||
-      (m_node[nodesid[1]].getZ() >= m_nodatavalue) ||
-      (m_node[nodesid[2]].getZ() >= m_nodatavalue))
+    if ((m_node[(unsigned int)nodesid[0]].getZ() >= m_nodatavalue) ||
+      (m_node[(unsigned int)nodesid[1]].getZ() >= m_nodatavalue) ||
+      (m_node[(unsigned int)nodesid[2]].getZ() >= m_nodatavalue))
     {
       //			Triangle with DUMMY Value
-      m_tsderiv[triid].setX(m_nodatavalue);
-      m_tsderiv[triid].setY(m_nodatavalue);
-      m_tsderiv[triid].setZ(m_nodatavalue);
+      m_tsderiv[(unsigned int)triid].setX(m_nodatavalue);
+      m_tsderiv[(unsigned int)triid].setY(m_nodatavalue);
+      m_tsderiv[(unsigned int)triid].setZ(m_nodatavalue);
       continue;
     }
     m1 = m2 = m_nodatavalue;
-    if ((m_node[nodesid[1]].getY() - m_node[nodesid[0]].getY()) != 0.0)
-      m1 = (m_node[nodesid[1]].getX() - m_node[nodesid[0]].getX()) /
-      (m_node[nodesid[1]].getY() - m_node[nodesid[0]].getY());
-    if ((m_node[nodesid[2]].getY() - m_node[nodesid[0]].getY()) != 0.0)
-      m2 = (m_node[nodesid[2]].getX() - m_node[nodesid[0]].getX()) /
-      (m_node[nodesid[2]].getY() - m_node[nodesid[0]].getY());
+    if ((m_node[(unsigned int)nodesid[1]].getY() - m_node[(unsigned int)nodesid[0]].getY()) != 0.0)
+      m1 = (m_node[(unsigned int)nodesid[1]].getX() - m_node[(unsigned int)nodesid[0]].getX()) /
+      (m_node[(unsigned int)nodesid[1]].getY() - m_node[(unsigned int)nodesid[0]].getY());
+    if ((m_node[(unsigned int)nodesid[2]].getY() - m_node[(unsigned int)nodesid[0]].getY()) != 0.0)
+      m2 = (m_node[(unsigned int)nodesid[2]].getX() - m_node[(unsigned int)nodesid[0]].getX()) /
+      (m_node[(unsigned int)nodesid[2]].getY() - m_node[(unsigned int)nodesid[0]].getY());
 
     if (fabs(m1 - m2) < tol)
     {
       // Triangle with DUMMY Value
-      m_tsderiv[triid].setX(m_nodatavalue);
-      m_tsderiv[triid].setY(m_nodatavalue);
-      m_tsderiv[triid].setZ(m_nodatavalue);
+      m_tsderiv[(unsigned int)triid].setX(m_nodatavalue);
+      m_tsderiv[(unsigned int)triid].setY(m_nodatavalue);
+      m_tsderiv[(unsigned int)triid].setZ(m_nodatavalue);
       continue;
     }
     
     // Calculate using dx
-    for (j = 0; j < 3; j++)
+    for (unsigned int j = 0; j < 3; j++)
     {
-      p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
-      p3da[j].setY(m_node[nodesid[j]].getNPoint().getY());
-      if (m_node[nodesid[j]].getType() > Last && m_node[nodesid[j]].getType() < Sample)
+      p3da[j].setX(m_node[(unsigned int)nodesid[j]].getNPoint().getX());
+      p3da[j].setY(m_node[(unsigned int)nodesid[j]].getNPoint().getY());
+      if (m_node[(unsigned int)nodesid[j]].getType() > Last && m_node[(unsigned int)nodesid[j]].getType() < Sample)
         // If breakline node
-        p3da[j].setZ(fderiv[nodesid[j] - m_fbnode].getX());
+        p3da[j].setZ(fderiv[(unsigned int)(nodesid[j] - m_fbnode)].getX());
       else
-        p3da[j].setZ(m_nfderiv[nodesid[j]].getX());
+        p3da[j].setZ(m_nfderiv[(unsigned int)nodesid[j]].getX());
     }
 
     if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
     {
-      m_tsderiv[triid].setX(0.);
+      m_tsderiv[(unsigned int)triid].setX(0.);
       dxy = 0.;
     }
     else
     {
       triangleNormalVector(p3da, nvector);
-      m_tsderiv[triid].setX(-nvector[0] / nvector[2]);
+      m_tsderiv[(unsigned int)triid].setX(-nvector[0] / nvector[2]);
       dxy = (-nvector[1] / nvector[2]);
     }
 
     // Calculate using dy
-    for (j = 0; j < 3; j++)
-      if (m_node[nodesid[j]].getType() > Last && m_node[nodesid[j]].getType() < Sample)
+    for (unsigned int j = 0; j < 3; j++)
+      if (m_node[(unsigned int)nodesid[j]].getType() > Last && m_node[(unsigned int)nodesid[j]].getType() < Sample)
         // If breakline node
-        p3da[j].setZ(fderiv[nodesid[j] - m_fbnode].getY());
+        p3da[j].setZ(fderiv[(unsigned int)(nodesid[j] - m_fbnode)].getY());
       else
-        p3da[j].setZ(m_nfderiv[nodesid[j]].getY());
+        p3da[j].setZ(m_nfderiv[(unsigned int)nodesid[j]].getY());
 
     if ((p3da[0].getZ() == p3da[1].getZ()) && (p3da[0].getZ() == p3da[2].getZ()))
     {
-      m_tsderiv[triid].setY(0.);
+      m_tsderiv[(unsigned int)triid].setY(0.);
       dyx = 0.;
     }
     else
     {
       triangleNormalVector(p3da, nvector);
-      m_tsderiv[triid].setY(-nvector[1] / (double)nvector[2]);
-      dyx = (-nvector[0] / (double)nvector[2]);
+      m_tsderiv[(unsigned int)triid].setY(-nvector[1] / nvector[2]);
+      dyx = (-nvector[0] / nvector[2]);
     }
-    m_tsderiv[triid].setZ((float)((dxy + dyx) / 2.));
+    m_tsderiv[(unsigned int)triid].setZ((dxy + dyx) / 2.);
   }
 
   return true;
@@ -2656,14 +2572,14 @@ bool te::mnt::Tin::BreakNodeSecondDeriv()
   }
 
   size_t i;
-  for (i = 0; i < bnodesize + 1; i++)
+  for (i = 0; i < (unsigned int)bnodesize + 1; i++)
   {
-    m_nbrsderiv.push_back(m_nsderiv[i + m_fbnode]);
-    m_nblsderiv.push_back(m_nsderiv[i + m_fbnode]);
+    m_nbrsderiv.push_back(m_nsderiv[i + (unsigned int)m_fbnode]);
+    m_nblsderiv.push_back(m_nsderiv[i + (unsigned int)m_fbnode]);
   }
 
   // To each break node
-  for (i = m_fbnode; i < m_node.size() - 1; i++)
+  for (i = (unsigned int)m_fbnode; i < m_node.size() - 1; i++)
   {
     // Special cases
     if ((m_node[i].getZ() >= m_nodatavalue) ||
@@ -2671,7 +2587,7 @@ bool te::mnt::Tin::BreakNodeSecondDeriv()
       (m_node[i].getType() > Breaklinenormal))
       continue;
 
-    // Look for triangles that share the node
+    // Look for triangles that sharing the node
     BreakNodeClosestPoints((int32_t)i, rclstnids, lclstnids);
     rsderiv = CalcNodeSecondDeriv((int32_t)i, rclstnids);
     lsderiv = CalcNodeSecondDeriv((int32_t)i, lclstnids);
@@ -2679,8 +2595,8 @@ bool te::mnt::Tin::BreakNodeSecondDeriv()
     node1 = NextNode((int32_t)i);
     node2 = PreviousNode((int32_t)i);
 
-    deltax = m_node[node1].getX() - m_node[node2].getX();
-    deltay = m_node[node1].getY() - m_node[node2].getY();
+    deltax = m_node[(unsigned int)node1].getX() - m_node[(unsigned int)node2].getX();
+    deltay = m_node[(unsigned int)node1].getY() - m_node[(unsigned int)node2].getY();
     modxy = sqrt(deltax*deltax + deltay*deltay);
     costheta = deltax / modxy;
     sintheta = deltay / modxy;
@@ -2757,18 +2673,19 @@ bool te::mnt::Tin::CheckLines(int32_t trid)
   double a, b, c, d, s;
   short i;
 
-  if ((trid == -1) || (trid > m_ltriang))
+  if (trid > m_ltriang)
     return false;
 
-  if (!m_triang[trid].LinesId(lids))
+  if (!m_triang[(unsigned int)trid].LinesId(lids))
     return false;
 
-  NodesId(trid, nids);
+  if (!NodesId(trid, nids))
+    return false;
 
-  a = m_node[nids[1]].getX() - m_node[nids[0]].getX();
-  b = m_node[nids[1]].getY() - m_node[nids[0]].getY();
-  c = m_node[nids[2]].getX() - m_node[nids[0]].getX();
-  d = m_node[nids[2]].getY() - m_node[nids[0]].getY();
+  a = m_node[(unsigned int)nids[1]].getX() - m_node[(unsigned int)nids[0]].getX();
+  b = m_node[(unsigned int)nids[1]].getY() - m_node[(unsigned int)nids[0]].getY();
+  c = m_node[(unsigned int)nids[2]].getX() - m_node[(unsigned int)nids[0]].getX();
+  d = m_node[(unsigned int)nids[2]].getY() - m_node[(unsigned int)nids[0]].getY();
   s = a*d - b*c;
 
   // To all triangle lines
@@ -2777,19 +2694,19 @@ bool te::mnt::Tin::CheckLines(int32_t trid)
     // Make sure that triangle is inside
     if (s > 0.)
     {
-      if (((m_line[lids[i]].getNodeFrom() == nids[i]) &&
-        (m_line[lids[i]].getRightPolygon() == trid)) ||
-        ((m_line[lids[i]].getNodeTo() == nids[i]) &&
-        (m_line[lids[i]].getLeftPolygon() == trid)))
-        m_line[lids[i]].SwapPolygon();
+      if (((m_line[(unsigned int)lids[i]].getNodeFrom() == nids[i]) &&
+        (m_line[(unsigned int)lids[i]].getRightPolygon() == trid)) ||
+        ((m_line[(unsigned int)lids[i]].getNodeTo() == nids[i]) &&
+        (m_line[(unsigned int)lids[i]].getLeftPolygon() == trid)))
+        m_line[(unsigned int)lids[i]].SwapPolygon();
     }
     else
     {
-      if (((m_line[lids[i]].getNodeTo() == nids[i]) &&
-        (m_line[lids[i]].getRightPolygon() == trid)) ||
-        ((m_line[lids[i]].getNodeFrom() == nids[i]) &&
-        (m_line[lids[i]].getLeftPolygon() == trid)))
-        m_line[lids[i]].SwapPolygon();
+      if (((m_line[(unsigned int)lids[i]].getNodeTo() == nids[i]) &&
+        (m_line[(unsigned int)lids[i]].getRightPolygon() == trid)) ||
+        ((m_line[(unsigned int)lids[i]].getNodeFrom() == nids[i]) &&
+        (m_line[(unsigned int)lids[i]].getLeftPolygon() == trid)))
+        m_line[(unsigned int)lids[i]].SwapPolygon();
     }
   }
 
@@ -2859,14 +2776,14 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, double *coef)
 {
   int32_t nodesid[3];
   te::gm::PointZ p3d[3];
-  short j;
 
-  NodesId(triid, nodesid);
-  for (j = 0; j < 3; j++)
+  if (!NodesId(triid, nodesid))
+    return false;
+  for (unsigned int j = 0; j < 3; j++)
   {
-    p3d[j].setX(m_node[nodesid[j]].getNPoint().getX());
-    p3d[j].setY(m_node[nodesid[j]].getNPoint().getY());
-    p3d[j].setZ(m_node[nodesid[j]].getZ());
+    p3d[j].setX(m_node[(unsigned int)nodesid[j]].getNPoint().getX());
+    p3d[j].setY(m_node[(unsigned int)nodesid[j]].getNPoint().getY());
+    p3d[j].setZ(m_node[(unsigned int)nodesid[j]].getZ());
   }
 
   DefineAkimaCoeficients(triid, nodesid, p3d, coef);
@@ -2892,7 +2809,7 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
     h1, h2, h3, g1, g2,
     fg, eh, ee, gg,
     zu[3], zv[3], zuu[3], zvv[3], zuv[3];
-  short i, bside;
+  short bside;
   int32_t lids[3], nodid;
   std::vector<te::gm::PointZ>* fderiv;
   std::vector<TinNode> *sderiv;
@@ -2921,31 +2838,31 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
   if (m_fbnode > 0)
   {
     // If there are breaklines
-    if (!m_triang[triid].LinesId(lids))
+    if (!m_triang[(unsigned int)triid].LinesId(lids))
       return false;
 
-    for (i = 0; i < 3; i++)
+    for (unsigned int i = 0; i < 3; i++)
     {
-      if ((m_line[lids[i]].getNodeTo() >= m_fbnode) &&
-        (m_line[lids[i]].getNodeFrom() >= m_fbnode))
+      if ((m_line[(unsigned int)lids[i]].getNodeTo() >= m_fbnode) &&
+        (m_line[(unsigned int)lids[i]].getNodeFrom() >= m_fbnode))
       {
-        if (m_line[lids[i]].getRightPolygon() == triid)
+        if (m_line[(unsigned int)lids[i]].getRightPolygon() == triid)
           // Triangle at the right side of a breakline
           bside = 1;
-        else if (m_line[lids[i]].getLeftPolygon() == triid)
+        else if (m_line[(unsigned int)lids[i]].getLeftPolygon() == triid)
           // Triangle at the left side of a breakline
           bside = 2;
         else
           return false;
         break;
       }
-      if (m_line[lids[i]].getNodeTo() >= m_fbnode)
+      if (m_line[(unsigned int)lids[i]].getNodeTo() >= m_fbnode)
       {
         // Triangle at the right side of a breakline
         bside = 1;
         break;
       }
-      if (m_line[lids[i]].getNodeFrom() >= m_fbnode)
+      if (m_line[(unsigned int)lids[i]].getNodeFrom() >= m_fbnode)
       {
         // Triangle at the left side of a breakline
         bside = 2;
@@ -2955,7 +2872,7 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
   }
 
   // Conversion of derivatives from XY to UV coordinates
-  for (i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; i++)
   {
     if ((m_fbnode == 0) ||
       ((m_fbnode > 0) && (nodesid[i] < m_fbnode)))
@@ -2980,18 +2897,18 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
       return false;
     }
 
-    if ((*fderiv)[nodid].getY() >= m_nodatavalue)
+    if ((*fderiv)[(unsigned int)nodid].getY() >= m_nodatavalue)
     {
       zu[i] = 0.; zv[i] = 0.;
     }
     else
     {
-      zu[i] = a * (*fderiv)[nodid].getX() +
-        c * (*fderiv)[nodid].getY();
-      zv[i] = b * (*fderiv)[nodid].getX() +
-        d * (*fderiv)[nodid].getY();
+      zu[i] = a * (*fderiv)[(unsigned int)nodid].getX() +
+        c * (*fderiv)[(unsigned int)nodid].getY();
+      zv[i] = b * (*fderiv)[(unsigned int)nodid].getX() +
+        d * (*fderiv)[(unsigned int)nodid].getY();
     }
-    if ((*sderiv)[nodid].getZ() >= m_nodatavalue)
+    if ((*sderiv)[(unsigned int)nodid].getZ() >= m_nodatavalue)
     {
       zuu[i] = 0.;
       zuv[i] = 0.;
@@ -2999,15 +2916,15 @@ bool te::mnt::Tin::DefineAkimaCoeficients(int32_t triid, int32_t *nodesid, te::g
     }
     else
     {
-      zuu[i] = aa * (*sderiv)[nodid].getX() +
-        2.*a*c * (double)(*sderiv)[nodid].getZ() +
-        cc * (*sderiv)[nodid].getY();
-      zuv[i] = a*b * (*sderiv)[nodid].getX() +
-        (ad + bc) * (double)(*sderiv)[nodid].getZ() +
-        c*d * (*sderiv)[nodid].getY();
-      zvv[i] = bb * (*sderiv)[nodid].getX() +
-        2.*b*d * (double)(*sderiv)[nodid].getZ() +
-        dd * (*sderiv)[nodid].getY();
+      zuu[i] = aa * (*sderiv)[(unsigned int)nodid].getX() +
+        2.*a*c * (double)(*sderiv)[(unsigned int)nodid].getZ() +
+        cc * (*sderiv)[(unsigned int)nodid].getY();
+      zuv[i] = a*b * (*sderiv)[(unsigned int)nodid].getX() +
+        (ad + bc) * (double)(*sderiv)[(unsigned int)nodid].getZ() +
+        c*d * (*sderiv)[(unsigned int)nodid].getY();
+      zvv[i] = bb * (*sderiv)[(unsigned int)nodid].getX() +
+        2.*b*d * (double)(*sderiv)[(unsigned int)nodid].getZ() +
+        dd * (*sderiv)[(unsigned int)nodid].getY();
     }
   }
 
@@ -3133,7 +3050,7 @@ bool te::mnt::Tin::FillGridValue(int32_t triid, int32_t flin, int32_t llin, int3
       pg.setY(cg.getY());
       if (!(ContainsPoint(triid, pg)))
         continue;
-      m_rst->setValue(ncol, nlin, zvalue);
+      m_rst->setValue((unsigned int)ncol, (unsigned int)nlin, zvalue);
     }
   }
   
@@ -3149,8 +3066,8 @@ bool te::mnt::Tin::DefineInterLinesColumns(int32_t *nodesid, int32_t &flin, int3
   te::gm::Point urpt(-std::numeric_limits< float >::max(), -std::numeric_limits< float >::max());
   for (size_t j = 0; j < 3; j++)
   {
-    llpt = Min(llpt, m_node[nodesid[j]].getNPoint());
-    urpt = Max(urpt, m_node[nodesid[j]].getNPoint());
+    llpt = Min(llpt, m_node[(unsigned int)nodesid[j]].getNPoint());
+    urpt = Max(urpt, m_node[(unsigned int)nodesid[j]].getNPoint());
   }
 
   //  Calculate lines and coluns intercepted
@@ -3170,9 +3087,9 @@ bool te::mnt::Tin::DefineInterLinesColumns(int32_t *nodesid, int32_t &flin, int3
   if (flin < 0)
     flin = 0;
   if ((int32_t)m_rst->getNumberOfColumns() <= lcol)
-    lcol = m_rst->getNumberOfColumns() - 1;
+    lcol = (int32_t)m_rst->getNumberOfColumns() - 1;
   if ((int32_t)m_rst->getNumberOfRows() <= llin)
-    llin = m_rst->getNumberOfRows() - 1;
+    llin = (int32_t)m_rst->getNumberOfRows() - 1;
 
   return true;
 }

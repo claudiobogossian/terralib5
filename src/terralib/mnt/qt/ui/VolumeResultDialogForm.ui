@@ -23,7 +23,7 @@
      </column>
      <column>
       <property name="text">
-       <string>PROFILE (m)</string>
+       <string>PROFILE(m)</string>
       </property>
      </column>
      <column>
@@ -59,9 +59,9 @@
       </spacer>
      </item>
      <item row="0" column="2">
-      <widget class="QPushButton" name="m_okPushButton">
+      <widget class="QPushButton" name="m_savePushButton">
        <property name="text">
-        <string>&amp;Ok</string>
+        <string>&amp;Save</string>
        </property>
       </widget>
      </item>

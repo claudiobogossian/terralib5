@@ -82,7 +82,7 @@ namespace te
 
       te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
       std::string m_outputArchive;                                                      //!< Archive information.
-      bool m_toFile;
+      bool m_toFile = false;
       std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.

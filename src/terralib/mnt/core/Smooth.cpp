@@ -90,7 +90,7 @@ bool te::mnt::Smooth::AdjustCatmullRom(te::gm::LineString &iso)
   te::gm::Coord2D xyA, xyB, xyC, xyD;
   te::gm::Coord2D pxy;
 
-  int32_t ipts = 0;
+  size_t ipts = 0;
 
   xyA = vxy[ipts];
   xyB = vxy[ipts];

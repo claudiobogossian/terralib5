@@ -76,7 +76,7 @@ namespace te
       /*! Function used to set the envelope parameter */
       void setEnvelope(te::gm::Envelope &env);
 
-      std::auto_ptr<te::rst::Raster> Initialize(bool spline, int &nro_neighb, double &rx1, double &ry2, int &outputWidth, int &outputHeight);
+      std::auto_ptr<te::rst::Raster> Initialize(bool spline, unsigned int &nro_neighb, double &rx1, double &ry2, unsigned int &outputWidth, unsigned int &outputHeight);
 
       /*!
       \brief Interpolates the z value of the pg point3d.
@@ -149,14 +149,14 @@ namespace te
     {
     public:
       //! Contructors
-      SplineInterpolationGrass(int nPartsX, int nPartsY, int minPoints, double overlappin) :
+      SplineInterpolationGrass(unsigned int nPartsX, unsigned int nPartsY, unsigned int minPoints, double overlappin) :
         m_nPartsX(nPartsX), m_nPartsY(nPartsY), m_minpoints(minPoints), m_overlapping(overlappin) {}
 
       //! Destructor
       ~SplineInterpolationGrass(){}
 
       void setControlPoints(double xMin, double yMin);
-      int  nPointInterest() { return m_npoints; }
+      unsigned int  nPointInterest() { return m_npoints; }
 
       void initInterpolation(int beginLine, int endLine, int beginCol, int endCol);
 
@@ -195,7 +195,7 @@ namespace te
       /*!
       * \brief  Node order computation
       */
-      int order(int i_x, int i_y, int yNum){ return (i_y + i_x * yNum); }
+      int order(int i_x, int i_y, unsigned int yNum){ return (i_y + i_x * (int)yNum); }
 
       /*!
       * \brief Design matrix coefficients computation
@@ -248,15 +248,15 @@ namespace te
       static bool AdjustLinear(te::gm::LineString *ptol, double maxDist);
 
     protected:
-      int m_minpoints;           //!< minimum of points considered
-      int m_nPartsX, m_nPartsY;  //!< number of parts considered in the x and y directions
+      unsigned int m_minpoints;           //!< minimum of points considered
+      unsigned int m_nPartsX, m_nPartsY;  //!< number of parts considered in the x and y directions
       double m_overlapping;         //!< overlap value considered
-      int m_nsplx;               //!< Numero de colunas do spline
-      int m_nsply;               //!< Numero de linhas do spline
-      int m_nparameters;
-      int m_BW;
+      unsigned int m_nsplx;               //!< Numero de colunas do spline
+      unsigned int m_nsply;               //!< Numero de linhas do spline
+      unsigned int m_nparameters;
+      unsigned int m_BW;
       double m_mean; //!< Media da area local
-      int m_npoints; //!< Numero de pontos de interesse
+      unsigned int m_npoints; //!< Numero de pontos de interesse
       double m_passoWidth, m_passoHeight, m_lambda;
       std::vector<te::gm::PointZ> m_obsVect; //!< Interpolation and least-square vectors
       std::vector<double> m_TN, m_parVect; //!< Interpolating and least-square vectors
