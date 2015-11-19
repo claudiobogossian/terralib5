@@ -723,7 +723,7 @@ void te::mnt::SplineInterpolationGrass::normalDefBicubic(double xMin, double yMi
               for (int n = n0; n <= 2; n++) {
                 if (((i_x + m) >= 0) && ((i_x + m) < (int)m_nsplx) && ((i_y + n) >= 0) && ((i_y + n) < (int)m_nsply)) {
                   m_N[(unsigned int)order(i_x + k, i_y + h, m_nsply)][(unsigned int)(order(i_x + m, i_y + n, m_nsply) - \
-                    order(i_x + k, i_y + h, m_nsply))] += alpha[(unsigned int)k + 1][(unsigned int)h + 1] * alpha[(unsigned int)m + 1][(unsigned int)n + 1];
+                    order(i_x + k, i_y + h, m_nsply))] += alpha[(unsigned int)(k + 1)][(unsigned int)(h + 1)] * alpha[(unsigned int)(m + 1)][(unsigned int)(n + 1)];
                 }
               }
             }
