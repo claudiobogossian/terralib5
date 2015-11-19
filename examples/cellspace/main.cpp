@@ -61,7 +61,7 @@ int main(int /*argc*/, char** /*argv*/)
     LoadModules();
 
     std::map<std::string, std::string> ogrInfo;
-    ogrInfo["SOURCE"] = "C://CellspaceExample//brazil_cells.shp";
+    ogrInfo["URI"] = "C://CellspaceExample//brazil_cells.shp";
 
     boost::uuids::basic_random_generator<boost::mt19937> gen;
     boost::uuids::uuid u = gen();
@@ -69,16 +69,14 @@ int main(int /*argc*/, char** /*argv*/)
 
     te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
     ds->setConnInfo(ogrInfo);
-    ds->setTitle("brazil_cells");
     ds->setAccessDriver("OGR");
-    ds->setType("OGR");
     ds->setId(id_ds);
 
     te::gm::Envelope env;
     env.m_llx = -73.99;
     env.m_lly = -33.75;
-    env.m_llx = -34.79;
-    env.m_llx = 5.27;
+    env.m_urx = -33.75;
+    env.m_ury = 5.27;
 
     int srid = 4618; // LatLong SAD64
 

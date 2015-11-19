@@ -52,9 +52,6 @@ te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* displa
   : GeometriesUpdateTool(display, layer.get(), parent),
     m_moveStarted(false)
 {
-  // Signals & slots
-  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-
   updateCursor();
 
   draw();
