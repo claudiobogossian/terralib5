@@ -88,7 +88,7 @@ void te::qt::widgets::TimeSeriesChart::setData()
   while(it != m_timeSeries->end())
   {
     te::dt::DateTime* dateTime = it.getTime();
-    double date;
+    double date=0;
 
     if(dateTime->getDateTimeType() == te::dt::TIME_INSTANT)
     {
