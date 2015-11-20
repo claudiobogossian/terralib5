@@ -70,6 +70,7 @@
 // STL
 #include <cassert>
 #include <list>
+#include <memory>
 #include <vector>
 
 te::qt::plugins::edit::ToolBar::ToolBar(QObject* parent):
