@@ -106,7 +106,12 @@ void te::mnt::VolumeResultDialog::saveVolume(const std::string& path)
   if (path.empty())
     return;
 
-  std::ofstream result(path, std::ofstream::out);
+  std::ofstream result(path.c_str(), std::ofstream::out);
+  if (!result.is_open())
+  {
+    QMessageBox::warning(this, tr("Volume"), tr("File was not create!"));
+    return;
+  }
 
   for (int i = 0; i < colCount; i++)
   {

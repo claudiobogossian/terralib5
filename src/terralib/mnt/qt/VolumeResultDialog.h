@@ -32,7 +32,7 @@ TerraLib Team at <terralib - team@terralib.org>.
 
 // STL
 #include <list>
-#include <map>
+#include <memory>
 
 // Qt
 #include <QDialog>
