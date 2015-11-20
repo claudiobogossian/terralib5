@@ -345,12 +345,13 @@ void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
 {
+  std::auto_ptr<te::da::DataSourceTransactor> t;
+
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if (layer.get() == 0)
   {
     return;
   }
-
 /*
   if(m_usingStash && !m_layerIsStashed)
   {
@@ -398,8 +399,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     return; 
   }
 */
-
-  std::unique_ptr<te::da::DataSourceTransactor> t;
 
   try
   {
