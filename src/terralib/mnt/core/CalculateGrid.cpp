@@ -512,8 +512,8 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
 void te::mnt::SplineInterpolationGrass::initInterpolation(int beginLine, int endLine, int beginCol, int endCol)
 {
   //define splines number
-  m_nsplx = unsigned int(endCol - beginCol);
-  m_nsply = unsigned int(endLine - beginLine);
+  m_nsplx = (unsigned int)(endCol - beginCol);
+  m_nsply = (unsigned int)(endLine - beginLine);
 
   //define parameters number
   m_nparameters = m_nsplx * m_nsply;

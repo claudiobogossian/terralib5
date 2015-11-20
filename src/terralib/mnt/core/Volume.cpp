@@ -9,6 +9,7 @@
 #include "Utils.h"
 
 //terralib
+#include "../../common/StringUtils.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../dataaccess/dataset/DataSetTypeConverter.h"
@@ -17,8 +18,8 @@
 #include "../../raster.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
-#include <geos\geom\Point.h>
-#include <geos\geom\Polygon.h>
+#include <geos/geom/Point.h>
+#include <geos/geom/Polygon.h>
 #include <geos/geosAlgorithm.h>
 
 
@@ -208,14 +209,14 @@ bool te::mnt::Volume::CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, 
   volcorte *= areabase;
 
   // Show the volumes values.
-  m_cortevec.push_back(std::to_string(volcorte));
-  m_aterrovec.push_back(std::to_string(volaterro));
-  m_areavec.push_back(std::to_string(pol->getArea()));
+  m_cortevec.push_back(te::common::Convert2String(volcorte));
+  m_aterrovec.push_back(te::common::Convert2String(volaterro));
+  m_areavec.push_back(te::common::Convert2String(pol->getArea()));
 
   if (nrozs != 0)
-    m_iquotavec.push_back(std::to_string(somazs / nrozs));
+    m_iquotavec.push_back(te::common::Convert2String(somazs / nrozs));
   else
-    m_iquotavec.push_back(std::to_string(m_quota));
+    m_iquotavec.push_back(te::common::Convert2String(m_quota));
 
   return true;
 }
