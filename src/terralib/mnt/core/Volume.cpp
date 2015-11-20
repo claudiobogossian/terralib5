@@ -17,8 +17,8 @@
 #include "../../raster.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
-#include <geos\geom\Point.h>
-#include <geos\geom\Polygon.h>
+#include <geos/geom/Point.h>
+#include <geos/geom/Polygon.h>
 #include <geos/geosAlgorithm.h>
 
 
