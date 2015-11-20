@@ -237,6 +237,9 @@ te::edit::Feature* te::edit::Repository::getFeature(const te::gm::Envelope& e, i
   {
     te::gm::Geometry* g = candidates[i]->getGeometry();
 
+    if (g->getSRID() != srid)
+      g->transform(srid);
+
     if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g))  // Geometry found!
       return candidates[i];
   }
