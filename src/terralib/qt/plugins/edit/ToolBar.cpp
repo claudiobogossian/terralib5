@@ -28,6 +28,7 @@
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype/SimpleData.h"
 #include "../../../edit/Feature.h"
@@ -69,6 +70,7 @@
 // STL
 #include <cassert>
 #include <list>
+#include <memory>
 #include <vector>
 
 te::qt::plugins::edit::ToolBar::ToolBar(QObject* parent):
@@ -343,12 +345,13 @@ void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
 {
+  std::auto_ptr<te::da::DataSourceTransactor> t;
+
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if (layer.get() == 0)
   {
     return;
   }
-
 /*
   if(m_usingStash && !m_layerIsStashed)
   {
@@ -396,6 +399,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     return; 
   }
 */
+
   try
   {
 
@@ -428,6 +432,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       te::da::DataSourcePtr dsource = te::da::GetDataSource(dslayer->getDataSourceId(), true);
       assert(dsource.get());
 
+      // Start the transactor
+      t = dsource->getTransactor();
+
       // Get the layer schema
       std::auto_ptr<te::map::LayerSchema> schema(layer->getSchema());
       assert(schema.get());
@@ -452,7 +459,12 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       // Get the geometry type
       std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
 
+      // Get the envelope of layer
+      te::gm::Envelope env(layer->getExtent());
+
       std::map<te::edit::OperationType, std::set<int> > propertiesPos;
+
+      t->begin();
 
       for (std::size_t i = 0; i < features.size(); ++i) // for each edited feature
       {
@@ -466,42 +478,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         const boost::ptr_vector<te::dt::AbstractData>& values = oid->getValue();
         assert(values.size() == oidPropertyNames.size());
 
-        switch (features[i]->getOperationType())
-        {
-          case te::edit::GEOMETRY_CREATE:
-          {
-            // case if postgis, take the max value of oid
-            if (info.get()->getType() == "POSTGIS")
-            {
-              //if case is a new feature and the oid is numeric
-              for (std::size_t j = 0; j < values.size(); ++j)
-              {
-                int pType = operationds[te::edit::GEOMETRY_CREATE]->getPropertyDataType(te::da::GetPropertyPos(operationds[te::edit::GEOMETRY_CREATE], oidPropertyNames[j]));
-
-                if (pType != te::dt::STRING_TYPE)
-                {
-                  //TODO: temporary
-                  std::string sql = "SELECT MAX(" + oidPropertyNames[j] + ") + " + boost::lexical_cast<std::string>(i + 1) + " AS " + oidPropertyNames[j] + " FROM " + schema.get()->getName();
-                  std::auto_ptr<te::da::DataSet> dsMax = dsource->query(sql);
-
-                  if (dsMax.get())
-                  {
-                    dsMax->moveFirst();
-                    item->setValue(oidPropertyNames[j], dsMax->getValue(oidPropertyNames[j]).release());
-                  }
-                }
-              }
-            }
-
-            break;
-          }
-          default:
-            // Fill the new item
-            for (std::size_t j = 0; j < values.size(); ++j)
-              item->setValue(oidPropertyNames[j], values[j].clone());
-
-            break;
-        }
+        // Fill the new item
+        for (std::size_t j = 0; j < values.size(); ++j)
+          item->setValue(oidPropertyNames[j], values[j].clone());
 
         // Get the edited geometry
         te::gm::Geometry* geom = features[i]->getGeometry();
@@ -516,13 +495,36 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         switch (features[i]->getOperationType())
         {
           case te::edit::GEOMETRY_CREATE:
+          {
+            te::mem::DataSet* tempDs = new te::mem::DataSet(schema.get());
+
+            tempDs->add(item);
+
+            // used to not insert the pk
+            for (std::size_t j = 0; j < oidPropertyNames.size(); ++j)
+            {
+              std::size_t pos = te::da::GetPropertyPos(operationds[te::edit::GEOMETRY_CREATE], oidPropertyNames[j]);
+              tempDs->drop(pos);
+            }
+
+            std::map<std::string, std::string> options;
+
+            t->add(dslayer->getDataSetName(), tempDs, options);
+
+            boost::int64_t id = t->getLastGeneratedId();
+
+            for (std::size_t j = 0; j < values.size(); ++j)
+              item->setValue(oidPropertyNames[j], new te::dt::SimpleData<int, te::dt::INT32_TYPE>((int)(id)));
 
             operationds[te::edit::GEOMETRY_CREATE]->add(item);
+
+            env.Union(*geom->getMBR());
+          }
             break;
 
           case te::edit::GEOMETRY_UPDATE:
 
-            propertiesPos[te::edit::GEOMETRY_UPDATE].insert(gpos);
+            propertiesPos[te::edit::GEOMETRY_UPDATE].insert((int)gpos);
 
             operationds[te::edit::GEOMETRY_UPDATE]->add(item);
             break;
@@ -558,11 +560,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       if (operationds[te::edit::GEOMETRY_CREATE]->size() > 0)
       {
+        currentOids[te::edit::GEOMETRY_CREATE] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_CREATE], schema.get());
+
         operationds[te::edit::GEOMETRY_CREATE]->moveBeforeFirst();
-
-        std::map<std::string, std::string> options;
-
-        dsource->add(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_CREATE], options, 0);
       }
 
       if (operationds[te::edit::GEOMETRY_UPDATE]->size() > 0)
@@ -579,7 +579,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
         operationds[te::edit::GEOMETRY_UPDATE]->moveBeforeFirst();
 
-        dsource->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE], properties, oidPropertyPosition);
+        t->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE], properties, oidPropertyPosition);
       }
 
       if (operationds[te::edit::GEOMETRY_DELETE]->size() > 0)
@@ -588,7 +588,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
         operationds[te::edit::GEOMETRY_DELETE]->moveBeforeFirst();
 
-        dsource->remove(dslayer->getDataSetName(), currentOids[te::edit::GEOMETRY_DELETE]);
+        t->remove(dslayer->getDataSetName(), currentOids[te::edit::GEOMETRY_DELETE]);
 
       }
 
@@ -606,18 +606,21 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
         operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->moveBeforeFirst();
 
-        dsource->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], properties, oidPropertyPosition);
+        t->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], properties, oidPropertyPosition);
       }
-
-      te::gm::Envelope env(layer->getExtent());
-
-      env.Union(*operationds[te::edit::GEOMETRY_CREATE]->getExtent(gpos).get());
 
       env.Union(*operationds[te::edit::GEOMETRY_UPDATE]->getExtent(gpos).get());
 
       layer->setExtent(env);
 
+      // Commit the transaction
+      t->commit();
+
+      // Clear the repository
       repo->clear();
+
+      // Clear the undo stack
+      te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
     }
 
     // repaint and clear
@@ -626,8 +629,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     e.m_display->getDisplay()->refresh();
 
-    te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
-
     m_layerIsStashed = false;
 
     te::qt::af::evt::LayerChanged e2(layer.get());
@@ -635,6 +636,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
   }
   catch(te::common::Exception& ex)
   {
+    t->rollBack();
     QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), ex.what());
     return;
   }
