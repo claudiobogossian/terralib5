@@ -1140,17 +1140,20 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
     m_line[(unsigned int)ai].setNodeTo(vn);
     m_line[(unsigned int)ai].setNodeFrom(vk); // this is vi
   }
-  std::vector<int32_t> edge_vi = m_node[(unsigned int)vi].getEdge();
-  for (size_t i_vi = 0; i_vi < edge_vi.size(); i_vi++)
+
+  std::vector<int32_t>::iterator it;
+  it = std::find(m_node[(unsigned int)vi].m_edge.begin(), m_node[(unsigned int)vi].m_edge.end(), ai);
+  if (it != m_node[(unsigned int)vi].m_edge.end())
   {
-    if (edge_vi[i_vi] == ai)
-      m_node[(unsigned int)vi].setEdge(edge_vi[i_vi]);
+    m_node[(unsigned int)vi].m_edge.erase(it);
+    m_node[(unsigned int)vi].setEdge(ak);
   }
-  std::vector<int32_t> edge_vj = m_node[(unsigned int)vj].getEdge();
-  for (size_t i_vj = 0; i_vj < edge_vj.size(); i_vj++)
+
+  it = std::find(m_node[(unsigned int)vj].m_edge.begin(), m_node[(unsigned int)vj].m_edge.end(), ai);
+  if (it != m_node[(unsigned int)vj].m_edge.end())
   {
-    if (edge_vj[i_vj] == ai)
-      m_node[(unsigned int)vj].setEdge(aj);
+    m_node[(unsigned int)vj].m_edge.erase(it);
+    m_node[(unsigned int)vj].setEdge(aj);
   }
 
   //    1.2. Swap in edge an the triangle tv by triangle t.
@@ -1458,7 +1461,7 @@ bool te::mnt::TINGeneration::TestIsolines()
     tnodid, vnodid;
   int32_t nid0, nid1, node, nidaux, nidaux1, 
     vlins[3];
-  unsigned short i;
+  unsigned int i;
   std::vector<int32_t> lids;
   te::gm::PointZ pt, ptf, npt0, npt1;
   bool modified = false;
@@ -1471,7 +1474,7 @@ bool te::mnt::TINGeneration::TestIsolines()
     snode.push_back(0);
   for (i = 0; i < m_linesize; i++)
   {
-    if (m_line[i].getNodeFrom() == -1 || m_line[i].getNodeTo())
+    if (m_line[i].getNodeFrom() == -1)
       continue;
     nid0 = m_line[i].getNodeFrom();
     if (nid0 > m_line[i].getNodeTo())

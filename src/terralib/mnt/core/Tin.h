@@ -252,6 +252,8 @@ namespace te
     protected:
       te::gm::PointZ m_point; //!< Node point
       Ntype m_type; //!< node type
+
+    public:
       std::vector<int32_t> m_edge;
     };
 

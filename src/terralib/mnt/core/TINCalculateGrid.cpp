@@ -196,11 +196,6 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
 
       zvalue = ((detx + dety - detz * p3da[0].getZ()) / -detz);
 
-      if (zvalue > m_max)
-        zvalue = dummyvalue;
-      if (zvalue < m_min)
-        zvalue = dummyvalue;
-
       m_rst->setValue((unsigned int)ncol, (unsigned int)nlin, zvalue);
     }
   }
