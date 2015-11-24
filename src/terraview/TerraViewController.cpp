@@ -120,8 +120,8 @@ void TerraViewController::initializeProjectMenus()
     for(int i = 0; i != nrc; ++i)
     {
       user_settings.setArrayIndex(i);
-      QString npath = user_settings.value("projects/path").toString();
-      QString ntitle = user_settings.value("projects/title").toString();
+      QString npath = user_settings.value("project/path").toString();
+      QString ntitle = user_settings.value("project/title").toString();
       
       
       QAction* act = mnu->addAction(npath);
