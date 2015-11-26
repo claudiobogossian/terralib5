@@ -26,6 +26,8 @@
 #define __TERRALIB_RP_INTERNAL_TIEPOINTSLOCATORSURFSTRATEGY_H
 
 #include "TiePointsLocatorStrategy.h"
+#include "TiePointsLocatorStrategyParameters.h"
+#include "TiePointsLocatorStrategyFactory.h"
 
 #include <boost/thread.hpp>
 
@@ -35,20 +37,57 @@ namespace te
 {
   namespace rp
   {
-    // Forwards
-    class TiePointsLocator;
-    
     /*!
       \class TiePointsLocatorSURFStrategy
       \brief Tie-points locator SURF strategy.
      */
     class TERPEXPORT TiePointsLocatorSURFStrategy : public TiePointsLocatorStrategy
     {
-      friend class TiePointsLocator;
+      friend class TiePointsLocatorSURFStrategyFactory;
       
       public:
         
+        /*!
+          \class Parameters
+          \brief TiePointsLocator SURF strategy parameters.
+         */        
+        class TERPEXPORT Parameters : public TiePointsLocatorStrategyParameters
+        {
+          public:
+            
+            unsigned int m_surfScalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3, minimum:3).
+            
+            unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:2).
+            
+            double m_surfMaxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.75, valid range: [0,1].
+            
+            Parameters();
+            
+            Parameters( const Parameters& );
+            
+            ~Parameters();
+            
+            //overload
+            void reset() throw( te::rp::Exception );
+            
+            //overload
+            const  Parameters& operator=( const Parameters& params );
+            
+            //overload
+            AbstractParameters* clone() const;
+        };        
+        
         ~TiePointsLocatorSURFStrategy();
+        
+        //overload
+        void getSubSampledSpecStrategyParams( 
+          const double subSampleOptimizationRescaleFactor,
+          const TiePointsLocatorStrategyParameters& inputSpecParams,
+          std::auto_ptr< TiePointsLocatorStrategyParameters >& subSampledSpecParamsPtr ) const;
+          
+        //overload
+        void getDefaultSpecStrategyParams( 
+          std::auto_ptr< TiePointsLocatorStrategyParameters >& defaultSpecParamsPtr ) const;          
         
       protected :
         
@@ -479,6 +518,25 @@ namespace te
             ( 3 * ( getSurfOctaveFilterStepSize( octaveIndex ) * scaleIndex ) );
         };                        
     };
+    
+    /*!
+      \class TiePointsLocatorSURFStrategyFactory
+      \brief SURF tie-points locator strategy factory.
+      \note Factory key: SURF
+     */
+    class TERPEXPORT TiePointsLocatorSURFStrategyFactory : public 
+      te::rp::TiePointsLocatorStrategyFactory
+    {
+      public:
+        
+        TiePointsLocatorSURFStrategyFactory();
+        
+        ~TiePointsLocatorSURFStrategyFactory();
+   
+        //overload
+        te::rp::TiePointsLocatorStrategy* build();
+        
+    };      
 
   } // end namespace rp
 }   // end namespace te

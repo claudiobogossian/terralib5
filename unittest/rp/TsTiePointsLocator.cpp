@@ -28,6 +28,8 @@
 
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/rp/TiePointsLocator.h>
+#include <terralib/rp/TiePointsLocatorMoravecStrategy.h>
+#include <terralib/rp/TiePointsLocatorSURFStrategy.h>
 #include <terralib/raster/Enums.h>
 #include <terralib/raster/BandProperty.h>
 #include <terralib/raster/Grid.h>
@@ -133,9 +135,10 @@ void TsTiePointsLocator::MoravecStrategySameImage()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "Moravec";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
@@ -143,6 +146,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -183,9 +187,10 @@ void TsTiePointsLocator::MoravecStrategyUpsampledImage()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "Moravec";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
@@ -197,7 +202,7 @@ void TsTiePointsLocator::MoravecStrategyUpsampledImage()
   algoInputParams.m_pixelSizeYRelation = inputRasterPointer->getResolutionY() /
    inputRaster2Pointer->getResolutionY();
   algoInputParams.m_geomTransfName = "RST";
-  
+  algoInputParams.setSpecStrategyParams( specPars );  
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -238,9 +243,10 @@ void TsTiePointsLocator::MoravecStrategy90ClkWRotationImage()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "Moravec";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
@@ -248,6 +254,7 @@ void TsTiePointsLocator::MoravecStrategy90ClkWRotationImage()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_geomTransfName = "RST";  
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -288,9 +295,10 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "Moravec";
   algoInputParams.m_inRaster1Ptr = inputRaster1Pointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
@@ -300,6 +308,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -333,9 +342,10 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "Moravec";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
@@ -351,6 +361,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   algoInputParams.m_raster2TargetAreaHeight = 400;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -383,9 +394,10 @@ void TsTiePointsLocator::MoravecStrategyMultipleThreads()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "Moravec";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
@@ -393,6 +405,7 @@ void TsTiePointsLocator::MoravecStrategyMultipleThreads()
   algoInputParams.m_enableMultiThread = true;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -425,9 +438,10 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "Moravec";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
@@ -436,6 +450,7 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_subSampleOptimizationRescaleFactor = 0.5;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -468,9 +483,10 @@ void TsTiePointsLocator::SurfStrategySameImage()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "SURF";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
@@ -478,6 +494,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -493,7 +510,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategySameImage" );
     
-  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)1807 ); 
+  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)1500 ); 
 }
 
 void TsTiePointsLocator::SurfStrategyUpsampledImage()
@@ -518,9 +535,10 @@ void TsTiePointsLocator::SurfStrategyUpsampledImage()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "SURF";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
@@ -532,6 +550,7 @@ void TsTiePointsLocator::SurfStrategyUpsampledImage()
    inputRaster2Pointer->getResolutionX();
   algoInputParams.m_pixelSizeYRelation = inputRasterPointer->getResolutionY() /
    inputRaster2Pointer->getResolutionY();  
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -572,9 +591,10 @@ void TsTiePointsLocator::SurfStrategy90ClkWRotationImage()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "SURF";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
@@ -582,6 +602,7 @@ void TsTiePointsLocator::SurfStrategy90ClkWRotationImage()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_geomTransfName = "RST";  
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -614,9 +635,10 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "SURF";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
@@ -632,6 +654,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   algoInputParams.m_raster2TargetAreaHeight = 700;
   algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -672,9 +695,10 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "SURF";
   algoInputParams.m_inRaster1Ptr = inputRaster1Pointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
@@ -684,6 +708,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   algoInputParams.m_geomTransfName = "RST";
   algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
   algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -717,9 +742,10 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "SURF";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
@@ -727,6 +753,7 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
   algoInputParams.m_enableMultiThread = true;
   algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -742,7 +769,7 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategyMultipleThreads" );
   
-  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)504 ); 
+  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)400 ); 
 }
 
 void TsTiePointsLocator::SurfStrategyRescaleFactor()
@@ -759,9 +786,10 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
     
   // Creating the algorithm parameters
   
+  te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+  
   te::rp::TiePointsLocator::InputParameters algoInputParams;
-  algoInputParams.m_interesPointsLocationStrategy = 
-    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_interesPointsLocationStrategyName = "SURF";
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
@@ -770,6 +798,7 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_subSampleOptimizationRescaleFactor = 0.5;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.setSpecStrategyParams( specPars );
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   

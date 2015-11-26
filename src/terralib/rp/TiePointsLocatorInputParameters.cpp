@@ -23,6 +23,7 @@
 */
 
 #include "TiePointsLocatorInputParameters.h"
+#include "TiePointsLocatorMoravecStrategy.h"
 
 namespace te
 {
@@ -46,7 +47,7 @@ namespace te
 
     void TiePointsLocatorInputParameters::reset() throw( te::rp::Exception )
     {
-      m_interesPointsLocationStrategy = TiePointsLocatorInputParameters::MoravecStrategyT;
+      m_interesPointsLocationStrategyName = "Moravec";
       m_inRaster1Ptr = 0;
       m_inMaskRaster1Ptr = 0;
       m_inRaster1Bands.clear();
@@ -68,20 +69,15 @@ namespace te
       m_pixelSizeYRelation = 1;
       m_geomTransfName = "Affine";
       m_geomTransfMaxError = 2;
-      m_moravecCorrelationWindowWidth = 21;
-      m_moravecWindowWidth = 21;
       m_enableGeometryFilter = true;
       m_geometryFilterAssurance = 0.75;
-      m_moravecNoiseFilterIterations = 1;
-      m_surfScalesNumber = 3;
-      m_surfOctavesNumber = 2;
       m_subSampleOptimizationRescaleFactor = 1.0;
       m_subSampleOptimizationMinTPAreaCoverage = 25;
       m_subSampleOptimizationMinTPNumberFactor = 2;
-      m_surfMaxNormEuclideanDist = 0.75;
-      m_moravecMinAbsCorrelation = 0.25;
       m_interpMethod = te::rst::NearestNeighbor;
       m_tiePointsSubSectorsSplitFactor = 3;
+      
+      m_specStratParamsPtr.reset( new te::rp::TiePointsLocatorMoravecStrategy::Parameters() );
     }
 
     const TiePointsLocatorInputParameters& TiePointsLocatorInputParameters::operator=(
@@ -89,7 +85,7 @@ namespace te
     {
       reset();
       
-      m_interesPointsLocationStrategy = params.m_interesPointsLocationStrategy;
+      m_interesPointsLocationStrategyName = params.m_interesPointsLocationStrategyName;
       m_inRaster1Ptr = params.m_inRaster1Ptr;
       m_inMaskRaster1Ptr = params.m_inMaskRaster1Ptr;
       m_inRaster1Bands = params.m_inRaster1Bands;
@@ -111,20 +107,23 @@ namespace te
       m_pixelSizeYRelation = params.m_pixelSizeYRelation;
       m_geomTransfName = params.m_geomTransfName;
       m_geomTransfMaxError = params.m_geomTransfMaxError;
-      m_moravecCorrelationWindowWidth = params.m_moravecCorrelationWindowWidth;
-      m_moravecWindowWidth = params.m_moravecWindowWidth;
       m_enableGeometryFilter = params.m_enableGeometryFilter;
       m_geometryFilterAssurance = params.m_geometryFilterAssurance;
-      m_moravecNoiseFilterIterations = params.m_moravecNoiseFilterIterations;
-      m_surfScalesNumber = params.m_surfScalesNumber;
-      m_surfOctavesNumber = params.m_surfOctavesNumber;
       m_subSampleOptimizationRescaleFactor = params.m_subSampleOptimizationRescaleFactor;
       m_subSampleOptimizationMinTPAreaCoverage = params.m_subSampleOptimizationMinTPAreaCoverage;
       m_subSampleOptimizationMinTPNumberFactor = params.m_subSampleOptimizationMinTPNumberFactor;
-      m_surfMaxNormEuclideanDist = params.m_surfMaxNormEuclideanDist;
-      m_moravecMinAbsCorrelation = params.m_moravecMinAbsCorrelation;
       m_interpMethod = params.m_interpMethod;
       m_tiePointsSubSectorsSplitFactor = params.m_tiePointsSubSectorsSplitFactor;
+      
+      if( params.m_specStratParamsPtr.get() )
+      {
+        m_specStratParamsPtr.reset( (TiePointsLocatorStrategyParameters*) 
+          params.m_specStratParamsPtr->clone() );
+      }
+      else
+      {
+        m_specStratParamsPtr.reset();
+      }
 
       return *this;
     }
@@ -133,6 +132,23 @@ namespace te
     {
       return new TiePointsLocatorInputParameters( *this );
     }
+    
+    void TiePointsLocatorInputParameters::setSpecStrategyParams( 
+      const TiePointsLocatorStrategyParameters& specStratParams )
+    {
+      m_specStratParamsPtr.reset( (TiePointsLocatorStrategyParameters*)
+        specStratParams.clone() );
+    }
+
+    TiePointsLocatorStrategyParameters const* TiePointsLocatorInputParameters::getSpecStrategyParams() const
+    {
+      return m_specStratParamsPtr.get();      
+    }
+    
+    TiePointsLocatorStrategyParameters* TiePointsLocatorInputParameters::getSpecStrategyParams()
+    {
+      return m_specStratParamsPtr.get();      
+    }    
 
   } // end namespace rp
 }   // end namespace te

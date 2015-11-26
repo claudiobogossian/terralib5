@@ -36,6 +36,7 @@
 #include <set>
 #include <string>
 #include <list>
+#include <memory>
 
 namespace te
 {
@@ -55,6 +56,26 @@ namespace te
       public:
         
         virtual ~TiePointsLocatorStrategy();
+        
+        /*!
+          \brief Returns a sub-sampled version of the given locator strategy specific input parameters.
+          \param subSampleOptimizationRescaleFactor Sub-sampled optimization tie-points search rescale factor.
+          \param inputSpecParams Input parameters (sub-sample factor 1).
+          \param subSampledSpecParamsPtr Sub-sampled parameters.
+         */
+        virtual void getSubSampledSpecStrategyParams( 
+          const double subSampleOptimizationRescaleFactor,
+          const TiePointsLocatorStrategyParameters& inputSpecParams,
+          std::auto_ptr< TiePointsLocatorStrategyParameters >& subSampledSpecParamsPtr ) const = 0;
+          
+        /*!
+          \brief Returns a sub-sampled version of the given locator strategy specific input parameters.
+          \param subSampleOptimizationRescaleFactor Sub-sampled optimization tie-points search rescale factor.
+          \param inputSpecParams Input parameters (sub-sample factor 1).
+          \param subSampledSpecParams Sub-sampled parameters.
+         */
+        virtual void getDefaultSpecStrategyParams( 
+          std::auto_ptr< TiePointsLocatorStrategyParameters >& defaultSpecParamsPtr ) const = 0;          
         
       protected :
         

@@ -27,6 +27,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../../geometry/GTFactory.h"
 #include "../../../geometry/GTParameters.h"
+#include "../../../rp/TiePointsLocatorMoravecStrategy.h"
+#include "../../../rp/TiePointsLocatorSURFStrategy.h"
 #include "TiePointLocatorParametersWidget.h"
 #include "ui_TiePointLocatorParametersWidgetForm.h"
 
@@ -88,19 +90,15 @@ void te::qt::widgets::TiePointLocatorParametersWidget::startAdvancedOptions()
   m_ui->m_enableGeometryFilterCheckBox->setChecked(m_inputParameters.m_enableGeometryFilter);
   m_ui->m_enableMultiThreadCheckBox->setChecked(m_inputParameters.m_enableMultiThread);
 
-  switch( m_inputParameters.m_interesPointsLocationStrategy )
+  if( m_inputParameters.m_interesPointsLocationStrategyName == "SURF" )
   {
-    case te::rp::TiePointsLocator::InputParameters::SurfStrategyT :
-    {
-      int idx = m_ui->m_interesPointsLocationStrategyComboBox->findText("Surf");
-      m_ui->m_interesPointsLocationStrategyComboBox->setCurrentIndex(idx);
-      break;
-    }
-    default:
-    {
-      int idx = m_ui->m_interesPointsLocationStrategyComboBox->findText("Moravec");
-      m_ui->m_interesPointsLocationStrategyComboBox->setCurrentIndex(idx);
-    }
+    int idx = m_ui->m_interesPointsLocationStrategyComboBox->findText("SURF");
+    m_ui->m_interesPointsLocationStrategyComboBox->setCurrentIndex(idx);
+  }
+  else
+  {
+    int idx = m_ui->m_interesPointsLocationStrategyComboBox->findText("Moravec");
+    m_ui->m_interesPointsLocationStrategyComboBox->setCurrentIndex(idx);
   }
 
   te::gm::GTFactory::dictionary_type::const_iterator gtItB = te::gm::GTFactory::getDictionary().begin();
@@ -141,21 +139,29 @@ void te::qt::widgets::TiePointLocatorParametersWidget::startAdvancedOptions()
   }
 
   m_ui->m_maxTiePointsLineEdit->setText(QString::number(m_inputParameters.m_maxTiePoints));
+  
+  {
+    te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+    
+    m_ui->m_correlationWindowWidthLineEdit->setText(QString::number(specPars.m_moravecCorrelationWindowWidth));
 
-  m_ui->m_correlationWindowWidthLineEdit->setText(QString::number(m_inputParameters.m_moravecCorrelationWindowWidth));
+    m_ui->m_gaussianFilterIterationsLineEdit->setText(QString::number(specPars.m_moravecNoiseFilterIterations));
 
-  m_ui->m_gaussianFilterIterationsLineEdit->setText(QString::number(m_inputParameters.m_moravecNoiseFilterIterations));
+    m_ui->m_minAbsCorrelationLineEdit->setText(QString::number(specPars.m_moravecMinAbsCorrelation));
 
-  m_ui->m_minAbsCorrelationLineEdit->setText(QString::number(m_inputParameters.m_moravecMinAbsCorrelation));
+    m_ui->m_moravecWindowWidthLineEdit->setText(QString::number(specPars.m_moravecWindowWidth));
+  }
 
-  m_ui->m_moravecWindowWidthLineEdit->setText(QString::number(m_inputParameters.m_moravecWindowWidth));
+  {
+    te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+      
+    m_ui->m_maxNormEuclideanDistLineEdit->setText(QString::number(specPars.m_surfMaxNormEuclideanDist));
 
-  m_ui->m_maxNormEuclideanDistLineEdit->setText(QString::number(m_inputParameters.m_surfMaxNormEuclideanDist));
+    m_ui->m_octavesNumberLineEdit->setText(QString::number(specPars.m_surfOctavesNumber));
 
-  m_ui->m_octavesNumberLineEdit->setText(QString::number(m_inputParameters.m_surfOctavesNumber));
-
-  m_ui->m_scalesNumberLineEdit->setText(QString::number(m_inputParameters.m_surfScalesNumber));
-
+    m_ui->m_scalesNumberLineEdit->setText(QString::number(specPars.m_surfScalesNumber));
+  }
+  
   m_ui->m_rescaleFactorLineEdit->setText(QString::number(m_inputParameters.m_subSampleOptimizationRescaleFactor));
 }
 
@@ -165,10 +171,10 @@ void te::qt::widgets::TiePointLocatorParametersWidget::updateAdvancedOptions()
 
   m_inputParameters.m_enableMultiThread = m_ui->m_enableMultiThreadCheckBox->isChecked();
 
-  if(m_ui->m_interesPointsLocationStrategyComboBox->currentText() == "Surf")
-    m_inputParameters.m_interesPointsLocationStrategy = te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  if(m_ui->m_interesPointsLocationStrategyComboBox->currentText() == "SURF")
+    m_inputParameters.m_interesPointsLocationStrategyName = "SURF";
   else
-    m_inputParameters.m_interesPointsLocationStrategy = te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+    m_inputParameters.m_interesPointsLocationStrategyName = "Moravec";
 
   m_inputParameters.m_geomTransfName = m_ui->m_geomTransfNameComboBox->currentText().toStdString();
 
@@ -207,57 +213,65 @@ void te::qt::widgets::TiePointLocatorParametersWidget::updateAdvancedOptions()
   }
   m_inputParameters.m_subSampleOptimizationRescaleFactor = m_ui->m_rescaleFactorLineEdit->text().toDouble();
 
-  if(m_ui->m_interesPointsLocationStrategyComboBox->currentText() == "Surf")
+  if(m_ui->m_interesPointsLocationStrategyComboBox->currentText() == "SURF")
   {
+    te::rp::TiePointsLocatorSURFStrategy::Parameters specPars;
+    
     if(m_ui->m_maxNormEuclideanDistLineEdit->text().isEmpty())
     {
       QMessageBox::warning(this, tr("Warning"), tr("Maximum euclidean distance not defined."));
       return;
     }
-    m_inputParameters.m_surfMaxNormEuclideanDist = m_ui->m_maxNormEuclideanDistLineEdit->text().toDouble();
+    specPars.m_surfMaxNormEuclideanDist = m_ui->m_maxNormEuclideanDistLineEdit->text().toDouble();
 
     if(m_ui->m_octavesNumberLineEdit->text().isEmpty())
     {
       QMessageBox::warning(this, tr("Warning"), tr("Octaves number not defined."));
       return;
     }
-    m_inputParameters.m_surfOctavesNumber = m_ui->m_octavesNumberLineEdit->text().toUInt();
+    specPars.m_surfOctavesNumber = m_ui->m_octavesNumberLineEdit->text().toUInt();
 
     if(m_ui->m_scalesNumberLineEdit->text().isEmpty())
     {
       QMessageBox::warning(this, tr("Warning"), tr("Scales number not defined."));
       return;
     }
-    m_inputParameters.m_surfScalesNumber = m_ui->m_scalesNumberLineEdit->text().toUInt();
+    specPars.m_surfScalesNumber = m_ui->m_scalesNumberLineEdit->text().toUInt();
+    
+    m_inputParameters.setSpecStrategyParams( specPars ); 
   }
   else
   {
+    te::rp::TiePointsLocatorMoravecStrategy::Parameters specPars;
+    
     if(m_ui->m_correlationWindowWidthLineEdit->text().isEmpty())
     {
       QMessageBox::warning(this, tr("Warning"), tr("Correlation window width not defined."));
       return;
     }
-    m_inputParameters.m_moravecCorrelationWindowWidth = m_ui->m_correlationWindowWidthLineEdit->text().toUInt();
+    specPars.m_moravecCorrelationWindowWidth = m_ui->m_correlationWindowWidthLineEdit->text().toUInt();
 
     if(m_ui->m_gaussianFilterIterationsLineEdit->text().isEmpty())
     {
       QMessageBox::warning(this, tr("Warning"), tr("Gaussian filter iterations not defined."));
       return;
     }
-    m_inputParameters.m_moravecNoiseFilterIterations = m_ui->m_gaussianFilterIterationsLineEdit->text().toUInt();
+    specPars.m_moravecNoiseFilterIterations = m_ui->m_gaussianFilterIterationsLineEdit->text().toUInt();
 
     if(m_ui->m_minAbsCorrelationLineEdit->text().isEmpty())
     {
       QMessageBox::warning(this, tr("Warning"), tr("Minimum correlation value not defined."));
       return;
     }
-    m_inputParameters.m_moravecMinAbsCorrelation = m_ui->m_minAbsCorrelationLineEdit->text().toDouble();
+    specPars.m_moravecMinAbsCorrelation = m_ui->m_minAbsCorrelationLineEdit->text().toDouble();
 
     if(m_ui->m_moravecWindowWidthLineEdit->text().isEmpty())
     {
       QMessageBox::warning(this, tr("Warning"), tr("Moravec window width not defined."));
       return;
     }
-    m_inputParameters.m_moravecWindowWidth = m_ui->m_moravecWindowWidthLineEdit->text().toUInt();
+    specPars.m_moravecWindowWidth = m_ui->m_moravecWindowWidthLineEdit->text().toUInt();
+    
+    m_inputParameters.setSpecStrategyParams( specPars );    
   }
 }

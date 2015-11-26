@@ -24,7 +24,7 @@
 
 #include "TiePointsLocator.h"
 #include "Macros.h"
-#include "TiePointsLocatorMoravecStrategy.h"
+#include "TiePointsLocatorStrategyFactory.h"
 #include "TiePointsLocatorSURFStrategy.h"
 #include "Functions.h"
 #include "../geometry/GTFactory.h"
@@ -100,25 +100,10 @@ namespace te
       
       // creating the choosed strategy
       
-      std::auto_ptr< TiePointsLocatorStrategy > stratPtr;
-      switch( m_inputParameters.m_interesPointsLocationStrategy )
-      {
-        case InputParameters::MoravecStrategyT :
-        {
-          stratPtr.reset( new te::rp::TiePointsLocatorMoravecStrategy() );
-          break;
-        }
-        case InputParameters::SurfStrategyT :
-        {
-          stratPtr.reset( new te::rp::TiePointsLocatorSURFStrategy() );
-          break;
-        }        
-        default :
-        {
-          TERP_LOG_AND_THROW( "Invalid strategy" );
-          break;
-        }
-      }
+      std::auto_ptr< TiePointsLocatorStrategy > stratPtr( 
+        TiePointsLocatorStrategyFactory::make( 
+        m_inputParameters.m_interesPointsLocationStrategyName ) );
+      TERP_TRUE_OR_THROW( stratPtr.get() != 0,  "Invalid strategy" );
       
       // Matching
       
@@ -148,59 +133,13 @@ namespace te
             * 
             std::sqrt( subSampledinputParameters.m_subSampleOptimizationRescaleFactor ) 
           );
-        switch( m_inputParameters.m_interesPointsLocationStrategy )
-        {
-          case InputParameters::MoravecStrategyT :
-          {
-            subSampledinputParameters.m_moravecCorrelationWindowWidth = 
-              3 
-              +
-              (unsigned int)
-              ( 
-                ((double)( subSampledinputParameters.m_moravecCorrelationWindowWidth - 3 ))
-                * 
-                subSampledinputParameters.m_subSampleOptimizationRescaleFactor
-              );
-            
-            subSampledinputParameters.m_moravecWindowWidth =
-              3 
-              +
-              (unsigned int)
-              ( 
-                ((double)( subSampledinputParameters.m_moravecWindowWidth - 3 ))
-                * 
-                subSampledinputParameters.m_subSampleOptimizationRescaleFactor
-              );            
-            break;
-          }
-          case InputParameters::SurfStrategyT :
-          {
-            subSampledinputParameters.m_surfScalesNumber =
-              3 
-              +
-              (unsigned int)
-              ( 
-                ((double)( subSampledinputParameters.m_surfScalesNumber - 3 ))
-                * 
-                subSampledinputParameters.m_subSampleOptimizationRescaleFactor
-              );            
-            subSampledinputParameters.m_surfOctavesNumber =
-              1 
-              +
-              (unsigned int)
-              ( 
-                ((double)( subSampledinputParameters.m_surfOctavesNumber - 1 ))
-                * 
-                subSampledinputParameters.m_subSampleOptimizationRescaleFactor
-              );              
-            break;
-          }        
-          default :
-          {
-            TERP_LOG_AND_THROW( "Invalid strategy" );
-            break;
-          }
-        }          
+          
+        std::auto_ptr< TiePointsLocatorStrategyParameters > subSampledSpecStratParametersPtr;
+        stratPtr->getSubSampledSpecStrategyParams( 
+          m_inputParameters.m_subSampleOptimizationRescaleFactor,
+          *m_inputParameters.getSpecStrategyParams(),
+          subSampledSpecStratParametersPtr );   
+        subSampledinputParameters.setSpecStrategyParams( *subSampledSpecStratParametersPtr );
           
         te::rp::TiePointsLocatorStrategy::MatchedInterestPointsSetT subSampledMatchedInterestPoints;
         TERP_TRUE_OR_RETURN_FALSE( stratPtr->initialize( subSampledinputParameters ),
@@ -574,22 +513,9 @@ namespace te
       
       // Checking strategy
       
-      switch( m_inputParameters.m_interesPointsLocationStrategy )
-      {
-        case InputParameters::MoravecStrategyT :
-        {
-          break;
-        }          
-        case InputParameters::SurfStrategyT :
-        {
-          break;
-        }
-        default :
-        {
-          TERP_LOG_AND_RETURN_FALSE( "Invalid strategy" );
-          break;
-        }
-      };
+      TERP_TRUE_OR_RETURN_FALSE( TiePointsLocatorStrategyFactory::getDictionary().find( 
+        m_inputParameters.m_interesPointsLocationStrategyName ),
+        "Invalid strategy" );
       
       // Checking other parameters
       

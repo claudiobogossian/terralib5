@@ -28,6 +28,7 @@
 #include "Config.h"
 #include "Exception.h"
 #include "AlgorithmInputParameters.h"
+#include "TiePointsLocatorStrategyParameters.h"
 #include "../geometry/GeometricTransformation.h"
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
@@ -48,20 +49,7 @@ namespace te
     {
       public:
         
-        /**
-        * \name Global parameters
-        */
-        /**@{*/            
-        
-        /*! \enum The strategy used to locate tie points.*/
-        enum InteresPointsLocationStrategyType
-        {
-          InvalidStrategyT = 0, /*!< Invalid strategy. */
-          MoravecStrategyT = 1, /*!<  Modified Moravec Interest Operator based image area matching - Reference: Extration of GCP chips from GeoCover using Modified Moravec Interest Operator (MMIO) algorithm, The United States Geological Survey. */
-          SurfStrategyT = 2 /*!<  SURF based image area matching - Reference: SURF: Speeded Up Robust Features, Herbert Bay. */
-        };
-
-        InteresPointsLocationStrategyType m_interesPointsLocationStrategy; //!< The strategy used to locate interest points (default:MoravecStrategyT).
+        std::string m_interesPointsLocationStrategyName; //!< The strategy used to locate interest points (default:Moravec).
         
         te::rst::Raster const* m_inRaster1Ptr; //!< Input raster 1.
         
@@ -119,36 +107,6 @@ namespace te
         
         unsigned int m_tiePointsSubSectorsSplitFactor; //!< The algorithm will try to generate tie-points distributed over image sectors ( Default: 3 - 3x3 sub-sectors, minimum: 1).
         
-        //@}
-        
-        /**
-        * \name Moravec parameters
-        */
-        /**@{*/            
-        
-        unsigned int m_moravecCorrelationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 21).
-        
-        unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 21 ).
-        
-        unsigned int m_moravecNoiseFilterIterations; //!< The number of noise filter iterations, when applicable (used to remove image noise, zero will disable the noise Filter, default:1).
-        
-        double m_moravecMinAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.25, valid range: [0,1].
-        
-        //@}
-        
-        /**
-        * \name SURF parameters
-        */
-        /**@{*/
-        
-        unsigned int m_surfScalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3, minimum:3).
-        
-        unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:2).
-        
-        double m_surfMaxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.75, valid range: [0,1].
-        
-        //@}
-        
         TiePointsLocatorInputParameters();
         
         TiePointsLocatorInputParameters( const TiePointsLocatorInputParameters& );
@@ -163,6 +121,35 @@ namespace te
         
         //overload
         AbstractParameters* clone() const;
+        
+        /*!
+          \brief Set specific tie-points locator strategy parameters.
+          \param specStratParams The specific tie-points locator strategy parameters.
+        */            
+        void setSpecStrategyParams( 
+          const TiePointsLocatorStrategyParameters& specStratParams );
+
+        /*!
+          \brief Returns a pointer to the internal specific tie-points locator strategy parameters.
+          \return A pointer to the internal specific tie-points locator strategy parameters, or
+          null if no parameters are present.
+        */                                
+        TiePointsLocatorStrategyParameters const* getSpecStrategyParams() const;        
+        
+        /*!
+          \brief Returns a pointer to the internal specific tie-points locator strategy parameters.
+          \return A pointer to the internal specific tie-points locator strategy parameters, or
+          null if no parameters are present.
+        */                                
+        TiePointsLocatorStrategyParameters* getSpecStrategyParams();          
+        
+    protected :
+      
+        /*!
+          \brief A pointer to the internal specific segmenter strategy parameters or
+          NULL if no parameters are present.
+        */               
+        std::auto_ptr< TiePointsLocatorStrategyParameters > m_specStratParamsPtr;
     };
 
   } // end namespace rp

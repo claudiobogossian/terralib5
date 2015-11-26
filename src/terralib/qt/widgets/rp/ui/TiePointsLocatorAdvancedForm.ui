@@ -99,7 +99,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Surf</string>
+             <string>SURF</string>
             </property>
            </item>
           </widget>
@@ -314,7 +314,7 @@
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
-       <string>Surf</string>
+       <string>SURF</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">

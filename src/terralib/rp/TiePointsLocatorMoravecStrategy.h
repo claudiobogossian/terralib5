@@ -26,6 +26,8 @@
 #define __TERRALIB_RP_INTERNAL_TIEPOINTSLOCATORMORAVECSTRATEGY_H
 
 #include "TiePointsLocatorStrategy.h"
+#include "TiePointsLocatorStrategyParameters.h"
+#include "TiePointsLocatorStrategyFactory.h"
 #include "../geometry/GeometricTransformation.h"
 
 #include <vector>
@@ -36,20 +38,59 @@ namespace te
 {
   namespace rp
   {
-    // Forwards
-    class TiePointsLocator;
-    
     /*!
       \class TiePointsLocatorMoravecStrategy
       \brief Tie-points locator Moravec strategy.
      */
     class TERPEXPORT TiePointsLocatorMoravecStrategy : public TiePointsLocatorStrategy
     {
-      friend class TiePointsLocator;
+      friend class TiePointsLocatorMoravecStrategyFactory;
       
       public:
         
+        /*!
+          \class Parameters
+          \brief TiePointsLocator Moravec strategy parameters
+         */        
+        class TERPEXPORT Parameters : public TiePointsLocatorStrategyParameters
+        {
+          public:
+            
+            unsigned int m_moravecCorrelationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 21, odd number).
+            
+            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 21, odd number ).
+            
+            unsigned int m_moravecNoiseFilterIterations; //!< The number of noise filter iterations, when applicable (used to remove image noise, zero will disable the noise Filter, default:1).
+            
+            double m_moravecMinAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.25, valid range: [0,1].
+            
+            Parameters();
+            
+            Parameters( const Parameters& );
+            
+            ~Parameters();
+            
+            //overload
+            void reset() throw( te::rp::Exception );
+            
+            //overload
+            const  Parameters& operator=( const Parameters& params );
+            
+            //overload
+            AbstractParameters* clone() const;
+        };        
+        
         ~TiePointsLocatorMoravecStrategy();
+        
+        //overload
+        void getSubSampledSpecStrategyParams( 
+          const double subSampleOptimizationRescaleFactor,
+          const TiePointsLocatorStrategyParameters& inputSpecParams,
+          std::auto_ptr< TiePointsLocatorStrategyParameters >& subSampledSpecParamsPtr ) const;
+          
+        //overload
+        void getDefaultSpecStrategyParams( 
+          std::auto_ptr< TiePointsLocatorStrategyParameters >& defaultSpecParamsPtr ) const;
         
       protected :
         
@@ -241,6 +282,25 @@ namespace te
         static void executeMatchingByCorrelationThreadEntry(
           ExecuteMatchingByCorrelationThreadEntryParams* paramsPtr);        
     };
+    
+    /*!
+      \class TiePointsLocatorMoravecStrategyFactory
+      \brief Moravec tie-points locator strategy factory.
+      \note Factory key: Moravec
+     */
+    class TERPEXPORT TiePointsLocatorMoravecStrategyFactory : public 
+      te::rp::TiePointsLocatorStrategyFactory
+    {
+      public:
+        
+        TiePointsLocatorMoravecStrategyFactory();
+        
+        ~TiePointsLocatorMoravecStrategyFactory();
+   
+        //overload
+        te::rp::TiePointsLocatorStrategy* build();
+        
+    };        
 
   } // end namespace rp
 }   // end namespace te

@@ -28,10 +28,64 @@
 
 #include <memory>
 
+namespace
+{
+  static te::rp::TiePointsLocatorMoravecStrategyFactory 
+    TiePointsLocatorMoravecStrategyFactoryInstance;
+}
+
 namespace te
 {
   namespace rp
   {
+    TiePointsLocatorMoravecStrategy::Parameters::Parameters()
+    {
+      reset();
+    }
+    
+    TiePointsLocatorMoravecStrategy::Parameters::Parameters( 
+      const TiePointsLocatorMoravecStrategy::Parameters& other )
+    {
+      reset();
+      operator=( other );
+    }    
+
+    TiePointsLocatorMoravecStrategy::Parameters::~Parameters()
+    {
+      reset();
+    }
+
+    void TiePointsLocatorMoravecStrategy::Parameters::reset() 
+      throw( te::rp::Exception )
+    {
+      m_moravecCorrelationWindowWidth = 21;
+      m_moravecWindowWidth = 21;
+      m_moravecNoiseFilterIterations = 1;
+      m_moravecMinAbsCorrelation = 0.25;
+    }
+
+    const TiePointsLocatorMoravecStrategy::Parameters& 
+      TiePointsLocatorMoravecStrategy::Parameters::operator=(
+      const TiePointsLocatorMoravecStrategy::Parameters& params )
+    {
+      reset();
+      
+      m_moravecCorrelationWindowWidth = params.m_moravecCorrelationWindowWidth;
+      m_moravecWindowWidth = params.m_moravecWindowWidth;
+      m_moravecNoiseFilterIterations = params.m_moravecNoiseFilterIterations;
+      m_moravecMinAbsCorrelation = params.m_moravecMinAbsCorrelation;
+
+      return *this;
+    }
+
+    te::common::AbstractParameters* 
+      TiePointsLocatorMoravecStrategy::Parameters::clone() const
+    {
+      return new Parameters( *this );
+    }    
+    
+    /* ------------------------------------------------------------------------*/
+    
     TiePointsLocatorMoravecStrategy::TiePointsLocatorMoravecStrategy()
     {
       reset();
@@ -40,6 +94,52 @@ namespace te
     TiePointsLocatorMoravecStrategy::~TiePointsLocatorMoravecStrategy()
     {
       reset();
+    }
+    
+    void TiePointsLocatorMoravecStrategy::getSubSampledSpecStrategyParams( 
+      const double subSampleOptimizationRescaleFactor,
+      const TiePointsLocatorStrategyParameters& inputSpecParams,
+      std::auto_ptr< TiePointsLocatorStrategyParameters >& subSampledSpecParamsPtr ) const
+    {
+      Parameters const* inputSpecParamsPtr = dynamic_cast< Parameters const* >( &inputSpecParams );
+      TERP_TRUE_OR_THROW( inputSpecParamsPtr, "Invalid specific parameters" );      
+      
+      subSampledSpecParamsPtr.reset( (te::rp::TiePointsLocatorStrategyParameters*)inputSpecParams.clone() );
+      
+      Parameters* subSampledSpecParamsNakedPtr = dynamic_cast< Parameters* >( subSampledSpecParamsPtr.get() );
+      TERP_TRUE_OR_THROW( subSampledSpecParamsNakedPtr, "Invalid specific parameters" );
+      
+      subSampledSpecParamsNakedPtr->m_moravecCorrelationWindowWidth = 
+        3 
+        +
+        (unsigned int)
+        ( 
+          ((double)( inputSpecParamsPtr->m_moravecCorrelationWindowWidth - 3 ))
+          * 
+          subSampleOptimizationRescaleFactor
+        );
+      subSampledSpecParamsNakedPtr->m_moravecCorrelationWindowWidth +=
+        ( ( subSampledSpecParamsNakedPtr->m_moravecCorrelationWindowWidth % 2 ) ?
+        0 : 1 );
+      
+      subSampledSpecParamsNakedPtr->m_moravecWindowWidth =
+        3 
+        +
+        (unsigned int)
+        ( 
+          ((double)( inputSpecParamsPtr->m_moravecWindowWidth - 3 ))
+          * 
+          subSampleOptimizationRescaleFactor
+        );   
+      subSampledSpecParamsNakedPtr->m_moravecWindowWidth +=
+        ( ( subSampledSpecParamsNakedPtr->m_moravecWindowWidth % 2 ) ?
+        0 : 1 );        
+    }
+    
+    void TiePointsLocatorMoravecStrategy::getDefaultSpecStrategyParams( 
+      std::auto_ptr< TiePointsLocatorStrategyParameters >& defaultSpecParamsPtr ) const
+    {
+      defaultSpecParamsPtr.reset( new Parameters() );
     }
     
     bool TiePointsLocatorMoravecStrategy::initialize( 
@@ -53,19 +153,23 @@ namespace te
         == 1, "Invalid number of raster 2 bands" );
       
       // other stuff
+      
+      Parameters const* specParsPtr = dynamic_cast< Parameters const* >( 
+        inputParameters.getSpecStrategyParams() );
+      TERP_TRUE_OR_RETURN_FALSE( specParsPtr, "Invalid specific parameters" );
         
-      m_inputParameters.m_moravecCorrelationWindowWidth += 
-        m_inputParameters.m_moravecCorrelationWindowWidth % 2 ? 0 : 1;
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_moravecCorrelationWindowWidth > 2,
+      TERP_TRUE_OR_RETURN_FALSE( ( specParsPtr->m_moravecCorrelationWindowWidth % 2 ) != 0,
+        "Invalid m_moravecCorrelationWindowWidth (should be an odd number)" );
+      TERP_TRUE_OR_RETURN_FALSE( specParsPtr->m_moravecCorrelationWindowWidth > 2,
         "Invalid m_moravecCorrelationWindowWidth" );
 
-      m_inputParameters.m_moravecWindowWidth += 
-        m_inputParameters.m_moravecWindowWidth % 2 ? 0 : 1;
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_moravecWindowWidth > 2,
+      TERP_TRUE_OR_RETURN_FALSE( ( specParsPtr->m_moravecWindowWidth % 2 ) != 0,
+        "Invalid m_moravecWindowWidth (should be an odd number)" );      
+      TERP_TRUE_OR_RETURN_FALSE( specParsPtr->m_moravecWindowWidth > 2,
         "Invalid m_moravecWindowWidth" );      
       
-      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_moravecMinAbsCorrelation >= 0 ) &&
-        ( m_inputParameters.m_moravecMinAbsCorrelation <= 1.0 ),
+      TERP_TRUE_OR_RETURN_FALSE( ( specParsPtr->m_moravecMinAbsCorrelation >= 0 ) &&
+        ( specParsPtr->m_moravecMinAbsCorrelation <= 1.0 ),
         "Invalid m_moravecMinAbsCorrelation" );        
       
       m_isInitialized = true;
@@ -227,7 +331,7 @@ namespace te
           
         // applying the noise filter
 
-        if( m_inputParameters.m_moravecNoiseFilterIterations )
+        if( ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecNoiseFilterIterations )
         {
           boost::shared_ptr< FloatsMatrix > tempMatrix( 
             new FloatsMatrix );
@@ -239,7 +343,8 @@ namespace te
             "Cannot allocate image matrix" );
           
           if( !applyMeanFilter( *(raster1Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_moravecNoiseFilterIterations ) )
+            *tempMatrix, 
+            ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecNoiseFilterIterations ) )
           {
             return false;
           }  
@@ -287,7 +392,7 @@ namespace te
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster1InterestPoints,
-          m_inputParameters.m_moravecCorrelationWindowWidth,
+          ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecCorrelationWindowWidth,
           *(raster1Data[ 0 ]),
           raster1Features,
           auxInterestPoints ),
@@ -369,7 +474,7 @@ namespace te
           
         // applying the noise filter
         
-        if( m_inputParameters.m_moravecNoiseFilterIterations )
+        if( ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecNoiseFilterIterations )
         {
           boost::shared_ptr< FloatsMatrix > tempMatrix( 
             new FloatsMatrix );
@@ -383,7 +488,7 @@ namespace te
             "Cannot allocate image matrix" );          
           
           if( !applyMeanFilter( *(raster2Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_moravecNoiseFilterIterations ) )
+            *tempMatrix, ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecNoiseFilterIterations ) )
           {
             return false;
           }
@@ -430,7 +535,7 @@ namespace te
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster2InterestPoints,
-          m_inputParameters.m_moravecCorrelationWindowWidth,
+          ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecCorrelationWindowWidth,
           *(raster2Data[ 0 ]),
           raster2Features,
           auxInterestPoints ),
@@ -625,8 +730,8 @@ namespace te
           );
         
       returnValue = maxRastersArea / 
-        ( m_inputParameters.m_moravecCorrelationWindowWidth *
-        m_inputParameters.m_moravecCorrelationWindowWidth );
+        ( ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecCorrelationWindowWidth *
+        ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecCorrelationWindowWidth );
         
       // This is because the features and matching matrix are being allocated in RAM
         
@@ -636,8 +741,8 @@ namespace te
       const double freeVMem = 0.75 * std::min( totalPhysMem, ( totalVMem - usedVMem ) ); 
       
       const double featureElementsNumber = (double)(
-        m_inputParameters.m_moravecCorrelationWindowWidth *
-        m_inputParameters.m_moravecCorrelationWindowWidth );
+        ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecCorrelationWindowWidth *
+        ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecCorrelationWindowWidth );
       
       double maxFeaturesMemory =
         std::max(
@@ -801,7 +906,7 @@ namespace te
       interestPoints.clear();
 
       const unsigned int minRasterWidthAndHeight = 
-        ( 4 * ( ( m_inputParameters.m_moravecWindowWidth ) / 2 ) ) + 1;
+        ( 4 * ( ( ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecWindowWidth ) / 2 ) ) + 1;
       // There is not enough data to look for interest points!
       if( rasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
       if( rasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
@@ -827,7 +932,7 @@ namespace te
       threadParams.m_tiePointsSubSectorsSplitFactor = m_inputParameters.m_tiePointsSubSectorsSplitFactor;
       threadParams.m_rasterDataPtr = &rasterData;
       threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
-      threadParams.m_moravecWindowWidth = m_inputParameters.m_moravecWindowWidth;        
+      threadParams.m_moravecWindowWidth = ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecWindowWidth;        
       
       if( m_inputParameters.m_enableMultiThread )
       {
@@ -1616,6 +1721,8 @@ namespace te
       std::vector< unsigned int > eachColMaxABSIndexes( interestPointsSet2Size,
         interestPointsSet1Size );
       float absValue = 0;
+      const double moravecMinAbsCorrelation = 
+        ((Parameters*)(m_inputParameters.getSpecStrategyParams()))->m_moravecMinAbsCorrelation;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
       {
@@ -1625,7 +1732,7 @@ namespace te
         {
           absValue = std::abs( linePtr[ col ] );
           
-          if( absValue >= m_inputParameters.m_moravecMinAbsCorrelation )
+          if( absValue >= moravecMinAbsCorrelation )
           {
             if( absValue > eachLineMaxABSValues[ line ] )
             {
@@ -1812,6 +1919,22 @@ namespace te
           paramsPtr->m_syncMutexPtr->unlock();
         }
       }
+    }    
+    
+    /* ----------------------------------------------------------------------- */
+    
+    TiePointsLocatorMoravecStrategyFactory::TiePointsLocatorMoravecStrategyFactory()
+    : te::rp::TiePointsLocatorStrategyFactory( "Moravec" )
+    {
+    }
+    
+    TiePointsLocatorMoravecStrategyFactory::~TiePointsLocatorMoravecStrategyFactory()
+    {
+    }    
+    
+    te::rp::TiePointsLocatorStrategy* TiePointsLocatorMoravecStrategyFactory::build()
+    {
+      return new te::rp::TiePointsLocatorMoravecStrategy();
     }    
 
   } // end namespace rp

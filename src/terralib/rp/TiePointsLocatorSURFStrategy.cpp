@@ -31,10 +31,62 @@
 
 #include <boost/shared_array.hpp>
 
+namespace
+{
+  static te::rp::TiePointsLocatorSURFStrategyFactory 
+    TiePointsLocatorSURFStrategyFactoryInstance;
+}
+
 namespace te
 {
   namespace rp
   {
+    TiePointsLocatorSURFStrategy::Parameters::Parameters()
+    {
+      reset();
+    }
+    
+    TiePointsLocatorSURFStrategy::Parameters::Parameters( 
+      const TiePointsLocatorSURFStrategy::Parameters& other )
+    {
+      reset();
+      operator=( other );
+    }    
+
+    TiePointsLocatorSURFStrategy::Parameters::~Parameters()
+    {
+      reset();
+    }
+
+    void TiePointsLocatorSURFStrategy::Parameters::reset() 
+      throw( te::rp::Exception )
+    {
+      m_surfScalesNumber = 3;
+      m_surfOctavesNumber = 2;
+      m_surfMaxNormEuclideanDist = 0.75;
+    }
+
+    const TiePointsLocatorSURFStrategy::Parameters& 
+      TiePointsLocatorSURFStrategy::Parameters::operator=(
+      const TiePointsLocatorSURFStrategy::Parameters& params )
+    {
+      reset();
+      
+      m_surfScalesNumber = params.m_surfScalesNumber;
+      m_surfOctavesNumber = params.m_surfOctavesNumber;
+      m_surfMaxNormEuclideanDist = params.m_surfMaxNormEuclideanDist;
+
+      return *this;
+    }
+
+    te::common::AbstractParameters* 
+      TiePointsLocatorSURFStrategy::Parameters::clone() const
+    {
+      return new Parameters( *this );
+    }    
+    
+    /* ------------------------------------------------------------------------*/    
+    
     TiePointsLocatorSURFStrategy::TiePointsLocatorSURFStrategy()
     {
       reset();
@@ -44,6 +96,45 @@ namespace te
     {
       reset();
     }
+    
+    void TiePointsLocatorSURFStrategy::getSubSampledSpecStrategyParams( 
+      const double subSampleOptimizationRescaleFactor,
+      const TiePointsLocatorStrategyParameters& inputSpecParams,
+      std::auto_ptr< TiePointsLocatorStrategyParameters >& subSampledSpecParamsPtr ) const
+    {
+      Parameters const* inputSpecParamsPtr = dynamic_cast< Parameters const* >( &inputSpecParams );
+      TERP_TRUE_OR_THROW( inputSpecParamsPtr, "Invalid specific parameters" );      
+      
+      subSampledSpecParamsPtr.reset( (te::rp::TiePointsLocatorStrategyParameters*)inputSpecParams.clone() );
+      
+      Parameters* subSampledSpecParamsNakedPtr = dynamic_cast< Parameters* >( subSampledSpecParamsPtr.get() );
+      TERP_TRUE_OR_THROW( subSampledSpecParamsNakedPtr, "Invalid specific parameters" );
+      
+      subSampledSpecParamsNakedPtr->m_surfScalesNumber =
+        3 
+        +
+        (unsigned int)
+        ( 
+          ((double)( inputSpecParamsPtr->m_surfScalesNumber - 3 ))
+          * 
+          subSampleOptimizationRescaleFactor
+        );            
+      subSampledSpecParamsNakedPtr->m_surfOctavesNumber =
+        1 
+        +
+        (unsigned int)
+        ( 
+          ((double)( inputSpecParamsPtr->m_surfOctavesNumber - 1 ))
+          * 
+          subSampleOptimizationRescaleFactor
+        );     
+    }
+    
+    void TiePointsLocatorSURFStrategy::getDefaultSpecStrategyParams( 
+      std::auto_ptr< TiePointsLocatorStrategyParameters >& defaultSpecParamsPtr ) const
+    {
+      defaultSpecParamsPtr.reset( new Parameters() );
+    }    
     
     bool TiePointsLocatorSURFStrategy::initialize( 
       const te::rp::TiePointsLocatorInputParameters& inputParameters )
@@ -55,14 +146,18 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
         == 1, "Invalid number of raster 2 bands" );
         
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfScalesNumber > 2,
+      Parameters const* specParsPtr = dynamic_cast< Parameters const* >( 
+        inputParameters.getSpecStrategyParams() );
+      TERP_TRUE_OR_RETURN_FALSE( specParsPtr, "Invalid specific parameters" );      
+      
+      TERP_TRUE_OR_RETURN_FALSE( specParsPtr->m_surfScalesNumber > 2,
         "Invalid m_surfScalesNumber" );        
         
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfOctavesNumber > 0,
+      TERP_TRUE_OR_RETURN_FALSE( specParsPtr->m_surfOctavesNumber > 0,
         "Invalid m_surfOctavesNumber" );           
         
-      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_surfMaxNormEuclideanDist >= 0 ) &&
-        ( m_inputParameters.m_surfMaxNormEuclideanDist <= 1.0 ),
+      TERP_TRUE_OR_RETURN_FALSE( ( specParsPtr->m_surfMaxNormEuclideanDist >= 0 ) &&
+        ( specParsPtr->m_surfMaxNormEuclideanDist <= 1.0 ),
         "Invalid m_surfMaxNormEuclideanDist" );                
       
       m_isInitialized = true;
@@ -626,8 +721,8 @@ namespace te
           );
             
       const unsigned int filterWindowSize = ( getSurfOctaveBaseFilterSize( 0 ) +
-        getSurfFilterSize( m_inputParameters.m_surfOctavesNumber - 1,
-        m_inputParameters.m_surfScalesNumber - 1 ) )  / 2;
+        getSurfFilterSize( ((Parameters*)m_inputParameters.getSpecStrategyParams())->m_surfOctavesNumber - 1,
+        ((Parameters*)m_inputParameters.getSpecStrategyParams())->m_surfScalesNumber - 1 ) )  / 2;
         
       returnValue = maxRastersArea /            
         ( filterWindowSize * filterWindowSize );
@@ -714,8 +809,8 @@ namespace te
       interestPoints.clear();
       
       const unsigned int minIntegralRasterWidthHeigh = getSurfFilterSize( 
-        m_inputParameters.m_surfOctavesNumber - 1, 
-        m_inputParameters.m_surfScalesNumber - 1 ) + 2;
+        ((Parameters*)m_inputParameters.getSpecStrategyParams())->m_surfOctavesNumber - 1, 
+        ((Parameters*)m_inputParameters.getSpecStrategyParams())->m_surfScalesNumber - 1 ) + 2;
       if( ( integralRasterData.getColumnsNumber() < minIntegralRasterWidthHeigh )
         || ( integralRasterData.getLinesNumber() < minIntegralRasterWidthHeigh ) )
       {
@@ -740,8 +835,8 @@ namespace te
         &nextRasterLinesBlockToProcess;
       threadParams.m_integralRasterDataPtr = &integralRasterData;
       threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
-      threadParams.m_scalesNumber = m_inputParameters.m_surfScalesNumber;
-      threadParams.m_octavesNumber = m_inputParameters.m_surfOctavesNumber;
+      threadParams.m_scalesNumber = ((Parameters*)m_inputParameters.getSpecStrategyParams())->m_surfScalesNumber;
+      threadParams.m_octavesNumber = ((Parameters*)m_inputParameters.getSpecStrategyParams())->m_surfOctavesNumber;
       threadParams.m_interestPointsSubSectorsPtr = &interestPointsSubSectors;
       threadParams.m_maxInterestPointsBySubSector = maxInterestPoints /
         ( m_inputParameters.m_tiePointsSubSectorsSplitFactor *
@@ -1788,7 +1883,7 @@ namespace te
       
       matchedPoints.clear();
       
-      const double maxEuclideanDist = m_inputParameters.m_surfMaxNormEuclideanDist 
+      const double maxEuclideanDist = ((Parameters*)m_inputParameters.getSpecStrategyParams())->m_surfMaxNormEuclideanDist 
         * 2.0; /* since surf feature vectors are unitary verctors */
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
@@ -2086,6 +2181,22 @@ namespace te
           paramsPtr->m_syncMutexPtr->unlock();
         }
       }
+    }        
+    
+    /* ----------------------------------------------------------------------- */
+    
+    TiePointsLocatorSURFStrategyFactory::TiePointsLocatorSURFStrategyFactory()
+    : te::rp::TiePointsLocatorStrategyFactory( "SURF" )
+    {
+    }
+    
+    TiePointsLocatorSURFStrategyFactory::~TiePointsLocatorSURFStrategyFactory()
+    {
+    }    
+    
+    te::rp::TiePointsLocatorStrategy* TiePointsLocatorSURFStrategyFactory::build()
+    {
+      return new te::rp::TiePointsLocatorSURFStrategy();
     }        
 
   } // end namespace rp
