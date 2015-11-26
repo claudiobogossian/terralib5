@@ -878,11 +878,6 @@ const QString& te::qt::af::ApplicationController::getAppPluginsPath() const
   return m_appPluginsPath;
 }
 
-void te::qt::af::ApplicationController::setAppPluginsPath(const QString& appPluginsPath)
-{
-  m_appPluginsPath = appPluginsPath;
-}
-
 const QString& te::qt::af::ApplicationController::getAboutLogo() const
 {
   return m_aboutLogo;

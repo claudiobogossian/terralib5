@@ -94,6 +94,9 @@ void te::qt::af::BaseApplication::init(const QString& cfgFile)
   try
   {
     makeDialog();
+
+    //register menubar and load plugins
+    m_app->initializePlugins();
   }
   catch(te::common::Exception& e)
   {
@@ -1011,10 +1014,4 @@ void te::qt::af::BaseApplication::initAction(QAction*& act, const QString& icon,
 #ifndef QT_NO_TOOLTIP
   act->setToolTip(tooltip);
 #endif
-}
-
-void te::qt::af::BaseApplication::initPlugins()
-{
-  //register menubar and load plugins
-  m_app->initializePlugins();
 }

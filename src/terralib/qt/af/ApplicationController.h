@@ -419,11 +419,6 @@ namespace te
           const QString& getAppPluginsPath() const;
 
           /*!
-          \brief Sets the plugins file path of application.
-          */
-          void setAppPluginsPath(const QString& appPluginsPath);
-
-          /*!
             \brief Returns the most recent project.
 
             \return Application most recent opened project.

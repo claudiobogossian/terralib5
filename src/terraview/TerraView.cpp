@@ -274,7 +274,6 @@ void TerraView::init()
 {
   //init base application
   BaseApplication::init(te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
-  te::qt::af::BaseApplication::initPlugins();
 
   //check user settings file
   QSettings user_settings(QSettings::IniFormat,
@@ -290,7 +289,6 @@ void TerraView::init()
   m_tvController = new TerraViewController(m_app, te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
   m_tvController->initializeProjectMenus();
-  
 
   QStringList prjTitles,
       prjPaths;
