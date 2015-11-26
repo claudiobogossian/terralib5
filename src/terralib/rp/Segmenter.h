@@ -98,7 +98,7 @@ namespace te
             
             unsigned char m_blocksOverlapPercent; //!< The percentage of blocks overlapped area (valid range:0-25, defaul:10).
             
-            std::string m_strategyName; //!< The segmenter strategy name see each te::rp::SegmenterStrategyFactory inherited classes documentation for reference.
+            std::string m_strategyName; //!< The segmenter strategy name see each te::rp::SegmenterStrategyFactory inherited classes documentation for reference (default:RegionGrowingMean).
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
@@ -139,7 +139,7 @@ namespace te
               \brief A pointer to the internal specific segmenter strategy parameters or
               NULL if no parameters are present.
             */               
-            SegmenterStrategyParameters* m_segStratParamsPtr;
+            std::auto_ptr< SegmenterStrategyParameters > m_segStratParamsPtr;
         };
         
         /*!

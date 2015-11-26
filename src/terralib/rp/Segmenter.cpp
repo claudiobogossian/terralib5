@@ -25,6 +25,7 @@
 #include "Segmenter.h"
 
 #include "SegmenterStrategyFactory.h"
+#include "SegmenterRegionGrowingMeanStrategy.h"
 #include "Functions.h"
 #include "Macros.h"
 
@@ -58,13 +59,11 @@ namespace te
   {
     Segmenter::InputParameters::InputParameters()
     {
-      m_segStratParamsPtr = 0;
       reset();
     }
 
     Segmenter::InputParameters::InputParameters( const InputParameters& other )
     {
-      m_segStratParamsPtr = 0;
       reset();
       operator=( other );
     }
@@ -84,15 +83,10 @@ namespace te
       m_enableBlockProcessing = true;
       m_maxBlockSize = 0;
       m_blocksOverlapPercent = 10;
-      m_strategyName.clear();
+      m_strategyName = "RegionGrowingMean";
       m_enableProgress = false;
       m_enableRasterCache = true;
-      
-      if( m_segStratParamsPtr )
-      {
-        delete m_segStratParamsPtr;
-        m_segStratParamsPtr = 0;
-      }
+      m_segStratParamsPtr.reset( new SegmenterRegionGrowingMeanStrategy::Parameters() );
     }
     
     const Segmenter::InputParameters& Segmenter::InputParameters::operator=( 
@@ -111,10 +105,9 @@ namespace te
       m_strategyName = params.m_strategyName;
       m_enableProgress = params.m_enableProgress;
       m_enableRasterCache = params.m_enableRasterCache;
-      
-      m_segStratParamsPtr = params.m_segStratParamsPtr ? 
+      m_segStratParamsPtr.reset( params.m_segStratParamsPtr.get() ? 
         (SegmenterStrategyParameters*)params.m_segStratParamsPtr->clone()
-        : 0; 
+        : 0 ); 
       
       return *this;
     }
@@ -127,19 +120,13 @@ namespace te
     void Segmenter::InputParameters::setSegStrategyParams( 
       const SegmenterStrategyParameters& params )
     {
-      if( m_segStratParamsPtr )
-      {
-        delete m_segStratParamsPtr;
-        m_segStratParamsPtr = 0;
-      }
-      
-      m_segStratParamsPtr = (SegmenterStrategyParameters*)params.clone();
+      m_segStratParamsPtr.reset( (SegmenterStrategyParameters*)params.clone() );
     }
     
     SegmenterStrategyParameters const* 
       Segmenter::InputParameters::getSegStrategyParams() const
     {
-      return m_segStratParamsPtr;
+      return m_segStratParamsPtr.get();
     }    
     
     Segmenter::OutputParameters::OutputParameters()
