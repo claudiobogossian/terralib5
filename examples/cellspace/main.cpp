@@ -146,7 +146,7 @@ void CreateMaskCellSpace()
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = data_dir + "/shp/munic_2001.shp";
 
-  te::da::DataSourcePtr source = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr source( te::da::DataSourceFactory::make("OGR") );
   source->setConnectionInfo(connInfo);
   source->open();
   source->setId(id_source);
