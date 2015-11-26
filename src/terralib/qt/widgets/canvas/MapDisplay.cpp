@@ -185,9 +185,9 @@ void te::qt::widgets::MapDisplay::refresh()
 
   QPainter painter(m_displayPixmap);
 
-  std::list<te::map::AbstractLayerPtr>::iterator it;
+  std::list<te::map::AbstractLayerPtr>::reverse_iterator it;
 
-  for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
+  for(it = m_layerList.rbegin(); it != m_layerList.rend(); ++it) // for each layer
     draw(it->get(), painter);
 
   m_isDrawing = false;

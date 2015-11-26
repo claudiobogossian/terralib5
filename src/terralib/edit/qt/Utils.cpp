@@ -72,7 +72,7 @@ te::gm::Geometry* te::edit::convertGeomType(const te::map::AbstractLayerPtr& lay
         mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
       else
       {
-        mp = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
+        mp = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, layer->getSRID());
         mp->add(geom);
       }
 

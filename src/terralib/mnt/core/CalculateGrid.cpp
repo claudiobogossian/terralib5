@@ -33,7 +33,7 @@ te::mnt::CalculateGrid::CalculateGrid()
 }
 
 
-std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, int &nro_neighb, double &rx1, double &ry2, int &outputWidth, int &outputHeight)
+std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, unsigned int &nro_neighb, double &rx1, double &ry2, unsigned int &outputWidth, unsigned int &outputHeight)
 {
   te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
   te::gm::MultiLineString isolines_simp(0, te::gm::MultiLineStringZType, m_srid);
@@ -58,8 +58,8 @@ std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, i
   rx1 = m_env.getLowerLeftX() - m_resx / 2.;
   ry2 = m_env.getUpperRightY() + m_resy / 2.;
 
-  outputWidth = (int)ceil(m_env.getWidth() / m_resx);
-  outputHeight = (int)ceil(m_env.getHeight() / m_resy);
+  outputWidth = (unsigned int)ceil(m_env.getWidth() / m_resx);
+  outputHeight = (unsigned int)ceil(m_env.getHeight() / m_resy);
 
   te::gm::Coord2D ulc(rx1, ry2);
 
@@ -69,8 +69,8 @@ std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, i
 
   bands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "DTM GRID"));
   bands[0]->m_nblocksx = 1;
-  bands[0]->m_nblocksy = outputHeight;
-  bands[0]->m_blkw = outputWidth;
+  bands[0]->m_nblocksy = (int)outputHeight;
+  bands[0]->m_blkw = (int)outputWidth;
   bands[0]->m_blkh = 1;
   bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
   bands[0]->m_noDataValue = m_nodatavalue;
@@ -81,7 +81,7 @@ std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, i
 
   std::vector<std::pair<te::gm::Coord2D, te::gm::PointZ> > dataset1;
 
-  for (int i = 0; i < mpt.getNumGeometries(); i++)
+  for (size_t i = 0; i < mpt.getNumGeometries(); i++)
   {
     te::gm::Point* gout = dynamic_cast<te::gm::Point*>(mpt.getGeometryN(i));
     te::gm::PointZ pz(gout->getX(), gout->getY(), gout->getZ());
@@ -97,7 +97,7 @@ std::auto_ptr<te::rst::Raster> te::mnt::CalculateGrid::Initialize(bool spline, i
 
   nro_neighb = THRESHOLD;
   if (datasize < THRESHOLD)
-    nro_neighb = (int)datasize;
+    nro_neighb = (unsigned int)datasize;
 
   if (m_inter == Vizinho)  //Nearest Neighbor
     nro_neighb = 1;
@@ -109,31 +109,31 @@ bool te::mnt::CalculateGrid::run()
 {
   try
   {
-    int nro_neighb;
+    unsigned int nro_neighb;
     double rx1, ry2;
-    int outputWidth;
-    int outputHeight;
+    unsigned int outputWidth;
+    unsigned int outputHeight;
 
     std::auto_ptr<te::rst::Raster> rst = Initialize(false, nro_neighb, rx1, ry2, outputWidth, outputHeight);
 
     std::vector<double> distneighb;
     std::vector<te::gm::PointZ> points;
-    for (std::size_t t = 0; t < nro_neighb; ++t)
+    for (unsigned int t = 0; t < nro_neighb; ++t)
       points.push_back(te::gm::PointZ(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
     double zvalue;
 
     te::gm::Coord2D pg;
-    for (int l = 0; l < outputHeight; l++)
+    for (unsigned int l = 0; l < outputHeight; l++)
     {
-      for (int c = 0; c < outputWidth; c++)
+      for (unsigned int c = 0; c < outputWidth; c++)
       {
         te::gm::Coord2D pg(rx1 + (c * m_resx /*+ m_resx / 2.*/), ry2 - (l * m_resy/* + m_resy / 2.*/));
         te::gm::PointZ pgz(pg.getX(), pg.getY(), m_nodatavalue);
         m_adaptativeTree->nearestNeighborSearch(pg, points, distneighb, nro_neighb);
 
         // Filter elements by raio_max distance
-        int j = 0;
-        for (int i = 0; i < (int)points.size(); i++)
+        size_t j = 0;
+        for (size_t i = 0; i < points.size(); i++)
         {
           if (distneighb[i] <= (m_radius*m_radius))
           {
@@ -205,7 +205,6 @@ void te::mnt::CalculateGrid::Interpolation(te::gm::PointZ& pg, std::vector<te::g
 {
   double Ztotal = 0.;
   double Wi, Wtotal = 0.;
-  int i;
   te::gm::PointZ pgtemp;
 
   if (distq[0] < 1.0e-5)
@@ -214,7 +213,6 @@ void te::mnt::CalculateGrid::Interpolation(te::gm::PointZ& pg, std::vector<te::g
   {
     switch (m_inter)
     {
-
     case 0:
       Ztotal = Interpwqz(pg, points, distq);
       Wtotal = 1.0;
@@ -226,7 +224,7 @@ void te::mnt::CalculateGrid::Interpolation(te::gm::PointZ& pg, std::vector<te::g
       break;
 
     case 2: // Average of Z neighbours values weighted by inverse distance powered by potencia
-      for (i = 0; i<(short)points.size(); i++){
+      for (unsigned int i = 0; i<points.size(); i++){
         Wi = 1. / pow(distq[i], m_power / 2.);
         Ztotal += (points[i].getZ()*Wi);
         Wtotal += Wi;
@@ -234,7 +232,7 @@ void te::mnt::CalculateGrid::Interpolation(te::gm::PointZ& pg, std::vector<te::g
       break;
 
     case 3: // Average of Z values of the neighbours 
-      for (i = 0; i< points.size(); i++){
+      for (unsigned int i = 0; i< points.size(); i++){
         Ztotal += points[i].getZ();
         Wtotal += 1.0;
       }
@@ -243,6 +241,17 @@ void te::mnt::CalculateGrid::Interpolation(te::gm::PointZ& pg, std::vector<te::g
     case 4: // Nearest neighbour
       Ztotal = points[0].getZ();
       Wtotal = 1.0;
+      break;
+
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    default:
       break;
     }
 
@@ -259,9 +268,10 @@ double te::mnt::CalculateGrid::Interpwq(te::gm::PointZ& pg, std::vector<te::gm::
 {
   double Ztotal = 0;
   double Wi, Wtotal = 0.0;
-  int q1 = 0, q2 = 0, q3 = 0, q4 = 0, i, npts = 0; // quadrants
+  int q1 = 0, q2 = 0, q3 = 0, q4 = 0; // quadrants
+  unsigned int  npts = 0;
 
-  for (i = 0; i < points.size(); i++)
+  for (unsigned int i = 0; i < points.size(); i++)
   {
     //Filter the point by quadrant
     if ((q1<1) && (points[i].getX() > pg.getX()) && (points[i].getY() > pg.getY()))
@@ -281,7 +291,7 @@ double te::mnt::CalculateGrid::Interpwq(te::gm::PointZ& pg, std::vector<te::gm::
           npts++;
   }
 
-  for (i = 0; i<npts; i++)
+  for (unsigned int i = 0; i<npts; i++)
   {
     Wi = 1. / pow(distq[i], (double)m_power / 2.);
     Ztotal += (points[i].getZ()*Wi);
@@ -299,13 +309,13 @@ double te::mnt::CalculateGrid::Interpwqz(te::gm::PointZ& pg, std::vector<te::gm:
   double Ztotal = 0;
   double Wi, Wtotal = 0;
   int q1 = 0, q2 = 0, q3 = 0, q4 = 0; // quadrants
-  int j, i;
+  int j;
 
   int use_point = 1;
-  for (i = 0; i < points.size(); i++)
+  for (unsigned int i = 0; i < points.size(); i++)
   {
-    for (j = i - 1; j >= 0; j--)
-      if (points[j].getZ() == points[i].getZ())
+    for (j = (int)i - 1; j >= 0; j--)
+      if (points[(unsigned int)j].getZ() == points[i].getZ())
         break; // Points with equal Z coordinates
 
     use_point = 1; // Use the point
@@ -348,27 +358,27 @@ bool te::mnt::CalculateGrid::GenerateGridSplineGrass()
 
 bool te::mnt::SplineInterpolationGrass::generateGrid()
 {
-  int nro_neighb;
+  unsigned int nro_neighb;
   double rx1, ry2;
-  int NCols;
-  int NLines;
+  unsigned int NCols;
+  unsigned int NLines;
 
   m_tolerance = m_resx/4;
 
   std::auto_ptr<te::rst::Raster> rst = Initialize(true, nro_neighb, rx1, ry2, NCols, NLines);
 
-  //divide em x partes overlaping
-  int nPartsX = m_nPartsX;
-  int nPartsY = m_nPartsY;
-  double deltx = m_env.getUpperRightX()-m_env.getLowerLeftX();// m_env.getWidth();
-  double delty = m_env.getUpperRightY()-m_env.getLowerLeftY();// m_env.getHeight();
+  //divide in x overlaping parts
+  unsigned int nPartsX = m_nPartsX;
+  unsigned int nPartsY = m_nPartsY;
+  double deltx = m_env.getUpperRightX()-m_env.getLowerLeftX();
+  double delty = m_env.getUpperRightY()-m_env.getLowerLeftY();
 
   double ew_region = deltx / (double)nPartsX;
   double ns_region = delty / (double)nPartsY;
 
   double percentageDist = m_overlapping/100;
 
-  int _minimoPontos = std::min(m_minpoints, (int)m_dataset.size());
+  unsigned int _minimoPontos = std::min(m_minpoints, (unsigned int)m_dataset.size());
 
   double resX = m_resx;
   double resY = m_resy;
@@ -378,17 +388,16 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
   double X1 = m_env.getLowerLeftX() + resX/2.;
   double Y1 = m_env.getUpperRightY() - resY/2.;
 
-  //mensagem de auxilio
-  for (int i = 0; i < m_nPartsY; i++)
+  for (unsigned int i = 0; i < m_nPartsY; i++)
   {
     double begin_y = Y1 + (i*ns_region);
     double end_y = Y1 - ((i + 1)*ns_region);
 
     double disty = (end_y - begin_y) * percentageDist;
 
-    for (int j = 0; j < nPartsX; j++)
+    for (unsigned int j = 0; j < nPartsX; j++)
     {
-      //calcula a área de inicio e fim
+      //Calculate the init and final area
       double begin_x = X1 + (j*ew_region);
       double end_x = X1 + ((j + 1)*ew_region);
 
@@ -405,7 +414,7 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
         double overlapDistY = disty*nOverlaping;
 
         int beginLine = std::max((int)((Y1 - begin_y + overlapDistY) / resY), 0);
-        int endLine = std::min((int)((Y1 - end_y - overlapDistY) / resY), NLines);
+        int endLine = std::min((int)((Y1 - end_y - overlapDistY) / resY), (int)NLines);
 
         min_y = std::max(Y1, begin_y - overlapDistY);
         if (beginLine == 0)
@@ -414,7 +423,7 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
           min_y = begin_y - overlapDistY;
 
         int beginCol = std::max((int)((begin_x - X1 - overlapDistX) / resX), 0);
-        int endCol = std::min((int)((end_x - X1 + overlapDistX) / resX), NCols);
+        int endCol = std::min((int)((end_x - X1 + overlapDistX) / resX), (int)NCols);
 
         min_x = std::max(X1, begin_x - overlapDistX);
         if (beginCol == 0)
@@ -422,10 +431,10 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
         else
           min_x = begin_x - overlapDistX;
 
-        //inicia a interpolação
+        //inits the interpolation
         initInterpolation(beginLine, endLine, beginCol, endCol);
 
-        //adiciona os pontos de controle e a area de overlaping
+        //add the points control and the overlaping area
         setControlPoints(min_x, min_y);
 
         poucosPontos = m_obsVect.size() < _minimoPontos;
@@ -437,17 +446,17 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
       m_N.resize(m_nparameters);
       m_TN.resize(m_nparameters);
       m_parVect.resize(m_nparameters);
-      for (int k = 0; k < m_nparameters; k++)
+      for (unsigned int k = 0; k < m_nparameters; k++)
       {
         m_N[k].resize(m_BW);
       }
       /*--------------------------------------*/
 
-      //calcula a grade
+      //calculate the grid
       calculateGrid(min_x, min_y);
 
       /*--------------------------------------*/
-      for (int k = 0; k < m_nparameters; k++)
+      for (unsigned int k = 0; k < m_nparameters; k++)
       {
         m_N[k].clear();
       }
@@ -455,16 +464,16 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
       m_TN.clear();
       /*--------------------------------------*/
 
-      //calcula a grade
-      unsigned int firstLine = std::max((int)((Y1 - begin_y) / resY), 0);
-      unsigned int lastLine = std::min((int)((Y1 - end_y) / resY), NLines);
+      //calculate the grid
+      unsigned int firstLine = (unsigned int)std::max((int)((Y1 - begin_y) / resY), 0);
+      unsigned int lastLine = std::min((unsigned int)((Y1 - end_y) / resY), NLines);
 
-      unsigned int firstCol = std::max((int)((begin_x - X1) / resX), 0);
-      unsigned int lastCol = std::min((int)((end_x - X1) / resX), NCols);
+      unsigned int firstCol = (unsigned int)std::max((int)((begin_x - X1) / resX), 0);
+      unsigned int lastCol = std::min((unsigned int)((end_x - X1) / resX), NCols);
 
-      //atribui os valores calculados para a grade
+      //allows calculated values to grid
       unsigned int l, c;
-      //atribui apenas as linhas do meio
+      //allows only the lines of the medium
       for (l = firstLine; l<=lastLine; l++)
       {
         for (c = firstCol; c <= lastCol; c++)
@@ -488,9 +497,7 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
 
           pg.setZ(interpolation);
 
-        //  unsigned int nl = (NLines - l);
-        //  if (nl >= 0 && nl < m_rst->getNumberOfRows() && c >= 0 && c < m_rst->getNumberOfColumns())
-            m_rst->setValue(c, l, pg.getZ());
+          m_rst->setValue(c, l, pg.getZ());
         }
       }
       m_parVect.clear();
@@ -504,14 +511,14 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
 
 void te::mnt::SplineInterpolationGrass::initInterpolation(int beginLine, int endLine, int beginCol, int endCol)
 {
-  //define o numero de splines
-  m_nsplx = (endCol - beginCol);
-  m_nsply = (endLine - beginLine);
+  //define splines number
+  m_nsplx = (unsigned int)(endCol - beginCol);
+  m_nsply = (unsigned int)(endLine - beginLine);
 
-  //define o numero de paramentros
+  //define parameters number
   m_nparameters = m_nsplx * m_nsply;
 
-  //define o passo norte e oeste
+  //define north and west step
   m_passoWidth = m_resx;
   m_passoHeight = m_resy;
 
@@ -536,18 +543,18 @@ void te::mnt::SplineInterpolationGrass::setControlPoints(double xMin, double yMi
 
   std::size_t nVectorPoints = m_dataset.size();
 
-  //inicializa a media e os pontos
+  //initialize mean and points
   m_mean = 0;
   m_npoints = 0;
 
-  //calcula a media e os pontos
-  for (int i = 0; i<nVectorPoints; i++)
+  //calculate mean and points
+  for (unsigned int i = 0; i<nVectorPoints; i++)
   {
     te::gm::PointZ pp3d = m_dataset.at(i).second;
     node_x(pp3d.getX(), i_x, csi_x, xMin, m_passoWidth);
     node_y(pp3d.getY(), i_y, csi_y, yMin, m_passoHeight);
 
-    if ((i_x >= -1) && (i_x < m_nsplx) && (i_y >= -1) && (i_y < m_nsply))
+    if ((i_x >= -1) && (i_x < (int)m_nsplx) && (i_y >= -1) && (i_y < (int)m_nsply))
     {
       m_mean += pp3d.getZ();
       m_npoints++;
@@ -555,21 +562,21 @@ void te::mnt::SplineInterpolationGrass::setControlPoints(double xMin, double yMi
   }
   m_mean /= (double)m_npoints;
 
-  //cria lista dos pontos
+  //create point list
   m_obsVect.clear();
-  for (int i = 0; i<nVectorPoints; i++)
+  for (unsigned int i = 0; i<nVectorPoints; i++)
   {
     te::gm::PointZ pp3d = m_dataset[i].second;
     node_x(pp3d.getX(), i_x, csi_x, xMin, m_passoWidth);
     node_y(pp3d.getY(), i_y, csi_y, yMin, m_passoHeight);
 
-    if ((i_x >= -1) && (i_x < m_nsplx) && (i_y >= -1) && (i_y < m_nsply))
+    if ((i_x >= -1) && (i_x < (int)m_nsplx) && (i_y >= -1) && (i_y < (int)m_nsply))
     {
-      //atualiza novo ponto
+      //update new point
       te::gm::PointZ npp3d = pp3d;
       npp3d.setZ(pp3d.getZ() - m_mean);
 
-      //adiciona o novo ponto
+      //add a new point
       m_obsVect.push_back(npp3d);
     }
   }
@@ -582,7 +589,6 @@ void te::mnt::SplineInterpolationGrass::setControlPoints(double xMin, double yMi
 
 void te::mnt::SplineInterpolationGrass::normalDefBilin(double xMin, double yMin)
 {
-  int i, k, h, m, n, n0;  /* counters	*/
   double  alpha[2][2];  /* coefficients */
 
   int i_x;  /* x = (xMin + (i_x * passoWidth) + csi_x) */
@@ -592,21 +598,23 @@ void te::mnt::SplineInterpolationGrass::normalDefBilin(double xMin, double yMin)
   double  csi_y;
 
   /*--------------------------------------*/
-  for (k = 0; k < m_nparameters; k++) 
+  for (unsigned int k = 0; k < m_nparameters; k++) 
   {
-    for (h = 0; h < m_BW; h++)
+    for (unsigned int h = 0; h < m_BW; h++)
       m_N[k][h] = 0.;/* Normal matrix inizialization */
     m_TN[k] = 0.;/* Normal vector inizialization */
   }
   /*--------------------------------------*/
 
-  for (i = 0; i < m_npoints; i++) {
+  unsigned int n0;
+  for (unsigned int i = 0; i < m_npoints; i++) 
+  {
 
     te::gm::PointZ pp3D = m_obsVect[i];
     node_x(pp3D.getX(), i_x, csi_x, xMin, m_passoWidth);
     node_y(pp3D.getY(), i_y, csi_y, yMin, m_passoHeight);
 
-    if ((i_x >= -1) && (i_x < m_nsplx) && (i_y >= -1) && (i_y < m_nsply)) 
+    if ((i_x >= -1) && (i_x < (int)m_nsplx) && (i_y >= -1) && (i_y < (int)m_nsply)) 
     {
       csi_x = csi_x / m_passoWidth;
       csi_y = csi_y / m_passoHeight;
@@ -616,24 +624,27 @@ void te::mnt::SplineInterpolationGrass::normalDefBilin(double xMin, double yMin)
       alpha[1][0] = phi(1 - csi_x, csi_y);
       alpha[1][1] = phi(1 - csi_x, 1 - csi_y);
 
-      for (k = 0; k <= 1; k++) {
-        for (h = 0; h <= 1; h++) {
-
-          if (((i_x + k) >= 0) && ((i_x + k) <= (m_nsplx - 1)) && ((i_y + h) >= 0) && ((i_y + h) <= (m_nsply - 1))) 
+      for (unsigned int k = 0; k <= 1; k++)
+      {
+        for (unsigned int h = 0; h <= 1; h++)
+        {
+          if (((i_x + k) <= (m_nsplx - 1)) && ((i_y + h) <= (m_nsply - 1))) 
           {
-            for (m = k; m <= 1; m++) {
+            for (unsigned int m = k; m <= 1; m++)
+            {
               if (m == k) n0 = h;
               else n0 = 0;
 
-              for (n = n0; n <= 1; n++) {
-                if (((i_x + m) >= 0) && ((i_x + m) < m_nsplx) && ((i_y + n) >= 0) && ((i_y + n) < m_nsply))
+              for (unsigned int n = n0; n <= 1; n++)
+              {
+                if (((i_x + m) < m_nsplx) && ((i_y + n) < m_nsply))
                 {
-                  m_N[order(i_x + k, i_y + h, m_nsply)][order(i_x + m, i_y + n, m_nsply) - \
-                    order(i_x + k, i_y + h, m_nsply)] += alpha[k][h] *alpha[m][n];
+                  m_N[(unsigned int)order(i_x + (int)k, i_y + (int)h, m_nsply)][(unsigned int)(order(i_x + (int)m, i_y + (int)n, m_nsply) - \
+                    order(i_x + (int)k, i_y + (int)h, m_nsply))] += alpha[k][h] *alpha[m][n];
                 }
               }
             }
-            m_TN[order(i_x + k, i_y + h, m_nsply)] += pp3D.getZ()* alpha[k][h];
+            m_TN[(unsigned int)order(i_x + (int)k, i_y + (int)h, m_nsply)] += pp3D.getZ()* alpha[k][h];
           }
         }
       }
@@ -649,7 +660,6 @@ void te::mnt::SplineInterpolationGrass::normalDefBilin(double xMin, double yMin)
 
 void te::mnt::SplineInterpolationGrass::normalDefBicubic(double xMin, double yMin)
 {
-  int i, k, h, m, n, n0;  /* counters		*/
   double  alpha[4][4];  /* coefficients */
 
   int i_x;  /* x = (xMin + (i_x * passoWidth) + csi_x) */
@@ -659,21 +669,21 @@ void te::mnt::SplineInterpolationGrass::normalDefBicubic(double xMin, double yMi
   double  csi_y;
 
   /*--------------------------------------*/
-  for (k = 0; k < m_nparameters; k++)
+  for (unsigned int k = 0; k < m_nparameters; k++)
   {
-    for (h = 0; h < m_BW; h++)
+    for (unsigned int h = 0; h < m_BW; h++)
       m_N[k][h] = 0.; /* Normal matrix inizialization */
     m_TN[k] = 0.; /* Normal vector inizialization */
   }
   /*--------------------------------------*/
 
-  for (i = 0; i < m_npoints; i++)
+  for (unsigned int i = 0; i < m_npoints; i++)
   {
     te::gm::PointZ pp3D = m_obsVect[i];
     node_x(pp3D.getX(), i_x, csi_x, xMin, m_passoWidth);
     node_y(pp3D.getY(), i_y, csi_y, yMin, m_passoHeight);
 
-    if ((i_x >= -2) && (i_x <= m_nsplx) && (i_y >= -2) && (i_y <= m_nsply))
+    if ((i_x >= -2) && (i_x <= (int)m_nsplx) && (i_y >= -2) && (i_y <= (int)m_nsply))
     {
       csi_x = csi_x / m_passoWidth;
       csi_y = csi_y / m_passoHeight;
@@ -698,25 +708,26 @@ void te::mnt::SplineInterpolationGrass::normalDefBicubic(double xMin, double yMi
       alpha[3][2] = phi_43(2 - csi_x, 1 - csi_y);
       alpha[3][3] = phi_44(2 - csi_x, 2 - csi_y);
 
-      for (k = -1; k <= 2; k++) 
+      int n0;
+      for (int k = -1; k <= 2; k++) 
       {
-        for (h = -1; h <= 2; h++) 
+        for (int h = -1; h <= 2; h++) 
         {
-          if (((i_x + k) >= 0) && ((i_x + k) < m_nsplx) && ((i_y + h) >= 0) && ((i_y + h) < m_nsply))
+          if (((i_x + k) >= 0) && ((i_x + k) < (int) m_nsplx) && ((i_y + h) >= 0) && ((i_y + h) < (int)m_nsply))
           {
-            for (m = k; m <= 2; m++)
+            for (int m = k; m <= 2; m++)
             {
               if (m == k) n0 = h;
               else n0 = -1;
 
-              for (n = n0; n <= 2; n++) {
-                if (((i_x + m) >= 0) && ((i_x + m) < m_nsplx) && ((i_y + n) >= 0) && ((i_y + n) < m_nsply)) {
-                  m_N[order(i_x + k, i_y + h, m_nsply)][order(i_x + m, i_y + n, m_nsply) - \
-                    order(i_x + k, i_y + h, m_nsply)] += alpha[k + 1][h + 1] * alpha[m + 1][n + 1];
+              for (int n = n0; n <= 2; n++) {
+                if (((i_x + m) >= 0) && ((i_x + m) < (int)m_nsplx) && ((i_y + n) >= 0) && ((i_y + n) < (int)m_nsply)) {
+                  m_N[(unsigned int)order(i_x + k, i_y + h, m_nsply)][(unsigned int)(order(i_x + m, i_y + n, m_nsply) - \
+                    order(i_x + k, i_y + h, m_nsply))] += alpha[(unsigned int)(k + 1)][(unsigned int)(h + 1)] * alpha[(unsigned int)(m + 1)][(unsigned int)(n + 1)];
                 }
               }
             }
-            m_TN[order(i_x + k, i_y + h, m_nsply)] += pp3D.getZ() * alpha[k + 1][h + 1];
+            m_TN[(unsigned int)order(i_x + k, i_y + h, m_nsply)] += pp3D.getZ() * alpha[(unsigned int)(k + 1)][(unsigned int)(h + 1)];
           }
         }
       }
@@ -731,8 +742,8 @@ void te::mnt::SplineInterpolationGrass::normalDefBicubic(double xMin, double yMi
 */
 void te::mnt::SplineInterpolationGrass::nCorrectGrad()
 {
-  int i;
-  int parNum;
+  unsigned int i;
+  unsigned int parNum;
 
   double alpha[3];
   double lambdaX, lambdaY;
@@ -765,16 +776,17 @@ void te::mnt::SplineInterpolationGrass::nCorrectGrad()
 
 bool te::mnt::SplineInterpolationGrass::tcholDec(std::vector< std::vector<double> > &T)
 {
-  int i, j, k;
+  unsigned int i, j, k;
   double  somma;
 
   for (i = 0; i < m_nparameters; i++)
   {
-    for (j = 0; j < m_BW; j++) 
+    for (j = 0; j < m_BW; j++)
     {
       somma = m_N[i][j];
       for (k = 1; k < m_BW; k++)
-        if (((i - k) >= 0) && ((j + k) < m_BW)) somma -= T[i - k][k] * T[i - k][j + k];
+        if ((int(i - k) >= 0) && ((j + k) < m_BW)) 
+          somma -= T[i - k][k] * T[i - k][j + k];
       if (j == 0) {
         if (somma <= 0.0)
           return false;
@@ -808,7 +820,7 @@ double te::mnt::SplineInterpolationGrass::dataInterpolateBilin(double x, double 
   node_x(x, i_x, csi_x, xMin, m_passoWidth);
   node_y(y, i_y, csi_y, yMin, m_passoHeight);
 
-  if ((i_x >= -1) && (i_x < m_nsplx) && (i_y >= -1) && (i_y < m_nsply))
+  if ((i_x >= -1) && (i_x <(int) m_nsplx) && (i_y >= -1) && (i_y < (int)m_nsply))
   {
     csi_x = csi_x / m_passoWidth;
     csi_y = csi_y / m_passoHeight;
@@ -823,8 +835,8 @@ double te::mnt::SplineInterpolationGrass::dataInterpolateBilin(double x, double 
     {
       for (h = 0; h <= 1; h++)
       {
-        if (((i_x + k) >= 0) && ((i_x + k) < m_nsplx) && ((i_y + h) >= 0) && ((i_y + h) < m_nsply))
-          z += m_parVect[order(i_x + k, i_y + h, m_nsply)] * alpha[k][h];
+        if (((i_x + k) >= 0) && ((i_x + k) < (int)m_nsplx) && ((i_y + h) >= 0) && ((i_y + h) < (int)m_nsply))
+          z += m_parVect[(unsigned int)order(i_x + k, i_y + h, m_nsply)] * alpha[(unsigned int)k][(unsigned int)h];
       }
     }
 
@@ -854,7 +866,7 @@ double te::mnt::SplineInterpolationGrass::dataInterpolateBicubic(double x, doubl
   node_x(x, i_x, csi_x, xMin, m_passoWidth);
   node_y(y, i_y, csi_y, yMin, m_passoHeight);
 
-  if ((i_x >= -2) && (i_x <= m_nsplx) && (i_y >= -2) && (i_y <= m_nsply)) {
+  if ((i_x >= -2) && (i_x <= (int)m_nsplx) && (i_y >= -2) && (i_y <= (int)m_nsply)) {
 
     csi_x = csi_x / m_passoWidth;
     csi_y = csi_y / m_passoHeight;
@@ -879,10 +891,12 @@ double te::mnt::SplineInterpolationGrass::dataInterpolateBicubic(double x, doubl
     alpha[3][2] = phi_43(2 - csi_x, 1 - csi_y);
     alpha[3][3] = phi_44(2 - csi_x, 2 - csi_y);
 
-    for (k = -1; k <= 2; k++) {
-      for (h = -1; h <= 2; h++) {
-        if (((i_x + k) >= 0) && ((i_x + k) < m_nsplx) && ((i_y + h) >= 0) && ((i_y + h) < m_nsply))
-          z += m_parVect[order(i_x + k, i_y + h, m_nsply)] * alpha[k + 1][h + 1];
+    for (k = -1; k <= 2; k++) 
+    {
+      for (h = -1; h <= 2; h++) 
+      {
+        if (((i_x + k) >= 0) && ((i_x + k) < (int)m_nsplx) && ((i_y + h) >= 0) && ((i_y + h) < (int)m_nsply))
+          z += m_parVect[(unsigned int)order(i_x + k, i_y + h, m_nsply)] * alpha[(unsigned int)(k + 1)][(unsigned int)(h + 1)];
       }
     }
     interp = true;
@@ -897,7 +911,7 @@ double te::mnt::SplineInterpolationGrass::dataInterpolateBicubic(double x, doubl
 bool te::mnt::SplineInterpolationGrass::tcholSolve()
 {
   std::vector< std::vector<double> > T;
-  int i, j;
+  size_t i, j;
 
   T = m_N;
 
@@ -916,7 +930,9 @@ bool te::mnt::SplineInterpolationGrass::tcholSolve()
 
   /* Backward substitution */
   m_parVect[m_nparameters - 1] = m_parVect[m_nparameters - 1] / T[m_nparameters - 1][0];
-  for (i = m_nparameters - 2; i >= 0; i--) {
+  for (int ii = (int)m_nparameters - 2; ii >= 0; ii--)
+  {
+    i = (size_t)ii;
     for (j = i + 1; j < m_nparameters; j++)
       if ((j - i) < m_BW) m_parVect[i] -= T[i][j - i] * m_parVect[j];
     m_parVect[i] = m_parVect[i] / T[i][0];
@@ -1111,7 +1127,7 @@ bool te::mnt::SplineInterpolationGrass::AdjustLinear(te::gm::LineString *ptol, d
   }
 
   ptol->setNumCoordinates(pts.size());
-  for (int i = 0; i < pts.size(); i++)
+  for (size_t i = 0; i < pts.size(); i++)
   {
     ptol->setPointN(i, pts[i]);
   }

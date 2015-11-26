@@ -189,7 +189,11 @@ void* te::common::Library::getAddress(const std::string& symbol) const throw(Exc
 std::string te::common::Library::getNativeName(const std::string& name) throw()
 {
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
   std::string nativeName = name + ".dll";
+#else
+  std::string nativeName = name + "d.dll";
+#endif
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
   std::string nativeName = "lib" + name + ".so";

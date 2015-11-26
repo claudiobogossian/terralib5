@@ -34,8 +34,6 @@ te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* displa
 : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
   m_updateWatches(0) 
 {
-  // Signals & slots
-  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 }
 
 te::edit::SubtractAreaTool::~SubtractAreaTool()

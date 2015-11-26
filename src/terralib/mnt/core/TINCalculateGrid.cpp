@@ -36,8 +36,8 @@ bool te::mnt::TINCalculateGrid::run()
   double rx1 = m_env.getLowerLeftX() - m_resx/2.; 
   double ry2 = m_env.getUpperRightY() + m_resy/2.;
 
-  int outputWidth = (int)ceil(m_env.getWidth() / m_resx);
-  int outputHeight = (int)ceil(m_env.getHeight() / m_resy);
+  unsigned int outputWidth = (unsigned int)ceil(m_env.getWidth() / m_resx);
+  unsigned int outputHeight = (unsigned int)ceil(m_env.getHeight() / m_resy);
 
   te::gm::Coord2D ulc(rx1, ry2);
 
@@ -47,8 +47,8 @@ bool te::mnt::TINCalculateGrid::run()
 
   bands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "DTM GRID"));
   bands[0]->m_nblocksx = 1;
-  bands[0]->m_nblocksy = outputHeight;
-  bands[0]->m_blkw = outputWidth;
+  bands[0]->m_nblocksy = (int)outputHeight;
+  bands[0]->m_blkw = (int)outputWidth;
   bands[0]->m_blkh = 1;
   bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
   bands[0]->m_noDataValue = m_nodatavalue;
@@ -74,51 +74,53 @@ bool te::mnt::TINCalculateGrid::run()
       if (!NodeDerivatives())
         return false;
 
-  int32_t nodesid[3], neighsid[3];
+  int32_t neighsid[3];
+  int32_t  nodesid[3];
   te::gm::PointZ p3da[3];
   int32_t flin, llin, fcol, lcol;
   short j;
   double	coef[27];
 
   //  To each triangle
-  for (int32_t i = 0; i < (int32_t) m_triang.size(); i++)
+  for (unsigned int i = 0; i < m_triang.size(); i++)
   { // Find Triangle Box
-    if (!NodesId(i, nodesid)) 
+    if (!NodesId((int32_t)i, nodesid)) 
       continue;
     if (!DefineInterLinesColumns(nodesid, flin, llin, fcol, lcol))
       continue;
     for (j = 0; j < 3; j++)
     {
-      p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
-      p3da[j].setY(m_node[nodesid[j]].getNPoint().getY());
-      p3da[j].setZ(m_node[nodesid[j]].getZ());
+      p3da[j].setX(m_node[(unsigned int)nodesid[j]].getNPoint().getX());
+      p3da[j].setY(m_node[(unsigned int)nodesid[j]].getNPoint().getY());
+      p3da[j].setZ(m_node[(unsigned int)nodesid[j]].getZ());
     }
 
     if ((p3da[0].getZ() == dummyvalue) ||
       (p3da[1].getZ() == dummyvalue) ||
       (p3da[2].getZ() == dummyvalue))
     {
-       FillGridValue(i, flin, llin, fcol, lcol, dummyvalue);
+       FillGridValue((int32_t)i, flin, llin, fcol, lcol, dummyvalue);
     }
     else if ((p3da[0].getZ() == p3da[1].getZ()) &&
       (p3da[0].getZ() == p3da[2].getZ()) && (m_gridtype == Linear))
-      FillGridValue(i, flin, llin, fcol, lcol, p3da[0].getZ());
+      FillGridValue((int32_t)i, flin, llin, fcol, lcol, p3da[0].getZ());
     else if ((m_gridtype == Quintico) || (m_gridtype == QuinticoBrkLine))
     {
-      NeighborsId(i, neighsid);
+      if (!NeighborsId((int32_t)i, neighsid))
+        continue;
       for (j = 0; j < 3; j++)
         if (neighsid[j] == -1)
           break;
       if (j == 3)
       {
-        if (DefineAkimaCoeficients(i, nodesid, p3da, coef))
-         FillGridQuintic(i, flin, llin, fcol, lcol, coef);
+        if (DefineAkimaCoeficients((int32_t)i, nodesid, p3da, coef))
+          FillGridQuintic((int32_t)i, flin, llin, fcol, lcol, coef);
       }
       else
-        FillGridValue(i, flin, llin, fcol, lcol, m_nodatavalue);
+        FillGridValue((int32_t)i, flin, llin, fcol, lcol, m_nodatavalue);
     }
     else
-      FillGridLinear(i, p3da, flin, llin, fcol, lcol);
+      FillGridLinear((int32_t)i, p3da, flin, llin, fcol, lcol);
   }
 
   if (m_gridtype == Quintico)    //Quintic Surface Adjust without breaklines
@@ -194,12 +196,7 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
 
       zvalue = ((detx + dety - detz * p3da[0].getZ()) / -detz);
 
-      if (zvalue > m_max)
-        zvalue = dummyvalue;
-      if (zvalue < m_min)
-        zvalue = dummyvalue;
-
-       m_rst->setValue(ncol, nlin, zvalue);
+      m_rst->setValue((unsigned int)ncol, (unsigned int)nlin, zvalue);
     }
   }
 
@@ -267,7 +264,7 @@ bool te::mnt::TINCalculateGrid::FillGridQuintic(int32_t triid, int32_t flin, int
       p4 = p40 + v*p41;
 
       zvalue = p0 + u*(p1 + u*(p2 + u*(p3 + u*(p4 + u*p50))));
-      m_rst->setValue( ncol, nlin,zvalue);
+      m_rst->setValue((unsigned int)ncol, (unsigned int)nlin, zvalue);
     }
   }
 

@@ -80,6 +80,7 @@ te::mnt::MNTGenerationDialog::MNTGenerationDialog(QWidget* parent , Qt::WindowFl
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
@@ -507,9 +508,9 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         }
         else
         {
-          int px = m_ui->m_sepXSpinBox->text().toInt();
-          int py = m_ui->m_sepYSpinBox->text().toInt();
-          int mp = m_ui->m_minPtsSpinBox->text().toInt();
+          unsigned int px = m_ui->m_sepXSpinBox->text().toUInt();
+          unsigned int py = m_ui->m_sepYSpinBox->text().toUInt();
+          unsigned int mp = m_ui->m_minPtsSpinBox->text().toUInt();
           double ov = m_ui->m_overDoubleSpinBox->text().toDouble();
 
           te::mnt::SplineInterpolationGrass *grid = new te::mnt::SplineInterpolationGrass(px, py, mp, ov);
@@ -567,7 +568,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
           dummy.push_back(inputRst.get()->getBand(0)->getProperty()->m_noDataValue);
 
         int inter_i = m_ui->m_interpolatorComboBox->currentIndex();
-        int inter;
+        int inter = 0;
         switch (inter_i)
         {
         case 0: //Bilinear
@@ -584,8 +585,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         double resyo = m_ui->m_resYLineEdit->text().toDouble();
         double resxi = inputRst.get()->getResolutionX();
         double resyi = inputRst.get()->getResolutionY();
-        int outputWidth = m_ui->m_dimCLineEdit->text().toInt();
-        int outputHeight = m_ui->m_dimLLineEdit->text().toInt();
+        unsigned int outputWidth = m_ui->m_dimCLineEdit->text().toUInt();
+        unsigned int outputHeight = m_ui->m_dimLLineEdit->text().toUInt();
         int X1 = inputRst.get()->getExtent()->getLowerLeftX();
         int Y2 = inputRst.get()->getExtent()->getUpperRightY();
         te::gm::Coord2D ulc(X1, Y2);
@@ -594,8 +595,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         std::vector<te::rst::BandProperty*> bands;
         bands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "DTM GRID"));
         bands[0]->m_nblocksx = 1;
-        bands[0]->m_nblocksy = outputHeight;
-        bands[0]->m_blkw = outputWidth;
+        bands[0]->m_nblocksy = (int)outputHeight;
+        bands[0]->m_blkw = (int)outputWidth;
         bands[0]->m_blkh = 1;
         bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
        // bands[0]->m_noDataValue = dummy;
@@ -607,9 +608,9 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         std::vector<std::complex<double> > value;
         double xi, yi, xo, yo;
 
-        for (int l = 0; l < outputHeight; l++)
+        for (unsigned int l = 0; l < outputHeight; l++)
         {
-          for (int c = 0; c < outputWidth; c++)
+          for (unsigned int c = 0; c < outputWidth; c++)
           {
             // Calculate the x and y coordinates of (l,c) corner of the output grid
             xo = (X1 + c * resxo + resxo / 2.);

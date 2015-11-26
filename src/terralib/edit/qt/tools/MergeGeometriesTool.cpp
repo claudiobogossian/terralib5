@@ -56,8 +56,6 @@ te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* 
   m_updateWatches(0),
   m_oidsMerged(0)
 {
-  // Signals & slots
-  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
   setCursor(cursor);
 

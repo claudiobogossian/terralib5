@@ -214,7 +214,7 @@ namespace te
       \param edge is the edge number of the triangle
       \return the line identification
       */
-      int32_t ExchangePolygon(int32_t triangId, int32_t newPolyId, short edge);
+      int32_t ExchangePolygon(int32_t triangId, int32_t newPolyId, unsigned short edge);
 
       /*!
       \brief Method that veryfies if the Isoline is a segment
@@ -230,7 +230,7 @@ namespace te
       */
       bool IsBreaklineSegment(int32_t linid);
 
-      bool IsNeighborOnIsoOrBreakline(int32_t triId, short nviz);
+      bool IsNeighborOnIsoOrBreakline(int32_t triId, unsigned short nviz);
 
       /*!
       \brief Method that creates a Delaunay triangulation

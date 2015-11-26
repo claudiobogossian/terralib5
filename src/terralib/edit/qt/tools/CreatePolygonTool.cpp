@@ -55,9 +55,6 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 {
   setCursor(cursor);
 
-  // Signals & slots
-  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-
   draw();
 }
 

@@ -58,10 +58,6 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
   m_currentStage(FEATURE_SELECTION),
   m_updateWatches(0)
 {
-
-  // Signals & slots
-  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-
   m_currentVertexIndex.makeInvalid();
 
   updateCursor();

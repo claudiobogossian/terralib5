@@ -21,8 +21,8 @@ Adapted from SPRING
 
 #include <vector>
 
-const short MAXTRIANGLES = 50;
-const short CLNODES = 10;
+const int32_t MAXTRIANGLES = 50;
+const int32_t CLNODES = 10;
 
 namespace te
 {
@@ -48,11 +48,11 @@ namespace te
       //....Fill in vector of triangle lines Ids.
       bool LinesId(int32_t *linesId)
       {
+        if (m_line[0] < 0 || m_line[1] < 0 || m_line[2] < 0)
+          return false;
         linesId[0] = m_line[0];
         linesId[1] = m_line[1];
         linesId[2] = m_line[2];
-        if (linesId[0] < 0 || linesId[1] < 0 || linesId[2] < 0)
-          return false;
         return true;
       }
 
@@ -61,9 +61,9 @@ namespace te
       //......edge: edge number (0, 1 or 2).
       //....Return:
       //......Line at edge number.
-      int32_t LineAtEdge(short edge)
+      int32_t LineAtEdge(unsigned short edge)
       {
-        if ((edge > -1) && (edge < 3))
+        if (edge < 3)
           return m_line[edge];
         else
           return -1;
@@ -153,7 +153,7 @@ namespace te
       */
       bool SwapNode();
 
-        /*!
+      /*!
       \brief Method for swap two adjacent polygons
       \return TRUE always
       */
@@ -252,8 +252,9 @@ namespace te
     protected:
       te::gm::PointZ m_point; //!< Node point
       Ntype m_type; //!< node type
-      std::vector<int32_t> m_edge;
 
+    public:
+      std::vector<int32_t> m_edge;
     };
 
     /*!
@@ -315,7 +316,7 @@ namespace te
       \brief Method that reads the identification number of the opposite edge of a given node
       \param triangId is the triangle identification number
       \param nodeId is the node identification number
-      \return the opposite edge identification considering the nodeId
+      \return the opposite edge identification considering the nodeId or -1 if error
       */
       int32_t OppositeEdge(int32_t triangId, int32_t nodeId);
 
@@ -323,7 +324,7 @@ namespace te
       \brief Method that find the oposite lines of a specific node
       \param v is the node identification number
       \param linids is pointer to a list of line identificators
-      \return TRUE if the line is found with no errors or FALSE otherwise
+      \return true if the line is found with no errors or false otherwise
       */
       bool NodeOppositeLines(int32_t v, std::vector<int32_t> &linids);
 
@@ -402,7 +403,7 @@ namespace te
       \param v is the node identification number
       \return the right or left polygon of a line containing v or FALSE (-1L) otherwise
       */
-      int32_t NodeTriangle(int32_t v);
+     int32_t NodeTriangle(int32_t v);
 
       /*!
       \brief Method that includes a node in a triangle list
@@ -568,7 +569,6 @@ namespace te
       \return TRUE if the gradient grid is filled or FALSE otherwise
       */
       bool DefineInterLinesColumns(int32_t *nodesid, int32_t &flin, int32_t &llin, int32_t &fcol, int32_t &lcol);
-
 
       int m_srid;                                  //!< Attribute with spatial reference information
 

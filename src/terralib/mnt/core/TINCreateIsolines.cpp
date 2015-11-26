@@ -39,9 +39,9 @@ bool te::mnt::TINCreateIsolines::run()
         continue;
       for (size_t j = 0; j < 3; j++)
       {
-        p3da[j].setX(m_node[nodesid[j]].getNPoint().getX());
-        p3da[j].setY(m_node[nodesid[j]].getNPoint().getY());
-        p3da[j].setZ(m_node[nodesid[j]].getZ());
+        p3da[j].setX(m_node[(unsigned int)nodesid[j]].getNPoint().getX());
+        p3da[j].setY(m_node[(unsigned int)nodesid[j]].getNPoint().getY());
+        p3da[j].setZ(m_node[(unsigned int)nodesid[j]].getZ());
       }
       if (!testVertexValues(cvalue, p3da))
         continue;

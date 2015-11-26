@@ -36,6 +36,8 @@
 #include "SlopeAction.h"
 #include "SmoothAction.h"
 #include "TINGenerationAction.h"
+#include "VolumeAction.h"
+
 #include "Plugin.h"
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
@@ -170,6 +172,10 @@ void te::qt::plugins::mnt::Plugin::registerActions()
   connect(m_ShowValue, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_ShowValue->getAction());
 
+  m_Volume = new te::qt::plugins::mnt::VolumeAction(m_mntMenu);
+  connect(m_Volume, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Volume->getAction());
+
 }
 
 void  te::qt::plugins::mnt::Plugin::unRegisterActions()
@@ -180,6 +186,7 @@ void  te::qt::plugins::mnt::Plugin::unRegisterActions()
   delete m_Slope;
   delete m_Smooth;
   delete m_ShowValue;
+  delete m_Volume;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::mnt::Plugin)

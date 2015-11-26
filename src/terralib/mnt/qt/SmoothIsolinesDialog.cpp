@@ -68,6 +68,7 @@ te::mnt::SmoothIsolinesDialog::SmoothIsolinesDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 }
@@ -342,35 +343,37 @@ void te::mnt::SmoothIsolinesDialog::onOkPushButtonClicked()
 
   delete iso;
 
-  if (m_toFile)
+  if (result)
   {
-    // let's include the new datasource in the managers
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id = boost::uuids::to_string(u);
+    if (m_toFile)
+    {
+      // let's include the new datasource in the managers
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
 
-    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-    ds->setConnInfo(outdsinfo);
-    ds->setTitle(uri.stem().string());
-    ds->setAccessDriver("OGR");
-    ds->setType("OGR");
-    ds->setDescription(uri.string());
-    ds->setId(id);
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      ds->setConnInfo(outdsinfo);
+      ds->setTitle(uri.stem().string());
+      ds->setAccessDriver("OGR");
+      ds->setType("OGR");
+      ds->setDescription(uri.string());
+      ds->setId(id);
 
-    te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
-    newds->open();
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-    m_outputDatasource = ds;
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+      newds->open();
+      te::da::DataSourceInfoManager::getInstance().add(ds);
+      m_outputDatasource = ds;
+    }
+
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_outputLayer = converter(dt);
   }
-
-  // creating a layer for the result
-  te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
-
-  te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
-
-  te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
-  m_outputLayer = converter(dt);
-
   this->setCursor(Qt::ArrowCursor);
   accept();
 }

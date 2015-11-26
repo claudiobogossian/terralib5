@@ -108,14 +108,30 @@ void te::mnt::CreateIsolinesDialog::setLayers(std::list<te::map::AbstractLayerPt
           std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
           if (dsType->hasGeom())
           {
-            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            te::gm::GeomType gmType = geomProp->getGeometryType();
-            if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-              gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
+            std::vector<te::dt::Property*> props = dsType->getProperties();
+            bool hasval = false;
+            for (size_t p = 0; p < props.size(); p++)
             {
-              m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+              if (props[p]->getName().compare("val1") == 0 ||
+                props[p]->getName().compare("val2") == 0 ||
+                props[p]->getName().compare("val3") ==0)
+              {
+                hasval = true;
+                break;
+              }
             }
-            geomProp.release();
+
+            if (hasval)
+            {
+              std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+              te::gm::GeomType gmType = geomProp->getGeometryType();
+              if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
+                gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
+              {
+                m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+              }
+              geomProp.release();
+            }
           }
           if (dsType->hasRaster()) //GRID
           {
@@ -415,6 +431,8 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
   std::map<std::string, std::string> outdsinfo;
   boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
+  bool result = false;
+
   if (m_toFile)
   {
     if (boost::filesystem::exists(uri))
@@ -469,7 +487,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
 
     ci->setParams(val, guideval, m_max, m_min, m_dummy, m_hasDummy);
     std::auto_ptr<te::rst::Raster> raster = ci->getPrepareRaster();
-    ci->run(raster);
+    result = ci->run(raster);
   }
   else
   {
@@ -513,40 +531,43 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
     Tin->setSRID(m_inputLayer->getSRID());
     Tin->setParams(val, guideval, tol);
 
-    bool result = Tin->run();
+    result = Tin->run();
 
     delete Tin;
 
   }
 
-  if (m_toFile)
+  if (result)
   {
-    // let's include the new datasource in the managers
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id = boost::uuids::to_string(u);
+    if (m_toFile)
+    {
+      // let's include the new datasource in the managers
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
 
-    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-    ds->setConnInfo(outdsinfo);
-    ds->setTitle(uri.stem().string());
-    ds->setAccessDriver("OGR");
-    ds->setType("OGR");
-    ds->setDescription(uri.string());
-    ds->setId(id);
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      ds->setConnInfo(outdsinfo);
+      ds->setTitle(uri.stem().string());
+      ds->setAccessDriver("OGR");
+      ds->setType("OGR");
+      ds->setDescription(uri.string());
+      ds->setId(id);
 
-    te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
-    newds->open();
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-    m_outputDatasource = ds;
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+      newds->open();
+      te::da::DataSourceInfoManager::getInstance().add(ds);
+      m_outputDatasource = ds;
+    }
+
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_outputLayer = converter(dt);
   }
-
-  // creating a layer for the result
-  te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
-
-  te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
-
-  te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
-  m_outputLayer = converter(dt);
 
   this->setCursor(Qt::ArrowCursor);
   accept();

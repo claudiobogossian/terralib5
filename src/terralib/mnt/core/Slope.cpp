@@ -78,8 +78,8 @@ bool te::mnt::Slope::run()
   double rx1 = m_env.getLowerLeftX();
   double ry2 = m_env.getUpperRightY();
 
-  int outputWidth = (int)ceil(m_env.getWidth() / m_resx);
-  int outputHeight = (int)ceil(m_env.getHeight() / m_resy);
+  unsigned int outputWidth = (unsigned int)ceil(m_env.getWidth() / m_resx);
+  unsigned int outputHeight = (unsigned int)ceil(m_env.getHeight() / m_resy);
 
   te::gm::Coord2D ulc(rx1, ry2);
 
@@ -89,8 +89,8 @@ bool te::mnt::Slope::run()
 
   bands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "DTM GRID"));
   bands[0]->m_nblocksx = 1;
-  bands[0]->m_nblocksy = outputHeight;
-  bands[0]->m_blkw = outputWidth;
+  bands[0]->m_nblocksy = (int)outputHeight;
+  bands[0]->m_blkw = (int)outputWidth;
   bands[0]->m_blkh = 1;
   bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
   bands[0]->m_noDataValue = m_nodatavalue;
@@ -107,30 +107,31 @@ bool te::mnt::Slope::run()
     double m1, m2;
 
     //To each triangle
-    for (int32_t i = 0; i < m_ltriang; i++)
+    for (unsigned int i = 0; i < (unsigned int)m_ltriang; i++)
     {
       // Find Triangle Box
-      NodesId(i, nodesid);
+      if (!NodesId((int32_t)i, nodesid))
+        continue;
       if (!DefineInterLinesColumns(nodesid, flin, llin, fcol, lcol))
         continue;
 
       //Special cases
       m1 = m2 = std::numeric_limits<double>::max();
-      if ((m_node[nodesid[1]].getY() - m_node[nodesid[0]].getY()) != 0.0)
-        m1 = (m_node[nodesid[1]].getX() - m_node[nodesid[0]].getX()) /
-        (m_node[nodesid[1]].getY() - m_node[nodesid[0]].getY());
+      if ((m_node[(unsigned int)nodesid[1]].getY() - m_node[(unsigned int)nodesid[0]].getY()) != 0.0)
+        m1 = (m_node[(unsigned int)nodesid[1]].getX() - m_node[(unsigned int)nodesid[0]].getX()) /
+        (m_node[(unsigned int)nodesid[1]].getY() - m_node[(unsigned int)nodesid[0]].getY());
 
-      if ((m_node[nodesid[2]].getY() - m_node[nodesid[0]].getY()) != 0.0)
-        m2 = (m_node[nodesid[2]].getX() - m_node[nodesid[0]].getX()) /
-        (m_node[nodesid[2]].getY() - m_node[nodesid[0]].getY());
+      if ((m_node[(unsigned int)nodesid[2]].getY() - m_node[(unsigned int)nodesid[0]].getY()) != 0.0)
+        m2 = (m_node[(unsigned int)nodesid[2]].getX() - m_node[(unsigned int)nodesid[0]].getX()) /
+        (m_node[(unsigned int)nodesid[2]].getY() - m_node[(unsigned int)nodesid[0]].getY());
 
       if (fabs(m1 - m2) < m_tol)
-        FillGridValue(i, flin, llin, fcol, lcol, m_nodatavalue);
+        FillGridValue((int32_t)i, flin, llin, fcol, lcol, m_nodatavalue);
       else
       {
         // Calculate gradient of triangle
         double decvalue = TriangleGradient(nodesid, m_gradtype, m_slopetype);
-        FillGridValue(i, flin, llin, fcol, lcol, decvalue);
+        FillGridValue((int32_t)i, flin, llin, fcol, lcol, decvalue);
       }
     }
   }
@@ -147,7 +148,7 @@ bool te::mnt::Slope::run()
     m_dx = m_resx;
     m_dy = m_resy;
 
-    te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_srid);
+    te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)m_srid);
 
     if (unitin && unitin->getId() == te::common::UOM_Degree)
     {
@@ -208,9 +209,9 @@ double te::mnt::Slope::TriangleGradient(int32_t *nodesid, char gradtype, char sl
 
   for (j = 0; j < 3; j++)
   {
-    p3da[j].setX(m_node[nodesid[j]].getX());
-    p3da[j].setY(m_node[nodesid[j]].getY());
-    p3da[j].setZ(m_node[nodesid[j]].getZ());
+    p3da[j].setX(m_node[(unsigned int)nodesid[j]].getX());
+    p3da[j].setY(m_node[(unsigned int)nodesid[j]].getY());
+    p3da[j].setZ(m_node[(unsigned int)nodesid[j]].getZ());
   }
 
   //Special cases

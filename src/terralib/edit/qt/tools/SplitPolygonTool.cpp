@@ -46,10 +46,7 @@
 
 te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent)
-{
-  // Signals & slots
-  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-}
+{}
 
 te::edit::SplitPolygonTool::~SplitPolygonTool()
 {

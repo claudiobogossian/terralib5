@@ -75,6 +75,23 @@
       <item>
        <widget class="QComboBox" name="m_vectorlayersComboBox"/>
       </item>
+      <item>
+       <widget class="QLabel" name="m_attributeLabel">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Identifier Attribute:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="m_attributeComboBox"/>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_selectCheckBox">
+        <property name="text">
+         <string>Use selected geometries</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -93,23 +110,6 @@
       </item>
       <item>
        <widget class="QLineEdit" name="m_quotaLineEdit"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="m_volumeLabel">
-        <property name="text">
-         <string>Volume:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="m_volumeCcomboBox"/>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="m_selectCheckBox">
-        <property name="text">
-         <string>Use selected geometries by pointing</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>

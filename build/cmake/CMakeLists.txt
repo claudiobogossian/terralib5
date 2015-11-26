@@ -140,6 +140,10 @@ elseif(APPLE)
   add_definitions(-ftemplate-depth-1024)  
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic ")
+endif()
+
 # Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
 if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER  2.8.9)
   cmake_policy(SET CMP0020 NEW)
@@ -179,19 +183,12 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang"))
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic ")
+if(MSVC)
+  set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 
-if(APPLE)
-  if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES AND TERRALIB_BUILD_AS_BUNDLE)
-    set(CMAKE_INSTALL_NAME_DIR "@executable_path/../lib")
-  else()
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${TERRALIB_DESTINATION_LIBRARY}")
-    set(CMAKE_SKIP_BUILD_RPATH FALSE)
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-  endif()
+if(APPLE AND TERRALIB_BUILD_AS_BUNDLE)
+  set(CMAKE_INSTALL_NAME_DIR "@executable_path/../lib")
 endif()
 
 

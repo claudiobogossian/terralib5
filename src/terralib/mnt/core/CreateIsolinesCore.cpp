@@ -156,19 +156,19 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
 
   std::vector<std::vector<te::gm::LineString*> >   vecSegments;
 
-  for (int i = 0; i < m_values.size(); i++)
+  for (unsigned int i = 0; i < m_values.size(); i++)
   {
     std::vector<te::gm::LineString*> vecLine;
     vecSegments.push_back(vecLine);
   } 
 
-  int numRows = raster->getNumberOfRows();
-  int numThreads = 8;
+  unsigned int numRows = raster->getNumberOfRows();
+  unsigned int numThreads = 8;
   std::vector<RasterBlockSize> vecBlocks = calculateBlocks(numRows, numThreads);
 
   std::vector<GenerateSegmentsParams*> vecGenerateParams;
 
-  for (int i = 0; i < numThreads; ++i)
+  for (unsigned int i = 0; i < numThreads; ++i)
   {
     vecGenerateParams.push_back(new GenerateSegmentsParams());
   }
@@ -176,7 +176,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   rstMemoryBlock(raster, vecBlocks, vecGenerateParams);
  
 
-  for (int vg = 0; vg < vecGenerateParams.size(); ++vg)
+  for (unsigned int vg = 0; vg < vecGenerateParams.size(); ++vg)
   {
     GenerateSegmentsParams* currentBlock = vecGenerateParams[vg];
     const std::vector<std::vector<te::gm::LineString*> >& allQuotas = currentBlock->m_vecSegments;
@@ -191,7 +191,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
     }
   }
 
-  for (int i = 0; i < numThreads; ++i)
+  for (unsigned int i = 0; i < numThreads; ++i)
   {
     delete vecGenerateParams[i];
   }
@@ -201,7 +201,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   vecParams.resize(m_values.size());
   boost::thread_group thread;
 
-  for (int idQuota = 0; idQuota < vecParams.size(); ++idQuota)
+  for (unsigned int idQuota = 0; idQuota < vecParams.size(); ++idQuota)
   {
     vecParams[idQuota].m_quota = m_values[idQuota];
     vecParams[idQuota].m_vecSegments = vecSegments[idQuota];
@@ -212,9 +212,9 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
 
   
   std::vector<te::gm::LineString*> lsOut;
-  for (int idQuota = 0; idQuota < vecParams.size(); ++idQuota)
+  for (unsigned int idQuota = 0; idQuota < vecParams.size(); ++idQuota)
   {
-    for (int i = 0; i < vecParams[idQuota].m_lsOut.size(); ++i)
+    for (unsigned int i = 0; i < vecParams[idQuota].m_lsOut.size(); ++i)
     {
       lsOut.push_back(vecParams[idQuota].m_lsOut[i]);
     }
@@ -234,7 +234,7 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
   boost::thread_group threadGenerateSegments;
 
  
-  for (int vb = 0; vb < vecBlocks.size(); ++vb)
+  for (unsigned int vb = 0; vb < vecBlocks.size(); ++vb)
   {
     te::gm::Coord2D coordLowerLeft = raster->getGrid()->gridToGeo(0, vecBlocks[vb].m_finalRow);
     te::gm::Coord2D coordUpperRight = raster->getGrid()->gridToGeo(raster->getNumberOfColumns() - 1, vecBlocks[vb].m_initalRow);
@@ -280,17 +280,17 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
   }
   threadGenerateSegments.join_all();
 }
-std::vector<RasterBlockSize> te::mnt::CreateIsolines::calculateBlocks(int numRows, int numThreads)
+std::vector<RasterBlockSize> te::mnt::CreateIsolines::calculateBlocks(unsigned int numRows, unsigned int numThreads)
 {
-  int calc = (numRows / numThreads) - 1;
+  int calc = (int)(numRows / numThreads) - 1;
   int aux = 0;
   int var = calc;
   struct RasterBlockSize rasterBlock;
   std::vector<RasterBlockSize> rasterBlockSize;
 
-  for (int i = 1; i < numThreads; i++)
+  for (unsigned int i = 1; i < numThreads; i++)
   {
-    rasterBlock.m_idThread = i;
+    rasterBlock.m_idThread = (int)i;
     rasterBlock.m_numRows = var + 1;
     rasterBlock.m_initalRow = aux;
     rasterBlock.m_finalRow = calc;
@@ -298,10 +298,10 @@ std::vector<RasterBlockSize> te::mnt::CreateIsolines::calculateBlocks(int numRow
     aux = calc;
     calc += var;
   }
-  int dif = numThreads - 1;
+  int dif = (int)numThreads - 1;
   int sum = dif + 1;
   int allRasters = var * dif;
-  int lastRaster = abs(allRasters - numRows);
+  int lastRaster = abs(allRasters - (int)numRows);
   calc = 0;
   calc = aux + lastRaster;
   rasterBlock.m_idThread = sum;
@@ -373,7 +373,7 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
       }
       else
       {
-        for (int idQuota = 0; idQuota < nvals.size(); ++idQuota)
+        for (unsigned int idQuota = 0; idQuota < nvals.size(); ++idQuota)
         {
           quota = nvals[idQuota];
           double delta = 0.0001;
@@ -535,12 +535,12 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
   bool borda;
   bool newiso = false;
 
-  for (int i = 0; i < vecSegments.size(); ++i)
-    segmentsTree.insert(*(vecSegments[i]->getMBR()), i);
+  for (unsigned int i = 0; i < vecSegments.size(); ++i)
+    segmentsTree.insert(*(vecSegments[i]->getMBR()), (int)i);
 
   
-  te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid);
-  double tol;
+  te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)srid);
+  double tol=0;
   if (unitin->getId() == te::common::UOM_Metre)
   {
     tol = 0.000001;
@@ -552,7 +552,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
 
   std::vector<te::gm::Envelope> vecEnvelope;
 
-  for (int l = 0; l < vecSegments.size(); ++l)
+  for (unsigned int l = 0; l < vecSegments.size(); ++l)
   {
     std::set<unsigned int>::iterator id = lineRemoved.find(l);
     if (id != lineRemoved.end())
@@ -568,7 +568,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
     currentSegment->setNumCoordinates(vecSegments[l]->size());
     currentSegment = vecSegments[l];
 
-    segmentsTree.remove(*(currentSegment->getMBR()), l);
+    segmentsTree.remove(*(currentSegment->getMBR()), (int)l);
     lineRemoved.insert(l);
 
     vecPoints.clear();
@@ -592,29 +592,29 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
 
       std::sort(candidate.begin(), candidate.end());
 
-      for (int i = 0; i < candidate.size(); ++i)
+      for (unsigned int i = 0; i < candidate.size(); ++i)
       {
-        if (std::find(vecEnvelope.begin(), vecEnvelope.end(), *vecSegments[candidate[i]]->getMBR()) != vecEnvelope.end())
+        if (std::find(vecEnvelope.begin(), vecEnvelope.end(), *vecSegments[(unsigned int)candidate[i]]->getMBR()) != vecEnvelope.end())
         {
           continue;
         }
 
-        te::gm::PointZ ptStartC(vecSegments[candidate[i]]->getX(0), vecSegments[candidate[i]]->getY(0), vecSegments[candidate[i]]->getZ(1));
-        te::gm::PointZ ptEndC(vecSegments[candidate[i]]->getX(1), vecSegments[candidate[i]]->getY(1), vecSegments[candidate[i]]->getZ(1));
-        te::gm::PointZ ptEnd(vecPoints[npts - 1].getX(), vecPoints[npts - 1].getY(), vecPoints[npts - 1].getZ());
+        te::gm::PointZ ptStartC(vecSegments[(unsigned int)candidate[i]]->getX(0), vecSegments[(unsigned int)candidate[i]]->getY(0), vecSegments[(unsigned int)candidate[i]]->getZ(1));
+        te::gm::PointZ ptEndC(vecSegments[(unsigned int)candidate[i]]->getX(1), vecSegments[(unsigned int)candidate[i]]->getY(1), vecSegments[(unsigned int)candidate[i]]->getZ(1));
+        te::gm::PointZ ptEnd(vecPoints[(unsigned int)npts - 1].getX(), vecPoints[(unsigned int)npts - 1].getY(), vecPoints[(unsigned int)npts - 1].getZ());
 
         if (equal(ptStartC, ptEnd, tol))
         {
           te::gm::PointZ pt;
-          pt.setX(vecSegments[candidate[i]]->getEndPoint()->getX());
-          pt.setY(vecSegments[candidate[i]]->getEndPoint()->getY());
-          pt.setZ(vecSegments[candidate[i]]->getEndPoint()->getZ());
+          pt.setX(vecSegments[(unsigned int)candidate[i]]->getEndPoint()->getX());
+          pt.setY(vecSegments[(unsigned int)candidate[i]]->getEndPoint()->getY());
+          pt.setZ(vecSegments[(unsigned int)candidate[i]]->getEndPoint()->getZ());
 
           vecPoints.push_back(pt);
           ++npts;
 
-          segmentsTree.remove(*(vecSegments[candidate[i]]->getMBR()), candidate[i]);
-          lineRemoved.insert(candidate[i]);
+          segmentsTree.remove(*(vecSegments[(unsigned int)candidate[i]]->getMBR()), candidate[i]);
+          lineRemoved.insert((unsigned int)candidate[i]);
 
           currentSegment = new te::gm::LineString(0, te::gm::LineStringZType);
           currentSegment->setNumCoordinates(currentSegment->size() + 1);
@@ -627,21 +627,21 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
         else if (equal(ptEndC, ptEnd, tol))
         {
           te::gm::PointZ pt;
-          pt.setX(vecSegments[candidate[i]]->getStartPoint()->getX());
-          pt.setY(vecSegments[candidate[i]]->getStartPoint()->getY());
-          pt.setZ(vecSegments[candidate[i]]->getEndPoint()->getZ());
+          pt.setX(vecSegments[(unsigned int)candidate[i]]->getStartPoint()->getX());
+          pt.setY(vecSegments[(unsigned int)candidate[i]]->getStartPoint()->getY());
+          pt.setZ(vecSegments[(unsigned int)candidate[i]]->getEndPoint()->getZ());
 
           vecPoints.push_back(pt);
           ++npts;
 
-          segmentsTree.remove(*(vecSegments[candidate[i]]->getMBR()), candidate[i]);
-          lineRemoved.insert(candidate[i]);
+          segmentsTree.remove(*(vecSegments[(unsigned int)candidate[i]]->getMBR()), candidate[i]);
+          lineRemoved.insert((unsigned int)candidate[i]);
 
           currentSegment = new te::gm::LineString(0, te::gm::LineStringZType);
           currentSegment->setNumCoordinates(currentSegment->size() + 1);
-          currentSegment->setPointZ(currentSegment->size() - 1, vecPoints[npts - 2].getX(), vecPoints[npts - 2].getY(), vecPoints[npts - 2].getZ());
+          currentSegment->setPointZ(currentSegment->size() - 1, vecPoints[(unsigned int)npts - 2].getX(), vecPoints[(unsigned int)npts - 2].getY(), vecPoints[(unsigned int)npts - 2].getZ());
           currentSegment->setNumCoordinates(currentSegment->size() + 1);
-          currentSegment->setPointZ(currentSegment->size() - 1, vecPoints[npts - 1].getX(), vecPoints[npts - 1].getY(), vecPoints[npts - 1].getZ());
+          currentSegment->setPointZ(currentSegment->size() - 1, vecPoints[(unsigned int)npts - 1].getX(), vecPoints[(unsigned int)npts - 1].getY(), vecPoints[(unsigned int)npts - 1].getZ());
 
           hasSegment = true;
           break;
@@ -661,14 +661,14 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
 
           currentSegment = new te::gm::LineString(0, te::gm::LineStringZType);
           currentSegment->setNumCoordinates(currentSegment->size() + 1);
-          currentSegment->setPointZ(currentSegment->size() - 1, vecPoints[npts - 2].getX(), vecPoints[npts - 2].getY(), vecPoints[npts - 1].getZ());
+          currentSegment->setPointZ(currentSegment->size() - 1, vecPoints[(unsigned int)npts - 2].getX(), vecPoints[(unsigned int)npts - 2].getY(), vecPoints[(unsigned int)npts - 1].getZ());
           currentSegment->setNumCoordinates(currentSegment->size() + 1);
-          currentSegment->setPointZ(currentSegment->size() - 1, vecPoints[npts - 1].getX(), vecPoints[npts - 1].getY(), vecPoints[npts - 1].getZ());
+          currentSegment->setPointZ(currentSegment->size() - 1, vecPoints[(unsigned int)npts - 1].getX(), vecPoints[(unsigned int)npts - 1].getY(), vecPoints[(unsigned int)npts - 1].getZ());
           hasSegment = true;
         }
       }
-      te::gm::PointZ ptStart(vecPoints[0].getX(), vecPoints[0].getY(), vecPoints[npts - 1].getZ());
-      te::gm::PointZ ptEnd(vecPoints[npts - 1].getX(), vecPoints[npts - 1].getY(), vecPoints[npts - 1].getZ());
+      te::gm::PointZ ptStart(vecPoints[0].getX(), vecPoints[0].getY(), vecPoints[(unsigned int)npts - 1].getZ());
+      te::gm::PointZ ptEnd(vecPoints[(unsigned int)npts - 1].getX(), vecPoints[(unsigned int)npts - 1].getY(), vecPoints[(unsigned int)npts - 1].getZ());
       if (npts > 2 && equal(ptStart, ptEnd, tol))
       {
         newiso = true;
@@ -679,7 +679,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
     if (newiso || segmentsTree.isEmpty())
     {
       te::gm::LineString* lineOut = new te::gm::LineString(vecPoints.size(), te::gm::LineStringZType);
-      for (int l = 0; l < vecPoints.size(); ++l)
+      for (unsigned int l = 0; l < vecPoints.size(); ++l)
       {
         lineOut->setPointZ(l, vecPoints[l].getX(), vecPoints[l].getY(), vecPoints[l].getZ());
       }
@@ -727,7 +727,6 @@ bool te::mnt::CreateIsolines::SaveIso(std::vector<te::gm::LineString*> lsOut)
   dt->add(prop2);
 
   te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
-  te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
 
   int id = 0;
 
