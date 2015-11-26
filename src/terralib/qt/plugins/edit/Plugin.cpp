@@ -180,6 +180,10 @@ void te::qt::plugins::edit::Plugin::onActionActivated(bool)
 
 void te::qt::plugins::edit::Plugin::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
+  // Blocks the edit toolbar in TerraAmazon project
+  if (te::qt::af::AppCtrlSingleton::getInstance().getAppName().compare("TerraAmazon", Qt::CaseInsensitive) == 0)
+    return;
+
   switch(e->m_id)
   {
     case te::qt::af::evt::DRAWING_FINISHED:
@@ -276,6 +280,10 @@ void te::qt::plugins::edit::Plugin::drawStashed()
 
 void te::qt::plugins::edit::Plugin::updateDelegate(const bool& add)
 {
+  // Blocks the edit toolbar in TerraAmazon project
+  if (te::qt::af::AppCtrlSingleton::getInstance().getAppName().compare("TerraAmazon", Qt::CaseInsensitive) == 0)
+    return;
+
   te::qt::widgets::LayerItemView* view = getLayerExplorer();
 
   if(view == 0)
