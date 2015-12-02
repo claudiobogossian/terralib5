@@ -83,8 +83,16 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
   te::da::DataSourceInfoManager::iterator itEnd = te::da::DataSourceInfoManager::getInstance().end();
   te::da::DataSourceInfoManager::iterator it;
 
+  std::vector<std::string> dsIdVec;
+  for (std::list<te::map::AbstractLayerPtr>::const_iterator itL = layers.begin(); itL != layers.end(); ++itL)
+    dsIdVec.push_back(itL->get()->getDataSourceId());
+
   for(it=itBegin; it!=itEnd; ++it)
   {
+
+    if (std::find(dsIdVec.begin(), dsIdVec.end(), it->second->getId()) == dsIdVec.end())
+      continue;
+
     bool ogrDsrc = it->second->getAccessDriver() == "OGR";
 
     writer->writeStartElement("te_da:DataSource");
