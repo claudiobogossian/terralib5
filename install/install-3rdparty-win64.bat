@@ -256,8 +256,6 @@ set PNGD_LIBRARY=%PNG_DIR%\deploy\lib\libpng15d.lib
  cd %PNG_DIR%\..
 :: ====
 
-pause
-
 ::  GEOS 
 set G_DIR=%CD%\libgeos-3.5.0
 set GEOS_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
@@ -287,18 +285,18 @@ set GEOSCD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\geos_c_id.lib
 
   nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES >nul 2>nul
 
-  copy src\*.dll .\lib >nul 2>nul
-  copy src\*.lib .\lib >nul 2>nul
+  xcopy src\*.dll .\lib >nul 2>nul
+  xcopy src\*.lib .\lib >nul 2>nul
   
 ::  INSTALL
   IF NOT EXIST %GEOS_INCLUDE_DIR%\geos mkdir %GEOS_INCLUDE_DIR%\geos  
   
   xcopy /S include\geos\*.h %GEOS_INCLUDE_DIR%\geos >nul 2>nul  
-  copy capi\geos_c.h %GEOS_INCLUDE_DIR%\geos >nul 2>nul  
-  copy include\geos.h %GEOS_INCLUDE_DIR%\geos >nul 2>nul  
-  copy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
-  copy lib\*i.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
-  copy lib\*id.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
+  xcopy capi\geos_c.h %GEOS_INCLUDE_DIR%\geos >nul 2>nul  
+  xcopy include\geos.h %GEOS_INCLUDE_DIR%\geos >nul 2>nul  
+  xcopy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
+  xcopy lib\*i.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
+  xcopy lib\*id.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
 
   echo done.
 
