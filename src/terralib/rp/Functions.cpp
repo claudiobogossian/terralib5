@@ -2727,5 +2727,49 @@ namespace te
       return true;
     }
     
+    void CreateFixedStepPalette( 
+      const double paletteSize,
+      std::vector< te::rst::BandProperty::ColorEntry >& palette )
+    {
+      const unsigned int perBandLevels = (unsigned int)pow( (double)paletteSize, 
+        ( 1. / 3. ) );
+      const unsigned int levelStep = (unsigned int)std::floor( 256. / 
+        (double)(paletteSize + 1) );
+
+      unsigned int level = 0;      
+      te::rst::BandProperty::ColorEntry auxColorEntry;
+      auxColorEntry.c4 = 255;
+      
+      palette.resize( paletteSize, auxColorEntry );
+    
+      while( level < paletteSize ) 
+      {
+        if( auxColorEntry.c1 > 255 ) 
+        {
+          auxColorEntry.c1 = auxColorEntry.c1 % 255;
+    
+          auxColorEntry.c2 += levelStep;
+    
+          if( auxColorEntry.c2 > 255 )
+          {
+            auxColorEntry.c2 = auxColorEntry.c2 % 255;
+    
+            auxColorEntry.c3 += levelStep;
+    
+            if( auxColorEntry.c3 > 255 )
+            {
+              auxColorEntry.c3 = auxColorEntry.c3 % 255;
+            }
+          }
+        }
+        
+        palette[ level ] = auxColorEntry;
+    
+        auxColorEntry.c1 += levelStep;
+    
+        ++level;
+      }
+    }
+    
   } // end namespace rp
 }   // end namespace te
