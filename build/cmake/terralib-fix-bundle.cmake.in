@@ -1,4 +1,3 @@
-
 #
 #  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 #
@@ -208,14 +207,16 @@ elseif(APPLE)
       set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/terraview.app")
       set(QT_PLUGINS "${TERRALIB_APPLICATION}/Contents/qtplugins")
     endif()
-  else()
-    if(TERRALIB_TERRAVIEW_ENABLED)
-      set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/bin/terraview")
-      set(QT_PLUGINS "${CMAKE_INSTALL_PREFIX}/qtplugins")
-    endif()
   endif()
-  
-    list(APPEND TERRALIB_DIRS "/usr/local/lib;/usr/lib")
+  list(APPEND TERRALIB_DIRS "/usr/local/lib;/usr/lib")
+else()
+  if(TERRALIB_TERRAVIEW_ENABLED)
+    set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/bin/terraview")
+    set(QT_PLUGINS "${CMAKE_INSTALL_PREFIX}/qtplugins")
+  endif()
+endif()
+ 
+  list(APPEND TERRALIB_DIRS "/usr/local/lib;/usr/lib;${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 if(QT_PLUGINS)
