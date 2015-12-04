@@ -82,7 +82,8 @@ namespace te
         void* read(int x, int y)
         {
           assert( m_blocksManager.isInitialized() );
-          return m_blocksManager.getBlockPointer( m_idx, x, y );
+          return m_blocksManager.getBlockPointer( (unsigned int)m_idx, 
+            (unsigned int)x, (unsigned int)y );
         };
 
         void write(int x, int y, void* buffer);
