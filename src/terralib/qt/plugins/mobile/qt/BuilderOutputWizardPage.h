@@ -69,6 +69,8 @@ namespace te
 
             bool useVisibleArea();
 
+            void appendLogMesssage(std::string msg);
+
           public slots:
 
             void onDirToolButtonPressed();

@@ -1016,7 +1016,7 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
 
   char **papszOptions = NULL;
   papszOptions = CSLSetNameValue(papszOptions, "APPEND_SUBDATASET", "YES");
-  papszOptions = CSLSetNameValue(papszOptions, "TILING_SCHEME", "InspireCRS84Quad");
+  papszOptions = CSLSetNameValue(papszOptions, "TILING_SCHEME", "GoogleMapsCompatible");
   papszOptions = CSLSetNameValue(papszOptions, "ZOOM_LEVEL_STRATEGY", "LOWER");
 
   GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);;
@@ -1025,6 +1025,7 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
   if (levels > 0)
   {
     boost::scoped_array< int > overviewsIndexes(new int[levels]);
+
     for (unsigned int overViewIdx = 1; overViewIdx <= levels; ++overViewIdx)
     {
       /*
@@ -1032,8 +1033,9 @@ void te::gdal::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
       with the baseline GeoPackage specification as mentioned in gdal documentation.
       */
       unsigned int index = (unsigned int)std::pow(2, overViewIdx);
-      overviewsIndexes[(overViewIdx-1)] = index;
+      overviewsIndexes[(overViewIdx - 1)] = index;
     }
+
     poDstDS->BuildOverviews("NEAREST", (int)levels, overviewsIndexes.get(), 0, NULL, NULL, NULL);
   }
 
