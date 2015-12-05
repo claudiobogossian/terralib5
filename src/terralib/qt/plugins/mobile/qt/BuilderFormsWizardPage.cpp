@@ -155,8 +155,11 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::setLayerList(std::lis
           item = new te::qt::plugins::terramobile::StringFormItem();
         }
 
-        item->setKey(props[t]->getName());
-        item->setLabel(props[t]->getName());
+        bool aux;
+        std::string newName = te::common::ReplaceSpecialChars(props[t]->getName(), aux);
+
+        item->setKey(newName);
+        item->setLabel(newName);
 
         form->getItems().push_back(item);
       }

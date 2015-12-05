@@ -71,6 +71,12 @@ bool te::qt::plugins::terramobile::BuilderOutputWizardPage::useVisibleArea()
   return m_ui->m_visibleAreaCheckBox->isChecked();
 }
 
+void te::qt::plugins::terramobile::BuilderOutputWizardPage::appendLogMesssage(std::string msg)
+{
+  m_ui->m_logPlainTextEdit->appendPlainText(QString::fromStdString(msg));
+  this->repaint();
+}
+
 void te::qt::plugins::terramobile::BuilderOutputWizardPage::onDirToolButtonPressed()
 {
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Geopackage (*.gpkg *.GPKG);;"), 0, QFileDialog::DontConfirmOverwrite);
