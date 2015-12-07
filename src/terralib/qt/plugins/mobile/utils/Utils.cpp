@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../../common/StringUtils.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
@@ -55,9 +56,32 @@ void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
   if (dsTypeResult->getProperty("FID"))
     converter->remove("FID");
 
-  dsTypeResult->clearIndexes();
-
   dsTypeResult->setName(dataType->getName());
+
+  // Check properties names
+  std::vector<te::dt::Property* > props = dsTypeResult->getProperties();
+  std::map<std::size_t, std::string> invalidNames;
+  for (std::size_t i = 0; i < props.size(); ++i)
+  {
+    if (!dsGPKG->isPropertyNameValid(props[i]->getName()))
+    {
+      invalidNames[i] = props[i]->getName();
+    }
+  }
+
+  if (!invalidNames.empty())
+  {
+    std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+    while (it != invalidNames.end())
+    {
+      bool aux;
+      std::string newName = te::common::ReplaceSpecialChars(it->second, aux);
+
+      props[it->first]->setName(newName);
+
+      ++it;
+    }
+  }
 
   //exporting
   std::map<std::string, std::string> nopt;
@@ -151,8 +175,8 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
           {
             try
             {
-              band.getValue(col, row, value);
-              outRaster->setValue(col, row, value, bandIdx);
+              band.getValue((unsigned int)col, (unsigned int)row, value);
+              outRaster->setValue((unsigned int)col, (unsigned int)row, value, bandIdx);
 
             }
             catch (...)
@@ -277,7 +301,7 @@ std::auto_ptr<te::rst::Raster> te::qt::plugins::terramobile::NormalizeRaster(te:
     {
       for (col = 0; col < inNCols; ++col)
       {
-        band.getValue(col, row, value);
+        band.getValue((unsigned int)col, (unsigned int)row, value);
         if (value != noDataValue)
         {
           if (value < minValue)
@@ -321,7 +345,7 @@ std::auto_ptr<te::rst::Raster> te::qt::plugins::terramobile::NormalizeRaster(te:
       {
         try
         {
-          band.getValue(col, row, value);
+          band.getValue((unsigned int)col, (unsigned int)row, value);
 
           if (value == noDataValue)
           {
@@ -330,7 +354,7 @@ std::auto_ptr<te::rst::Raster> te::qt::plugins::terramobile::NormalizeRaster(te:
           else
           {
             double normalizeValue = (value * gain + offset);
-            rasterNormalized->setValue(col, row, normalizeValue, bandIdx);
+            rasterNormalized->setValue((unsigned int)col, (unsigned int)row, normalizeValue, bandIdx);
           }
         }
         catch (...)
