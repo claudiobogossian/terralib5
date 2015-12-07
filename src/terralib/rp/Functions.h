@@ -30,6 +30,7 @@
 #include "FeedersRaster.h"
 #include "Matrix.h"
 #include "Macros.h"
+#include "RasterHandler.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterFactory.h"
@@ -65,8 +66,6 @@ namespace te
 
   namespace rp
   {
-    class RasterHandler;
-    
     /*!
       \brief Wavelet Atrous Filter types.
       \ingroup rp_func
@@ -111,6 +110,23 @@ namespace te
       const std::string& outDataSetName,
       te::da::DataSource& outDataSource,
       RasterHandler& outRasterHandler );
+    
+    /*!
+      \brief Create a new raster into the givem data source.
+      \param rasterGrid The template grid used to create the output raster.
+      \param bandsProperties The template band properties used to create the output raster.
+      \param rasterInfo The output raster info (specific driver info).
+      \param rasterType The output raster type (specific driver name - See te::rst::RasterFactory dictorary for more info).
+      \param outRasterPtr The created raster pointer.
+      \return true if OK, false on errors.
+      \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+      \ingroup rp_func
+     */
+    bool TERPEXPORT CreateNewRaster( const te::rst::Grid& rasterGrid,
+      const std::vector< te::rst::BandProperty* >& bandsProperties,
+      const std::map< std::string, std::string>& rasterInfo,
+      const std::string& rasterType,
+      std::auto_ptr< te::rst::Raster >& outRasterPtr );    
 
     /*!
       \brief Create a new raster into a new memory datasource.
@@ -676,7 +692,35 @@ namespace te
     */
     TERPEXPORT void CreateFixedStepPalette( 
       const double paletteSize,
+      const bool randomize,
       std::vector< te::rst::BandProperty::ColorEntry >& palette );
+    
+    /*!
+      \brief Generate all wavelet planes from the given input raster.
+      \param inputRaster Input raster.
+      \param inputRasterBand Input raster band.
+      \param createPaletteRaster If true a paletted raster will be created instead of a multi-band raster..
+      \param slicesNumber The number of historgram slices to create;
+      \param eqHistogram If true, the input raster will historgram will be equalized before the slicing process.
+      \param rasterInfo The output raster info (specific driver info).
+      \param rasterType The output raster type (specific driver name - See te::rst::RasterFactory dictorary for more info).
+      \param enableProgress Enable/disable the progress interface.
+      \param palettePtr A pointer to an optional user given palette (if null, an fixed step pallete will be generated).
+      \param outRasterPtr The output sliced raster pointer.
+      \return true if OK, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool RasterSlicing( 
+      const te::rst::Raster& inputRaster,
+      const unsigned int inputRasterBand,
+      const bool createPaletteRaster,
+      const unsigned int slicesNumber,
+      const bool eqHistogram,
+      const std::map< std::string, std::string >& rasterInfo,
+      const std::string& rasterType,
+      const bool enableProgress,
+      std::vector< te::rst::BandProperty::ColorEntry > const * const palettePtr,
+      std::auto_ptr< te::rst::Raster >& outRasterPtr );         
     
   } // end namespace rp
 }   // end namespace te

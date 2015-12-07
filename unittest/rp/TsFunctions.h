@@ -42,6 +42,8 @@ class TsFunctions : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsFunctions );
 
+  CPPUNIT_TEST( RasterSlicing );
+  
   CPPUNIT_TEST( GetStdDevValue );
   
   CPPUNIT_TEST( GetStdDevValueOptimized );
@@ -75,6 +77,8 @@ class TsFunctions : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE_END();
 
 protected :
+  
+  void RasterSlicing();
 
   void ihs();
   

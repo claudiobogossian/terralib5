@@ -41,6 +41,53 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsFunctions );
 
+void TsFunctions::RasterSlicing()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  {
+    std::auto_ptr< te::rst::Raster > outRasterPtr;
+    std::map<std::string, std::string> auxRasterInfo2;
+    auxRasterInfo2["URI"] = "terralib_unittest_rp_functions_RasterSlicing_RGB.tif";
+    CPPUNIT_ASSERT( te::rp::RasterSlicing( 
+      *diskRasterPtr.get(), 
+      0, 
+      false,
+      255,
+      true,
+      auxRasterInfo2,
+      "GDAL",
+      true,
+      0,
+      outRasterPtr ) );  
+  }
+  
+  {
+    std::auto_ptr< te::rst::Raster > outRasterPtr;
+    std::map<std::string, std::string> auxRasterInfo2;
+    auxRasterInfo2["URI"] = "terralib_unittest_rp_functions_RasterSlicing_palette.tif";
+    CPPUNIT_ASSERT( te::rp::RasterSlicing( 
+      *diskRasterPtr.get(), 
+      0, 
+      true,
+      255,
+      true,
+      auxRasterInfo2,
+      "GDAL",
+      true,
+      0,
+      outRasterPtr ) );
+  }
+
+}
+
 void TsFunctions::ihs()
 {
   // openning input raster

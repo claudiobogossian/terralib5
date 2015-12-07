@@ -39,9 +39,11 @@
 #include "../raster/Utils.h"
 #include "../geometry/Point.h"
 #include "../common/MatrixUtils.h"
+#include "../common/progress/TaskProgress.h"
 #include "Exception.h"
 #include "Macros.h"
 #include "RasterHandler.h"
+#include "Contrast.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -61,6 +63,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <algorithm>
 
 #ifndef M_PI
   #define M_PI       3.14159265358979323846
@@ -219,6 +222,30 @@ namespace te
       {
         return false;
       }
+    }
+    
+    bool TERPEXPORT CreateNewRaster( const te::rst::Grid& rasterGrid,
+      const std::vector< te::rst::BandProperty* >& bandsProperties,
+      const std::map< std::string, std::string>& rasterInfo,
+      const std::string& rasterType,
+      std::auto_ptr< te::rst::Raster >& outRasterPtr )
+    {
+      try
+      {
+        outRasterPtr.reset( te::rst::RasterFactory::make( rasterType,
+          new te::rst::Grid( rasterGrid ), bandsProperties, rasterInfo, 0, 0 ) );
+      }
+      catch( const te::common::Exception& exc )
+      {
+        return false;
+      }
+      
+      if( outRasterPtr.get() == 0 )
+      {
+        return false;
+      }      
+      
+      return true;
     }
 
     bool CreateNewMemRaster( const te::rst::Grid& rasterGrid,
@@ -2728,16 +2755,19 @@ namespace te
     }
     
     void CreateFixedStepPalette( 
-      const double paletteSize,
+      const double paletteSize, const bool randomize,
       std::vector< te::rst::BandProperty::ColorEntry >& palette )
     {
       const unsigned int perBandLevels = (unsigned int)pow( (double)paletteSize, 
         ( 1. / 3. ) );
       const unsigned int levelStep = (unsigned int)std::floor( 256. / 
-        (double)(paletteSize + 1) );
+        (double)(perBandLevels) );
 
       unsigned int level = 0;      
       te::rst::BandProperty::ColorEntry auxColorEntry;
+      auxColorEntry.c1 = 0;
+      auxColorEntry.c2 = 0;
+      auxColorEntry.c3 = 0;
       auxColorEntry.c4 = 255;
       
       palette.resize( paletteSize, auxColorEntry );
@@ -2769,6 +2799,238 @@ namespace te
     
         ++level;
       }
+      
+      if( randomize )
+      {
+        std::random_shuffle( palette.begin(), palette.end() );
+      }
+    }
+    
+    bool RasterSlicing( 
+      const te::rst::Raster& inputRaster,
+      const unsigned int inputRasterBand,
+      const bool createPaletteRaster,
+      const unsigned int slicesNumber,
+      const bool eqHistogram,
+      const std::map< std::string, std::string >& rasterInfo,
+      const std::string& rasterType,
+      const bool enableProgress,
+      std::vector< te::rst::BandProperty::ColorEntry > const * const palettePtr,
+      std::auto_ptr< te::rst::Raster >& outRasterPtr )
+    {
+      TERP_TRUE_OR_RETURN_FALSE( inputRasterBand < inputRaster.getNumberOfBands(),
+        "Invalid raster band index" );
+      TERP_TRUE_OR_RETURN_FALSE( ( palettePtr != 0 ) || ( slicesNumber > 1 ),
+        "Invalid palette parameters" );      
+      TERP_TRUE_OR_RETURN_FALSE( palettePtr ? ( palettePtr->size() > 1 ) : true,
+        "Invalid palette parameters" );    
+      
+      te::rst::Raster const * internalInRasterPtr = &inputRaster;
+      unsigned int internalInRasterBand = inputRasterBand;
+      std::auto_ptr< te::rst::Raster > eqRasterPtr;
+      if( eqHistogram )
+      {
+        double min = 0;
+        double max = 0;
+        GetDataTypeRange( inputRaster.getBand( inputRasterBand )->getProperty()->m_type,
+          min, max );
+        
+        Contrast::InputParameters contInputPars;
+        contInputPars.m_type = Contrast::Contrast::InputParameters::HistogramEqualizationContrastT;
+        contInputPars.m_inRasterPtr = &inputRaster;
+        contInputPars.m_inRasterBands.push_back( inputRasterBand );
+        contInputPars.m_hECMaxInput.push_back( max );
+        contInputPars.m_enableProgress = enableProgress;
+        
+        Contrast contInstance;
+        TERP_TRUE_OR_RETURN_FALSE( contInstance.initialize( contInputPars ),
+          "Contrast init error" );        
+        
+        Contrast::OutputParameters contOutPars;
+        contOutPars.m_createdOutRasterDSType = "EXPANSIBLE";
+        TERP_TRUE_OR_RETURN_FALSE( contInstance.execute( contOutPars ),
+          "Contrast exec error" );  
+        
+        eqRasterPtr.reset( contOutPars.m_createdOutRasterPtr.release() );
+        internalInRasterPtr = eqRasterPtr.get();
+        internalInRasterBand = 0;
+      }
+//      Copy2DiskRaster( *internalInRasterPtr, "Eqraster.tif" );
+      
+      std::vector< te::rst::BandProperty::ColorEntry > const * internalPalettePtr =
+        palettePtr;
+      std::vector< te::rst::BandProperty::ColorEntry > internalPalette;
+      if( palettePtr == 0 )
+      {
+        CreateFixedStepPalette( slicesNumber, true, internalPalette );
+        internalPalettePtr = &internalPalette;
+      }
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Slicing" );
+        progressPtr->setTotalSteps( 2 * internalInRasterPtr->getNumberOfRows() );
+      }       
+      
+      double inputRasterMin = std::numeric_limits< double >::max();
+      double inputRasterMax = -1.0 * inputRasterMin;
+      {
+        const te::rst::Band& inBand = (*internalInRasterPtr->getBand( internalInRasterBand ));
+        const unsigned int nRows = internalInRasterPtr->getNumberOfRows();
+        const unsigned int nCols = internalInRasterPtr->getNumberOfColumns();
+        const double noDataValue = inBand.getProperty()->m_noDataValue;
+        unsigned int col = 0;
+        double value = 0;
+        
+        for( unsigned int row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value );
+            
+            if( value != noDataValue )
+            {
+              if( value > inputRasterMax ) inputRasterMax = value;
+              if( value < inputRasterMin ) inputRasterMin = value;
+            }
+          }
+          
+          if( enableProgress )
+          {
+            progressPtr->pulse();
+            if( ! progressPtr->isActive() ) return false;
+          }            
+        }
+      }
+      
+      if( createPaletteRaster )
+      {
+        std::vector< te::rst::BandProperty* > bandsProperties;
+        bandsProperties.push_back( new te::rst::BandProperty( 
+          * internalInRasterPtr->getBand( internalInRasterBand )->getProperty() ) );
+        bandsProperties[ 0 ]->m_colorInterp = te::rst::PaletteIdxCInt;
+        bandsProperties[ 0 ]->m_paletteInterp = te::rst::RGBPalInt;
+        bandsProperties[ 0 ]->m_palette = (*internalPalettePtr);
+        if( internalPalettePtr->size() <= std::numeric_limits< unsigned char >::max() )
+        {
+          bandsProperties[ 0 ]->m_type = te::dt::UCHAR_TYPE;
+        }
+        else if( internalPalettePtr->size() <= std::numeric_limits< unsigned short int >::max() )
+        {
+          bandsProperties[ 0 ]->m_type = te::dt::UINT16_TYPE;
+        }
+        else if( internalPalettePtr->size() <= std::numeric_limits< unsigned int >::max() )
+        {
+          bandsProperties[ 0 ]->m_type = te::dt::UINT32_TYPE;
+        }
+        else
+        {
+          TERP_LOG_AND_RETURN_FALSE( "Invalid palette size" );
+        }
+        
+        TERP_TRUE_OR_RETURN_FALSE( CreateNewRaster( *internalInRasterPtr->getGrid(),
+          bandsProperties, rasterInfo, rasterType, outRasterPtr ),
+          "Output raster creation error" );         
+        
+        const te::rst::Band& inBand = (*internalInRasterPtr->getBand( internalInRasterBand ));
+        te::rst::Band& outBand = (*outRasterPtr->getBand( 0 ));
+        const unsigned int nRows = internalInRasterPtr->getNumberOfRows();
+        const unsigned int nCols = internalInRasterPtr->getNumberOfColumns();
+        const double inScale = ( inputRasterMax == inputRasterMin ) ? 0.0 :
+          ( 1.0 / ( inputRasterMax - inputRasterMin ) );
+        const double outScale = ( (double)internalPalettePtr->size() - 1 );
+        const double paletteSizeDouble = (double)internalPalettePtr->size();
+        unsigned int col = 0;
+        double value = 0;
+        
+        for( unsigned int row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value );
+            value -= inputRasterMin;
+            value *= inScale;
+            value *= outScale;
+            value = std::floor( value );
+            value = std::max( 0.0, value );
+            value = std::min( paletteSizeDouble, value );            
+            outBand.setValue( col, row, value );
+          }
+          
+          if( enableProgress )
+          {
+            progressPtr->pulse();
+            if( ! progressPtr->isActive() ) return false;
+          }   
+        }        
+      }
+      else
+      {
+        std::vector< te::rst::BandProperty* > bandsProperties;
+        bandsProperties.push_back( new te::rst::BandProperty( 
+          * internalInRasterPtr->getBand( internalInRasterBand )->getProperty() ) );
+        bandsProperties.push_back( new te::rst::BandProperty( 
+          * internalInRasterPtr->getBand( internalInRasterBand )->getProperty() ) );
+        bandsProperties.push_back( new te::rst::BandProperty( 
+          * internalInRasterPtr->getBand( internalInRasterBand )->getProperty() ) );        
+        bandsProperties[ 0 ]->m_colorInterp = te::rst::RedCInt;
+        bandsProperties[ 1 ]->m_colorInterp = te::rst::GreenCInt;
+        bandsProperties[ 2 ]->m_colorInterp = te::rst::BlueCInt;
+        bandsProperties[ 0 ]->m_type = te::dt::UCHAR_TYPE;
+        bandsProperties[ 1 ]->m_type = te::dt::UCHAR_TYPE;
+        bandsProperties[ 2 ]->m_type = te::dt::UCHAR_TYPE;
+        bandsProperties[ 0 ]->m_noDataValue = std::numeric_limits< double >::max();
+        bandsProperties[ 1 ]->m_noDataValue = std::numeric_limits< double >::max();
+        bandsProperties[ 2 ]->m_noDataValue = std::numeric_limits< double >::max();
+        
+        TERP_TRUE_OR_RETURN_FALSE( CreateNewRaster( *internalInRasterPtr->getGrid(),
+          bandsProperties, rasterInfo, rasterType, outRasterPtr ),
+          "Output raster creation error" );         
+        
+        const te::rst::Band& inBand = (*internalInRasterPtr->getBand( internalInRasterBand ));
+        te::rst::Band& outBandRed = (*outRasterPtr->getBand( 0 ));
+        te::rst::Band& outBandGreen = (*outRasterPtr->getBand( 1 ));
+        te::rst::Band& outBandBlue = (*outRasterPtr->getBand( 2 ));
+        const unsigned int nRows = internalInRasterPtr->getNumberOfRows();
+        const unsigned int nCols = internalInRasterPtr->getNumberOfColumns();
+        const double inScale = ( inputRasterMax == inputRasterMin ) ? 0 :
+          ( 1.0 / ( inputRasterMax - inputRasterMin ) );
+        const double outScale = ( (double)internalPalettePtr->size() - 1 ); 
+        const double paletteSizeDouble = (double)internalPalettePtr->size();
+        unsigned int col = 0;
+        double value = 0;
+        
+        for( unsigned int row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value );
+            value -= inputRasterMin;
+            value *= inScale;
+            value *= outScale;
+            value = std::floor( value );
+            value = std::max( 0.0, value );
+            value = std::min( paletteSizeDouble, value );
+            
+            const te::rst::BandProperty::ColorEntry& cEntry = 
+              internalPalettePtr->operator[]( (unsigned int)value );
+            
+            outBandRed.setValue( col, row, cEntry.c1 );
+            outBandGreen.setValue( col, row, cEntry.c2 );
+            outBandBlue.setValue( col, row, cEntry.c3 );
+          }
+          
+          if( enableProgress )
+          {
+            progressPtr->pulse();
+            if( ! progressPtr->isActive() ) return false;
+          }   
+        } 
+      }
+     
+      return true;
     }
     
   } // end namespace rp
