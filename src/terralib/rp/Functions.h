@@ -669,6 +669,15 @@ namespace te
       }
     }
     
+    /*!
+      \brief Create a fixed step sequential color palette.
+      \param paletteSize The desired palette size.
+      \param palette The crated palette.
+    */
+    TERPEXPORT void CreateFixedStepPalette( 
+      const double paletteSize,
+      std::vector< te::rst::BandProperty::ColorEntry >& palette );
+    
   } // end namespace rp
 }   // end namespace te
 
