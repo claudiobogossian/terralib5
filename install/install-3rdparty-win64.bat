@@ -32,13 +32,13 @@ set BZIP2D_LIBRARY=%BZIP2_DIR%\lib\libbz2d.lib
   
   IF NOT EXIST lib mkdir lib
 
-  copy *.lib lib >nul 2>nul 
+  xcopy *.lib lib >nul 2>nul 
 
   nmake /f makefile.msc clean >nul 2>nul
 
   nmake /f makefile.msc DEBUG=1 >nul 2>nul 
 
-  copy *.lib lib >nul 2>nul 
+  xcopy *.lib lib >nul 2>nul 
 
   echo done.
 
@@ -67,8 +67,8 @@ set ZL_LIBRARIES=debug;%ZLD_LIBRARY%;optimized;%ZL_LIBRARY%
   
   MSBuild.exe /m zlib.sln /p:Configuration=Debug >nul 2>nul
   
-  copy %ZL_DIR%\build\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy %ZL_DIR%\build\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %ZL_DIR%\build\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %ZL_DIR%\build\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
   echo done.
 
@@ -89,8 +89,8 @@ set READLINE_LIBRARIES=debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%
   MSBuild.exe /m /p:Configuration=Debug readline-32.sln >nul 2>nul
   MSBuild.exe /m /p:Configuration=Release readline-32.sln >nul 2>nul
   
-  copy %READLINE_DIR%\x64\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy %READLINE_DIR%\x64\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %READLINE_DIR%\x64\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %READLINE_DIR%\x64\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   
   echo done.
 
@@ -104,7 +104,7 @@ set READLINE_LIBRARIES=debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%
 ::  ====
 :: PCRE
 set PCRE_DIR=%CD%\pcre-8.37
-set PCRE_INCLUDE_DIR= /I%PCRE_DIR% /I%PCRE_DIR%\sljit /I%PCRE_DIR%\build\Release /I%PCRE_DIR%\build\Debug
+set PCRE_INCLUDE_DIR= /I%PCRE_DIR% /I%PCRE_DIR%\sljit /I%PCRE_DIR%\build
 set PCRE_LIBRARY=%PCRE_DIR%\build\Release\pcre.lib
 set PCRED_LIBRARY=%PCRE_DIR%\build\Debug\pcred.lib
 set PCRE_LIBRARIES=debug;%PCRED_LIBRARY%;optimized;%PCRE_LIBRARY%
@@ -159,8 +159,8 @@ set ICONV_LIBRARIES=debug;%ICONVD_LIBRARY%;optimized;%ICONV_LIBRARY%
   MSBuild.exe /m /p:Configuration=Debug myIconv.sln >nul 2>nul
   MSBuild.exe /m /p:Configuration=Release myIconv.sln >nul 2>nul
   
-  copy %ICONV_DIR%\x64\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy %ICONV_DIR%\x64\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %ICONV_DIR%\x64\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %ICONV_DIR%\x64\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   
   echo done.
 
@@ -190,7 +190,7 @@ set FREEXL_LIBRARIES=debug;%FREEXLD_LIBRARY%;optimized;%FREEXL_LIBRARY%
   copy freexld.lib lib >nul
   copy freexld.dll lib >nul
   
-  copy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
   echo done.
 
@@ -218,8 +218,8 @@ set PJ_LIBRARIES=debug;%PJD_LIBRARY%;optimized;%PJ_LIBRARY%
 
   nmake /f makefile.vc DEBUG=1  >nul 2>nul
   
-  copy .\src\*d.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul
-  copy .\src\*d.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul
+  xcopy .\src\*d.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul
+  xcopy .\src\*d.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul
 
   echo done.
 
@@ -249,7 +249,7 @@ set PNGD_LIBRARY=%PNG_DIR%\deploy\lib\libpng15d.lib
   MSBuild.exe /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
   MSBuild.exe /m INSTALL.vcxproj >nul 2>nul
  
- copy %PNG_DIR%\deploy\bin\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+ xcopy %PNG_DIR%\deploy\bin\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
  echo done.
 
@@ -292,8 +292,8 @@ set GEOSCD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\geos_c_id.lib
   IF NOT EXIST %GEOS_INCLUDE_DIR%\geos mkdir %GEOS_INCLUDE_DIR%\geos  
   
   xcopy /S include\geos\*.h %GEOS_INCLUDE_DIR%\geos >nul 2>nul  
-  xcopy capi\geos_c.h %GEOS_INCLUDE_DIR%\geos >nul 2>nul  
-  xcopy include\geos.h %GEOS_INCLUDE_DIR%\geos >nul 2>nul  
+  copy capi\geos_c.h %GEOS_INCLUDE_DIR% >nul 2>nul  
+  copy include\geos.h %GEOS_INCLUDE_DIR% >nul 2>nul  
   xcopy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
   xcopy lib\*i.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
   xcopy lib\*id.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul  
@@ -317,18 +317,79 @@ IF NOT EXIST .\build mkdir .\build
 
 nmake /f makefile.vc libjpeg.lib >nul 2>nul
 
-copy *.lib build >nul 2>nul
+xcopy *.lib build >nul 2>nul
 
 nmake /f makefile.vc clean >nul 2>nul
 
 nmake /f makefile.vc DEBUG=1 libjpeg.lib >nul 2>nul
 
-copy *.lib build >nul 2>nul
+xcopy *.lib build >nul 2>nul
 
 echo done.
 
 cd %JPG_DIR%\..
 ::  ====
+
+
+:: HDF4 version 4.2.9
+set HDF4C_DIR=%CD%\hdf-4.2.9
+set HDF4_INCLUDE_DIR=%HDF4C_DIR%\binaries\include
+set HDF4_LIBRARY=%HDF4C_DIR%\binaries\lib\hdfdll.lib
+set HDF4D_LIBRARY=%HDF4C_DIR%\binaries\lib\hdfddll.lib
+set MFHDF_LIBRARY=%HDF4C_DIR%\binaries\lib\mfhdfdll.lib
+set MFHDFD_LIBRARY=%HDF4C_DIR%\binaries\lib\mfhdfddll.lib
+
+  echo | set /p="Installing hdf4... "<nul
+  
+  cd %HDF4C_DIR%
+
+  IF NOT EXIST build (
+    mkdir build
+    mkdir build\Release
+    mkdir build\Debug
+  )
+
+  cd build\Release
+
+  cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=%HDF4C_DIR%\binaries^
+ -DCMAKE_BUILD_TYPE=Release^
+ -DBUILD_SHARED_LIBS=ON^
+ -DHDF4_DISABLE_COMPILER_WARNINGS=ON^
+ -DHDF4_ENABLE_COVERAGE=ON^
+ -DHDF4_ENABLE_NETCDF=ON^
+ -DHDF4_BUILD_FORTRAN=OFF^
+ -DJPEG_INCLUDE_DIR="%JPG_INCLUDE_DIR%"^
+ -DJPEG_LIBRARY="%JPG_LIBRARY%"^
+ -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
+ -DZLIB_LIBRARY="%ZL_LIBRARY%" ..\.. >nul 2>nul
+ 
+ nmake install >nul 2>nul
+ 
+  cd %HDF4C_DIR%\build\Debug
+
+  cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=%HDF4C_DIR%\binaries^
+ -DCMAKE_BUILD_TYPE=Debug^
+ -DBUILD_SHARED_LIBS=ON^
+ -DHDF4_DISABLE_COMPILER_WARNINGS=ON^
+ -DHDF4_ENABLE_COVERAGE=ON^
+ -DHDF4_ENABLE_NETCDF=ON^
+ -DHDF4_BUILD_FORTRAN=OFF^
+ -DJPEG_INCLUDE_DIR="%JPG_INCLUDE_DIR%"^
+ -DJPEG_LIBRARY="%JPGD_LIBRARY%"^
+ -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
+ -DZLIB_LIBRARY="%ZLD_LIBRARY%" ..\.. >nul 2>nul
+ 
+ nmake install >nul 2>nul
+  
+  xcopy %HDF4C_DIR%\binaries\bin\hdf* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %HDF4C_DIR%\binaries\bin\mfhdf* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %HDF4C_DIR%\binaries\bin\xdr* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+
+  echo done.
+
+  cd %HDF4C_DIR%\..
+:: ====
+
 
 ::  TIFF 
 set TIFF_DIR=%CD%\tiff-4.0.3
@@ -343,16 +404,16 @@ cd %TIFF_DIR%\libtiff
 IF NOT EXIST .\lib mkdir .\lib
 
 nmake /f Makefile.vc >nul 2>nul
-copy *i.lib lib >nul 2>nul
-copy *.dll lib >nul 2>nul
+xcopy *i.lib lib >nul 2>nul
+xcopy *.dll lib >nul 2>nul
 
 nmake /f Makefile.vc clean >nul 2>nul
 
 nmake /f Makefile.vc DEBUG=1 >nul 2>nul
-copy *id.lib lib >nul 2>nul
-copy *.dll lib >nul 2>nul
+xcopy *id.lib lib >nul 2>nul
+xcopy *.dll lib >nul 2>nul
 
-copy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+xcopy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
 echo done.
 
@@ -372,16 +433,16 @@ cd %GTIFF_DIR%
 IF NOT EXIST .\lib mkdir .\lib
 
 nmake /f makefile.vc libgeotiff.dll >nul 2>nul
-copy *i.lib lib >nul 2>nul
-copy *.dll lib >nul 2>nul
+xcopy *i.lib lib >nul 2>nul
+xcopy *.dll lib >nul 2>nul
 
 nmake /f makefile.vc clean >nul 2>nul
 
 nmake /f makefile.vc DEBUG=1 libgeotiffd.dll >nul 2>nul
-copy *id.lib lib >nul 2>nul
-copy *.dll lib >nul 2>nul
+xcopy *id.lib lib >nul 2>nul
+xcopy *.dll lib >nul 2>nul
 
-copy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+xcopy lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
 echo done.
 
@@ -454,13 +515,13 @@ set CURLD_LIBRARY=%CURL_DIR%\binaries\lib\libcurld.lib
 
   nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=yes MACHINE=x64 >nul 2>nul
   
-  copy %CURL_DIR%\builds\libcurl-vc12-x64-debug-dll-ssl-dll-zlib-dll-ipv6-sspi\bin\*.dll %CURL_DIR%\binaries\lib >nul 2>nul 
-  copy %CURL_DIR%\builds\libcurl-vc12-x64-debug-dll-ssl-dll-zlib-dll-ipv6-sspi\lib\*.lib %CURL_DIR%\binaries\lib >nul 2>nul 
-  copy %CURL_DIR%\builds\libcurl-vc12-x64-release-dll-ssl-dll-zlib-dll-ipv6-sspi\bin\*.dll %CURL_DIR%\binaries\lib >nul 2>nul 
-  copy %CURL_DIR%\builds\libcurl-vc12-x64-release-dll-ssl-dll-zlib-dll-ipv6-sspi\lib\*.lib %CURL_DIR%\binaries\lib >nul 2>nul 
+  xcopy %CURL_DIR%\builds\libcurl-vc12-x64-debug-dll-ssl-dll-zlib-dll-ipv6-sspi\bin\*.dll %CURL_DIR%\binaries\lib >nul 2>nul 
+  xcopy %CURL_DIR%\builds\libcurl-vc12-x64-debug-dll-ssl-dll-zlib-dll-ipv6-sspi\lib\*.lib %CURL_DIR%\binaries\lib >nul 2>nul 
+  xcopy %CURL_DIR%\builds\libcurl-vc12-x64-release-dll-ssl-dll-zlib-dll-ipv6-sspi\bin\*.dll %CURL_DIR%\binaries\lib >nul 2>nul 
+  xcopy %CURL_DIR%\builds\libcurl-vc12-x64-release-dll-ssl-dll-zlib-dll-ipv6-sspi\lib\*.lib %CURL_DIR%\binaries\lib >nul 2>nul 
   xcopy %CURL_DIR%\builds\libcurl-vc12-x64-release-dll-ssl-dll-zlib-dll-ipv6-sspi\include /S %CURL_DIR%\binaries\include >nul 2>nul 
    
-  copy  %CURL_DIR%\binaries\lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy  %CURL_DIR%\binaries\lib\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
    
   echo done.
 
@@ -524,15 +585,15 @@ set XERCES_ICU_LIBRARY=%XERCESCROOT%\src\xercesc\util\MsgLoaders\ICU\resources\x
 
   IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\xercesc mkdir %TERRALIB_DEPENDENCIES_DIR%\include\xercesc  
   
-  copy "%XERCESCROOT%\Build\Win64\VC10\ICU Debug\"*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul 
-  copy "%XERCESCROOT%\Build\Win64\VC10\ICU Debug\"*.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy "%XERCESCROOT%\Build\Win64\VC10\ICU Release\"*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy "%XERCESCROOT%\Build\Win64\VC10\ICU Release\"*.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy "%XERCESCROOT%\src\xercesc\util\MsgLoaders\ICU\resources\"*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy "%XERCESCROOT%\Build\Win64\VC10\ICU Debug\"*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul 
+  xcopy "%XERCESCROOT%\Build\Win64\VC10\ICU Debug\"*.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy "%XERCESCROOT%\Build\Win64\VC10\ICU Release\"*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy "%XERCESCROOT%\Build\Win64\VC10\ICU Release\"*.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy "%XERCESCROOT%\src\xercesc\util\MsgLoaders\ICU\resources\"*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
   xcopy %XERCESCROOT%\src\xercesc\*.h* %TERRALIB_DEPENDENCIES_DIR%\include\xercesc /S /Y >nul 2>nul
 
-  copy %XERCESCROOT%\src\xercesc\util\*.c %TERRALIB_DEPENDENCIES_DIR%\include\xercesc\util /Y >nul 2>nul
+  xcopy %XERCESCROOT%\src\xercesc\util\*.c %TERRALIB_DEPENDENCIES_DIR%\include\xercesc\util /Y >nul 2>nul
   
   echo done.
 
@@ -552,8 +613,8 @@ set XML2D_LIBRARY=%XML2_DIR%\win32\bin.dbg.msvc\libxml2d.lib
   nmake /f Makefile.msvc libxml >nul 2>nul
   nmake /f Makefile.msvc DEBUG=1 libxml >nul 2>nul
 
-  copy %XML2_DIR%\win32\bin.msvc\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy %XML2_DIR%\win32\bin.dbg.msvc\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %XML2_DIR%\win32\bin.msvc\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %XML2_DIR%\win32\bin.dbg.msvc\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   
   echo done.
 
@@ -595,7 +656,7 @@ set BD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\boost_thread-mt-gd.lib
 
   call .\bootstrap.bat >nul 2>nul 
 
-  call .\b2.exe toolset=msvc-12.0 --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged --abbreviate-paths runtime-link=shared link=shared variant=debug,release threading=multi address-model=64 install >nul 2>nul
+  call .\b2.exe toolset=msvc-12.0 --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged --abbreviate-paths runtime-link=shared link=shared variant=debug,release threading=multi address-model=64 install -j4 >nul 2>nul
 
   echo done.
 
@@ -605,8 +666,8 @@ set BD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\boost_thread-mt-gd.lib
 :: PostgreSQL version 9.4.1
 set PGis_DIR=%CD%\postgresql-9.4.1
 set PG_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
-set PG_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\libpq.lib
-set PGD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\libpqd.lib
+set PG_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\libpqdll.lib
+set PGD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\libpqddll.lib
 
   echo | set /p="Installing libpq... "<nul
   
@@ -619,60 +680,15 @@ set PGD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\libpqd.lib
   copy %PGis_DIR%\src\include\pg_config_ext.h %TERRALIB_DEPENDENCIES_DIR%\include >nul 2>nul
   copy %PGis_DIR%\src\include\postgres_ext.h %TERRALIB_DEPENDENCIES_DIR%\include >nul 2>nul
   copy %PGis_DIR%\src\interfaces\libpq\Release\libpqdll.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy %PGis_DIR%\src\interfaces\libpq\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %PGis_DIR%\src\interfaces\libpq\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   copy %PGis_DIR%\src\interfaces\libpq\Debug\libpqddll.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy %PGis_DIR%\src\interfaces\libpq\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %PGis_DIR%\src\interfaces\libpq\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
   echo done.
 
   cd %PGis_DIR%\..
 :: ====
 
-:: HDF4 version 4.2.9
-set HDF4C_DIR=%CD%\hdf-4.2.9
-set HDF4_INCLUDE_DIR=%HDF4C_DIR%\binaries\include
-set HDF4_LIBRARY=%HDF4C_DIR%\binaries\lib\hdfdll.lib
-set HDF4D_LIBRARY=%HDF4C_DIR%\binaries\lib\hdfddll.lib
-set MFHDF_LIBRARY=%HDF4C_DIR%\binaries\lib\mfhdfdll.lib
-set MFHDFD_LIBRARY=%HDF4C_DIR%\binaries\lib\mfhdfddll.lib
-
-  echo | set /p="Installing hdf4... "<nul
-  
-  cd %HDF4C_DIR%
-
-  IF NOT EXIST build mkdir build
-
-  cd build
-
-  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%HDF4C_DIR%\binaries^
- -DBUILD_SHARED_LIBS=ON^
- -DHDF4_ALLOW_EXTERNAL_SUPPORT=ON^
- -DHDF4_DISABLE_COMPILER_WARNINGS=ON^
- -DHDF4_ENABLE_COVERAGE=ON^
- -DHDF4_ENABLE_NETCDF=ON^
- -DHDF4_BUILD_FORTRAN=OFF^
- -DJPEG_INCLUDE_DIR=%JPG_INCLUDE_DIR%^
- -DJPEG_LIBRARY:STRING="debug;%JPGD_LIBRARY%;optimized;%JPG_LIBRARY%"^
- -DZLIB_INCLUDE_DIR:STRING=%ZL_INCLUDE_DIR%^
- -DZLIB_LIBRARY:STRING="%ZL_LIBRARIES%" .. >nul 2>nul
-  
-  MSBuild.exe /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
-  MSBuild.exe /m INSTALL.vcxproj >nul 2>nul
-::  MSBuild.exe /m /t:install /p:Configuration=Release hdf4.sln >nul 2>nul 
-::  MSBuild.exe /m /t:install /p:Configuration=Debug hdf4.sln >nul 2>nul
-  
-::  cmake --build . --target install --config Release >nul 2>nul
-  
-::  cmake --build . --target install --config Debug >nul 2>nul
-  
-  copy %HDF4C_DIR%\binaries\bin\hdf* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy %HDF4C_DIR%\binaries\bin\mfhdf* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy %HDF4C_DIR%\binaries\bin\xdr* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-
-  echo done.
-
-  cd %HDF4C_DIR%\..
-:: ====
 
 :: netcdf version 4.3.3
 set NETCDF_DIR=%CD%\netcdf-c-4.3.3
@@ -713,7 +729,7 @@ set NETCDFD_LIBRARY=%NETCDF_DIR%\binaries\lib\netcdfd.lib
   
 ::  cmake --build . --target install --config Debug >nul 2>nul
   
-  copy %NETCDF_DIR%\binaries\bin\net* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %NETCDF_DIR%\binaries\bin\net* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
   echo done.
 
@@ -734,9 +750,9 @@ set SQLITED_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\sqlite3d.lib
 
   cl sqlite3.c /DSQLITE_API=__declspec(dllexport) /DSQLITE_DEBUG -link -dll -out:sqlite3d.dll >nul 2>nul
   
-  copy *.h %TERRALIB_DEPENDENCIES_DIR%\include >nul 2>nul
-  copy *.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-  copy *.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy *.h %TERRALIB_DEPENDENCIES_DIR%\include >nul 2>nul
+  xcopy *.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy *.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
   echo done.
 
@@ -792,7 +808,7 @@ set EXPATD_LIBRARY=%EXPAT_DIR%\binaries\lib\expatd.lib
   
 ::  cmake --build . --target install --config Debug >nul 2>nul
   
-  copy %EXPAT_DIR%\binaries\bin\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy %EXPAT_DIR%\binaries\bin\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
   echo done.
 
@@ -813,7 +829,8 @@ set GDALD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\gdal_id.lib
   copy nmake.release.opt.in nmake.opt >nul 2>nul
   
   nmake -f makefile.vc MSVC_VER=1800 >nul 2>nul
-  nmake -f makefile.vc MSVC_VER=1800 devinstall  >nul 2>nul
+  
+  nmake -f makefile.vc MSVC_VER=1800 devinstall >nul 2>nul
 
   nmake /f makefile.vc clean >nul 2>nul
 
@@ -822,7 +839,7 @@ set GDALD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\gdal_id.lib
   
   nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 >nul 2>nul
   
-  copy *.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  xcopy *.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   copy gdal_id.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
     
   echo done.
@@ -873,7 +890,7 @@ set QBROWSERD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\qtpropertybrowserd.lib
 
 :: Lua version 5.2.2
 set LUAC_DIR=%CD%\lua-5.2.2
-set LUAC_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
+set LUAC_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include\lua
 set LUAC_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\lua.lib
 set LUACD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\luad.lib
 
@@ -887,19 +904,19 @@ set LUACD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\luad.lib
   cd build
 
   cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%TERRALIB_DEPENDENCIES_DIR%^
+ -DCMAKE_DEBUG_POSTFIX=d^
  -DINSTALL_BIN=%TERRALIB_DEPENDENCIES_DIR%\lib^
- -DINSTALL_INCLUDE=%TERRALIB_DEPENDENCIES_DIR%\include\lua^
  -DREADLINE_INCLUDE_DIR=%READLINE_INCLUDE_DIR%^
  -DREADLINE_LIBRARY:STRING="debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%" .. >nul 2>nul
   
   MSBuild.exe /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
   MSBuild.exe /m INSTALL.vcxproj >nul 2>nul
   
-::  MSBuild.exe /m /t:install /p:Configuration=Release lua.sln >nul 2>nul 
-::  MSBuild.exe /m /t:install /p:Configuration=Debug lua.sln >nul 2>nul
-::  cmake --build . --target install --config Release >nul 2>nul
-  
- :: cmake --build . --target install --config Debug >nul 2>nul
+  copy %LUAC_DIR%\src\lua.h %LUAC_INCLUDE_DIR% >nul 2>nul
+  copy %LUAC_DIR%\src\lualib.h %LUAC_INCLUDE_DIR% >nul 2>nul
+  copy %LUAC_DIR%\src\lauxlib.h %LUAC_INCLUDE_DIR% >nul 2>nul
+  copy %LUAC_DIR%\src\lua.hpp %LUAC_INCLUDE_DIR% >nul 2>nul
+  copy %LUAC_DIR%\build\luaconf.h %LUAC_INCLUDE_DIR% >nul 2>nul
   
   echo done.
 
@@ -922,14 +939,27 @@ cd .\building
 
 copy ..\terralib.conf.cmake . >nul 2>nul
 
+set CL=/MP1
+
 cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%TERRALIB_DEPENDENCIES_DIR%^
  -DCMAKE_PREFIX_PATH="%TERRALIB_DEPENDENCIES_DIR%"^
+ -DTIFF_INCLUDE_DIR:STRING="%TIFF_INCLUDE_DIR%"^
+ -DTIFF_LIBRARY:STRING="debug;%TIFFD_LIBRARY%;optimized;%TIFF_LIBRARY%"^
+ -DGeoTIFF_INCLUDE_DIR:STRING="%GTIFF_DIR%;%GTIFF_DIR%/libxtiff"^
+ -DGeoTIFF_LIBRARY:STRING="debug;%GTIFFD_LIBRARY%;optimized;%GTIFF_LIBRARY%"^
+ -DJPEG_INCLUDE_DIR="%JPG_DIR%"^
+ -DJPEG_LIBRARY:STRING="debug;%JPGD_LIBRARY%;optimized;%JPG_LIBRARY%"^
+ -DPostGIS_INCLUDE_DIR="%PG_INCLUDE_DIR%"^
+ -DPostgreSQL_LIBRARY:STRING="debug;%PGD_LIBRARY%;optimized;%PG_LIBRARY%"^
+ -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
+ -DZLIB_LIBRARIES:STRING="%ZL_LIBRARIES%"^
  -C terralib.conf.cmake %TERRALIB4_DIR%\build\cmake >nul 2>nul
 
 ::  MSBuild.exe /m /t:install /p:Configuration=Release terraView.sln >nul 2>nul 
 ::  MSBuild.exe /m /t:install /p:Configuration=Debug terraView.sln >nul 2>nul
-  MSBuild.exe /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
-  MSBuild.exe /m INSTALL.vcxproj >nul 2>nul
+  MSBuild.exe /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
+  
+  MSBuild.exe INSTALL.vcxproj >nul 2>nul
  
 ::cmake --build . --target install --config Release >nul 2>nul
 
