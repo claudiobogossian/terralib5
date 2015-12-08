@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_CREATELAYERDIALOG_H
 
 // TerraLib
+#include "../../../../maptools/AbstractLayer.h"
 #include "../../Config.h"
 
 // STL
@@ -59,6 +60,10 @@ namespace te
           CreateLayerDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~CreateLayerDialog();
+
+        public:
+
+          te::map::AbstractLayerPtr getLayer();
 
         protected slots:
 

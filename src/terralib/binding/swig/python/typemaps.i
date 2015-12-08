@@ -2,16 +2,10 @@
  * Defining a typemap for std::auto_ptr
  */
 
-%define AUTO_PTR_TYPEMAPS(TYPE...)
+%include std_auto_ptr.i
 
-%typemap(out) (std::auto_ptr< TYPE >) %{
-%}
-
-%template () std::auto_ptr< TYPE >;
-
-%enddef
-
-namespace std 
+namespace std
 {
-  template<class T> class auto_ptr { };
+  %template (StrVector) vector <string>;
+  %template (StrStrMap) map <string, string>;
 }

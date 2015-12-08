@@ -5,7 +5,7 @@
  */
 
 #define TEDATATYPEEXPORT
-#define BOOST_DATE_TIME_DECL 
+#define BOOST_DATE_TIME_DECL
 
 namespace te {
   namespace common {
@@ -14,7 +14,7 @@ namespace te {
 }
 
 %nodefaultctor te::dt::DataConverterManager;
-  
+
 %{
 #include "terralib/datatype/AbstractData.h"
 #include "terralib/datatype/Array.h"
@@ -55,6 +55,10 @@ namespace te {
 #include "terralib/datatype/Utils.h"
 %}
 
+
+//Python doesn't work with namespaces
+#ifndef SWIGPYTHON
+
 %nspace te::dt::DateTimeType;
 %nspace te::dt::DateTimeResolution;
 %nspace te::dt::TemporalRelation;
@@ -80,7 +84,7 @@ namespace te {
 %nspace te::dt::DatePeriod;
 %nspace te::dt::DateTimeProperty;
 %nspace te::dt::DateTimeUtils;
-%nspace te::dt::DataTypeConverter; 
+%nspace te::dt::DataTypeConverter;
 %nspace te::dt::DataConverterManager;
 %nspace te::dt::NumericProperty;
 %nspace te::dt::SimpleData;
@@ -96,6 +100,8 @@ namespace te {
 %nspace boost::gregorian::greg_year;
 %nspace boost::gregorian::greg_month;
 %nspace boost::gregorian::greg_day;
+
+#endif //SWIGPYTHON
 
 %include "boost/date_time/gregorian/greg_day.hpp"
 %include "boost/date_time/gregorian/greg_month.hpp"
@@ -127,7 +133,7 @@ namespace te {
 %include "terralib/datatype/TimeInstant.h"
 %include "terralib/datatype/DateTimeProperty.h"
 %include "terralib/datatype/DateTimeUtils.h"
-%include "terralib/datatype/DataTypeConverter.h" 
+%include "terralib/datatype/DataTypeConverter.h"
 
 /* %include "terralib/datatype/DataConverterManager.h"
 
