@@ -9,6 +9,10 @@
 
 %ignore accept;
 
+#ifdef SWIGPYTHON
+%apply SWIGTYPE *DISOWN { te::gm::Curve* ring };
+%apply SWIGTYPE *DISOWN { te::gm::Geometry* g };
+#endif
 
 %{
 #include "terralib/geometry/Config.h"
@@ -41,6 +45,9 @@
 
 %}
 
+//Python doesn't work with namespaces
+#ifndef SWIGPYTHON
+
 %nspace te::gm::GeomType;
 %nspace te::gm::SpatialRelation;
 %nspace te::gm::Dimensionality;
@@ -71,7 +78,9 @@
 %nspace te::gm::PointZM;
 %nspace te::gm::Polygon;
 %nspace te::gm::PolyhedralSurface;
-  
+
+#endif // SWIGPYTHON
+
 %include "terralib/geometry/Enums.h"
 %include "terralib/geometry/Geometry.h"
 %include "terralib/geometry/Coord2D.h"
