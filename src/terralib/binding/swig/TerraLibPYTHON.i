@@ -1,9 +1,9 @@
-/* 
-* File: TerraLibR.i 
-* 
-*/ 
- 
-%module terralib_mod_binding_python 
+/*
+* File: TerraLibR.i
+*
+*/
+
+%module terralib_mod_binding_python
 
 #define TECOMMONEXPORT
 
@@ -14,9 +14,9 @@
 
 %include python/typemaps.i
 
-namespace te 
+namespace te
 {
-  namespace common 
+  namespace common
   {
     %template(TeSingleton) Singleton < TerraLib >;
   }
@@ -40,9 +40,9 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 
 %feature("compactdefaultargs") te::rst::RasterSummaryManager::get;
 
-%{  
+%{
 /* #include <terralib/Config.h> */
-#include <terralib/common/Enums.h>  
+#include <terralib/common/Enums.h>
 #include <terralib/common/TerraLib.h>
 #include <terralib/common/Exception.h>
 
@@ -63,7 +63,7 @@ static std::string GetRandomicId()
 
 %}
 
-%include "terralib/common/Enums.h"  
+%include "terralib/common/Enums.h"
 %include "terralib/common/TerraLib.h"
 
 
@@ -76,17 +76,18 @@ static std::string GetRandomicId()
 /* Include Data Type module to the bind. */
 %include common/DataType.i
 
-/* Include Geometry module to the bind. */   
+/* Include Geometry module to the bind. */
 %include common/Geometry.i
 
-/* Include Raster module to the bind. */   
+/* Include Raster module to the bind. */
 %include common/Raster.i
 
 /* Include Data Access module to the bind. */
-%include common/DataAccess.i 
+%include common/DataAccess.i
+%include python/DataAccess.i
 
 /* Include Plugin module to the bind. */
-%include common/Plugin.i 
+%include common/Plugin.i
 
 /* Include Spatial Temporal module to the bind. */
 %include common/ST.i
