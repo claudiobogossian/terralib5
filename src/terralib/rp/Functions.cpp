@@ -2836,7 +2836,7 @@ namespace te
           min, max );
         
         Contrast::InputParameters contInputPars;
-        contInputPars.m_type = Contrast::Contrast::InputParameters::HistogramEqualizationContrastT;
+        contInputPars.m_type = Contrast::InputParameters::HistogramEqualizationContrastT;
         contInputPars.m_inRasterPtr = &inputRaster;
         contInputPars.m_inRasterBands.push_back( inputRasterBand );
         contInputPars.m_hECMaxInput.push_back( max );
