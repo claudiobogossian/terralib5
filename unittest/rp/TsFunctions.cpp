@@ -41,6 +41,44 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsFunctions );
 
+void TsFunctions::CreateFixedStepPalette()
+{
+  std::vector< te::rst::BandProperty * > bandsProps;
+  bandsProps.push_back( new te::rst::BandProperty( 0, 
+    te::dt::UCHAR_TYPE ) );    
+  bandsProps.push_back( new te::rst::BandProperty( 1, 
+    te::dt::UCHAR_TYPE ) );    
+  bandsProps.push_back( new te::rst::BandProperty( 2, 
+    te::dt::UCHAR_TYPE ) );   
+  bandsProps[ 0 ]->m_colorInterp = te::rst::RedCInt;
+  bandsProps[ 1 ]->m_colorInterp = te::rst::GreenCInt;
+  bandsProps[ 2 ]->m_colorInterp = te::rst::BlueCInt;  
+  bandsProps[ 0 ]->m_noDataValue = std::numeric_limits< double >::max();
+  bandsProps[ 1 ]->m_noDataValue = std::numeric_limits< double >::max();
+  bandsProps[ 2 ]->m_noDataValue = std::numeric_limits< double >::max();  
+  
+  std::map< std::string, std::string > rInfo;
+  rInfo["URI"] = "terralib_unittest_rp_functions_CreateFixedStepPalette.tif";
+  
+  std::auto_ptr< te::rst::Raster > rasterPointer( te::rst::RasterFactory::make( "GDAL", 
+    new te::rst::Grid( 256, 256 ), bandsProps, 
+    rInfo, 0, 0 ) );
+  
+  std::vector< te::rst::BandProperty::ColorEntry > palette;
+  te::rp::CreateFixedStepPalette( 256, true, palette );
+    
+  unsigned int line = 0;
+  unsigned int col = 0;
+  
+  for( line = 0 ; line < 256 ; ++line )
+    for( col = 0 ; col < 256 ; ++col )
+    {
+      rasterPointer->setValue( col, line, (double)palette[ line ].c1, 0 );
+      rasterPointer->setValue( col, line, (double)palette[ line ].c2, 1 );
+      rasterPointer->setValue( col, line, (double)palette[ line ].c3, 2 );
+    }
+}
+
 void TsFunctions::RasterSlicing()
 {
   // openning input raster
