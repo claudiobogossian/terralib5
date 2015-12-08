@@ -9,7 +9,7 @@ You can download this package from two places:
      http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.0.1-3rdparty-msvc-2013-win64.zip
            or
      http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.0.1-3rdparty-msvc-2013-win32.zip
-		   
+
    - The most updated version used by developers (only to work with develop branch): 
      http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win64.zip
            or
@@ -119,7 +119,7 @@ Make sure to have at least version 3.1.0 installed.
 
 GEOS is available from http://trac.osgeo.org/geos.
 
-Make sure to have at least version 3.3.9 installed.
+Make sure to have at least version 3.4.2 installed.
 
 
 10. Apache log4cxx (Optional)
