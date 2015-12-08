@@ -8,6 +8,22 @@
  
 #define TESTEXPORT 
 
+#ifdef SWIGPYTHON
+
+%auto_ptr(te::dt::DateTimePeriod)
+%auto_ptr(te::st::Coverage)
+%auto_ptr(te::st::TimeSeries)
+%auto_ptr(te::st::CoverageSeries)
+%auto_ptr(te::st::Observation)
+%auto_ptr(te::st::Trajectory)
+%auto_ptr(te::st::ObservationDataSet)
+%auto_ptr(te::st::TrajectoryDataSet)
+%auto_ptr(te::st::PointCoverage)
+%auto_ptr(te::st::TimeSeriesDataSet)
+%auto_ptr(te::st::RasterCoverage)
+
+#else
+
 AUTO_PTR_TYPEMAPS(te::dt::DateTimePeriod)
 AUTO_PTR_TYPEMAPS(te::st::Coverage)
 AUTO_PTR_TYPEMAPS(te::st::TimeSeries)
@@ -19,6 +35,8 @@ AUTO_PTR_TYPEMAPS(te::st::TrajectoryDataSet)
 AUTO_PTR_TYPEMAPS(te::st::PointCoverage)
 AUTO_PTR_TYPEMAPS(te::st::TimeSeriesDataSet)
 AUTO_PTR_TYPEMAPS(te::st::RasterCoverage)
+
+#endif // SWIGPYTHON
 
 // Fail to export this operator
 %ignore te::st::CoverageSeriesIterator::operator *;
@@ -77,6 +95,9 @@ AUTO_PTR_TYPEMAPS(te::st::RasterCoverage)
 */
 %}
 
+//Python doesn't work with namespaces
+#ifndef SWIGPYTHON
+
 %nspace te::st::SpatioTemporalRelation;
 %nspace te::st::CoverageType;
 %nspace te::st::Observation;
@@ -118,6 +139,8 @@ AUTO_PTR_TYPEMAPS(te::st::RasterCoverage)
 %nspace te::st::TrajectoryDataSet;
 %nspace te::st::TrajectoryDataSetInfo;
 %nspace te::st::STDataLoader;
+
+#endif // SWIGPYTHON
 
 %include "terralib/st/Enums.h"
 %include "terralib/st/core/observation/Observation.h"

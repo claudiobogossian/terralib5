@@ -28,8 +28,9 @@
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/Utils.h"
+#include "../../../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../../../qt/widgets/property/NewPropertyWidget.h"
 #include "../../layer/utils/DataSet2Layer.h"
 #include "CreateLayerWidget.h"
@@ -114,8 +115,6 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
     return false;
   }
 
-  te::da::DataSourcePtr outputDataSource = te::da::DataSourceManager::getInstance().get(m_outputDatasource->getId(), m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
-
   std::string dsTypeName = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
   std::auto_ptr<te::da::DataSetType> dsType(new te::da::DataSetType(dsTypeName));
@@ -128,19 +127,49 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
   //create
   std::map<std::string, std::string> nopt;
 
-  try
+  if (m_toFile)
   {
-    outputDataSource->createDataSet(dsType.get(), nopt);
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+    std::map<std::string, std::string> dsinfo;
+    dsinfo["URI"] = uri.string();
+
+    te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
+    dsOGR->setConnectionInfo(dsinfo);
+    dsOGR->open();
+
+    try
+    {
+      dsOGR->createDataSet(dsType.get(), nopt);
+    }
+    catch (const std::exception& ex)
+    {
+      errorMessage = ex.what();
+      return false;
+    }
+    catch (...)
+    {
+      errorMessage = "Error creating layer.";
+      return false;
+    }
   }
-  catch (const std::exception& ex)
+  else
   {
-    errorMessage = ex.what();
-    return false;
-  }
-  catch (...)
-  {
-    errorMessage = "Error creating layer.";
-    return false;
+    te::da::DataSourcePtr outputDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+
+    try
+    {
+      outputDataSource->createDataSet(dsType.get(), nopt);
+    }
+    catch (const std::exception& ex)
+    {
+      errorMessage = ex.what();
+      return false;
+    }
+    catch (...)
+    {
+      errorMessage = "Error creating layer.";
+      return false;
+    }
   }
 
   return true;
@@ -148,36 +177,40 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
 
 te::map::AbstractLayerPtr te::qt::widgets::CreateLayerWidget::getLayer()
 {
-  std::string driverName = m_outputDatasource->getType();
-  std::map<std::string, std::string> connInfo = m_outputDatasource->getConnInfo();
+  //std::string driverName = m_outputDatasource->getType();
+  //std::map<std::string, std::string> connInfo = m_outputDatasource->getConnInfo();
   std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  std::size_t idx = dataSetName.find(".");
+  if (idx != std::string::npos)
+    dataSetName = dataSetName.substr(0, idx);
 
   te::map::AbstractLayerPtr layer;
 
-  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  //static boost::uuids::basic_random_generator<boost::mt19937> gen;
 
-  boost::uuids::uuid valU = gen();
-  std::string id = boost::uuids::to_string(valU);
+  //boost::uuids::uuid valU = gen();
+  //std::string id = boost::uuids::to_string(valU);
 
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName));
-  ds->setConnectionInfo(connInfo);
-  ds->open();
+  //std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName));
+  //ds->setConnectionInfo(connInfo);
+  //ds->open();
 
-  //add ds info
-  te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
-  dsInfoPtr->setConnInfo(connInfo);
-  dsInfoPtr->setId(id);
-  dsInfoPtr->setTitle(dataSetName);
-  dsInfoPtr->setAccessDriver(driverName);
-  dsInfoPtr->setType(driverName);
+  ////add ds info
+  //te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
+  //dsInfoPtr->setConnInfo(connInfo);
+  //dsInfoPtr->setId(id);
+  //dsInfoPtr->setTitle(dataSetName);
+  //dsInfoPtr->setAccessDriver(driverName);
+  //dsInfoPtr->setType(driverName);
 
-  te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
+  //te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
 
   //add ds
-  te::da::DataSourcePtr dsPtr(ds.release());
-  dsPtr->setId(id);
+  te::da::DataSourcePtr dsPtr = te::da::GetDataSource(m_outputDatasource->getId());
+  //dsPtr->setId(id);
 
-  te::da::DataSourceManager::getInstance().insert(dsPtr);
+  //te::da::DataSourceManager::getInstance().insert(dsPtr);
 
   //create layer
   te::da::DataSetTypePtr dsType(dsPtr->getDataSetType(dataSetName).release());
@@ -267,6 +300,10 @@ void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
   std::map<std::string, std::string> dsInfo;
   dsInfo["URI"] = uri.string();
 
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  ds->setConnectionInfo(dsInfo);
+  ds->open();
+
   boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
   std::string id_ds = boost::uuids::to_string(u);
@@ -284,6 +321,8 @@ void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
   m_outputDatasource = dsInfoPtr;
 
   te::da::DataSourcePtr outputDataSource = te::da::DataSourceManager::getInstance().get(m_outputDatasource->getId(), m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
+
+  outputDataSource->open();
 
   m_newPropWidget->setDataSourceId(m_outputDatasource->getId());
 }

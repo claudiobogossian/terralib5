@@ -37,6 +37,9 @@
 
 %ignore te::rst::Raster::callOperator;
 
+//Python doesn't work with namespaces
+#ifndef SWIGPYTHON
+
 %nspace te::rst::SummaryTypes;
 %nspace te::rst::ColorInterp;
 %nspace te::rst::PaletteInterpretation;
@@ -63,6 +66,8 @@
 %nspace te::rst::TileIndexer;
 %nspace te::rst::Vectorizer;
 %nspace te::rst::VectorizerPolygonStructure;
+
+#endif //SWIGPYTHON
 
 %include "terralib/raster/Enums.h"
 %include "terralib/raster/Band.h"

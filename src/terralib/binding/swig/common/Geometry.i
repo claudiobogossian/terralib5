@@ -38,6 +38,7 @@
 #include "terralib/geometry/Polygon.h"
 #include "terralib/geometry/PolyhedralSurface.h"
 #include "terralib/geometry/Surface.h"
+#include "terralib/geometry/GeometryProperty.h"
 
 %}
 
@@ -71,6 +72,7 @@
 %nspace te::gm::PointZM;
 %nspace te::gm::Polygon;
 %nspace te::gm::PolyhedralSurface;
+%nspace te::gem::GeometryProperty;
   
 %include "terralib/geometry/Enums.h"
 %include "terralib/geometry/Geometry.h"
@@ -99,3 +101,4 @@
 %include "terralib/geometry/PointZM.h"
 %include "terralib/geometry/Polygon.h"
 %include "terralib/geometry/PolyhedralSurface.h"
+%include "terralib/geometry/GeometryProperty.h"

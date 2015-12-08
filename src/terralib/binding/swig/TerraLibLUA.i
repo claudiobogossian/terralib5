@@ -3,13 +3,17 @@
 * 
 */ 
  
-%module terralib_mod_binding_lua 
+%module terralib_mod_binding_lua
 
 %include stl.i
 
 %include lua/typemaps.i
 
 %include typemaps.i
+
+%include std_except.i
+
+%catches(std::exception);
 
 #define TECOMMONEXPORT
 
@@ -71,12 +75,21 @@ static std::string GetRandomicId()
 
 /* Include Data Access module to the bind. */
 %include common/DataAccess.i 
+%include lua/DataAccess.i
 
 /* Include Plugin module to the bind. */
 %include common/Plugin.i 
 
 /* Include Spatial Temporal module to the bind. */   
 %include common/ST.i
+
+%include common/CellSpace.i
+%include lua/CellSpace.i
+
+%include common/Maptools.i
+
+%include common/QtAf.i
+%include lua/QtAf.i
 
 // Wrap function
 std::string GetRandomicId();
