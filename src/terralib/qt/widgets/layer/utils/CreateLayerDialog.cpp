@@ -59,6 +59,11 @@ te::qt::widgets::CreateLayerDialog::~CreateLayerDialog()
 
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::CreateLayerDialog::getLayer()
+{
+  return m_createLayerWidget->getLayer();
+}
+
 void te::qt::widgets::CreateLayerDialog::onOkPushButtonClicked()
 {
   std::string errorMessage = "";

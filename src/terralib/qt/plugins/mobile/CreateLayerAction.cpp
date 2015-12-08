@@ -54,6 +54,7 @@ void te::qt::plugins::terramobile::CreateLayerAction::onActionActivated(bool che
 
   if(dlg.exec() == QDialog::Accepted)
   {
-
+    //add new layer
+    addNewLayer(dlg.getLayer());
   }
 }
