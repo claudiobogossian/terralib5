@@ -196,15 +196,19 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
     std::auto_ptr<te::da::DataSetType> dsType = (*it)->getSchema();
 
+    m_outputPage->appendLogMesssage("Exporting gathering layer " + dsType->getName());
+
     std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position') values('" + dsType->getName() + "', " + boost::lexical_cast<std::string>(visible)+", " + boost::lexical_cast<std::string>(pos)+"); ";
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++pos;
+
+    m_outputPage->appendLogMesssage("Gathering layer " + dsType->getName() + " successfuly exported.");
   }
 
   for (it = inputLayers.begin(); it != inputLayers.end(); ++it)
   {
     bool visible = (*it)->getVisibility();
-    
+
     std::auto_ptr<te::da::DataSetType> dsType = (*it)->getSchema();
     std::string name = dsType->getName();
 
@@ -218,11 +222,15 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
         name += values[i];
     }
 
+    m_outputPage->appendLogMesssage("Exporting input layer " + name);
+
     std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position') values('" + name + "', " + boost::lexical_cast<std::string>(visible)+", " + boost::lexical_cast<std::string>(pos)+"); ";
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
     te::qt::plugins::terramobile::queryGPKG("select * from sqlite_master", dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++pos;
+
+    m_outputPage->appendLogMesssage("Input layer " + name + " successfuly exported.");
   }
 
   //Exporting the forms used to collect data on the field
