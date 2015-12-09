@@ -18,13 +18,13 @@
  */
 
 /*!
-\file src/terraMobilePlugin/GatheringLayerConfigurerAction.h
+\file src/terraMobilePlugin/GeoPackageSynchronizerAction.h
 
-\brief This file defines the Gathering Layer Configurer Action class
+\brief This file defines the GeoPackage Synchronizer Action class
 */
 
-#ifndef __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GATHERINGLAYERCONFIGURERACTION_H
-#define __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GATHERINGLAYERCONFIGURERACTION_H
+#ifndef __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GEOPACKAGESYNCHRONIZERACTION_H
+#define __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GEOPACKAGESYNCHRONIZERACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -39,20 +39,20 @@ namespace te
       namespace terramobile
       {
         /*!
-          \class GatheringLayerConfigurerAction
+          \class GeoPackageSynchronizerAction
           
-          \brief This file defines the Gathering Layer Configurer Action class
+          \brief This file defines the GeoPackage Synchronizer Action class
 
         */
-        class GatheringLayerConfigurerAction : public te::qt::plugins::terramobile::AbstractAction
+        class GeoPackageSynchronizerAction : public te::qt::plugins::terramobile::AbstractAction
         {
           Q_OBJECT
 
           public:
 
-            GatheringLayerConfigurerAction(QMenu* menu);
+            GeoPackageSynchronizerAction(QMenu* menu);
 
-            virtual ~GatheringLayerConfigurerAction();
+            virtual ~GeoPackageSynchronizerAction();
 
           protected slots:
 
@@ -64,4 +64,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GATHERINGLAYERCONFIGURERACTION_H
+#endif //__TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GEOPACKAGESYNCHRONIZERACTION_H

@@ -18,13 +18,13 @@
  */
 
 /*!
-\file src/terraMobilePlugin/qt/GatheringLayerConfigurerDialog.h
+\file src/terraMobilePlugin/qt/GeoPackageSynchronizerDialog.h
 
-\brief This interface is used to get the input parameters for Gathering Layer Configurer operation.
+\brief This interface is used to get the input parameters for GeoPackage Synchronizer operation.
 */
 
-#ifndef __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GATHERINGLAYERCONFIGURERDIALOG_H
-#define __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GATHERINGLAYERCONFIGURERDIALOG_H
+#ifndef __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GEOPACKAGESYNCHRONIZERDIALOG_H
+#define __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GEOPACKAGESYNCHRONIZERDIALOG_H
 
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
@@ -36,7 +36,7 @@
 // Qt
 #include <QDialog>
 
-namespace Ui { class GatheringLayerConfigurerDialogForm; }
+namespace Ui { class GeoPackageSynchronizerDialogForm; }
 
 namespace te
 {
@@ -47,19 +47,25 @@ namespace te
       namespace terramobile
       {
         /*!
-          \class GatheringLayerConfigurerDialog
+          \class GeoPackageSynchronizerDialog
 
-          \brief This interface is used to get the input parameters for Gathering Layer Configurer operation.
+          \brief This interface is used to get the input parameters for GeoPackage Synchronizer operation.
         */
-        class GatheringLayerConfigurerDialog : public QDialog
+        class GeoPackageSynchronizerDialog : public QDialog
         {
           Q_OBJECT
 
           public:
 
-            GatheringLayerConfigurerDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+            GeoPackageSynchronizerDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-            ~GatheringLayerConfigurerDialog();
+            ~GeoPackageSynchronizerDialog();
+
+          protected slots:
+
+            void onGeopackageToolButtonClicked();
+
+            void onSynchronizePushButtonClicked();
 
           public:
 
@@ -67,7 +73,7 @@ namespace te
 
           private:
 
-            std::auto_ptr<Ui::GatheringLayerConfigurerDialogForm> m_ui;
+            std::auto_ptr<Ui::GeoPackageSynchronizerDialogForm> m_ui;
 
         }; 
       }   // end namespace thirdParty
@@ -75,5 +81,5 @@ namespace te
   }       // end namespace qt
 }         // end namespace te
 
-#endif  // __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_FORESTMONITORCLASSDIALOG_H
+#endif  // __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GEOPACKAGESYNCHRONIZERDIALOG_H
 
