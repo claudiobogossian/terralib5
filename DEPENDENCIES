@@ -97,14 +97,34 @@ libpq is available with PostgreSQL source from http://www.postgresql.org.
 Make sure to have at least version 9.1.0 installed.
 
 
-7. Microsoft ADO (Optional)
+7. Microsoft Jet database engine ADO (.mdb) versus  
+   Microsoft Access Database Engine (.accbd)   - (optional)
 ---------------------------
 
-Microsof ADO is general installed under a folder such as:
+Microsoft ADO is available with Microsoft Office 2007 package
+and usually is its installed under a folder such as:
+
 C:\Program Files (x86)\Common Files\System\ado
 C:\Program Files (x86)\Common Files\System\Ole DB
 
-Oprtionally you can install de 
+or (for 64bits)
+
+C:\Program Files\Common Files\System\ado
+C:\Program Files\Common Files\System\Ole DB\Ole DB
+
+If you do not have Office 2007 installed you can download the 
+AccessDatabaseEngine from  
+
+https://www.microsoft.com/en-us/download/details.aspx?id=13255
+
+     AccessDatabaseEngine.exe     (32-bit version)
+     AccessDatabaseEngine_x64.exe (64-bit version)
+
+NOTE: Some problems might occur if 32 and 64 bits are installed. 
+See the Terralib4 plugin documentation if you need both versions installed.
+
+http://www.dpi.inpe.br/terralib5/help/help_5.0.1/plugins/terralib4/Terralib4ConverterACE.html
+
 
 8. Xerces-c (Optional)
 ----------------------
