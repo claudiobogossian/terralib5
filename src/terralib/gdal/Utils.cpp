@@ -199,44 +199,16 @@ void te::gdal::GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProp
   bprops.clear();
   
   int nBands = 0;
-  bool hasPalette = false;
   
   if( gds->GetRasterCount() > 0 )
   {
-    if( gds->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex )
-    {
-      hasPalette = true;
-      assert( gds->GetRasterBand(1)->GetColorTable() );
-      
-      switch( gds->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
-      {
-        case GPI_Gray : 
-          nBands = 1;
-          break;
-        case GPI_RGB : // RGBA
-          nBands = 4;
-          break;
-        case GPI_CMYK :
-          nBands = 4;
-          break;          
-        case GPI_HLS :
-          nBands = 3;
-          break;
-        default :
-          throw Exception(TE_TR("invalid palette interpretation"));
-          break;
-      }        
-    }
-    else
-    {
-      nBands = gds->GetRasterCount();
-    }
+    nBands = gds->GetRasterCount();
   }    
 
-      // retrieve the information about each band
+  // retrieve the information about each band
   for (int rasterIdx = 0; rasterIdx < nBands ; ++rasterIdx)
   {
-    GDALRasterBand* rasterBand = gds->GetRasterBand( hasPalette ? 1 : ( 1 + rasterIdx) );
+    GDALRasterBand* rasterBand = gds->GetRasterBand( ( 1 + rasterIdx) );
     bprops.push_back( GetBandProperty( rasterBand, rasterIdx ) ); 
   }
 }
@@ -378,36 +350,7 @@ bool te::gdal::GetBands(te::gdal::Raster* rst, int multiResLevel, std::vector<te
   
   if( gds->GetRasterCount() > 0 )
   {
-    if( gds->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex )
-    {
-      if( gds->GetRasterBand(1)->GetColorTable() == 0 )
-      {
-        throw Exception(TE_TR("invalid color table"));
-      }
-      
-      switch( gds->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
-      {
-        case GPI_Gray : 
-          terralibBandsNumber = 1;
-          break;
-        case GPI_RGB : // RGBA
-          terralibBandsNumber = 4;
-          break;
-        case GPI_CMYK :
-          terralibBandsNumber = 4;
-          break;          
-        case GPI_HLS :
-          terralibBandsNumber = 3;
-          break;
-        default :
-          throw Exception(TE_TR("invalid palette interpretation"));
-          break;
-      }        
-    }
-    else
-    {
-      terralibBandsNumber = rst->getGDALDataset()->GetRasterCount();
-    }
+    terralibBandsNumber = rst->getGDALDataset()->GetRasterCount();
   }  
   
   // Creating terralib bands
@@ -449,11 +392,7 @@ bool te::gdal::GetBands(te::gdal::Raster* rst, int multiResLevel, std::vector<te
       }
     }   
     
-    if( rst->getGDALDataset()->GetRasterBand(1)->GetColorInterpretation() !=
-      GCI_PaletteIndex )     
-    {
-      ++gdalBandIndex;
-    }
+    ++gdalBandIndex;
   }
   
   return true;
