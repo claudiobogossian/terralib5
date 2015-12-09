@@ -104,7 +104,7 @@ namespace te
 
         bool isValid() const;
 
-        void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+        void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
 
         /*!
           \brief It returns the layer type: FOLDERLAYER.

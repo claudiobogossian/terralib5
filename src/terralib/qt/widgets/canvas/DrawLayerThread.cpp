@@ -45,7 +45,7 @@ te::qt::widgets::DrawLayerThread::~DrawLayerThread()
   wait();
 }
 
-void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const te::gm::Envelope& box, int srid, const QSize& size, const int& index)
+void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const te::gm::Envelope& box, int srid, const double& scale, const QSize& size, const int& index)
 {
   /* Note: For while... Actually, I would like to can stop the current draw process and restart with the new request box! te::common::TaskProgress?! */
   if(isRunning())
@@ -56,6 +56,7 @@ void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const
   m_env = box;
   m_srid = srid;
   m_index = index;
+  m_scale = scale;
 
   m_finishedWithSuccess = true;
   m_errorMessage.clear();
@@ -100,7 +101,7 @@ void te::qt::widgets::DrawLayerThread::run()
     // Let's draw!
     try
     {
-      m_layer->draw(&canvas, m_env, m_srid);
+      m_layer->draw(&canvas, m_env, m_srid, m_scale);
       break;
     }
     catch(const te::da::Exception& e)
@@ -121,6 +122,12 @@ void te::qt::widgets::DrawLayerThread::run()
     {
       m_finishedWithSuccess = false;
       m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
+      break; // finish with error
+    }
+    catch (...)
+    {
+      m_finishedWithSuccess = false;
+      m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn!")).arg(m_layer->getTitle().c_str());
       break; // finish with error
     }
   }

@@ -6,19 +6,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>329</width>
-    <height>60</height>
+    <width>349</width>
+    <height>209</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3">
-   <property name="margin">
+  <layout class="QGridLayout" name="gridLayout_5">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_2">
+    <layout class="QGridLayout" name="gridLayout_4">
      <item row="1" column="0">
       <widget class="QFrame" name="frame">
        <property name="sizePolicy">
@@ -34,7 +43,16 @@
         <enum>QFrame::Sunken</enum>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>2</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
          <number>2</number>
         </property>
         <item row="0" column="4">
@@ -171,6 +189,12 @@
      </item>
      <item row="0" column="0">
       <widget class="QFrame" name="m_explorerFrame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -182,18 +206,16 @@
     </layout>
    </item>
   </layout>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>16</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <layout class="QGridLayout" name="gridLayout_2"/>
-  </widget>
  </widget>
+ <tabstops>
+  <tabstop>m_mapRefreshToolButton</tabstop>
+  <tabstop>m_addSymbToolButton</tabstop>
+  <tabstop>m_removeSymbToolButton</tabstop>
+  <tabstop>m_upSymbToolButton</tabstop>
+  <tabstop>m_downSymbToolButton</tabstop>
+  <tabstop>m_libManagerToolButton</tabstop>
+  <tabstop>m_iconSizeSlider</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

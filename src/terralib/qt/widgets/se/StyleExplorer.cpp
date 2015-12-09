@@ -210,7 +210,7 @@ void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* sym
   }
 }
 
-te::se::Rule* te::qt::widgets::StyleExplorer::getRule(QTreeWidgetItem* item) const
+te::se::Rule* te::qt::widgets::StyleExplorer::getRule(QTreeWidgetItem* item)
 {
   assert(item && item->type() == RULE);
   
@@ -221,7 +221,7 @@ te::se::Rule* te::qt::widgets::StyleExplorer::getRule(QTreeWidgetItem* item) con
   return m_style->getRule(index);
 }
 
-te::se::Symbolizer* te::qt::widgets::StyleExplorer::getSymbolizer(QTreeWidgetItem* item) const
+te::se::Symbolizer* te::qt::widgets::StyleExplorer::getSymbolizer(QTreeWidgetItem* item)
 {
   assert(item && item->type() == SYMBOLIZER);
 

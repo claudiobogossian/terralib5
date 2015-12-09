@@ -205,7 +205,7 @@ bool te::st::ObservationDataSetLayer::isValid() const
   return true;
 }
 
-void te::st::ObservationDataSetLayer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
+void te::st::ObservationDataSetLayer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale)
 {
   if(m_rendererType.empty())
     throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
@@ -215,7 +215,7 @@ void te::st::ObservationDataSetLayer::draw(te::map::Canvas* canvas, const te::gm
   if(renderer.get() == 0)
     throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
-  renderer->draw(this, canvas, bbox, srid);
+  renderer->draw(this, canvas, bbox, srid, scale);
 }
 
 const std::string& te::st::ObservationDataSetLayer::getType() const

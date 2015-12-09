@@ -311,7 +311,7 @@ void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst, te
   te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
 
   // Draw raster
-  te::map::DrawRaster(rst, &canvas, env, m_mapDisplay->getSRID(), envRst, rst->getSRID(), cs);
+  te::map::DrawRaster(rst, &canvas, env, m_mapDisplay->getSRID(), envRst, rst->getSRID(), cs, m_mapDisplay->getScale());
 
   if(m_draftOriginal)
     delete m_draftOriginal;

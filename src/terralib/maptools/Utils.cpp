@@ -468,7 +468,7 @@ void te::map::DrawGeometries(te::da::DataSet* dataset, const std::size_t& gpos, 
 }
 
 void te::map::DrawRaster(te::da::DataSetType* type, te::da::DataSourcePtr ds, Canvas* canvas,
-                         const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style)
+  const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style, const double& scale)
 {
   assert(type);
   assert(type->hasRaster());
@@ -494,17 +494,29 @@ void te::map::DrawRaster(te::da::DataSetType* type, te::da::DataSourcePtr ds, Ca
   if(dataset.get() == 0)
     throw Exception((boost::format(TE_TR("Could not retrieve the raster from the data set %1%.")) % datasetName).str());
 
-  DrawRaster(raster.get(), canvas, bbox, bboxSRID, visibleArea, srid, style);
+  DrawRaster(raster.get(), canvas, bbox, bboxSRID, visibleArea, srid, style, scale);
 }
 
 void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
-                         const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style)
+  const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style, const double& scale)
 {
   assert(raster);
   assert(canvas);
   assert(bbox.isValid());
   assert(visibleArea.isValid());
   assert(style);
+
+  // get the raster symbolizer
+  std::size_t nRules = style->getRules().size();
+  assert(nRules >= 1);
+
+  // for while, consider one rule
+  const te::se::Rule* rule = style->getRule(0);
+
+  if (!(scale >= rule->getMinScaleDenominator() && scale < rule->getMaxScaleDenominator()))
+  {
+    return;
+  }
 
 // build the grid canvas. i.e. a grid with canvas dimensions and requested mbr
   te::gm::Envelope* gmbr = new te::gm::Envelope(visibleArea);
@@ -559,13 +571,6 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
   {
     rasterTransform.setLinearTransfParameters(0, 255, 0, 255);
   }
-
-// get the raster symbolizer
-  std::size_t nRules = style->getRules().size();
-  assert(nRules >= 1);
-
-// for while, consider one rule
-  const te::se::Rule* rule = style->getRule(0);
 
   const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
   assert(!symbolizers.empty());

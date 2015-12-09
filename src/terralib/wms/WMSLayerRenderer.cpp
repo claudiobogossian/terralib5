@@ -69,7 +69,8 @@ te::wms::WMSLayerRenderer::~WMSLayerRenderer()
 void te::wms::WMSLayerRenderer::draw(te::map::AbstractLayer* layer,
                                      te::map::Canvas* canvas,
                                      const te::gm::Envelope& bbox,
-                                     int srid)
+                                     int srid, 
+                                     const double& scale)
 {
   if(!bbox.isValid())
     throw Exception(TE_TR("The requested box is invalid!"));
