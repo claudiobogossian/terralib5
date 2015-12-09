@@ -155,7 +155,7 @@ void TsMatrix::rAMMemPolTest()
 
 void TsMatrix::autoMemPolTest()
 {
-  const unsigned long int max_ram  = te::common::GetTotalPhysicalMemory() / 10;
+  const unsigned long long int max_ram  = te::common::GetTotalPhysicalMemory() / 10;
 
   unsigned long int lines = (unsigned long int)
     (

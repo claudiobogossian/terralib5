@@ -67,9 +67,9 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-unsigned long int te::common::GetFreePhysicalMemory()
+unsigned long long int te::common::GetFreePhysicalMemory()
 {
-      unsigned long int freemem = 0;
+    unsigned long long int freemem = 0;
 
 #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
       int64_t usermem = 0;
@@ -88,13 +88,20 @@ unsigned long int te::common::GetFreePhysicalMemory()
       }
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-      freemem = static_cast<unsigned long int>( sysconf(_SC_PAGESIZE) * sysconf(_SC_AVPHYS_PAGES) );
+      freemem = static_cast<unsigned long long int>( sysconf(_SC_PAGESIZE) * sysconf(_SC_AVPHYS_PAGES) );
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    #if defined(_WIN64)
+      MEMORYSTATUSEX status_buffer;
+      status_buffer.dwLength = sizeof(status_buffer);
+      GlobalMemoryStatusEx(&status_buffer);
+      freemem = status_buffer.ullAvailPhys;
+    #else
       LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
       GlobalMemoryStatus(status_buffer);
       freemem = static_cast<unsigned long int>(status_buffer->dwAvailPhys);
       delete status_buffer;
+    #endif
 #else
   #error "Unsuported plataform for physical memory checking"
 #endif
@@ -102,9 +109,9 @@ unsigned long int te::common::GetFreePhysicalMemory()
       return freemem;
 }
 
-unsigned long int te::common::GetTotalPhysicalMemory()
+unsigned long long int te::common::GetTotalPhysicalMemory()
 {
-  unsigned long int totalmem = 0;
+    unsigned long long int totalmem = 0;
 
   #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
     #ifdef HW_MEMSIZE /* OSX. --------------------- */
@@ -125,35 +132,43 @@ unsigned long int te::common::GetTotalPhysicalMemory()
 
     if(sysctl(mib, 2, &physmem, &physmem_len, NULL, 0) == 0)
     {
-      totalmem = static_cast<unsigned long int>(physmem); 
+      totalmem = static_cast<unsigned long long int>(physmem); 
     }
     else
     {
       throw Exception("Could not get total physical memory!");
     }
   #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-    totalmem = static_cast<unsigned long int>( sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) );
+    totalmem = static_cast<unsigned long long int>( sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) );
 
   #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-    LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
-    GlobalMemoryStatus(status_buffer);
-    totalmem = static_cast<unsigned long int>(status_buffer->dwTotalPhys);
-    delete status_buffer;
+    #if defined(_WIN64)
+        MEMORYSTATUSEX  status_buffer;
+        status_buffer.dwLength = sizeof(status_buffer);
+        GlobalMemoryStatusEx(&status_buffer);
+        totalmem = status_buffer.ullTotalPhys;
+    #else
+        LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
+        GlobalMemoryStatus(status_buffer);
+        totalmem = static_cast<unsigned long int>(status_buffer->dwTotalPhys);
+        delete status_buffer;
+    #endif
+
   #else
-  #error "Unsuported plataform for physical memory checking"
+    #error "Unsuported plataform for physical memory checking"
   #endif
 
   return totalmem;
 }
 
-unsigned long int te::common::GetUsedVirtualMemory()
+unsigned long long int te::common::GetUsedVirtualMemory()
 {
-      unsigned long int usedmem = 0;
+    unsigned long long int usedmem = 0;
       
 #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD
       struct rusage rusageinfo;
       getrusage( RUSAGE_SELF, &rusageinfo );
-      usedmem = static_cast<unsigned long int>(1024 * rusageinfo.ru_maxrss);
+      usedmem = static_cast<unsigned long long int>(1024 * rusageinfo.ru_maxrss);
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
       std::string pid, comm, state, ppid, pgrp, session, tty_nr, 
@@ -178,13 +193,20 @@ unsigned long int te::common::GetUsedVirtualMemory()
     if ( task_info( mach_task_self( ), MACH_TASK_BASIC_INFO,
                    (task_info_t)&info, &infoCount ) != KERN_SUCCESS )
         throw;
-    usedmem = (unsigned long int)info.resident_size;
+    usedmem = (unsigned long long int)info.resident_size;
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    #if defined(_WIN64)
+      MEMORYSTATUSEX status_buffer;
+      status_buffer.dwLength = sizeof(status_buffer);
+      GlobalMemoryStatusEx(&status_buffer);
+      usedmem = status_buffer.ullTotalVirtual - status_buffer.ullAvailVirtual;
+    #else
       LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
       GlobalMemoryStatus( status_buffer );
-      usedmem = static_cast<unsigned long int>(status_buffer->dwTotalVirtual - status_buffer->dwAvailVirtual);
+      usedmem = static_cast<unsigned long long int>(status_buffer->dwTotalVirtual - status_buffer->dwAvailVirtual);
       delete status_buffer;
+    #endif
 
 #else
   #error "Unsuported plataform for virtual memory checking"
@@ -194,23 +216,30 @@ unsigned long int te::common::GetUsedVirtualMemory()
 }
 
 
-unsigned long int te::common::GetTotalVirtualMemory()
+unsigned long long int te::common::GetTotalVirtualMemory()
 {
-      unsigned long int totalmem = 0;
+    unsigned long long int totalmem = 0;
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_FREEBSD) || (TE_PLATFORM == TE_PLATFORMCODE_OPENBSD) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE) || (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
       struct rlimit info;
         
       if( getrlimit( RLIMIT_AS, &info ) == 0 )
       {
-        totalmem = (unsigned long int)info.rlim_max;
+        totalmem = (unsigned long long int)info.rlim_max;
       }
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    #if defined(_WIN64)
+      MEMORYSTATUSEX status_buffer;
+      status_buffer.dwLength = sizeof(status_buffer);
+      GlobalMemoryStatusEx(&status_buffer);
+      totalmem = status_buffer.ullTotalVirtual;
+    #else
       LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
       GlobalMemoryStatus( status_buffer );
       totalmem = (unsigned long int) status_buffer->dwTotalVirtual;
       delete status_buffer;
+    #endif
 
 #else
   #error "Unsuported plataform for virtual memory checking"
