@@ -228,79 +228,52 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
   
   if( bprop->m_colorInterp == te::rst::PaletteIdxCInt )
   {
-    switch( gband->GetColorTable()->GetPaletteInterpretation() )
+    GDALColorTable * gdalColorTablePtr = gband->GetColorTable();
+    
+    if( gdalColorTablePtr )
     {
-      case GPI_Gray : 
-        switch( bandIndex )
+      switch( gdalColorTablePtr->GetPaletteInterpretation() )
+      {
+        case GPI_Gray : 
         {
-          case 0 :
-            bprop->m_colorInterp = te::rst::GrayIdxCInt;
-            break;
-          default :
-            throw Exception(TE_TR("invalid band index"));
-            break;
+          bprop->m_paletteInterp = te::rst::GrayPalInt;
+          break;
         }
-        break;
-      case GPI_RGB : // RGBA
-        switch( bandIndex )
+        case GPI_RGB : // RGBA
         {
-          case 0 :
-            bprop->m_colorInterp = te::rst::RedCInt;
-            break;
-          case 1 :
-            bprop->m_colorInterp = te::rst::GreenCInt;
-            break;
-          case 2 :
-            bprop->m_colorInterp = te::rst::BlueCInt;
-            break;
-          case 3 :
-            bprop->m_colorInterp = te::rst::AlphaCInt;
-            break;            
-          default :
-            throw Exception(TE_TR("invalid band index"));
-            break;
+          bprop->m_paletteInterp = te::rst::RGBPalInt;
+          break;
         }        
-        break;
-      case GPI_CMYK :
-        switch( bandIndex )
+        case GPI_CMYK :
         {
-          case 0 :
-            bprop->m_colorInterp = te::rst::CyanCInt;
-            break;
-          case 1 :
-            bprop->m_colorInterp = te::rst::MagentaCInt;
-            break;
-          case 2 :
-            bprop->m_colorInterp = te::rst::YellowCInt;
-            break;
-          case 3 :
-            bprop->m_colorInterp = te::rst::KeyCInt;
-            break;            
-          default :
-            throw Exception(TE_TR("invalid band index"));
-            break;
+          bprop->m_paletteInterp = te::rst::CMYKPalInt;
+          break;
         }        
-        break;          
-      case GPI_HLS :
-        switch( bandIndex )
+        case GPI_HLS :
         {
-          case 0 :
-            bprop->m_colorInterp = te::rst::HueCInt;
-            break;
-          case 1 :
-            bprop->m_colorInterp = te::rst::SatCInt;
-            break;
-          case 2 :
-            bprop->m_colorInterp = te::rst::LigCInt;
-            break;
-          default :
-            throw Exception(TE_TR("invalid band index"));
-            break;
+          bprop->m_paletteInterp = te::rst::HSLPalInt;
+          break;
         }         
-        break;
-      default :
-        throw Exception(TE_TR("invalid palette interpretation"));
-        break;
+        default :
+        {
+          throw Exception(TE_TR("invalid palette interpretation"));
+          break;
+        }
+      }
+      
+      te::rst::BandProperty::ColorEntry auxTLColorEntry;
+      
+      for( int cTableIdx = 0 ; cTableIdx < gdalColorTablePtr->GetColorEntryCount() ;
+        ++cTableIdx )
+      {
+        auxTLColorEntry.c1 = (short)gdalColorTablePtr->GetColorEntry( cTableIdx )->c1;
+        auxTLColorEntry.c2 = (short)gdalColorTablePtr->GetColorEntry( cTableIdx )->c2;
+        auxTLColorEntry.c3 = (short)gdalColorTablePtr->GetColorEntry( cTableIdx )->c3;
+        auxTLColorEntry.c4 = (short)gdalColorTablePtr->GetColorEntry( cTableIdx )->c4;
+        
+        bprop->m_palette.push_back( auxTLColorEntry );        
+      }
+        
     }
   }
 

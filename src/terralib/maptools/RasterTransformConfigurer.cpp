@@ -27,6 +27,8 @@
 #include "RasterTransformConfigurer.h"
 #include "Utils.h"
 #include "../raster/Raster.h"
+#include "../raster/Band.h"
+#include "../raster/BandProperty.h"
 #include "../raster/RasterProperty.h"
 #include "../se/RasterSymbolizer.h"
 #include "../se/ChannelSelection.h"
@@ -108,11 +110,52 @@ void te::map::RasterTransformConfigurer::getChannelSelection()
 
   if(type == te::se::GRAY_COMPOSITION)
   {
-    if((m_rstTransform->getInputRaster() && m_rstTransform->getOutputRaster()) &&
-      (m_rstTransform->getInputRaster()->getNumberOfBands() == m_rstTransform->getOutputRaster()->getNumberOfBands()))
+    if(
+        (m_rstTransform->getInputRaster() && m_rstTransform->getOutputRaster()) 
+        &&
+        (
+          m_rstTransform->getInputRaster()->getNumberOfBands() 
+          == 
+          m_rstTransform->getOutputRaster()->getNumberOfBands()
+        )
+      )
+    {
       m_rstTransform->setTransfFunction(te::map::RasterTransform::BAND2BAND_TRANSF);
+    }
+    else if( 
+             m_rstTransform->getInputRaster()->getBand( 
+               m_rstTransform->getSrcBand() )->getProperty()->m_colorInterp
+             ==
+             te::rst::PaletteIdxCInt
+           )
+    {
+      m_rstTransform->setTransfFunction(te::map::RasterTransform::RECODE_TRANSF);      
+      
+      // Building a RecodedMap
+      
+      const te::rst::BandProperty& bandProp = *m_rstTransform->getInputRaster()->getBand( 
+        m_rstTransform->getSrcBand() )->getProperty();
+      
+      RasterTransform::RecodedMap map;
+      te::color::RGBAColor auxRGBACol;
+      
+      for( std::vector<te::rst::BandProperty::ColorEntry>::size_type palIndex = 0 ; 
+          palIndex < bandProp.m_palette.size() ;  ++palIndex )
+      {
+        auxRGBACol.setColor( (int)bandProp.m_palette[ palIndex ].c1,
+          (int)bandProp.m_palette[ palIndex ].c2, (int)bandProp.m_palette[ palIndex ].c3,
+          (int)bandProp.m_palette[ palIndex ].c4
+        );
+        
+        map[ (int)palIndex ] = auxRGBACol;
+      }
+      
+      m_rstTransform->setRecodedMap( map );
+    }
     else
+    {
       m_rstTransform->setTransfFunction(te::map::RasterTransform::MONO2THREE_TRANSF);
+    }
 
     getGrayChannelProperties(cs->getGrayChannel());
   }
