@@ -30,6 +30,7 @@
 
 // STL
 #include <cassert>
+#include <limits>
 
 te::qt::widgets::ScalePropertyItem::ScalePropertyItem(QtTreePropertyBrowser* pb, QColor c) 
   : te::qt::widgets::AbstractPropertyItem(pb, c),
