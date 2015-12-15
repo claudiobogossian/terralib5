@@ -182,12 +182,14 @@ te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
     te::dt::Property* p = 0;
     if (m_attributeVec[i].first == firstDst->getName())
     {
-      p = firstDst->getProperty(m_attributeVec[i].second);
+      p = firstDst->getProperty(m_attributeVec[i].second);      
     }
     else
     {
       p = secondDst->getProperty(m_attributeVec[i].second);
     }
+
+    p->setName(m_attributeVec[i].first + "_" + p->getName());
 
     dsType->add(p->clone());
   }
