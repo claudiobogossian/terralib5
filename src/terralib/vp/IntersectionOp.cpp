@@ -169,6 +169,14 @@ te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
   std::auto_ptr<te::da::DataSetType> firstDst = m_inFirstDsrc->getDataSetType(m_inFirstDsetName);
   std::auto_ptr<te::da::DataSetType> secondDst = m_inSecondDsrc->getDataSetType(m_inSecondDsetName);
 
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+  pkProperty->setAutoNumber(true);
+  dsType->add(pkProperty);
+
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_pk", dsType);
+  pk->add(pkProperty);
+  dsType->setPrimaryKey(pk);
+  
   for (std::size_t i = 0; i < m_attributeVec.size(); ++i)
   {
     te::dt::Property* p = 0;
@@ -183,6 +191,14 @@ te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
 
     dsType->add(p->clone());
   }
+
+  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(firstDst.get())->getGeometryType(), te::da::GetFirstGeomProperty(secondDst.get())->getGeometryType());
+
+  te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
+  newGeomProp->setGeometryType(newType);
+  newGeomProp->setSRID(te::da::GetFirstGeomProperty(firstDst.get())->getSRID());
+
+  dsType->add(newGeomProp);
 
   return dsType;
 }
