@@ -214,13 +214,15 @@ void te::vp::IntersectionDialog::updateDoubleListWidget()
   std::vector<te::dt::Property*> firstProps = firstSchema->getProperties();
   for (std::size_t i = 0; i < firstProps.size(); ++i)
   {
-    inputValues.push_back(firstSchema->getTitle() + ": " + firstProps[i]->getName());
+    if (firstProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+      inputValues.push_back(firstSchema->getTitle() + ": " + firstProps[i]->getName());
   }
 
   std::vector<te::dt::Property*> secondProps = secondSchema->getProperties();
   for (std::size_t i = 0; i < secondProps.size(); ++i)
   {
-    inputValues.push_back(secondSchema->getTitle() + ": " + secondProps[i]->getName());
+    if (secondProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+      inputValues.push_back(secondSchema->getTitle() + ": " + secondProps[i]->getName());
   }
 
   m_doubleListWidget->setInputValues(inputValues);
