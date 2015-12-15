@@ -96,8 +96,7 @@ bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
   else
     secondMember.ds = te::da::CreateAdapter(m_inSecondDsrc->getDataSet(m_inSecondDsetName, m_secondOidSet).release(), m_secondConverter.get());
 
-  if(m_copyInputColumns)
-    secondMember.props = getTabularProps(secondMember.dt);
+  secondMember.props = getTabularProps(secondMember.dt);
   
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
   resultPair = this->pairwiseIntersection(m_outDsetName, firstMember, secondMember);
