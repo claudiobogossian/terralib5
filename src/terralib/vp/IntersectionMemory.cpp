@@ -144,7 +144,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
   size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp);
 
   // Create the DataSetType and DataSet
-  te::da::DataSetType* outputDt = this->createDataSetType(newName, firstMember.dt, firstMember.props, secondMember.dt, secondMember.props);
+  te::da::DataSetType* outputDt = this->getOutputDsType();
   te::mem::DataSet* outputDs = new te::mem::DataSet(outputDt);
 
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;

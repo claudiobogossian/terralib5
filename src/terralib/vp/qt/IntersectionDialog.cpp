@@ -342,7 +342,6 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   
   try
   {
-    //bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
     bool res;
@@ -401,7 +400,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
                                 secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
                                 firstOidSet, secondOidSet);
       intersectionOp->setOutput(dsOGR, outputdataset);
-      //intersectionOp->setParams(copyInputColumns);
+      intersectionOp->setParams(getSelectedProperties());
 
       if (!intersectionOp->paramsAreValid())
         res = false;
@@ -480,7 +479,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
                                 secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
                                 firstOidSet, secondOidSet);
       intersectionOp->setOutput(aux, outputdataset);
-      //intersectionOp->setParams(copyInputColumns);
+      intersectionOp->setParams(getSelectedProperties());
 
       if (!intersectionOp->paramsAreValid())
         res = false;
