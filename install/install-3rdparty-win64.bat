@@ -656,7 +656,7 @@ set BD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\boost_thread-mt-gd.lib
 
   call .\bootstrap.bat >nul 2>nul 
 
-  call .\b2.exe toolset=msvc-12.0 --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged --abbreviate-paths runtime-link=shared link=shared variant=debug,release threading=multi address-model=64 install -j4 >nul 2>nul
+  call .\b2.exe --toolset=msvc-12.0 --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged --abbreviate-paths runtime-link=shared link=shared variant=debug,release threading=multi address-model=64 install >nul 2>nul
 
   echo done.
 
