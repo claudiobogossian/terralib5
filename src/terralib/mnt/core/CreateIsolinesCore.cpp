@@ -39,7 +39,6 @@
 #include "../../../../src/terralib/dataaccess/datasource/DataSourceManager.h"
 #include "../../../../src/terralib/dataaccess/query/EqualTo.h"
 
-
 #include "../../../../src/terralib/datatype/Property.h"
 #include "../../../../src/terralib/datatype/SimpleProperty.h"
 #include "../../../../src/terralib/datatype/StringProperty.h"
@@ -59,6 +58,7 @@
 #include "../../../../src/terralib/srs/SpatialReferenceSystemManager.h"
 #include "../../../../src/terralib/statistics/core/Enums.h"
 
+#include "../../mnt/core/Utils.h"
 #include "CreateIsolinesCore.h"
 
 //STL
@@ -210,13 +210,12 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   }
   thread.join_all();
 
-  
-  std::vector<te::gm::LineString*> lsOut;
+  std::vector<te::gm::LineString> lsOut;
   for (unsigned int idQuota = 0; idQuota < vecParams.size(); ++idQuota)
   {
     for (unsigned int i = 0; i < vecParams[idQuota].m_lsOut.size(); ++i)
     {
-      lsOut.push_back(vecParams[idQuota].m_lsOut[i]);
+      lsOut.push_back(*vecParams[idQuota].m_lsOut[i]);
     }
   }
 
@@ -225,7 +224,8 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   te::common::Logger::logDebug("mnt", timeResult.c_str());
 #endif
  
-  SaveIso(lsOut);
+  std::vector<double> guidevalues;
+  te::mnt::SaveIso(m_outDsetName, m_outDsrc, lsOut, guidevalues, m_srid);
   
   return true;
 }
@@ -711,86 +711,3 @@ bool te::mnt::CreateIsolines::equal(te::gm::PointZ &p1, te::gm::PointZ &p2, doub
   return (std::fabs(p1.getX() - p2.getX()) < tol && std::fabs(p1.getY() - p2.getY()) < tol/* && std::fabs(p1.getZ() - p2.getZ()) < tol*/);
 }
 
-bool te::mnt::CreateIsolines::SaveIso(std::vector<te::gm::LineString*> lsOut)
-{
-  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(m_outDsetName));
-
-  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("ID", te::dt::INT32_TYPE);
-  prop0->setAutoNumber(true);
-  te::dt::SimpleProperty* prop1 = new te::dt::SimpleProperty("Z", te::dt::DOUBLE_TYPE);
-  te::dt::SimpleProperty* prop11 = new te::dt::SimpleProperty("type", te::dt::STRING_TYPE);
-  te::gm::GeometryProperty* prop2 = new te::gm::GeometryProperty("iso", 0, te::gm::LineStringZType, true);
-  prop2->setSRID(m_srid);
-  dt->add(prop0);
-  dt->add(prop1);
-  dt->add(prop11);
-  dt->add(prop2);
-
-  te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
-
-  int id = 0;
-
-  for (unsigned int Idx = 0; Idx < lsOut.size(); ++Idx)
-  {
-    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
-    te::gm::LineString* gout = lsOut[Idx];
-    double *zvalue = gout->getZ();
-    dataSetItem->setInt32("ID", id++);
-    if (zvalue){
-      dataSetItem->setDouble("Z", zvalue[0]);
-      if (std::find(m_guidevalues.begin(), m_guidevalues.end(), zvalue[0]) != m_guidevalues.end())
-        dataSetItem->setString("type", "GUIDELINE");
-      else
-        dataSetItem->setString("type", "NORMAL");
-    }
-    dataSetItem->setGeometry("iso", (te::gm::Geometry*)gout->clone());
-
-    ds->add(dataSetItem);
-  }
-
-  Save(m_outDsrc.get(), ds, dt.get());
-
-  return true;
-
-}
-void te::mnt::CreateIsolines::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType)
-{
-
-  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
-  std::map<std::string, std::string> options;
-
-  try
-  {
-    if (source->getType() == "OGR")
-    {
-      source->createDataSet(outDsType, options);
-
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      source->add(name, result, options);
-    }
-    else
-    {
-      t->begin();
-
-      t->createDataSet(outDsType, options);
-
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      t->add(name, result, options);
-
-      t->commit();
-    }
-
-  }
-  catch (te::common::Exception& e)
-  {
-    t->rollBack();
-    throw e;
-  }
-  catch (std::exception& e)
-  {
-    t->rollBack();
-    throw e;
-  }
-}

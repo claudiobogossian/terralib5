@@ -142,18 +142,13 @@ namespace te
       static void firstCaseSpecial(double quota, double& lineSupLeft, double& lineSupRigth, double& lineInfLeft, double& lineInfRigth);
 
       static void segments(int idQuota,  te::gm::LineString* line, double quota, double ylg_sup, double xlg_ant, double xlg_pos, double ylg_inf,
-        double& lineSupLeft, double& lineSupRigth, double& lineInfLeft, double& lineInfRigth, std::vector< std::vector<te::gm::LineString*> >& vecSegments);
+      double& lineSupLeft, double& lineSupRigth, double& lineInfLeft, double& lineInfRigth, std::vector< std::vector<te::gm::LineString*> >& vecSegments);
 
       static bool generateSegmentsThreaded(GenerateSegmentsParams* params);
-
-      bool SaveIso(std::vector<te::gm::LineString*> lsOut);
-
-      void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
       std::vector<RasterBlockSize> calculateBlocks(unsigned int numRows, unsigned int numThreads);
 
       void rstMemoryBlock(std::auto_ptr<te::rst::Raster> raster, std::vector<RasterBlockSize> vecBlocks, std::vector<GenerateSegmentsParams*>& vecGenerateParams);
-
 
       void createFileShp(std::auto_ptr<te::mem::DataSet> dataSet, te::da::DataSetType* dataSetType);
       bool connectLines1(std::vector<te::gm::LineString*>  vecSegments, double scale, std::vector<te::gm::LineString*>& lsOut);
