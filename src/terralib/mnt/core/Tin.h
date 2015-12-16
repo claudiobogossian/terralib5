@@ -196,6 +196,8 @@ namespace te
 
       bool setEdge(int32_t edge);
 
+      bool removeEdge(int32_t edge);
+
       std::vector<int32_t> &getEdge() { return m_edge; }
 
       /*! Set node height value.*/

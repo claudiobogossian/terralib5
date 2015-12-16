@@ -144,10 +144,21 @@ bool te::mnt::TinNode::operator< (const TinNode &rhs) const
     return false;
 }
 
-bool te::mnt::TinNode::setEdge(int32_t edge) 
+bool te::mnt::TinNode::setEdge(int32_t edge)
 {
   if (std::find(m_edge.begin(), m_edge.end(), edge) == m_edge.end()) {
     m_edge.push_back(edge);
+    return true;
+  }
+  return false;
+}
+
+bool te::mnt::TinNode::removeEdge(int32_t edge)
+{
+  std::vector<int32_t>::iterator it = std::find(m_edge.begin(), m_edge.end(), edge);
+  if (it != m_edge.end())
+  {
+    m_edge.erase(it);
     return true;
   }
   return false;

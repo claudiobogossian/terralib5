@@ -15,6 +15,7 @@
 #include "../../geometry/Point.h"
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
+#include "../../raster.h"
 
 //#include <geos.h>
 #include <geos/geom/Coordinate.h>
@@ -1611,7 +1612,6 @@ void te::mnt::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::
   }
 }
 
-
 bool te::mnt::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit)
 {
   switch (unit->getId())
@@ -1629,4 +1629,33 @@ bool te::mnt::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr uni
     return false;
   }
   return true;
+}
+
+void te::mnt::getMinMax(te::rst::Raster *inputRst, double &vmin, double &vmax)
+{
+  double min = std::numeric_limits<double>::max();
+  double max = std::numeric_limits<double>::min();
+
+  std::complex<double> pixel;
+  unsigned int rf = inputRst->getNumberOfRows() - 1;
+  unsigned int cf = inputRst->getNumberOfColumns() - 1;
+  double no_data = inputRst->getBand(0)->getProperty()->m_noDataValue;
+
+  for (unsigned r = 0; r <= rf; r++)
+    for (unsigned c = 0; c <= cf; c++)
+    {
+      inputRst->getValue(c, r, pixel);
+
+      if (pixel.real() == no_data)
+        continue;
+
+      if (pixel.real() < min)
+        min = pixel.real();
+
+      if (pixel.real() > max)
+        max = pixel.real();
+    }
+
+  vmin = min;
+  vmax = max;
 }
