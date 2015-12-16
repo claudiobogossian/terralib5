@@ -206,8 +206,13 @@ void te::qt::plugins::gdal::GDALConnectorDialog::searchDatasetToolButtonPressed(
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Geo Spatial File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
-      tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
+    QString fileName = QFileDialog::getOpenFileName(
+      this,
+      tr("Open Geo Spatial File"),
+      te::qt::widgets::GetFilePathFromSettings("raster"), 
+      te::qt::widgets::GetDiskRasterFileSelFilter()
+      , 0
+      , QFileDialog::ReadOnly );    
 
     if(fileName.isEmpty())
       return;
