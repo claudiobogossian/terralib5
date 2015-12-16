@@ -44,6 +44,7 @@ te::qt::widgets::RasterSlicingWizardPage::~RasterSlicingWizardPage()
 
 void te::qt::widgets::RasterSlicingWizardPage::setBandsNumber( const unsigned int bandsNumber )
 {
+  m_ui->_m_bandComboBox->clear();
   for( unsigned int band = 0 ; band < bandsNumber ; ++band )
   {
     m_ui->_m_bandComboBox->addItem( QString::number( band ) );

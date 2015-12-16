@@ -94,8 +94,12 @@ bool te::qt::widgets::RasterSlicingWizard::validateCurrentPage()
   }
   else if(currentPage() ==  m_wizardPage.get())
   {
-    return execute();
+    return true;
   }
+  else if(currentPage() ==  m_rasterInfoPage.get())
+  {
+    return execute();
+  }  
 
   return true;
 }
@@ -154,6 +158,7 @@ bool te::qt::widgets::RasterSlicingWizard::execute()
     slicesNumber, eqHistogram, m_rasterInfoPage->getWidget()->getInfo(),
     m_rasterInfoPage->getWidget()->getType(), true, 0, outRasterPtr ) )
   {
+    outRasterPtr.reset();
     //set output layer
     m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                  m_rasterInfoPage->getWidget()->getInfo());
