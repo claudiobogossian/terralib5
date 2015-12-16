@@ -26,7 +26,7 @@ te::qt::widgets::Eta5kmItem::~Eta5kmItem()
 
 bool te::qt::widgets::Eta5kmItem::loadData()
 {
-  if(getCtlParameters() == false)
+  if (getCtlParameters() == false)
     return false;
 
   //m_animationScene->addItem(pi);
@@ -83,13 +83,13 @@ bool te::qt::widgets::Eta5kmItem::loadData()
 
 bool te::qt::widgets::Eta5kmItem::getCtlParameters()
 {
-  char buf[300];
+  char buf[500];
   QString file(m_dir.path() + "/Prec5km.ctl");
   FILE* fp = fopen(file.toStdString().c_str(), "r");
   if (fp == 0)
     return false;
 
-  size_t n = fread(buf, sizeof(char), 300, fp);
+  size_t n = fread(buf, sizeof(char), 500, fp);
   fclose(fp);
   buf[n] = 0;
   QString ss(QString(buf).simplified());
@@ -103,15 +103,27 @@ bool te::qt::widgets::Eta5kmItem::getCtlParameters()
   QString s;
 
   // CHUTE SRID 4326 WGS84
-  m_SRID = 4326;
+  //m_SRID = 4326;
+  // get undef
+  size_t pos = ss.indexOf("undef ", Qt::CaseInsensitive) + (int)strlen("undef ");
+  ss.remove(0, (int)pos);
+  pos = ss.indexOf("srid ", Qt::CaseInsensitive);
+  if (pos != -1)
+  {
+    s = ss.left((int)pos);
+    m_undef = atof(s.toStdString().c_str());
+    ss.remove(0, (int)pos);
 
-  // get UNDEF value
-  size_t pos = ss.indexOf("undef ", Qt::CaseInsensitive) + strlen("undef ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf("xdef", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  m_undef = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
+    // get srid
+    pos = ss.indexOf("srid ", Qt::CaseInsensitive) + (int)strlen("srid ");
+    ss.remove(0, (int)pos);
+    pos = ss.indexOf("xdef ", Qt::CaseInsensitive);
+    s = ss.left((int)pos);
+    m_SRID = atoi(s.toStdString().c_str());
+    ss.remove(0, (int)pos);
+  }
+  else
+    m_SRID = 4326;
 
   // get XDEF ulx and resX values
   pos = ss.indexOf("xdef ", Qt::CaseInsensitive) + strlen("xdef ");

@@ -92,21 +92,21 @@ bool te::qt::widgets::ImageItem::loadData()
 
 bool te::qt::widgets::ImageItem::getCtlParameters()
 {
-  char buf[300];
+  char buf[500];
   QString file(m_dir.path() + "/image.ctl");
   FILE* fp = fopen(file.toStdString().c_str(), "r");
   if (fp == 0)
     return false;
 
-  size_t n = fread(buf, sizeof(char), 300, fp);
+  size_t n = fread(buf, sizeof(char), 500, fp);
   fclose(fp);
   buf[n] = 0;
   QString s, ss(QString(buf).simplified());
 
   // validation
   if (!(ss.contains("suffix ", Qt::CaseInsensitive) && ss.contains("preffix ", Qt::CaseInsensitive) &&
-    ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("srid ", Qt::CaseInsensitive) && 
-    ss.contains("llx ", Qt::CaseInsensitive) && ss.contains("lly ", Qt::CaseInsensitive) && 
+    ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("srid ", Qt::CaseInsensitive) &&
+    ss.contains("llx ", Qt::CaseInsensitive) && ss.contains("lly ", Qt::CaseInsensitive) &&
     ss.contains("urx ", Qt::CaseInsensitive) && ss.contains("ury ", Qt::CaseInsensitive)))
     return false;
 
@@ -130,17 +130,22 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
   pos = ss.indexOf("undef ", Qt::CaseInsensitive) + (int)strlen("undef ");
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" srid", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  m_undef = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
+  if (pos != -1)
+  {
+    s = ss.left((int)pos);
+    m_undef = atof(s.toStdString().c_str());
+    ss.remove(0, (int)pos);
 
-  // get srid
-  pos = ss.indexOf("srid ", Qt::CaseInsensitive) + (int)strlen("srid ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" llx", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  m_SRID = atoi(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
+    // get srid
+    pos = ss.indexOf("srid ", Qt::CaseInsensitive) + (int)strlen("srid ");
+    ss.remove(0, (int)pos);
+    pos = ss.indexOf(" llx", Qt::CaseInsensitive);
+    s = ss.left((int)pos);
+    m_SRID = atoi(s.toStdString().c_str());
+    ss.remove(0, (int)pos);
+  }
+  else
+    m_SRID = 4326;
 
   // get llx
   pos = ss.indexOf("llx ", Qt::CaseInsensitive) + strlen("llx ");
@@ -178,7 +183,7 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
   // get static representation
   if (m_dir.exists("staticRepresentation.png"))
     m_staticRepresentation = QImage(m_dir.path() + "/staticRepresentation.png");
-  
+
   return true;
 }
 
