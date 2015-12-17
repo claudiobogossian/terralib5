@@ -137,8 +137,6 @@ namespace te
 
       static bool connectLinesThreaded(ConnectLinesParams* params);
 
-      static bool equal(te::gm::PointZ &p1, te::gm::PointZ &p2, double &tol);
-
       static void firstCaseSpecial(double quota, double& lineSupLeft, double& lineSupRigth, double& lineInfLeft, double& lineInfRigth);
 
       static void segments(int idQuota,  te::gm::LineString* line, double quota, double ylg_sup, double xlg_ant, double xlg_pos, double ylg_inf,
@@ -150,7 +148,6 @@ namespace te
 
       void rstMemoryBlock(std::auto_ptr<te::rst::Raster> raster, std::vector<RasterBlockSize> vecBlocks, std::vector<GenerateSegmentsParams*>& vecGenerateParams);
 
-      void createFileShp(std::auto_ptr<te::mem::DataSet> dataSet, te::da::DataSetType* dataSetType);
       bool connectLines1(std::vector<te::gm::LineString*>  vecSegments, double scale, std::vector<te::gm::LineString*>& lsOut);
       bool connectLines(std::vector<te::gm::LineString*>  vecSegments, std::vector<te::gm::LineString*>& lsOut);
      

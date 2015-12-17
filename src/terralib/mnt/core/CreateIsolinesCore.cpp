@@ -229,6 +229,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   
   return true;
 }
+
 void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> raster, std::vector<RasterBlockSize> vecBlocks, std::vector<GenerateSegmentsParams*>& vecGenerateParams)
 {
   boost::thread_group threadGenerateSegments;
@@ -280,6 +281,7 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
   }
   threadGenerateSegments.join_all();
 }
+
 std::vector<RasterBlockSize> te::mnt::CreateIsolines::calculateBlocks(unsigned int numRows, unsigned int numThreads)
 {
   int calc = (int)(numRows / numThreads) - 1;
@@ -326,6 +328,7 @@ bool te::mnt::CreateIsolines::generateSegmentsThreaded(GenerateSegmentsParams* p
   generateSegments(params->m_rasterPtr, params->m_nvals, params->m_vecSegments);
   return true;
 }
+
 bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> raster, std::vector<double> nvals, std::vector< std::vector<te::gm::LineString*> >& vecSegments)
 {
   double quota;
@@ -603,7 +606,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
         te::gm::PointZ ptEndC(vecSegments[(unsigned int)candidate[i]]->getX(1), vecSegments[(unsigned int)candidate[i]]->getY(1), vecSegments[(unsigned int)candidate[i]]->getZ(1));
         te::gm::PointZ ptEnd(vecPoints[(unsigned int)npts - 1].getX(), vecPoints[(unsigned int)npts - 1].getY(), vecPoints[(unsigned int)npts - 1].getZ());
 
-        if (equal(ptStartC, ptEnd, tol))
+        if (te::mnt::Equal(ptStartC, ptEnd, tol))
         {
           te::gm::PointZ pt;
           pt.setX(vecSegments[(unsigned int)candidate[i]]->getEndPoint()->getX());
@@ -624,7 +627,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
           hasSegment = true;
           break;
         }
-        else if (equal(ptEndC, ptEnd, tol))
+        else if (te::mnt::Equal(ptEndC, ptEnd, tol))
         {
           te::gm::PointZ pt;
           pt.setX(vecSegments[(unsigned int)candidate[i]]->getStartPoint()->getX());
@@ -669,7 +672,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
       }
       te::gm::PointZ ptStart(vecPoints[0].getX(), vecPoints[0].getY(), vecPoints[(unsigned int)npts - 1].getZ());
       te::gm::PointZ ptEnd(vecPoints[(unsigned int)npts - 1].getX(), vecPoints[(unsigned int)npts - 1].getY(), vecPoints[(unsigned int)npts - 1].getZ());
-      if (npts > 2 && equal(ptStart, ptEnd, tol))
+      if (npts > 2 && te::mnt::Equal(ptStart, ptEnd, tol))
       {
         newiso = true;
         break;
@@ -692,6 +695,8 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
 
 void te::mnt::CreateIsolines::interpolacao(int direction, te::gm::LineString* line, double quota, double coord, double c_inf, double c_sup, double z_inf, double z_sup)
 {
+  assert(z_sup != z_inf);
+
   double aux = c_inf + ((quota - z_inf) * (c_sup - c_inf) / (z_sup - z_inf));
   
   line->setNumCoordinates(line->size() + 1);
@@ -705,9 +710,3 @@ void te::mnt::CreateIsolines::interpolacao(int direction, te::gm::LineString* li
     line->setPointZ(line->size()-1, aux, coord, quota);
   }
 }
-
-bool te::mnt::CreateIsolines::equal(te::gm::PointZ &p1, te::gm::PointZ &p2, double &tol)
-{
-  return (std::fabs(p1.getX() - p2.getX()) < tol && std::fabs(p1.getY() - p2.getY()) < tol/* && std::fabs(p1.getZ() - p2.getZ()) < tol*/);
-}
-

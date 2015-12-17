@@ -24,6 +24,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 // terralib
+#include "../../common/progress/ProgressManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -34,6 +35,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../mnt/core/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../raster.h"
 #include "../../statistics/core/Utils.h"
 #include "../../mnt/core/Utils.h"
@@ -395,48 +397,52 @@ void te::mnt::CreateIsolinesDialog::onHelpPushButtonClicked()
 
 void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
 {
+  if (!m_inputLayer.get())
+  {
+    QMessageBox::information(this, tr("Create Isolines"), tr("Select an input layer!"));
+    return;
+  }
+
+  te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
+  if (!indsLayer)
+  {
+    QMessageBox::information(this, tr("Create Isolines"), tr("Can not execute this operation on this type of layer!"));
+    return;
+  }
+
+  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
+  if (!inDataSource.get())
+  {
+    QMessageBox::information(this, tr("Create Isolines"), tr("The selected input data source can not be accessed!"));
+    return;
+  }
+
+  std::string inDsetName = indsLayer->getDataSetName();
+  std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
+
+  // Checking consistency of output paramenters
+  if (m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Create Isolines"), tr("Select a repository for the resulting layer."));
+    return;
+  }
+
+  if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Create Isolines"), tr("Define a name for the resulting layer."));
+    return;
+  }
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  std::map<std::string, std::string> outdsinfo;
+  boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
-    if (!m_inputLayer.get())
-    {
-      QMessageBox::information(this, tr("Create Isolines"), tr("Select an input layer!"));
-      return;
-    }
-
-    te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
-    if (!indsLayer)
-    {
-      QMessageBox::information(this, tr("Create Isolines"), tr("Can not execute this operation on this type of layer!"));
-      return;
-    }
-
-    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
-    if (!inDataSource.get())
-    {
-      QMessageBox::information(this, tr("Create Isolines"), tr("The selected input data source can not be accessed!"));
-      return;
-    }
-
-    std::string inDsetName = indsLayer->getDataSetName();
-    std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
-
-    // Checking consistency of output paramenters
-    if (m_ui->m_repositoryLineEdit->text().isEmpty())
-    {
-      QMessageBox::information(this, tr("Create Isolines"), tr("Select a repository for the resulting layer."));
-      return;
-    }
-
-    if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
-    {
-      QMessageBox::information(this, tr("Create Isolines"), tr("Define a name for the resulting layer."));
-      return;
-    }
-    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-
-    std::map<std::string, std::string> outdsinfo;
-    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
-
     bool result = false;
 
     if (m_toFile)
@@ -478,24 +484,48 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
     {
       CreateIsolines* ci = new CreateIsolines();
       ci->setInput(inDataSource, inDsetName, inDsetType);
+      if (m_toFile)
+      {
+        te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
+        dsOGR->setConnectionInfo(outdsinfo);
+        dsOGR->open();
 
-      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-      dsOGR->setConnectionInfo(outdsinfo);
-      dsOGR->open();
+        if (dsOGR->dataSetExists(outputdataset))
+        {
+          QMessageBox::information(this, tr("TIN Generation"), tr("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
+          return;
+        }
 
-      ci->setOutput(dsOGR, outputdataset);
+        ci->setOutput(dsOGR, outputdataset);
+      }
+      else
+      {
+        te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
+        if (!aux)
+        {
+          QMessageBox::information(this, tr("Create Isolines"), tr("The selected output datasource can not be accessed."));
+          return;
+        }
+        if (aux->dataSetExists(outputdataset))
+        {
+          QMessageBox::information(this, tr("Create Isolines"), tr("Dataset already exists. Remove it or select a new name and try again. "));
+          return;
+        }
+        ci->setOutput(aux, outputdataset);
+      }
 
       if (m_ui->m_dummycheckBox->isChecked() == true)
       {
-        //m_dummy = inputRst->getBand(0)->getProperty()->m_noDataValue;
         m_hasDummy = true;
       }
 
       ci->setParams(val, guideval, m_max, m_min, m_dummy, m_hasDummy);
       std::auto_ptr<te::rst::Raster> raster = ci->getPrepareRaster();
       result = ci->run(raster);
+
+      delete ci;
     }
-    else
+    else //TIN
     {
       double tol = m_inputLayer->getExtent().getHeight() / 1.e9;
 
@@ -538,9 +568,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
       Tin->setParams(val, guideval, tol);
 
       result = Tin->run();
-
       delete Tin;
-
     }
 
     if (result)
@@ -577,11 +605,13 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
   }
   catch (const std::exception& e)
   {
+    te::common::ProgressManager::getInstance().removeViewer(id);
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, tr("Create Isolines "), e.what());
     return;
   }
 
+  te::common::ProgressManager::getInstance().removeViewer(id);
   this->setCursor(Qt::ArrowCursor);
   accept();
 

@@ -261,8 +261,6 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
   }
 
   bool nflag;
-  unsigned int i;
-
   double PRECISAO = 0.000001;
 
   typedef te::sam::kdtree::Node<te::gm::Coord2D, int32_t, int32_t> KD_NODE;
@@ -290,14 +288,6 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
         reportsnode.clear();
         continue;
       }
-
-      //for (i = 0; i < (unsigned int)m_lnode; i++)
-      //{
-      //  if (Equal(m_node[i].getNPoint(), pz, PRECISAO))
-      //    break;
-      //}
-      //if (i != (unsigned int)m_lnode)
-      //  continue;
 
       // for each point, create and insert node
       node = ++m_lnode;
