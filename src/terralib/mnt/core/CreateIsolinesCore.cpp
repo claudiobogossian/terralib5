@@ -361,7 +361,12 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
       raster->getValue(nc + 1, nr - 1, lineSupRigth);
       raster->getValue(nc, nr, lineInfLeft);
       raster->getValue(nc + 1, nr, lineInfRigth);
-      if (m_hasDummy == true && ((lineSupRigth > m_vmax) ||
+      if ((m_hasDummy == true &&
+        (lineSupRigth == m_dummy || 
+        lineSupLeft == m_dummy || 
+        lineInfRigth == m_dummy || 
+        lineInfLeft == m_dummy)) ||
+        ((lineSupRigth > m_vmax) ||
         (lineSupLeft > m_vmax) ||
         (lineInfRigth > m_vmax) ||
         (lineInfLeft > m_vmax) ||
@@ -370,142 +375,137 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
         (lineInfRigth < m_vmin) ||
         (lineInfLeft < m_vmin)))
       {
-
         continue;
-
       }
-      else
+
+      for (unsigned int idQuota = 0; idQuota < nvals.size(); ++idQuota)
       {
-        for (unsigned int idQuota = 0; idQuota < nvals.size(); ++idQuota)
+        quota = nvals[idQuota];
+        double delta = 0.0001;
+
+        bool changed = true;
+
+        while (changed)
         {
-          quota = nvals[idQuota];
-          double delta = 0.0001;
-
-          bool changed = true;
-
-          while (changed)
+          changed = false;
+          if (fabs(quota - lineSupRigth) < delta)
           {
-            changed = false;
-            if (fabs(quota - lineSupRigth) < delta)
-            {
-              lineSupRigth += delta;
-              changed = true;
-            }
-            if (fabs(quota - lineInfRigth) < delta)
-            {
-              lineInfRigth += delta;
-              changed = true;
-            }
-            if (fabs(quota - lineSupLeft) < delta)
-            {
-              lineSupLeft += delta;
-              changed = true;
-            }
-            if (fabs(quota - lineInfLeft) < delta)
-            {
-              lineInfLeft += delta;
-              changed = true;
-            }
+            lineSupRigth += delta;
+            changed = true;
           }
-
-          if (((quota > lineSupLeft) && (quota > lineSupRigth) &&
-            (quota > lineInfLeft) && (quota > lineInfRigth)) ||
-            ((quota < lineSupLeft) && (quota < lineSupRigth) &&
-            (quota < lineInfLeft) && (quota < lineInfRigth)))
+          if (fabs(quota - lineInfRigth) < delta)
           {
-
+            lineInfRigth += delta;
+            changed = true;
           }
-          else
+          if (fabs(quota - lineSupLeft) < delta)
           {
-            if (((quota < lineSupLeft) && (quota > lineSupRigth) &&
-              (quota > lineInfLeft) && (quota < lineInfRigth)) ||
-              ((quota > lineSupLeft) && (quota < lineSupRigth) &&
-              (quota < lineInfLeft) && (quota > lineInfRigth)))
+            lineSupLeft += delta;
+            changed = true;
+          }
+          if (fabs(quota - lineInfLeft) < delta)
+          {
+            lineInfLeft += delta;
+            changed = true;
+          }
+        } //while (changed)
+
+        if (((quota > lineSupLeft) && (quota > lineSupRigth) &&
+          (quota > lineInfLeft) && (quota > lineInfRigth)) ||
+          ((quota < lineSupLeft) && (quota < lineSupRigth) &&
+          (quota < lineInfLeft) && (quota < lineInfRigth)))
+        {
+        }
+        else
+        {
+          if (((quota < lineSupLeft) && (quota > lineSupRigth) &&
+            (quota > lineInfLeft) && (quota < lineInfRigth)) ||
+            ((quota > lineSupLeft) && (quota < lineSupRigth) &&
+            (quota < lineInfLeft) && (quota > lineInfRigth)))
+          {
+            double zmeio = (lineSupLeft + lineSupRigth + lineInfLeft + lineInfRigth) / 4;
+
+            while (quota == zmeio)
             {
-              double zmeio = (lineSupLeft + lineSupRigth + lineInfLeft + lineInfRigth) / 4;
-
-              while (quota == zmeio)
-              {
-                if (zmeio == 0)
-                  zmeio += 0.0001;
-                else
-                  zmeio *= 1.001;
-              }
-
-              if (((quota > zmeio) && (quota > lineSupLeft)) ||
-                ((quota < zmeio) && (quota < lineSupLeft)))
-              {
-                interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
-                interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
-                interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
-                interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
-              }
+              if (zmeio == 0)
+                zmeio += 0.0001;
               else
-              {
-                interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
-                interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
-                interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
-                interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
-              }
+                zmeio *= 1.001;
+            }
+
+            if (((quota > zmeio) && (quota > lineSupLeft)) ||
+              ((quota < zmeio) && (quota < lineSupLeft)))
+            {
+              interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
+              interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
+              interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
+              interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
             }
             else
             {
-              if (((quota < lineSupLeft) && (quota > lineSupRigth)) ||
-                ((quota > lineSupLeft) && (quota < lineSupRigth)))
-              {
-                interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
-              }
-              if (((quota < lineSupRigth) && (quota > lineInfRigth)) ||
-                ((quota > lineSupRigth) && (quota < lineInfRigth)))
-              {
-                interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
-              }
-              if (((quota < lineInfLeft) && (quota > lineInfRigth)) ||
-                ((quota > lineInfLeft) && (quota < lineInfRigth)))
-              {
-                interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
-              }
-              if (((quota < lineSupLeft) && (quota > lineInfLeft)) ||
-                ((quota > lineSupLeft) && (quota < lineInfLeft)))
-              {
-                interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
-              }
-            }
-            if (line->size() > 1)
-            {
-              if (line->size() == 4)
-              {
-                te::gm::LineString* line1 = new te::gm::LineString(2, te::gm::LineStringZType);
-                size_t n = line->size();
-                line1->setX(0, line->getPointN(0)->getX());
-                line1->setY(0, line->getPointN(0)->getY());
-                line1->setZ(0, line->getPointN(n - 1)->getZ());
-
-                line1->setX(1, line->getPointN(1)->getX());
-                line1->setY(1, line->getPointN(1)->getY());
-                line1->setZ(1, line->getPointN(n - 1)->getZ());
-
-                te::gm::LineString* line2 = new te::gm::LineString(2, te::gm::LineStringZType);
-
-                line2->setX(0, line->getPointN(2)->getX());
-                line2->setY(0, line->getPointN(2)->getY());
-                line2->setZ(0, line->getPointN(n - 1)->getZ());
-
-                line2->setX(1, line->getPointN(3)->getX());
-                line2->setY(1, line->getPointN(3)->getY());
-                line2->setZ(1, line->getPointN(n - 1)->getZ());
-
-                vecSegments[idQuota].push_back(line1);
-                vecSegments[idQuota].push_back(line2);
-                delete line;
-              }
-              else if (line->size())
-              {
-                vecSegments[idQuota].push_back(line);
-              }
-              line = new te::gm::LineString(0, te::gm::LineStringZType);
+              interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
+              interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
+              interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
+              interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
             }
           }
+          else
+          {
+            if (((quota < lineSupLeft) && (quota > lineSupRigth)) ||
+              ((quota > lineSupLeft) && (quota < lineSupRigth)))
+            {
+              interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
+            }
+            if (((quota < lineSupRigth) && (quota > lineInfRigth)) ||
+              ((quota > lineSupRigth) && (quota < lineInfRigth)))
+            {
+              interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
+            }
+            if (((quota < lineInfLeft) && (quota > lineInfRigth)) ||
+              ((quota > lineInfLeft) && (quota < lineInfRigth)))
+            {
+              interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
+            }
+            if (((quota < lineSupLeft) && (quota > lineInfLeft)) ||
+              ((quota > lineSupLeft) && (quota < lineInfLeft)))
+            {
+              interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
+            }
+          }
+          if (line->size() > 1)
+          {
+            if (line->size() == 4)
+            {
+              te::gm::LineString* line1 = new te::gm::LineString(2, te::gm::LineStringZType);
+              size_t n = line->size();
+              line1->setX(0, line->getPointN(0)->getX());
+              line1->setY(0, line->getPointN(0)->getY());
+              line1->setZ(0, line->getPointN(n - 1)->getZ());
+              
+              line1->setX(1, line->getPointN(1)->getX());
+              line1->setY(1, line->getPointN(1)->getY());
+              line1->setZ(1, line->getPointN(n - 1)->getZ());
+              
+              te::gm::LineString* line2 = new te::gm::LineString(2, te::gm::LineStringZType);
+
+              line2->setX(0, line->getPointN(2)->getX());
+              line2->setY(0, line->getPointN(2)->getY());
+              line2->setZ(0, line->getPointN(n - 1)->getZ());
+              
+              line2->setX(1, line->getPointN(3)->getX());
+              line2->setY(1, line->getPointN(3)->getY());
+              line2->setZ(1, line->getPointN(n - 1)->getZ());
+              
+              vecSegments[idQuota].push_back(line1);
+              vecSegments[idQuota].push_back(line2);
+              delete line;
+            }
+            else if (line->size())
+            {
+              vecSegments[idQuota].push_back(line);
+            }
+            line = new te::gm::LineString(0, te::gm::LineStringZType);
+          } // if (line->size() > 1) ...
         }
       }
     }
