@@ -62,13 +62,16 @@ namespace te
 
         public:
 
-          RasterInfoWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          /*!
+            \brief Default constructor.
+
+            \param outputMode Allows select input rasters (outputMode=false - rasters that already exists) or output raster info - outputMode=true).
+          */
+          RasterInfoWidget(const bool outputMode, QWidget* parent, Qt::WindowFlags f);
 
           ~RasterInfoWidget();
 
           Ui::RasterInfoWidgetForm* getForm() const;
-
-        public:
 
           std::string getType() const;
 
@@ -89,25 +92,20 @@ namespace te
           bool overight() const;
 
           bool fileExists() const;
+          
+        protected slots:
+
+          void onOpenFileDlgToolButtonClicked();          
 
         protected:
 
-          std::string getBaseName() const;
-
           void fillExtensions();
-
-        protected slots:
-
-          void onOpenFileDlgToolButtonClicked();
 
         private:
 
+         bool m_outputMode; //!< Allows select input rasters (outputMode=false - rasters that already exists) or output raster info - outputMode=true).
          std::auto_ptr<Ui::RasterInfoWidgetForm> m_ui;
          std::auto_ptr<te::qt::widgets::ParameterTableWidget> m_table;
-
-        public:
-
-         std::string m_dir;
       }; 
 
     } // end namespace widgets

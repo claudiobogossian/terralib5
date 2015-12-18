@@ -37,7 +37,7 @@ te::qt::widgets::RasterInfoWizardPage::RasterInfoWizardPage(QWidget* parent)
 {
 //build form
   QGridLayout* layout = new QGridLayout(this);
-  m_rinfo.reset( new te::qt::widgets::RasterInfoWidget(this));
+  m_rinfo.reset( new te::qt::widgets::RasterInfoWidget(true, this, 0));
   layout->addWidget(m_rinfo.get(), 0, 0);
 
 //configure page
@@ -45,7 +45,7 @@ te::qt::widgets::RasterInfoWizardPage::RasterInfoWizardPage(QWidget* parent)
   this->setSubTitle(tr("Defines the parameters of raster creation."));
 
 //connects
-  connect(m_rinfo->getForm()->m_nameLineEdit, SIGNAL(textEdited(QString)), this, SLOT(onChanged(QString)));
+  connect(m_rinfo->getForm()->m_nameLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onChanged(QString)));
   connect(m_rinfo->getForm()->m_fileNameLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onChanged(QString)));
   connect(m_rinfo->getForm()->m_fileRadioButton, SIGNAL(clicked()), this, SLOT(onChanged()));
   connect(m_rinfo->getForm()->m_memRadioButton, SIGNAL(clicked()), this, SLOT(onChanged()));
@@ -65,7 +65,7 @@ bool te::qt::widgets::RasterInfoWizardPage::isComplete() const
 
     if(m_rinfo->getForm()->m_fileRadioButton->isChecked())
     {
-      if(m_rinfo->m_dir.empty())
+      if( m_rinfo->getName().empty() && m_rinfo->getPath().empty() )
         return false;
     }
   }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>288</width>
-    <height>185</height>
+    <width>293</width>
+    <height>228</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,11 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="m_nameLineEdit"/>
+           <widget class="QLineEdit" name="m_nameLineEdit">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -66,7 +70,7 @@
              </size>
             </property>
             <property name="text">
-             <string>File</string>
+             <string>Fi&amp;le</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -80,12 +84,15 @@
               <property name="enabled">
                <bool>false</bool>
               </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item row="0" column="1">
              <widget class="QToolButton" name="m_openFileDlgToolButton">
               <property name="toolTip">
-               <string>Select a folder to save the raster file.</string>
+               <string>Select the raster file name</string>
               </property>
               <property name="text">
                <string>...</string>
@@ -116,7 +123,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Memory</string>
+             <string>Memor&amp;y</string>
             </property>
            </widget>
           </item>
@@ -132,7 +139,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Data Source</string>
+             <string>Da&amp;ta Source</string>
             </property>
            </widget>
           </item>
