@@ -39,7 +39,7 @@ te::qt::widgets::RasterInfoDialog::RasterInfoDialog(QWidget* parent, Qt::WindowF
   m_ui->setupUi(this);
 
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
-  m_widget.reset( new te::qt::widgets::RasterInfoWidget(m_ui->m_widget));
+  m_widget.reset( new te::qt::widgets::RasterInfoWidget(true, m_ui->m_widget, 0));
   layout->addWidget(m_widget.get(), 0, 0);
   layout->setContentsMargins(0,0,0,0);
 }

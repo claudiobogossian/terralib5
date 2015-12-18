@@ -35,16 +35,20 @@
 
 // QT
 #include <QFileDialog>
+#include <QString>
 
 // BOOST Includes
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 
 
-te::qt::widgets::RasterInfoWidget::RasterInfoWidget(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::RasterInfoWidget::RasterInfoWidget(
+    const bool outputMode,
+    QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::RasterInfoWidgetForm),
-    m_dir("")
+    m_outputMode( outputMode ),
+    m_ui(new Ui::RasterInfoWidgetForm)
 {
   m_ui->setupUi(this);
 
@@ -53,7 +57,7 @@ te::qt::widgets::RasterInfoWidget::RasterInfoWidget(QWidget* parent, Qt::WindowF
   layout->addWidget(m_table.get());
   layout->setContentsMargins(0,0,0,0);
 
-  m_ui->m_openFileDlgToolButton->setIcon(QIcon::fromTheme("folder"));
+  m_ui->m_openFileDlgToolButton->setIcon(QIcon::fromTheme("file-raster"));
   m_ui->m_openDSDlgToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   m_table->getForm()->m_parameterTitle->setText(tr("Extra parameters"));
@@ -95,13 +99,9 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
 {
   std::map<std::string, std::string> rinfo;
 
-  std::string name = getBaseName();
-
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    std::string fileName = m_dir + "/" + name + getExtension();
-
-    rinfo["URI"] = fileName;
+    rinfo["URI"] = m_ui->m_fileNameLineEdit->text().toStdString();
   }
   else if(m_ui->m_memRadioButton->isChecked())
   {
@@ -127,12 +127,18 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(in
 {
   std::map<std::string, std::string> rinfo;
 
-  std::string name = getBaseName();
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  
+  //std::string name = getBaseName();
 
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    std::string str = boost::lexical_cast< std::string >( count );
-    std::string fileName = m_dir + "/" + name + "_" + str + getExtension();
+    std::string fileName = 
+      path.parent_path().string() 
+      + boost::filesystem::path::preferred_separator + path.stem().string()
+      + "_" 
+      + boost::lexical_cast< std::string >( count ) 
+      + path.extension().string();
 
     rinfo["URI"] = fileName;
   }
@@ -158,8 +164,9 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(in
 
 std::auto_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSource() const
 {
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
   std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["SOURCE"] = m_dir + "/";
+  connInfoRaster["SOURCE"] = path.parent_path().string();
 
   std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
   dsPtr->setConnectionInfo( connInfoRaster );
@@ -170,22 +177,14 @@ std::auto_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSour
 
 std::string te::qt::widgets::RasterInfoWidget::getName() const
 {
-  std::string name = getBaseName();
-
-  if(m_ui->m_fileRadioButton->isChecked())
-  {
-     name += getExtension();
-  }
-
-  return name;
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  return path.filename().string();
 }
 
 std::string te::qt::widgets::RasterInfoWidget::getShortName() const
 {
-  std::string name = "";
-
-  if(m_ui->m_nameLineEdit->text().isEmpty() == false)
-    name = m_ui->m_nameLineEdit->text().toStdString();
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  std::string name = path.filename().string();
 
   std::size_t pos = name.find(".");
   if(pos != std::string::npos)
@@ -198,14 +197,14 @@ std::string te::qt::widgets::RasterInfoWidget::getShortName() const
 
 std::string te::qt::widgets::RasterInfoWidget::getExtension() const
 {
-  std::string ext = "." + m_ui->m_extComboBox->currentText().toStdString();
-
-  return ext;
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  return path.extension().string();
 }
 
 std::string te::qt::widgets::RasterInfoWidget::getPath() const
 {
-  return m_dir + "/";
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  return path.parent_path().string();
 }
 
 bool te::qt::widgets::RasterInfoWidget::overight() const
@@ -217,32 +216,11 @@ bool te::qt::widgets::RasterInfoWidget::fileExists() const
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    std::string name = getBaseName();
-
-    std::string fileName = m_dir + "/" + name + getExtension();
-
-    QFile file(fileName.c_str());
-
-    return file.exists();
+    boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+    return boost::filesystem::exists( path );
   }
 
   return false;
-}
-
-std::string te::qt::widgets::RasterInfoWidget::getBaseName() const
-{
-  std::string name = "";
-
-  if(m_ui->m_nameLineEdit->text().isEmpty() == false)
-  {
-    name = m_ui->m_nameLineEdit->text().toStdString();
-
-    QFileInfo file(name.c_str());
-
-    name = file.baseName().toStdString();
-  }
-
-  return name;
 }
 
 void te::qt::widgets::RasterInfoWidget::fillExtensions()
@@ -285,14 +263,33 @@ void te::qt::widgets::RasterInfoWidget::fillExtensions()
 
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
 {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), te::qt::widgets::GetFilePathFromSettings("rp_raster_info"), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
-  if(dir.isEmpty() == false)
+  m_ui->m_nameLineEdit->clear();
+  m_ui->m_fileNameLineEdit->clear();
+  
+  QString fileName;
+  
+  if( m_outputMode )
   {
-    m_dir = dir.replace(QRegExp("\\\\"), "/").toStdString();
-
-    m_ui->m_fileNameLineEdit->setText(m_dir.c_str());
-
-    te::qt::widgets::AddFilePathToSettings(m_dir.c_str(), "rp_raster_info");
+    fileName = QFileDialog::getSaveFileName(this, tr("Select the output file name"), 
+      te::qt::widgets::GetFilePathFromSettings("rp_raster_info"), 
+      te::qt::widgets::GetDiskRasterFileSelFilter(), 0 , 0);    
   }
+  else
+  {
+    fileName = QFileDialog::getOpenFileName(this, tr("Select File"), 
+      te::qt::widgets::GetFilePathFromSettings("rp_raster_info"), 
+      te::qt::widgets::GetDiskRasterFileSelFilter(), 0 ,QFileDialog::ReadOnly);
+  }
+  
+  if(fileName.isEmpty() == false)
+  {
+    m_ui->m_fileNameLineEdit->setText(fileName);
+
+    boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+    
+    m_ui->m_nameLineEdit->setText(path.stem().string().c_str());
+    
+    te::qt::widgets::AddFilePathToSettings(path.parent_path().string().c_str(), 
+      "rp_raster_info");
+  }  
 }
