@@ -136,7 +136,7 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(in
     std::string fileName = 
       path.parent_path().string() 
       + boost::filesystem::path::preferred_separator + path.stem().string()
-      + "_" 
+      + std::string( "_" )
       + boost::lexical_cast< std::string >( count ) 
       + path.extension().string();
 
