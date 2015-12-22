@@ -131,4 +131,3 @@ void te::stat::NumericStatisticalSummary::clear()
   m_mode.clear();
   m_percentEachClass.clear();
 }
-

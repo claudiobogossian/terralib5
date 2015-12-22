@@ -67,6 +67,8 @@ const te::rp::ClassifierEMStrategy::Parameters& te::rp::ClassifierEMStrategy::Pa
   m_maxInputPoints = rhs.m_maxInputPoints;
   m_epsilon = rhs.m_epsilon;
   m_clustersMeans = rhs.m_clustersMeans;
+  m_outputNumberBands = rhs.m_outputNumberBands;
+  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -92,6 +94,16 @@ te::rp::ClassifierEMStrategy::ClassifierEMStrategy()
 
 te::rp::ClassifierEMStrategy::~ClassifierEMStrategy()
 {
+}
+
+std::vector< unsigned int > te::rp::ClassifierEMStrategy::getOutputDataType(void)
+{
+	return m_parameters.m_outputDataType;
+}
+
+unsigned int te::rp::ClassifierEMStrategy::getOutputNumberBands(void)
+{
+	return m_parameters.m_outputNumberBands;
 }
 
 bool te::rp::ClassifierEMStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)

@@ -79,7 +79,11 @@ namespace te
             
             std::vector< double > m_maxAngularDistances; //!< This is a vector of maximum acceptable angles (radians) between one pixel spectra and the reference spectra for each class (pixels with angular distance higher than this value will not be classifyed as belonging to each class (common used default:0.1 radians).
 
-            Parameters();
+		    int m_outputNumberBands;  
+	        
+			std::vector< unsigned int > m_outputDataType;
+
+			Parameters();
 
             ~Parameters();
 
@@ -104,7 +108,11 @@ namespace te
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                      const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                      const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception);
-                     
+        		
+		std::vector< unsigned int > getOutputDataType(void); 
+
+		unsigned int getOutputNumberBands(void);
+
       protected :
         
         bool m_isInitialized; //!< Is this instance initialized?

@@ -154,7 +154,7 @@ namespace te
             std::string m_rType;                                          //!< Output raster data source type (as described in te::raster::RasterFactory ).
             std::map< std::string, std::string > m_rInfo;                 //!< The necessary information to create the raster (as described in te::raster::RasterFactory).
             mutable std::auto_ptr<te::rst::Raster> m_outputRasterPtr;     //!< A pointer to the generated output raster (label image).
-
+			std::map< std::string, std::string > m_metadados;
         };
 
         Classifier();

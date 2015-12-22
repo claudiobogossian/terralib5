@@ -30,6 +30,7 @@
 #include "Config.h"
 #include "Enums.h"
 #include "NumericStatisticalSummary.h"
+#include "NumericStatisticalComplexSummary.h"
 #include "StringStatisticalSummary.h"
 
 // STL
@@ -74,7 +75,14 @@ namespace te
      */
     TESTATEXPORT void GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss);
 
-    /*! Fills the percentage of each class by area.
+    /*! Fills the summary statistics structure from a set of numerical complex values.
+     
+     \param values  a vector of numerical values. Do not pass empty.
+     \param ss      to return the statistical summary.
+     */
+    TESTATEXPORT void GetNumericComplexStatisticalSummary(std::vector<std::complex<double> >& values, te::stat::NumericStatisticalComplexSummary& ss);
+	
+	/*! Fills the percentage of each class by area.
 
     \param values             a vector of numerical values, representing pixels from a raster. Do not pass empty.
     \param resolutionX        a raster horizontal (x-axis) resolution.

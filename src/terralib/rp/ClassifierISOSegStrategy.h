@@ -66,7 +66,11 @@ namespace te
 
             double m_acceptanceThreshold;   //!< The acceptance threshold (the closer to 100\%, few clusters are created).
 
-            Parameters();
+ 		    int m_outputNumberBands;  
+	        
+			std::vector< unsigned int > m_outputDataType;
+
+			Parameters();
 
             ~Parameters();
 
@@ -144,6 +148,10 @@ namespace te
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                      const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                      const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception);
+		
+		std::vector< unsigned int > getOutputDataType(void); 
+
+		unsigned int getOutputNumberBands(void);
 
       protected:
 

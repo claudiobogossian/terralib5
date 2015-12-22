@@ -76,7 +76,11 @@ namespace te
             
             unsigned int m_prioriCalcSampleStep; //!< A positive non-zero sample step used when calculating piori probabilities (default:2 - half of samples will be used);
     
-            Parameters();
+		    int m_outputNumberBands;  
+	        
+			std::vector< unsigned int > m_outputDataType;
+
+			Parameters();
 
             ~Parameters();
 
@@ -101,7 +105,11 @@ namespace te
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                      const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                      const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception);
-                     
+        		
+		std::vector< unsigned int > getOutputDataType(void); 
+
+		unsigned int getOutputNumberBands(void);
+
       protected :
         
         bool m_isInitialized; //!< Is this instance initialized?

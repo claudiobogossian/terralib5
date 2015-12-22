@@ -55,7 +55,7 @@ namespace te
     */
     template<class T>
     bool GetDeterminant(const boost::numeric::ublas::matrix<T>& inputMatrix,
-      T& determinant)
+         double& determinant)
     {
       if( ( inputMatrix.size1() == 0 ) || ( inputMatrix.size2() == 0 ) )
       {
@@ -66,7 +66,46 @@ namespace te
       // create a working copy of the input
       boost::numeric::ublas::matrix<T> A( inputMatrix );      
       
-      const unsigned int size1 = (unsigned int)A.size1();
+      const unsigned int size1 = A.size1();
+      
+      boost::numeric::ublas::permutation_matrix<std::size_t> pm( size1 );
+      
+      if( boost::numeric::ublas::lu_factorize( A, pm ) != 0.0 ) 
+      {
+        return false;
+      } 
+      else 
+      {
+        double pmSign = 1.0;
+        for ( unsigned int pmi = 0; pmi < size1; ++pmi)
+          if ( pmi != pm( pmi ) )
+              pmSign *= -1.0; // swap_rows would swap a pair of rows here, so we change sign        
+        
+        determinant = 1.0;
+        
+        for( unsigned int i = 0 ; i < size1 ; i++ ) 
+          determinant *= A(i,i); // multiply by elements on diagonal
+          
+        determinant = determinant * pmSign;
+        
+        return true;
+      }
+    }
+    
+	template<class T>
+    bool GetDeterminantComplex(const boost::numeric::ublas::matrix<T>& inputMatrix,
+	  T& determinant)
+    {
+      if( ( inputMatrix.size1() == 0 ) || ( inputMatrix.size2() == 0 ) )
+      {
+        determinant = 0.0;
+        return true;
+      }
+      
+      // create a working copy of the input
+      boost::numeric::ublas::matrix<T> A( inputMatrix );      
+      
+      const unsigned int size1 = A.size1();
       
       boost::numeric::ublas::permutation_matrix<std::size_t> pm( size1 );
       
