@@ -27,6 +27,7 @@
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../srs/SRSManagerDialog.h"
 #include "../utils/ParameterTableWidget.h"
 #include "../Utils.h"
 #include "RasterInfoWidget.h"
@@ -58,14 +59,22 @@ te::qt::widgets::RasterInfoWidget::RasterInfoWidget(
   layout->setContentsMargins(0,0,0,0);
 
   m_ui->m_openFileDlgToolButton->setIcon(QIcon::fromTheme("file-raster"));
-  m_ui->m_openDSDlgToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_openSRIDDlgToolButton->setIcon(QIcon::fromTheme("srs"));
 
   m_table->getForm()->m_parameterTitle->setText(tr("Extra parameters"));
+  
+  if( outputMode )
+  {
+    m_ui->m_forceRAWRastercheckBox->setEnabled( false );    
+  }
+  else
+  {
+    m_ui->m_forceRAWRastercheckBox->setEnabled( true );    
+  }  
 
   //connects
   connect(m_ui->m_openFileDlgToolButton, SIGNAL(clicked()), this, SLOT(onOpenFileDlgToolButtonClicked()));
-
-  fillExtensions();
+  connect(m_ui->m_openSRIDDlgToolButton, SIGNAL(clicked()), this, SLOT(onOpenSRIDDlgToolButtonClicked()));
 }
 
 te::qt::widgets::RasterInfoWidget::~RasterInfoWidget()
@@ -79,46 +88,20 @@ Ui::RasterInfoWidgetForm* te::qt::widgets::RasterInfoWidget::getForm() const
 
 std::string te::qt::widgets::RasterInfoWidget::getType() const
 {
-  if(m_ui->m_fileRadioButton->isChecked())
-  {
-    return "GDAL";
-  }
-  else if(m_ui->m_memRadioButton->isChecked())
-  {
-    return "MEM";
-  }
-  else if(m_ui->m_dsRadioButton->isChecked())
-  {
-    return "";
-  }
-
-  return "";
+  return "GDAL";
 }
 
 std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() const
 {
   std::map<std::string, std::string> rinfo;
 
-  if(m_ui->m_fileRadioButton->isChecked())
-  {
-    rinfo["URI"] = m_ui->m_fileNameLineEdit->text().toStdString();
-  }
-  else if(m_ui->m_memRadioButton->isChecked())
-  {
+  rinfo["URI"] = m_ui->m_fileNameLineEdit->text().toStdString();
 
-  }
-  else if(m_ui->m_dsRadioButton->isChecked())
-  {
+  //get extra parameters
+  
+  std::map<std::string, std::string> extra = m_table->getMap();
 
-  }
-
-  if(m_ui->m_overightRadioButton->isChecked() == false)
-  {
-    //get extra parameters
-    std::map<std::string, std::string> extra = m_table->getMap();
-
-    rinfo.insert(extra.begin(), extra.end());
-  }
+  rinfo.insert(extra.begin(), extra.end());
 
   return rinfo;
 }
@@ -131,34 +114,21 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(in
   
   //std::string name = getBaseName();
 
-  if(m_ui->m_fileRadioButton->isChecked())
-  {
-    std::string fileName = 
-      path.parent_path().string() 
-      + std::string( "/" )
-      + path.stem().string()
-      + std::string( "_" )
-      + boost::lexical_cast< std::string >( count ) 
-      + path.extension().string();
+  std::string fileName = 
+    path.parent_path().string() 
+    + std::string( "/" )
+    + path.stem().string()
+    + std::string( "_" )
+    + boost::lexical_cast< std::string >( count ) 
+    + path.extension().string();
 
-    rinfo["URI"] = fileName;
-  }
-  else if(m_ui->m_memRadioButton->isChecked())
-  {
+  rinfo["URI"] = fileName;
 
-  }
-  else if(m_ui->m_dsRadioButton->isChecked())
-  {
+  //get extra parameters
+  
+  std::map<std::string, std::string> extra = m_table->getMap();
 
-  }
-
-  if(m_ui->m_overightRadioButton->isChecked() == false)
-  {
-    //get extra parameters
-    std::map<std::string, std::string> extra = m_table->getMap();
-
-    rinfo.insert(extra.begin(), extra.end());
-  }
+  rinfo.insert(extra.begin(), extra.end());
 
   return rinfo;
 }
@@ -196,6 +166,12 @@ std::string te::qt::widgets::RasterInfoWidget::getShortName() const
   return name;
 }
 
+std::string te::qt::widgets::RasterInfoWidget::getFullName() const
+{
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  return path.string();
+}
+
 std::string te::qt::widgets::RasterInfoWidget::getExtension() const
 {
   boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
@@ -208,58 +184,10 @@ std::string te::qt::widgets::RasterInfoWidget::getPath() const
   return path.parent_path().string();
 }
 
-bool te::qt::widgets::RasterInfoWidget::overight() const
-{
-  return m_ui->m_overightRadioButton->isChecked();
-}
-
 bool te::qt::widgets::RasterInfoWidget::fileExists() const
 {
-  if(m_ui->m_fileRadioButton->isChecked())
-  {
-    boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
-    return boost::filesystem::exists( path );
-  }
-
-  return false;
-}
-
-void te::qt::widgets::RasterInfoWidget::fillExtensions()
-{
-  //fill extensions
-  m_ui->m_extComboBox->clear();
-
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-
-  if(!ds.get())
-    return;
-
-  te::da::DataSourceCapabilities dsCap = ds->getCapabilities();
-
-  std::map<std::string, std::string> mapSpecCap = dsCap.getSpecificCapabilities();
-
-  std::string exts = mapSpecCap["SUPPORTED_EXTENSIONS"];
-
-//create boost tokenizer
-  typedef boost::tokenizer< boost::escaped_list_separator<char> > Tokenizer;
-  boost::escaped_list_separator<char> sep('\\', ';', '\"');
-  
-  std::vector<std::string> extVec;
-
-  Tokenizer tok(exts, sep);
-  extVec.assign(tok.begin(), tok.end());
-
-  int curIdx = 0;
-
-  for(std::size_t t = 0; t < extVec.size(); ++t)
-  {
-    m_ui->m_extComboBox->addItem(extVec[t].c_str());
-
-    if(extVec[t] == "tif")
-      curIdx = (int)t;
-  }
-
-  m_ui->m_extComboBox->setCurrentIndex(curIdx);
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  return boost::filesystem::exists( path );
 }
 
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
@@ -293,4 +221,21 @@ void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
     te::qt::widgets::AddFilePathToSettings(path.parent_path().string().c_str(), 
       "rp_raster_info");
   }  
+}
+
+void te::qt::widgets::RasterInfoWidget::onOpenSRIDDlgToolButtonClicked()
+{
+  m_ui->m_sridLineEdit->clear();
+  
+  te::qt::widgets::SRSManagerDialog diag( this, 0 );
+  diag.exec();
+  
+  if( 
+      ( diag.getSelectedSRS().first != 0 )
+      &&
+      ( ! diag.getSelectedSRS().second.empty() )
+    )
+  {
+    m_ui->m_sridLineEdit->setText( QString::number( diag.getSelectedSRS().first ) );
+  }
 }

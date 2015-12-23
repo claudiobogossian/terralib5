@@ -47,9 +47,6 @@ te::qt::widgets::RasterInfoWizardPage::RasterInfoWizardPage(QWidget* parent)
 //connects
   connect(m_rinfo->getForm()->m_nameLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onChanged(QString)));
   connect(m_rinfo->getForm()->m_fileNameLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onChanged(QString)));
-  connect(m_rinfo->getForm()->m_fileRadioButton, SIGNAL(clicked()), this, SLOT(onChanged()));
-  connect(m_rinfo->getForm()->m_memRadioButton, SIGNAL(clicked()), this, SLOT(onChanged()));
-  connect(m_rinfo->getForm()->m_overightRadioButton, SIGNAL(clicked()), this, SLOT(onChanged()));
 }
 
 te::qt::widgets::RasterInfoWizardPage::~RasterInfoWizardPage()
@@ -58,19 +55,12 @@ te::qt::widgets::RasterInfoWizardPage::~RasterInfoWizardPage()
 
 bool te::qt::widgets::RasterInfoWizardPage::isComplete() const
 {
-  if(m_rinfo->getForm()->m_overightRadioButton->isChecked() == false)
-  {
-    if(m_rinfo->getForm()->m_nameLineEdit->text().isEmpty())
-      return false;
+   if( m_rinfo->getName().empty() )
+   {
+     return false;
+   }
 
-    if(m_rinfo->getForm()->m_fileRadioButton->isChecked())
-    {
-      if( m_rinfo->getName().empty() && m_rinfo->getPath().empty() )
-        return false;
-    }
-  }
-
-  return true;
+   return true;
 }
 
 te::qt::widgets::RasterInfoWidget* te::qt::widgets::RasterInfoWizardPage::getWidget()

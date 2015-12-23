@@ -74,8 +74,6 @@ namespace te
 
           std::string getName() const;
 
-          bool overight() const;
-
         public slots:
 
           void onSourceToolButtonClicked();
