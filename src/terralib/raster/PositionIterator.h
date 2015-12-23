@@ -29,6 +29,7 @@
 
 // Terralib
 #include "../common/STLUtils.h"
+#include "../common/MathUtils.h"
 #include "../geometry.h"
 #include "Band.h"
 #include "BandProperty.h"
@@ -38,7 +39,7 @@
 
 // STL
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 namespace te
 {
@@ -46,6 +47,11 @@ namespace te
   {
 // Forward declaration.
     class Band;
+    
+    inline bool StdSortPointPointerComparison( te::gm::Point *p1, te::gm::Point *p2 )
+    {
+      return *p1 < *p2;
+    }    
 
     /*!
       \class AbstractPositionIterator
@@ -226,7 +232,7 @@ namespace te
 
         std::auto_ptr<te::rst::TileIndexer> m_tileIndexer; //!< Tile indexer used to optimize the geometric operations
         te::rst::TileIndexer::TileSegIndex* m_currentTile; //!< Current tile segment
-        std::vector<std::pair<int, int>> m_columns; //!< Coordinates of the columns to be transversed
+        std::vector<std::pair<int, int> > m_columns; //!< Coordinates of the columns to be transversed
 
         /*! \brief Clear all internal allocated objects and reset back to the initial state. */        
         void clear();
@@ -445,8 +451,8 @@ namespace te
       te::gm::Coord2D ur = m_polygon->getMBR()->getUpperRight();
 
 // defining starting/ending rows
-      m_startingrow = std::round(r->getGrid()->geoToGrid(ll.x, ur.y).y);
-      m_endingrow = std::round(r->getGrid()->geoToGrid(ll.x, ll.y).y);
+      m_startingrow = te::common::Round< double, int >(r->getGrid()->geoToGrid(ll.x, ur.y).y);
+      m_endingrow = te::common::Round< double, int >(r->getGrid()->geoToGrid(ll.x, ll.y).y);
 
       int tmp;
       if (m_startingrow > m_endingrow)
@@ -569,7 +575,7 @@ namespace te
 
           // Sort the intersection points through its Y coordinates (column)
           std::sort(intersectionPoints.begin(), intersectionPoints.end(),
-                    [&](te::gm::Point *p1, te::gm::Point *p2)->bool {return *p1 < *p2; });
+                    te::rst::StdSortPointPointerComparison);
 
           // Using the intersection points, build a vector of coordinates (columns) with the start and
           // end column of the current line for each stretch
@@ -593,8 +599,8 @@ namespace te
             // where each pair represents a stretch to be transversed
 
             if (m_tileIndexer->within_or_touches(te::gm::Point((startingX + (endingX - startingX) / 2), (startingY + (endingY - startingY) / 2), m_polygon->getSRID()))) {
-              startingCol = std::round(this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
-              endingCol = std::round(this->m_raster->getGrid()->geoToGrid(endingX, endingY).x);
+              startingCol = te::common::Round< double, int >(this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
+              endingCol = te::common::Round< double, int >(this->m_raster->getGrid()->geoToGrid(endingX, endingY).x);
 
               if (m_columns.size() >= 1) {
                 if (startingCol == m_columns[m_columns.size() - 1].second)
@@ -603,7 +609,7 @@ namespace te
               if (startingCol <= m_endingcolumn)
                 m_columns.push_back(std::pair<int, int>(startingCol, endingCol));
             } else {
-              startingCol = std::round(this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
+              startingCol = te::common::Round< double, int >(this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
               if (m_columns.size() >= 1) {
                 if (m_columns[m_columns.size() - 1].second != startingCol)
                   m_columns.push_back(std::pair<int, int>(startingCol, startingCol));
@@ -1162,6 +1168,7 @@ namespace te
     {
       return ( (this->m_currentpixelindex != rhs.m_currentpixelindex) );
     }
+
   } // end namespace rst
 }   // end namespace te
 
