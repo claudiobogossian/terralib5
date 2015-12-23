@@ -54,7 +54,7 @@ namespace te
       {
         public:
 
-          RasterInfoDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          RasterInfoDialog(const bool outputMode, QWidget* parent, Qt::WindowFlags f);
 
           ~RasterInfoDialog();
 

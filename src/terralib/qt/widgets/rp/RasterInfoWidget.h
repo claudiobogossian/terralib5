@@ -81,25 +81,48 @@ namespace te
 
           std::auto_ptr<te::da::DataSource> getDataSource() const;
 
+          /*!
+            \brief Returns the raster name.
+            \return Returns the raster name.
+            \note If the full raster file name is "/home/user/raster.tif" this methods will return "raster.tif";
+          */
           std::string getName() const;
 
+          /*!
+            \brief Returns the raster short name.
+            \return Returns the raster short name.
+            \note If the full raster file name is "/home/user/raster.tif" this methods will return "raster";
+          */
           std::string getShortName() const;
+          
+          /*!
+            \brief Returns the raster full name.
+            \return Returns the raster full name.
+            \note If the full raster file name is "/home/user/raster.tif" this methods will return "/home/user/raster.tif";
+          */
+          std::string getFullName() const;          
 
+          /*!
+            \brief Returns the raster name extension.
+            \return Returns the raster name extension.
+            \note If the full raster file name is "/home/user/raster.tif" this methods will return ".tif";
+          */          
           std::string getExtension() const;
           
+          /*!
+            \brief Returns the raster directory.
+            \return Returns the raster directory.
+            \note If the full raster file name is "/home/user/raster.tif" this methods will return "/home/user";
+          */          
           std::string getPath() const;
-
-          bool overight() const;
 
           bool fileExists() const;
           
         protected slots:
 
-          void onOpenFileDlgToolButtonClicked();          
-
-        protected:
-
-          void fillExtensions();
+          void onOpenFileDlgToolButtonClicked();      
+          
+          void onOpenSRIDDlgToolButtonClicked();
 
         private:
 

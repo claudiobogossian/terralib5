@@ -27,11 +27,12 @@
 #include "RasterInfoDialog.h"
 #include "RasterInfoWidget.h"
 #include "ui_RasterInfoDialogForm.h"
+#include "ui_RasterInfoWidgetForm.h"
 
 // Qt
 #include <QGridLayout>
 
-te::qt::widgets::RasterInfoDialog::RasterInfoDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::RasterInfoDialog::RasterInfoDialog(const bool outputMode, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
   m_ui(new Ui::RasterInfoDialogForm)
 {
@@ -39,7 +40,7 @@ te::qt::widgets::RasterInfoDialog::RasterInfoDialog(QWidget* parent, Qt::WindowF
   m_ui->setupUi(this);
 
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
-  m_widget.reset( new te::qt::widgets::RasterInfoWidget(true, m_ui->m_widget, 0));
+  m_widget.reset( new te::qt::widgets::RasterInfoWidget(outputMode, m_ui->m_widget, 0));
   layout->addWidget(m_widget.get(), 0, 0);
   layout->setContentsMargins(0,0,0,0);
 }
