@@ -1754,9 +1754,9 @@ namespace te
               featureWindowRadiusDouble;
               
             featureElementRasterRotatedXIdx = featureWindowRasterXStart +
-              (unsigned int)ROUND( featureElementRotatedXIdx );
+              (unsigned int)te::common::Round< float, unsigned int >( featureElementRotatedXIdx );
             featureElementRasterRotatedYIdx = featureWindowRasterYStart +
-              (unsigned int)ROUND( featureElementRotatedYIdx );
+              (unsigned int)te::common::Round< float, unsigned int >( featureElementRotatedYIdx );
               
             assert( ((long int)featureElementRasterRotatedXIdx) -
               ((long int)featureElementHaarWindowRadius) >= 0 );

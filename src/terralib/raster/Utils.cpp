@@ -295,14 +295,6 @@ void te::rst::Copy(unsigned int drow, unsigned int dcolumn, unsigned int height,
   }
 }
 
-int te::rst::Round(double val)
-{
-  if (val>=0)
-    return (int)(val+.5);
-  else
-    return (int)(val-.5);
-}
-
 te::rst::RasterPtr te::rst::CreateCopy(const te::rst::Raster& rin,
                                        const std::string& uri,
                                        const std::string &rType)

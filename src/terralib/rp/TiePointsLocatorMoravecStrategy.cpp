@@ -25,6 +25,7 @@
 #include "TiePointsLocatorMoravecStrategy.h"
 #include "Macros.h"
 #include "../common/progress/TaskProgress.h"
+#include "../common/MathUtils.h"
 
 #include <memory>
 
@@ -1561,9 +1562,9 @@ namespace te
             /* copy the new rotated window to the output vector */
               
             rotated_curr_x_img = curr_window_x_start +
-              (unsigned int)ROUND( rotated_curr_x );
+              (unsigned int)te::common::Round< float, unsigned int >( rotated_curr_x );
             rotated_curr_y_img = curr_window_y_start +
-              (unsigned int)ROUND( rotated_curr_y );  
+              (unsigned int)te::common::Round< float, unsigned int >( rotated_curr_y );  
               
             featureElementValue = rasterData( rotated_curr_y_img, 
               rotated_curr_x_img );
