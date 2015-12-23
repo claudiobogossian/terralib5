@@ -136,7 +136,7 @@ namespace te
 
           \return true if the given geometry is within the indexed reference polygon.
         */
-        bool within(const te::gm::Point& geometry) const;        
+        bool within_or_touches(const te::gm::Point& geometry) const;
 
       protected:
         double m_dy;                                  //!< Tile resolution along "y" axis.
@@ -151,6 +151,7 @@ namespace te
         mutable bool m_withinIsInside;
         mutable int m_withinYFlag0;
         mutable int m_withinYFlag1;
+        mutable int m_withinYEquals;
         mutable te::gm::LinearRing const* m_withinRingPtr;
         mutable te::gm::Coord2D m_withinVtx0;
         mutable te::gm::Coord2D m_withinVtx1;        

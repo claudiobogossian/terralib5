@@ -38,6 +38,7 @@
 
 // STL
 #include <iostream>
+#include <math.h>
 
 namespace te
 {
@@ -209,7 +210,6 @@ namespace te
       protected:
 
         const te::gm::Polygon* m_polygon;                  //!< The spatial restriction to be applied in the iterator.
-        std::vector<te::gm::LineString*> m_intersections;  //!< The points or lines of the intersection between the geometry and the current line.
         te::gm::Line* m_currline;                          //!< The current line in the iterator.
         int m_column;                                      //!< The current column of the iterator.
         int m_row;                                         //!< The current row of the iterator.
@@ -223,18 +223,10 @@ namespace te
         int m_nintersections;                              //!< The number number of intersected lines in current line of the iterator.
         mutable double m_operatorBrackets_value;                   //!< Used by the operator[] method.
         mutable std::complex< double > m_operatorParenthesis_value;     //!< Used by the operator() method.
-        
-        /*!
-          \brief Decomponse one geometry collection in a vector of basic components (line, point).
 
-          \param g The input geometry collection.
-
-          \param decomposedGeoms The output geometries will be appended to this vector.
-          
-          \note The caller of this method must take the ownership of the returned objects.
-        */
-        void decompose(te::gm::Geometry const * const g,
-          std::vector<te::gm::LineString*>& decomposedGeoms ) const;
+        std::auto_ptr<te::rst::TileIndexer> m_tileIndexer; //!< Tile indexer used to optimize the geometric operations
+        te::rst::TileIndexer::TileSegIndex* m_currentTile; //!< Current tile segment
+        std::vector<std::pair<int, int>> m_columns; //!< Coordinates of the columns to be transversed
 
         /*! \brief Clear all internal allocated objects and reset back to the initial state. */        
         void clear();
@@ -375,6 +367,7 @@ namespace te
         
 
     };
+
 // implementation of abstract position iterator
     template<class T> te::rst::AbstractPositionIterator<T>::AbstractPositionIterator()
       : m_raster(0)
@@ -422,7 +415,8 @@ namespace te
         m_maxcolumns(0),
         m_maxrows(0),
         m_actualintersection(-1),
-        m_nintersections(0)
+        m_nintersections(0),
+        m_currentTile()
     {
     }
 
@@ -439,7 +433,8 @@ namespace te
         m_maxcolumns(r->getNumberOfColumns()),
         m_maxrows(r->getNumberOfRows()),
         m_actualintersection(-1),
-        m_nintersections(0)
+        m_nintersections(0),
+        m_currentTile()
     {
       if( r->getSRID() != p->getSRID() )
       {
@@ -450,8 +445,8 @@ namespace te
       te::gm::Coord2D ur = m_polygon->getMBR()->getUpperRight();
 
 // defining starting/ending rows
-      m_startingrow = (int) r->getGrid()->geoToGrid(ll.x, ur.y).y;
-      m_endingrow = (int) r->getGrid()->geoToGrid(ll.x, ll.y).y;
+      m_startingrow = std::round(r->getGrid()->geoToGrid(ll.x, ur.y).y);
+      m_endingrow = std::round(r->getGrid()->geoToGrid(ll.x, ll.y).y);
 
       int tmp;
       if (m_startingrow > m_endingrow)
@@ -470,13 +465,19 @@ namespace te
 
       m_row = m_startingrow;
 
-      m_currline = new te::gm::Line(te::gm::Point(ll.x, ur.y, m_polygon->getSRID()),
-                                    te::gm::Point(ur.x, ur.y, m_polygon->getSRID()),
+      m_startingcolumn = std::floor(r->getGrid()->geoToGrid(ll.x, ur.y).x);
+      m_endingcolumn = std::ceil(r->getGrid()->geoToGrid(ur.x, ll.y).x);
+
+      m_currline = new te::gm::Line(te::gm::Point(ll.x, r->getGrid()->gridToGeo(m_startingcolumn, m_startingrow).y, m_polygon->getSRID()),
+                                    te::gm::Point(ur.x, r->getGrid()->gridToGeo(m_endingcolumn, m_startingrow).y, m_polygon->getSRID()),
                                     te::gm::LineStringType, m_polygon->getSRID());
 
 // in case of problems, we initialize the first line here
       m_startingcolumn = 0;
       m_endingcolumn = m_maxcolumns - 1;
+
+      // initialize the TileIndexer
+      m_tileIndexer = std::auto_ptr<te::rst::TileIndexer>(new te::rst::TileIndexer(*m_polygon, r->getResolutionY()));
 
 // defining starting/ending columns
       setNextLine(false);
@@ -497,7 +498,8 @@ namespace te
         m_maxcolumns(0),
         m_maxrows(0),
         m_actualintersection(-1),
-        m_nintersections(0)      
+        m_nintersections(0),
+        m_currentTile()
     {
       operator=( rhs );
     }
@@ -507,92 +509,11 @@ namespace te
       clear();
     }
 
-    template<class T> 
-    void te::rst::PolygonIterator<T>::decompose(
-      te::gm::Geometry const * const g,
-      std::vector<te::gm::LineString*>& decomposedGeoms ) const
-    {
-      te::gm::Geometry const * ing = g;
-      te::gm::GeometryCollection const* gc = 
-        static_cast<te::gm::GeometryCollection const*> (g);
-      if (gc->getNumGeometries() == 1)
-        ing = gc->getGeometryN(0);
-
-// check if the geometry is a multi line string
-      if (ing->getGeomTypeId() == te::gm::MultiLineStringType)
-      {
-        te::gm::MultiLineString const* mls = 
-          static_cast<te::gm::MultiLineString const*> (
-          ing);
-
-        for (unsigned int i = 0; i < mls->getNumGeometries(); i++)
-        {
-          decomposedGeoms.push_back(static_cast<te::gm::LineString*> (
-            mls->getGeometryN(i)->clone() ));
-        }
-      }
-// check if the geometry is a line
-      else if (ing->getGeomTypeId() == te::gm::LineStringType)
-      {
-        decomposedGeoms.push_back((te::gm::LineString*)ing->clone());
-      }
-// check if the geometry is a multi point
-      else if (ing->getGeomTypeId() == te::gm::MultiPointType)
-      {
-        te::gm::MultiPoint const* mp = static_cast<te::gm::MultiPoint const*> (
-          ing);
-
-        for (unsigned int i = 0; i < mp->getNumGeometries(); i++)
-        {
-          te::gm::LineString* lineinter = new te::gm::LineString(2, te::gm::LineStringType, g->getSRID());
-          te::gm::Point* pointinter = static_cast<te::gm::Point*> (mp->getGeometryN(i));
-
-          lineinter->setX(0, pointinter->getX());
-          lineinter->setY(0, pointinter->getY());
-          lineinter->setX(1, pointinter->getX());
-          lineinter->setY(1, pointinter->getY());
-
-          decomposedGeoms.push_back(lineinter);
-        }
-      }
-// check if the geometry is a point
-      else if (ing->getGeomTypeId() == te::gm::PointType)
-      {
-        te::gm::Point const* p = static_cast<te::gm::Point const*> (ing);
-
-        te::gm::LineString* lineinter = new te::gm::LineString(2, te::gm::LineStringType, g->getSRID());
-
-        lineinter->setX(0, p->getX());
-        lineinter->setY(0, p->getY());
-        lineinter->setX(1, p->getX());
-        lineinter->setY(1, p->getY());
-
-        decomposedGeoms.push_back(lineinter);
-      }
-// check if the geometry is a geometry collection
-      else if (ing->getGeomTypeId() == te::gm::GeometryCollectionType)
-      {
-        for (unsigned int i = 0; i < gc->getNumGeometries(); i++)
-        {
-          decompose(gc->getGeometryN(i), decomposedGeoms);
-        }
-      }
-// throw exception when other types?
-      else
-      {
-        throw te::rst::Exception( TE_TR(
-          "An exception has occurred in Polygon Iterator, with geometry " + 
-          g->toString()) );
-      }
-
-// clean up (?)
-//      delete g;
-    }
-
     template<class T> void te::rst::PolygonIterator<T>::setNextLine(bool updatecurrline)
     {
       if (m_actualintersection == -1 || m_actualintersection >= m_nintersections)
       {
+        // Updates the line corresponding to the current line of the iterator
         if (updatecurrline)
         {
           double nexty = this->m_raster->getGrid()->gridToGeo(0, m_row).y;
@@ -603,16 +524,103 @@ namespace te
           m_currline->setY(1, nexty);
         }
 
-        te::gm::Geometry* inter;
+        // Initialize Tile Indexer and structures used to retrieve the points where the current line 
+        // intersects the polygon
+        te::gm::LinearRing const* ringTile;
+        std::auto_ptr<te::gm::Line> tileSeg;
+        m_columns.clear();
+
 // in some cases the intersection presents an unhandled exception, in this case we do not paint the current line
         try
-        {
-          inter = m_polygon->intersection(m_currline);
+        { 
+          // Vector to store the points where the current line intersects the current tile of the polygon
+          std::vector<te::gm::Point*> intersectionPoints;
 
-          if (inter->isEmpty())
+          // Retrieve the tile corresponding to the current line and store the points where the line
+          // intersects the tile
+          if (m_tileIndexer->getTile(m_currline->getY(0), &m_currentTile)) {
+            assert(m_currentTile);
+            
+            // Transverse the segments of the tile retrieving the intersection between them and the current line
+            for (int i = 0; i < m_currentTile->size(); i++) {
+              assert((*m_currentTile)[i].first < m_polygon->getNumRings());
+
+              // Retrieve the current ring of the current tile
+              assert(dynamic_cast<te::gm::LinearRing const*>((*m_polygon)[(*m_currentTile)[i].first]));
+              ringTile = (te::gm::LinearRing const*)(*m_polygon)[(*m_currentTile)[i].first];
+
+              assert((*m_currentTile)[i].second < m_polygon->getNPoints());
+
+              // Retrieve the current segment of the current tile
+              tileSeg.reset(new te::gm::Line(te::gm::Point(ringTile->getX((*m_currentTile)[i].second),
+                                                           ringTile->getY((*m_currentTile)[i].second), 
+                                                           ringTile->getSRID()),
+                                             te::gm::Point(ringTile->getX((*m_currentTile)[i].second + 1),
+                                                           ringTile->getY((*m_currentTile)[i].second + 1),
+                                                           ringTile->getSRID()),
+                                             te::gm::LineStringType, ringTile->getSRID()));
+
+              // Computes the intersection point between the current segment and the current line
+              te::gm::Point* pointInter = new te::gm::Point(m_polygon->getSRID());
+              if (tileSeg->intersection(*m_currline, *pointInter))
+                intersectionPoints.push_back(pointInter);
+            }
+          }
+
+          // Sort the intersection points through its Y coordinates (column)
+          std::sort(intersectionPoints.begin(), intersectionPoints.end(),
+                    [&](te::gm::Point *p1, te::gm::Point *p2)->bool {return *p1 < *p2; });
+
+          // Using the intersection points, build a vector of coordinates (columns) with the start and
+          // end column of the current line for each stretch
+          int positionBegin = 0, positionEnd = 1;
+          int startingCol = 0, endingCol = 0;
+          double startingX, startingY, endingX, endingY;
+          while (positionBegin < ((int)intersectionPoints.size() - 1))  {
+            // Ignoring duplicated points
+            while (positionEnd < ((int)intersectionPoints.size() - 1) &&
+              intersectionPoints[positionBegin]->equals(intersectionPoints[positionEnd], true)) {
+              delete intersectionPoints[positionEnd];
+              positionEnd++;
+            }
+
+            startingX = intersectionPoints[positionBegin]->getX();
+            startingY = intersectionPoints[positionBegin]->getY();
+            endingX = intersectionPoints[positionEnd]->getX();
+            endingY = intersectionPoints[positionEnd]->getY();
+
+            // Build the vector of coordinates with the folowing structure: vector<pair<startcolumn, endcolumn>>;
+            // where each pair represents a stretch to be transversed
+
+            if (m_tileIndexer->within_or_touches(te::gm::Point((startingX + (endingX - startingX) / 2), (startingY + (endingY - startingY) / 2), m_polygon->getSRID()))) {
+              startingCol = std::round(this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
+              endingCol = std::round(this->m_raster->getGrid()->geoToGrid(endingX, endingY).x);
+
+              if (m_columns.size() >= 1) {
+                if (startingCol == m_columns[m_columns.size() - 1].second)
+                  startingCol++;
+              }
+              if (startingCol <= m_endingcolumn)
+                m_columns.push_back(std::pair<int, int>(startingCol, endingCol));
+            } else {
+              startingCol = std::round(this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
+              if (m_columns.size() >= 1) {
+                if (m_columns[m_columns.size() - 1].second != startingCol)
+                  m_columns.push_back(std::pair<int, int>(startingCol, startingCol));
+              } else
+                m_columns.push_back(std::pair<int, int>(startingCol, startingCol));
+            }
+
+            delete intersectionPoints[positionBegin];
+            positionBegin = positionEnd;
+            positionEnd++;
+          }
+
+          if (intersectionPoints.size() > 0)
+            delete intersectionPoints[positionEnd - 1];
+
+          if (m_columns.empty())
           {
-            delete inter;
-
             m_row++;
             if (m_row > m_endingrow)
             {
@@ -642,25 +650,13 @@ namespace te
           return;
         }
 
-        te::gm::GeometryCollection* intersections = new te::gm::GeometryCollection(0, inter->getGeomTypeId(), inter->getSRID());
-
-        intersections->add(inter);
-
         m_actualintersection = 0;
 
-        m_intersections.clear();
-        decompose(intersections,m_intersections);
-        
-        delete intersections;
-
-        m_nintersections = m_intersections.size();
+        m_nintersections = m_columns.size();
       }
 
-      te::gm::LineString* lineinter = m_intersections[m_actualintersection];
-
-      m_startingcolumn = (int) this->m_raster->getGrid()->geoToGrid(lineinter->getStartPoint()->getX(), lineinter->getStartPoint()->getY()).x;
-
-      m_endingcolumn = (int) this->m_raster->getGrid()->geoToGrid(lineinter->getEndPoint()->getX(), lineinter->getEndPoint()->getY()).x;
+      m_startingcolumn = this->m_columns[m_actualintersection].first;
+      m_endingcolumn = this->m_columns[m_actualintersection].second;
 
       int tmp;
       if (m_startingcolumn > m_endingcolumn)
@@ -742,6 +738,8 @@ namespace te
 
     template<class T> void te::rst::PolygonIterator<T>::operator--()
     {
+      if (m_row == -1) 
+          throw te::rst::Exception(TE_TR("This operation is not supported!"));
       m_column--;
 
       if (m_column < m_startingcolumn)
@@ -775,14 +773,7 @@ namespace te
         te::rst::AbstractPositionIterator<T>::operator=(rhs);
 
         m_polygon = rhs.m_polygon;
-        
-        for( unsigned int intersectionsIdx = 0 ; intersectionsIdx <
-          rhs.m_intersections.size() ; ++intersectionsIdx )
-        {
-          m_intersections.push_back( (te::gm::LineString*)
-            rhs.m_intersections[ intersectionsIdx ]->clone() );
-        }
-        
+
         if( rhs.m_currline )
         {
           m_currline = (te::gm::Line*)rhs.m_currline->clone();
@@ -798,6 +789,7 @@ namespace te
         m_maxrows = rhs.m_maxrows;
         m_actualintersection = rhs.m_actualintersection;
         m_nintersections = rhs.m_nintersections;
+        m_currentTile = rhs.m_currentTile;
       }
 
       return *this;
@@ -832,14 +824,7 @@ namespace te
     template<class T> void te::rst::PolygonIterator<T>::clear()
     {
       m_polygon = 0;
-      
-      for( unsigned int intersectionsIdx = 0 ; intersectionsIdx <
-        m_intersections.size() ; ++intersectionsIdx )
-      {
-        delete m_intersections[ intersectionsIdx ];
-      }
-      m_intersections.clear();
-      
+
       if( m_currline )
       {
         delete m_currline;

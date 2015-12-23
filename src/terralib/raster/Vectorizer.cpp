@@ -244,7 +244,7 @@ bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons)
             if (val == pol_str_ref.m_value)
             {
               assert( pol_str_ref.m_indexerPtr.get() );
-              if ( pol_str_ref.m_indexerPtr->within( pointWorld) )
+              if (pol_str_ref.m_indexerPtr->within_or_touches(pointWorld))
               //if( TePDIUtils::TeRelation( coordWorld, *( pol_str_ref.m_indexer ) ) == TeINSIDE )
               {
                 exist = true;
@@ -277,7 +277,7 @@ bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons)
                 m_containerPolygons[indexVec[indexVec_index]];
               assert( pol_struct_ref.m_indexerPtr.get() );
               
-              if( pol_struct_ref.m_indexerPtr->within( pointWorld) )
+              if (pol_struct_ref.m_indexerPtr->within_or_touches(pointWorld))
               {
                 pol_struct_ref.m_polygonPtr->add((te::gm::LinearRing*) (newPolPtr->getRingN(0)->clone()));
                 pol_struct_ref.m_indexerPtr->addRing(pol_struct_ref.m_polygonPtr->getNumRings() - 1); // .getNumRings()
