@@ -8,6 +8,7 @@
 #include "Utils.h"
 #include "CalculateGrid.h"
 
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/SimpleProperty.h"
@@ -40,10 +41,14 @@ size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsr
 
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
+  te::common::TaskProgress task("Reading Samples - TIN generation proccess", te::common::TaskProgress::UNDEFINED, (int)inDset->size());
+
   inDset->moveBeforeFirst();
   double value;
   while (inDset->moveNext())
   {
+    task.pulse();
+
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
     geostype = gin.get()->getGeometryType();
 
@@ -108,6 +113,8 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
     ptypes.push_back(inDset->getPropertyDataType(i));
   }
 
+  te::common::TaskProgress task("Reading Isolines - TIN generation proccess", te::common::TaskProgress::UNDEFINED, (int)inDset->size());
+
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
   inDset->moveBeforeFirst();
@@ -115,6 +122,8 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
   while (inDset->moveNext())
   {
+    task.pulse();
+
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
     geostype = gin.get()->getGeometryType();
 

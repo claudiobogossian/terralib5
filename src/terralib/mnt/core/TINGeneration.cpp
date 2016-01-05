@@ -9,6 +9,7 @@
 #include "Utils.h"
 
 //.. /..
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/utils/Utils.h"
 
 #include "../../geometry/Envelope.h"
@@ -248,7 +249,9 @@ bool te::mnt::TINGeneration::CreateInitialTriangles(size_t nsamples)
 
 bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te::gm::MultiLineString &mls)
 {
-  int32_t node=0;
+  te::common::TaskProgress task("Inserting Nodes...", te::common::TaskProgress::UNDEFINED, (int)m_nodesize-6);
+
+  int32_t node = 0;
   //  Create nodes and insert on triangulation 
   for (size_t id = 0; id < mpt.getNumGeometries(); ++id)
   {
@@ -258,6 +261,7 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
       return false;
     m_node[(unsigned int)node].Init(*pto3d, Sample);
     InsertNode(node, 1);
+    task.pulse();
   }
 
   bool nflag;
@@ -314,6 +318,7 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
         m_node[(unsigned int)node].setType(Normalnode);
         InsertNode(node, 1);
       } //nflag
+      task.pulse();
     } //for (std::size_t j = 0; j < gout->getNPoints(); ++j)
   
     if (m_node[(unsigned int)node].getType() == Normalnode)
@@ -1340,8 +1345,12 @@ bool te::mnt::TINGeneration::CreateDelaunay()
 {
   int32_t triangid, contr = 0, npoly = -1;
 
+  te::common::TaskProgress task("Creating Delaunay...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
+
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    task.pulse();
+
     if (triangid > npoly)
       npoly = triangid;
     else
@@ -1481,15 +1490,16 @@ bool te::mnt::TINGeneration::ModifyBoundTriangles()
 
 bool te::mnt::TINGeneration::IsolinesConstrained()
 {
+  int iter = 0;
   for (;;)
-    if (!TestIsolines())
+    if (!TestIsolines(++iter))
       break;
 
   return true;
 }
 
 
-bool te::mnt::TINGeneration::TestIsolines()
+bool te::mnt::TINGeneration::TestIsolines(int iter)
 {
   int32_t linid1 = 0, lidaux, oldline,
     ntri,
@@ -1507,8 +1517,17 @@ bool te::mnt::TINGeneration::TestIsolines()
 
   for (nid0 = 0; nid0 < m_lnode; nid0++)
     snode.push_back(0);
+
+  std::string msg("Testing Isolines(");
+  std::stringstream ss;
+  ss << iter;
+  msg += ss.str() + ")...";
+  te::common::TaskProgress task(msg, te::common::TaskProgress::UNDEFINED, (int)m_linesize);
+
   for (i = 0; i < m_linesize; i++)
   {
+    task.pulse();
+
     if (m_line[i].getNodeFrom() == -1)
       continue;
     nid0 = m_line[i].getNodeFrom();
@@ -1725,8 +1744,12 @@ bool te::mnt::TINGeneration::CreateMinAngleTriangulation()
   int32_t triangid, neighids[3];
   short j;
 
+  te::common::TaskProgress task("Creating Minimum Angle...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
+
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    task.pulse();
+
     NeighborsId(triangid, neighids);
     for (j = 0; j < 3; j++)
     {
@@ -1905,9 +1928,13 @@ bool te::mnt::TINGeneration::InsertBreakNodes(te::gm::MultiLineString &breakline
   std::vector<te::gm::PointZ> p3dl;
   std::vector<bool> fixed;
 
+  te::common::TaskProgress task("Inserting BreakLines...", te::common::TaskProgress::UNDEFINED, (int)breaklines.getNumGeometries());
+
   // To all breaklines
   for (unsigned int id = 0; id < breaklines.getNumGeometries(); ++id)
   {
+    task.pulse();
+
     te::gm::LineString* gout = dynamic_cast<te::gm::LineString*>(breaklines.getGeometryN(id));
     if ((gout->getNPoints() < 2))
     {
@@ -2549,8 +2576,11 @@ bool te::mnt::TINGeneration::ReCreateDelaunay()
 {
   int32_t triangid, contr = 0, npoly = -1;
 
+  te::common::TaskProgress task("Regeneration Delaunay...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
+
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    task.pulse();
 
     if (triangid > npoly)
       npoly = triangid;

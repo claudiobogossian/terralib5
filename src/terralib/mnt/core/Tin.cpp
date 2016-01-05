@@ -8,6 +8,8 @@
 #include "Tin.h"
 #include "Utils.h"
 
+#include "../../common/progress/TaskProgress.h"
+
 #include "../../dataaccess/utils/Utils.h"
 
 #include "../../datatype/Property.h"
@@ -1333,6 +1335,8 @@ te::da::DataSetType* te::mnt::Tin::GetDataSetType(std::string &outDsetName)
 
 bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetName)
 {
+  te::common::TaskProgress task("Saving TIN...", te::common::TaskProgress::UNDEFINED, (int)m_triangsize);
+
   std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType(outDsetName));
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
 
@@ -1346,6 +1350,8 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
 
   for (unsigned int tri = 0; tri < m_triangsize; tri++)
   {
+    task.pulse();
+
     te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet.get());
     if (!m_triang[tri].LinesId(tEdges))
       continue;
@@ -1415,6 +1421,7 @@ struct nodecomp {
 */
 bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetName, double zmin, double zmax)
 {
+
   double val[3];
   te::mnt::Ntype type[3];
   int32_t right[3];
@@ -1427,6 +1434,8 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   std::string geo_attr("tri_id");
   const std::size_t np = inDset->getNumProperties();
   m_triangsize = inDset->size();
+
+  te::common::TaskProgress task("Loading TIN...", te::common::TaskProgress::UNDEFINED, (int)m_triangsize);
 
   // Open tin nodes file for nodes data load
   m_fbnode = 0;
@@ -1455,6 +1464,8 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
 
   while (inDset->moveNext())
   {
+    task.pulse();
+
     id = inDset->getInt32(1);
     if (inDset->isNull("val1"))
       val[0] = m_nodatavalue;
