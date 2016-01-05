@@ -56,13 +56,18 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 #include <exception>      // std::exception
 
+#ifndef _MSC_VER
+#define NOEXCEPT noexcept
+#else
+#define NOEXCEPT
+#endif
 
 class elayer : public std::exception
 {
 public:
   std::string msg;
   elayer(){ msg = "Can not execute this operation on this type of layer."; }
-  const char* what() const { return msg.c_str(); }
+  const char* what() const NOEXCEPT{ return msg.c_str(); }
 } e_layer;
 
 struct einputdata : std::exception
@@ -70,7 +75,7 @@ struct einputdata : std::exception
 public:
   std::string msg;
   einputdata(){ msg = "The selected input data source can not be accessed."; }
-  const char* what() const { return msg.c_str(); }
+  const char* what() const NOEXCEPT{ return msg.c_str(); }
 }e_inputdata;
 
 struct erepository : std::exception
@@ -78,7 +83,7 @@ struct erepository : std::exception
 public:
   std::string msg;
   erepository(){ msg = "Select a repository for the resulting layer."; }
-  const char* what() const { return msg.c_str(); }
+  const char* what() const NOEXCEPT{ return msg.c_str(); }
 }e_repository;
 
 struct eoutfile : std::exception
@@ -86,7 +91,7 @@ struct eoutfile : std::exception
 public:
   std::string msg;
   eoutfile(){ msg = "Define a name for the resulting layer."; }
-  const char* what() const { return msg.c_str(); }
+  const char* what() const NOEXCEPT{ return msg.c_str(); }
 }e_outfile;
 
 struct eoutfileexist : std::exception
@@ -94,7 +99,7 @@ struct eoutfileexist : std::exception
 public:
   std::string msg;
   eoutfileexist(){ msg = "Output file already exists. Remove it or select a new name and try again."; }
-  const char* what() const { return msg.c_str(); }
+  const char* what() const NOEXCEPT{ return msg.c_str(); }
 }e_outfileexist;
 
 struct eoutdatasetexist : std::exception
@@ -102,7 +107,7 @@ struct eoutdatasetexist : std::exception
 public:
   std::string msg;
   eoutdatasetexist(){ msg = "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."; }
-  const char* what() const { return msg.c_str(); }
+  const char* what() const NOEXCEPT{ return msg.c_str(); }
 }e_outdatasetexist;
 
 struct eoutdatasetaccess : std::exception
@@ -110,7 +115,7 @@ struct eoutdatasetaccess : std::exception
 public:
   std::string msg;
   eoutdatasetaccess(){ msg = "The selected output datasource can not be accessed."; }
-  const char* what() const { return msg.c_str(); }
+  const char* what() const NOEXCEPT{ return msg.c_str(); }
 }e_outdatasetaccess;
 
 te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFlags f)
