@@ -62,6 +62,42 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define NOEXCEPT
 #endif
 
+
+struct e_layer : std::exception
+{
+  const char* what() const NOEXCEPT{ return "Can not execute this operation on this type of layer."; }
+};
+
+struct e_inputdata : std::exception
+{
+  const char* what() const NOEXCEPT{ return "The selected input data source can not be accessed."; }
+};
+
+struct e_repository : std::exception
+{
+  const char* what() const NOEXCEPT{ return "Select a repository for the resulting layer."; }
+};
+
+struct e_outfile : std::exception
+{
+  const char* what() const NOEXCEPT{ return "Define a name for the resulting layer."; }
+};
+
+struct e_outfileexist : std::exception
+{
+  const char* what() const NOEXCEPT{ return "Output file already exists. Remove it or select a new name and try again."; }
+};
+
+struct e_outdatasetexist : std::exception
+{
+  const char* what() const NOEXCEPT{ return "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."; }
+};
+
+struct e_outdatasetaccess : std::exception
+{
+  const char* what() const NOEXCEPT{ return "The selected output datasource can not be accessed."; }
+};
+
 te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
   m_ui(new Ui::TINGenerationDialogForm),
@@ -320,46 +356,6 @@ void te::mnt::TINGenerationDialog::onHelpPushButtonClicked()
 {
 }
 
-struct exception1 : std::exception
-{
-  const char* what() const NOEXCEPT{ return "Can not execute this operation on this type of layer."; }
-};
-
-struct exception2 : std::exception
-{
-  const char* what() const NOEXCEPT{ return "The selected input data source can not be accessed."; }
-};
-
-struct exception3 : std::exception
-{
-  const char* what() const NOEXCEPT{ return "Select a repository for the resulting layer."; }
-};
-
-struct exception4 : std::exception
-{
-  const char* what() const NOEXCEPT{ return "Define a name for the resulting layer."; }
-};
-
-struct exception5 : std::exception
-{
-  const char* what() const NOEXCEPT{ return "Output file already exists. Remove it or select a new name and try again."; }
-};
-
-struct exception6 : std::exception
-{
-  const char* what() const NOEXCEPT{ return "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."; }
-};
-
-struct exception7 : std::exception
-{
-  const char* what() const NOEXCEPT{ return "The selected output datasource can not be accessed."; }
-};
-
-struct exception8 : std::exception
-{
-  const char* what() const NOEXCEPT{ return "Dataset already exists. Remove it or select a new name and try again."; }
-};
-
 void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 {
   int srid = 0;
@@ -379,11 +375,11 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       te::map::DataSetLayer* dsisoLayer = dynamic_cast<te::map::DataSetLayer*>(m_isolinesLayer.get());
       if (!dsisoLayer)
-        throw exception1();
+        throw e_layer();
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsisoLayer->getDataSourceId(), true);
       if (!inDataSource.get())
-        throw exception2();
+        throw e_inputdata();
 
       std::string inDsetNameiso = dsisoLayer->getDataSetName();
       Tin->setInput(inDataSource, inDsetNameiso, inDataSource->getDataSetType(inDsetNameiso), te::mnt::Isolines);
@@ -393,11 +389,11 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       te::map::DataSetLayer* dssampleLayer = dynamic_cast<te::map::DataSetLayer*>(m_samplesLayer.get());
       if (!dssampleLayer)
-        throw exception1();
+        throw e_layer();
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dssampleLayer->getDataSourceId(), true);
       if (!inDataSource.get())
-        throw exception2();
+        throw e_inputdata();
 
       std::string inDsetNamesample = dssampleLayer->getDataSetName();
       Tin->setInput(inDataSource, inDsetNamesample, inDataSource->getDataSetType(inDsetNamesample), te::mnt::Samples);
@@ -408,11 +404,11 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       te::map::DataSetLayer* dsbreaklineLayer = dynamic_cast<te::map::DataSetLayer*>(m_breaklinesLayer.get());
       if (!dsbreaklineLayer)
-        throw exception1();
+        throw e_layer();
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsbreaklineLayer->getDataSourceId(), true);
       if (!inDataSource.get())
-        throw exception2();
+        throw e_inputdata();
 
       std::string inDsetNamebreakline = dsbreaklineLayer->getDataSetName();
       Tin->setBreakLine(inDataSource, inDsetNamebreakline, inDataSource->getDataSetType(inDsetNamebreakline), m_breaktol);
@@ -420,10 +416,10 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
     // Checking consistency of output paramenters
     if (m_ui->m_repositoryLineEdit->text().isEmpty())
-      throw exception3();
+      throw e_repository();
 
     if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
-      throw exception1();
+      throw e_outfile();
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
@@ -433,7 +429,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     if (m_toFile)
     {
       if (boost::filesystem::exists(uri))
-        throw exception1();
+        throw e_outfileexist();
 
       std::size_t idx = outputdataset.find(".");
       if (idx != std::string::npos)
@@ -446,7 +442,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       dsOGR->open();
 
       if (dsOGR->dataSetExists(outputdataset))
-        throw exception6();
+        throw e_outdatasetexist();
 
       Tin->setOutput(dsOGR, outputdataset);
     }
@@ -454,10 +450,10 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
       if (!aux)
-        throw exception7();
+        throw e_outdatasetaccess();
 
       if (aux->dataSetExists(outputdataset))
-        throw exception8();
+        throw e_outdatasetexist();
 
       Tin->setOutput(aux, outputdataset);
     }
