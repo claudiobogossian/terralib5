@@ -57,7 +57,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <exception>      // std::exception
 
 #ifndef _MSC_VER
-#define NOEXCEPT noexcept
+#define NOEXCEPT
 #else
 #define NOEXCEPT
 #endif
