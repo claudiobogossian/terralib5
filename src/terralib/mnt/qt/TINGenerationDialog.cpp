@@ -25,7 +25,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 
 //terralib
+#include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
+#include "../../common/Translator.h"
 #include "../../common/UnitsOfMeasureManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -53,70 +55,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
-
-#include <exception>      // std::exception
-
-#ifndef _MSC_VER
-#define NOEXCEPT noexcept
-#else
-#define NOEXCEPT
-#endif
-
-class elayer : public std::exception
-{
-public:
-  std::string msg;
-  elayer(){ msg = "Can not execute this operation on this type of layer."; }
-  const char* what() const NOEXCEPT{ return msg.c_str(); }
-} e_layer;
-
-struct einputdata : std::exception
-{
-public:
-  std::string msg;
-  einputdata(){ msg = "The selected input data source can not be accessed."; }
-  const char* what() const NOEXCEPT{ return msg.c_str(); }
-}e_inputdata;
-
-struct erepository : std::exception
-{
-public:
-  std::string msg;
-  erepository(){ msg = "Select a repository for the resulting layer."; }
-  const char* what() const NOEXCEPT{ return msg.c_str(); }
-}e_repository;
-
-struct eoutfile : std::exception
-{
-public:
-  std::string msg;
-  eoutfile(){ msg = "Define a name for the resulting layer."; }
-  const char* what() const NOEXCEPT{ return msg.c_str(); }
-}e_outfile;
-
-struct eoutfileexist : std::exception
-{
-public:
-  std::string msg;
-  eoutfileexist(){ msg = "Output file already exists. Remove it or select a new name and try again."; }
-  const char* what() const NOEXCEPT{ return msg.c_str(); }
-}e_outfileexist;
-
-struct eoutdatasetexist : std::exception
-{
-public:
-  std::string msg;
-  eoutdatasetexist(){ msg = "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."; }
-  const char* what() const NOEXCEPT{ return msg.c_str(); }
-}e_outdatasetexist;
-
-struct eoutdatasetaccess : std::exception
-{
-public:
-  std::string msg;
-  eoutdatasetaccess(){ msg = "The selected output datasource can not be accessed."; }
-  const char* what() const NOEXCEPT{ return msg.c_str(); }
-}e_outdatasetaccess;
 
 te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -395,11 +333,11 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       te::map::DataSetLayer* dsisoLayer = dynamic_cast<te::map::DataSetLayer*>(m_isolinesLayer.get());
       if (!dsisoLayer)
-        throw e_layer;
+        throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsisoLayer->getDataSourceId(), true);
       if (!inDataSource.get())
-        throw e_inputdata;
+        throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
 
       std::string inDsetNameiso = dsisoLayer->getDataSetName();
       Tin->setInput(inDataSource, inDsetNameiso, inDataSource->getDataSetType(inDsetNameiso), te::mnt::Isolines);
@@ -409,11 +347,11 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       te::map::DataSetLayer* dssampleLayer = dynamic_cast<te::map::DataSetLayer*>(m_samplesLayer.get());
       if (!dssampleLayer)
-        throw e_layer;
+        throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dssampleLayer->getDataSourceId(), true);
       if (!inDataSource.get())
-        throw e_inputdata;
+        throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
 
       std::string inDsetNamesample = dssampleLayer->getDataSetName();
       Tin->setInput(inDataSource, inDsetNamesample, inDataSource->getDataSetType(inDsetNamesample), te::mnt::Samples);
@@ -424,11 +362,11 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       te::map::DataSetLayer* dsbreaklineLayer = dynamic_cast<te::map::DataSetLayer*>(m_breaklinesLayer.get());
       if (!dsbreaklineLayer)
-        throw e_layer;
+        throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
 
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsbreaklineLayer->getDataSourceId(), true);
       if (!inDataSource.get())
-        throw e_inputdata;
+        throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
 
       std::string inDsetNamebreakline = dsbreaklineLayer->getDataSetName();
       Tin->setBreakLine(inDataSource, inDsetNamebreakline, inDataSource->getDataSetType(inDsetNamebreakline), m_breaktol);
@@ -436,10 +374,10 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
     // Checking consistency of output paramenters
     if (m_ui->m_repositoryLineEdit->text().isEmpty())
-      throw e_repository;
+      throw te::common::Exception(TE_TR("Select a repository for the resulting layer."));
 
     if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
-      throw e_outfile;
+      throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
@@ -449,7 +387,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     if (m_toFile)
     {
       if (boost::filesystem::exists(uri))
-        throw e_outfileexist;
+        throw te::common::Exception(TE_TR("Output file already exists. Remove it or select a new name and try again."));
 
       std::size_t idx = outputdataset.find(".");
       if (idx != std::string::npos)
@@ -462,7 +400,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       dsOGR->open();
 
       if (dsOGR->dataSetExists(outputdataset))
-        throw e_outdatasetexist;
+        throw te::common::Exception(TE_TR("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
 
       Tin->setOutput(dsOGR, outputdataset);
     }
@@ -470,10 +408,10 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     {
       te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
       if (!aux)
-        throw e_outdatasetaccess;
+        throw te::common::Exception(TE_TR("The selected output datasource can not be accessed."));
 
       if (aux->dataSetExists(outputdataset))
-        throw e_outdatasetexist;
+        throw te::common::Exception(TE_TR("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
 
       Tin->setOutput(aux, outputdataset);
     }
