@@ -165,7 +165,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
   int ind_pf = -1;
   int ind_pfant = -1;
 
-  double xmin, xmax, ymin, ymax, zval, dummy = 0, pt1X, pt1Y, pt2X, pt2Y;
+  double xmin, xmax, ymin, ymax, zval, pt1X, pt1Y, pt2X, pt2Y;
   int col, row;
 
   //te::gm::Coord2D pt1Theme, pt2Theme, collin;
@@ -181,7 +181,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
   while (itVisadas != visadas.end())
   {
     //int t = (*itVisadas)->getNPoints();
-    for (int i = 0; i < (*itVisadas)->getNPoints(); i++)
+    for (std::size_t i = 0; i < (*itVisadas)->getNPoints(); i++)
     {
       //pt1Theme = itVisadas[i]->getX(i);
       //pt1Theme = itVisadas[i]->getY;

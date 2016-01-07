@@ -265,8 +265,7 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
   }
 
   bool nflag;
-  double PRECISAO = 0.000001;
-
+ 
   typedef te::sam::kdtree::Node<te::gm::Coord2D, int32_t, int32_t> KD_NODE;
   typedef te::sam::kdtree::Index<KD_NODE> KD_TREE;
   te::gm::Envelope e;
@@ -1123,7 +1122,7 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
   if (!m_triang[(unsigned int)tv].LinesId(tvEdges))
     return false;
 
-  int32_t am = 0, an = 0;
+  int32_t an = 0;
   unsigned short j;
   for (j = 0; j < 3; j++)
   {
@@ -1133,7 +1132,7 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
     if (m_line[(unsigned int)tvEdges[j]].getNodeFrom() == vn)
     {
       if (m_line[(unsigned int)tvEdges[j]].getNodeTo() == vi)
-        am = tvEdges[j];
+      {} 
       else if (m_line[(unsigned int)tvEdges[j]].getNodeTo() == vj)
         an = tvEdges[j];
       else{
@@ -1143,7 +1142,7 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
     else if (m_line[(unsigned int)tvEdges[j]].getNodeTo() == vn)
     {
       if (m_line[(unsigned int)tvEdges[j]].getNodeFrom() == vi)
-        am = tvEdges[j];
+      {}  
       else if (m_line[(unsigned int)tvEdges[j]].getNodeFrom() == vj)
         an = tvEdges[j];
       else{
@@ -1510,7 +1509,6 @@ bool te::mnt::TINGeneration::TestIsolines(int iter)
   std::vector<int32_t> lids;
   te::gm::PointZ pt, ptf, npt0, npt1;
   bool modified = false;
-  static size_t count = 0;
   std::vector<te::mnt::TinNode> p3dl;
   te::mnt::TinNode ptaux;
   std::vector<int32_t> snode;
@@ -1718,7 +1716,6 @@ bool te::mnt::TINGeneration::TestIsolines(int iter)
   size_t npts = p3dl.size();
   if (npts == 0)
   {
-    count = 0;
     return modified;
   }
 
@@ -1754,13 +1751,17 @@ bool te::mnt::TINGeneration::CreateMinAngleTriangulation()
     for (j = 0; j < 3; j++)
     {
       if (TestAngleBetweenNormals(triangid, j))
+      {
         if (neighids[j] < triangid)
         {
           triangid = neighids[j] - 1;
           j = 3;
         }
         else
+	      {
           j = -1;
+	      }
+      }
     }
   }
 
@@ -2459,8 +2460,7 @@ bool te::mnt::TINGeneration::OrderLines()
     nrtri,
     bline, nline, lline,
     lids[3],
-    node1, node2,
-    line1, line2;
+    node1, node2;
   short j;
 
   // To all breakline nodes
@@ -2489,7 +2489,6 @@ bool te::mnt::TINGeneration::OrderLines()
       m_node[(unsigned int)node1].setType(Breaklinefirst);
       continue;
     }
-    line1 = bline;
 
     // Search line from node+1 to node+2
     node2 = NextNode(node1);
@@ -2504,8 +2503,7 @@ bool te::mnt::TINGeneration::OrderLines()
         m_node[(unsigned int)node2].setType(Breaklinefirst);
       continue;
     }
-    line2 = nline;
-
+ 
     // Make sure line pointing to next node
     if (m_line[(unsigned int)bline].getNodeTo() == i)
       m_line[(unsigned int)bline].SwapNodePolygon();
@@ -2833,6 +2831,7 @@ bool te::mnt::TINGeneration::borderUp()
 
         //Check if triangle edges are equal eii
         int32_t edge[3];
+	edge[0]= edge[1] = edge[2] = -1;
         if (tleft != -1)
         {
           //left triangle
@@ -2899,8 +2898,6 @@ bool te::mnt::TINGeneration::borderUp()
           }
         }
       }
-
-//      m_node[(unsigned int)vii].setType(Deletednode);
     }
   }
 

@@ -53,10 +53,14 @@ namespace te
 
 struct  RasterBlockSize
 {
-  int m_idThread = 0;
-  int m_numRows = 0;
-  int m_initalRow = 0;
-  int m_finalRow = 0;
+  int m_idThread;
+  int m_numRows;
+  int m_initalRow;
+  int m_finalRow;
+  RasterBlockSize() : m_idThread(0),
+   m_numRows(0),
+   m_initalRow(0),
+   m_finalRow(0) {}
 };
 
 class ConnectLinesParams

@@ -18,6 +18,7 @@
 #include "../../srs/SpatialReferenceSystemManager.h"
 
 te::mnt::Slope::Slope()
+:m_tol(0.000001)
 {
 }
 

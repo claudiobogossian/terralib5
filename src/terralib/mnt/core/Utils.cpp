@@ -359,7 +359,7 @@ te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double
   else
   {
     lineOut = new te::gm::LineString(lringOut.size(), te::gm::LineStringZType);
-    for (int i = 0; i < lringOut.size(); i++)
+    for (std::size_t i = 0; i < lringOut.size(); i++)
     {
       lineOut->setPointN(i, *lringOut[i]);
       lineOut->setZ(i, Zvalue);
@@ -1181,15 +1181,14 @@ int te::mnt::onSameSide(te::gm::Coord2D pt1, te::gm::Coord2D pt2, te::gm::Coord2
 bool te::mnt::point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<bool> &fixed, double tol)
 {
   te::gm::PointZ p3d;
-  int32_t npts, nptsmax, i, j, maxdiffindex = 0;
-  double x0 = 0, y0 = 0, z0, coef[5];
+  int32_t npts, i, j, maxdiffindex = 0;
+  double x0 = 0, y0 = 0, coef[5];
   double maxdiff;
   double maxfixptdiff;
   short degree;
 
   npts = 0;
-  nptsmax = 0;
-
+ 
   try
   {
     double *vectd = new double[200];
@@ -1264,7 +1263,6 @@ bool te::mnt::point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<b
         {
           p3d = p3dlaux[i];
           p3d.setZ(fvectz[i]);
-          z0 = p3d.getZ();
         }
         npts = 0;
         continue;
