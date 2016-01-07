@@ -123,12 +123,21 @@ namespace te
           void onOpenFileDlgToolButtonClicked();      
           
           void onOpenSRIDDlgToolButtonClicked();
+          
+          void rawRasterInfoChanged(const QString & text);
+          
+          void rawRasterCheckBoxStateChanged(int state );
+          
 
         private:
 
          bool m_outputMode; //!< Allows select input rasters (outputMode=false - rasters that already exists) or output raster info - outputMode=true).
          std::auto_ptr<Ui::RasterInfoWidgetForm> m_ui;
-         std::auto_ptr<te::qt::widgets::ParameterTableWidget> m_table;
+         std::auto_ptr<te::qt::widgets::ParameterTableWidget> m_table;         
+         std::string m_originalFullFileName; //!< The selected raster file full file name.
+         
+         void updateRawRasterFileName();
+         
       }; 
 
     } // end namespace widgets

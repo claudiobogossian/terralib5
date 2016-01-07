@@ -47,7 +47,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>130</y>
+        <y>310</y>
         <width>651</width>
         <height>16</height>
        </rect>
@@ -56,7 +56,7 @@
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -118,11 +118,11 @@
        </rect>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>90</y>
+        <y>330</y>
         <width>651</width>
         <height>33</height>
        </rect>
@@ -157,11 +157,11 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>150</y>
+        <y>90</y>
         <width>651</width>
         <height>211</height>
        </rect>
@@ -199,11 +199,11 @@
            <rect>
             <x>20</x>
             <y>20</y>
-            <width>621</width>
+            <width>611</width>
             <height>33</height>
            </rect>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <layout class="QHBoxLayout" name="horizontalLayout_14">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
@@ -223,36 +223,6 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Resolution X</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="m_resolutionXLineEdit">
-               <property name="readOnly">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>60</y>
-            <width>621</width>
-            <height>33</height>
-           </rect>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_10">
-           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QLabel" name="label_4">
@@ -271,36 +241,6 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_7">
-             <item>
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>Resolution Y</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="m_resolutionYLineEdit">
-               <property name="readOnly">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>100</y>
-            <width>621</width>
-            <height>35</height>
-           </rect>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_11">
-           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
               <widget class="QLabel" name="label_5">
@@ -311,6 +251,124 @@
              </item>
              <item>
               <widget class="QLineEdit" name="m_bandsLineEdit">
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Data Type</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="m_dataTypeComboBox">
+               <item>
+                <property name="text">
+                 <string>Byte</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>UInt16</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Int16</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>UInt32</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Int32</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Float32</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Float64</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>CInt16</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>CInt32</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>CFloat32</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>CFloat64</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>60</y>
+            <width>611</width>
+            <height>35</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_16">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Resolution X</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="m_resolutionXLineEdit">
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Resolution Y</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="m_resolutionYLineEdit">
                <property name="readOnly">
                 <bool>false</bool>
                </property>
@@ -351,13 +409,49 @@
          <widget class="QWidget" name="">
           <property name="geometry">
            <rect>
-            <x>21</x>
-            <y>140</y>
-            <width>621</width>
+            <x>20</x>
+            <y>100</y>
+            <width>611</width>
             <height>33</height>
            </rect>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <layout class="QHBoxLayout" name="horizontalLayout_17">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>UpperLeft X</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="m_upperLeftXLineEdit">
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>UpperLeft Y</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="m_upperLeftYLineEdit">
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
@@ -368,23 +462,61 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="m_byteOrderComboBox"/>
+              <widget class="QComboBox" name="m_byteOrderComboBox">
+               <property name="toolTip">
+                <string>Defines the byte order of the data on disk. Either LSB (Least Significant Byte first) such as the natural byte order on Intel x86 systems or MSB (Most Significant Byte first) such as the natural byte order on Motorola or Sparc systems. Defaults to being the local machine order.</string>
+               </property>
+               <item>
+                <property name="text">
+                 <string/>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>LSB</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>MSB</string>
+                </property>
+               </item>
+              </widget>
              </item>
             </layout>
            </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="">
+          <property name="geometry">
+           <rect>
+            <x>21</x>
+            <y>141</y>
+            <width>141</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_15">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <widget class="QLabel" name="label_15">
+             <property name="text">
+              <string>Interleaving</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="m_interleaveComboBox">
              <item>
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>Data Type</string>
-               </property>
-              </widget>
+              <property name="text">
+               <string>BSQ</string>
+              </property>
              </item>
              <item>
-              <widget class="QComboBox" name="m_dataTypeComboBox"/>
+              <property name="text">
+               <string>BIP</string>
+              </property>
              </item>
-            </layout>
+            </widget>
            </item>
           </layout>
          </widget>
