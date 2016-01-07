@@ -8,6 +8,8 @@
 #include "TINCreateIsolines.h"
 #include "Utils.h"
 
+#include "../../common/progress/TaskProgress.h"
+
 
 bool te::mnt::TINCreateIsolines::run()
 {
@@ -32,9 +34,17 @@ bool te::mnt::TINCreateIsolines::run()
   for (size_t v = 0; v < m_values.size(); v++)
   {
     cvalue = m_values[v];
+    std::string msg("Creating Isolines with quote ");
+    std::stringstream ss;
+    ss << cvalue;
+    msg += ss.str() + "...";
 
-    for (size_t i = 0; i < m_triang.size(); i++)
+    std::size_t ntri = m_triang.size();
+    te::common::TaskProgress task(msg, te::common::TaskProgress::UNDEFINED, (int)ntri);
+
+    for (size_t i = 0; i < ntri; i++)
     {
+      task.pulse();
       if (!NodesId((int32_t)i, nodesid))
         continue;
       for (size_t j = 0; j < 3; j++)

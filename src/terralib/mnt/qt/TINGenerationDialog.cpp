@@ -326,11 +326,30 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
   {
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
+    if (!m_isolinesLayer.get() && !m_samplesLayer.get())
+      throw te::common::Exception(TE_TR("Select a input layer."));
+
+    if (m_ui->m_yesradioButton->isChecked() && !m_breaklinesLayer.get())
+      throw te::common::Exception(TE_TR("Select a breakline layer."));
+
+    bool ok;
+    m_edgeSize = m_ui->m_minedgelineEdit->text().toDouble(&ok);
+    if (!ok)
+      throw te::common::Exception(TE_TR("Define a Minimal Edge Size."));
+
     te::mnt::TINGeneration *Tin = new te::mnt::TINGeneration();
 
     // Checking consistency of the input layer where the buffer will executed
     if (m_isolinesLayer.get())
     {
+      m_tol = m_ui->m_tollineEdit->text().toDouble(&ok);
+      if (!ok)
+        throw te::common::Exception(TE_TR("Define a isolines tolerance."));
+
+      m_distance = m_ui->m_distancelineEdit->text().toDouble(&ok);
+      if (!ok)
+        throw te::common::Exception(TE_TR("Define a distance of isolines points."));
+
       te::map::DataSetLayer* dsisoLayer = dynamic_cast<te::map::DataSetLayer*>(m_isolinesLayer.get());
       if (!dsisoLayer)
         throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
@@ -360,6 +379,10 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
     if (m_breaklinesLayer.get())
     {
+      m_breaktol = m_ui->m_breaktollineEdit->text().toDouble(&ok);
+      if (!ok)
+        throw te::common::Exception(TE_TR("Define a breaklines tolerance."));
+
       te::map::DataSetLayer* dsbreaklineLayer = dynamic_cast<te::map::DataSetLayer*>(m_breaklinesLayer.get());
       if (!dsbreaklineLayer)
         throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));

@@ -1525,8 +1525,12 @@ bool te::mnt::SaveIso(std::string& outDsetName, te::da::DataSourcePtr &outDsrc, 
 
   int id = 0;
 
+  te::common::TaskProgress task("Saving Isolines...", te::common::TaskProgress::UNDEFINED, (int)isolist.size());
+
   for (unsigned int Idx = 0; Idx < isolist.size(); ++Idx)
   {
+    task.pulse();
+
     te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
     te::gm::LineString gout = isolist[Idx];
     double *zvalue = gout.getZ();
