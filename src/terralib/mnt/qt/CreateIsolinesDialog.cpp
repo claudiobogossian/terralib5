@@ -59,7 +59,9 @@ te::mnt::CreateIsolinesDialog::CreateIsolinesDialog(QWidget* parent, Qt::WindowF
   m_ui(new Ui::CreateIsolinesDialogForm),
   m_layers(std::list<te::map::AbstractLayerPtr>()),
   m_min(0.),
-  m_max(0.)
+  m_max(0.),
+  m_toFile(false),
+  m_hasDummy(false)
 {
   m_ui->setupUi(this);
 
