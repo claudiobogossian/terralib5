@@ -248,8 +248,8 @@ namespace te
       static bool AdjustLinear(te::gm::LineString *ptol, double maxDist);
 
     protected:
-      unsigned int m_minpoints;           //!< minimum of points considered
       unsigned int m_nPartsX, m_nPartsY;  //!< number of parts considered in the x and y directions
+      unsigned int m_minpoints;           //!< minimum of points considered
       double m_overlapping;         //!< overlap value considered
       unsigned int m_nsplx;               //!< Numero de colunas do spline
       unsigned int m_nsply;               //!< Numero de linhas do spline

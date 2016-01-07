@@ -223,7 +223,6 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
     int32_t vi;
     for (;;)
     {
-      bool flag = false;
       //6. For each vertice vi (i Î  {1,  .,n}) of V, do:
       size_t iiv;
       for (iiv = 0; iiv < vvn.size(); iiv++)
@@ -251,14 +250,12 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
         { //6.2.1. Define v as vi,
           v = vi;
           //6.2.2. Return to 2.;
-          flag = true;
           break;
         }
       }
       if (iiv != vvn.size())
         break;
 
-      flag = false;
       //7. For each edge ai (i Î  {1,  .,m}) of A, do:
       size_t iia;
       for (iia = 0; iia < aam.size(); iia++)
@@ -335,8 +332,7 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
             {
               if ((fabs(ptr2.getX() - m_node[(unsigned int)v1].getX()) < tol) && (fabs(ptr2.getY() - m_node[(unsigned int)v1].getY()) < tol))
               {
-                flag = true;
-                break;
+                 break;
               }
             }
             vvn.push_back(v1);
@@ -346,7 +342,6 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
             //7.1.7. Defines vaux auxiliar vertice as null
             vaux = -1;
             //7.1.8. Returns to 6.;
-            flag = true;
             break;
           }
         }

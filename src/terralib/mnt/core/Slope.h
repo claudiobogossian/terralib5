@@ -70,7 +70,7 @@ namespace te
   
       mntType m_inputType;  //!< Input type (TIN, GRID)
 
-      double m_tol = 0.000001;
+      double m_tol;
       double m_min, m_max;
       double m_dx, m_dy;
       double m_dummy;

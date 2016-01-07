@@ -252,8 +252,8 @@ namespace te
         m_type = ntype;
       }
     protected:
-      te::gm::PointZ m_point; //!< Node point
       Ntype m_type; //!< node type
+      te::gm::PointZ m_point; //!< Node point
 
     public:
       std::vector<int32_t> m_edge;
@@ -599,8 +599,8 @@ namespace te
       int32_t m_lline; //!<Triangulation last line number.
 
       double m_nodatavalue;
-      double m_max;
       double m_min;
+      double m_max;
 
       te::rst::Raster* m_rst;
       double m_resx, m_resy;
