@@ -27,6 +27,7 @@
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../srs/SpatialReferenceSystemManager.h"
 #include "../../../common/StringUtils.h"
 #include "../srs/SRSManagerDialog.h"
 #include "../utils/ParameterTableWidget.h"
@@ -319,6 +320,8 @@ void te::qt::widgets::RasterInfoWidget::updateRawRasterFileName()
         const unsigned int rowsNumber = m_ui->m_rowsLineEdit->text().toUInt();
         const double resX = m_ui->m_resolutionXLineEdit->text().toDouble();
         const double resY = m_ui->m_resolutionYLineEdit->text().toDouble();
+        const double upperLeftX = m_ui->m_upperLeftXLineEdit->text().toDouble();
+        const double upperLeftY = m_ui->m_upperLeftYLineEdit->text().toDouble();
         const int SRID = m_ui->m_sridLineEdit->text().toInt();
         const std::string byteOrder = m_ui->m_byteOrderComboBox->currentText().toStdString();
         const std::string dataTypeString = m_ui->m_dataTypeComboBox->currentText().toStdString();;
@@ -384,10 +387,29 @@ void te::qt::widgets::RasterInfoWidget::updateRawRasterFileName()
         }
         else
         {
+          vrtfile.precision( 20 );
+          
           vrtfile 
             << "<VRTDataset rasterXSize=\"" << colsNumber << "\""
             << " rasterYSize=\"" << rowsNumber << "\""
-            << ">" << std::endl;
+            << ">";
+            
+          if( SRID > 0 )
+          {
+            const std::string wktStr = te::srs::SpatialReferenceSystemManager::getInstance().getWkt( SRID );
+            
+            if( ! wktStr.empty() )
+            {
+              vrtfile << std::endl << "<SRS>" << wktStr << "</SRS>";
+            }
+          }
+          
+          if( ( resX != 0.0 ) && ( resY != 0.0 ) )
+          {
+            vrtfile << std::endl << "<GeoTransform>" << upperLeftX << "," 
+              << resX << ",0," << upperLeftY << ",0," << (-1.0 * resY) 
+              << "</GeoTransform>";
+          }
             
           unsigned int pixelOffset = 0;
           unsigned int lineOffset = 0;
@@ -412,18 +434,19 @@ void te::qt::widgets::RasterInfoWidget::updateRawRasterFileName()
             }            
             
             vrtfile
+              << std::endl
               << "<VRTRasterBand dataType=\"" << dataTypeString << "\" band=\"" << ( bandIdx + 1 )<< "\" subClass=\"VRTRawRasterBand\">" << std::endl
                 << "<SourceFilename relativetoVRT=\"1\">" << fullFilePath.filename().string() << "</SourceFilename>" << std::endl
                 << "<ImageOffset>" << imageOffset << "</ImageOffset>" << std::endl
                 << "<PixelOffset>" << pixelOffset << "</PixelOffset>" << std::endl
-                << "<LineOffset>" << lineOffset << "</LineOffset>" << std::endl;
+                << "<LineOffset>" << lineOffset << "</LineOffset>";
                 
-            if( !byteOrder.empty() ) vrtfile << "<ByteOrder>" << byteOrder << "</ByteOrder>" << std::endl;
+            if( !byteOrder.empty() ) vrtfile << std::endl << "<ByteOrder>" << byteOrder << "</ByteOrder>" << std::endl;
               
-            vrtfile  << "</VRTRasterBand>" << std::endl;
+            vrtfile << std::endl << "</VRTRasterBand>";
           }
           
-          vrtfile << "</VRTDataset>" << std::endl;
+          vrtfile << std::endl << "</VRTDataset>" << std::endl;
           
           m_ui->m_fileNameLineEdit->setText( vrtFullFileName.c_str() );
         }
