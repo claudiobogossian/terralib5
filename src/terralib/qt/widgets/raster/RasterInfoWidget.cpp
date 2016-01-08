@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/RasterInfoWidget.cpp
+  \file terralib/qt/widgets/raster/RasterInfoWidget.cpp
 
   \brief This file has the RasterInfoWidget class.
 */

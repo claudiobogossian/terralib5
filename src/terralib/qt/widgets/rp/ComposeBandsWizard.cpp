@@ -38,7 +38,7 @@
 #include "../progress/ProgressViewerDialog.h"
 #include "ComposeBandsWizard.h"
 #include "ComposeBandsWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
 

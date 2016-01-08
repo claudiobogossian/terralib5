@@ -30,7 +30,7 @@
 #include "../progress/ProgressViewerDialog.h"
 #include "RasterSlicingWizardPage.h"
 #include "RasterInfoWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "Utils.h"
 
 
