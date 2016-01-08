@@ -267,7 +267,14 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
             qvalue = Convert2Qt(value, encoding);
           }
           else
-            qvalue = dataset->getAsString(i, 3).c_str();
+          {
+            if (dataset->getPropertyDataType(i) == te::dt::GEOMETRY_TYPE)
+            {
+              qvalue = (dataset->getAsString(i).substr(0, 15) + "...").c_str();
+            }
+            else
+              qvalue = dataset->getAsString(i, 3).c_str();
+          }
 
           propertyItem->setText(1, qvalue);
         }
