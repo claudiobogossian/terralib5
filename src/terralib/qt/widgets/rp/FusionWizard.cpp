@@ -38,7 +38,7 @@
 #include "../progress/ProgressViewerDialog.h"
 #include "FusionWizard.h"
 #include "FusionWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
 

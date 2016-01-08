@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "ui_RasterInfoWidgetForm.h"
 

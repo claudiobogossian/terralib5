@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/RasterInfoWidget.h
+  \file terralib/qt/widgets/raster/RasterInfoWidget.h
 
   \brief This file has the RasterInfoWidget class.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERINFOWIDGET_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERINFOWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_RASTER_INTERNAL_RASTERINFOWIDGET_H
+#define __TERRALIB_QT_WIDGETS_RASTER_INTERNAL_RASTERINFOWIDGET_H
 
 // TerraLib
 #include "../Config.h"

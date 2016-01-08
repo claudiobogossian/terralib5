@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "OutputRasterParametersWidget.h"
-#include "RasterInfoDialog.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoDialog.h"
+#include "../raster/RasterInfoWidget.h"
 #include "ui_OutputRasterParametersWidgetForm.h"
 
 //QT

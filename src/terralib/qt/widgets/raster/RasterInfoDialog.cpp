@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/RasterInfoDialog.cpp
+  \file terralib/qt/widgets/raster/RasterInfoDialog.cpp
 
   \brief This file defines a class for a RasterInfoDialog.
 */
