@@ -249,15 +249,6 @@ void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsIn
       sql += " CONNECTION LIMIT = " + it->second;
 
     ds->execute(sql);
-    
-// check if new database has postgis extension enabled
-    std::auto_ptr<te::da::DataSet> result(ds->query("SELECT extname, extversion FROM pg_extension WHERE extname = 'postgis'"));
-    
-    if(!result->moveNext())
-    {
-// no PostGIS extension found, let's try to enable it!
-      ds->execute("CREATE EXTENSION postgis");
-    }
 
     ds->close();
   }
@@ -392,6 +383,23 @@ void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsIn
     if(it != it_end)
       m_connInfo["PG_CLIENT_ENCODING"] = it->second;
   }
+
+  // check if new database has postgis extension enabled
+  std::auto_ptr<DataSource> dsPGIS(new DataSource());
+
+  dsPGIS->setConnectionInfo(m_connInfo);
+
+  dsPGIS->open();
+
+  std::auto_ptr<te::da::DataSet> result(dsPGIS->query("SELECT extname, extversion FROM pg_extension WHERE extname = 'postgis'"));
+
+  if (!result->moveNext())
+  {
+    // no PostGIS extension found, let's try to enable it!
+    dsPGIS->execute("CREATE EXTENSION postgis");
+  }
+
+  dsPGIS->close();
 }
 
 void te::pgis::DataSource::drop(const std::map<std::string, std::string>& dsInfo)

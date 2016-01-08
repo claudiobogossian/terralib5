@@ -173,9 +173,7 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
     detx, dety, detz;
   double zvalue;
   int32_t nlin, ncol;
-  double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
-
-  x1_x0 = p3da[1].getX() - p3da[0].getX();
+   x1_x0 = p3da[1].getX() - p3da[0].getX();
   x2_x0 = p3da[2].getX() - p3da[0].getX();
   y1_y0 = p3da[1].getY() - p3da[0].getY();
   y2_y0 = p3da[2].getY() - p3da[0].getY();

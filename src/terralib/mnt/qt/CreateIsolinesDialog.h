@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright  (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
 This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -22,6 +22,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 \brief A dialog ISolines generation
 */
+
 #ifndef __TERRALIB_MNT_INTERNAL_CREATEISOLINESDIALOG_H
 #define __TERRALIB_MNT_INTERNAL_CREATEISOLINESDIALOG_H
 
@@ -82,7 +83,6 @@ namespace te
 
       te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
       std::string m_outputArchive;                                                      //!< Archive information.
-      bool m_toFile = false;
       std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
@@ -91,7 +91,8 @@ namespace te
       double m_min;
       double m_max;
       double m_dummy;
-      bool m_hasDummy = false;
+      bool m_toFile;
+      bool m_hasDummy;
 
     };
   } //mnt

@@ -161,7 +161,7 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           m_ui->m_interpolatorComboBox->addItem("Nearest Neighbor");
           m_ui->m_interpolatorComboBox->addItem("Bilinear Spline");
           m_ui->m_interpolatorComboBox->addItem("Bicubic Spline");
-         // m_ui->m_interpolatorComboBox->addItem("Mitasova Spline"); Implementar depois
+          m_ui->m_interpolatorComboBox->addItem("Mitasova Spline");
 
           m_ui->m_ZcomboBox->show();
           m_ui->m_Zlabel->show();

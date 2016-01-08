@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
+#include "../../common/StringUtils.h"
 #include "../../common/Translator.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
@@ -39,6 +40,7 @@
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
+#include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../srs/Config.h"
 #include "../Exception.h"
 #include "../IntersectionMemory.h"
@@ -51,6 +53,7 @@
 
 // Qt
 #include <QFileDialog>
+#include <QGridLayout>
 #include <QMessageBox>
 #include <QTreeWidget>
 
@@ -58,6 +61,9 @@
 #include <boost/filesystem.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -69,6 +75,15 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
 
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-intersection-hint").pixmap(48,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+
+  //add double list widget to this form
+  m_doubleListWidget.reset(new te::qt::widgets::DoubleListWidget(m_ui->m_attrSelectionGroupBox));
+  m_doubleListWidget->setLeftLabel("");
+  m_doubleListWidget->setRightLabel("");
+
+  QGridLayout* layout = new QGridLayout(m_ui->m_attrSelectionGroupBox);
+  layout->addWidget(m_doubleListWidget.get());
+  layout->setContentsMargins(0, 0, 0, 0);
 
   connect(m_ui->m_firstLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFirstLayerComboBoxChanged(int)));
   connect(m_ui->m_secondLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSecondLayerComboBoxChanged(int)));
@@ -86,17 +101,68 @@ te::vp::IntersectionDialog::~IntersectionDialog()
 
 void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
-  m_layers = layers;
+  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+
+  while (it != layers.end())
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    if (dsType->hasGeom())
+    {
+      m_layers.push_back(*it);
+    }
+
+    ++it;
+  }
+
+  updateFirstLayerComboBox();
+
+  updateSecondLayerComboBox();
+
+  updateDoubleListWidget();
+}
+
+void te::vp::IntersectionDialog::updateFirstLayerComboBox()
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+
+  disconnect(m_ui->m_firstLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFirstLayerComboBoxChanged(int)));
+
+  while (it != m_layers.end())
+  {
+    m_ui->m_firstLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant::fromValue(*it));
+    ++it;
+  }
+
+  connect(m_ui->m_firstLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFirstLayerComboBoxChanged(int)));
+
+  QVariant varLayer = m_ui->m_firstLayerComboBox->itemData(m_ui->m_firstLayerComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  m_firstSelectedLayer = layer;
+}
+
+void te::vp::IntersectionDialog::updateSecondLayerComboBox()
+{
+  int currIndex = m_ui->m_firstLayerComboBox->currentIndex();
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
-  while(it != m_layers.end())
+  disconnect(m_ui->m_secondLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSecondLayerComboBoxChanged(int)));
+
+  while (it != m_layers.end())
   {
-    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasGeom())
-      m_ui->m_firstLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    m_ui->m_secondLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant::fromValue(*it));
     ++it;
   }
+
+  m_ui->m_secondLayerComboBox->removeItem(currIndex);
+
+  connect(m_ui->m_secondLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSecondLayerComboBoxChanged(int)));
+
+  QVariant varLayer = m_ui->m_secondLayerComboBox->itemData(m_ui->m_secondLayerComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  m_secondSelectedLayer = layer;
 }
 
 te::map::AbstractLayerPtr te::vp::IntersectionDialog::getLayer()
@@ -106,43 +172,80 @@ te::map::AbstractLayerPtr te::vp::IntersectionDialog::getLayer()
 
 void te::vp::IntersectionDialog::onFirstLayerComboBoxChanged(int index)
 {
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_firstLayerComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  QVariant varLayer = m_ui->m_firstLayerComboBox->itemData(index, Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
   m_ui->m_secondLayerComboBox->clear();
-  while(it != m_layers.end())
-  {
-    if(layerID != it->get()->getId().c_str())
-    {
-      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-      if(dsType->hasGeom())
-        m_ui->m_secondLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-    }
-    else
-    {
-      te::map::AbstractLayerPtr selectedLayer = it->get();
-      m_firstSelectedLayer = selectedLayer;
-    }
+  
+  m_firstSelectedLayer = layer;
 
-    ++it;
-  }
+  updateSecondLayerComboBox();
+
+  updateDoubleListWidget();
 }
 
 void te::vp::IntersectionDialog::onSecondLayerComboBoxChanged(int index)
 {
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_secondLayerComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  QVariant varLayer = m_ui->m_firstLayerComboBox->itemData(index, Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
-  while(it != m_layers.end())
+  m_secondSelectedLayer = layer;
+
+  updateDoubleListWidget();
+}
+
+void te::vp::IntersectionDialog::updateDoubleListWidget()
+{
+  std::vector<std::string> inputValues;
+
+  std::auto_ptr<te::da::DataSetType> firstSchema;
+  std::auto_ptr<te::da::DataSetType> secondSchema;
+
+  if (m_firstSelectedLayer)
+    firstSchema = m_firstSelectedLayer->getSchema();
+  else
+    return;
+
+  if (m_secondSelectedLayer)
+    secondSchema = m_secondSelectedLayer->getSchema();
+  else
+    return;
+
+  std::vector<te::dt::Property*> firstProps = firstSchema->getProperties();
+  for (std::size_t i = 0; i < firstProps.size(); ++i)
   {
-    if(layerID == it->get()->getId().c_str())
-    {
-      te::map::AbstractLayerPtr selectedLayer = it->get();
-      m_secondSelectedLayer = selectedLayer;
-    }
-
-    ++it;
+    if (firstProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+      inputValues.push_back(firstSchema->getTitle() + ": " + firstProps[i]->getName());
   }
+
+  std::vector<te::dt::Property*> secondProps = secondSchema->getProperties();
+  for (std::size_t i = 0; i < secondProps.size(); ++i)
+  {
+    if (secondProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+      inputValues.push_back(secondSchema->getTitle() + ": " + secondProps[i]->getName());
+  }
+
+  m_doubleListWidget->setInputValues(inputValues);
+}
+
+std::vector<std::pair<std::string, std::string> > te::vp::IntersectionDialog::getSelectedProperties()
+{
+  std::vector<std::string> outVec = m_doubleListWidget->getOutputValues();
+  std::vector<std::pair<std::string, std::string> > result;
+
+  for (std::size_t i = 0; i < outVec.size(); ++i)
+  {
+    std::vector<std::string> tok;
+    te::common::Tokenize(outVec[i], tok, ": ");
+
+    std::pair<std::string, std::string> p;
+    p.first = tok[0];
+    p.second = tok[1];
+
+    result.push_back(p);
+  }
+
+  return result;
 }
 
 void te::vp::IntersectionDialog::onOkPushButtonClicked()
@@ -241,7 +344,6 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   
   try
   {
-    bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
     bool res;
@@ -300,7 +402,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
                                 secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
                                 firstOidSet, secondOidSet);
       intersectionOp->setOutput(dsOGR, outputdataset);
-      intersectionOp->setParams(copyInputColumns);
+      intersectionOp->setParams(getSelectedProperties());
 
       if (!intersectionOp->paramsAreValid())
         res = false;
@@ -379,7 +481,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
                                 secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
                                 firstOidSet, secondOidSet);
       intersectionOp->setOutput(aux, outputdataset);
-      intersectionOp->setParams(copyInputColumns);
+      intersectionOp->setParams(getSelectedProperties());
 
       if (!intersectionOp->paramsAreValid())
         res = false;
