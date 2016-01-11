@@ -186,7 +186,7 @@ void te::vp::IntersectionDialog::onFirstLayerComboBoxChanged(int index)
 
 void te::vp::IntersectionDialog::onSecondLayerComboBoxChanged(int index)
 {
-  QVariant varLayer = m_ui->m_firstLayerComboBox->itemData(index, Qt::UserRole);
+  QVariant varLayer = m_ui->m_secondLayerComboBox->itemData(index, Qt::UserRole);
   te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
   m_secondSelectedLayer = layer;
