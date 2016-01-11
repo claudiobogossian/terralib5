@@ -31,16 +31,12 @@ bool te::mnt::TINCreateIsolines::run()
 
   LoadTin(m_inDsrc, m_inDsetName, zmin, zmax);
 
+  std::size_t ntri = m_triang.size();
+  te::common::TaskProgress task("Creating Isolines...", te::common::TaskProgress::UNDEFINED, (int)(ntri*m_values.size()));
+
   for (size_t v = 0; v < m_values.size(); v++)
   {
     cvalue = m_values[v];
-    std::string msg("Creating Isolines with quote ");
-    std::stringstream ss;
-    ss << cvalue;
-    msg += ss.str() + "...";
-
-    std::size_t ntri = m_triang.size();
-    te::common::TaskProgress task(msg, te::common::TaskProgress::UNDEFINED, (int)ntri);
 
     for (size_t i = 0; i < ntri; i++)
     {

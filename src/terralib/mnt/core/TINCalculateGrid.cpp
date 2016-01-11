@@ -8,6 +8,7 @@
 #include "TINCalculateGrid.h"
 #include "Utils.h"
 
+#include "../../common/progress/TaskProgress.h"
 #include "../../raster.h"
 #include "../../raster/BandProperty.h"
 #include "../../raster/Grid.h"
@@ -81,9 +82,12 @@ bool te::mnt::TINCalculateGrid::run()
   short j;
   double	coef[27];
 
+  te::common::TaskProgress task("Generating DTM...", te::common::TaskProgress::UNDEFINED, (int)m_triang.size());
+
   //  To each triangle
   for (unsigned int i = 0; i < m_triang.size(); i++)
   { // Find Triangle Box
+    task.pulse();
     if (!NodesId((int32_t)i, nodesid)) 
       continue;
     if (!DefineInterLinesColumns(nodesid, flin, llin, fcol, lcol))

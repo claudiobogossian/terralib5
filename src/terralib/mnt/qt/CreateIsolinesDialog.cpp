@@ -448,11 +448,13 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
       outdsinfo["URI"] = uri.string();
     }
 
-    this->setCursor(Qt::WaitCursor);
-
     std::vector<double> val;
     std::vector<double> guideval;
-    double step = m_ui->m_steplineEdit->text().toDouble();
+    bool ok;
+    double step = m_ui->m_steplineEdit->text().toDouble(&ok);
+    if (!ok)
+      step = 0;
+
     double gLineValue = m_ui->m_isolineslistWidget->item(0)->text().toDouble() + step * 5;
 
     for (int i = 0; i < m_ui->m_isolineslistWidget->count(); i++)
