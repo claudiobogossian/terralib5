@@ -442,17 +442,17 @@ te::gm::Geometry* te::vp::GetValidMultiPolygon(const te::gm::Geometry* g)
   case te::gm::PolygonMType:
   case te::gm::PolygonZMType:
   {
-                              te::gm::GeomType gAuxType = g->getGeomTypeId();
-                              bool valid = (gAuxType == te::gm::PolygonType) || (gAuxType == te::gm::PolygonZType) ||
-                                (gAuxType == te::gm::PolygonMType) || (gAuxType == te::gm::PolygonZMType);
+    te::gm::GeomType gAuxType = g->getGeomTypeId();
+    bool valid = (gAuxType == te::gm::PolygonType) || (gAuxType == te::gm::PolygonZType) ||
+      (gAuxType == te::gm::PolygonMType) || (gAuxType == te::gm::PolygonZMType);
 
-                              if (!valid)
-                                return 0;
+    if (!valid)
+      return 0;
 
-                              te::gm::MultiPolygon* geom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
-                              geom->add(GetValidPolygon((te::gm::Polygon*)g));
+    te::gm::MultiPolygon* geom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, g->getSRID());
+    geom->add(GetValidPolygon((te::gm::Polygon*)g));
 
-                              return geom;
+    return geom;
   }
     break;
 
@@ -465,29 +465,29 @@ te::gm::Geometry* te::vp::GetValidMultiPolygon(const te::gm::Geometry* g)
   case te::gm::MultiPolygonMType:
   case te::gm::MultiPolygonZMType:
   {
-                                   te::gm::MultiPolygon* geom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
-                                   te::gm::GeometryCollection* aux = (te::gm::GeometryCollection*)g;
+    te::gm::MultiPolygon* geom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, g->getSRID());
+    te::gm::GeometryCollection* aux = (te::gm::GeometryCollection*)g;
 
-                                   for (size_t i = 0; i < aux->getNumGeometries(); i++)
-                                   {
-                                     te::gm::Geometry* gAux = aux->getGeometryN(i);
-                                     te::gm::GeomType gAuxType = gAux->getGeomTypeId();
-                                     bool valid = (gAuxType == te::gm::PolygonType) || (gAuxType == te::gm::PolygonZType) ||
-                                       (gAuxType == te::gm::PolygonMType) || (gAuxType == te::gm::PolygonZMType);
+    for (size_t i = 0; i < aux->getNumGeometries(); i++)
+    {
+      te::gm::Geometry* gAux = aux->getGeometryN(i);
+      te::gm::GeomType gAuxType = gAux->getGeomTypeId();
+      bool valid = (gAuxType == te::gm::PolygonType) || (gAuxType == te::gm::PolygonZType) ||
+        (gAuxType == te::gm::PolygonMType) || (gAuxType == te::gm::PolygonZMType);
 
-                                     if (!valid)
-                                       continue;
+      if (!valid)
+        continue;
 
-                                     geom->add(GetValidPolygon((te::gm::Polygon*)gAux));
-                                   }
+      geom->add(GetValidPolygon((te::gm::Polygon*)gAux));
+    }
 
-                                   if (geom->isEmpty())
-                                   {
-                                     delete geom;
-                                     return 0;
-                                   }
+    if (geom->isEmpty())
+    {
+      delete geom;
+      return 0;
+    }
 
-                                   return geom;
+    return geom;
   }
     break;
 
