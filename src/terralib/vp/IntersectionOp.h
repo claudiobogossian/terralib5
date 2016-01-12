@@ -73,9 +73,11 @@ namespace te
                     const te::da::ObjectIdSet* firstOidSet = 0,
                     const te::da::ObjectIdSet* secondOidSet = 0);
 
-      void setParams(const bool& copyInputColumns);
+      void setParams(const std::vector<std::pair<std::string, std::string> >& attributeVec);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
+
+      te::da::DataSetType* getOutputDsType();
 
     protected:
 
@@ -93,7 +95,7 @@ namespace te
       const te::da::ObjectIdSet* m_firstOidSet;
       const te::da::ObjectIdSet* m_secondOidSet;
 
-      bool m_copyInputColumns;
+      std::vector<std::pair<std::string, std::string> > m_attributeVec;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDsetName;

@@ -96,8 +96,7 @@ bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
   else
     secondMember.ds = te::da::CreateAdapter(m_inSecondDsrc->getDataSet(m_inSecondDsetName, m_secondOidSet).release(), m_secondConverter.get());
 
-  if(m_copyInputColumns)
-    secondMember.props = getTabularProps(secondMember.dt);
+  secondMember.props = getTabularProps(secondMember.dt);
   
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
   resultPair = this->pairwiseIntersection(m_outDsetName, firstMember, secondMember);
@@ -145,7 +144,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
   size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp);
 
   // Create the DataSetType and DataSet
-  te::da::DataSetType* outputDt = this->createDataSetType(newName, firstMember.dt, firstMember.props, secondMember.dt, secondMember.props);
+  te::da::DataSetType* outputDt = this->getOutputDsType();
   te::mem::DataSet* outputDs = new te::mem::DataSet(outputDt);
 
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
@@ -184,8 +183,12 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDs);
       std::auto_ptr<te::gm::Geometry> resultGeom;
 
-      if(currGeom->isValid() && secGeom->isValid())
+      if (currGeom->isValid() && secGeom->isValid())
+      {
         resultGeom.reset(currGeom->intersection(secGeom.get()));
+        resultGeom.reset(GetValidMultiPolygon(resultGeom.get()));
+      }
+       
       
       if(resultGeom.get()!=0 && resultGeom->isValid())
       {
@@ -246,8 +249,12 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
         if (!m_inFirstDsetName.empty())
           name = te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + name;
 
-        te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
+        std::size_t propPos = outputDt->getPropertyPosition(name);
 
+        if ((propPos < 0) || (propPos >= outputDt->size()))
+          continue;
+
+        te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
         item->setValue(name, ad);
       }
 
@@ -258,8 +265,12 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
         if (!m_inSecondDsetName.empty())
           name = te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + name;
 
-        te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
+        std::size_t propPos = outputDt->getPropertyPosition(name);
 
+        if ((propPos < 0) || (propPos >= outputDt->size()))
+          continue;
+
+        te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
         item->setValue(name, ad);
       }
 

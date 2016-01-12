@@ -37,8 +37,7 @@
 
 te::vp::IntersectionOp::IntersectionOp()
   : m_firstOidSet(0),
-  m_secondOidSet(0),
-  m_copyInputColumns(false)
+  m_secondOidSet(0)
 {
 }
 
@@ -62,9 +61,9 @@ void te::vp::IntersectionOp::setInput(te::da::DataSourcePtr inFirstDsrc,
   m_secondOidSet = secondOidSet;
 }
 
-void te::vp::IntersectionOp::setParams( const bool& copyInputColumns)
+void te::vp::IntersectionOp::setParams(const std::vector<std::pair<std::string, std::string> >& attributeVec)
 {
-  m_copyInputColumns = copyInputColumns;
+  m_attributeVec = attributeVec;
 }
 
 void te::vp::IntersectionOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)
@@ -163,4 +162,45 @@ std::vector<te::dt::Property*> te::vp::IntersectionOp::getTabularProps(te::da::D
   return props;
 }
 
+te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
+{
+  te::da::DataSetType* dsType = new te::da::DataSetType(m_outDsetName);
 
+  std::auto_ptr<te::da::DataSetType> firstDst = m_inFirstDsrc->getDataSetType(m_inFirstDsetName);
+  std::auto_ptr<te::da::DataSetType> secondDst = m_inSecondDsrc->getDataSetType(m_inSecondDsetName);
+
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+  pkProperty->setAutoNumber(true);
+  dsType->add(pkProperty);
+
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_pk", dsType);
+  pk->add(pkProperty);
+  dsType->setPrimaryKey(pk);
+  
+  for (std::size_t i = 0; i < m_attributeVec.size(); ++i)
+  {
+    te::dt::Property* p = 0;
+    if (m_attributeVec[i].first == firstDst->getName())
+    {
+      p = firstDst->getProperty(m_attributeVec[i].second);      
+    }
+    else
+    {
+      p = secondDst->getProperty(m_attributeVec[i].second);
+    }
+
+    p->setName(m_attributeVec[i].first + "_" + p->getName());
+
+    dsType->add(p->clone());
+  }
+
+  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(firstDst.get())->getGeometryType(), te::da::GetFirstGeomProperty(secondDst.get())->getGeometryType());
+
+  te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
+  newGeomProp->setGeometryType(newType);
+  newGeomProp->setSRID(te::da::GetFirstGeomProperty(firstDst.get())->getSRID());
+
+  dsType->add(newGeomProp);
+
+  return dsType;
+}

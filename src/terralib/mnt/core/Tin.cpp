@@ -8,6 +8,8 @@
 #include "Tin.h"
 #include "Utils.h"
 
+#include "../../common/progress/TaskProgress.h"
+
 #include "../../dataaccess/utils/Utils.h"
 
 #include "../../datatype/Property.h"
@@ -144,10 +146,21 @@ bool te::mnt::TinNode::operator< (const TinNode &rhs) const
     return false;
 }
 
-bool te::mnt::TinNode::setEdge(int32_t edge) 
+bool te::mnt::TinNode::setEdge(int32_t edge)
 {
   if (std::find(m_edge.begin(), m_edge.end(), edge) == m_edge.end()) {
     m_edge.push_back(edge);
+    return true;
+  }
+  return false;
+}
+
+bool te::mnt::TinNode::removeEdge(int32_t edge)
+{
+  std::vector<int32_t>::iterator it = std::find(m_edge.begin(), m_edge.end(), edge);
+  if (it != m_edge.end())
+  {
+    m_edge.erase(it);
     return true;
   }
   return false;
@@ -210,7 +223,6 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
     int32_t vi;
     for (;;)
     {
-      bool flag = false;
       //6. For each vertice vi (i Î  {1,  .,n}) of V, do:
       size_t iiv;
       for (iiv = 0; iiv < vvn.size(); iiv++)
@@ -238,14 +250,12 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
         { //6.2.1. Define v as vi,
           v = vi;
           //6.2.2. Return to 2.;
-          flag = true;
           break;
         }
       }
       if (iiv != vvn.size())
         break;
 
-      flag = false;
       //7. For each edge ai (i Î  {1,  .,m}) of A, do:
       size_t iia;
       for (iia = 0; iia < aam.size(); iia++)
@@ -322,8 +332,7 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
             {
               if ((fabs(ptr2.getX() - m_node[(unsigned int)v1].getX()) < tol) && (fabs(ptr2.getY() - m_node[(unsigned int)v1].getY()) < tol))
               {
-                flag = true;
-                break;
+                 break;
               }
             }
             vvn.push_back(v1);
@@ -333,7 +342,6 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
             //7.1.7. Defines vaux auxiliar vertice as null
             vaux = -1;
             //7.1.8. Returns to 6.;
-            flag = true;
             break;
           }
         }
@@ -1322,6 +1330,8 @@ te::da::DataSetType* te::mnt::Tin::GetDataSetType(std::string &outDsetName)
 
 bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetName)
 {
+  te::common::TaskProgress task("Saving TIN...", te::common::TaskProgress::UNDEFINED, (int)m_triangsize);
+
   std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType(outDsetName));
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
 
@@ -1335,6 +1345,8 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
 
   for (unsigned int tri = 0; tri < m_triangsize; tri++)
   {
+    task.pulse();
+
     te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet.get());
     if (!m_triang[tri].LinesId(tEdges))
       continue;
@@ -1404,6 +1416,7 @@ struct nodecomp {
 */
 bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetName, double zmin, double zmax)
 {
+
   double val[3];
   te::mnt::Ntype type[3];
   int32_t right[3];
@@ -1416,6 +1429,8 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
   std::string geo_attr("tri_id");
   const std::size_t np = inDset->getNumProperties();
   m_triangsize = inDset->size();
+
+  te::common::TaskProgress task("Loading TIN...", te::common::TaskProgress::UNDEFINED, (int)m_triangsize);
 
   // Open tin nodes file for nodes data load
   m_fbnode = 0;
@@ -1444,6 +1459,8 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
 
   while (inDset->moveNext())
   {
+    task.pulse();
+
     id = inDset->getInt32(1);
     if (inDset->isNull("val1"))
       val[0] = m_nodatavalue;

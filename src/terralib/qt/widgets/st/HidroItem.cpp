@@ -64,33 +64,46 @@ bool te::qt::widgets::HidroItem::loadData()
 
 bool te::qt::widgets::HidroItem::getCtlParameters()
 {
-  char buf[300];
+  char buf[500];
   QString file(m_dir.path() + "/racc.ctl");
   FILE* fp = fopen(file.toStdString().c_str(), "r");
-  if(fp == 0)
+  if (fp == 0)
     return false;
 
-  size_t n = fread(buf, sizeof(char), 300, fp);
+  size_t n = fread(buf, sizeof(char), 500, fp);
   fclose(fp);
   buf[n] = 0;
   QString s, ss(QString(buf).simplified());
 
   // validation
-  if(!(ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("title", Qt::CaseInsensitive) && 
-    ss.contains("xdef", Qt::CaseInsensitive) && ss.contains("ydef", Qt::CaseInsensitive) && 
+  if (!(ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("title", Qt::CaseInsensitive) &&
+    ss.contains("xdef", Qt::CaseInsensitive) && ss.contains("ydef", Qt::CaseInsensitive) &&
     ss.contains("linear", Qt::CaseInsensitive) && ss.contains("zdef", Qt::CaseInsensitive)))
     return false;
 
   // CHUTE SRID 4326 WGS84
-  m_SRID = 4326;
+  //m_SRID = 4326;
 
   // get UNDEF value
-  size_t pos = ss.indexOf("UNDEF ", Qt::CaseInsensitive) + strlen("UNDEF "); 
+  size_t pos = ss.indexOf("UNDEF ", Qt::CaseInsensitive) + strlen("UNDEF ");
   ss.remove(0, (int)pos);
-  pos = ss.indexOf("TITLE", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  m_undef = atoi(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
+  if (pos != -1)
+  {
+    pos = ss.indexOf("SRID", Qt::CaseInsensitive);
+    s = ss.left((int)pos);
+    m_undef = atoi(s.toStdString().c_str());
+    ss.remove(0, (int)pos);
+
+    // get SRID
+    pos = ss.indexOf("SRID ", Qt::CaseInsensitive) + (int)strlen("SRID ");
+    ss.remove(0, (int)pos);
+    pos = ss.indexOf("XDEF ", Qt::CaseInsensitive);
+    s = ss.left((int)pos);
+    m_SRID = atoi(s.toStdString().c_str());
+    ss.remove(0, (int)pos);
+  }
+  else
+    m_SRID = 4326;
 
   // get XDEF ulx and resX values
   pos = ss.indexOf("XDEF ", Qt::CaseInsensitive) + strlen("XDEF ");

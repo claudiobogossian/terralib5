@@ -24,6 +24,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 //terralib
+#include "../../common/Exception.h"
+#include "../../common/progress/ProgressManager.h"
+#include "../../common/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -33,6 +36,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../mnt/core/CalculateGrid.h"
 #include "../../mnt/core/TINCalculateGrid.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
 #include "../../raster.h"
 #include "../../raster/Interpolator.h"
@@ -161,7 +165,7 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           m_ui->m_interpolatorComboBox->addItem("Nearest Neighbor");
           m_ui->m_interpolatorComboBox->addItem("Bilinear Spline");
           m_ui->m_interpolatorComboBox->addItem("Bicubic Spline");
-         // m_ui->m_interpolatorComboBox->addItem("Mitasova Spline"); Implementar depois
+         // m_ui->m_interpolatorComboBox->addItem("Mitasova Spline");
 
           m_ui->m_ZcomboBox->show();
           m_ui->m_Zlabel->show();
@@ -395,55 +399,41 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 {
   int srid;
 
-  if (!m_inputLayer.get())
-  {
-    QMessageBox::information(this, tr("DTM Generation"), tr("Select an input layer."));
-    return;
-  }
-
-  te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
-  if (!indsLayer)
-  {
-    QMessageBox::information(this, tr("DTM Generation"), tr("Can not execute this operation on this type of layer."));
-    return;
-  }
-
-  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
-  if (!inDataSource.get())
-  {
-    QMessageBox::information(this, tr("DTM Generation"), tr("The selected input data source can not be accessed."));
-    return;
-  }
-
-  std::map<std::string, std::string> outdsinfo;
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
   try
   {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    if (!m_inputLayer.get())
+      throw te::common::Exception(TE_TR("Select a input layer."));
+
+    te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
+    if (!indsLayer)
+      throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
+
+    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
+    if (!inDataSource.get())
+      throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
+
+    std::map<std::string, std::string> outdsinfo;
     std::string inDsetName = indsLayer->getDataSetName();
     srid = indsLayer->getSRID();
 
-
     // Checking consistency of output paramenters
     if (m_ui->m_repositoryLineEdit->text().isEmpty())
-    {
-      QMessageBox::information(this, tr("DTM Generation"), tr("Select a repository for the resulting layer."));
-      return;
-    }
+      throw te::common::Exception(TE_TR("Select a repository for the resulting layer."));
 
     if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
-    {
-      QMessageBox::information(this, tr("DTM Generation"), tr("Define a name for the resulting layer."));
-      return;
-    }
+      throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
     if (boost::filesystem::exists(uri))
-    {
-      QMessageBox::information(this, tr("DTM Generation"), tr("Output file already exists. Remove it or select a new name and try again."));
-      return;
-    }
+      throw te::common::Exception(TE_TR("Output file already exists. Remove it or select a new name and try again."));
 
     std::size_t idx = outputdataset.find(".");
     if (idx != std::string::npos)
@@ -454,7 +444,13 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
     double radius = m_ui->m_radiusLineEdit->text().toDouble();
     int pow = m_ui->m_powerComboBox->currentText().toInt();
 
-    this->setCursor(Qt::WaitCursor);
+    bool ok;
+    double resxo = m_ui->m_resXLineEdit->text().toDouble(&ok);
+    if (!ok)
+      throw te::common::Exception(TE_TR("Define X resolution."));
+    double resyo = m_ui->m_resYLineEdit->text().toDouble(&ok);
+    if (!ok)
+      throw te::common::Exception(TE_TR("Define Y resolution."));
 
     switch (m_inputType)
     {
@@ -499,7 +495,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
           grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
           grid->setOutput(outdsinfo);
-          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), m_inter, radius, pow);
+          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
           grid->setSRID(srid);
 
           grid->run();
@@ -517,7 +513,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
           grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
           grid->setOutput(outdsinfo);
-          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), m_inter, radius, pow);
+          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
           grid->setSRID(srid);
 
           grid->generateGrid();
@@ -546,7 +542,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
         grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
         grid->setOutput(outdsinfo);
-        grid->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), m_inter);
+        grid->setParams(resxo, resyo, m_inter);
         grid->setSRID(srid);
 
         grid->run();
@@ -563,7 +559,12 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
         std::vector< std::complex<double> > dummy;
         if (m_ui->m_dummycheckBox->isChecked())
-          dummy.push_back(m_ui->m_dummylineEdit->text().toDouble());
+        {
+          bool ok;
+          dummy.push_back(m_ui->m_dummylineEdit->text().toDouble(&ok));
+          if (!ok)
+            throw te::common::Exception(TE_TR("Define Dummy Value."));
+        }
         else
           dummy.push_back(inputRst.get()->getBand(0)->getProperty()->m_noDataValue);
 
@@ -580,9 +581,6 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         }
 
         te::rst::Interpolator interp(inputRst.get(), inter, dummy);
-
-        double resxo = m_ui->m_resXLineEdit->text().toDouble();
-        double resyo = m_ui->m_resYLineEdit->text().toDouble();
         double resxi = inputRst.get()->getResolutionX();
         double resyi = inputRst.get()->getResolutionY();
         unsigned int outputWidth = m_ui->m_dimCLineEdit->text().toUInt();
@@ -601,6 +599,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
        // bands[0]->m_noDataValue = dummy;
 
+        te::common::TaskProgress task("Calculating DTM...", te::common::TaskProgress::UNDEFINED, outputHeight*outputWidth);
+
         // create raster
         std::auto_ptr<te::rst::Raster> outRst(te::rst::RasterFactory::make("GDAL", grid, bands, outdsinfo));
         te::rst::Raster* out = outRst.get();
@@ -612,6 +612,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         {
           for (unsigned int c = 0; c < outputWidth; c++)
           {
+            task.pulse();
             // Calculate the x and y coordinates of (l,c) corner of the output grid
             xo = (X1 + c * resxo + resxo / 2.);
             yo = (Y2 - l * resyo - resyo / 2.);
@@ -636,17 +637,18 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         break;
     }
 
+    m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
   }
   catch (const std::exception& e)
   {
-    this->setCursor(Qt::ArrowCursor);
+    QApplication::restoreOverrideCursor();
+    te::common::ProgressManager::getInstance().removeViewer(id);
     QMessageBox::information(this, "DTM Generation", e.what());
     return;
   }
 
-  m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
-
-  this->setCursor(Qt::ArrowCursor);
+  QApplication::restoreOverrideCursor();
+  te::common::ProgressManager::getInstance().removeViewer(id);
   accept();
 
 }

@@ -9,6 +9,7 @@
 #include "Utils.h"
 
 //.. /..
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/utils/Utils.h"
 
 #include "../../geometry/Envelope.h"
@@ -17,6 +18,8 @@
 #include "../../geometry/Point.h"
 #include "../../geometry/TIN.h"
 #include "../../geometry/Triangle.h"
+
+#include "../../sam.h"
 
 #include <limits>
 
@@ -206,7 +209,12 @@ bool te::mnt::TINGeneration::CreateInitialTriangles(size_t nsamples)
       return false;
     }
 
-    if (i<4) m_line[(unsigned int)linlist[i]].Nodes(nodelist[i], nodelist[((i + 1) % 4)]);
+    if (i < 4)
+    {
+      m_line[(unsigned int)linlist[i]].Nodes(nodelist[i], nodelist[((i + 1) % 4)]);
+      m_node[nodelist[i]].setEdge(linlist[i]);
+      m_node[nodelist[((i + 1) % 4)]].setEdge(linlist[i]);
+    }
 
     if (i < 2)
     {
@@ -219,6 +227,8 @@ bool te::mnt::TINGeneration::CreateInitialTriangles(size_t nsamples)
     else
     {
       m_line[(unsigned int)linlist[i]].Nodes(nodelist[2], nodelist[0]);
+      m_node[nodelist[2]].setEdge(linlist[i]);
+      m_node[nodelist[0]].setEdge(linlist[i]);
       m_line[(unsigned int)linlist[i]].Polygons((int32_t)t2, (int32_t)t1);
     }
   }
@@ -239,7 +249,9 @@ bool te::mnt::TINGeneration::CreateInitialTriangles(size_t nsamples)
 
 bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te::gm::MultiLineString &mls)
 {
-  int32_t node=0;
+  te::common::TaskProgress task("Inserting Nodes...", te::common::TaskProgress::UNDEFINED, (int)m_nodesize-6);
+
+  int32_t node = 0;
   //  Create nodes and insert on triangulation 
   for (size_t id = 0; id < mpt.getNumGeometries(); ++id)
   {
@@ -249,12 +261,16 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
       return false;
     m_node[(unsigned int)node].Init(*pto3d, Sample);
     InsertNode(node, 1);
+    task.pulse();
   }
 
   bool nflag;
-  unsigned int i;
-
-  double PRECISAO = 0.000001;
+ 
+  typedef te::sam::kdtree::Node<te::gm::Coord2D, int32_t, int32_t> KD_NODE;
+  typedef te::sam::kdtree::Index<KD_NODE> KD_TREE;
+  te::gm::Envelope e;
+  KD_TREE nodetree(e);
+  std::vector<KD_NODE*> reportsnode;
 
   size_t mlsize = mls.getNumGeometries();
   for (unsigned int id = 0; id < mlsize; ++id)
@@ -268,13 +284,13 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
       te::gm::Point *p = gout->getPointN(j);
       te::gm::PointZ pz(p->getX(), p->getY(), p->getZ());
       // Test if new point is equal to inserted
-      for (i = 0; i < (unsigned int)m_lnode; i++)
+      te::gm::Envelope ept(*p->getMBR());
+      nodetree.search(ept, reportsnode);
+      if (reportsnode.size())
       {
-        if (Equal(m_node[i].getNPoint(), pz, PRECISAO))
-          break;
-      }
-      if (i != (unsigned int)m_lnode)
+        reportsnode.clear();
         continue;
+      }
 
       // for each point, create and insert node
       node = ++m_lnode;
@@ -282,6 +298,9 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
         return false;
 
       m_node[(unsigned int)node].Init(pz);
+
+      te::gm::Coord2D coord(p->getX(), p->getY());
+      nodetree.insert(coord, node);
 
       // Set node type
       if (nflag)
@@ -298,6 +317,7 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
         m_node[(unsigned int)node].setType(Normalnode);
         InsertNode(node, 1);
       } //nflag
+      task.pulse();
     } //for (std::size_t j = 0; j < gout->getNPoints(); ++j)
   
     if (m_node[(unsigned int)node].getType() == Normalnode)
@@ -309,6 +329,7 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
   } //for (unsigned int id = 0; id < mls.getNumGeometries(); ++id)
 
   m_fbnode = 0;
+  nodetree.clear();
 
   return true;
 }
@@ -636,11 +657,12 @@ bool te::mnt::TINGeneration::NodeExchange(int32_t oldNode, int32_t newNode)
   {
     linid = lids[i];
     m_line[(unsigned int)linid].ExchangeNode(oldNode, newNode);
+    m_node[(unsigned int)oldNode].removeEdge(linid);
+    m_node[(unsigned int)newNode].setEdge(linid);
   }
   m_node[(unsigned int)newNode].setX(m_node[(unsigned int)oldNode].getX());
   m_node[(unsigned int)newNode].setY(m_node[(unsigned int)oldNode].getY());
   m_node[(unsigned int)newNode].setZ(m_node[(unsigned int)oldNode].getZ());
-  m_node[(unsigned int)newNode].setEdge(linid);
   return true;
 }
 
@@ -663,18 +685,24 @@ bool te::mnt::TINGeneration::TwoNewTriangles(int32_t t, int32_t nodeId, int32_t*
   //   has t and t1 as the triangles that shared the edge.
   int32_t an0 = m_lline++;
   m_line[(unsigned int)an0].Nodes(vn, NodeId(t, 0)); //v0 is the vertex 0 of t
+  m_node[vn].setEdge(an0);
+  m_node[NodeId(t, 0)].setEdge(an0);
   m_line[(unsigned int)an0].Polygons(t, t1);
 
   //4. Create a new edge an1 that connects the vertex vn and v1 and
   //   has t1 and t2 as triangles thats shares the edge.
   int32_t an1 = m_lline++;
   m_line[(unsigned int)an1].Nodes(vn, NodeId(t, 1)); //v1 is the vertex 1 of t
+  m_node[vn].setEdge(an1);
+  m_node[NodeId(t, 1)].setEdge(an1);
   m_line[(unsigned int)an1].Polygons(t1, t2);
 
   //5. Creates a new wdge an2 that connects the vertex vn and v2 and
   //  has t2 and t as triangles that shares the edge.
   int32_t an2 = m_lline++;
   m_line[(unsigned int)an2].Nodes(vn, NodeId(t, 2)); //v2 is the vertex 2 of t
+  m_node[vn].setEdge(an2);
+  m_node[NodeId(t, 2)].setEdge(an2);
   m_line[(unsigned int)an2].Polygons(t2, t);
 
   //6. Swap triangle t for t1 on edge a0,
@@ -688,7 +716,6 @@ bool te::mnt::TINGeneration::TwoNewTriangles(int32_t t, int32_t nodeId, int32_t*
 
   //9. Defines edges of t2 as an1, a1 and an2,
   m_triang[(unsigned int)t2].setEdges(an1, a1, an2);
-
 
   //10. Defines edges of t as an2, a2 and an0,
   int32_t a2 = m_triang[(unsigned int)t].LineAtEdge(2);
@@ -751,6 +778,8 @@ int32_t te::mnt::TINGeneration::DuplicateTriangle(int32_t t, short n, int32_t v,
     return -1;
 
   m_line[(unsigned int)an0].Nodes(v, vn);
+  m_node[v].setEdge(an0);
+  m_node[vn].setEdge(an0);
   m_line[(unsigned int)an0].Polygons(t1, tv);
 
   testLines[2] = an;
@@ -763,11 +792,15 @@ int32_t te::mnt::TINGeneration::DuplicateTriangle(int32_t t, short n, int32_t v,
     return -1;
 
   m_line[(unsigned int)an1].Nodes(v, vop);
+  m_node[v].setEdge(an1);
+  m_node[vop].setEdge(an1);
   m_line[(unsigned int)an1].Polygons(t, t1);
 
   testLines[4] = an1;
 
   //  7. Modifies the edge an to connect vertice v instead of vn,
+  m_node[vn].removeEdge(an);
+  m_node[v].setEdge(an);
   m_line[(unsigned int)an].ExchangeNode(vn, v);
 
   //  8. Defines the edges of t as an, aj and an1,
@@ -1089,7 +1122,7 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
   if (!m_triang[(unsigned int)tv].LinesId(tvEdges))
     return false;
 
-  int32_t am = 0, an = 0;
+  int32_t an = 0;
   unsigned short j;
   for (j = 0; j < 3; j++)
   {
@@ -1099,7 +1132,7 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
     if (m_line[(unsigned int)tvEdges[j]].getNodeFrom() == vn)
     {
       if (m_line[(unsigned int)tvEdges[j]].getNodeTo() == vi)
-        am = tvEdges[j];
+      {} 
       else if (m_line[(unsigned int)tvEdges[j]].getNodeTo() == vj)
         an = tvEdges[j];
       else{
@@ -1109,7 +1142,7 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
     else if (m_line[(unsigned int)tvEdges[j]].getNodeTo() == vn)
     {
       if (m_line[(unsigned int)tvEdges[j]].getNodeFrom() == vi)
-        am = tvEdges[j];
+      {}  
       else if (m_line[(unsigned int)tvEdges[j]].getNodeFrom() == vj)
         an = tvEdges[j];
       else{
@@ -1132,11 +1165,17 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
   //       vertice vj pelo vertice vn.
   if (m_line[(unsigned int)ai].getNodeTo() == vi)
   {
+    m_node[vi].removeEdge(ai);
+    m_node[vk].setEdge(ai);
+    m_node[vn].setEdge(ai);
     m_line[(unsigned int)ai].setNodeTo(vk);
     m_line[(unsigned int)ai].setNodeFrom(vn); // this is vj
   }
   else if (m_line[(unsigned int)ai].getNodeTo() == vj)
   {
+    m_node[vj].removeEdge(ai);
+    m_node[vn].setEdge(ai);
+    m_node[vk].setEdge(ai);
     m_line[(unsigned int)ai].setNodeTo(vn);
     m_line[(unsigned int)ai].setNodeFrom(vk); // this is vi
   }
@@ -1305,8 +1344,12 @@ bool te::mnt::TINGeneration::CreateDelaunay()
 {
   int32_t triangid, contr = 0, npoly = -1;
 
+  te::common::TaskProgress task("Creating Delaunay...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
+
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    task.pulse();
+
     if (triangid > npoly)
       npoly = triangid;
     else
@@ -1446,15 +1489,16 @@ bool te::mnt::TINGeneration::ModifyBoundTriangles()
 
 bool te::mnt::TINGeneration::IsolinesConstrained()
 {
+  int iter = 0;
   for (;;)
-    if (!TestIsolines())
+    if (!TestIsolines(++iter))
       break;
 
   return true;
 }
 
 
-bool te::mnt::TINGeneration::TestIsolines()
+bool te::mnt::TINGeneration::TestIsolines(int iter)
 {
   int32_t linid1 = 0, lidaux, oldline,
     ntri,
@@ -1465,15 +1509,23 @@ bool te::mnt::TINGeneration::TestIsolines()
   std::vector<int32_t> lids;
   te::gm::PointZ pt, ptf, npt0, npt1;
   bool modified = false;
-  static size_t count = 0;
   std::vector<te::mnt::TinNode> p3dl;
   te::mnt::TinNode ptaux;
   std::vector<int32_t> snode;
 
   for (nid0 = 0; nid0 < m_lnode; nid0++)
     snode.push_back(0);
+
+  std::string msg("Testing Isolines(");
+  std::stringstream ss;
+  ss << iter;
+  msg += ss.str() + ")...";
+  te::common::TaskProgress task(msg, te::common::TaskProgress::UNDEFINED, (int)m_linesize);
+
   for (i = 0; i < m_linesize; i++)
   {
+    task.pulse();
+
     if (m_line[i].getNodeFrom() == -1)
       continue;
     nid0 = m_line[i].getNodeFrom();
@@ -1664,7 +1716,6 @@ bool te::mnt::TINGeneration::TestIsolines()
   size_t npts = p3dl.size();
   if (npts == 0)
   {
-    count = 0;
     return modified;
   }
 
@@ -1690,19 +1741,27 @@ bool te::mnt::TINGeneration::CreateMinAngleTriangulation()
   int32_t triangid, neighids[3];
   short j;
 
+  te::common::TaskProgress task("Creating Minimum Angle...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
+
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    task.pulse();
+
     NeighborsId(triangid, neighids);
     for (j = 0; j < 3; j++)
     {
       if (TestAngleBetweenNormals(triangid, j))
+      {
         if (neighids[j] < triangid)
         {
           triangid = neighids[j] - 1;
           j = 3;
         }
         else
+	      {
           j = -1;
+	      }
+      }
     }
   }
 
@@ -1870,9 +1929,13 @@ bool te::mnt::TINGeneration::InsertBreakNodes(te::gm::MultiLineString &breakline
   std::vector<te::gm::PointZ> p3dl;
   std::vector<bool> fixed;
 
+  te::common::TaskProgress task("Inserting BreakLines...", te::common::TaskProgress::UNDEFINED, (int)breaklines.getNumGeometries());
+
   // To all breaklines
   for (unsigned int id = 0; id < breaklines.getNumGeometries(); ++id)
   {
+    task.pulse();
+
     te::gm::LineString* gout = dynamic_cast<te::gm::LineString*>(breaklines.getGeometryN(id));
     if ((gout->getNPoints() < 2))
     {
@@ -2397,8 +2460,7 @@ bool te::mnt::TINGeneration::OrderLines()
     nrtri,
     bline, nline, lline,
     lids[3],
-    node1, node2,
-    line1, line2;
+    node1, node2;
   short j;
 
   // To all breakline nodes
@@ -2427,7 +2489,6 @@ bool te::mnt::TINGeneration::OrderLines()
       m_node[(unsigned int)node1].setType(Breaklinefirst);
       continue;
     }
-    line1 = bline;
 
     // Search line from node+1 to node+2
     node2 = NextNode(node1);
@@ -2442,8 +2503,7 @@ bool te::mnt::TINGeneration::OrderLines()
         m_node[(unsigned int)node2].setType(Breaklinefirst);
       continue;
     }
-    line2 = nline;
-
+ 
     // Make sure line pointing to next node
     if (m_line[(unsigned int)bline].getNodeTo() == i)
       m_line[(unsigned int)bline].SwapNodePolygon();
@@ -2514,8 +2574,11 @@ bool te::mnt::TINGeneration::ReCreateDelaunay()
 {
   int32_t triangid, contr = 0, npoly = -1;
 
+  te::common::TaskProgress task("Regeneration Delaunay...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
+
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    task.pulse();
 
     if (triangid > npoly)
       npoly = triangid;
@@ -2751,11 +2814,13 @@ bool te::mnt::TINGeneration::borderUp()
 
         if (from == vii)
         {
+          m_node[from].removeEdge(lii);
           m_line[(unsigned int)lii].setNodeFrom(-1);
           m_line[(unsigned int)lii].setType(Deletedline);
         }
         if (to == vii)
         {
+          m_node[to].removeEdge(lii);
           m_line[(unsigned int)lii].setNodeTo(-1);
           m_line[(unsigned int)lii].setType(Deletedline);
         }
@@ -2766,6 +2831,7 @@ bool te::mnt::TINGeneration::borderUp()
 
         //Check if triangle edges are equal eii
         int32_t edge[3];
+	edge[0]= edge[1] = edge[2] = -1;
         if (tleft != -1)
         {
           //left triangle
@@ -2832,8 +2898,6 @@ bool te::mnt::TINGeneration::borderUp()
           }
         }
       }
-
-//      m_node[(unsigned int)vii].setType(Deletednode);
     }
   }
 

@@ -39,7 +39,6 @@
 #include "../../../../src/terralib/dataaccess/datasource/DataSourceManager.h"
 #include "../../../../src/terralib/dataaccess/query/EqualTo.h"
 
-
 #include "../../../../src/terralib/datatype/Property.h"
 #include "../../../../src/terralib/datatype/SimpleProperty.h"
 #include "../../../../src/terralib/datatype/StringProperty.h"
@@ -59,6 +58,7 @@
 #include "../../../../src/terralib/srs/SpatialReferenceSystemManager.h"
 #include "../../../../src/terralib/statistics/core/Enums.h"
 
+#include "../../mnt/core/Utils.h"
 #include "CreateIsolinesCore.h"
 
 //STL
@@ -210,13 +210,12 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   }
   thread.join_all();
 
-  
-  std::vector<te::gm::LineString*> lsOut;
+  std::vector<te::gm::LineString> lsOut;
   for (unsigned int idQuota = 0; idQuota < vecParams.size(); ++idQuota)
   {
     for (unsigned int i = 0; i < vecParams[idQuota].m_lsOut.size(); ++i)
     {
-      lsOut.push_back(vecParams[idQuota].m_lsOut[i]);
+      lsOut.push_back(*vecParams[idQuota].m_lsOut[i]);
     }
   }
 
@@ -225,10 +224,12 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
   te::common::Logger::logDebug("mnt", timeResult.c_str());
 #endif
  
-  SaveIso(lsOut);
+  std::vector<double> guidevalues;
+  te::mnt::SaveIso(m_outDsetName, m_outDsrc, lsOut, guidevalues, m_srid);
   
   return true;
 }
+
 void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> raster, std::vector<RasterBlockSize> vecBlocks, std::vector<GenerateSegmentsParams*>& vecGenerateParams)
 {
   boost::thread_group threadGenerateSegments;
@@ -280,6 +281,7 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
   }
   threadGenerateSegments.join_all();
 }
+
 std::vector<RasterBlockSize> te::mnt::CreateIsolines::calculateBlocks(unsigned int numRows, unsigned int numThreads)
 {
   int calc = (int)(numRows / numThreads) - 1;
@@ -326,6 +328,7 @@ bool te::mnt::CreateIsolines::generateSegmentsThreaded(GenerateSegmentsParams* p
   generateSegments(params->m_rasterPtr, params->m_nvals, params->m_vecSegments);
   return true;
 }
+
 bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> raster, std::vector<double> nvals, std::vector< std::vector<te::gm::LineString*> >& vecSegments)
 {
   double quota;
@@ -358,7 +361,12 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
       raster->getValue(nc + 1, nr - 1, lineSupRigth);
       raster->getValue(nc, nr, lineInfLeft);
       raster->getValue(nc + 1, nr, lineInfRigth);
-      if (m_hasDummy == true && ((lineSupRigth > m_vmax) ||
+      if ((m_hasDummy == true &&
+        (lineSupRigth == m_dummy || 
+        lineSupLeft == m_dummy || 
+        lineInfRigth == m_dummy || 
+        lineInfLeft == m_dummy)) ||
+        ((lineSupRigth > m_vmax) ||
         (lineSupLeft > m_vmax) ||
         (lineInfRigth > m_vmax) ||
         (lineInfLeft > m_vmax) ||
@@ -367,142 +375,137 @@ bool te::mnt::CreateIsolines::generateSegments(std::auto_ptr<te::rst::Raster> ra
         (lineInfRigth < m_vmin) ||
         (lineInfLeft < m_vmin)))
       {
-
         continue;
-
       }
-      else
+
+      for (unsigned int idQuota = 0; idQuota < nvals.size(); ++idQuota)
       {
-        for (unsigned int idQuota = 0; idQuota < nvals.size(); ++idQuota)
+        quota = nvals[idQuota];
+        double delta = 0.0001;
+
+        bool changed = true;
+
+        while (changed)
         {
-          quota = nvals[idQuota];
-          double delta = 0.0001;
-
-          bool changed = true;
-
-          while (changed)
+          changed = false;
+          if (fabs(quota - lineSupRigth) < delta)
           {
-            changed = false;
-            if (fabs(quota - lineSupRigth) < delta)
-            {
-              lineSupRigth += delta;
-              changed = true;
-            }
-            if (fabs(quota - lineInfRigth) < delta)
-            {
-              lineInfRigth += delta;
-              changed = true;
-            }
-            if (fabs(quota - lineSupLeft) < delta)
-            {
-              lineSupLeft += delta;
-              changed = true;
-            }
-            if (fabs(quota - lineInfLeft) < delta)
-            {
-              lineInfLeft += delta;
-              changed = true;
-            }
+            lineSupRigth += delta;
+            changed = true;
           }
-
-          if (((quota > lineSupLeft) && (quota > lineSupRigth) &&
-            (quota > lineInfLeft) && (quota > lineInfRigth)) ||
-            ((quota < lineSupLeft) && (quota < lineSupRigth) &&
-            (quota < lineInfLeft) && (quota < lineInfRigth)))
+          if (fabs(quota - lineInfRigth) < delta)
           {
-
+            lineInfRigth += delta;
+            changed = true;
           }
-          else
+          if (fabs(quota - lineSupLeft) < delta)
           {
-            if (((quota < lineSupLeft) && (quota > lineSupRigth) &&
-              (quota > lineInfLeft) && (quota < lineInfRigth)) ||
-              ((quota > lineSupLeft) && (quota < lineSupRigth) &&
-              (quota < lineInfLeft) && (quota > lineInfRigth)))
+            lineSupLeft += delta;
+            changed = true;
+          }
+          if (fabs(quota - lineInfLeft) < delta)
+          {
+            lineInfLeft += delta;
+            changed = true;
+          }
+        } //while (changed)
+
+        if (((quota > lineSupLeft) && (quota > lineSupRigth) &&
+          (quota > lineInfLeft) && (quota > lineInfRigth)) ||
+          ((quota < lineSupLeft) && (quota < lineSupRigth) &&
+          (quota < lineInfLeft) && (quota < lineInfRigth)))
+        {
+        }
+        else
+        {
+          if (((quota < lineSupLeft) && (quota > lineSupRigth) &&
+            (quota > lineInfLeft) && (quota < lineInfRigth)) ||
+            ((quota > lineSupLeft) && (quota < lineSupRigth) &&
+            (quota < lineInfLeft) && (quota > lineInfRigth)))
+          {
+            double zmeio = (lineSupLeft + lineSupRigth + lineInfLeft + lineInfRigth) / 4;
+
+            while (quota == zmeio)
             {
-              double zmeio = (lineSupLeft + lineSupRigth + lineInfLeft + lineInfRigth) / 4;
-
-              while (quota == zmeio)
-              {
-                if (zmeio == 0)
-                  zmeio += 0.0001;
-                else
-                  zmeio *= 1.001;
-              }
-
-              if (((quota > zmeio) && (quota > lineSupLeft)) ||
-                ((quota < zmeio) && (quota < lineSupLeft)))
-              {
-                interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
-                interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
-                interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
-                interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
-              }
+              if (zmeio == 0)
+                zmeio += 0.0001;
               else
-              {
-                interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
-                interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
-                interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
-                interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
-              }
+                zmeio *= 1.001;
+            }
+
+            if (((quota > zmeio) && (quota > lineSupLeft)) ||
+              ((quota < zmeio) && (quota < lineSupLeft)))
+            {
+              interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
+              interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
+              interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
+              interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
             }
             else
             {
-              if (((quota < lineSupLeft) && (quota > lineSupRigth)) ||
-                ((quota > lineSupLeft) && (quota < lineSupRigth)))
-              {
-                interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
-              }
-              if (((quota < lineSupRigth) && (quota > lineInfRigth)) ||
-                ((quota > lineSupRigth) && (quota < lineInfRigth)))
-              {
-                interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
-              }
-              if (((quota < lineInfLeft) && (quota > lineInfRigth)) ||
-                ((quota > lineInfLeft) && (quota < lineInfRigth)))
-              {
-                interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
-              }
-              if (((quota < lineSupLeft) && (quota > lineInfLeft)) ||
-                ((quota > lineSupLeft) && (quota < lineInfLeft)))
-              {
-                interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
-              }
-            }
-            if (line->size() > 1)
-            {
-              if (line->size() == 4)
-              {
-                te::gm::LineString* line1 = new te::gm::LineString(2, te::gm::LineStringZType);
-                size_t n = line->size();
-                line1->setX(0, line->getPointN(0)->getX());
-                line1->setY(0, line->getPointN(0)->getY());
-                line1->setZ(0, line->getPointN(n - 1)->getZ());
-
-                line1->setX(1, line->getPointN(1)->getX());
-                line1->setY(1, line->getPointN(1)->getY());
-                line1->setZ(1, line->getPointN(n - 1)->getZ());
-
-                te::gm::LineString* line2 = new te::gm::LineString(2, te::gm::LineStringZType);
-
-                line2->setX(0, line->getPointN(2)->getX());
-                line2->setY(0, line->getPointN(2)->getY());
-                line2->setZ(0, line->getPointN(n - 1)->getZ());
-
-                line2->setX(1, line->getPointN(3)->getX());
-                line2->setY(1, line->getPointN(3)->getY());
-                line2->setZ(1, line->getPointN(n - 1)->getZ());
-
-                vecSegments[idQuota].push_back(line1);
-                vecSegments[idQuota].push_back(line2);
-                delete line;
-              }
-              else if (line->size())
-              {
-                vecSegments[idQuota].push_back(line);
-              }
-              line = new te::gm::LineString(0, te::gm::LineStringZType);
+              interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
+              interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
+              interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
+              interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
             }
           }
+          else
+          {
+            if (((quota < lineSupLeft) && (quota > lineSupRigth)) ||
+              ((quota > lineSupLeft) && (quota < lineSupRigth)))
+            {
+              interpolacao(1, line, quota, ylg_sup, xlg_ant, xlg_pos, lineSupLeft, lineSupRigth);
+            }
+            if (((quota < lineSupRigth) && (quota > lineInfRigth)) ||
+              ((quota > lineSupRigth) && (quota < lineInfRigth)))
+            {
+              interpolacao(0, line, quota, xlg_pos, ylg_inf, ylg_sup, lineInfRigth, lineSupRigth);
+            }
+            if (((quota < lineInfLeft) && (quota > lineInfRigth)) ||
+              ((quota > lineInfLeft) && (quota < lineInfRigth)))
+            {
+              interpolacao(1, line, quota, ylg_inf, xlg_ant, xlg_pos, lineInfLeft, lineInfRigth);
+            }
+            if (((quota < lineSupLeft) && (quota > lineInfLeft)) ||
+              ((quota > lineSupLeft) && (quota < lineInfLeft)))
+            {
+              interpolacao(0, line, quota, xlg_ant, ylg_inf, ylg_sup, lineInfLeft, lineSupLeft);
+            }
+          }
+          if (line->size() > 1)
+          {
+            if (line->size() == 4)
+            {
+              te::gm::LineString* line1 = new te::gm::LineString(2, te::gm::LineStringZType);
+              size_t n = line->size();
+              line1->setX(0, line->getPointN(0)->getX());
+              line1->setY(0, line->getPointN(0)->getY());
+              line1->setZ(0, line->getPointN(n - 1)->getZ());
+              
+              line1->setX(1, line->getPointN(1)->getX());
+              line1->setY(1, line->getPointN(1)->getY());
+              line1->setZ(1, line->getPointN(n - 1)->getZ());
+              
+              te::gm::LineString* line2 = new te::gm::LineString(2, te::gm::LineStringZType);
+
+              line2->setX(0, line->getPointN(2)->getX());
+              line2->setY(0, line->getPointN(2)->getY());
+              line2->setZ(0, line->getPointN(n - 1)->getZ());
+              
+              line2->setX(1, line->getPointN(3)->getX());
+              line2->setY(1, line->getPointN(3)->getY());
+              line2->setZ(1, line->getPointN(n - 1)->getZ());
+              
+              vecSegments[idQuota].push_back(line1);
+              vecSegments[idQuota].push_back(line2);
+              delete line;
+            }
+            else if (line->size())
+            {
+              vecSegments[idQuota].push_back(line);
+            }
+            line = new te::gm::LineString(0, te::gm::LineStringZType);
+          } // if (line->size() > 1) ...
         }
       }
     }
@@ -603,7 +606,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
         te::gm::PointZ ptEndC(vecSegments[(unsigned int)candidate[i]]->getX(1), vecSegments[(unsigned int)candidate[i]]->getY(1), vecSegments[(unsigned int)candidate[i]]->getZ(1));
         te::gm::PointZ ptEnd(vecPoints[(unsigned int)npts - 1].getX(), vecPoints[(unsigned int)npts - 1].getY(), vecPoints[(unsigned int)npts - 1].getZ());
 
-        if (equal(ptStartC, ptEnd, tol))
+        if (te::mnt::Equal(ptStartC, ptEnd, tol))
         {
           te::gm::PointZ pt;
           pt.setX(vecSegments[(unsigned int)candidate[i]]->getEndPoint()->getX());
@@ -624,7 +627,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
           hasSegment = true;
           break;
         }
-        else if (equal(ptEndC, ptEnd, tol))
+        else if (te::mnt::Equal(ptEndC, ptEnd, tol))
         {
           te::gm::PointZ pt;
           pt.setX(vecSegments[(unsigned int)candidate[i]]->getStartPoint()->getX());
@@ -669,7 +672,7 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
       }
       te::gm::PointZ ptStart(vecPoints[0].getX(), vecPoints[0].getY(), vecPoints[(unsigned int)npts - 1].getZ());
       te::gm::PointZ ptEnd(vecPoints[(unsigned int)npts - 1].getX(), vecPoints[(unsigned int)npts - 1].getY(), vecPoints[(unsigned int)npts - 1].getZ());
-      if (npts > 2 && equal(ptStart, ptEnd, tol))
+      if (npts > 2 && te::mnt::Equal(ptStart, ptEnd, tol))
       {
         newiso = true;
         break;
@@ -692,6 +695,8 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
 
 void te::mnt::CreateIsolines::interpolacao(int direction, te::gm::LineString* line, double quota, double coord, double c_inf, double c_sup, double z_inf, double z_sup)
 {
+  assert(z_sup != z_inf);
+
   double aux = c_inf + ((quota - z_inf) * (c_sup - c_inf) / (z_sup - z_inf));
   
   line->setNumCoordinates(line->size() + 1);
@@ -703,94 +708,5 @@ void te::mnt::CreateIsolines::interpolacao(int direction, te::gm::LineString* li
   else
   {
     line->setPointZ(line->size()-1, aux, coord, quota);
-  }
-}
-
-bool te::mnt::CreateIsolines::equal(te::gm::PointZ &p1, te::gm::PointZ &p2, double &tol)
-{
-  return (std::fabs(p1.getX() - p2.getX()) < tol && std::fabs(p1.getY() - p2.getY()) < tol/* && std::fabs(p1.getZ() - p2.getZ()) < tol*/);
-}
-
-bool te::mnt::CreateIsolines::SaveIso(std::vector<te::gm::LineString*> lsOut)
-{
-  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(m_outDsetName));
-
-  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("ID", te::dt::INT32_TYPE);
-  prop0->setAutoNumber(true);
-  te::dt::SimpleProperty* prop1 = new te::dt::SimpleProperty("Z", te::dt::DOUBLE_TYPE);
-  te::dt::SimpleProperty* prop11 = new te::dt::SimpleProperty("type", te::dt::STRING_TYPE);
-  te::gm::GeometryProperty* prop2 = new te::gm::GeometryProperty("iso", 0, te::gm::LineStringZType, true);
-  prop2->setSRID(m_srid);
-  dt->add(prop0);
-  dt->add(prop1);
-  dt->add(prop11);
-  dt->add(prop2);
-
-  te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
-
-  int id = 0;
-
-  for (unsigned int Idx = 0; Idx < lsOut.size(); ++Idx)
-  {
-    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
-    te::gm::LineString* gout = lsOut[Idx];
-    double *zvalue = gout->getZ();
-    dataSetItem->setInt32("ID", id++);
-    if (zvalue){
-      dataSetItem->setDouble("Z", zvalue[0]);
-      if (std::find(m_guidevalues.begin(), m_guidevalues.end(), zvalue[0]) != m_guidevalues.end())
-        dataSetItem->setString("type", "GUIDELINE");
-      else
-        dataSetItem->setString("type", "NORMAL");
-    }
-    dataSetItem->setGeometry("iso", (te::gm::Geometry*)gout->clone());
-
-    ds->add(dataSetItem);
-  }
-
-  Save(m_outDsrc.get(), ds, dt.get());
-
-  return true;
-
-}
-void te::mnt::CreateIsolines::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType)
-{
-
-  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
-  std::map<std::string, std::string> options;
-
-  try
-  {
-    if (source->getType() == "OGR")
-    {
-      source->createDataSet(outDsType, options);
-
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      source->add(name, result, options);
-    }
-    else
-    {
-      t->begin();
-
-      t->createDataSet(outDsType, options);
-
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      t->add(name, result, options);
-
-      t->commit();
-    }
-
-  }
-  catch (te::common::Exception& e)
-  {
-    t->rollBack();
-    throw e;
-  }
-  catch (std::exception& e)
-  {
-    t->rollBack();
-    throw e;
   }
 }

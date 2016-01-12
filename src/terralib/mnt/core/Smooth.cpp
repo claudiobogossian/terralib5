@@ -52,10 +52,9 @@ bool te::mnt::Smooth::run()
   std::vector<te::gm::LineString> isolines_suavizado;
 
   std::string geostype;
-  size_t nsamples;
-  te::gm::Envelope env;
+   te::gm::Envelope env;
 
-  nsamples = ReadSamples(m_inDsetName, m_inDsrc, m_Zattr, m_factor, m_maxdist, DouglasPeucker, mpt, isolines_simp, geostype, env);
+  ReadSamples(m_inDsetName, m_inDsrc, m_Zattr, m_factor, m_maxdist, DouglasPeucker, mpt, isolines_simp, geostype, env);
 
   for (size_t i = 0; i < isolines_simp.getNumGeometries(); i++)
   {

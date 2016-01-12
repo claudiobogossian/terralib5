@@ -53,37 +53,24 @@
       public:
       
         /*! \brief Default constructor. */
-		  CreateIsolinesInputParams()
-        {
-          //m_rate = 1.;
-          //m_eventAttrName = "";
-          //m_populationAttrName = "";
-        }
+        CreateIsolinesInputParams()
+       {
+       }
 
         /*! \brief Virtual destructor. */
-		  ~CreateIsolinesInputParams()
-        {
-        }
+      ~CreateIsolinesInputParams()
+      {
+      }
 
       public:
 
         std::auto_ptr<te::da::DataSetType> m_dsType;              //!< Attribute used to access the data set metadata
         std::auto_ptr<te::da::DataSet> m_ds;                      //!< Attribute with data set
-		/*
-		std::auto_ptr<te::sa::GeneralizedProximityMatrix> m_gpm;  //!< Attribute with gpm information (local bayes)
-
-        std::string m_eventAttrName;                      //!< Attribute from dataset with event information.
-        std::string m_populationAttrName;                 //!< Attribute from dataset with population information.
-        std::string m_gpmAttrLink;                        //!< Attribute from dataset that was used to generate the gpm.
-
-        double  m_rate;                                   //!< Attribute with multiplicative rate correction*/
     };
 
     /*!
       \class BayesOutputParams
-
       \brief Class that represents the Bayes output parameters.
-
       \sa BayesGlobalOperation BayesLocalOperation
     */
 
@@ -92,13 +79,13 @@
       public:
       
         /*! \brief Default constructor. */
-		CreateIsolinesOutputParams()
+        CreateIsolinesOutputParams()
         {
           m_outputDataSetName = "";
         }
 
         /*! \brief Virtual destructor. */
-		~CreateIsolinesOutputParams()
+        ~CreateIsolinesOutputParams()
         {
         }
 

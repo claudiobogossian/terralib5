@@ -9,6 +9,7 @@
 #include "Utils.h"
 
 
+#include "../../common/progress/TaskProgress.h"
 #include "../../raster.h"
 #include "../../raster/BandProperty.h"
 #include "../../raster/Grid.h"
@@ -122,11 +123,14 @@ bool te::mnt::CalculateGrid::run()
       points.push_back(te::gm::PointZ(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
     double zvalue;
 
+    te::common::TaskProgress task("Calculating DTM...", te::common::TaskProgress::UNDEFINED, outputHeight*outputWidth);
+
     te::gm::Coord2D pg;
     for (unsigned int l = 0; l < outputHeight; l++)
     {
       for (unsigned int c = 0; c < outputWidth; c++)
       {
+        task.pulse();
         te::gm::Coord2D pg(rx1 + (c * m_resx /*+ m_resx / 2.*/), ry2 - (l * m_resy/* + m_resy / 2.*/));
         te::gm::PointZ pgz(pg.getX(), pg.getY(), m_nodatavalue);
         m_adaptativeTree->nearestNeighborSearch(pg, points, distneighb, nro_neighb);
@@ -384,6 +388,9 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
   double resY = m_resy;
 
   double zdummy = m_nodatavalue;
+  int nsteps = m_nPartsY*m_nPartsY + 1;
+
+  te::common::TaskProgress task("Generating DTM...", te::common::TaskProgress::UNDEFINED, nsteps);
 
   double X1 = m_env.getLowerLeftX() + resX/2.;
   double Y1 = m_env.getUpperRightY() - resY/2.;
@@ -395,8 +402,9 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
 
     double disty = (end_y - begin_y) * percentageDist;
 
-    for (unsigned int j = 0; j < nPartsX; j++)
+    for (unsigned int j = 0; j < m_nPartsY; j++)
     {
+      task.pulse();
       //Calculate the init and final area
       double begin_x = X1 + (j*ew_region);
       double end_x = X1 + ((j + 1)*ew_region);
@@ -474,9 +482,9 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
       //allows calculated values to grid
       unsigned int l, c;
       //allows only the lines of the medium
-      for (l = firstLine; l<=lastLine; l++)
+      for (l = firstLine; l<lastLine; l++)
       {
-        for (c = firstCol; c <= lastCol; c++)
+        for (c = firstCol; c < lastCol; c++)
         {
           te::gm::PointZ pg((X1 + (double)(c*m_resx)),(Y1 - (double)(l*m_resy)), m_nodatavalue);
 
@@ -609,7 +617,6 @@ void te::mnt::SplineInterpolationGrass::normalDefBilin(double xMin, double yMin)
   unsigned int n0;
   for (unsigned int i = 0; i < m_npoints; i++) 
   {
-
     te::gm::PointZ pp3D = m_obsVect[i];
     node_x(pp3D.getX(), i_x, csi_x, xMin, m_passoWidth);
     node_y(pp3D.getY(), i_y, csi_y, yMin, m_passoHeight);
