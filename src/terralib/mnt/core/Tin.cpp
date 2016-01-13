@@ -1649,8 +1649,11 @@ bool te::mnt::Tin::TriangleFirstDeriv()
     m_tfderiv.push_back(te::gm::PointZ(m_nodatavalue, 0., 0.));
   }
 
+  te::common::TaskProgress task("Creating triangle first derivatives...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
+
   for (i = 0; i <(unsigned int)m_ltriang; i++)
   {
+    task.pulse();
     if (!NodesId((int32_t)i, nodesid))
     {
       m_tfderiv[i].setY(m_nodatavalue);
@@ -1722,6 +1725,7 @@ bool te::mnt::Tin::TriangleSecondDeriv()
     m_tsderiv.clear();
   }
 
+  te::common::TaskProgress task("Creating triangle second derivatives...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
   size_t i;
   for (i = 0; i < m_triangsize + 1; i++)
   {
@@ -1731,6 +1735,7 @@ bool te::mnt::Tin::TriangleSecondDeriv()
 
   for (i = 0; i < (unsigned int)m_ltriang; i++)
   {
+    task.pulse();
     if (!NodesId((int32_t)i, nodesid))
     {
       m_tsderiv[i].setZ(m_nodatavalue);
@@ -1813,7 +1818,7 @@ bool te::mnt::Tin::NodeFirstDeriv()
 {
   int32_t clstnids[CLNODES];
   size_t i;
-
+  
   // Create and Initialize first derivatives vector
   if (m_nfderiv.size())
   {
@@ -1824,9 +1829,12 @@ bool te::mnt::Tin::NodeFirstDeriv()
     m_nfderiv.push_back(te::gm::PointZ(0., 0., 0.));
   }
 
+  te::common::TaskProgress task("Creating node first derivatives...", te::common::TaskProgress::UNDEFINED, (int)m_node.size());
+
   // To each node
   for (i = 0; i < m_node.size(); i++)
   {
+    task.pulse();
     // Special cases
     if (m_node[i].getZ() >= m_nodatavalue)
       continue;
@@ -1864,8 +1872,10 @@ bool te::mnt::Tin::NodeSecondDeriv()
     m_nsderiv[i].Init(0., 0., 0.);
   }
 
+  te::common::TaskProgress task("Creating node second derivatives...", te::common::TaskProgress::UNDEFINED, (int)m_node.size());
   for (i = 0; i < m_node.size(); i++)
   {
+    task.pulse();
     // Special cases
     if (m_node[i].getZ() >= m_nodatavalue)
       // Node with DUMMY value
@@ -2166,9 +2176,12 @@ bool ::te::mnt::Tin::BreakNodeFirstDeriv()
     m_nblfderiv.push_back(m_nfderiv[i + m_fbnode]);
   }
 
+  te::common::TaskProgress task("Creating breaknode first derivatives...", te::common::TaskProgress::UNDEFINED, (int)m_node.size());
+
   // To each break node
   for (i = (unsigned int)m_fbnode; i < m_node.size() - 1; i++)
   {
+    task.pulse();
     // Special cases
     if ((m_node[i].getZ() >= m_nodatavalue) ||
       (m_node[i].getType() == Deletednode) ||
@@ -2230,9 +2243,11 @@ bool te::mnt::Tin::BreakTriangleSecondDeriv()
   if (!m_tsderiv.size())
     return false;
 
+  te::common::TaskProgress task("Creating breaknode second derivatives...", te::common::TaskProgress::UNDEFINED, (int)m_node.size());
   // To each break node except first and last
   for (i = (unsigned int)m_fbnode; i < m_node.size() - 1; i++)
   {
+    task.pulse();
     if (m_node[i].getZ() >- m_nodatavalue)
       continue;
 
