@@ -2,7 +2,8 @@
 
 This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
+TerraLib is free software: you can redistribute it and/or 
+
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
@@ -24,6 +25,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 //terralib
+#include "../../common/progress/ProgressManager.h"
+#include "../../common/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -34,6 +37,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../mnt/core/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
 #include "../../raster.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
@@ -229,153 +233,143 @@ void te::mnt::SmoothIsolinesDialog::onHelpPushButtonClicked()
 
 void te::mnt::SmoothIsolinesDialog::onOkPushButtonClicked()
 {
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
-  if (!m_inputLayer.get())
+  try
   {
-    QMessageBox::information(this, tr("Isolines Smooth"), tr("Select an input layer!"));
-    return;
-  }
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
-  te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
-  if (!indsLayer)
-  {
-    QMessageBox::information(this, tr("Isolines Smooth"), tr("Can not execute this operation on this type of layer!"));
-    return;
-  }
+    if (!m_inputLayer.get())
+      throw te::common::Exception(TE_TR("Select an input layer!"));
 
-  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
-  if (!inDataSource.get())
-  {
-    QMessageBox::information(this, tr("Isolines Smooth"), tr("The selected input data source can not be accessed!"));
-    return;
-  }
+    te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
+    if (!indsLayer)
+      throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
 
-  std::string inDsetName = indsLayer->getDataSetName();
-  std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
+    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
+    if (!inDataSource.get())
+      throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
 
-  // Checking consistency of output paramenters
-  if (m_ui->m_repositoryLineEdit->text().isEmpty())
-  {
-    QMessageBox::information(this, tr("Isolines Smooth"), tr("Select a repository for the resulting layer."));
-    return;
-  }
+    std::string inDsetName = indsLayer->getDataSetName();
+    std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
 
-  if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
-  {
-    QMessageBox::information(this, tr("Isolines Smooth"), tr("Define a name for the resulting layer."));
-    return;
-  }
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    // Checking consistency of output paramenters
+    if (m_ui->m_repositoryLineEdit->text().isEmpty())
+      throw te::common::Exception(TE_TR("Select a repository for the resulting layer."));
 
-  std::map<std::string, std::string> outdsinfo;
-  boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+    if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+      throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
-  if (m_toFile)
-  {
-    if (boost::filesystem::exists(uri))
-    {
-      QMessageBox::information(this, tr("Isolines Smooth"), tr("Output file already exists! Remove it or select a new name and try again."));
-      return;
-    }
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    std::map<std::string, std::string> outdsinfo;
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
-    std::size_t idx = outputdataset.find(".");
-    if (idx != std::string::npos)
-      outputdataset = outputdataset.substr(0, idx);
-
-    outdsinfo["URI"] = uri.string();
-  }
-
-  this->setCursor(Qt::WaitCursor);
-  
-  Smooth *iso = new te::mnt::Smooth();
-  iso->setInput(inDataSource, inDsetName, inDsetType);
-  if (m_toFile)
-  {
-    te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-    dsOGR->setConnectionInfo(outdsinfo);
-    dsOGR->open();
-
-    if (dsOGR->dataSetExists(outputdataset))
-    {
-      QMessageBox::information(this, tr("Isolines Smooth"), tr("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
-      return;
-    }
-
-    iso->setOutput(dsOGR, outputdataset);
-  }
-  else
-  {
-    te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
-    if (!aux)
-    {
-      QMessageBox::information(this, tr("Isolines Smooth"), tr("The selected output datasource can not be accessed."));
-      return;
-    }
-    if (aux->dataSetExists(outputdataset))
-    {
-      QMessageBox::information(this, tr("Isolines Smooth"), tr("Dataset already exists. Remove it or select a new name and try again. "));
-      return;
-    }
-    iso->setOutput(aux, outputdataset);
-
-  }
-
-  bool simpl_out = m_ui->m_simploutCheckBox->isChecked();
-  std::string attr = m_ui->m_ZcomboBox->currentText().toStdString();
-
-  int srid = m_inputLayer->getSRID();
-  iso->setSRID(srid);
-  if (srid)
-  {
-    te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid);
-    te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
-
-    if (unitin->getId() != te::common::UOM_Metre)
-    {
-      convertPlanarToAngle(m_factor, unitout);
-      convertPlanarToAngle(m_maxdist, unitout);
-    }
-  }
-
-  iso->setParams(m_factor, m_maxdist, simpl_out, attr);
-
-  bool result = iso->run();
-
-  delete iso;
-
-  if (result)
-  {
     if (m_toFile)
     {
-      // let's include the new datasource in the managers
-      boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string id = boost::uuids::to_string(u);
+      if (boost::filesystem::exists(uri))
+        throw te::common::Exception(TE_TR("Output file already exists! Remove it or select a new name and try again."));
 
-      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-      ds->setConnInfo(outdsinfo);
-      ds->setTitle(uri.stem().string());
-      ds->setAccessDriver("OGR");
-      ds->setType("OGR");
-      ds->setDescription(uri.string());
-      ds->setId(id);
+      std::size_t idx = outputdataset.find(".");
+      if (idx != std::string::npos)
+        outputdataset = outputdataset.substr(0, idx);
 
-      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
-      newds->open();
-      te::da::DataSourceInfoManager::getInstance().add(ds);
-      m_outputDatasource = ds;
+      outdsinfo["URI"] = uri.string();
     }
 
-    // creating a layer for the result
-    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+    Smooth *iso = new te::mnt::Smooth();
+    iso->setInput(inDataSource, inDsetName, inDsetType);
+    if (m_toFile)
+    {
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
+      dsOGR->setConnectionInfo(outdsinfo);
+      dsOGR->open();
 
-    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+      if (dsOGR->dataSetExists(outputdataset))
+        throw te::common::Exception(TE_TR("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
 
-    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
-    m_outputLayer = converter(dt);
+      iso->setOutput(dsOGR, outputdataset);
+    }
+    else
+    {
+      te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
+      if (!aux)
+        throw te::common::Exception(TE_TR("The selected output datasource can not be accessed."));
+
+      if (aux->dataSetExists(outputdataset))
+        throw te::common::Exception(TE_TR("Dataset already exists. Remove it or select a new name and try again. "));
+
+      iso->setOutput(aux, outputdataset);
+    }
+
+    bool simpl_out = m_ui->m_simploutCheckBox->isChecked();
+    std::string attr = m_ui->m_ZcomboBox->currentText().toStdString();
+
+    int srid = m_inputLayer->getSRID();
+    iso->setSRID(srid);
+    if (srid)
+    {
+      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid);
+      te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+      if (unitin->getId() != te::common::UOM_Metre)
+      {
+        convertPlanarToAngle(m_factor, unitout);
+        convertPlanarToAngle(m_maxdist, unitout);
+      }
+    }
+
+    iso->setParams(m_factor, m_maxdist, simpl_out, attr);
+
+    bool result = iso->run();
+
+    delete iso;
+
+    if (result)
+    {
+      if (m_toFile)
+      {
+        // let's include the new datasource in the managers
+        boost::uuids::basic_random_generator<boost::mt19937> gen;
+        boost::uuids::uuid u = gen();
+        std::string id = boost::uuids::to_string(u);
+
+        te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+        ds->setConnInfo(outdsinfo);
+        ds->setTitle(uri.stem().string());
+        ds->setAccessDriver("OGR");
+        ds->setType("OGR");
+        ds->setDescription(uri.string());
+        ds->setId(id);
+
+        te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+        newds->open();
+        te::da::DataSourceInfoManager::getInstance().add(ds);
+        m_outputDatasource = ds;
+      }
+
+      // creating a layer for the result
+      te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+
+      te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+
+      te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+      m_outputLayer = converter(dt);
+    }
   }
-  this->setCursor(Qt::ArrowCursor);
+  catch (const std::exception& e)
+  {
+    QApplication::restoreOverrideCursor();
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    QMessageBox::information(this, tr("Smooth Isolines "), e.what());
+    return;
+  }
+  
+  QApplication::restoreOverrideCursor();
+  te::common::ProgressManager::getInstance().removeViewer(id);
   accept();
+
 }
 
 void te::mnt::SmoothIsolinesDialog::onCancelPushButtonClicked()

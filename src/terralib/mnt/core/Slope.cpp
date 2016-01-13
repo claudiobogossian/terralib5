@@ -9,6 +9,7 @@
 #include "Utils.h"
 
 //terralib
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../raster.h"
@@ -107,9 +108,11 @@ bool te::mnt::Slope::run()
     int32_t flin, llin, fcol, lcol;
     double m1, m2;
 
+    te::common::TaskProgress task("Calculating Slope...", te::common::TaskProgress::UNDEFINED, (int)m_ltriang);
     //To each triangle
     for (unsigned int i = 0; i < (unsigned int)m_ltriang; i++)
     {
+      task.pulse();
       // Find Triangle Box
       if (!NodesId((int32_t)i, nodesid))
         continue;
@@ -157,10 +160,12 @@ bool te::mnt::Slope::run()
       m_dy *= 111000;            // 1 degree = 111.000 meters
     }
 
+    te::common::TaskProgress task("Calculating Slope...", te::common::TaskProgress::UNDEFINED, (int)(in_raster->getNumberOfRows()*in_raster->getNumberOfColumns()));
     for (unsigned l = 1; l < in_raster->getNumberOfRows() - 1; l++)
     {
       for (unsigned c = 1; c < in_raster->getNumberOfColumns() - 1; c++)
       {
+        task.pulse();
         if (CalcGradientRst(in_raster, l, c, dzdx, dzdy))
         {
           if (m_gradtype == 's')
