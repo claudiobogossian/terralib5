@@ -4,52 +4,154 @@
 // TerraLib
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/datatype.h>
-//#include <../terralib/dataaccess_h.h>
- 
+
 // STL
 #include <iostream>
 #include <exception>
 
+
+std::auto_ptr<te::da::DataSource> GetPostGISConnection()
+{
+  // let's give the minimal server connection information needed to connect to the database server
+  std::string aux;
+  std::map<std::string, std::string> connInfo;
+  std::cout << "Inform the Host for your postGIS server (ENTER to accept default \'atlas.dpi.inpe.br\'): ";
+  std::getline (std::cin, aux);
+  if (!aux.empty())
+    connInfo["PG_HOST"] = aux;
+  else
+    connInfo["PG_HOST"] = "atlas.dpi.inpe.br";
+  
+  std::cout << "Inform the Port number to access your postGIS server (ENTER to accept default \'5433\'): ";
+  std::getline (std::cin, aux);
+  if (!aux.empty())
+    connInfo["PG_PORT"] = aux;
+  else
+    connInfo["PG_PORT"] = "5433" ;
+  
+  std::cout << "Inform the User to access your postGIS server (ENTER to accept default \'postgres\'): ";
+  std::getline (std::cin, aux);
+  if (!aux.empty())
+    connInfo["PG_USER"] = aux;
+  else
+    connInfo["PG_USER"] = "postgres";
+  
+  std::cout << "Inform the Password to access your postGIS server (ENTER to accept default \'postgres\'): ";
+  std::getline (std::cin, aux);
+  if (!aux.empty())
+    connInfo["PG_PASSWORD"] = aux;
+  else
+    connInfo["PG_PASSWORD"] = "postgres";
+  
+  std::cout << "Inform the Database name to connect to your postGIS server (ENTER to accept default \'terralib4\'): ";
+  std::getline (std::cin, aux);
+  if (!aux.empty())
+    connInfo["PG_DB_NAME"] = aux;
+  else
+    connInfo["PG_DB_NAME"] = "terralib4";
+  
+  std::cout << "Inform the Connection Time Out to connect to your postGIS server (ENTER to accept default \'4\'): ";
+  std::getline (std::cin, aux);
+  if (!aux.empty())
+    connInfo["PG_CONNECT_TIMEOUT"] = aux;
+  else
+    connInfo["PG_CONNECT_TIMEOUT"] = "4";
+  
+  std::cout << "Inform the Client enconding to connect to your postGIS server (ENTER to accept default \'CP1252\'): ";
+  std::getline (std::cin, aux);
+  if (!aux.empty())
+    connInfo["PG_CLIENT_ENCODING"] = aux;
+  else
+    connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1"; //"WIN1252"
+  
+  // create a data source using the data source factory
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+  
+  // as we are going to use the data source, lets set the connection info
+  ds->setConnectionInfo(connInfo);
+  
+  try {
+      ds->open();
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << "Datasource " << connInfo["PG_HOST"] << "/" <<  connInfo["PG_DB_NAME"] << " can not be used!\nMake sure to have the correct connection parameters\n";
+    std::cout << "Error: " << e.what() << std::endl;
+    ds.reset();
+    return ds;
+  }
+  catch(...)
+  {
+    std::cout << "Datasource " << connInfo["PG_HOST"] << "/" <<  connInfo["PG_DB_NAME"] << " can not be used!\nMake sure to have the correct connection parameters\n";
+    ds.reset();
+    return ds;
+  }
+  
+  std::cout << "Using datasource " << connInfo["PG_HOST"] << "/" <<  connInfo["PG_DB_NAME"] << std::endl;
+  ds->close();
+  return ds;
+}
+
+
 void PostGISExample()
-{ 
+{
   try
   {
-// let's give the minimal server connection information needed to connect to the database server
-    std::map<std::string, std::string> connInfo;
-    connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-    connInfo["PG_PORT"] = "5433" ;
-    connInfo["PG_USER"] = "postgres";
-    connInfo["PG_PASSWORD"] = "postgres";
-    connInfo["PG_DB_NAME"] = "terralib4";
-    connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-    connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1"; //"WIN1252" 
+    std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+    if (!ds.get())
+      return;
     
-// create a data source using the data source factory
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-
-// as we are going to use the data source, let´s set the connection info
-    ds->setConnectionInfo(connInfo);
-
-// let's open it with the connection info above!
     ds->open();
+    
+    std::cout << "Datasource is opened? " << std::boolalpha << ds->isOpened() << '\n';
+    std::cout << "Datasource is valid? " << std::boolalpha << ds->isValid() << '\n';
 
 // retrieve the data source capabilities and print it
+    std::cout << std::endl;
     PrintDataSourceCapabilities(ds.get());
-
-// shows how to retrieve and then print the datasets stored in the data source
-//    PrintDataSets(ds);
-
-// get a transactor to interact to the data source in the next examples
-    std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
+    
+// printing some datasets from the datasource
+    std::vector<std::string> dsets = ds->getDataSetNames();
+    
+    if (dsets.empty())
+    {
+      std::cout << "Datasource has no datasets.\n";
+      return;
+    }
+    
+// let's check one of them (or all)
+    std::cout << "\nThere is(are) " << dsets.size() << " dataset(s) in the datasource: \n";
+    for (size_t i=0; i<dsets.size(); ++i)
+      std::cout << '\t' << i+1 << ':' << dsets[i] << std::endl;
+    
+    // check point: retrieving the data from a dataset of the datasource
+    while (true)
+    {
+      std::cout << "\nSelect a dataset from 1 to " << ds->getNumberOfDataSets() << " to see its data (0 to none): ";
+      int n;
+      std::cin >> n;
+      if (n<1 || n>ds->getNumberOfDataSets())
+        break;
+      PrintDataSet(dsets[n-1], ds->getDataSet(dsets[n-1]).get());
+    }
 
 // shows how to use a spatial filter
-    RetrieveUsingSpatialFilter(ds.get());
-
-// shows several examples on how to retrieve the dataset extent
-    DataSetGetExtent(transactor.get());
-
+    std::vector<std::string>::iterator it;
+    it = std::find(dsets.begin(),dsets.end(),"public.br_munic_2001");
+    if (it != dsets.end())
+    {
+      std::cout << "\nHow to do spatial filtering using the dataset \'public.br_munic_2001\'\n";
+      RetrieveUsingSpatialFilter(ds.get());
+    }
+    
 // it creates a DataSetType called 'our_country' using the schema 'public' in the given data source
-    std::string dt_name = "public.our_country2";
+    it = std::find(dsets.begin(),dsets.end(),"public.our_country");
+    if (it != dsets.end())
+      return;
+    
+    std::cout << "\nHow to create a new dataset the dataset: ex 'public.our_country'\n";
+    std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
+    std::string dt_name = "our_country";
     std::cout << std::endl << "Creating dataSet= " << dt_name  << std::endl;
     te::da::DataSetType* dtype = new te::da::DataSetType(dt_name);
     dtype->add(new te::dt::SimpleProperty("gid", te::dt::INT32_TYPE, true));
@@ -76,21 +178,21 @@ void PostGISExample()
 
 // it adds an integer property called 'population' to the given dataset type
     std::cout << std::endl << "Adding new Property population to " << dt_name << std::endl;
-    /*te::dt::SimpleProperty* p = */AddProperty(datasetType->getName(), transactor.get());
+    AddProperty(datasetType->getName(), transactor.get());
 
-// Now, let's  remove things from the data source using transactor or function DroppingDataSetTypeProperty
-    // first, drop the recently added property
+// Now, lets  remove things from the data source using transactor or function DroppingDataSetTypeProperty
+// first, drop the recently added property
     std::cout << std::endl << "Droping Property population of " << dt_name <<" using transactor or ds"<< std::endl;
     (transactor.get())->dropProperty(datasetType->getName(), "population");
-     //DroppingDataSetTypeProperty(dt_name, "population",transactor.get());
 
-// Now, let´s it add again an integer property called 'population' to the given dataset type and drop it using ds
+// Now, lets it add again an integer property called 'population' to the given dataset type and drop it using ds
     std::cout << std::endl << "Adding new Property population to " << dt_name << std::endl;
-    /*te::dt::SimpleProperty* p1 = */AddProperty(datasetType->getName(), transactor.get());
+    AddProperty(datasetType->getName(), transactor.get());
+    
 // Dropping using ds api   
     ds->dropProperty(dt_name, "population");
 
-// Now, let´s drop a geom column
+// Now, lets drop a geom column
     ds->dropProperty(dt_name, "spatial_data"); //check the view geometry_columns
 
 // finally, drop the dataset we have created above via ds or via transactor
@@ -99,17 +201,13 @@ void PostGISExample()
 
 // Create again the dataset and drop it using transactor
     datasetType = CreateDataSetType(dt_name,dtype,transactor.get());
-    transactor->dropDataSet( datasetType->getName());
-    //DroppingDataSetType(datasetType->getName(),transactor.get()); 
+
+    DroppingDataSetType(datasetType->getName(),transactor.get());
    
     if (transactor->isInTransaction())
-    {
       std::cout << std::endl << "Transactor in transaction! "<< std::endl;
-    }
-    //release and delete transactor before closing ds, otherwise as it is auto_ptr -tenta destruir denovo e cai.
     delete transactor.release(); 
-    ds->close(); 
-    //int i =1;
+    ds->close();
   }
   catch(const std::exception& e)
   {

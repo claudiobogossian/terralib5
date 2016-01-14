@@ -14,10 +14,16 @@ void OGRExampleRead()
 {
   try
   {
+    std::map<std::string, std::string> connInfo;
     std::string data_dir = TERRALIB_DATA_DIR;
     
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = data_dir + "/shp";
+    std::string aux("");
+    std::cout << "Inform the location of your data source (ENTER to accept default \'" << (data_dir + "/shp") << "\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      connInfo["URI"] = aux;
+    else
+      connInfo["URI"] = data_dir + "/shp";
   
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionInfo(connInfo);
@@ -33,17 +39,18 @@ void OGRExampleRead()
     std::cout << "\nDatasource has " << ds->getNumberOfDataSets() << " datasources\n";
     std::vector<std::string> dsets = ds->getDataSetNames();
     for (size_t i=0; i<ds->getNumberOfDataSets(); ++i)
-      std::cout << '[' << i << "]: " << dsets[i] << std::endl;
+      std::cout << '[' << i+1 << "]: " << dsets[i] << std::endl;
     
     // check point: retrieving the data from a dataset of the datasource
-    std::cout << "Select a dataset [from 0 to " << ds->getNumberOfDataSets() << "] to see its data: ";
-    int n;
-    std::cin >> n;
-    if (n<0 && n>= ds->getNumberOfDataSets())
-      return;
-    
-    PrintDataSet(dsets[n], ds->getDataSet(dsets[n]).get());
-
+    while (true)
+    {
+      std::cout << "\nSelect a dataset from 1 to " << ds->getNumberOfDataSets() << " to see its data (0 to none): ";
+      int n;
+      std::cin >> n;
+      if (n<1 || n>ds->getNumberOfDataSets())
+        break;
+      PrintDataSet(dsets[n-1], ds->getDataSet(dsets[n-1]).get());
+    }
   }
   catch(const std::exception& e)
   {
@@ -60,7 +67,15 @@ void ORGExampleWrite()
   try
   {
     // create a dataset in memory with some data
-    std::string dsName("soilmeasures");
+    std::string dsName;
+    std::string aux("");
+    std::cout << "Inform a name to shapefile being created (ENTER to accept default \'soilmeasures\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      dsName = aux;
+    else
+      dsName = "soilmeasures";
+
     te::da::DataSetType* dType  = CreateDataSetTypeInMemory(dsName);
     te::da::DataSet* dSet = CreatingDataSetInMemoryGivingDt(dType);
     dSet->moveBeforeFirst();
@@ -69,7 +84,14 @@ void ORGExampleWrite()
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
   
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = std::string(TERRALIB_DATA_DIR) + "/shp";
+    std::string data_dir = TERRALIB_DATA_DIR;
+    aux.clear();
+    std::cout << "Inform a location to write your shapefile (ENTER to accept default \'" << (data_dir + "/shp") << "\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      connInfo["URI"] = aux;
+    else
+      connInfo["URI"] = data_dir + "/shp";
     ds->setConnectionInfo(connInfo);
     ds->open();
 

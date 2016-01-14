@@ -7,27 +7,17 @@
 #include <iostream>
 #include <exception>
 
-void QueryExample_2()
+std::auto_ptr<te::da::DataSource> GetPostGISConnection();
+
+void QueryExample()
 {
-// let's give the minimal server connection information needed to connect to the database server
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "terralib4";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1";
- 
   try
   {
-// if you are not using the data source manager, create one instance of the data source called ds an other dsOGR!
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-    ds->setConnectionInfo(connInfo);
+    std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+    if (!ds.get())
+      return;
+    
     ds->open();
-
-// let's find out the information in the data source!
-    //ds->loadCatalog();
 
 // get a transactor to interact to the data source
     std::auto_ptr<te::da::DataSourceTransactor> transactor =  ds->getTransactor();
