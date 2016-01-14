@@ -9,6 +9,7 @@
 #include "Utils.h"
 
 //terralib
+#include "../../common/progress/TaskProgress.h"
 #include "../../common/StringUtils.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../dataaccess/dataset/DataSetAdapter.h"
@@ -101,9 +102,10 @@ bool te::mnt::Volume::run()
     if (DefLC(pols[p], flin, llin, fcol, lcol))
     {
       //Calculate the volumes.
-      if (CVGrd(pols[p], flin, llin, fcol, lcol))
+      std::string attr = inDsetSrc->getString(m_attr);
+      if (CVGrd(pols[p], flin, llin, fcol, lcol, attr))
       {
-        m_polyvec.push_back(inDsetSrc->getString(m_attr));
+        m_polyvec.push_back(attr);
       }
     }
     pols.clear();
@@ -148,7 +150,7 @@ bool te::mnt::Volume::DefLC(te::gm::Polygon *pol, int& flin, int& llin, int& fco
   return true;
 }
 
-bool te::mnt::Volume::CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, int lcol)
+bool te::mnt::Volume::CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, int lcol, std::string &polid)
 {
   double somazs = 0.0;
   double nrozs = 0.0;
@@ -156,11 +158,30 @@ bool te::mnt::Volume::CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, 
   double areatotal;
   double volcorte = 0.;
   double volaterro = 0.;
+  double polarea = pol->getArea();
+
+  std::string msg("Calculating Volume - Pol(");
+  msg += polid;
+  msg += ")...";
+  te::common::TaskProgress task(msg, te::common::TaskProgress::UNDEFINED, (int)(llin-flin)*(lcol-fcol));
 
   double rx = m_raster->getResolutionX();
   double ry = m_raster->getResolutionY();
 
   areabase = rx * ry;
+
+  if (m_srid)
+  {
+    te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)m_srid);
+    te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+    if (unitin->getId() != te::common::UOM_Metre)
+    {
+      convertAngleToPlanar(areabase, unitout);
+      convertAngleToPlanar(polarea, unitout);
+    }
+  }
+
   areatotal = areabase;
 
   te::gm::Coord2D cg;
@@ -175,6 +196,7 @@ bool te::mnt::Volume::CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, 
   {
     for (int j = fcol; j <= lcol; j++)
     {
+      task.pulse();
       cg = m_raster->getGrid()->gridToGeo(j, i);
       geos::geom::Coordinate pt(cg.getX(), cg.getY());
 
@@ -209,14 +231,14 @@ bool te::mnt::Volume::CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, 
   volcorte *= areabase;
 
   // Show the volumes values.
-  m_cortevec.push_back(te::common::Convert2String(volcorte));
-  m_aterrovec.push_back(te::common::Convert2String(volaterro));
-  m_areavec.push_back(te::common::Convert2String(pol->getArea()));
+  m_cortevec.push_back(te::common::Convert2String(volcorte,2));
+  m_aterrovec.push_back(te::common::Convert2String(volaterro,2));
+  m_areavec.push_back(te::common::Convert2String(polarea,2));
 
   if (nrozs != 0)
-    m_iquotavec.push_back(te::common::Convert2String(somazs / nrozs));
+    m_iquotavec.push_back(te::common::Convert2String(somazs / nrozs,2));
   else
-    m_iquotavec.push_back(te::common::Convert2String(m_quota));
+    m_iquotavec.push_back(te::common::Convert2String(m_quota,2));
 
   return true;
 }

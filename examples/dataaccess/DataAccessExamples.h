@@ -147,7 +147,7 @@ void PrintDataSets(te::da::DataSource* ds);
 
   \param dataset Any dataset.
  */
-void PrintDataSet(const std::string& datasetName, te::da::DataSet* dataset);
+void PrintDataSet(std::string datasetName, te::da::DataSet* dataset);
 
 /*!
   \brief An example showing how to retrieve data using a spatial filter.
