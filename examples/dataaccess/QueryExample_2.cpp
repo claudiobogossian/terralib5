@@ -98,10 +98,10 @@ void QueryExample()
         ++i;
       }
 
-// quering a table called public.br_munic_2001 using native interface and returning all neighbours of 'Ouro Preto'
+// quering a table called public.munic_2001 using native interface and returning all neighbours of 'Ouro Preto'
       {
         std::string sql("SELECT * , st_intersects(g1.geom, g2.geom) " 
-                        "FROM br_munic_2001 AS g1, br_munic_2001 AS g2 "
+                        "FROM munic_2001 AS g1, munic_2001 AS g2 "
                         "WHERE g1.nome = 'Ouro Preto' "
                         "AND st_intersects(g1.geom, g2.geom) "
                          ) ;

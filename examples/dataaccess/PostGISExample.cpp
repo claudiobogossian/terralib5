@@ -137,10 +137,10 @@ void PostGISExample()
 
 // shows how to use a spatial filter
     std::vector<std::string>::iterator it;
-    it = std::find(dsets.begin(),dsets.end(),"public.br_munic_2001");
+    it = std::find(dsets.begin(),dsets.end(),"public.munic_2001");
     if (it != dsets.end())
     {
-      std::cout << "\nHow to do spatial filtering using the dataset \'public.br_munic_2001\'\n";
+      std::cout << "\nHow to do spatial filtering using the dataset \'public.munic_2001\'\n";
       RetrieveUsingSpatialFilter(ds.get());
     }
     
