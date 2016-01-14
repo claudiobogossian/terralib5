@@ -1601,6 +1601,26 @@ void te::mnt::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::
   }
 }
 
+bool te::mnt::convertAngleToPlanar(double& val, te::common::UnitOfMeasurePtr planar)
+{
+  switch (planar->getId())
+  {
+  case te::common::UOM_Metre:
+    val *= 111000. * 111000.;            // 1 degree = 111.000 meters
+    break;
+  case te::common::UOM_Kilometre:
+    val *= 111. * 111.;                  // 1 degree = 111 kilometers
+    break;
+  case te::common::UOM_Foot:
+    val *= 364173.24 * 364173.24;        //  1 feet  = 3.28084 meters
+    break;
+  default:
+    return false;
+  }
+  return true;
+}
+
+
 bool te::mnt::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit)
 {
   switch (unit->getId())
