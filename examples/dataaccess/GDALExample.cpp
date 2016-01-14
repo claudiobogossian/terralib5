@@ -9,13 +9,20 @@ void OpenFile()
 {
   try
   {
+    // let's take the input dataset from a shape file
+    std::string data_dir = TERRALIB_DATA_DIR;
+    std::map<std::string, std::string> connInfo;
+    
+    std::string aux("");
+    std::cout << "Inform the location of your tiff file (ENTER to accept default \'" << (data_dir + "/rasters/cbers2b_rgb342_crop.tif") << "\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      connInfo["URI"] = aux;
+    else
+      connInfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+    
     std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL");
     std::cout << "Datasource is opened? " << std::boolalpha << dsGDAL->isOpened() << '\n' << '\n';
-  
-    std::string data_dir = TERRALIB_DATA_DIR;
-
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
   
     dsGDAL->setConnectionInfo(connInfo);
     dsGDAL->open();
@@ -44,9 +51,15 @@ void OpenDirectory()
   try
   {
     std::string data_dir = TERRALIB_DATA_DIR;
-  
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = data_dir + "/rasters";
+    
+    std::string aux("");
+    std::cout << "Inform the location of your folder of imagens (ENTER to accept default \'" << (data_dir + "/rasters") << "\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      connInfo["SOURCE"] = aux;
+    else
+      connInfo["SOURCE"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
   
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
