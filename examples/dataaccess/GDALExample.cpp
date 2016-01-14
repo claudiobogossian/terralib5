@@ -54,12 +54,12 @@ void OpenDirectory()
     std::map<std::string, std::string> connInfo;
     
     std::string aux("");
-    std::cout << "Inform the location of your folder of imagens (ENTER to accept default \'" << (data_dir + "/rasters") << "\'): ";
+    std::cout << "Inform the location of your folder of images (ENTER to accept default \'" << (data_dir + "/rasters") << "\'): ";
     std::getline (std::cin, aux);
     if (!aux.empty())
       connInfo["SOURCE"] = aux;
     else
-      connInfo["SOURCE"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+      connInfo["SOURCE"] = data_dir + "/rasters";
   
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -96,9 +96,15 @@ void DataSourceTransactor()
   try
   {
     std::string data_dir = TERRALIB_DATA_DIR;
-
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = data_dir + "/rasters";
+    
+    std::string aux("");
+    std::cout << "Inform the location of your folder of imagens (ENTER to accept default \'" << (data_dir + "/rasters") << "\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      connInfo["SOURCE"] = aux;
+    else
+      connInfo["SOURCE"] = data_dir + "/rasters";
   
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
 
