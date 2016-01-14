@@ -102,9 +102,10 @@ bool te::mnt::Volume::run()
     if (DefLC(pols[p], flin, llin, fcol, lcol))
     {
       //Calculate the volumes.
-      if (CVGrd(pols[p], flin, llin, fcol, lcol, inDsetSrc->getString(m_attr)))
+      std::string attr = inDsetSrc->getString(m_attr);
+      if (CVGrd(pols[p], flin, llin, fcol, lcol, attr))
       {
-        m_polyvec.push_back(inDsetSrc->getString(m_attr));
+        m_polyvec.push_back(attr);
       }
     }
     pols.clear();
