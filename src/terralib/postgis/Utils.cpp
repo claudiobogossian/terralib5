@@ -661,6 +661,9 @@ static const char* sg_pg_encoding [] = {"UTF8", "WIN1250", "WIN1251", "WIN1252",
 
 const char* te::pgis::GetPGEncoding(te::common::CharEncoding encoding)
 {
+  if (encoding == te::common::UNKNOWN_CHAR_ENCODING)
+    return "";
+  
   return sg_pg_encoding[encoding];
 }
 
