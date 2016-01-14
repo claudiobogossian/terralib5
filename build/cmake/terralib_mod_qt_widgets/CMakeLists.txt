@@ -898,6 +898,8 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PolygonSymbolizerWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/RasterSymbolizerDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/RasterSymbolizerWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/RuleProperty.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ScalePropertyItem.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SelectedChannelWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ShadedReliefWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/StyleControllerWidget.h

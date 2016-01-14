@@ -52,7 +52,7 @@ namespace te
       // Find the polygon bounding box.
       bool DefLC(te::gm::Polygon *pol, int& flin, int& llin, int& fcol, int& lcol);
 
-      bool CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, int lcol);
+      bool CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, int lcol, std::string &polid);
 
       te::da::DataSourcePtr m_inrstDsrc;
       std::string m_inrstDsetName;
