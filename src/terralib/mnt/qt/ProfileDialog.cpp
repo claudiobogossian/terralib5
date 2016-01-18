@@ -36,6 +36,7 @@
 #include "../../statistics/core/Utils.h"
 
 #include "ProfileDialog.h"
+#include "ProfileResultDialog.h"
 #include "ui_ProfileDialogForm.h"
 
 // Qt
@@ -49,6 +50,7 @@
 
 // Boost
 #include <boost/filesystem.hpp>
+
 
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
@@ -76,9 +78,6 @@ te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_selectGeometryPushButton, SIGNAL(clicked()), this, SLOT(onSelectGeometryClicked()));
   connect(m_ui->m_clearSelectionPushButton, SIGNAL(clicked()), this, SLOT(onClearSelectionClicked()));
 
-// help info
-  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
-  m_ui->m_helpPushButton->setPageReference("plugins/sa/sa_bayesglobal.html");
 }
 
 te::mnt::ProfileDialog::~ProfileDialog()
@@ -236,8 +235,10 @@ void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
   }
 }
 
+
 void te::mnt::ProfileDialog::onOkPushButtonClicked()
-{//m_ui->m_vectorlayersComboBox->count() == 0
+{
+  //m_ui->m_vectorlayersComboBox->count() == 0
   //raster
   if (!m_rasterinputLayer.get() || !m_vectorinputLayer.get())
   {
@@ -289,8 +290,6 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
 
   //end vector
 
-  bool result = false;
-
   Profile* profile = new Profile();
   profile->setInput(inrasterDataSource, inDsetName, inDsetType);
 
@@ -302,7 +301,16 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
   
   // chamada da função principal
   std::vector< std::vector<te::gm::LineString*> > profileSet;
-  profile->runRasterProfile(raster, visadas, profileSet);
+//  profile->runRasterProfile(raster, visadas, profileSet);
+
+  te::mnt::ProfileResultDialog result(m_ui->m_titleLineEdit->text(), m_ui->m_yAxisLineEdit->text(), profileSet, this->parentWidget());
+
+  if (result.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  accept();
   //result = profile->run(raster);
 
 }

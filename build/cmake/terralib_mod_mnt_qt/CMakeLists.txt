@@ -26,6 +26,8 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
+include_directories(${QWT_INCLUDE_DIR})
+
 
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEMNTDLL)

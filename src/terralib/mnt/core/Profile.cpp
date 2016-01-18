@@ -180,14 +180,16 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
   //itVisadas será uma linha e para isso tem que percorrer os pontos dela
   while (itVisadas != visadas.end())
   {
+    te::gm::LineString *l = (*itVisadas);
     //int t = (*itVisadas)->getNPoints();
-    for (std::size_t i = 0; i < (*itVisadas)->getNPoints(); i++)
+    te::gm::Point *endpt = l->getEndPoint();
+    for (std::size_t i = 0; i < l->getNPoints(); i++)
     {
       //pt1Theme = itVisadas[i]->getX(i);
       //pt1Theme = itVisadas[i]->getY;
 
-      pt1X = itVisadas[i]->getX(i);
-      pt1Y = itVisadas[i]->getY(i);
+      pt1X = l->getX(i);
+      pt1Y = l->getY(i);
 
       //collin = raster->getGrid()->geoToGrid(pt1Theme.getX(), pt1Theme.getY());
       collin = raster->getGrid()->geoToGrid(pt1X, pt1Y);
@@ -199,15 +201,14 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
       line.insert(std::map<double, double>::value_type(0.0, zval));
 
       ind_pf++;
-      //i++;
-      te::gm::Point ptEnd((*itVisadas)->getEndPoint()->getX(), (*itVisadas)->getEndPoint()->getY());
+//      te::gm::Point ptEnd(endpt->getX(), endpt->getY());
 
-      while (itVisadas[i]->getPointN(i) != (*itVisadas)->getEndPoint())
+      while (l->getPointN(i) != endpt)
       {
         //pt2Theme = itVisadas[i]->getX;
        // pt2Theme = itVisadas[i]->getY;
-        pt2X = itVisadas[i]->getX(i);
-        pt2Y = itVisadas[i]->getY(i);
+        pt2X = l->getX(i);
+        pt2Y = l->getY(i);
 
         if (pt1X > pt2X)
         {
@@ -302,7 +303,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
         pt1X = pt2X;
         pt1Y = pt2Y;
         line.insert(std::map<double, double>::value_type(dist, zval));
-        //i++;
+        i++;
       }
 
       te::gm::LineString* profile = new te::gm::LineString(0, te::gm::LineStringType);
