@@ -53,7 +53,7 @@
 
 
 
-Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr)
 
 te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -157,7 +157,7 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
           if (dsType->hasGeom())
           {
             std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            te::gm::GeomType gmType = geomProp->getGeometryType();
+            //te::gm::GeomType gmType = geomProp->getGeometryType();
             /*if (gmType == te::gm::PolygonType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
               gmType == te::gm::PolygonZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType ||
               gmType == te::gm::PolygonMType || gmType == te::gm::MultiPolygonMType || gmType == te::gm::PolyhedralSurfaceMType ||
@@ -299,7 +299,7 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
   te::gm::MultiLineString isolines(0, te::gm::MultiLineStringZType, m_srid);
   std::vector<te::gm::LineString*> visadas = profile->prepareVector(invectorDsetName, invectorDataSource, geostype);
   
-  // chamada da função principal
+  // chamada da fun\E7\E3o principal
   std::vector< std::vector<te::gm::LineString*> > profileSet;
 //  profile->runRasterProfile(raster, visadas, profileSet);
 

@@ -37,9 +37,9 @@ TerraLib Team at <terralib - team@terralib.org>.
 #include <fstream>
 
 //QWT
-#include <qwt/qwt_symbol.h>
-#include <qwt/qwt_text.h>
-#include <qwt/qwt_plot_curve.h>
+#include <qwt_symbol.h>
+#include <qwt_text.h>
+#include <qwt_plot_curve.h>
 
 void GeraTeste(QwtPlotCurve *profile, QColor cor)
 {
@@ -60,7 +60,7 @@ void GeraTeste(QwtPlotCurve *profile, QColor cor)
   profile->setPen(CurvePen);
 }
 
-te::mnt::ProfileResultDialog::ProfileResultDialog(QString& tittle, QString &yaxis, std::vector< std::vector<te::gm::LineString*> > &profileSet,
+te::mnt::ProfileResultDialog::ProfileResultDialog(QString tittle, QString yaxis, std::vector< std::vector<te::gm::LineString*> > &profileSet,
   QWidget* parent,
   Qt::WindowFlags f)
   : QDialog(parent, f),
