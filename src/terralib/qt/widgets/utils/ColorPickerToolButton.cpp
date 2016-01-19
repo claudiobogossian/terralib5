@@ -28,7 +28,8 @@
 
 te::qt::widgets::ColorPickerToolButton::ColorPickerToolButton(QWidget* parent)
   : QToolButton(parent),
-    m_popup(new ColorPickerPopup)
+    m_popup(new ColorPickerPopup),
+    m_isOpen(false)
 {
   setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
   setPopupMode(QToolButton::MenuButtonPopup);
@@ -65,8 +66,17 @@ void te::qt::widgets::ColorPickerToolButton::resizeEvent(QResizeEvent* e)
 
 void te::qt::widgets::ColorPickerToolButton::mousePressEvent(QMouseEvent* /*e*/)
 {
-  m_popup->move(mapToGlobal(QPoint(0, height())));
-  m_popup->show();
+  if (!m_isOpen)
+  {
+    m_popup->move(mapToGlobal(QPoint(0, height())));
+    m_popup->show();
+    m_isOpen = true;
+  }
+  else
+  {
+    m_popup->close();
+    m_isOpen = false;
+  }
 }
 
 void te::qt::widgets::ColorPickerToolButton::updateIcon()
@@ -83,4 +93,5 @@ void te::qt::widgets::ColorPickerToolButton::onPopupSelected(const QColor& color
 {
   setColor(color);
   emit colorChanged(color);
+  m_isOpen = false;
 }
