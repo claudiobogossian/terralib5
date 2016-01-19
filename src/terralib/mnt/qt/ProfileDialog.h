@@ -65,7 +65,7 @@ namespace te
 
       void onSelectGeometryClicked();
       void onClearSelectionClicked();
-      void onOkPushButtonClicked();      
+      void onOkPushButtonClicked();   
 
     public:
       te::map::AbstractLayerPtr getLayer();
