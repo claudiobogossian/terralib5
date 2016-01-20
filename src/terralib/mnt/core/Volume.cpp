@@ -177,8 +177,8 @@ bool te::mnt::Volume::CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, 
 
     if (unitin->getId() != te::common::UOM_Metre)
     {
-      convertAngleToPlanar(areabase, unitout);
-      convertAngleToPlanar(polarea, unitout);
+      convertAngleToPlanar(areabase, unitout, 1);
+      convertAngleToPlanar(polarea, unitout, 1);
     }
   }
 
