@@ -234,7 +234,6 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
   if(gp && !m_ui->m_sridLineEdit->text().isEmpty())
     gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
 
-  te::da::DataSourceManager::getInstance().insert(m_dataSource);
   return m_dsConverter;
 }
 
@@ -282,12 +281,20 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     dsInfo->setAccessDriver("OGR");
     dsInfo->setType("OGR");
 
-    te::da::DataSourceInfoManager::getInstance().add(dsInfo);
-
     m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
     m_dataSource->setConnectionInfo(dsInfo->getConnInfo());
 
-    m_dataSource->setId(boost::uuids::to_string(u));
+    if(te::da::DataSourceInfoManager::getInstance().add(dsInfo))
+    {
+      m_dataSource->setId(boost::uuids::to_string(u));
+      te::da::DataSourceManager::getInstance().insert(m_dataSource);
+    }
+    else
+    {
+      dsInfo = te::da::DataSourceInfoManager::getInstance().getByConnInfo(dsInfo->getConnInfoAsString());
+      m_dataSource->setId(dsInfo->getId());
+    }
+
     m_dataSource->open();
 
     //Creating the DataSet and DataType
