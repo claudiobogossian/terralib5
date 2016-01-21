@@ -212,8 +212,8 @@ bool te::mnt::TINGeneration::CreateInitialTriangles(size_t nsamples)
     if (i < 4)
     {
       m_line[(unsigned int)linlist[i]].Nodes(nodelist[i], nodelist[((i + 1) % 4)]);
-      m_node[nodelist[i]].setEdge(linlist[i]);
-      m_node[nodelist[((i + 1) % 4)]].setEdge(linlist[i]);
+      m_node[(unsigned int)nodelist[i]].setEdge(linlist[i]);
+      m_node[(unsigned int)nodelist[((i + 1) % 4)]].setEdge(linlist[i]);
     }
 
     if (i < 2)
@@ -227,8 +227,8 @@ bool te::mnt::TINGeneration::CreateInitialTriangles(size_t nsamples)
     else
     {
       m_line[(unsigned int)linlist[i]].Nodes(nodelist[2], nodelist[0]);
-      m_node[nodelist[2]].setEdge(linlist[i]);
-      m_node[nodelist[0]].setEdge(linlist[i]);
+      m_node[(unsigned int)nodelist[2]].setEdge(linlist[i]);
+      m_node[(unsigned int)nodelist[0]].setEdge(linlist[i]);
       m_line[(unsigned int)linlist[i]].Polygons((int32_t)t2, (int32_t)t1);
     }
   }
@@ -685,24 +685,24 @@ bool te::mnt::TINGeneration::TwoNewTriangles(int32_t t, int32_t nodeId, int32_t*
   //   has t and t1 as the triangles that shared the edge.
   int32_t an0 = m_lline++;
   m_line[(unsigned int)an0].Nodes(vn, NodeId(t, 0)); //v0 is the vertex 0 of t
-  m_node[vn].setEdge(an0);
-  m_node[NodeId(t, 0)].setEdge(an0);
+  m_node[(unsigned int)vn].setEdge(an0);
+  m_node[(unsigned int)NodeId(t, 0)].setEdge(an0);
   m_line[(unsigned int)an0].Polygons(t, t1);
 
   //4. Create a new edge an1 that connects the vertex vn and v1 and
   //   has t1 and t2 as triangles thats shares the edge.
   int32_t an1 = m_lline++;
   m_line[(unsigned int)an1].Nodes(vn, NodeId(t, 1)); //v1 is the vertex 1 of t
-  m_node[vn].setEdge(an1);
-  m_node[NodeId(t, 1)].setEdge(an1);
+  m_node[(unsigned int)vn].setEdge(an1);
+  m_node[(unsigned int)NodeId(t, 1)].setEdge(an1);
   m_line[(unsigned int)an1].Polygons(t1, t2);
 
   //5. Creates a new wdge an2 that connects the vertex vn and v2 and
   //  has t2 and t as triangles that shares the edge.
   int32_t an2 = m_lline++;
   m_line[(unsigned int)an2].Nodes(vn, NodeId(t, 2)); //v2 is the vertex 2 of t
-  m_node[vn].setEdge(an2);
-  m_node[NodeId(t, 2)].setEdge(an2);
+  m_node[(unsigned int)vn].setEdge(an2);
+  m_node[(unsigned int)NodeId(t, 2)].setEdge(an2);
   m_line[(unsigned int)an2].Polygons(t2, t);
 
   //6. Swap triangle t for t1 on edge a0,
@@ -778,8 +778,8 @@ int32_t te::mnt::TINGeneration::DuplicateTriangle(int32_t t, short n, int32_t v,
     return -1;
 
   m_line[(unsigned int)an0].Nodes(v, vn);
-  m_node[v].setEdge(an0);
-  m_node[vn].setEdge(an0);
+  m_node[(unsigned int)v].setEdge(an0);
+  m_node[(unsigned int)vn].setEdge(an0);
   m_line[(unsigned int)an0].Polygons(t1, tv);
 
   testLines[2] = an;
@@ -792,15 +792,15 @@ int32_t te::mnt::TINGeneration::DuplicateTriangle(int32_t t, short n, int32_t v,
     return -1;
 
   m_line[(unsigned int)an1].Nodes(v, vop);
-  m_node[v].setEdge(an1);
-  m_node[vop].setEdge(an1);
+  m_node[(unsigned int)v].setEdge(an1);
+  m_node[(unsigned int)vop].setEdge(an1);
   m_line[(unsigned int)an1].Polygons(t, t1);
 
   testLines[4] = an1;
 
   //  7. Modifies the edge an to connect vertice v instead of vn,
-  m_node[vn].removeEdge(an);
-  m_node[v].setEdge(an);
+  m_node[(unsigned int)vn].removeEdge(an);
+  m_node[(unsigned int)v].setEdge(an);
   m_line[(unsigned int)an].ExchangeNode(vn, v);
 
   //  8. Defines the edges of t as an, aj and an1,
@@ -1165,17 +1165,17 @@ bool te::mnt::TINGeneration::UpdateTriangles(int32_t t, int32_t tv, int32_t ai)
   //       vertice vj pelo vertice vn.
   if (m_line[(unsigned int)ai].getNodeTo() == vi)
   {
-    m_node[vi].removeEdge(ai);
-    m_node[vk].setEdge(ai);
-    m_node[vn].setEdge(ai);
+    m_node[(unsigned int)vi].removeEdge(ai);
+    m_node[(unsigned int)vk].setEdge(ai);
+    m_node[(unsigned int)vn].setEdge(ai);
     m_line[(unsigned int)ai].setNodeTo(vk);
     m_line[(unsigned int)ai].setNodeFrom(vn); // this is vj
   }
   else if (m_line[(unsigned int)ai].getNodeTo() == vj)
   {
-    m_node[vj].removeEdge(ai);
-    m_node[vn].setEdge(ai);
-    m_node[vk].setEdge(ai);
+    m_node[(unsigned int)vj].removeEdge(ai);
+    m_node[(unsigned int)vn].setEdge(ai);
+    m_node[(unsigned int)vk].setEdge(ai);
     m_line[(unsigned int)ai].setNodeTo(vn);
     m_line[(unsigned int)ai].setNodeFrom(vk); // this is vi
   }
@@ -2814,13 +2814,13 @@ bool te::mnt::TINGeneration::borderUp()
 
         if (from == vii)
         {
-          m_node[from].removeEdge(lii);
+          m_node[(unsigned int)from].removeEdge(lii);
           m_line[(unsigned int)lii].setNodeFrom(-1);
           m_line[(unsigned int)lii].setType(Deletedline);
         }
         if (to == vii)
         {
-          m_node[to].removeEdge(lii);
+          m_node[(unsigned int)to].removeEdge(lii);
           m_line[(unsigned int)lii].setNodeTo(-1);
           m_line[(unsigned int)lii].setType(Deletedline);
         }

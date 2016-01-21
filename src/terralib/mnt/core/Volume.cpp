@@ -143,9 +143,9 @@ bool te::mnt::Volume::DefLC(te::gm::Polygon *pol, int& flin, int& llin, int& fco
   if (flin < 0)
     flin = 0;
   if ((int)m_raster->getNumberOfColumns() <= lcol)
-    lcol = m_raster->getNumberOfColumns() - 1;
+    lcol = (int)m_raster->getNumberOfColumns() - 1;
   if ((int)m_raster->getNumberOfRows() <= llin)
-    llin = m_raster->getNumberOfRows() - 1;
+    llin = (int)m_raster->getNumberOfRows() - 1;
 
   return true;
 }
@@ -203,7 +203,7 @@ bool te::mnt::Volume::CVGrd(te::gm::Polygon *pol, int flin, int llin, int fcol, 
       if (loc.locate(pt, polGeom.get()) == geos::geom::Location::INTERIOR)
       {
        // Verify ans atualize the profile volume or embankment volume.
-       m_raster->getValue(j, i, value);
+       m_raster->getValue((unsigned)j, (unsigned)i, value);
        if (value >= m_dummy)
        {
           contr = false;

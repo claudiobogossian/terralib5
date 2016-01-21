@@ -299,16 +299,16 @@ te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double
   std::vector<te::gm::Point*> lringOut;
   lringOut.push_back(lringIn.getPointN(0));
 
-  int initial = 0;
-  int final = 2;
+  unsigned int initial = 0;
+  unsigned int final = 2;
 
-  while (initial < (int)(lringIn.size() - 2))
+  while (initial < (lringIn.size() - 2))
   {
     bool distIsGreater = false;
 
     while (!distIsGreater)
     {
-      for (int i = initial + 1; i < final; i++)
+      for (unsigned i = initial + 1; i < final; i++)
       {
         te::gm::Coord2D pInter;
         if (TePerpendicularDistance(te::gm::Coord2D(lringIn.getX(initial), lringIn.getY(initial)), te::gm::Coord2D(lringIn.getX(final), lringIn.getY(final)), 
@@ -329,7 +329,7 @@ te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double
       {
         final++;
 
-        if ((final) >= (int)lringIn.size())
+        if ((final) >= lringIn.size())
         {
           lringOut.push_back(lringIn.getPointN(final - 2));
 
@@ -342,7 +342,7 @@ te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double
       else
         break;
 
-      if (final >= (int)lringIn.size())
+      if (final >= lringIn.size())
       {
         initial = final;
         distIsGreater = true;
@@ -1330,9 +1330,9 @@ bool te::mnt::Least_square_fitting(double *vectx, double *vecty, short np, short
 
   try
   {
-    powx = new double[np];
+    powx = new double[(unsigned)np];
     sumpow = new double[200];
-    fx = new double[np];
+    fx = new double[(unsigned)np];
   }
   catch (std::bad_alloc& ba)
   {

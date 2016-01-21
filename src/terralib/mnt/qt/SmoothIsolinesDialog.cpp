@@ -310,7 +310,7 @@ void te::mnt::SmoothIsolinesDialog::onOkPushButtonClicked()
     iso->setSRID(srid);
     if (srid)
     {
-      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid);
+      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned)srid);
       te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
 
       if (unitin->getId() != te::common::UOM_Metre)
