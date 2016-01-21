@@ -53,14 +53,10 @@
       public:
       
         /*! \brief Default constructor. */
-        CreateIsolinesInputParams()
-       {
-       }
+        CreateIsolinesInputParams() {}
 
         /*! \brief Virtual destructor. */
-      ~CreateIsolinesInputParams()
-      {
-      }
+      ~CreateIsolinesInputParams() {}
 
       public:
 

@@ -340,7 +340,7 @@ void te::mnt::ProfileDialog::DrawSelected(const std::vector<te::gm::LineString*>
   if ((m_srid != TE_UNKNOWN_SRS) && (window->getMapDisplay()->getSRID() != TE_UNKNOWN_SRS) && (m_srid != window->getMapDisplay()->getSRID()))
     needRemap = true;
 
-  for (int v = 0; v < visadas.size(); ++v)
+  for (unsigned int v = 0; v < visadas.size(); ++v)
   {
     canvas.setLineColor(color[v%color.size()]);
     if (needRemap)

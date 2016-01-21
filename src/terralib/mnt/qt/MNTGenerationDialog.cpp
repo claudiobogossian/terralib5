@@ -599,7 +599,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
        // bands[0]->m_noDataValue = dummy;
 
-        te::common::TaskProgress task("Calculating DTM...", te::common::TaskProgress::UNDEFINED, outputHeight*outputWidth);
+        te::common::TaskProgress task("Calculating DTM...", te::common::TaskProgress::UNDEFINED, (int)(outputHeight*outputWidth));
 
         // create raster
         std::auto_ptr<te::rst::Raster> outRst(te::rst::RasterFactory::make("GDAL", grid, bands, outdsinfo));

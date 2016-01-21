@@ -55,7 +55,7 @@ void GeraTeste(QwtPlotCurve *profile, te::color::RGBAColor cor)
   profile->setSamples(values);
 
   QPen CurvePen;
-  CurvePen.setColor(QColor(cor.getRgba()));
+  CurvePen.setColor(QColor((QRgb)cor.getRgba()));
   CurvePen.setStyle(Qt::SolidLine);
   CurvePen.setWidth(0);
   profile->setPen(CurvePen);
@@ -89,18 +89,18 @@ te::mnt::ProfileResultDialog::ProfileResultDialog(
   chartDisplay->adjustDisplay();
 
   te::qt::widgets::ChartDisplayWidget* displayWidget = 0;
-  for (int i = 0; i < profileSet.size(); ++i)
+  for (unsigned int i = 0; i < profileSet.size(); ++i)
   {
     QwtPlotCurve *profile = new QwtPlotCurve();
     profile->setOrientation(Qt::Horizontal);
     QVector<QPointF> values;
-    for (int ii = 0; ii < profileSet[i]->size(); ++ii)
+    for (unsigned int ii = 0; ii < profileSet[i]->size(); ++ii)
       values.push_back(QPointF(profileSet[i]->getX(ii), profileSet[i]->getY(ii)));
 
     profile->setSamples(values);
 
     QPen CurvePen;
-    CurvePen.setColor(QColor(color[i%color.size()].getRgba()));
+    CurvePen.setColor(QColor((QRgb)color[i%color.size()].getRgba()));
     CurvePen.setStyle(Qt::SolidLine);
     CurvePen.setWidth(0);
     profile->setPen(CurvePen);

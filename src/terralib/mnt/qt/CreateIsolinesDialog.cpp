@@ -165,7 +165,7 @@ std::vector<double> GetNumericData(te::da::DataSet* dataSet, std::vector<std::st
       if (dataSet->getPropertyName(index) == propName[p])
       {
         index_selected.push_back(index);
-        type.push_back(dataSet->getPropertyDataType(index));
+        type.push_back((unsigned)dataSet->getPropertyDataType(index));
       }
 
   dataSet->moveFirst();
@@ -462,7 +462,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
       val.push_back(m_ui->m_isolineslistWidget->item(i)->text().toDouble());
       if (m_ui->m_guidelinescheckBox->isChecked())
       {
-        if (val[i] == gLineValue)
+        if (val[(unsigned)i] == gLineValue)
         {
           guideval.push_back(gLineValue);
           gLineValue += (step * 5);

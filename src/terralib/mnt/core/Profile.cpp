@@ -168,7 +168,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
   int ind_pfant = -1;
 
   double xmin, xmax, ymin, ymax, zval, pt1X, pt1Y, pt2X, pt2Y;
-  int col, row;
+  unsigned int col, row;
 
   te::gm::Coord2D collin;
 
@@ -191,9 +191,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
   }
   te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
 
-  bool first = false;
-
-  for (int v = 0; v < visadas.size(); ++v)
+  for (std::size_t v = 0; v < visadas.size(); ++v)
   {
     te::gm::LineString *l = visadas[v];
     for (std::size_t i = 0; i < l->getNPoints()-1; i++)
