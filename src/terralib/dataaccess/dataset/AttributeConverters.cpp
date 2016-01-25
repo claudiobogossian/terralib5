@@ -46,7 +46,8 @@ te::dt::AbstractData* te::da::GenericAttributeConverter(DataSet* dataset, const 
 
   // Gets the data from input data set
   std::auto_ptr<te::dt::AbstractData> data(dataset->getValue(indexes[0]));
-  assert(data.get());
+  if(!data.get())
+    return 0;
 
   // Source and Destination Types
   int srcType = data->getTypeCode();
