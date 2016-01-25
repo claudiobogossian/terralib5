@@ -1646,7 +1646,7 @@ void te::pgis::Transactor::renameDataSet(const std::string& name, const std::str
   execute(sql);
 
   // If the table has a geometry column, we need to propagate changes to the geometry columns table
-  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(name);
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(newName);
 
   if(dt->hasGeom())
   {

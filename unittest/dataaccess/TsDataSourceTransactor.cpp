@@ -112,6 +112,26 @@ void TsDataSourceTransactor::tcGetDataSource()
 //#endif
 }
 
+void TsDataSourceTransactor::tcRenameDataSet()
+{
+  std::map< std::string, std::string > cInfo = m_ds->getConnectionInfo();
+  
+  CPPUNIT_ASSERT(m_ds != 0);
+  m_ds->open();
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
+  CPPUNIT_ASSERT(t.get() != 0);
+
+  std::vector< std::string > dsNames = t->getDataSetNames();
+  CPPUNIT_ASSERT(dsNames.size() > 0);
+  
+  const std::string oldDsName = dsNames[ 0 ];
+  const std::string newDsName = "newDsName";
+  
+  t->renameDataSet( oldDsName, newDsName );
+  
+  t->renameDataSet( newDsName, oldDsName );
+}
+
 void TsDataSourceTransactor::tcGetDataSet()
 {
 //#ifdef TE_COMPILE_ALL
