@@ -27,6 +27,7 @@
 #define __TERRALIB_MNT_INTERNAL_PROFILEDIALOG_H
 
 // TerraLib
+#include "../../color/RGBAColor.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
@@ -65,7 +66,9 @@ namespace te
 
       void onSelectGeometryClicked();
       void onClearSelectionClicked();
-      void onOkPushButtonClicked();      
+      void onOkPushButtonClicked();   
+
+      void DrawSelected(const std::vector<te::gm::LineString*> visadas, const std::vector<te::color::RGBAColor>color);
 
     public:
       te::map::AbstractLayerPtr getLayer();
@@ -80,6 +83,7 @@ namespace te
       std::list<te::map::AbstractLayerPtr> m_layers;
       mntType m_inputType;  //!< Input type (TIN, GRID)
       int m_srid;
+      double m_dummy;
       std::auto_ptr<te::da::DataSetType> m_dsType;
       te::map::AbstractLayerPtr m_rasterinputLayer;                                
       te::map::AbstractLayerPtr m_vectorinputLayer;

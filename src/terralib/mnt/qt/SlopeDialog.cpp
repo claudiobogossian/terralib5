@@ -24,6 +24,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 //terralib
+#include "../../common/progress/ProgressManager.h"
+#include "../../common/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -33,6 +35,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../mnt/core/Slope.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
 #include "../../raster.h"
 #include "SlopeDialog.h"
@@ -311,88 +314,86 @@ void te::mnt::SlopeDialog::onHelpPushButtonClicked()
 void te::mnt::SlopeDialog::onOkPushButtonClicked()
 {
 
-  if (!m_inputLayer.get())
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  try
   {
-    QMessageBox::information(this, tr("Slope"), tr("Select an input layer!"));
-    return;
-  }
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    if (!m_inputLayer.get())
+      throw te::common::Exception(TE_TR("Select an input layer!"));
 
-  te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
-  if (!indsLayer)
-  {
-    QMessageBox::information(this, tr("Slope"), tr("Can not execute this operation on this type of layer!"));
-    return;
-  }
+    te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
+    if (!indsLayer)
+      throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
 
-  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
-  if (!inDataSource.get())
-  {
-    QMessageBox::information(this, tr("Slope"), tr("The selected input data source can not be accessed!"));
-    return;
-  }
+    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
+    if (!inDataSource.get())
+      throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
 
-  std::string inDsetName = indsLayer->getDataSetName();
-  std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
+    std::string inDsetName = indsLayer->getDataSetName();
+    std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
 
-  // Checking consistency of output paramenters
-  if (m_ui->m_repositoryLineEdit->text().isEmpty())
-  {
-    QMessageBox::information(this, tr("Slope"), tr("Select a repository for the resulting layer."));
-    return;
-  }
+    // Checking consistency of output paramenters
+    if (m_ui->m_repositoryLineEdit->text().isEmpty())
+      throw te::common::Exception(TE_TR("Select a repository for the resulting layer."));
 
-  if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
-  {
-    QMessageBox::information(this, tr("Slope"), tr("Define a name for the resulting layer."));
-    return;
-  }
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+      throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
-  std::map<std::string, std::string> outdsinfo;
-  boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
-  if (m_toFile)
-  {
-    if (boost::filesystem::exists(uri))
+    std::map<std::string, std::string> outdsinfo;
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+
+    if (m_toFile)
     {
-      QMessageBox::information(this, tr("Slope"), tr("Output file already exists! Remove it or select a new name and try again."));
-      return;
+      if (boost::filesystem::exists(uri))
+        throw te::common::Exception(TE_TR("Output file already exists! Remove it or select a new name and try again."));
+
+      std::size_t idx = outputdataset.find(".");
+      if (idx != std::string::npos)
+        outputdataset = outputdataset.substr(0, idx);
+
+      outdsinfo["URI"] = uri.string();
     }
 
-    std::size_t idx = outputdataset.find(".");
-    if (idx != std::string::npos)
-      outputdataset = outputdataset.substr(0, idx);
+    te::mnt::Slope *decl = new te::mnt::Slope();
+    decl->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
+    decl->setOutput(outdsinfo);
+    char grad, slope;
+    if (m_ui->m_aspectradioButton->isChecked())
+      grad = 'a';
+    else
+      grad = 's';
+    if (m_ui->m_degreesradioButton->isChecked())
+      slope = 'g';
+    else
+      slope = 'p';
 
-    outdsinfo["URI"] = uri.string();
+    double dummy = m_ui->m_dummylineEdit->text().toDouble();
+
+    decl->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), grad, slope, m_inputLayer->getSRID(), dummy);
+
+    decl->run();
+
+    delete decl;
+
+    m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
+  }
+  catch (const std::exception& e)
+  {
+    QApplication::restoreOverrideCursor();
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    QMessageBox::information(this, tr("Slope "), e.what());
+    return;
   }
 
-  this->setCursor(Qt::WaitCursor);
-
-  te::mnt::Slope *decl = new te::mnt::Slope();
-  decl->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
-  decl->setOutput(outdsinfo);
-  char grad, slope;
-  if (m_ui->m_aspectradioButton->isChecked())
-    grad = 'a';
-  else
-    grad = 's';
-  if (m_ui->m_degreesradioButton->isChecked())
-    slope = 'g';
-  else
-    slope = 'p';
-
-  double dummy = m_ui->m_dummylineEdit->text().toDouble();
-
-  decl->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), grad, slope, m_inputLayer->getSRID(), dummy);
-
-  decl->run();
-
-  delete decl;
-
-  m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
-
-  this->setCursor(Qt::ArrowCursor);
+  QApplication::restoreOverrideCursor();
+  te::common::ProgressManager::getInstance().removeViewer(id);
   accept();
+
 
 }
 

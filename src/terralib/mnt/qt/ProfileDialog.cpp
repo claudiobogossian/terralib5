@@ -30,12 +30,18 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../mnt/core/Profile.h"
+#include "../../qt/af/ApplicationController.h"
+#include "../../qt/af/BaseApplication.h"
+#include "../../qt/af/connectors/MapDisplay.h"
+#include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/canvas/MapDisplay.h"
 #include "../../raster.h"
 #include "../../statistics/core/Utils.h"
 
 #include "ProfileDialog.h"
+#include "ProfileResultDialog.h"
 #include "ui_ProfileDialogForm.h"
 
 // Qt
@@ -51,7 +57,8 @@
 #include <boost/filesystem.hpp>
 
 
-Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
+
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr)
 
 te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -76,9 +83,6 @@ te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_selectGeometryPushButton, SIGNAL(clicked()), this, SLOT(onSelectGeometryClicked()));
   connect(m_ui->m_clearSelectionPushButton, SIGNAL(clicked()), this, SLOT(onClearSelectionClicked()));
 
-// help info
-  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
-  m_ui->m_helpPushButton->setPageReference("plugins/sa/sa_bayesglobal.html");
 }
 
 te::mnt::ProfileDialog::~ProfileDialog()
@@ -158,7 +162,7 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
           if (dsType->hasGeom())
           {
             std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            te::gm::GeomType gmType = geomProp->getGeometryType();
+            //te::gm::GeomType gmType = geomProp->getGeometryType();
             /*if (gmType == te::gm::PolygonType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
               gmType == te::gm::PolygonZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType ||
               gmType == te::gm::PolygonMType || gmType == te::gm::MultiPolygonMType || gmType == te::gm::PolyhedralSurfaceMType ||
@@ -236,73 +240,116 @@ void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
   }
 }
 
+
 void te::mnt::ProfileDialog::onOkPushButtonClicked()
-{//m_ui->m_vectorlayersComboBox->count() == 0
-  //raster
-  if (!m_rasterinputLayer.get() || !m_vectorinputLayer.get())
+{
+  //m_ui->m_vectorlayersComboBox->count() == 0
+  try
   {
-    QMessageBox::information(this, tr("Profile"), tr("Select an input layer!"));
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    //raster
+    if (!m_rasterinputLayer.get() || !m_vectorinputLayer.get())
+      throw te::common::Exception(TE_TR("Select an input layer!"));
+
+    if (m_rasterinputLayer->getSRID() != m_vectorinputLayer->getSRID())
+      throw te::common::Exception(TE_TR("Can not execute this operation with different SRIDs geometries!"));
+
+    m_dummy = m_ui->m_dummylineEdit->text().toDouble();
+
+    te::map::DataSetLayer* indsrasterLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterinputLayer.get());
+    if (!indsrasterLayer)
+      throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
+
+    te::da::DataSourcePtr inrasterDataSource = te::da::GetDataSource(indsrasterLayer->getDataSourceId(), true);
+    if (!inrasterDataSource.get())
+      throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
+
+    std::string inDsetName = indsrasterLayer->getDataSetName();
+    std::auto_ptr<te::da::DataSetType> inDsetType(inrasterDataSource->getDataSetType(inDsetName));
+    // end raster
+
+    //vector
+    te::map::DataSetLayer* indsvectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorinputLayer.get());
+    if (!indsvectorLayer)
+      throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
+
+    te::da::DataSourcePtr invectorDataSource = te::da::GetDataSource(indsvectorLayer->getDataSourceId(), true);
+    if (!invectorDataSource.get())
+      throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
+
+    std::string invectorDsetName = indsvectorLayer->getDataSetName();
+    std::auto_ptr<te::da::DataSetType> invectorDsetType(invectorDataSource->getDataSetType(invectorDsetName));
+    m_srid = m_vectorinputLayer->getSRID();
+
+    //end vector
+    
+    Profile* profile = new Profile();
+    profile->setInput(inrasterDataSource, inDsetName, inDsetType, m_dummy);
+
+    std::auto_ptr<te::rst::Raster> raster = profile->getPrepareRaster();
+    te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
+    std::string geostype;
+    te::gm::MultiLineString isolines(0, te::gm::MultiLineStringZType, m_srid);
+    std::vector<te::gm::LineString*> visadas = profile->prepareVector(invectorDsetName, invectorDataSource, geostype);
+
+    // Principal function calling
+    std::vector<te::gm::LineString*> profileSet;
+    profile->runRasterProfile(raster, visadas, profileSet);
+
+    std::vector<te::color::RGBAColor> color;
+    color.push_back(te::color::RGBAColor(255, 0, 0, 255));
+    color.push_back(te::color::RGBAColor(255, 0, 255, 255));
+    color.push_back(te::color::RGBAColor(0, 255, 255, 255));
+    color.push_back(te::color::RGBAColor(37, 127, 0, 255));
+    color.push_back(te::color::RGBAColor(0, 0, 255, 255));
+
+    DrawSelected(visadas, color);
+
+    te::mnt::ProfileResultDialog result(m_ui->m_titleLineEdit->text(), m_ui->m_yAxisLineEdit->text(), profileSet, color, this->parentWidget());
+
+    if (result.exec() != QDialog::Accepted)
+    {
+      return;
+    }
+
+   //result = profile->run(raster);
+ }
+  catch (const std::exception& e)
+  {
+    QApplication::restoreOverrideCursor();
+    QMessageBox::information(this, tr("Profile "), e.what());
     return;
   }
 
-  if (m_rasterinputLayer->getSRID() != m_vectorinputLayer->getSRID())
-  {
-    QMessageBox::information(this, tr("Profile"), tr("Can not execute this operation with different SRIDs geometries!"));
-    return;
-  }
-
-  te::map::DataSetLayer* indsrasterLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterinputLayer.get());
-  if (!indsrasterLayer)
-  {
-    QMessageBox::information(this, tr("Profile"), tr("Can not execute this operation on this type of layer!"));
-    return;
-  }
-
-  te::da::DataSourcePtr inrasterDataSource = te::da::GetDataSource(indsrasterLayer->getDataSourceId(), true);
-  if (!inrasterDataSource.get())
-  {
-    QMessageBox::information(this, tr("Profile"), tr("The selected input data source can not be accessed!"));
-    return;
-  }
-
-  std::string inDsetName = indsrasterLayer->getDataSetName();
-  std::auto_ptr<te::da::DataSetType> inDsetType(inrasterDataSource->getDataSetType(inDsetName));
-  // end raster
-
-  //vector
-  te::map::DataSetLayer* indsvectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorinputLayer.get());
-  if (!indsvectorLayer)
-  {
-    QMessageBox::information(this, tr("Profile"), tr("Can not execute this operation on this type of layer!"));
-    return;
-  }
-
-  te::da::DataSourcePtr invectorDataSource = te::da::GetDataSource(indsvectorLayer->getDataSourceId(), true);
-  if (!invectorDataSource.get())
-  {
-    QMessageBox::information(this, tr("Profile"), tr("The selected input data source can not be accessed!"));
-    return;
-  }
-
-  std::string invectorDsetName = indsvectorLayer->getDataSetName();
-  std::auto_ptr<te::da::DataSetType> invectorDsetType(invectorDataSource->getDataSetType(invectorDsetName));
-
-  //end vector
-
-  bool result = false;
-
-  Profile* profile = new Profile();
-  profile->setInput(inrasterDataSource, inDsetName, inDsetType);
-
-  std::auto_ptr<te::rst::Raster> raster = profile->getPrepareRaster(); 
-  te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
-  std::string geostype;
-  te::gm::MultiLineString isolines(0, te::gm::MultiLineStringZType, m_srid);
-  std::vector<te::gm::LineString*> visadas = profile->prepareVector(invectorDsetName, invectorDataSource, geostype);
+  QApplication::restoreOverrideCursor();
+  accept();
   
-  // chamada da função principal
-  std::vector< std::vector<te::gm::LineString*> > profileSet;
-  profile->runRasterProfile(raster, visadas, profileSet);
-  //result = profile->run(raster);
-
 }
+
+void te::mnt::ProfileDialog::DrawSelected(const std::vector<te::gm::LineString*> visadas, const std::vector<te::color::RGBAColor>color)
+{
+  te::qt::af::BaseApplication* window = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  const te::gm::Envelope& displayExtent = window->getMapDisplay()->getExtent();
+  te::qt::widgets::Canvas canvas(window->getMapDisplay()->getDisplayPixmap());
+  canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
+  canvas.setLineWidth(3);
+  canvas.setLineDashStyle(te::map::SolidLine);
+
+  bool needRemap = false;
+
+  if ((m_srid != TE_UNKNOWN_SRS) && (window->getMapDisplay()->getSRID() != TE_UNKNOWN_SRS) && (m_srid != window->getMapDisplay()->getSRID()))
+    needRemap = true;
+
+  for (unsigned int v = 0; v < visadas.size(); ++v)
+  {
+    canvas.setLineColor(color[v%color.size()]);
+    if (needRemap)
+    {
+      visadas[v]->setSRID(m_srid);
+      visadas[v]->transform(window->getMapDisplay()->getSRID());
+    }
+    canvas.draw(visadas[v]);
+  }
+  window->getMapDisplay()->repaint();
+}
+

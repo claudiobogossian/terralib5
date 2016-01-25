@@ -367,7 +367,7 @@ void te::qt::af::BaseApplication::onScaleDisplayChanged()
 {
   double scale = m_display->getDisplay()->getScale();
 
-  m_scaleCmbBox->setCurrentText(QString::number(scale, 'f', 0));
+  m_scaleCmbBox->setItemText(m_scaleCmbBox->currentIndex(), QString::number(scale, 'f', 0));
 }
 
 void te::qt::af::BaseApplication::onLayerRemoveTriggered()

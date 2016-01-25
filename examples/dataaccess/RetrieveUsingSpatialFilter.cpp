@@ -15,9 +15,9 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
     int row = 0;
 
-    std::cout << std::endl << "=== DataSet: public.br_munic_2001 ===" << std::endl;
+    std::cout << std::endl << "=== DataSet: public.br_munic_2001: 5 first rows" << std::endl;
 
-    while(dataset->moveNext())
+    while(dataset->moveNext() && row<5)
     {
       std::string municName = dataset->getString(2);
 
@@ -49,7 +49,7 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
     int row = 0;
 
-    std::cout << std::endl << "=== DataSet: public.br_munic_2001 ===" << std::endl;
+    std::cout << std::endl << "=== DataSet: public.br_munic_2001: objects that intercepts location (-43.6107606714293, -20.3913548070123)" << std::endl;
 
     while(dataset->moveNext())
     {
@@ -80,7 +80,7 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
  
     int row = 0;
 
-    std::cout << std::endl << "=== DataSet: public.br_munic_2001 ===" << std::endl;
+    std::cout << std::endl << "=== DataSet: public.br_munic_2001: objects that intercepts the last object found in the previous query" << std::endl;
 
     while(dataset->moveNext())
     {
@@ -114,7 +114,7 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 	  pol->push_back(s);
     pol->setSRID(srid); //srid =  4291
 
-    std::cout << std::endl << "Polygon NPoints: " << pol->getNPoints() << std::endl; 
+    std::cout << std::endl << "Created a polygon with: " << pol->getNPoints() << "points. " << std::endl;
 
     std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet("public.br_munic_2001", "geom", pol, te::gm::INTERSECTS);
 
@@ -122,7 +122,7 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
     int row = 0;
 
-    std::cout << std::endl << "=== DataSet: public.br_munic_2001 ===" << std::endl;
+    std::cout << std::endl << "=== DataSet: public.br_munic_2001: objects that intercept the polygon" << std::endl;
 
     while(dataset->moveNext())
     {
@@ -150,7 +150,7 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
     int row = 0;
 
-    std::cout << std::endl << "=== DataSet: public.br_munic_2001 ===" << std::endl;
+    std::cout << std::endl << "=== DataSet: public.br_munic_2001: objects that intercept a box" << std::endl;
 
     while(dataset->moveNext())
     {
@@ -166,83 +166,5 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
       delete g;
     }
     std::cout << std::endl;
-  }   
-
-////////???VER te::map::DataSetLayer e depois arrumar esses exenplos
-////////// now we will retrieve all cities and then we will refine with cities that contains a given point
-////////  {
-////////    //te::da::DataSet* dataset = transactor->getDataSet("public.br_munic_2001");
-////////    std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer("public.br_munic_2001"));
-////////
-////////    te::gm::Point pt(-43.6107606714293, -20.3913548070123 , 4291, 0);
-////////
-////////    //dataset->setFilter(&pt, te::gm::INTERSECTS);
-////////    te::da::DataSet* dataset = layer->getData(pt, te::gm::INTERSECTS);
-////////
-////////    //const te::da::DataSetType* dType = dataset->getType();
-////////
-////////    //int pos = static_cast<int>(dType->getDefaultGeomPropertyPos());
-////////    std::size_t pos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
-////////
-////////    int row = 0;
-////////
-////////    std::cout << std::endl << "=== DataSet: public.br_munic_2001 ===" << std::endl;
-////////
-////////    while(dataset->moveNext())
-////////    {
-////////      std::string municName = dataset->getString(2);
-////////      std::cout << std::endl << "City Name: " << municName;
-////////
-////////      std::cout << std::endl << "ROW: " << row++ << "\t"; 
-////////
-////////      te::gm::Geometry* g = dataset->getGeometry(pos);
-////////
-////////      //std::cout << dType->getProperty(pos)->getName() << ": " << g->asText() << std::endl;
-////////      std::cout << dataset->getPropertyName(pos) << ": " << g->asText() << std::endl;
-////////
-////////      delete g;
-////////    }
-////////
-////////    delete dataset;
-////////
-////////    std::cout << std::endl;
-////////  }   
-////////  
-//////// now we will retrieve all cities and then refine with a box filter
-//////  {
-//////     te::gm::Envelope box(-43.9329795837402, -20.6328010559082, -43.4036407470703, -20.1612071990967);
-//////
-//////    //te::da::DataSet* dataset = transactor->getDataSet("public.br_munic_2001");
-//////    std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer("public.br_munic_2001"));
-//////    te::da::DataSet* dataset = layer->getData(box, te::gm::INTERSECTS);
-//////
-//////    //dataset->setFilter(&box, te::gm::INTERSECTS);
-//////
-//////    //const te::da::DataSetType* dType = dataset->getType();
-//////
-//////    //int pos = static_cast<int>(dType->getDefaultGeomPropertyPos());
-//////    std::size_t pos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
-//////
-//////    int row = 0;
-//////
-//////    std::cout << std::endl << "=== DataSet: public.br_munic_2001 ===" << std::endl;
-//////
-//////    while(dataset->moveNext())
-//////    {
-//////      std::string municName = dataset->getString(2);
-//////      std::cout << std::endl << "City Name: " << municName;
-//////
-//////      std::cout << std::endl << "ROW: " << row++ << "\t"; 
-//////
-//////      te::gm::Geometry* g = dataset->getGeometry(pos);
-//////
-//////      //std::cout << dType->getProperty(pos)->getName() << ": " << g->asText() << std::endl;
-//////      std::cout << dataset->getPropertyName(pos) << ": " << g->asText() << std::endl;
-//////
-//////      delete g;
-//////    }
-//////
-//////    delete dataset;
-//////
-//////    std::cout << std::endl;
+  }
 }

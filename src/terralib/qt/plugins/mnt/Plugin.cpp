@@ -86,7 +86,7 @@ void te::qt::plugins::mnt::Plugin::startup()
 // add plugin menu
   QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Processing");
   m_mntMenu = new QMenu(pluginMenu);
- // m_mntMenu->setIcon(QIcon::fromTheme("vp-vectorprocessing-icon"));
+  m_mntMenu->setIcon(QIcon::fromTheme("mnt-processing-icon"));
 
   // Insert action before plugin manager action
   QAction* pluginsSeparator = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");

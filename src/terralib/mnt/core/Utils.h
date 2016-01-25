@@ -100,6 +100,7 @@ namespace te
 
     void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
+    TEMNTEXPORT bool convertAngleToPlanar(double& val, te::common::UnitOfMeasurePtr planar, int type);
     TEMNTEXPORT bool convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit);
 
     TEMNTEXPORT void getMinMax(te::rst::Raster* inputRst, double &vmin, double &vmax);

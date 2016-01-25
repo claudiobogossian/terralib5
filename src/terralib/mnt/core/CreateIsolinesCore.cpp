@@ -234,9 +234,14 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
 {
   boost::thread_group threadGenerateSegments;
 
- 
-  for (unsigned int vb = 0; vb < vecBlocks.size(); ++vb)
+  int steps = (int)vecBlocks.size();
+ // for (unsigned i = 0; i < vecBlocks.size(); ++i)
+
+  te::common::TaskProgress task("Creating Isolines...", te::common::TaskProgress::UNDEFINED, steps);
+
+  for (std::size_t vb = 0; vb < vecBlocks.size(); ++vb)
   {
+    task.pulse();
     te::gm::Coord2D coordLowerLeft = raster->getGrid()->gridToGeo(0, vecBlocks[vb].m_finalRow);
     te::gm::Coord2D coordUpperRight = raster->getGrid()->gridToGeo(raster->getNumberOfColumns() - 1, vecBlocks[vb].m_initalRow);
 
@@ -247,7 +252,6 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
     double xmax = coordUpperRight.getX() + (raster->getResolutionX() / 2);
     double ymax = coordUpperRight.getY() + (raster->getResolutionY() / 2);
 
-   
     std::map<std::string, std::string> rinfo;
 
     rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(vecBlocks[vb].m_numRows);
@@ -541,16 +545,14 @@ bool te::mnt::CreateIsolines::connectLines(std::vector<te::gm::LineString*>  vec
   for (unsigned int i = 0; i < vecSegments.size(); ++i)
     segmentsTree.insert(*(vecSegments[i]->getMBR()), (int)i);
 
-  
   te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)srid);
-  double tol=0;
-  if (unitin->getId() == te::common::UOM_Metre)
+  double tol = 0.000001;
+  if (unitin.get())
   {
-    tol = 0.000001;
-  }
-  else if (unitin->getId() == te::common::UOM_Degree)
-  {
-    tol = 0.000001 / 1000;
+    if (unitin->getId() == te::common::UOM_Degree)
+    {
+      tol = 0.000001 / 1000;
+    }
   }
 
   std::vector<te::gm::Envelope> vecEnvelope;

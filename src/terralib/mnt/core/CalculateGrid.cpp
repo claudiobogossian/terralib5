@@ -123,7 +123,7 @@ bool te::mnt::CalculateGrid::run()
       points.push_back(te::gm::PointZ(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
     double zvalue;
 
-    te::common::TaskProgress task("Calculating DTM...", te::common::TaskProgress::UNDEFINED, outputHeight*outputWidth);
+    te::common::TaskProgress task("Calculating DTM...", te::common::TaskProgress::UNDEFINED, (int)(outputHeight*outputWidth));
 
     te::gm::Coord2D pg;
     for (unsigned int l = 0; l < outputHeight; l++)
@@ -388,7 +388,7 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
   double resY = m_resy;
 
   double zdummy = m_nodatavalue;
-  int nsteps = m_nPartsY*m_nPartsY + 1;
+  int nsteps = (int)(m_nPartsY*m_nPartsY + 1);
 
   te::common::TaskProgress task("Generating DTM...", te::common::TaskProgress::UNDEFINED, nsteps);
 
