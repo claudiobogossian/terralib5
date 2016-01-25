@@ -7,6 +7,7 @@
 
 #include "Utils.h"
 #include "CalculateGrid.h"
+#include "SplineGrass.h"
 
 #include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSourceTransactor.h"
