@@ -52,8 +52,8 @@
 
 struct te::module::Library::Impl
 {
-    std::string slib_file_name_;  //!< The shared library file name.
-    void* module_;                //!< The handle for a DLLs, SO or a DyLib.
+    std::string slib_file_name;  //!< The shared library file name.
+    void* module;                //!< The handle for a DLLs, SO or a DyLib.
 
 #if defined(TE_PLATFORM) && (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
     static bool added_search_path_;  //!< This flag is very important for Windows because some routines in its API returns 0 with two meanings: error or empty, but there is no way to know which one is right!
@@ -67,8 +67,8 @@ bool te::module::Library::Impl::added_search_path_(false);
 #endif
 
 te::module::Library::Impl::Impl(const std::string& slib_file_name)
-  : slib_file_name_(slib_file_name),
-    module_(nullptr)
+  : slib_file_name(slib_file_name),
+    module(nullptr)
 {
 }
 
@@ -141,16 +141,16 @@ te::module::Library::~Library()
 void
 te::module::Library::load()
 {
-  if(m_pimpl->module_ != nullptr)
+  if(m_pimpl->module != nullptr)
     return;
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
 
-  m_pimpl->module_ = (void*)LoadLibraryA(m_pimpl->slib_file_name_.c_str());
+  m_pimpl->module = (void*)LoadLibraryA(m_pimpl->slib_file_name.c_str());
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
-  m_pimpl->module_ = dlopen(m_pimpl->slib_file_name_.c_str(), RTLD_NOW);
+  m_pimpl->module = dlopen(m_pimpl->slib_file_name.c_str(), RTLD_NOW);
 
 #else
 
@@ -158,38 +158,38 @@ te::module::Library::load()
 
 #endif
 
-  if(m_pimpl->module_ == nullptr)
+  if(m_pimpl->module == nullptr)
   {
     boost::format err_msg("Could not load library: %1%, due to following error: %2%.");
 
-    throw LibraryLoadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name_ % te_get_os_error()).str());
+    throw LibraryLoadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
 }
 
 void
 te::module::Library::unload()
 {
-  if(m_pimpl->module_ == nullptr)
+  if(m_pimpl->module == nullptr)
     return;
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
 
-  BOOL result = FreeLibrary((HMODULE)m_pimpl->module_);
+  BOOL result = FreeLibrary((HMODULE)m_pimpl->module);
 
   if(result == FALSE)
   {
     boost::format err_msg("Could not unload library: %1%, due to following error: %2%.");
 
-    throw LibraryUnloadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name_ % te_get_os_error()).str());
+    throw LibraryUnloadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
-  if(dlclose(m_pimpl->module_))
+  if(dlclose(m_pimpl->module))
   {
     boost::format err_msg("Could not unload library: %1%, due to following error: %2%.");
 
-    throw LibraryUnloadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name_ % te_get_os_error()).str());
+    throw LibraryUnloadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
 
 #else
@@ -198,19 +198,19 @@ te::module::Library::unload()
 
 #endif
 
-  m_pimpl->module_ = nullptr;
+  m_pimpl->module = nullptr;
 }
 
 bool
 te::module::Library::isLoaded() const
 {
-  return (m_pimpl->module_ != nullptr);
+  return (m_pimpl->module != nullptr);
 }
 
 const std::string&
 te::module::Library::getFileName() const
 {
-  return m_pimpl->slib_file_name_;
+  return m_pimpl->slib_file_name;
 }
 
 void*
@@ -224,7 +224,7 @@ te::module::Library::getAddress(const char* symbol) const
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
-  void* f = dlsym(m_pimpl->module_, symbol);
+  void* f = dlsym(m_pimpl->module, symbol);
 
 #else
 
@@ -236,7 +236,7 @@ te::module::Library::getAddress(const char* symbol) const
   {
     boost::format err_msg("Could not find symbol: %1%, in the library %2%, due to the following error: %3%.");
 
-    throw LibrarySymbolNotFoundException() << te::ErrorDescription((err_msg % symbol % m_pimpl->slib_file_name_ % te_get_os_error()).str());
+    throw LibrarySymbolNotFoundException() << te::ErrorDescription((err_msg % symbol % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
 
   return f;
