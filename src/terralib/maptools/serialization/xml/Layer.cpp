@@ -888,6 +888,7 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
       assert(geom);
       env->Union(*geom->getMBR());
     }
+    result->setSRID(gp->getSRID());
   }
 
   result->setExtent(*env);
