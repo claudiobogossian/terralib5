@@ -11,13 +11,13 @@
 #include "../../common/progress/TaskProgress.h"
 
 #include <algorithm>
+#include <math.h>
 #include <vector>
 
 
 te::mnt::SplineInterpolationGrassMitasova::SplineInterpolationGrassMitasova(int minPoints, double tension, double smooth)
 {
   m_minimoPontos = minPoints * 2;
-  m_minimoPontos = m_minimoPontos;
   m_tension = tension;
   m_smooth = smooth;
 }
@@ -34,7 +34,7 @@ void te::mnt::SplineInterpolationGrassMitasova::setControlPoints(double xMin, do
   m_pointsRegion.clear();
   for (std::size_t  i = 0; i<nVectorPoints; i++)
   {
-    te::gm::PointZ pp3d = m_dataset.at(i).second;
+    te::gm::PointZ pp3d = m_dataset[i].second;
     if ((pp3d.getX() >= xMin) && (pp3d.getX() < xMax) && (pp3d.getY() >= yMin) && (pp3d.getY() < yMax))
     {
       //update new point
@@ -56,13 +56,9 @@ double te::mnt::SplineInterpolationGrassMitasova::amax1(double arg1, double arg2
   double res;
 
   if (arg1 >= arg2)
-  {
     res = arg1;
-  }
   else
-  {
     res = arg2;
-  }
   return res;
 }
 
@@ -71,13 +67,9 @@ double te::mnt::SplineInterpolationGrassMitasova::amin1(double arg1, double arg2
   double res;
 
   if (arg1 <= arg2)
-  {
     res = arg1;
-  }
   else
-  {
     res = arg2;
-  }
   return res;
 }
 
@@ -234,9 +226,8 @@ int te::mnt::SplineInterpolationGrassMitasova::IL_matrix_create(
   */
 {
   double xx, yy;
-  double rfsta2, r;
+  double r;
   double d;
-  double fstar2 = fi * fi / 4.;
   std::vector<double> A;
   double RO, amaxa;
   std::size_t i, i1, j, k, k1, k2, l, m;
@@ -252,9 +243,9 @@ int te::mnt::SplineInterpolationGrassMitasova::IL_matrix_create(
   C      FIRST COLUMN
   C
   */
-  for (k = 0; k < ((KMAX2 + 2)*(KMAX2 + 2)); ++k)
-    A.push_back(0.);
+  A.resize((KMAX2 + 2)*(KMAX2 + 2) + 1);
 
+  A[1] = 0;
   for (k = 1; k <= n_points; k++)
   {
     i1 = k + 1;
@@ -287,7 +278,7 @@ int te::mnt::SplineInterpolationGrassMitasova::IL_matrix_create(
 
       {
         r = xx*xx + yy*yy;
-        rfsta2 = fstar2 * (xx * xx + yy * yy);
+      //  rfsta2 = fstar2 * (xx * xx + yy * yy);
       }
 
       i1 = k1 + l;
@@ -336,6 +327,8 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
   unsigned int NCols;
   unsigned int NLines;
 
+  m_tolerance = m_resx / 4.;
+
   std::auto_ptr<te::rst::Raster> rst = Initialize(true, nro_neighb, rx1, ry2, NCols, NLines);
 
   double deltx = m_env.getUpperRightX() - m_env.getLowerLeftX();
@@ -373,20 +366,20 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
   int nsteps = (int)(nPartsY*nPartsX + 1);
   te::common::TaskProgress task("Generating DTM...", te::common::TaskProgress::UNDEFINED, nsteps);
 
-  for (int i = 0; i < nPartsY; i++)
+  for (int iy = 0; iy < nPartsY; iy++)
   {
-    double begin_y = Y1 + (i*ns_region);
-    double end_y = Y1 + ((i + 1)*ns_region);
+    double begin_y = Y1 + (iy*ns_region);
+    double end_y = Y1 + ((iy + 1)*ns_region);
 
     double disty = (end_y - begin_y) * percentageDist;
 
-    for (int j = 0; j < nPartsX; j++)
+    for (int jx = 0; jx < nPartsX; jx++)
     {
       task.pulse();
 
       //computes the beginning and end area
-      double begin_x = X1 + (j*ew_region);
-      double end_x = X1 + ((j + 1)*ew_region);
+      double begin_x = X1 + (jx*ew_region);
+      double end_x = X1 + ((jx + 1)*ew_region);
 
       double distx = (end_x - begin_x) * percentageDist;
 
@@ -429,14 +422,12 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
       }
 
       std::size_t n_points = m_pointsRegion.size();
-      for (std::size_t j = 0; j < n_points; j++)
+      for (std::size_t jj = 0; jj < n_points; jj++)
       {
-        te::gm::PointZ pp3d = m_pointsRegion.at(j);
-        b[j + 1] = pp3d.getZ();
+        te::gm::PointZ pp3d = m_pointsRegion.at(jj);
+        b[jj + 1] = pp3d.getZ();
       }
-      //computes the matrix
-      for (size_t ib = 0; ib < size_t(KMAX2 + 3); ++ib)
-        b.push_back(0);
+      b[0] = 0;
 
       G_lubksb(matrix, (int)n_points + 1, indx, b);
       double errotot = 0.;
@@ -462,9 +453,9 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
 }
 
 int te::mnt::SplineInterpolationGrassMitasova::IL_check_at_points_2d(
-  std::vector<double>& b,			/* solution of linear equations */
-  double &ertot,		/* total error */
-  double zmin,			/* min z-value */
+  std::vector<double>& b, /* solution of linear equations */
+  double &ertot,  /* total error */
+  double zmin,    /* min z-value */
   double dnorm, double fi
   )
 
@@ -485,11 +476,11 @@ int te::mnt::SplineInterpolationGrassMitasova::IL_check_at_points_2d(
   n1 = n_points + 1;
   for (mm = 1; mm <= n_points; mm++)
   {
-    te::gm::PointZ pp3dMM = m_pointsRegion.at(mm - 1);
+    te::gm::PointZ pp3dMM = m_pointsRegion[mm - 1];
     h = b[0];
     for (m = 1; m <= n_points; m++)
     {
-      te::gm::PointZ pp3dM = m_pointsRegion.at(m - 1);
+      te::gm::PointZ pp3dM = m_pointsRegion[m - 1];
       xx = pp3dMM.getX() - pp3dM.getX();
       yy = pp3dMM.getY() - pp3dM.getY();
 
@@ -535,10 +526,6 @@ bool te::mnt::SplineInterpolationGrassMitasova::IL_grid_calc(double xMin, double
   int ngstr = (int)((y2 - yMax) / ns_res + 0.5);
   int nszr = ngstr + n_rows;
 
-  double zminac = 0.;
-  double zmaxac = 0.;
-  int first_time_z = 1;
-
   double stepix = ew_res / dnorm;
   double stepiy = ns_res / dnorm;
 
@@ -555,7 +542,7 @@ bool te::mnt::SplineInterpolationGrassMitasova::IL_grid_calc(double xMin, double
     double yg = (k - ngstr) * stepiy + stepiy / 2.; // fixed by J.H. in July 01 
     for (int m = 1; m <= n_points; m++)
     {
-      te::gm::PointZ pp3d = m_pointsRegion.at(m - 1);
+      te::gm::PointZ pp3d = m_pointsRegion[m - 1];
       double wm = yg - pp3d.getY();
       w[m] = wm;
       w2[m] = wm * wm;
@@ -569,7 +556,7 @@ bool te::mnt::SplineInterpolationGrassMitasova::IL_grid_calc(double xMin, double
       double h = b[0];
       for (int m = 1; m <= n_points; m++)
       {
-        te::gm::PointZ pp3d = m_pointsRegion.at(m - 1);
+        te::gm::PointZ pp3d = m_pointsRegion[m - 1];
         double xx = xg - pp3d.getX();
         double xx2 = xx * xx;
         double r2 = xx2 + w2[m];
@@ -579,21 +566,6 @@ bool te::mnt::SplineInterpolationGrassMitasova::IL_grid_calc(double xMin, double
       }
 
       double zz = h;
-      if (first_time_z)
-      {
-        first_time_z = 0;
-        zmaxac = zminac = zz;
-      }
-      zmaxac = amax1(zz, zmaxac);
-      zminac = amin1(zz, zminac);
-      if ((zz > zMax + 0.1 * (zMax - zMin)) || (zz < zMin - 0.1 * (zMax - zMin)))
-      {
-        static int once = 0;
-        if (!once)
-        {
-          once = 1;
-        }
-      }
       int row = nszr - contadory;
       if (row >= 0 && row < (int)m_rst->getNumberOfRows() &&
         l >= 0 && l < (int)m_rst->getNumberOfColumns())

@@ -506,7 +506,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         }
         else if (m_inter == Mitasova)
         {
-          int mp = m_ui->m_minPtsSpinBox->text().toUInt();
+          int mp = m_ui->m_minPtsMitLineEdit->text().toInt();
           double t = m_ui->m_tensionLineEdit->text().toDouble();
           double s = m_ui->m_smothLineEdit->text().toDouble();
           te::mnt::SplineInterpolationGrassMitasova *grid = new te::mnt::SplineInterpolationGrassMitasova(mp, t, s);
