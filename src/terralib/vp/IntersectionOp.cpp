@@ -37,7 +37,9 @@
 
 te::vp::IntersectionOp::IntersectionOp()
   : m_firstOidSet(0),
-  m_secondOidSet(0)
+  m_secondOidSet(0),
+  m_isFistQuery(false),
+  m_isSecondQuery(false)
 {
 }
 
@@ -56,6 +58,35 @@ void te::vp::IntersectionOp::setInput(te::da::DataSourcePtr inFirstDsrc,
   m_inSecondDsrc = inSecondDsrc;
   m_inSecondDsetName = inSecondDsetName;
   m_secondConverter = secondConverter;
+
+  m_firstOidSet = firstOidSet;
+  m_secondOidSet = secondOidSet;
+}
+
+void te::vp::IntersectionOp::setInput(te::da::DataSourcePtr inFirstDsrc,
+                                      std::string inFirstDsetName,
+                                      std::auto_ptr<te::da::DataSetType> firstDsType,
+                                      std::auto_ptr<te::da::DataSet> firstDs,
+                                      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter,
+                                      te::da::DataSourcePtr inSecondDsrc,
+                                      std::string inSecondDsetName,
+                                      std::auto_ptr<te::da::DataSetType> secondDsType,
+                                      std::auto_ptr<te::da::DataSet> secondDs,
+                                      std::auto_ptr<te::da::DataSetTypeConverter> secondConverter,
+                                      const te::da::ObjectIdSet* firstOidSet,
+                                      const te::da::ObjectIdSet* secondOidSet)
+{
+  m_inFirstDsrc = inFirstDsrc;
+  m_inFirstDsetName = inFirstDsetName;
+  m_firstConverter = firstConverter;
+  m_inSecondDsrc = inSecondDsrc;
+  m_inSecondDsetName = inSecondDsetName;
+  m_secondConverter = secondConverter;
+
+  m_firstDsType = firstDsType;
+  m_firstDs = firstDs;
+  m_secondDsType = secondDsType;
+  m_secondDs = secondDs;
 
   m_firstOidSet = firstOidSet;
   m_secondOidSet = secondOidSet;
@@ -166,8 +197,8 @@ te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
 {
   te::da::DataSetType* dsType = new te::da::DataSetType(m_outDsetName);
 
-  std::auto_ptr<te::da::DataSetType> firstDst = m_inFirstDsrc->getDataSetType(m_inFirstDsetName);
-  std::auto_ptr<te::da::DataSetType> secondDst = m_inSecondDsrc->getDataSetType(m_inSecondDsetName);
+  //std::auto_ptr<te::da::DataSetType> firstDst = m_inFirstDsrc->getDataSetType(m_inFirstDsetName);
+  //std::auto_ptr<te::da::DataSetType> secondDst = m_inSecondDsrc->getDataSetType(m_inSecondDsetName);
 
   te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
   pkProperty->setAutoNumber(true);
@@ -180,13 +211,13 @@ te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
   for (std::size_t i = 0; i < m_attributeVec.size(); ++i)
   {
     te::dt::Property* p = 0;
-    if (m_attributeVec[i].first == firstDst->getName())
+    if (m_attributeVec[i].first == m_firstDsType->getName())
     {
-      p = firstDst->getProperty(m_attributeVec[i].second);      
+      p = m_firstDsType->getProperty(m_attributeVec[i].second);
     }
     else
     {
-      p = secondDst->getProperty(m_attributeVec[i].second);
+      p = m_secondDsType->getProperty(m_attributeVec[i].second);
     }
 
     p->setName(m_attributeVec[i].first + "_" + p->getName());
@@ -194,13 +225,23 @@ te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
     dsType->add(p->clone());
   }
 
-  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(firstDst.get())->getGeometryType(), te::da::GetFirstGeomProperty(secondDst.get())->getGeometryType());
+  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(m_firstDsType.get())->getGeometryType(), te::da::GetFirstGeomProperty(m_secondDsType.get())->getGeometryType());
 
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
   newGeomProp->setGeometryType(newType);
-  newGeomProp->setSRID(te::da::GetFirstGeomProperty(firstDst.get())->getSRID());
+  newGeomProp->setSRID(te::da::GetFirstGeomProperty(m_firstDsType.get())->getSRID());
 
   dsType->add(newGeomProp);
 
   return dsType;
+}
+
+void te::vp::IntersectionOp::setIsFirstQuery()
+{
+  m_isFistQuery = true;
+}
+
+void te::vp::IntersectionOp::setIsSecondQuery()
+{
+  m_isSecondQuery = true;
 }
