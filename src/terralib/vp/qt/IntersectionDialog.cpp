@@ -467,7 +467,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
         te::da::Expression* in = firstOidSet->getExpressionByInClause();
 
-        te::da::And* and = new te::da::And(originalExp->clone(), in);
+        te::da::Expression* cloneWhere = originalExp->clone();
+
+        te::da::And* and = new te::da::And(cloneWhere, in);
 
         te::da::Where* newWhere = new te::da::Where(and);
 
@@ -483,7 +485,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
         te::da::Expression* in = secondOidSet->getExpressionByInClause();
 
-        te::da::And* and = new te::da::And(originalExp->clone(), in);
+        te::da::Expression* cloneWhere = originalExp->clone();
+
+        te::da::And* and = new te::da::And(cloneWhere, in);
 
         te::da::Where* newWhere = new te::da::Where(and);
 
