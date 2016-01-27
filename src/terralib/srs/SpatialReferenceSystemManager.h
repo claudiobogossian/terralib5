@@ -90,7 +90,8 @@ namespace te
        1) an unique index by <auth_name, id>;
        2) a non-unique index by name;
        3) a non-unique index by p4txt;
-       4) a non unuque index by wkt;
+       4) a non-unique index by wkt;
+       5) a non-unique index by auth_name;
        */
       typedef boost::multi_index_container<
       srs_desc,
@@ -98,7 +99,8 @@ namespace te
       boost::multi_index::ordered_unique<BOOST_MULTI_INDEX_CONST_MEM_FUN(srs_desc,std::string,srid)>,
       boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(srs_desc,std::string,m_name)>,
       boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(srs_desc,std::string,m_p4txt)>,
-      boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(srs_desc,std::string,m_wkt)>
+      boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(srs_desc,std::string,m_wkt)>,
+      boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(srs_desc,std::string,m_auth_name)>
       >
       > srs_set;
       
@@ -238,12 +240,18 @@ namespace te
        \return True if the SRS with a given id refers to a geographic spatial reference system or false if not or not founded in the Manager.
        */
       bool isGeographic(unsigned int id, const std::string& authName="EPSG");
-
+	  
       /*!
        \brief Checks if the System Manager is already initialized.
        */
-      bool isInitialized();
-
+      bool isInitialized();	  
+      
+      /*!
+       \brief Returns a SRID, not yet used, to identify an SRS created by an user. 
+       \return a string represent a SRID, not yet used, to identify an SRS created by an user.
+      */
+      std::string getNewUserDefinedSRID();
+      
     protected:
       
       /*! \brief Constructor. */

@@ -183,7 +183,7 @@
           <item>
            <widget class="QToolButton" name="m_addSRSToolButton">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="toolTip">
              <string>Add a new SRS definition</string>
@@ -196,7 +196,7 @@
           <item>
            <widget class="QToolButton" name="m_removeSRSToolButton">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="toolTip">
              <string>Remove a SRS definition</string>
@@ -209,7 +209,7 @@
           <item>
            <widget class="QToolButton" name="m_editSRSToolButton">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="toolTip">
              <string>Edit a SRS definition</string>
@@ -247,11 +247,20 @@
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QPlainTextEdit" name="m_p4descPlainTextEdit">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
           <height>40</height>
          </size>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="plainText">
+         <string notr="true"/>
         </property>
        </widget>
       </item>
