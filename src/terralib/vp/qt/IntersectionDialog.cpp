@@ -469,9 +469,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
         te::da::Expression* cloneWhere = originalExp->clone();
 
-        te::da::And* and = new te::da::And(cloneWhere, in);
+        te::da::And* newAnd = new te::da::And(cloneWhere, in);
 
-        te::da::Where* newWhere = new te::da::Where(and);
+        te::da::Where* newWhere = new te::da::Where(newAnd);
 
         query->setWhere(newWhere);
       }
@@ -487,9 +487,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
         te::da::Expression* cloneWhere = originalExp->clone();
 
-        te::da::And* and = new te::da::And(cloneWhere, in);
+        te::da::And* newAnd = new te::da::And(cloneWhere, in);
 
-        te::da::Where* newWhere = new te::da::Where(and);
+        te::da::Where* newWhere = new te::da::Where(newAnd);
 
         query->setWhere(newWhere);
       }
