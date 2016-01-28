@@ -60,7 +60,18 @@ te::qt::widgets::SRSDialog::SRSDialog(QWidget* parent, Qt::WindowFlags f,
   m_ui(new Ui::SRSDialogForm),
   m_isUpdate(true)
 {
-  QString sridt = QString("%1").arg(srid);
+  m_ui->setupUi(this);
+  
+  // Signals & slots
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));
+  
+  m_ui->m_helpPushButton->setPageReference("widgets/srs/srs.html");
+  
+  m_ui->m_authority->setPlainText("USER");
+
+  QString sridt;
+  sridt.setNum(srid);
   m_ui->m_srid->setPlainText(sridt);
   m_ui->m_name->setPlainText(name.c_str());
   m_ui->m_p4desc->setPlainText(p4desc.c_str());

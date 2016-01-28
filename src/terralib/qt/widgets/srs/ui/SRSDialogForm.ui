@@ -30,7 +30,7 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_6">
       <item>
-       <widget class="QLabel" name="m_datasourceTypeTitleLabel">
+       <widget class="QLabel" name="m_srsDiagTitleLabel">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -39,7 +39,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Create a new Spatial Reference System (SRS)</string>
+         <string>Create/Edit a Spatial Reference System (SRS)</string>
         </property>
        </widget>
       </item>
@@ -49,9 +49,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QGroupBox" name="groupBox_5">
+      <widget class="QGroupBox" name="m_sridGroupBox">
        <property name="title">
-        <string>New SRID</string>
+        <string>SRID</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
@@ -110,9 +110,9 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="m_sridNameGroupBox">
      <property name="title">
-      <string>Enter with a name for the new SRS</string>
+      <string>SRS Name</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
@@ -140,7 +140,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Enter with a PROJ.4 description for the new SRS</string>
+      <string>SRS PROJ.4 description</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
