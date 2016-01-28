@@ -236,7 +236,7 @@ void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsIn
     it = dsInfo.find("PG_NEWDB_ENCODING");
 
     if(it != it_end)
-      sql += " ENCODING = " + it->second;
+      sql += " ENCODING = '" + it->second + "'";
 
     it = dsInfo.find("PG_NEWDB_TABLESPACE");
 
