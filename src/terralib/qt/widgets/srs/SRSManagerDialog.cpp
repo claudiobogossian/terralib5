@@ -316,7 +316,8 @@ void te::qt::widgets::SRSManagerDialog::onEditSRSPushButtonClicked()
 
   // call the interface with the data selected
   std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(m_selSrsId.first,"USER");
-  te::qt::widgets::SRSDialog dlg(this,0,m_selSrsId.first,name,m_selSrsId.second);
+  std::string p4d = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(m_selSrsId.first,"USER");
+  te::qt::widgets::SRSDialog dlg(this,0,m_selSrsId.first,name,p4d);
   int res = dlg.exec();
   if (res == QDialog::Accepted)
   {
