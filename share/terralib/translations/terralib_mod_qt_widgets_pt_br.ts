@@ -7109,7 +7109,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="146"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="503"/>
-        <source>Surf</source>
+        <source>SURF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7524,7 +7524,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="102"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="317"/>
-        <source>Surf</source>
+        <source>SURF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -13621,72 +13621,72 @@ The layer must have an attribute with the same name of the attribute used to mak
 <context>
     <name>te::qt::widgets::TiePointLocatorParametersWidget</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="177"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="184"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="198"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="205"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="214"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="221"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="228"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="237"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="244"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="251"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="258"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="183"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="190"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="204"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="211"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="222"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="229"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="236"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="249"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="256"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="263"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="270"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="177"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="183"/>
         <source>Geometry assurance not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="184"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="190"/>
         <source>Transformation error not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="198"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="204"/>
         <source>Maximum number of tie-points not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="205"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="211"/>
         <source>Sub-sampled search rescale factor not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="214"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="222"/>
         <source>Maximum euclidean distance not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="221"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="229"/>
         <source>Octaves number not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="228"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="236"/>
         <source>Scales number not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="237"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="249"/>
         <source>Correlation window width not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="244"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="256"/>
         <source>Gaussian filter iterations not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="251"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="263"/>
         <source>Minimum correlation value not defined.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="258"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="270"/>
         <source>Moravec window width not defined.</source>
         <translation type="unfinished"></translation>
     </message>

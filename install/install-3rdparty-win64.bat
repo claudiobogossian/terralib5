@@ -63,9 +63,9 @@ set ZL_LIBRARIES=debug;%ZLD_LIBRARY%;optimized;%ZL_LIBRARY%
 
   cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%TERRALIB_DEPENDENCIES_DIR% .. >nul 2>nul
 
-  MSBuild.exe /m zlib.sln /p:Configuration=Release >nul 2>nul
+  msbuild /m zlib.sln /p:Configuration=Release >nul 2>nul
   
-  MSBuild.exe /m zlib.sln /p:Configuration=Debug >nul 2>nul
+  msbuild /m zlib.sln /p:Configuration=Debug >nul 2>nul
   
   xcopy %ZL_DIR%\build\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   xcopy %ZL_DIR%\build\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
@@ -86,8 +86,8 @@ set READLINE_LIBRARIES=debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%
   
   cd %READLINE_DIR%
 
-  MSBuild.exe /m /p:Configuration=Debug readline-32.sln >nul 2>nul
-  MSBuild.exe /m /p:Configuration=Release readline-32.sln >nul 2>nul
+  msbuild /m /p:Configuration=Debug readline-32.sln >nul 2>nul
+  msbuild /m /p:Configuration=Release readline-32.sln >nul 2>nul
   
   xcopy %READLINE_DIR%\x64\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   xcopy %READLINE_DIR%\x64\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
@@ -127,8 +127,8 @@ set PCRE_LIBRARIES=debug;%PCRED_LIBRARY%;optimized;%PCRE_LIBRARY%
  -D READLINE_LIBRARY:STRING="%READLINE_LIBRARIES%"^
  -D BUILD_SHARED_LIBS=ON .. >nul 2>nul
    
-  MSBuild.exe /m /p:Configuration=Release pcre.sln >nul 2>nul
-  MSBuild.exe /m /p:Configuration=Debug pcre.sln >nul 2>nul
+  msbuild /m /p:Configuration=Release pcre.sln >nul 2>nul
+  msbuild /m /p:Configuration=Debug pcre.sln >nul 2>nul
 ::  cmake --build . --target ALL_BUILD --config Release >nul 2>nul
 ::  cmake --build . --target ALL_BUILD --config Debug >nul 2>nul
 
@@ -156,8 +156,8 @@ set ICONV_LIBRARIES=debug;%ICONVD_LIBRARY%;optimized;%ICONV_LIBRARY%
   
   cd %ICONV_DIR%
 
-  MSBuild.exe /m /p:Configuration=Debug myIconv.sln >nul 2>nul
-  MSBuild.exe /m /p:Configuration=Release myIconv.sln >nul 2>nul
+  msbuild /m /p:Configuration=Debug myIconv.sln >nul 2>nul
+  msbuild /m /p:Configuration=Release myIconv.sln >nul 2>nul
   
   xcopy %ICONV_DIR%\x64\Release\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   xcopy %ICONV_DIR%\x64\Debug\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
@@ -246,8 +246,8 @@ set PNGD_LIBRARY=%PNG_DIR%\deploy\lib\libpng15d.lib
  -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
  -DZLIB_LIBRARY:STRING="%ZL_LIBRARIES%" .. >nul 2>nul
  
-  MSBuild.exe /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
-  MSBuild.exe /m INSTALL.vcxproj >nul 2>nul
+  msbuild /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
+  msbuild /m INSTALL.vcxproj >nul 2>nul
  
  xcopy %PNG_DIR%\deploy\bin\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
@@ -544,9 +544,9 @@ set ICUROOT=%ICU_DIR%
   
   cd %ICU_DIR%\source\allinone
   
-  MSBuild.exe /m /t:makedata /p:Configuration=Release allinone.sln >nul 2>nul
+  msbuild /m /t:makedata /p:Configuration=Release allinone.sln >nul 2>nul
   
-  MSBuild.exe /m /t:common /p:Configuration=Debug allinone.sln >nul 2>nul
+  msbuild /m /t:common /p:Configuration=Debug allinone.sln >nul 2>nul
   
   copy %ICU_DIR%\bin64\icuuc52.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
   copy %ICU_DIR%\bin64\icuuc52d.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
@@ -577,8 +577,8 @@ set XERCES_ICU_LIBRARY=%XERCESCROOT%\src\xercesc\util\MsgLoaders\ICU\resources\x
   
   cd %XERCESCROOT%\projects\Win32\VC12\xerces-all  
 
-  MSBuild.exe /m /t:XercesLib /p:Configuration="ICU Release" xerces-all.sln >nul 2>nul 
-  MSBuild.exe /m /t:XercesLib /p:Configuration="ICU Debug" xerces-all.sln >nul 2>nul
+  msbuild /m /t:XercesLib /p:Configuration="ICU Release" xerces-all.sln >nul 2>nul 
+  msbuild /m /t:XercesLib /p:Configuration="ICU Debug" xerces-all.sln >nul 2>nul
   
 :: Install  
   cd %XERCESCROOT%
@@ -719,11 +719,11 @@ set NETCDFD_LIBRARY=%NETCDF_DIR%\binaries\lib\netcdfd.lib
  -DUSE_HDF5=OFF^
  -DENABLE_NETCDF_4=OFF .. >nul 2>nul
 
-  MSBuild.exe /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
-  MSBuild.exe /m INSTALL.vcxproj >nul 2>nul
+  msbuild /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
+  msbuild /m INSTALL.vcxproj >nul 2>nul
  
-::  MSBuild.exe /m /t:install /p:Configuration=Release netcdf.sln >nul 2>nul 
-::  MSBuild.exe /m /t:install /p:Configuration=Debug netcdf.sln >nul 2>nul
+::  msbuild /m /t:install /p:Configuration=Release netcdf.sln >nul 2>nul 
+::  msbuild /m /t:install /p:Configuration=Debug netcdf.sln >nul 2>nul
  
 ::  cmake --build . --target install --config Release >nul 2>nul
   
@@ -798,11 +798,11 @@ set EXPATD_LIBRARY=%EXPAT_DIR%\binaries\lib\expatd.lib
  -DCMAKE_INSTALL_PREFIX=%EXPAT_DIR%\binaries^
  -DCMAKE_DEBUG_POSTFIX=d .. >nul 2>nul
 
-  MSBuild.exe /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
-  MSBuild.exe /m INSTALL.vcxproj >nul 2>nul
+  msbuild /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
+  msbuild /m INSTALL.vcxproj >nul 2>nul
  
-::  MSBuild.exe /m /t:install /p:Configuration=Release expat.sln >nul 2>nul 
-::  MSBuild.exe /m /t:install /p:Configuration=Debug expat.sln >nul 2>nul
+::  msbuild /m /t:install /p:Configuration=Release expat.sln >nul 2>nul 
+::  msbuild /m /t:install /p:Configuration=Debug expat.sln >nul 2>nul
 
 ::  cmake --build . --target install --config Release >nul 2>nul
   
@@ -909,8 +909,8 @@ set LUACD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\luad.lib
  -DREADLINE_INCLUDE_DIR=%READLINE_INCLUDE_DIR%^
  -DREADLINE_LIBRARY:STRING="debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%" .. >nul 2>nul
   
-  MSBuild.exe /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
-  MSBuild.exe /m INSTALL.vcxproj >nul 2>nul
+  msbuild /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
+  msbuild /m INSTALL.vcxproj >nul 2>nul
   
   copy %LUAC_DIR%\src\lua.h %LUAC_INCLUDE_DIR% >nul 2>nul
   copy %LUAC_DIR%\src\lualib.h %LUAC_INCLUDE_DIR% >nul 2>nul
@@ -955,11 +955,11 @@ cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%TERRALIB_DEPENDEN
  -DZLIB_LIBRARIES:STRING="%ZL_LIBRARIES%"^
  -C terralib.conf.cmake %TERRALIB4_DIR%\build\cmake >nul 2>nul
 
-::  MSBuild.exe /m /t:install /p:Configuration=Release terraView.sln >nul 2>nul 
-::  MSBuild.exe /m /t:install /p:Configuration=Debug terraView.sln >nul 2>nul
-  MSBuild.exe /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
+::  msbuild /m /t:install /p:Configuration=Release terraView.sln >nul 2>nul 
+::  msbuild /m /t:install /p:Configuration=Debug terraView.sln >nul 2>nul
+  msbuild /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
   
-  MSBuild.exe INSTALL.vcxproj >nul 2>nul
+  msbuild INSTALL.vcxproj >nul 2>nul
  
 ::cmake --build . --target install --config Release >nul 2>nul
 

@@ -27,7 +27,7 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${ADO_LIBRARY_DIRS})
-include_directories(${TERRALIB4_INCLUDE_DIRS})
+include_directories(${TE_INCLUDE_DIRS})
 
 add_definitions(-DTETERRALIB4DLL)
 
@@ -44,7 +44,7 @@ target_link_libraries(terralib_mod_terralib4 terralib_mod_dataaccess
                                              terralib_mod_memory
                                              terralib_mod_plugin
                                              terralib_mod_raster
-                                             ${TERRALIB4_LIBRARIES})
+                                             ${TE_LIBRARIES})
 
 set_target_properties(terralib_mod_terralib4
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
