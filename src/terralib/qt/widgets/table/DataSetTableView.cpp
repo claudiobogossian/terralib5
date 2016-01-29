@@ -599,6 +599,90 @@ class TablePopupFilter : public QObject
 
               m_hMenu->popup(pos);
             }
+            else
+            {
+              m_hMenu = new QMenu;
+
+              QAction* act = new QAction(m_hMenu);
+              act->setText(tr("Hide column"));
+              act->setToolTip(tr("Hides the selected column."));
+
+              m_hMenu->addAction(act);
+
+              QMenu* hMnu = GetHiddenColumnsMenu(hHdr, m_dset, m_hMenu);
+
+              if (m_columnPressed == -1)
+                act->setEnabled(false);
+
+              m_hMenu->addAction(hMnu->menuAction());
+
+              QAction* act2 = GetShowAllMenu(hHdr, m_dset, m_hMenu);
+              m_hMenu->addAction(act2);
+
+              QAction* act3 = new QAction(m_hMenu);
+              act3->setText(tr("Reset columns order"));
+              act3->setToolTip(tr("Put all columns in the original order."));
+              m_hMenu->addAction(act3);
+
+              m_hMenu->addSeparator();
+
+              QAction* act5 = new QAction(m_hMenu);
+              act5->setText(tr("Sort data ASC"));
+              act5->setToolTip(tr("Sort data in ascendent order using selected columns."));
+              m_hMenu->addAction(act5);
+
+              QAction* act9 = new QAction(m_hMenu);
+              act9->setText(tr("Sort data DESC"));
+              act9->setToolTip(tr("Sort data in descendent order using selected columns."));
+              m_hMenu->addAction(act9);
+
+              m_hMenu->addSeparator();
+
+              QAction* act4 = new QAction(m_hMenu);
+              act4->setText(tr("Histogram"));
+              act4->setToolTip(tr("Creates a new histogram based on the data of the selected colunm."));
+              m_hMenu->addAction(act4);
+
+              QAction* act10 = new QAction(m_hMenu);
+              act10->setText(tr("Normal Probability"));
+              act10->setToolTip(tr("Show a chart that displays the normal probability curve."));
+              m_hMenu->addAction(act10);
+
+              QAction* act6 = new QAction(m_hMenu);
+              act6->setText(tr("Statistics"));
+              act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
+              m_hMenu->addAction(act6);
+
+              m_hMenu->addSeparator();
+
+              // Signal / Slot connections
+              connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
+              connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
+
+              connect(act4, SIGNAL(triggered()), SLOT(createHistogram()));
+
+              m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
+              m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
+
+
+              connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
+              connect(act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
+              connect(act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
+              connect(act10, SIGNAL(triggered()), SLOT(createNormalDistribution()));
+
+              if (m_caps.get())
+              {
+                QAction* act7 = new QAction(m_hMenu);
+                act7->setText(tr("Add column"));
+                act7->setToolTip(tr("Adds a column to the table."));
+                m_hMenu->addAction(act7);
+                act7->setEnabled(m_caps->supportsAddColumn());
+
+                m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
+              }
+
+              m_hMenu->popup(pos);
+            }
           }
           else if(watched == vport)
           {
