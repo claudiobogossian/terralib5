@@ -62,7 +62,7 @@ namespace te
 
         ~WMSLayerRenderer();
 
-        void draw(te::map::AbstractLayer* layer, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+        void draw(te::map::AbstractLayer* layer, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
 
       private:
 

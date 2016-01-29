@@ -53,7 +53,7 @@ namespace te
         class CreateLayerAction;
         class GeoPackageBuilderAction;
         class GeoPackagePublisherAction;
-        class GatheringLayerConfigurerAction;
+        class GeoPackageSynchronizerAction;
 
         
         class Plugin : public QObject, public te::plugin::Plugin
@@ -95,7 +95,7 @@ namespace te
 
             te::qt::plugins::terramobile::GeoPackageBuilderAction* m_gpBuider;              //!< GeoPackage Builder Operation Process Action
             te::qt::plugins::terramobile::GeoPackagePublisherAction* m_gpPublisher;         //!< GeoPackage Publisher Operation Process Action
-            te::qt::plugins::terramobile::GatheringLayerConfigurerAction* m_glConfiguer;    //!< Gathering Layer Configurer Operation Process Action
+            te::qt::plugins::terramobile::GeoPackageSynchronizerAction* m_gpSync;           //!< GeoPackage Synchronizer Operation Process Action
 
             te::qt::plugins::terramobile::CreateLayerAction* m_createLayer;                 //!< Used to create a new layer
         };

@@ -100,7 +100,7 @@ namespace te
 
         bool isValid() const;
 
-        void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+        void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
 
         const std::string& getType() const;
 

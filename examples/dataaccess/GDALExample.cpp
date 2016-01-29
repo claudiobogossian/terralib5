@@ -9,20 +9,29 @@ void OpenFile()
 {
   try
   {
-    std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL");
-
-    bool res = dsGDAL->isOpened();  // expect false;
-  
+    // let's take the input dataset from a shape file
     std::string data_dir = TERRALIB_DATA_DIR;
-
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+    
+    std::string aux("");
+    std::cout << "Inform the location of your tiff file (ENTER to accept default \'" << (data_dir + "/rasters/cbers2b_rgb342_crop.tif") << "\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      connInfo["URI"] = aux;
+    else
+      connInfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+    
+    std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL");
+    std::cout << "Datasource is opened? " << std::boolalpha << dsGDAL->isOpened() << '\n' << '\n';
   
     dsGDAL->setConnectionInfo(connInfo);
     dsGDAL->open();
   
-    res = dsGDAL->isOpened();  // expect true
-    res = dsGDAL->isValid();   // expect true
+    std::cout << "Datasource is opened? " << std::boolalpha << dsGDAL->isOpened() << '\n' << '\n';
+    std::cout << "Datasource is valid? " << std::boolalpha << dsGDAL->isValid() << '\n' << '\n';
+    
+    if (!dsGDAL->isOpened() || !dsGDAL->isValid())
+      std::cout << "Datasource " << connInfo["URI"] << " can not be used!\n";
 
     PrintDataSets(dsGDAL.get());
   }
@@ -42,9 +51,15 @@ void OpenDirectory()
   try
   {
     std::string data_dir = TERRALIB_DATA_DIR;
-  
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = data_dir + "/rasters";
+    
+    std::string aux("");
+    std::cout << "Inform the location of your folder of images (ENTER to accept default \'" << (data_dir + "/rasters") << "\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      connInfo["SOURCE"] = aux;
+    else
+      connInfo["SOURCE"] = data_dir + "/rasters";
   
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -53,8 +68,12 @@ void OpenDirectory()
     res = ds->isOpened();  // expect false
 
     ds->open();
-    res = ds->isOpened();  // expect true
-    res = ds->isValid();   // expect true
+    
+    std::cout << "Datasource is opened? " << std::boolalpha << ds->isOpened() << '\n' << '\n';
+    std::cout << "Datasource is valid? " << std::boolalpha << ds->isValid() << '\n' << '\n';
+    
+    if (!ds->isOpened() || !ds->isValid())
+      std::cout << "Datasource " << connInfo["SOURCE"] << " can not be used!\n";
 
     PrintDataSets(ds.get());
 
@@ -77,9 +96,15 @@ void DataSourceTransactor()
   try
   {
     std::string data_dir = TERRALIB_DATA_DIR;
-
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = data_dir + "/rasters";
+    
+    std::string aux("");
+    std::cout << "Inform the location of your folder of imagens (ENTER to accept default \'" << (data_dir + "/rasters") << "\'): ";
+    std::getline (std::cin, aux);
+    if (!aux.empty())
+      connInfo["SOURCE"] = aux;
+    else
+      connInfo["SOURCE"] = data_dir + "/rasters";
   
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
 
@@ -89,10 +114,11 @@ void DataSourceTransactor()
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();  // caller gets the pointer ownership, delete it later
 
-    if (tr->dataSetExists("cbers2b_rgb342_crop.tif"))
+    std::string dsName("cbers2b_rgb342_crop.tif");
+    if (tr->dataSetExists(dsName))
     {
       std::auto_ptr<te::da::DataSet> dtset = tr->getDataSet("cbers2b_rgb342_crop.tif");  // caller gets the pointer ownership, delete it later
-      PrintDataSet("cbers2b_rgb342_crop.tif", dtset.get());
+      PrintDataSet(dsName,dtset.get());
     }
   }
   catch(const std::exception& e)
@@ -108,6 +134,6 @@ void DataSourceTransactor()
 void GDALExample()
 {
   OpenFile();
- // OpenDirectory();
+  OpenDirectory();
   DataSourceTransactor();
 }

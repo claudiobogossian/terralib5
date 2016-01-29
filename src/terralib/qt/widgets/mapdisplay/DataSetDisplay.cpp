@@ -112,7 +112,7 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
     te::gm::Envelope* rstEnv = rst->getExtent();
     int rstSrid = rst->getSRID();
 
-    te::map::DrawRaster(rst.get(), m_canvas.get(), *rstEnv, rstSrid, *rstEnv, rstSrid, cs);
+    te::map::DrawRaster(rst.get(), m_canvas.get(), *rstEnv, rstSrid, *rstEnv, rstSrid, cs, 0);
   }
   else if(dataset->hasGeom())
   {

@@ -7,27 +7,17 @@
 #include <iostream>
 #include <exception>
 
-void QueryExample_2()
+std::auto_ptr<te::da::DataSource> GetPostGISConnection();
+
+void QueryExample()
 {
-// let's give the minimal server connection information needed to connect to the database server
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "terralib4";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1";
- 
   try
   {
-// if you are not using the data source manager, create one instance of the data source called ds an other dsOGR!
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-    ds->setConnectionInfo(connInfo);
+    std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+    if (!ds.get())
+      return;
+    
     ds->open();
-
-// let's find out the information in the data source!
-    //ds->loadCatalog();
 
 // get a transactor to interact to the data source
     std::auto_ptr<te::da::DataSourceTransactor> transactor =  ds->getTransactor();
@@ -108,10 +98,10 @@ void QueryExample_2()
         ++i;
       }
 
-// quering a table called public.br_munic_2001 using native interface and returning all neighbours of 'Ouro Preto'
+// quering a table called public.munic_2001 using native interface and returning all neighbours of 'Ouro Preto'
       {
         std::string sql("SELECT * , st_intersects(g1.geom, g2.geom) " 
-                        "FROM br_munic_2001 AS g1, br_munic_2001 AS g2 "
+                        "FROM munic_2001 AS g1, munic_2001 AS g2 "
                         "WHERE g1.nome = 'Ouro Preto' "
                         "AND st_intersects(g1.geom, g2.geom) "
                          ) ;

@@ -15,7 +15,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with TerraLib.See COPYING.If not, write to
 TerraLib Team at <terralib - team@terralib.org>.
-* /
+*/
+
 
 /*!
 \file terralib/mnt/qt/VolumeResultDialog.h

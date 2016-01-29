@@ -90,8 +90,9 @@ namespace te
           \param canvas The canvas were the layer objects will be drawn.
           \param bbox   The interest area to render the map.
           \param srid   The SRS to be used to draw the layer objects.
+          \param scale  The current scale to draw the layer.
          */
-        virtual void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid) = 0;
+        virtual void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale) = 0;
 
         //@}
     

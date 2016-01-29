@@ -20,7 +20,7 @@
 /*!
   \file DataAccessExamples.h
 
-  \brief Examples on how to access/manipulate a specified DatasOURCE.
+  \brief Examples on how to access/manipulate DataSources in TerraLib.
  */
 
 #ifndef __TERRALIB_EXAMPLES_DATAACCESS_INTERNAL_DATAACCESSEXAMPLES_H
@@ -32,24 +32,10 @@
 #include <terralib/datatype_fw.h>
 #include <terralib/dataaccess_fw.h>
 
-//#include <terralib/dataaccess/datasource/datasourceTransactor.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/geometry.h>
 
-
-
-//#include "Config.h"
-
-/*
-  \brief It creates a DataSetType called 'our_country' using the schema 'public' in the given data source.
-
-  \param transactor The transactor to be used to get the DataSetTypePersistence and persist the modifications
-
-  \return A pointer to the created dataset type.
-
-  \exception Exception It throws an exception if something goes wrong.
- */
-te::da::DataSetType* CreateDataSetType(const std::string& datasetname,te::da::DataSetType*dt, te::da::DataSourceTransactor* transactor);
+te::da::DataSetType* CreateDataSetType(const std::string& datasetname,te::da::DataSetType* dt, te::da::DataSourceTransactor* transactor);
 
 te::da::DataSetType* CreateDataSetTypeInMemory(const std::string& datasettypename);
 
@@ -137,17 +123,19 @@ void PrintCatalog(te::da::DataSource* ds);
 
 /*!
   \brief It prints datasets in a given data source.
-
-  \param ds The data source you want to print its data.
+  \param ds The data source you want to print its data
  */
 void PrintDataSets(te::da::DataSource* ds);
 
 /*!
   \brief It prints the data in a given dataset.
-
-  \param dataset Any dataset.
+  \param datasetName the dataset name
+  \param dataset pointer to a dataset. Do not pass NULL.
+ 
+ This function will move the dataset to the item before first and return it there after printing. 
+ 
  */
-void PrintDataSet(const std::string& datasetName, te::da::DataSet* dataset);
+void PrintDataSet(std::string datasetName, te::da::DataSet* dataset);
 
 /*!
   \brief An example showing how to retrieve data using a spatial filter.
@@ -172,6 +160,9 @@ void OGRExampleRead();
 /*! \brief An example using OGR data source driver to persist data to a datafile */
 void ORGExampleWrite();
 
+/*! \brief An example using OGR data source driver to export some ; */
+void ExportingOGR();
+
 /*! \brief An example using PostGIS data source driver. */
 void PostGISExample();
 
@@ -180,9 +171,6 @@ void GDALExample();
 
 /*! \brief Quering a dataset. */
 void QueryExample();
-
-/*! \brief Quering a dataset. */
-void QueryExample_2();
 
 /*! \brief Quering Insert clause. */
 void QueryInsertExample();

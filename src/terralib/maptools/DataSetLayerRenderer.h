@@ -61,7 +61,7 @@ namespace te
         /*! \brief Destructor. */
         ~DataSetLayerRenderer();
 
-        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
 
       private:
 

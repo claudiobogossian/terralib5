@@ -71,6 +71,7 @@ void buidTypeMap(std::map<int, std::string>& typeMap)
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, QObject::tr("Geometry").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toStdString()));
 }
@@ -492,7 +493,7 @@ void te::qt::widgets::DatapPropertiesWidget::onPropertyTypeChanged(int row)
   }
   else
   {
-    if((type <= te::dt::INT16_TYPE && type >= te::dt::UINT64_TYPE) || type != te::dt::FLOAT_TYPE || type != te::dt::DOUBLE_TYPE)
+    if((type <= te::dt::INT16_TYPE || type >= te::dt::UINT64_TYPE) && type != te::dt::FLOAT_TYPE && type != te::dt::DOUBLE_TYPE)
     {
       m_ui->m_xAxisComboBox->removeItem(xyAxis);
       m_ui->m_yAxisComboBox->removeItem(xyAxis);

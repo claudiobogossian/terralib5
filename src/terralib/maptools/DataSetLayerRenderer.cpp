@@ -79,7 +79,8 @@ te::map::DataSetLayerRenderer::~DataSetLayerRenderer()
 void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
                                          Canvas* canvas,
                                          const te::gm::Envelope& bbox,
-                                         int srid)
+                                         int srid, 
+                                         const double& scale)
 {
 // should I render this layer?
   DataSetLayer* dlayer = dynamic_cast<DataSetLayer*>(layer);
@@ -171,7 +172,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
     if(cs == 0)
       throw Exception(TE_TR("The layer style is not a Coverage Style!"));
 
-    DrawRaster(dstype.get(), ds, canvas, ibbox, dlayer->getSRID(), bbox, srid, cs);
+    DrawRaster(dstype.get(), ds, canvas, ibbox, dlayer->getSRID(), bbox, srid, cs, scale);
   }
   else
   {

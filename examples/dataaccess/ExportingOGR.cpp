@@ -21,10 +21,13 @@
 
 #include <boost/foreach.hpp>
 
+// utilitary funcion create a dataset in memory
 te::da::DataSet* create_ds_memory(const std::string& datasetName, te::da::DataSetType* datasettype);
+
 void openFile(const std::string& filename, const std::string dstype);
 void openDirectory(const std::string& filename, const std::string dstype);
 void saveUsingOGR(const std::string& filename, const std::string drivername);
+
 void ExportingOGR()
 {
   std::string data_dir = TERRALIB_DATA_DIR;
@@ -51,7 +54,7 @@ void ExportingOGR()
   saveUsingOGR(data_dir + "/ogr/testeOGR.gml", "GML");
   
   std::cout << std::endl << "6 - ";
-  openFile(data_dir + "/ogr", "OGR");
+  openDirectory(data_dir + "/ogr", "OGR");
 }
 
 void openFile(const std::string& filename, const std::string dstype)

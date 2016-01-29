@@ -118,7 +118,7 @@
       <item>
        <widget class="QStackedWidget" name="m_interparamStackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="m_averagePage">
          <layout class="QFormLayout" name="formLayout">
@@ -158,7 +158,7 @@
             <item>
              <widget class="QSpinBox" name="m_sepXSpinBox">
               <property name="minimum">
-               <number>5</number>
+               <number>1</number>
               </property>
               <property name="maximum">
                <number>1000</number>

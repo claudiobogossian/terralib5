@@ -7,7 +7,9 @@
 
 #include "Utils.h"
 #include "CalculateGrid.h"
+#include "SplineGrass.h"
 
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/SimpleProperty.h"
@@ -15,6 +17,7 @@
 #include "../../geometry/Point.h"
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
+#include "../../raster.h"
 
 //#include <geos.h>
 #include <geos/geom/Coordinate.h>
@@ -39,10 +42,14 @@ size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsr
 
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
+  te::common::TaskProgress task("Reading Samples...", te::common::TaskProgress::UNDEFINED, (int)inDset->size());
+
   inDset->moveBeforeFirst();
   double value;
   while (inDset->moveNext())
   {
+    task.pulse();
+
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
     geostype = gin.get()->getGeometryType();
 
@@ -107,6 +114,8 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
     ptypes.push_back(inDset->getPropertyDataType(i));
   }
 
+  te::common::TaskProgress task("Reading Isolines...", te::common::TaskProgress::UNDEFINED, (int)inDset->size());
+
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
   inDset->moveBeforeFirst();
@@ -114,6 +123,8 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
   while (inDset->moveNext())
   {
+    task.pulse();
+
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
     geostype = gin.get()->getGeometryType();
 
@@ -289,16 +300,16 @@ te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double
   std::vector<te::gm::Point*> lringOut;
   lringOut.push_back(lringIn.getPointN(0));
 
-  int initial = 0;
-  int final = 2;
+  unsigned int initial = 0;
+  unsigned int final = 2;
 
-  while (initial < (int)(lringIn.size() - 2))
+  while (initial < (lringIn.size() - 2))
   {
     bool distIsGreater = false;
 
     while (!distIsGreater)
     {
-      for (int i = initial + 1; i < final; i++)
+      for (unsigned i = initial + 1; i < final; i++)
       {
         te::gm::Coord2D pInter;
         if (TePerpendicularDistance(te::gm::Coord2D(lringIn.getX(initial), lringIn.getY(initial)), te::gm::Coord2D(lringIn.getX(final), lringIn.getY(final)), 
@@ -319,7 +330,7 @@ te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double
       {
         final++;
 
-        if ((final) >= (int)lringIn.size())
+        if ((final) >= lringIn.size())
         {
           lringOut.push_back(lringIn.getPointN(final - 2));
 
@@ -332,7 +343,7 @@ te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double
       else
         break;
 
-      if (final >= (int)lringIn.size())
+      if (final >= lringIn.size())
       {
         initial = final;
         distIsGreater = true;
@@ -349,7 +360,7 @@ te::gm::LineString* te::mnt::DouglasPeuckerTA(te::gm::LineString *lineIn, double
   else
   {
     lineOut = new te::gm::LineString(lringOut.size(), te::gm::LineStringZType);
-    for (int i = 0; i < lringOut.size(); i++)
+    for (std::size_t i = 0; i < lringOut.size(); i++)
     {
       lineOut->setPointN(i, *lringOut[i]);
       lineOut->setZ(i, Zvalue);
@@ -868,8 +879,6 @@ bool te::mnt::defineInterEdge(std::vector<te::gm::PointZ> &ptline, te::gm::Point
   return true;
 }
 
-#include <fstream>      // std::ofstream
-
 bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::gm::LineString> &clinlist, double scale)
 {
   std::vector<te::gm::PointZ> velin;
@@ -878,36 +887,26 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
   std::vector<te::gm::PointZ>::iterator it, itf, itn;
   short borda; // borda = 1 no boundary reached, 2 one boundary reached.
 
-  //std::ofstream ofs("d:\\teste\\Extract.txt", std::ofstream::out | std::ofstream::app);
-  //ofs.precision(8);
-
+ 
   initLineVector(pline, velin);
   borda = 1;
-  //ofs << "velin.size " << velin.size() << std::endl;
-  //for (size_t vv = 0; vv < velin.size(); vv++)
-  //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
 
   //index pindex to the current point of old line
   it = itf = pline.begin();
   itn = ++it;
   te::gm::PointZ ptf(*itf);
   te::gm::PointZ ptn(*itn);
-  //ofs << "pline.size " << pline.size() << std::endl;
   while (it != pline.end())
   {
     ptf = *itf;
     ptn = *itn;
     pt = velin[velin.size()-1];
-    //ofs << "ptf " << ptf.getX() << " " << ptf.getY() << " ptn " << ptn.getX() << " " << ptn.getY() << " pt " << pt.getX() << " " << pt.getY() << std::endl;
     if (equalFptSpt(ptf, pt, scale))
     {// conection on ptf
       velin.push_back(ptn);
       --it;
       it = itf = pline.erase(it);
       itn = pline.erase(it);
-      //ofs << "velin.size " << velin.size() << std::endl;
-      //for (size_t vv = 0; vv < velin.size(); vv++)
-      //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
     }
     else if (equalFptSpt(ptn, pt, scale))
     {// conection on ptn
@@ -915,9 +914,6 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
       --it;
       it = itf = pline.erase(it);
       itn = pline.erase(it);
-      //ofs << "velin.size " << velin.size() << std::endl;
-      //for (size_t vv = 0; vv < velin.size(); vv++)
-      //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
     }
     else
     {
@@ -930,17 +926,11 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
         {// If first point is on boundary -> open contour
           assembLine(clinlist, velin);
           initLineVector(pline, velin); //SSL0296
-          //ofs << "velin.size " << velin.size() << std::endl;
-          //for (size_t vv = 0; vv < velin.size(); vv++)
-          //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
           borda = 1;
         }
         else
         {// If not on boundary, invert line points
           std::reverse(velin.begin(), velin.end());
-          //ofs << " Reverse velin.size " << velin.size() << std::endl;
-          //for (size_t vv = 0; vv < velin.size(); vv++)
-          //  ofs << velin[vv].getX() << " " << velin[vv].getY() << std::endl;
           borda = 2;
         }
         it = itf = pline.begin();
@@ -965,7 +955,6 @@ bool te::mnt::extractLines(std::vector<te::gm::PointZ> &pline, std::vector<te::g
   }
 
   assembLine(clinlist, velin);
-  //ofs.close();
 
   return true;
 }
@@ -1193,15 +1182,14 @@ int te::mnt::onSameSide(te::gm::Coord2D pt1, te::gm::Coord2D pt2, te::gm::Coord2
 bool te::mnt::point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<bool> &fixed, double tol)
 {
   te::gm::PointZ p3d;
-  int32_t npts, nptsmax, i, j, maxdiffindex = 0;
-  double x0 = 0, y0 = 0, z0, coef[5];
+  int32_t npts, i, j, maxdiffindex = 0;
+  double x0 = 0, y0 = 0, coef[5];
   double maxdiff;
   double maxfixptdiff;
   short degree;
 
   npts = 0;
-  nptsmax = 0;
-
+ 
   try
   {
     double *vectd = new double[200];
@@ -1276,7 +1264,6 @@ bool te::mnt::point3dListFilter(std::vector<te::gm::PointZ> &p3dl, std::vector<b
         {
           p3d = p3dlaux[i];
           p3d.setZ(fvectz[i]);
-          z0 = p3d.getZ();
         }
         npts = 0;
         continue;
@@ -1344,9 +1331,9 @@ bool te::mnt::Least_square_fitting(double *vectx, double *vecty, short np, short
 
   try
   {
-    powx = new double[np];
+    powx = new double[(unsigned)np];
     sumpow = new double[200];
-    fx = new double[np];
+    fx = new double[(unsigned)np];
   }
   catch (std::bad_alloc& ba)
   {
@@ -1537,8 +1524,12 @@ bool te::mnt::SaveIso(std::string& outDsetName, te::da::DataSourcePtr &outDsrc, 
 
   int id = 0;
 
+  te::common::TaskProgress task("Saving Isolines...", te::common::TaskProgress::UNDEFINED, (int)isolist.size());
+
   for (unsigned int Idx = 0; Idx < isolist.size(); ++Idx)
   {
+    task.pulse();
+
     te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
     te::gm::LineString gout = isolist[Idx];
     double *zvalue = gout.getZ();
@@ -1611,6 +1602,46 @@ void te::mnt::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::
   }
 }
 
+bool te::mnt::convertAngleToPlanar(double& val, te::common::UnitOfMeasurePtr planar, int type)
+{
+  if (type == 0) //lenght
+  {
+    switch (planar->getId())
+    {
+    case te::common::UOM_Metre:
+      val *= 111000.;            // 1 degree = 111.000 meters
+      break;
+    case te::common::UOM_Kilometre:
+      val *= 111.;                  // 1 degree = 111 kilometers
+      break;
+    case te::common::UOM_Foot:
+      val *= 364173.24;        //  1 feet  = 3.28084 meters
+      break;
+    default:
+      return false;
+    }
+  }
+
+  if (type == 1) //area
+  {
+    switch (planar->getId())
+    {
+    case te::common::UOM_Metre:
+      val *= 111000. * 111000.;            // 1 degree = 111.000 meters
+      break;
+    case te::common::UOM_Kilometre:
+      val *= 111. * 111.;                  // 1 degree = 111 kilometers
+      break;
+    case te::common::UOM_Foot:
+      val *= 364173.24 * 364173.24;        //  1 feet  = 3.28084 meters
+      break;
+    default:
+      return false;
+    }
+  }
+  return true;
+}
+
 
 bool te::mnt::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit)
 {
@@ -1629,4 +1660,33 @@ bool te::mnt::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr uni
     return false;
   }
   return true;
+}
+
+void te::mnt::getMinMax(te::rst::Raster *inputRst, double &vmin, double &vmax)
+{
+  double min = std::numeric_limits<double>::max();
+  double max = std::numeric_limits<double>::min();
+
+  std::complex<double> pixel;
+  unsigned int rf = inputRst->getNumberOfRows() - 1;
+  unsigned int cf = inputRst->getNumberOfColumns() - 1;
+  double no_data = inputRst->getBand(0)->getProperty()->m_noDataValue;
+
+  for (unsigned r = 0; r <= rf; r++)
+    for (unsigned c = 0; c <= cf; c++)
+    {
+      inputRst->getValue(c, r, pixel);
+
+      if (pixel.real() == no_data)
+        continue;
+
+      if (pixel.real() < min)
+        min = pixel.real();
+
+      if (pixel.real() > max)
+        max = pixel.real();
+    }
+
+  vmin = min;
+  vmax = max;
 }

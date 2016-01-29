@@ -57,7 +57,7 @@
               <bool>true</bool>
              </property>
              <property name="text">
-              <string>Minimum Bounding Rectangle (MBR)</string>
+              <string>Minimum Bounding Rectangle</string>
              </property>
             </widget>
            </item>

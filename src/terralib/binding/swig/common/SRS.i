@@ -10,8 +10,13 @@
 %ignore te::srs::SpatialReferenceSystemManager::getIterators;
 %ignore te::srs::SpatialReferenceSystemManager::getSpatialReferenceSystem;
 
+//Python doesn't work with namespaces
+#ifndef SWIGPYTHON
+
 %nspace te::srs::SpatialReferenceSystem;
 %nspace te::srs::SpatialReferenceSystemManager;
+
+#endif // SWIGPYTHON
 
 %{
 #include "terralib/srs/SpatialReferenceSystem.h"

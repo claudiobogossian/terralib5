@@ -54,7 +54,8 @@ te::map::RasterLayerRenderer::~RasterLayerRenderer()
 void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
                                         Canvas* canvas,
                                         const te::gm::Envelope& bbox,
-                                        int srid)
+                                        int srid, 
+                                        const double& scale)
 {
 // should I render this layer?
   RasterLayer* rlayer = dynamic_cast<RasterLayer*>(layer);
@@ -99,5 +100,5 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
   if(cs == 0)
     throw Exception(TE_TR("The layer style is not a Coverage Style!"));
 
-  DrawRaster(raster.get(), canvas, ibbox, rlayer->getSRID(), bbox, srid, dynamic_cast<te::se::CoverageStyle*>(style));
+  DrawRaster(raster.get(), canvas, ibbox, rlayer->getSRID(), bbox, srid, dynamic_cast<te::se::CoverageStyle*>(style), scale);
 }

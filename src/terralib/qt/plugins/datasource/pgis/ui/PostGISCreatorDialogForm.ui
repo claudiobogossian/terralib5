@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>445</width>
-    <height>410</height>
+    <width>456</width>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -237,7 +237,7 @@
               <item>
                <widget class="QLabel" name="m_charsetLabel">
                 <property name="text">
-                 <string>PostGIS Template</string>
+                 <string>Database Template</string>
                 </property>
                </widget>
               </item>

@@ -265,6 +265,7 @@ namespace te
 
           ColorPickerPopup* m_popup;
           QColor m_selectedColor;
+          bool m_isOpen;
       };
 
     } // end namespace widgets

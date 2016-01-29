@@ -90,7 +90,8 @@ te::map::AbstractLayerRenderer::~AbstractLayerRenderer()
 void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
                                           Canvas* canvas,
                                           const te::gm::Envelope& bbox,
-                                          int srid)
+                                          int srid,
+                                          const double& scale)
 {
   if(!bbox.isValid())
     throw Exception(TE_TR("The requested box is invalid!"));
@@ -148,7 +149,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     Grouping* grouping = layer->getGrouping();
     if(grouping && grouping->isVisible())
     {
-      drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, srid);
+      drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, srid, scale);
       return;
     }
 
@@ -170,7 +171,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     if(fts == 0)
       throw Exception(TE_TR("The layer style is not a Feature Type Style!"));
 
-    drawLayerGeometries(layer, geometryProperty->getName(), fts, canvas, ibbox, srid);
+    drawLayerGeometries(layer, geometryProperty->getName(), fts, canvas, ibbox, srid, scale);
   }
   else if(schema->hasRaster())
   {
@@ -213,7 +214,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
       throw Exception((boost::format(TE_TR("Could not retrieve the raster from the layer %1%.")) % layer->getTitle()).str());
 
     // Let's draw!
-    DrawRaster(raster.get(), canvas, ibbox, layer->getSRID(), bbox, srid, cs);
+    DrawRaster(raster.get(), canvas, ibbox, layer->getSRID(), bbox, srid, cs, scale);
   }
   else
   {
@@ -226,7 +227,8 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
                                                          te::se::FeatureTypeStyle* style,
                                                          Canvas* canvas,
                                                          const te::gm::Envelope& bbox,
-                                                         int srid)
+                                                         int srid,
+                                                         const double& scale)
 {
   assert(!geomPropertyName.empty());
 
@@ -243,6 +245,11 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     assert(rule);
 
     // TODO: Should be verified the MinScaleDenominator and MaxScaleDenominator. Where will we put the current scale information? Method parameter?
+
+    if (!(scale >= rule->getMinScaleDenominator() && scale < rule->getMaxScaleDenominator()))
+    {
+      continue;
+    }
 
     // Gets the rule filter
     const te::fe::Filter* filter = rule->getFilter();
@@ -495,9 +502,25 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
                                                           const std::string& geomPropertyName,
                                                           Canvas* canvas,
                                                           const te::gm::Envelope& bbox,
-                                                          int srid)
+                                                          int srid,
+                                                          const double& scale)
 {
   assert(!geomPropertyName.empty());
+
+  //check scale
+  if (layer->getStyle())
+  {
+    if (!layer->getStyle()->getRules().empty())
+    {
+      // The current rule
+      te::se::Rule* rule = layer->getStyle()->getRules()[0];
+
+      if (!(scale >= rule->getMinScaleDenominator() && scale < rule->getMaxScaleDenominator()))
+      {
+        return;
+      }
+    }
+  }
 
   // Creates a canvas configurer
   te::map::CanvasConfigurer cc(canvas);

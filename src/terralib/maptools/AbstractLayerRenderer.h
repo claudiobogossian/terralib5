@@ -84,7 +84,7 @@ namespace te
         /*! \brief Destructor. */
         ~AbstractLayerRenderer();
 
-        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
 
       private:
 
@@ -100,6 +100,7 @@ namespace te
           \param canvas            The canvas were the layer objects will be drawn.
           \param bbox              The interest area to render the map.
           \param srid              The SRS to be used to draw the layer objects.
+          \param scale             The scale used to draw the layer.
 
           \note This method consider that the given layer contains vetorial data.
         */
@@ -108,7 +109,8 @@ namespace te
                                  te::se::FeatureTypeStyle* style,
                                  Canvas* canvas,
                                  const te::gm::Envelope& bbox,
-                                 int srid);
+                                 int srid,
+                                 const double& scale);
 
         /*!
           \brief It draws the grouping of the abstract layer in the given canvas using the SRS informed.
@@ -141,6 +143,7 @@ namespace te
           \param canvas            The canvas were the layer objects will be drawn.
           \param bbox              The interest area to render the map.
           \param srid              The SRS to be used to draw the layer objects.
+          \param scale             The scale used to draw the layer.
 
           \note This method consider that the given layer contains vetorial data.
 
@@ -150,7 +153,8 @@ namespace te
                                   const std::string& geomPropertyName,
                                   Canvas* canvas,
                                   const te::gm::Envelope& bbox,
-                                  int srid);
+                                  int srid,
+                                  const double& scale);
 
         /*!
           \brief It draws the data set geometries in the given canvas using the informed SRS.

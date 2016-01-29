@@ -1,0 +1,22 @@
+This is the TerraView Mobile Plugin
+===================================
+
+Historico de Versoes
+====================
+
+Versão 1.0-alpha do plugin TerraMobile. 
+(a) acessar diferentes fontes de dados geográficos; 
+(b) fazer uma seleção espacial e temporal desses dados; 
+(c) gerar o arquivo GeoPackage com esses dados selecionados. Esse arquivo GeoPackage deve ser aberto e entendido pelo aplicativo mobile.
+
+Versão 1.0-beta do plugin TerraMobile. 
+(a) permitir que o usuário edite o formulário, bem como seu estilo, com as informações que serão coletadas em campo; 
+(b) armazenar todas essas informações sobre o formulário no mesmo GeoPackage com os dados geográficos. Esse arquivo GeoPackage deve ser aberto e entendido pelo aplicativo mobile. 
+
+Versão 1.0-rc do plugin TerraMobile. 
+(a) permitir a sincronização entre os dados coletados em campo e a base de dados do projeto, através do arquivo GeoPackage. 
+
+Versão 1.0 do plugin TerraMobile. 
+(a) ter um mecanismo automático para passar o GeoPackage do plugin para a aplicação mobile e vice-versa. 
+
+Documentação, manual do usuário e instalador. Todos esses documentos devem ser escritos em inglês.

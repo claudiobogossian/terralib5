@@ -32,6 +32,7 @@
 #include "LineSymbolizerProperty.h"
 #include "PointSymbolizerProperty.h"
 #include "RasterSymbolizerWidget.h"
+#include "RuleProperty.h"
 #include "StyleControllerWidget.h"
 #include "StyleExplorer.h"
 #include "StyleDockWidget.h"
@@ -60,10 +61,11 @@ void te::qt::widgets::StyleDockWidget::setStyle(te::se::Style* style, te::map::A
 
 void te::qt::widgets::StyleDockWidget::setTabStatus(bool status)
 {
-  m_tabWidget->setTabEnabled(0, status); // Polygons
-  m_tabWidget->setTabEnabled(1, status); // Lines
-  m_tabWidget->setTabEnabled(2, status); // Points
-  m_tabWidget->setTabEnabled(3, status); // Raster
+  m_tabWidget->setTabEnabled(0, status); // Rules
+  m_tabWidget->setTabEnabled(1, status); // Polygons
+  m_tabWidget->setTabEnabled(2, status); // Lines
+  m_tabWidget->setTabEnabled(3, status); // Points
+  m_tabWidget->setTabEnabled(4, status); // Raster
 }
 
 void te::qt::widgets::StyleDockWidget::updateUi()
@@ -84,6 +86,7 @@ QWidget* te::qt::widgets::StyleDockWidget::buildUi()
 
   connect(m_styleController, SIGNAL(mapRefresh()), this, SLOT(onMapRefresh()));
   connect(m_styleController->getStyleExplorer(), SIGNAL(symbolizerClicked(te::se::Symbolizer*)), this, SLOT(onSymbolizerSelected(te::se::Symbolizer*)));
+  connect(m_styleController->getStyleExplorer(), SIGNAL(ruleClicked(te::se::Rule*)), this, SLOT(onRuleSelected(te::se::Rule*)));
   connect(this, SIGNAL(symbolizerChanged(te::se::Symbolizer*)), m_styleController->getStyleExplorer(), SLOT(onSymbolizerChanged(te::se::Symbolizer*)));
 
   // Tab widget
@@ -91,6 +94,10 @@ QWidget* te::qt::widgets::StyleDockWidget::buildUi()
   m_tabWidget->setTabPosition(QTabWidget::South);
   layout->addWidget(m_tabWidget, 1, 0);
   m_tabWidget->setMinimumWidth(360);
+
+  //Rule Property
+  m_ruleWidget = new te::qt::widgets::RuleProperty(m_tabWidget);
+  m_tabWidget->addTab(m_ruleWidget, tr("Rule"));
 
   // PolygonSymbolizer Property
   m_polyWidget = new te::qt::widgets::PolygonSymbolizerProperty(m_tabWidget);
@@ -117,6 +124,16 @@ QWidget* te::qt::widgets::StyleDockWidget::buildUi()
   return w;
 }
 
+void te::qt::widgets::StyleDockWidget::onRuleSelected(te::se::Rule* r)
+{
+  setTabStatus(false);
+
+  m_tabWidget->setCurrentIndex(0);
+  m_tabWidget->setTabEnabled(0, true);
+
+  m_ruleWidget->setRule(r);
+}
+
 void te::qt::widgets::StyleDockWidget::onSymbolizerSelected(te::se::Symbolizer* s)
 {
   setTabStatus(false);
@@ -124,25 +141,25 @@ void te::qt::widgets::StyleDockWidget::onSymbolizerSelected(te::se::Symbolizer* 
   if(s->getType() == "PolygonSymbolizer")
   {
     m_tabWidget->setCurrentWidget(m_polyWidget);
-    m_tabWidget->setTabEnabled(0, true);
+    m_tabWidget->setTabEnabled(1, true);
     m_polyWidget->setSymbolizer(dynamic_cast<te::se::PolygonSymbolizer*>(s));
   }
   else if(s->getType() == "LineSymbolizer")
   {
     m_tabWidget->setCurrentWidget(m_lineWidget);
-    m_tabWidget->setTabEnabled(1, true);
+    m_tabWidget->setTabEnabled(2, true);
     m_lineWidget->setSymbolizer(dynamic_cast<te::se::LineSymbolizer*>(s));
   }
   else if(s->getType() == "PointSymbolizer")
   {
     m_tabWidget->setCurrentWidget(m_pointWidget);
-    m_tabWidget->setTabEnabled(2, true);
+    m_tabWidget->setTabEnabled(3, true);
     m_pointWidget->setSymbolizer(dynamic_cast<te::se::PointSymbolizer*>(s));
   }
   else if(s->getType() == "RasterSymbolizer")
   {
-    m_tabWidget->setCurrentIndex(3);
-    m_tabWidget->setTabEnabled(3, true);
+    m_tabWidget->setCurrentIndex(4);
+    m_tabWidget->setTabEnabled(4, true);
 
     std::auto_ptr<te::map::LayerSchema> lschema = m_currentLayer->getSchema();
 

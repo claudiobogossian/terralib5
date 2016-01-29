@@ -41,6 +41,14 @@ namespace Ui { class IntersectionDialogForm; }
 
 namespace te
 {
+  namespace qt
+  {
+    namespace widgets
+    {
+      class DoubleListWidget;
+    }
+  }
+
   namespace vp
   {
 // Forward declarations
@@ -70,6 +78,16 @@ namespace te
 
         te::map::AbstractLayerPtr getLayer();
 
+      protected:
+
+        std::vector<std::pair<std::string, std::string> > getSelectedProperties();
+
+        void updateFirstLayerComboBox();
+
+        void updateSecondLayerComboBox();
+
+        void updateDoubleListWidget();
+
       protected slots:
 
         void onFirstLayerComboBoxChanged(int index);
@@ -92,6 +110,7 @@ namespace te
         std::string m_outputArchive;                      //!< Archive information.
         te::map::AbstractLayerPtr m_layerResult;          //!< Generated Layer.
         bool m_toFile;
+        std::auto_ptr<te::qt::widgets::DoubleListWidget> m_doubleListWidget;
     };
   }   // end namespace vp
 }     // end namespace te

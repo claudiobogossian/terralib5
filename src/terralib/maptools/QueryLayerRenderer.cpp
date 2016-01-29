@@ -94,7 +94,8 @@ te::map::QueryLayerRenderer::~QueryLayerRenderer()
 void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
                                           Canvas* canvas,
                                           const te::gm::Envelope& bbox,
-                                          int srid)
+                                          int srid, 
+                                          const double& scale)
 {
   if(!bbox.isValid())
     throw Exception(TE_TR("The requested box is invalid!"));
@@ -217,7 +218,7 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
       throw Exception((boost::format(TE_TR("Could not retrieve the raster from the layer %1%.")) % layer->getTitle()).str());
 
     // Let's draw!
-    DrawRaster(raster.get(), canvas, ibbox, layer->getSRID(), bbox, srid, cs);
+    DrawRaster(raster.get(), canvas, ibbox, layer->getSRID(), bbox, srid, cs, scale);
   }
   else
   {

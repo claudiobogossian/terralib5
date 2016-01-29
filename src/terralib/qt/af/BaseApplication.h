@@ -31,7 +31,7 @@
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
 
-
+#include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
@@ -118,6 +118,10 @@ namespace te
         void onMapSetUnknwonSRIDTriggered();
 
         void onStopDrawTriggered();
+
+        void onScaleComboBoxActivated();
+
+        void onScaleDisplayChanged();
 
         void onLayerRemoveTriggered();
 
@@ -227,6 +231,7 @@ namespace te
         QAction* m_mapStopDrawing;
         QLineEdit* m_mapSRIDLineEdit;
         QLineEdit* m_coordinateLineEdit;
+        QComboBox* m_scaleCmbBox;
 
       private:
         Ui::BaseApplicationForm* m_ui;
