@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "OutputRasterParametersWidget.h"
-#include "RasterInfoDialog.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoDialog.h"
+#include "../raster/RasterInfoWidget.h"
 #include "ui_OutputRasterParametersWidgetForm.h"
 
 //QT
@@ -44,7 +44,7 @@ te::qt::widgets::OutputRasterParametersWidget::OutputRasterParametersWidget(QWid
   m_ui->m_fileToolButton->setIcon(QIcon::fromTheme("folder"));
   m_ui->m_sourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
-  m_rasterInfoDlg.reset( new te::qt::widgets::RasterInfoDialog(this));
+  m_rasterInfoDlg.reset( new te::qt::widgets::RasterInfoDialog(true, this, 0));
 
 //connects
   connect(m_ui->m_sourceToolButton, SIGNAL(clicked()), this, SLOT(onSourceToolButtonClicked()));
@@ -97,17 +97,6 @@ std::string te::qt::widgets::OutputRasterParametersWidget::getName() const
     return m_ui->m_outputLineEdit->text().toStdString();
 
   return "";
-}
-
-bool te::qt::widgets::OutputRasterParametersWidget::overight() const
-{
-  if(m_dataSource)
-    return m_rasterInfoDlg->getWidget()->overight();
-
-  if(m_fileGDAL)
-    return false;
-
-  return false;
 }
 
 void te::qt::widgets::OutputRasterParametersWidget::onSourceToolButtonClicked()

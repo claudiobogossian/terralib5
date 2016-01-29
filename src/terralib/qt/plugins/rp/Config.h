@@ -104,6 +104,13 @@
 #define TE_QT_PLUGIN_RP_HAVE_SEGMENTER
 
 /*!
+\def TE_QT_PLUGIN_RP_HAVE_RASTERSLICING
+
+\brief It defines if the RP Qt Plugin has the raster slicing operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_RASTERSLICING
+
+/*!
 \def TE_QT_PLUGIN_RP_HAVE_RASTERIZATION
 
 \brief It defines if the RP Qt Plugin has the rasterization operation.

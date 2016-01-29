@@ -39,8 +39,8 @@
   #include "GeoPackagePublisherAction.h"
 #endif
 
-#ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GATHERINGLAYERCONFIGURER
-#include "GatheringLayerConfigurerAction.h"
+#ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GEOPACKAGESYNCHRONIZER
+#include "GeoPackageSynchronizerAction.h"
 #endif
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER
@@ -113,9 +113,9 @@ void te::qt::plugins::terramobile::Plugin::registerActions()
   connect(m_gpPublisher, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
-#ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GATHERINGLAYERCONFIGURER
-  m_glConfiguer = new te::qt::plugins::terramobile::GatheringLayerConfigurerAction(m_menu);
-  connect(m_glConfiguer, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+#ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GEOPACKAGESYNCHRONIZER
+  m_gpSync = new te::qt::plugins::terramobile::GeoPackageSynchronizerAction(m_menu);
+  connect(m_gpSync, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER
@@ -138,7 +138,7 @@ void  te::qt::plugins::terramobile::Plugin::unRegisterActions()
 #endif
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GATHERINGLAYERCONFIGURER
-  delete m_glConfiguer;
+  delete m_gpSync;
 #endif
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER

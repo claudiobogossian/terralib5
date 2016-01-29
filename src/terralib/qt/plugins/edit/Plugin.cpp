@@ -122,26 +122,20 @@ void te::qt::plugins::edit::Plugin::startup()
   // Get plugins menu
   QMenu* pluginsMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Plugins");
 
-  // Blocks the edit toolbar in TerraAmazon project
-  if (te::qt::af::AppCtrlSingleton::getInstance().getAppName().compare("TerraAmazon", Qt::CaseInsensitive) > 0)
-  {
+  // Create the main menu
+  m_menu = new QMenu(pluginsMenu);
+  m_menu->setTitle(TE_TR("Edit"));
+  m_menu->setIcon(QIcon::fromTheme("layer-edit"));
 
-    // Create the main menu
-    m_menu = new QMenu(pluginsMenu);
-    m_menu->setTitle(TE_TR("Edit"));
-    m_menu->setIcon(QIcon::fromTheme("layer-edit"));
+  // Insert menu before plugins last action
+  QAction* lastAction = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
+  pluginsMenu->insertMenu(lastAction, m_menu);
 
-    // Insert menu before plugins last action
-    QAction* lastAction = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
-    pluginsMenu->insertMenu(lastAction, m_menu);
+  m_action = new QAction(m_menu);
+  m_action->setText(TE_TR("Edit Tools"));
+  m_menu->addAction(m_action);
 
-    m_action = new QAction(m_menu);
-    m_action->setText(TE_TR("Edit Tools"));
-    m_menu->addAction(m_action);
-
-    connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
-
-  }
+  connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
   TE_LOG_TRACE(TE_TR("TerraLib Edit Qt Plugin startup!"));
 

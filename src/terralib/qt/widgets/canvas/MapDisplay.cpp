@@ -272,10 +272,12 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& 
   // Retrieves a canvas to current layer
   te::qt::widgets::Canvas* canvas = getCanvas(layer);
 
+  double curScale = getScale();
+
   // Draw the current layer
   try
   {
-    layer->draw(canvas, m_extent, m_srid);
+    layer->draw(canvas, m_extent, m_srid, curScale);
   }
   catch(...)
   {
@@ -461,11 +463,21 @@ double te::qt::widgets::MapDisplay::getScale() const
 
     if (unit == "DEGREE")
     {
+      if (envelope.getLowerLeftX()  < -180. || 
+          envelope.getLowerLeftY()  < -80.  ||
+          envelope.getUpperRightX() >  180. ||
+          envelope.getUpperRightY() >  80.)
+      {
+        wdx = envelope.getWidth() * 111133.;
+        wdy = envelope.getHeight() * 111133.;
+      }
+      else
+      {
+        te::gm::Envelope planarEnvelope = te::map::GetWorldBoxInPlanar(envelope, m_srid);
 
-      te::gm::Envelope planarEnvelope = te::map::GetWorldBoxInPlanar(envelope, m_srid);
-
-      wdx = planarEnvelope.getWidth();
-      wdy = planarEnvelope.getHeight();
+        wdx = planarEnvelope.getWidth();
+        wdy = planarEnvelope.getHeight();
+      }
 
       unit ="METRE";
     }

@@ -36,7 +36,7 @@
 #include "../progress/ProgressViewerDialog.h"
 #include "ColorTransformWizard.h"
 #include "ColorTransformWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
 

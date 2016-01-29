@@ -58,6 +58,8 @@ class TsRasterIterator : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST(PolygonIteratorTest1 );
 
+  CPPUNIT_TEST(PolygonIteratorTest2);
+
   // add other tests (tcXxxx)
 
   CPPUNIT_TEST_SUITE_END();
@@ -65,10 +67,15 @@ class TsRasterIterator : public CPPUNIT_NS::TestFixture
   protected :
     
     void CreateTestRaster( unsigned int nBands, unsigned int nLines, 
-      unsigned int nCols, boost::shared_ptr< te::rst::Raster >& rasterPointer );    
+      unsigned int nCols, boost::shared_ptr< te::rst::Raster >& rasterPointer, bool zero = false );
+
+    void Copy2DiskShp(std::vector<te::gm::Polygon*> polygons, std::string shpName);
     
     bool GetDetailedExtent( const te::rst::Grid& grid, 
-      te::gm::LinearRing& detailedExtent );    
+      te::gm::LinearRing& detailedExtent );
+
+    te::gm::LinearRing* createSquare(const double& xCenter, const double& yCenter, 
+                                     const double& size, int srid);
     
     void tcRasterIteratorConstructor1();
 
@@ -81,6 +88,8 @@ class TsRasterIterator : public CPPUNIT_NS::TestFixture
     void tcRasterIteratorGetCol();
 
     void PolygonIteratorTest1();
+
+    void PolygonIteratorTest2();
 
     // add other tests...
 };

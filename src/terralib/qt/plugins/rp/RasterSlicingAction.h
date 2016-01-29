@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-\file src/terraMobilePlugin/GatheringLayerConfigurerAction.h
+  \file terralib/qt/plugins/rp/RasterSlicingAction.h
 
-\brief This file defines the Gathering Layer Configurer Action class
+  \brief This file defines the RasterSlicing class
 */
 
-#ifndef __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GATHERINGLAYERCONFIGURERACTION_H
-#define __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GATHERINGLAYERCONFIGURERACTION_H
+#ifndef __TE_QT_PLUGINS_RP_INTERNAL_RASTERSLICINGACTION_H
+#define __TE_QT_PLUGINS_RP_INTERNAL_RASTERSLICINGACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -36,32 +36,34 @@ namespace te
   {
     namespace plugins
     {
-      namespace terramobile
+      namespace rp
       {
         /*!
-          \class GatheringLayerConfigurerAction
-          
-          \brief This file defines the Gathering Layer Configurer Action class
+          \class RasterSlicingAction
+
+          \brief This class register the RasterSlicing action into RP Plugin.
 
         */
-        class GatheringLayerConfigurerAction : public te::qt::plugins::terramobile::AbstractAction
+        class RasterSlicingAction : public te::qt::plugins::rp::AbstractAction
         {
           Q_OBJECT
 
           public:
 
-            GatheringLayerConfigurerAction(QMenu* menu);
+            RasterSlicingAction(QMenu* menu, QMenu* popupMenu);
 
-            virtual ~GatheringLayerConfigurerAction();
+            virtual ~RasterSlicingAction();
 
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            virtual void onPopUpActionActivated(bool checked);
         };
 
-      } // end namespace thirdParty
+      } // end namespace rp
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GATHERINGLAYERCONFIGURERACTION_H
+#endif //__TE_QT_PLUGINS_RP_INTERNAL_RASTERSLICINGACTION_H

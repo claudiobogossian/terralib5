@@ -75,6 +75,10 @@ namespace te
                              const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                              const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception) = 0;
 
+		virtual std::vector< unsigned int > getOutputDataType(void) = 0; 
+
+		virtual unsigned int getOutputNumberBands(void) = 0;
+
       protected:
 
         /*! \brief Default constructor. */

@@ -308,7 +308,7 @@ void Draw(te::map::DataSetLayer* layer)
   canvas->setWindow(llx, lly, urx, ury);
   canvas->setBackgroundColor(te::color::RGBAColor(255, 255, 255, TE_OPAQUE));
 
-  layer->draw(canvas.get(), extent, 4326);
+  layer->draw(canvas.get(), extent, 4326, 0);
 
   QPixmap* pixmap = canvas->getPixmap();
 

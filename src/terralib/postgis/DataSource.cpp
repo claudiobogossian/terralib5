@@ -204,178 +204,202 @@ te::common::CharEncoding te::pgis::DataSource::getCharEncoding() const
 
 void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  // Get an auxiliary data source
-  std::auto_ptr<DataSource> ds(new DataSource());
+// get an auxiliary data source to create the new database
+  {
+    std::auto_ptr<DataSource> ds(new DataSource());
 
-  ds->setConnectionInfo(dsInfo);
+    ds->setConnectionInfo(dsInfo);
 
-  ds->open();
+    ds->open();
 
-  // Create a database based on the connection information
-  std::string sql = "CREATE DATABASE ";
+// create a database based on the connection information
+    std::string sql = "CREATE DATABASE ";
 
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_NEWDB_NAME");
-  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
+    std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_NEWDB_NAME");
+    std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
 
-  if(it != it_end)
-    sql += "\"" + it->second + "\"";
-  else
-    throw Exception(TE_TR("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
+    if(it != it_end)
+      sql += "\"" + it->second + "\"";
+    else
+      throw Exception(TE_TR("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
 
-  it = dsInfo.find("PG_NEWDB_TEMPLATE");
+    it = dsInfo.find("PG_NEWDB_TEMPLATE");
 
-  if(it != it_end)
-    sql += " TEMPLATE = " + it->second;
+    if(it != it_end)
+      sql += " TEMPLATE = " + it->second;
 
-  it = dsInfo.find("PG_NEWDB_OWNER");
+    it = dsInfo.find("PG_NEWDB_OWNER");
 
-  if(it != it_end)
-    sql += " OWNER = " + it->second;
+    if(it != it_end)
+      sql += " OWNER = " + it->second;
 
-  it = dsInfo.find("PG_NEWDB_ENCODING");
+    it = dsInfo.find("PG_NEWDB_ENCODING");
 
-  if(it != it_end)
-    sql += " ENCODING = " + it->second;
+    if(it != it_end)
+      sql += " ENCODING = '" + it->second + "'";
 
-  it = dsInfo.find("PG_NEWDB_TABLESPACE");
+    it = dsInfo.find("PG_NEWDB_TABLESPACE");
 
-  if(it != it_end)
-    sql += " TABLESPACE = " + it->second;
+    if(it != it_end)
+      sql += " TABLESPACE = " + it->second;
 
-  it = dsInfo.find("PG_NEWDB_CONN_LIMIT");
+    it = dsInfo.find("PG_NEWDB_CONN_LIMIT");
 
-  if(it != it_end)
-    sql += " CONNECTION LIMIT = " + it->second;
+    if(it != it_end)
+      sql += " CONNECTION LIMIT = " + it->second;
 
-  ds->execute(sql);
+    ds->execute(sql);
 
-  ds->close();
+    ds->close();
+  }
 
-  // Copy the database connection parameters to this new data source object.
-  it = dsInfo.find("PG_NEWDB_HOST");
+// copy the database connection parameters to this new data source object.
+  {
+    assert(m_connInfo.empty());
 
-  if(it == it_end)
-    it = dsInfo.find("PG_HOST");
+    std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_NEWDB_HOST");
+    std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
 
-  if(it != it_end)
-    m_connInfo["PG_HOST"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_HOST");
 
-  it = dsInfo.find("PG_NEWDB_HOSTADDR");
+    if(it != it_end)
+      m_connInfo["PG_HOST"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_HOST_ADDR");
+    it = dsInfo.find("PG_NEWDB_HOSTADDR");
 
-  if(it != it_end)
-    m_connInfo["PG_HOST_ADDR"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_HOST_ADDR");
 
-  it = dsInfo.find("PG_NEWDB_PORT");
+    if(it != it_end)
+      m_connInfo["PG_HOST_ADDR"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_PORT");
+    it = dsInfo.find("PG_NEWDB_PORT");
 
-  if(it != it_end)
-    m_connInfo["PG_PORT"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_PORT");
 
-  it = dsInfo.find("PG_NEWDB_NAME");
+    if(it != it_end)
+      m_connInfo["PG_PORT"] = it->second;
 
-  if(it != it_end)
-    m_connInfo["PG_DB_NAME"] = it->second;
+    it = dsInfo.find("PG_NEWDB_NAME");
 
-  it = dsInfo.find("PG_NEWDB_USER");
+    if(it != it_end)
+      m_connInfo["PG_DB_NAME"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_USER");
+    it = dsInfo.find("PG_NEWDB_USER");
 
-  if(it != it_end)
-    m_connInfo["PG_USER"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_USER");
 
-  it = dsInfo.find("PG_NEWDB_PASSWORD");
+    if(it != it_end)
+      m_connInfo["PG_USER"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_PASSWORD");
+    it = dsInfo.find("PG_NEWDB_PASSWORD");
 
-  if(it != it_end)
-    m_connInfo["PG_PASSWORD"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_PASSWORD");
 
-  it = dsInfo.find("PG_NEWDB_CONNECT_TIMEOUT");
+    if(it != it_end)
+      m_connInfo["PG_PASSWORD"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_CONNECT_TIMEOUT");
+    it = dsInfo.find("PG_NEWDB_CONNECT_TIMEOUT");
 
-  if(it != it_end)
-    m_connInfo["PG_CONNECT_TIMEOUT"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_CONNECT_TIMEOUT");
 
-  it = dsInfo.find("PG_NEWDB_OPTIONS");
+    if(it != it_end)
+      m_connInfo["PG_CONNECT_TIMEOUT"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_OPTIONS");
+    it = dsInfo.find("PG_NEWDB_OPTIONS");
 
-  if(it != it_end)
-    m_connInfo["PG_OPTIONS"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_OPTIONS");
 
-  it = dsInfo.find("PG_NEWDB_SSL_MODE");
+    if(it != it_end)
+      m_connInfo["PG_OPTIONS"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_SSL_MODE");
+    it = dsInfo.find("PG_NEWDB_SSL_MODE");
 
-  if(it != it_end)
-    m_connInfo["PG_SSL_MODE"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_SSL_MODE");
 
-  it = dsInfo.find("PG_NEWDB_KRBSRVNAME");
+    if(it != it_end)
+      m_connInfo["PG_SSL_MODE"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_KRBSRVNAME");
+    it = dsInfo.find("PG_NEWDB_KRBSRVNAME");
 
-  if(it != it_end)
-    m_connInfo["PG_KRBSRVNAME"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_KRBSRVNAME");
 
-  it = dsInfo.find("PG_NEWDB_GSSLIB");
+    if(it != it_end)
+      m_connInfo["PG_KRBSRVNAME"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_GSSLIB");
+    it = dsInfo.find("PG_NEWDB_GSSLIB");
 
-  if(it != it_end)
-    m_connInfo["PG_GSSLIB"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_GSSLIB");
 
-  it = dsInfo.find("PG_NEWDB_INITIAL_POOL_SIZE");
+    if(it != it_end)
+      m_connInfo["PG_GSSLIB"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_INITIAL_POOL_SIZE");
+    it = dsInfo.find("PG_NEWDB_INITIAL_POOL_SIZE");
 
-  if(it != it_end)
-    m_connInfo["PG_INITIAL_POOL_SIZE"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_INITIAL_POOL_SIZE");
 
-  it = dsInfo.find("PG_NEWDB_MIN_POOL_SIZE");
+    if(it != it_end)
+      m_connInfo["PG_INITIAL_POOL_SIZE"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_MIN_POOL_SIZE");
+    it = dsInfo.find("PG_NEWDB_MIN_POOL_SIZE");
 
-  if(it != it_end)
-    m_connInfo["PG_MIN_POOL_SIZE"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_MIN_POOL_SIZE");
 
-  it = dsInfo.find("PG_NEW_DB_MAX_POOL_SIZE");
+    if(it != it_end)
+      m_connInfo["PG_MIN_POOL_SIZE"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_MAX_POOL_SIZE");
+    it = dsInfo.find("PG_NEW_DB_MAX_POOL_SIZE");
 
-  if(it != it_end)
-    m_connInfo["PG_MAX_POOL_SIZE"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_MAX_POOL_SIZE");
 
-  it = dsInfo.find("PG_NEWDB_MAX_IDLE_TIME");
+    if(it != it_end)
+      m_connInfo["PG_MAX_POOL_SIZE"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_MAX_IDLE_TIME");
+    it = dsInfo.find("PG_NEWDB_MAX_IDLE_TIME");
 
-  if(it != it_end)
-    m_connInfo["PG_MAX_IDLE_TIME"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_MAX_IDLE_TIME");
 
-  it = dsInfo.find("PG_NEWDB_CLIENT_ENCODING");
+    if(it != it_end)
+      m_connInfo["PG_MAX_IDLE_TIME"] = it->second;
 
-  if(it == it_end)
-    it = dsInfo.find("PG_CLIENT_ENCODING");
+    it = dsInfo.find("PG_NEWDB_CLIENT_ENCODING");
 
-  if(it != it_end)
-    m_connInfo["PG_CLIENT_ENCODING"] = it->second;
+    if(it == it_end)
+      it = dsInfo.find("PG_CLIENT_ENCODING");
+
+    if(it != it_end)
+      m_connInfo["PG_CLIENT_ENCODING"] = it->second;
+  }
+
+  // check if new database has postgis extension enabled
+  std::auto_ptr<DataSource> dsPGIS(new DataSource());
+
+  dsPGIS->setConnectionInfo(m_connInfo);
+
+  dsPGIS->open();
+
+  std::auto_ptr<te::da::DataSet> result(dsPGIS->query("SELECT extname, extversion FROM pg_extension WHERE extname = 'postgis'"));
+
+  if (!result->moveNext())
+  {
+    // no PostGIS extension found, let's try to enable it!
+    dsPGIS->execute("CREATE EXTENSION postgis");
+  }
+
+  dsPGIS->close();
 }
 
 void te::pgis::DataSource::drop(const std::map<std::string, std::string>& dsInfo)

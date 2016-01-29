@@ -61,6 +61,8 @@ const te::rp::ClassifierKMeansStrategy::Parameters& te::rp::ClassifierKMeansStra
   m_maxIterations = rhs.m_maxIterations;
   m_maxInputPoints = rhs.m_maxInputPoints;
   m_epsilon = rhs.m_epsilon;
+  m_outputNumberBands = rhs.m_outputNumberBands;
+  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -85,6 +87,16 @@ te::rp::ClassifierKMeansStrategy::ClassifierKMeansStrategy()
 
 te::rp::ClassifierKMeansStrategy::~ClassifierKMeansStrategy()
 {
+}
+
+std::vector< unsigned int > te::rp::ClassifierKMeansStrategy::getOutputDataType(void)
+{
+	return m_parameters.m_outputDataType;
+}
+
+unsigned int te::rp::ClassifierKMeansStrategy::getOutputNumberBands(void)
+{
+	return m_parameters.m_outputNumberBands;
 }
 
 bool te::rp::ClassifierKMeansStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)

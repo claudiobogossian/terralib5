@@ -42,6 +42,7 @@ namespace te
     size_t ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, double max, Simplify alg, te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype, te::gm::Envelope &env);
 
     double Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2);
+
     bool Equal(te::gm::PointZ &p1, te::gm::PointZ &p2, double &tol);
 
     //DouglasPeucker from TerraAmazon 4
@@ -60,8 +61,7 @@ namespace te
     short segIntersect(te::gm::PointZ &pfr, te::gm::PointZ &pto, te::gm::PointZ &lfr, te::gm::PointZ &lto);
     bool segInterPoint(te::gm::PointZ &pfr, te::gm::PointZ &pto, te::gm::PointZ &lfr, te::gm::PointZ &lto, te::gm::PointZ *pt);
 
-    // Test Vertex values for valid and special cases, returns TRUE if normal,
-    // FALSE otherwise.
+    // Test Vertex values for valid and special cases, returns TRUE if normal, FALSE otherwise.
     bool testVertexValues(double, te::gm::PointZ*);
 
     // Define intersections of contour with edges of triangle
@@ -100,8 +100,10 @@ namespace te
 
     void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
+    TEMNTEXPORT bool convertAngleToPlanar(double& val, te::common::UnitOfMeasurePtr planar, int type);
     TEMNTEXPORT bool convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit);
 
+    TEMNTEXPORT void getMinMax(te::rst::Raster* inputRst, double &vmin, double &vmax);
   }
 }
 

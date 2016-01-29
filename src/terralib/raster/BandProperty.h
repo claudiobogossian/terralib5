@@ -130,7 +130,7 @@ namespace te
     public:
 
       std::size_t m_idx;                                             //!< The band index.
-      int m_type;                                                    //!< The data type of the elements in the band ( See te::common basic data types for reference ).
+      int m_type;                                                    //!< The data type of the elements in the band ( See te::dt namespace basic data types for reference ).
       std::string m_description;                                     //!< A description.
       std::vector<std::pair<std::string, std::string> > m_metadata;  //!< A list of metadata where each element consists of a (key, value).
       double m_noDataValue;                                          //!< Value to indicate elements where there is no data, default is std::numeric_limits<double>::max().

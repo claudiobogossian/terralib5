@@ -263,7 +263,7 @@ namespace te
       \brief Method that test the Isolines
       \return true if the isolines are modified or false otherwise
       */
-      bool TestIsolines();
+      bool TestIsolines(int iter);
 
       /*!
       \brief Method used to load a triangular network (TIN)

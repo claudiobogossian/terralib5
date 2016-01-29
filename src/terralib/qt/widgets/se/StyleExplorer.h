@@ -136,10 +136,10 @@ namespace te
         private:
 
           /*! \brief Auxiliary internal method to retrieve a rule from a QTreeWidgetItem. */
-          te::se::Rule* getRule(QTreeWidgetItem* item) const;
+          te::se::Rule* getRule(QTreeWidgetItem* item);
 
           /*! \brief Auxiliary internal method to retrieve a symbolizer from a QTreeWidgetItem. */
-          te::se::Symbolizer* getSymbolizer(QTreeWidgetItem* item) const;
+          te::se::Symbolizer* getSymbolizer(QTreeWidgetItem* item);
 
           /*!
             \brief Auxiliary internal method to retrieve the selected item on Style Explorer.
@@ -159,7 +159,7 @@ namespace te
         signals:
 
           /*! This signal is emitted when a rule is clicked. */
-          void ruleClicked(const te::se::Rule* rule);
+          void ruleClicked(te::se::Rule* rule);
 
           /*! This signal is emitted when a symbolizer is clicked. */
           void symbolizerClicked(te::se::Symbolizer* symb);

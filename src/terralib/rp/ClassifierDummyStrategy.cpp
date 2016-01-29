@@ -56,6 +56,8 @@ const te::rp::ClassifierDummyStrategy::Parameters& te::rp::ClassifierDummyStrate
   reset();
 
   m_dummyParameter = rhs.m_dummyParameter;
+  m_outputNumberBands = rhs.m_outputNumberBands;
+  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -77,6 +79,16 @@ te::rp::ClassifierDummyStrategy::ClassifierDummyStrategy()
 
 te::rp::ClassifierDummyStrategy::~ClassifierDummyStrategy()
 {
+}
+
+std::vector< unsigned int > te::rp::ClassifierDummyStrategy::getOutputDataType(void)
+{
+	return m_parameters.m_outputDataType;
+}
+
+unsigned int te::rp::ClassifierDummyStrategy::getOutputNumberBands(void)
+{
+	return m_parameters.m_outputNumberBands;
 }
 
 bool te::rp::ClassifierDummyStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)

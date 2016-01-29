@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../statistics/core/NumericStatisticalSummary.h"
+#include "../statistics/core/NumericStatisticalComplexSummary.h"
 #include "Algorithm.h"
 #include "Config.h"
 #include "Exception.h"
@@ -118,7 +119,7 @@ namespace te
 
           \warning Bands and polygon must fit.
         */
-        std::vector<std::vector<std::complex<double> > > getComplexValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
+        std::vector<std::vector<std::complex<double> > > getComplexValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands, unsigned int rowstep = 1, unsigned int colstep = 1);
 
         /*!
           \brief Returns the pixel values for all the bands in raster, inside the polygon.
@@ -131,7 +132,7 @@ namespace te
 
           \warning Bands and polygon must fit.
         */
-        std::vector<std::vector<double> > getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
+        std::vector<std::vector<double> > getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands, unsigned int rowstep = 1, unsigned int colstep = 1);
 
         /*!
           \brief Returns several statistics from a set of pixels.
@@ -141,6 +142,15 @@ namespace te
           \return A series of statistics (\sa te::stat::NumericStatisticalSummary).
         */
         te::stat::NumericStatisticalSummary getStatistics(std::vector<double>& pixels);
+
+		/*!
+          \brief Returns several statistics from a set of pixels (real and imag).
+
+          \param pixels      A vector of pixel values.
+
+          \return A series of statistics (\sa te::stat::NumericStatisticalSummary).
+        */
+        te::stat::NumericStatisticalComplexSummary getComplexStatistics(std::vector <std::complex <double> >& pixels);
 
         /*!
           \brief Returns the covariance matrix between vectors of pixel values.
@@ -155,6 +165,18 @@ namespace te
         boost::numeric::ublas::matrix<double> getCovarianceMatrix(const std::vector<std::vector<double> >& vpixels, const std::vector<double>& vmeans);
         
         /*!
+          \brief Returns the covariance matrix between vectors of pixel values.
+
+          \param vpixels     The vector of pixel vectors, with vpixels[band][pixel].
+          \param vmeans      The vector of pixels means, one mean per vector of pixels.
+
+          \return The covariance matrix between the vectors of pixel values.
+
+          \warning All vectors sizes must fit.
+        */
+        boost::numeric::ublas::matrix<std::complex <double> > getComplexCovarianceMatrix(const std::vector<std::vector<std::complex < double> > >& vpixels, const std::vector<std::complex < double > >& vmeans);
+
+		/*!
           \brief Computes the Gray-Level CoOccurrence Matrix (GLCM) from a raster band.
 
           \param rin    The input raster.

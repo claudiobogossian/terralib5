@@ -88,8 +88,8 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
 
   std::vector<te::dt::Property*> firstProps = getTabularProps(m_firstConverter->getResult());
   std::vector<te::dt::Property*> secondProps;
-  if(m_copyInputColumns)
-    secondProps = getTabularProps(m_secondConverter->getResult());
+
+  secondProps = getTabularProps(m_secondConverter->getResult());
 
 // Get DataSetType from DataSource to compare geometry SRID with DataSetType from Layer.
   std::auto_ptr<te::da::DataSetType>firstDsTypeSource(m_inFirstDsrc->getDataSetType(m_inFirstDsetName));

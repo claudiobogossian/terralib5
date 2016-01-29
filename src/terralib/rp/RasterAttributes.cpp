@@ -94,9 +94,42 @@ std::vector<double> te::rp::RasterAttributes::getValuesFromBand(const te::rst::R
   return values;
 }
 
-std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getComplexValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands)
+std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getComplexValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands,
+																									  unsigned int rowstep, unsigned int colstep)
 {
-  std::vector<std::vector<double> > dallvalues = getValuesFromRaster(raster, polygon, bands);
+  assert(bands.size() > 0);
+  assert(bands.size() <= raster.getNumberOfBands());
+
+  assert(rowstep > 0);
+  assert(colstep > 0);
+
+  std::vector<std::vector<std::complex<double> > > allvalues;
+  std::complex<double> value;
+
+// create iterators for band and polygon
+  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&raster, &polygon);
+  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&raster, &polygon);
+
+  //unsigned int initrow = it.getRow();
+
+  for (unsigned int i = 0; i < bands.size(); i++)
+    allvalues.push_back(std::vector<std::complex< double > > ());
+  
+  while (it != itend)
+  {
+    for (unsigned int i = 0; i < bands.size(); i++)
+    {
+      raster.getValue(it.getColumn(), it.getRow(), value, bands[i]);
+      allvalues[i].push_back(value);
+    }
+
+    ++it;
+  }
+
+  return allvalues;
+	
+	
+	/*  std::vector<std::vector<double> > dallvalues = getValuesFromRaster(raster, polygon, bands);
   std::vector<std::complex<double> > values;
   std::vector<std::vector<std::complex<double> > > allvalues;
 
@@ -108,13 +141,17 @@ std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getCo
     allvalues.push_back(values);
   }
 
-  return allvalues;
+  return allvalues;*/
 }
 
-std::vector<std::vector<double> > te::rp::RasterAttributes::getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands)
+std::vector<std::vector<double> > te::rp::RasterAttributes::getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands,
+	                                                                            unsigned int rowstep, unsigned int colstep)
 {
   assert(bands.size() > 0);
   assert(bands.size() <= raster.getNumberOfBands());
+
+  assert(rowstep > 0);
+  assert(colstep > 0);
 
   std::vector<std::vector<double> > allvalues;
   double value;
@@ -123,17 +160,28 @@ std::vector<std::vector<double> > te::rp::RasterAttributes::getValuesFromRaster(
   te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&raster, &polygon);
   te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&raster, &polygon);
 
+  unsigned int initrow = it.getRow(), initcol;
+
   for (unsigned int i = 0; i < bands.size(); i++)
     allvalues.push_back(std::vector<double> ());
   while (it != itend)
   {
-    for (unsigned int i = 0; i < bands.size(); i++)
-    {
-      raster.getValue(it.getColumn(), it.getRow(), value, bands[i]);
-      allvalues[i].push_back(value);
-    }
+	  if(!((it.getRow() - initrow) % rowstep))
+	  {
+		for (unsigned int i = 0; i < bands.size(); i++)
+		{
+		  raster.getValue(it.getColumn(), it.getRow(), value, bands[i]);
+		  allvalues[i].push_back(value);
+		}
+	  }
 
-    ++it;
+	  unsigned posstep = it.getColumn() + colstep;
+
+	  initcol = it.getColumn();
+
+	  for(initcol; initcol < posstep; initcol++)
+		++it;
+	  
   }
 
   return allvalues;
@@ -147,6 +195,65 @@ te::stat::NumericStatisticalSummary te::rp::RasterAttributes::getStatistics(std:
   te::stat::GetNumericStatisticalSummary(pixels, summary);
 
   return summary;
+}
+
+te::stat::NumericStatisticalComplexSummary te::rp::RasterAttributes::getComplexStatistics(std::vector<std::complex < double > >& pixels)
+{
+  assert(pixels.size() > 0);
+
+  te::stat::NumericStatisticalComplexSummary summary;
+  te::stat::GetNumericComplexStatisticalSummary(pixels, summary);
+
+  return summary;
+}
+
+boost::numeric::ublas::matrix<std::complex < double> > te::rp::RasterAttributes::getComplexCovarianceMatrix(const std::vector<std::vector<std::complex < double > > >& vpixels, const std::vector<std::complex < double > >& vmeans)
+{
+	  for (unsigned int i = 0; i < vpixels.size(); i++)
+		assert(vpixels[i].size() > 0);
+	  for (unsigned int i = 1; i < vpixels.size(); i++)
+		assert(vpixels[0].size() == vpixels[i].size());
+	  assert(vpixels.size() == vmeans.size());
+
+	  unsigned int i;
+	  unsigned int j;
+	  unsigned int k;
+	  unsigned int nbands = vpixels.size();
+	  unsigned int nvalues = vpixels[0].size();
+
+	  boost::numeric::ublas::matrix<std::complex < double > > covariance(nbands, nbands);
+
+	// with few values, the covariance is default
+	  if (nvalues < 2)
+	  {
+		for (i = 0; i < nbands; i++)
+		{
+		  for (j = 0; j < nbands; j++)
+			covariance(i, j) = 0.0;
+		  covariance(i, i) = 1000.0;
+		}
+
+		return covariance;
+	  }
+
+	// compute covariance matrix based on values and means
+	  te::common::TaskProgress taskProgress("Computing covariance complex matrix", te::common::TaskProgress::UNDEFINED, nbands * nbands);
+	  std::complex<double> sum;
+	  for (i = 0; i < nbands; i++)
+		for (j = 0; j < nbands; j++)
+		{
+		  taskProgress.pulse();
+      
+		  sum = std::complex<double> (0.0, 0.0);
+
+		  for (k = 0; k < nvalues; k++)
+			sum += (vpixels[i][k] - vmeans[i]) * (vpixels[j][k] - vmeans[j]);
+
+		  covariance(i, j) = sum / (nvalues - 1.0);
+		}
+
+	  return covariance;
+
 }
 
 boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getCovarianceMatrix(const std::vector<std::vector<double> >& vpixels, const std::vector<double>& vmeans)

@@ -73,9 +73,28 @@ namespace te
                     const te::da::ObjectIdSet* firstOidSet = 0,
                     const te::da::ObjectIdSet* secondOidSet = 0);
 
-      void setParams(const bool& copyInputColumns);
+      void setInput(te::da::DataSourcePtr inFirstDsrc,
+                    std::string inFirstDsetName,
+                    std::auto_ptr<te::da::DataSetType> firstDsType,
+                    std::auto_ptr<te::da::DataSet> firstDs,
+                    std::auto_ptr<te::da::DataSetTypeConverter> firstConverter,
+                    te::da::DataSourcePtr inSecondDsrc,
+                    std::string inSecondDsetName,
+                    std::auto_ptr<te::da::DataSetType> secondDsType,
+                    std::auto_ptr<te::da::DataSet> secondDs,
+                    std::auto_ptr<te::da::DataSetTypeConverter> secondConverter,
+                    const te::da::ObjectIdSet* firstOidSet = 0,
+                    const te::da::ObjectIdSet* secondOidSet = 0);
+
+      void setParams(const std::vector<std::pair<std::string, std::string> >& attributeVec);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
+
+      te::da::DataSetType* getOutputDsType();
+
+      void setIsFirstQuery();
+
+      void setIsSecondQuery();
 
     protected:
 
@@ -93,7 +112,15 @@ namespace te
       const te::da::ObjectIdSet* m_firstOidSet;
       const te::da::ObjectIdSet* m_secondOidSet;
 
-      bool m_copyInputColumns;
+      std::auto_ptr<te::da::DataSetType> m_firstDsType;
+      std::auto_ptr<te::da::DataSet> m_firstDs;
+      std::auto_ptr<te::da::DataSetType> m_secondDsType;
+      std::auto_ptr<te::da::DataSet> m_secondDs;
+
+      bool m_isFistQuery;
+      bool m_isSecondQuery;
+
+      std::vector<std::pair<std::string, std::string> > m_attributeVec;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDsetName;

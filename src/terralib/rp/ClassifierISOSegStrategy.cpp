@@ -70,6 +70,8 @@ const te::rp::ClassifierISOSegStrategy::Parameters& te::rp::ClassifierISOSegStra
   reset();
 
   m_acceptanceThreshold = rhs.m_acceptanceThreshold;
+  m_outputNumberBands = rhs.m_outputNumberBands;
+  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -198,6 +200,16 @@ te::rp::ClassifierISOSegStrategy::ClassifierISOSegStrategy()
 
 te::rp::ClassifierISOSegStrategy::~ClassifierISOSegStrategy()
 {
+}
+
+std::vector< unsigned int > te::rp::ClassifierISOSegStrategy::getOutputDataType(void)
+{
+	return m_parameters.m_outputDataType;
+}
+
+unsigned int te::rp::ClassifierISOSegStrategy::getOutputNumberBands(void)
+{
+	return m_parameters.m_outputNumberBands;
 }
 
 bool te::rp::ClassifierISOSegStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)

@@ -73,14 +73,14 @@ void LoadOGRModule()
 void generateHistogram(te::da::DataSet* dataset, te::da::DataSourceTransactor* transactor)
 {
   //Getting the Column that will be used to populate the chart
-  std::string renda = "RENDA_FAM";
+  std::string renda = "densidade";
 
   int rendaIdx= te::da::GetPropertyPos(dataset, renda);
 
-  std::auto_ptr<te::da::DataSetType> dt =  transactor->getDataSetType("mapa_distritos_sp");
+  std::auto_ptr<te::da::DataSetType> dt =  transactor->getDataSetType("sp_cities");
 
   //Creating the histogram and it's chart with the given dataset
-  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt.get(), rendaIdx, 10, -1);
+  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt.get(), rendaIdx, 50, -1);
   te::qt::widgets::HistogramChart* chart = new te::qt::widgets::HistogramChart(histogram);
 
   //Creating and adjusting the chart Display's style.
@@ -104,13 +104,13 @@ void generateHistogram(te::da::DataSet* dataset, te::da::DataSourceTransactor* t
 void generateScatter(te::da::DataSet* dataset, te::da::DataSourceTransactor* transactor)
 {
     //Getting the Column that will be used to populate the chart
-  std::string renda = "RENDA_FAM";
-  std::string anosest = "ANOS_EST";
+  std::string renda = "densidade";
+  std::string anosest = "codmicro";
 
   int rendaIdx= te::da::GetPropertyPos(dataset, renda);
   int anosestIdx= te::da::GetPropertyPos(dataset, anosest);
 
-  std::auto_ptr<te::da::DataSetType> dt =  transactor->getDataSetType("mapa_distritos_sp");
+  std::auto_ptr<te::da::DataSetType> dt =  transactor->getDataSetType("sp_cities");
 
   //Creating the scatter and it's chart with the given dataset
   te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, dt.get(), rendaIdx, anosestIdx, -1);
@@ -156,7 +156,7 @@ int main(int /*argc*/, char** /*argv*/)
     
     std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
 
-    std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet("mapa_distritos_sp");
+    std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet("sp_cities");
     if(dataset.get()==0)
     {
        return 0;

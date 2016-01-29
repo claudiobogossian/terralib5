@@ -416,6 +416,8 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" ON)
 endif()
 
+option(TERRALIB_MOD_MANAGER_ENABLED "Build Module Manager?" OFF)
+
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
 option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
@@ -728,6 +730,10 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/COPYING ${CMAKE_BINARY_DIR}/COPYING
 #
 # build modules
 #
+
+if(TERRALIB_MOD_MANAGER_ENABLED)
+  add_subdirectory(terralib_mod_manager)
+endif()
 
 if(TERRALIB_DOXYGEN_ENABLED)
   add_subdirectory(terralib_doxygen)

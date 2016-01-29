@@ -54,6 +54,8 @@ const te::rp::ClassifierSAMStrategy::Parameters& te::rp::ClassifierSAMStrategy::
 
   m_trainSamplesPtr = rhs.m_trainSamplesPtr;
   m_maxAngularDistances = rhs.m_maxAngularDistances;
+  m_outputNumberBands = rhs.m_outputNumberBands;
+  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -78,6 +80,16 @@ te::rp::ClassifierSAMStrategy::ClassifierSAMStrategy()
 
 te::rp::ClassifierSAMStrategy::~ClassifierSAMStrategy()
 {
+}
+
+std::vector< unsigned int > te::rp::ClassifierSAMStrategy::getOutputDataType(void)
+{
+	return m_initParams.m_outputDataType;
+}
+
+unsigned int te::rp::ClassifierSAMStrategy::getOutputNumberBands(void)
+{
+	return m_initParams.m_outputNumberBands;
 }
 
 bool te::rp::ClassifierSAMStrategy::initialize(

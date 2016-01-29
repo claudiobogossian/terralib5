@@ -7,6 +7,8 @@
 #include <iostream>
 #include <exception>
 
+std::auto_ptr<te::da::DataSource> GetPostGISConnection();
+
 void QueryInsertExample()
 {
 // Create a simple DataSetType.
@@ -28,22 +30,13 @@ void QueryInsertExample()
   te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty("geom");
   geomProp->setGeometryType(te::gm::MultiPolygonType);
   dsType->add(geomProp);
-
-// let's give the minimal server connection information needed to connect to the database server
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost" ;   // or "localhost";
-  connInfo["PG_PORT"] = "5432" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
-  connInfo["PG_DB_NAME"] = "TerraView5";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1";
  
   try
   {
-// if you are not using the data source manager, create one instance of the data source called ds an other dsOGR!
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-    ds->setConnectionInfo(connInfo);
+    std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+    if (!ds.get())
+      return;
+    
     ds->open();
 
 // get fields from output datasettype
@@ -69,14 +62,14 @@ void QueryInsertExample()
     te::da::Field* f_gid = new te::da::Field("gid");
     fields->push_back(f_gid);
 
-    te::da::Field* f_region = new te::da::Field("regiao");
-    fields->push_back(f_region);
+    te::da::Field* f_deno = new te::da::Field("deno");
+    fields->push_back(f_deno);
 
-    te::da::Field* f_geom = new te::da::Field("geom");
+    te::da::Field* f_geom = new te::da::Field("the_geom");
     fields->push_back(f_geom);
     
     te::da::From* from = new te::da::From;
-    te::da::FromItem* fromItem = new te::da::DataSetName("sp_cities");
+    te::da::FromItem* fromItem = new te::da::DataSetName("distritos");
     from->push_back(fromItem);
 
     te::da::Select* select = new te::da::Select(fields, from);

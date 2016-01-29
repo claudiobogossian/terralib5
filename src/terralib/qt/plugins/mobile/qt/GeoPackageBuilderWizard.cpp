@@ -187,10 +187,17 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   //Exporting the selected input and gathering layers
   size_t pos = 1;
+  bool visible = false;
 
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
-    bool visible = (*it)->getVisibility();
+    bool aux = false;
+
+    if (!visible && !aux)
+    {
+      visible = (*it)->getVisibility();
+      aux = (*it)->getVisibility();
+    }
 
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
 
@@ -198,7 +205,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
     m_outputPage->appendLogMesssage("Exporting gathering layer " + dsType->getName());
 
-    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position') values('" + dsType->getName() + "', " + boost::lexical_cast<std::string>(visible)+", " + boost::lexical_cast<std::string>(pos)+"); ";
+    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position') values('" + dsType->getName() + "', " + boost::lexical_cast<std::string>(aux)+", " + boost::lexical_cast<std::string>(pos)+"); ";
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++pos;
 
@@ -207,7 +214,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   for (it = inputLayers.begin(); it != inputLayers.end(); ++it)
   {
-    bool visible = (*it)->getVisibility();
+    visible = (*it)->getVisibility();
 
     std::auto_ptr<te::da::DataSetType> dsType = (*it)->getSchema();
     std::string name = dsType->getName();

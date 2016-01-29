@@ -28,6 +28,7 @@
 
   #include "../common/Logger.h"
   #include "../common/Config.h"
+  #include "../common/MathUtils.h"
   #include "Module.h"
   #include "Exception.h"
 
@@ -386,13 +387,6 @@
    */
   #ifndef MAX
     #define MAX(x,y) std::max( x , y )
-  #endif  
-  
-  /*!
-   \brief Minimum of two values.
-   */
-  #ifndef ROUND
-    #define ROUND(x) ( ( (x) >= 0 ) ? (long int)( (x) + 0.5 ) : (long int)( (x) - 0.5 ) )
   #endif  
   
   /*!

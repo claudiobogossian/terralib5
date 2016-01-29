@@ -177,7 +177,7 @@ bool te::rst::TileIndexer::getTile(const double& y, TileSegIndex** index) const
   }
 }
 
-bool te::rst::TileIndexer::within(const te::gm::Point& geometry) const
+bool te::rst::TileIndexer::within_or_touches(const te::gm::Point& geometry) const
 {
   m_withinTileY = geometry.getY();
   
@@ -202,17 +202,26 @@ bool te::rst::TileIndexer::within(const te::gm::Point& geometry) const
       m_withinVtx1.y = m_withinRingPtr->getY( ( *m_withinTileIndexPtr )[ i ].second + 1 );
       
       m_withinYFlag0 = (m_withinVtx0.y >= m_withinTileY);
-      
       m_withinYFlag1 = (m_withinVtx1.y >= m_withinTileY);
+      m_withinYEquals = (m_withinVtx0.y == m_withinTileY) && (m_withinVtx1.y == m_withinTileY);
     
+      double m_within_coef1 = (m_withinVtx1.y - m_withinTileY) * (m_withinVtx0.x - m_withinVtx1.x);
+      double m_within_coef2 = (m_withinVtx1.x - m_withinTileX) * (m_withinVtx0.y - m_withinVtx1.y);
+      
       if(m_withinYFlag0 != m_withinYFlag1)
       {
-        /* TODO - Check Boundary case */
-      
-        if(((m_withinVtx1.y - m_withinTileY) * (m_withinVtx0.x - m_withinVtx1.x) >=
-              (m_withinVtx1.x - m_withinTileX) * (m_withinVtx0.y - m_withinVtx1.y)) == m_withinYFlag1)
+        if (m_within_coef1 - m_within_coef2 == 0)
         {
-          m_withinIsInside = !m_withinIsInside ;
+          return true;
+        }
+        else if ((m_within_coef1 >= m_within_coef2) == m_withinYFlag1) {
+          m_withinIsInside = !m_withinIsInside;
+        }
+      }
+      else if (m_withinYEquals)
+      {
+        if ((m_withinVtx0.x >= m_withinTileX) == (m_withinVtx1.x <= m_withinTileX)) {
+          return true;
         }
       }
     }

@@ -767,7 +767,7 @@ namespace te
         ++m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx )
       {
         if( m_intersectionTileIndexers[ 
-          m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx ].within( 
+          m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx ].within_or_touches( 
           m_euclideanDistanceMethodImp_auxPoint ) )
         {
           m_euclideanDistanceMethodImp_PointInsideIntersection = true;
@@ -968,7 +968,7 @@ namespace te
         ++m_sumMethodImp_IntersectionTileIndexersIdx )
       {
         if( m_intersectionTileIndexers[ 
-          m_sumMethodImp_IntersectionTileIndexersIdx ].within( 
+          m_sumMethodImp_IntersectionTileIndexersIdx ].within_or_touches( 
           m_sumMethodImp_auxPoint ) )
         {
           m_sumMethodImp_PointInsideIntersection = true;

@@ -59,6 +59,7 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
 
 // It registers the class methods as Test Cases belonging to the suit 
   CPPUNIT_TEST( tcGetDataSource ); 
+  CPPUNIT_TEST( tcRenameDataSet );
   CPPUNIT_TEST( tcGetDataSet );
   CPPUNIT_TEST( tcGetDataSetByGeometry );
   CPPUNIT_TEST( tcGetDataSetByProperty );
@@ -92,6 +93,7 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
     void tcExecuteQuery();
     void tcExecuteCommand();
     void tcGetDataSource();
+    void tcRenameDataSet();
 
     /*!
       \brief Test Case: get the dataSet using the i-th position in the DataSourceCatalog.

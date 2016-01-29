@@ -8,6 +8,8 @@
 #include "TINCreateIsolines.h"
 #include "Utils.h"
 
+#include "../../common/progress/TaskProgress.h"
+
 
 bool te::mnt::TINCreateIsolines::run()
 {
@@ -29,12 +31,16 @@ bool te::mnt::TINCreateIsolines::run()
 
   LoadTin(m_inDsrc, m_inDsetName, zmin, zmax);
 
+  std::size_t ntri = m_triang.size();
+  te::common::TaskProgress task("Creating Isolines...", te::common::TaskProgress::UNDEFINED, (int)(ntri*m_values.size()));
+
   for (size_t v = 0; v < m_values.size(); v++)
   {
     cvalue = m_values[v];
 
-    for (size_t i = 0; i < m_triang.size(); i++)
+    for (size_t i = 0; i < ntri; i++)
     {
+      task.pulse();
       if (!NodesId((int32_t)i, nodesid))
         continue;
       for (size_t j = 0; j < 3; j++)

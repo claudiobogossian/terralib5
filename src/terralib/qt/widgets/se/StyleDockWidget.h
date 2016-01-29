@@ -45,6 +45,7 @@ namespace te
     namespace widgets
     {
       // Forward declarations
+      class RuleProperty;
       class PolygonSymbolizerProperty;
       class LineSymbolizerProperty;
       class PointSymbolizerProperty;
@@ -95,7 +96,9 @@ namespace te
 
           QWidget* buildUi();
 
-        protected slots:
+        protected slots:  
+
+          void onRuleSelected(te::se::Rule* r);
 
           void onSymbolizerSelected(te::se::Symbolizer* s);
 
@@ -117,6 +120,7 @@ namespace te
 
           QTabWidget* m_tabWidget;
 
+          te::qt::widgets::RuleProperty* m_ruleWidget;
           te::qt::widgets::PolygonSymbolizerProperty* m_polyWidget;
           te::qt::widgets::LineSymbolizerProperty* m_lineWidget;
           te::qt::widgets::PointSymbolizerProperty* m_pointWidget;

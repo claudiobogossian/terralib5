@@ -32,6 +32,7 @@
 #include "Config.h"
 #include "Grid.h"
 #include "Raster.h"
+#include "../common/MathUtils.h"
 
 // STL
 #include <map>
@@ -112,7 +113,7 @@ namespace te
       \return A integer value.
     */
 
-     TERASTEREXPORT int Round(double val);
+     TERASTEREXPORT inline int Round(double val) { return te::common::Round< double, int >( val ); }
 
     /*!
       \brief Create a new raster from existing one.

@@ -18,16 +18,16 @@
  */
 
 /*!
-\file src/terraMobilePlugin/GatheringLayerConfigurerAction.cpp
+\file src/terraMobilePlugin/GeoPackageSynchronizerAction.cpp
 
-\brief This file defines the Gathering Layer Configurer Action class
+\brief This file defines the GeoPackage Synchronizer Action class
 */
 
 // Terralib
 #include "../../../qt/af/ApplicationController.h"
 #include "../../../qt/af/BaseApplication.h"
-#include "qt/GatheringLayerConfigurerDialog.h"
-#include "GatheringLayerConfigurerAction.h"
+#include "qt/GeoPackageSynchronizerDialog.h"
+#include "GeoPackageSynchronizerAction.h"
 
 // Qt
 #include <QtCore/QObject>
@@ -35,16 +35,16 @@
 // STL
 #include <memory>
 
-te::qt::plugins::terramobile::GatheringLayerConfigurerAction::GatheringLayerConfigurerAction(QMenu* menu) :te::qt::plugins::terramobile::AbstractAction(menu)
+te::qt::plugins::terramobile::GeoPackageSynchronizerAction::GeoPackageSynchronizerAction(QMenu* menu) :te::qt::plugins::terramobile::AbstractAction(menu)
 {
   createAction(tr("GeoPackage Synchronizer...").toStdString(), "");
 }
 
-te::qt::plugins::terramobile::GatheringLayerConfigurerAction::~GatheringLayerConfigurerAction()
+te::qt::plugins::terramobile::GeoPackageSynchronizerAction::~GeoPackageSynchronizerAction()
 {
 }
 
-void te::qt::plugins::terramobile::GatheringLayerConfigurerAction::onActionActivated(bool checked)
+void te::qt::plugins::terramobile::GeoPackageSynchronizerAction::onActionActivated(bool checked)
 {
   std::list<te::map::AbstractLayerPtr> list = getLayers();
   
@@ -52,7 +52,7 @@ void te::qt::plugins::terramobile::GatheringLayerConfigurerAction::onActionActiv
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   //show interface
-  te::qt::plugins::terramobile::GatheringLayerConfigurerDialog dlg(ba);
+  te::qt::plugins::terramobile::GeoPackageSynchronizerDialog dlg(ba);
 
   dlg.setLayerList(list);
 

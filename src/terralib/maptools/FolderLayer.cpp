@@ -169,7 +169,7 @@ bool te::map::FolderLayer::isValid() const
   return true;
 }
 
-void te::map::FolderLayer::draw(Canvas* /*canvas*/, const te::gm::Envelope& /*bbox*/, int /*srid*/)
+void te::map::FolderLayer::draw(Canvas* /*canvas*/, const te::gm::Envelope& /*bbox*/, int /*srid*/, const double& /*scale*/)
 {
 }
 

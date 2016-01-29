@@ -81,10 +81,11 @@ namespace te
             \param layer The layer that will be draw.
             \param box The interest area to draw the layer.
             \param srid The SRS to be used to draw the layer objects.
+            param scale The current scale of display.
             \param size The result size, in pixels; e.g. (800 x 600).
             \param index An optional index that can be provided by the caller to keep the draw order.
           */
-          void draw(te::map::AbstractLayer* layer, const te::gm::Envelope& box, int srid, const QSize& size, const int& index);
+          void draw(te::map::AbstractLayer* layer, const te::gm::Envelope& box, int srid, const double& scale, const QSize& size, const int& index);
 
            /*! \brief This method tells if the thread finished with success. */
           bool finishedWithSuccess() const;
@@ -134,6 +135,7 @@ namespace te
           te::gm::Envelope m_env;          //!< The interest area to draw the layer.
           int m_srid;                      //!< The SRS to be used to draw the layer objects.
           int m_index;                     //!< An optional index that can be provided by the caller to keep the draw order.
+          double m_scale;                  //!< Scale value used to draw the layer.
           QImage m_image;                  //!< The image that will be generated during the draw process.
           QMutex m_mutex;                  //!< Controls the serialization between threads.
           QTimer m_feedback;               //!< Timer used to send feedback. The feedback will be sent right after timeout() QTimer's signal.

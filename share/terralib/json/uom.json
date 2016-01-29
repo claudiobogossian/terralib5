@@ -4,6 +4,11 @@
 		{ "id" : 9002, "name" : "foot", "symbol" : "ft", "type" : "length", "description" : "", "target_uom" : 9001, "factor_a" : 0.3048, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
 		{ "id" : 9036, "name" : "kilometre", "symbol" : "km", "type" : "length", "description" : "", "target_uom" : 9001, "factor_a" : 1000, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
 		{ "id" : 9101, "name" : "radian","symbol" : "rad","type" : "angle",  "description" : "",  "target_uom": 9101, "factor_a" : 1, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
-		{ "id" : 9102, "name" : "degree", "symbol": "deg", "type": "angle", "description" : "",	"target_uom" : 9101	, "factor_a" : 3.14159265358979	, "factor_b" : 0, "factor_c" : 0, "factor_d" :180}
+		{ "id" : 9102, "name" : "degree", "symbol": "deg", "type": "angle", "description" : "",	"target_uom" : 9101	, "factor_a" : 3.14159265358979	, "factor_b" : 0, "factor_c" : 0, "factor_d" :180},
+		{ "id" : 9201, "name" : "square metre", "symbol" : "m2", "type" : "area","description" : "", "target_uom" : 9201, "factor_a" : 1, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
+		{ "id" : 9202, "name" : "square foot", "symbol" : "f2", "type" : "area","description" : "", "target_uom" : 9201, "factor_a" : 0.09290304, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
+		{ "id" : 9203, "name" : "square kilometre", "symbol" : "km2", "type" : "area","description" : "", "target_uom" : 9201, "factor_a" : 1000000, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
+		{ "id" : 9204, "name" : "hectare", "symbol" : "ha", "type" : "area","description" : "", "target_uom" : 9201, "factor_a" : 10000, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
+		{ "id" : 9205, "name" : "acre", "symbol" : "a", "type" : "area","description" : "", "target_uom" : 9201, "factor_a" : 4046.8564224, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 }
 	]
 }

@@ -228,10 +228,10 @@ namespace te
                                     Canvas* canvas, int fromSRID, int toSRID, te::common::TaskProgress* task = 0);
 
     TEMAPEXPORT void DrawRaster(te::da::DataSetType* type, te::da::DataSourcePtr ds, Canvas* canvas,
-                                const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
+                                const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style, const double& scale);
 
     TEMAPEXPORT void DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
-                                const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
+                                const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style, const double& scale);
 
     TEMAPEXPORT te::rst::Raster* GetExtentRaster(te::rst::Raster* raster, int w, int h, const te::gm::Envelope& bbox, int bboxSRID,
                                 const te::gm::Envelope& visibleArea, int srid);

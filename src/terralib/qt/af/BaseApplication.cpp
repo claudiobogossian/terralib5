@@ -338,6 +338,38 @@ void te::qt::af::BaseApplication::onStopDrawTriggered()
   te::common::ProgressManager::getInstance().cancelTasks(te::common::TaskProgress::DRAW);
 }
 
+void te::qt::af::BaseApplication::onScaleComboBoxActivated()
+{
+  bool ok = false;
+
+  double scale = m_scaleCmbBox->currentText().toDouble(&ok);
+
+  if (ok)
+  {
+    m_display->getDisplay()->setScale(scale);
+    m_display->getDisplay()->refresh();
+  }
+  else
+  {
+    QVariant var = m_scaleCmbBox->itemData(m_scaleCmbBox->currentIndex());
+
+    if (var.isValid())
+    {
+      double scale = var.toDouble();
+
+      m_display->getDisplay()->setScale(scale);
+      m_display->getDisplay()->refresh();
+    }
+  }
+}
+
+void te::qt::af::BaseApplication::onScaleDisplayChanged()
+{
+  double scale = m_display->getDisplay()->getScale();
+
+  m_scaleCmbBox->setItemText(m_scaleCmbBox->currentIndex(), QString::number(scale, 'f', 0));
+}
+
 void te::qt::af::BaseApplication::onLayerRemoveTriggered()
 {
   QModelIndexList ls = getLayerExplorer()->selectionModel()->selectedIndexes();
@@ -905,6 +937,47 @@ void te::qt::af::BaseApplication::initStatusBar()
   QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
   stopDrawToolButton->setDefaultAction(m_mapStopDrawing);
   m_statusbar->addPermanentWidget(stopDrawToolButton);
+
+  // Scale Combo Box
+  m_scaleCmbBox = new QComboBox(m_statusbar);
+  m_scaleCmbBox->setToolTip(tr("Scale Information"));
+  m_scaleCmbBox->setEditable(true);
+  m_scaleCmbBox->setInsertPolicy(QComboBox::NoInsert);
+  m_scaleCmbBox->setMinimumWidth(100);
+  m_statusbar->addPermanentWidget(m_scaleCmbBox);
+
+  m_scaleCmbBox->addItem("Scale");
+  m_scaleCmbBox->addItem("1 000", QVariant((double)1000));
+  m_scaleCmbBox->addItem("1 500", QVariant((double)1500));
+  m_scaleCmbBox->addItem("2 000", QVariant((double)2000));
+  m_scaleCmbBox->addItem("2 500", QVariant((double)2500));
+  m_scaleCmbBox->addItem("5 000", QVariant((double)5000));
+  m_scaleCmbBox->addItem("7 500", QVariant((double)7500));
+  m_scaleCmbBox->addItem("10 000", QVariant((double)10000));
+  m_scaleCmbBox->addItem("12 500", QVariant((double)12500));
+  m_scaleCmbBox->addItem("15 000", QVariant((double)15000));
+  m_scaleCmbBox->addItem("20 000", QVariant((double)20000));
+  m_scaleCmbBox->addItem("25 000", QVariant((double)25000));
+  m_scaleCmbBox->addItem("50 000", QVariant((double)50000));
+  m_scaleCmbBox->addItem("100 000", QVariant((double)100000));
+  m_scaleCmbBox->addItem("125 000", QVariant((double)125000));
+  m_scaleCmbBox->addItem("150 000", QVariant((double)150000));
+  m_scaleCmbBox->addItem("175 000", QVariant((double)175000));
+  m_scaleCmbBox->addItem("200 000", QVariant((double)200000));
+  m_scaleCmbBox->addItem("250 000", QVariant((double)250000));
+  m_scaleCmbBox->addItem("500 000", QVariant((double)500000));
+  m_scaleCmbBox->addItem("750 000", QVariant((double)750000));
+  m_scaleCmbBox->addItem("1 000 000", QVariant((double)1000000));
+  m_scaleCmbBox->addItem("1 250 000", QVariant((double)1250000));
+  m_scaleCmbBox->addItem("1 500 000", QVariant((double)1500000));
+  m_scaleCmbBox->addItem("1 750 000", QVariant((double)1750000));
+  m_scaleCmbBox->addItem("2 000 000", QVariant((double)2000000));
+
+  connect(m_scaleCmbBox, SIGNAL(activated(int)), this, SLOT(onScaleComboBoxActivated()));
+  connect(m_scaleCmbBox->lineEdit(), SIGNAL(returnPressed()), this, SLOT(onScaleComboBoxActivated()));
+
+  if (m_display->getDisplay())
+    connect(m_display->getDisplay(), SIGNAL(extentChanged()), SLOT(onScaleDisplayChanged()));
 }
 
 void te::qt::af::BaseApplication::initActions()

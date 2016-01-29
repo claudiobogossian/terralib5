@@ -55,28 +55,28 @@ namespace te
 
       \return The amount of free physical memory (bytes).
     */
-    TECOMMONEXPORT unsigned long int GetFreePhysicalMemory();
+    TECOMMONEXPORT unsigned long long int GetFreePhysicalMemory();
 
     /*!
       \brief Returns the amount of total physical memory (bytes).
 
       \return The amount of total physical memory (bytes).
     */
-    TECOMMONEXPORT unsigned long int GetTotalPhysicalMemory();
+    TECOMMONEXPORT unsigned long long int GetTotalPhysicalMemory();
 
     /*!
       \brief Returns the amount of used virtual memory (bytes) for the current process (physical + swapped).
 
       \return The amount of free virtual memory (bytes).
     */
-    TECOMMONEXPORT unsigned long int GetUsedVirtualMemory();
+    TECOMMONEXPORT unsigned long long  int GetUsedVirtualMemory();
 
     /*!
       \brief Returns the amount of total virtual memory (bytes) that can be claimed by the current process (physical + swapped).
 
       \return The amount of total virtual memory (bytes).
     */
-    TECOMMONEXPORT unsigned long int GetTotalVirtualMemory();
+    TECOMMONEXPORT unsigned long long int GetTotalVirtualMemory();
 
     /*!
       \brief Returns the number of physical processors.

@@ -55,6 +55,8 @@ const te::rp::ClassifierMAPStrategy::Parameters& te::rp::ClassifierMAPStrategy::
   m_trainSamplesPtr = rhs.m_trainSamplesPtr;
   m_prioriProbs = rhs.m_prioriProbs;
   m_prioriCalcSampleStep = rhs.m_prioriCalcSampleStep;
+  m_outputNumberBands = rhs.m_outputNumberBands;
+  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -80,6 +82,16 @@ te::rp::ClassifierMAPStrategy::ClassifierMAPStrategy()
 
 te::rp::ClassifierMAPStrategy::~ClassifierMAPStrategy()
 {
+}
+
+std::vector< unsigned int > te::rp::ClassifierMAPStrategy::getOutputDataType(void)
+{
+	return m_initParams.m_outputDataType;
+}
+
+unsigned int te::rp::ClassifierMAPStrategy::getOutputNumberBands(void)
+{
+	return m_initParams.m_outputNumberBands;
 }
 
 bool te::rp::ClassifierMAPStrategy::initialize(
