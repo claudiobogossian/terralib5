@@ -88,6 +88,8 @@ te::vp::GeometricOpOutputWizardPage::GeometricOpOutputWizardPage(QWidget* parent
   connect(m_ui->m_byAttributesRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttributeOperationToggled()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+  
+  onAllObjectsToggled();
 
 }
 
