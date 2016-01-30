@@ -17,6 +17,23 @@ set INCLUDE=%WIN32MAK_FILEPATH%;%INCLUDE%
 :: Building libraries
 ::  ==================
 
+
+:: BOOST
+set B_DIR=%CD%\boost_1_58_0
+
+  echo | set /p="Installing boost... "<nul
+  
+  cd %B_DIR%
+
+  call bootstrap.bat vc12 setup-amd64 >nul 2>nul
+  
+  b2 -j4 toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged install  >nul 2>nul
+  
+  echo done.
+
+  cd %B_DIR%\..
+:: ====
+
 :: BZIP2
 ::  =========================================
 set BZIP2_DIR=%CD%\bzip2-1.0.6
@@ -645,24 +662,6 @@ set XML2D_LIBRARY=%XML2_DIR%\win32\bin.dbg.msvc\libxml2d.lib
 :: )
 ::  ====
 
-:: BOOST
-set B_DIR=%CD%\boost_1_58_0
-set B_INCLUDE_DIR=%BOOST_DIR%\boost
-set BD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\boost_thread-mt-gd.lib
-
-  echo | set /p="Installing boost... "<nul
-  
-  cd %B_DIR%
-
-  call .\bootstrap.bat >nul 2>nul 
-
-  call .\b2.exe toolset=msvc-12.0 --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged --abbreviate-paths runtime-link=shared link=shared variant=debug,release threading=multi address-model=64 install -j4 >nul 2>nul
-
-  echo done.
-
-  cd %B_DIR%\..
-:: ====
-
 :: PostgreSQL version 9.4.1
 set PGis_DIR=%CD%\postgresql-9.4.1
 set PG_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
@@ -721,14 +720,7 @@ set NETCDFD_LIBRARY=%NETCDF_DIR%\binaries\lib\netcdfd.lib
 
   msbuild /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
   msbuild /m INSTALL.vcxproj >nul 2>nul
- 
-::  msbuild /m /t:install /p:Configuration=Release netcdf.sln >nul 2>nul 
-::  msbuild /m /t:install /p:Configuration=Debug netcdf.sln >nul 2>nul
- 
-::  cmake --build . --target install --config Release >nul 2>nul
-  
-::  cmake --build . --target install --config Debug >nul 2>nul
-  
+   
   xcopy %NETCDF_DIR%\binaries\bin\net* %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
   echo done.
@@ -800,13 +792,6 @@ set EXPATD_LIBRARY=%EXPAT_DIR%\binaries\lib\expatd.lib
 
   msbuild /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
   msbuild /m INSTALL.vcxproj >nul 2>nul
- 
-::  msbuild /m /t:install /p:Configuration=Release expat.sln >nul 2>nul 
-::  msbuild /m /t:install /p:Configuration=Debug expat.sln >nul 2>nul
-
-::  cmake --build . --target install --config Release >nul 2>nul
-  
-::  cmake --build . --target install --config Debug >nul 2>nul
   
   xcopy %EXPAT_DIR%\binaries\bin\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
 
@@ -955,16 +940,10 @@ cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%TERRALIB_DEPENDEN
  -DZLIB_LIBRARIES:STRING="%ZL_LIBRARIES%"^
  -C terralib.conf.cmake %TERRALIB4_DIR%\build\cmake >nul 2>nul
 
-::  msbuild /m /t:install /p:Configuration=Release terraView.sln >nul 2>nul 
-::  msbuild /m /t:install /p:Configuration=Debug terraView.sln >nul 2>nul
   msbuild /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
   
   msbuild INSTALL.vcxproj >nul 2>nul
  
-::cmake --build . --target install --config Release >nul 2>nul
-
-::cmake --build . --target install --config Debug >nul 2>nul
-
 echo done.
 
 cd %TERRALIB4_DIR%\..
