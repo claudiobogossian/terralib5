@@ -36,6 +36,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 // STL
 #include <memory>
 
+#include <QMessageBox>
+
 
 te::qt::plugins::mnt::ShowValuesAction::ShowValuesAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
@@ -74,6 +76,7 @@ void te::qt::plugins::mnt::ShowValuesAction::onActionActivated(bool )
   std::list<te::map::AbstractLayerPtr> layers = te::qt::widgets::GetSelectedLayersOnly(m_app->getLayerExplorer());
   if (!layers.size())
   {
+    QMessageBox::information(0, tr("Show Values"), tr("Select a layer!"));
     m_status = false;
   }
 
@@ -96,8 +99,17 @@ void te::qt::plugins::mnt::ShowValuesAction::onActionActivated(bool )
   f.setBold(true);
   m_action->setFont(f);
 
-  m_readpixel = new ShowValuesTool(m_app->getMapDisplay(), m_app);
-  m_app->getMapDisplay()->installEventFilter(m_readpixel);
+  try
+  {
+    m_readpixel = new ShowValuesTool(m_app->getMapDisplay(), m_app);
+    m_readpixel->setAction(m_action);
+    m_app->getMapDisplay()->installEventFilter(m_readpixel);
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::information(0, tr("Show Values"), e.what());
+    return;
+  }
 
 }
 
