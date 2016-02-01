@@ -114,13 +114,15 @@ bool te::ogr::Transactor::isInTransaction() const
 std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string& name, 
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/,
-                                          const te::common::AccessPolicy)
+                                          const te::common::AccessPolicy pol)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
-  
-  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
+
+  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
+  if (!ds)
+    return std::auto_ptr<te::da::DataSet>();
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -137,13 +139,15 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           te::gm::SpatialRelation /*r*/,
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/,
-                                          const te::common::AccessPolicy)
+                                          const te::common::AccessPolicy pol)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
+  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
+  if (!ds)
+    return std::auto_ptr<te::da::DataSet>();
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -162,13 +166,15 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           te::gm::SpatialRelation /*r*/,
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/,
-                                          const te::common::AccessPolicy)
+                                          const te::common::AccessPolicy pol)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
+  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
+  if (!ds)
+    return std::auto_ptr<te::da::DataSet>();
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -188,13 +194,15 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
 std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& q,
                                       te::common::TraverseType /*travType*/, 
                                       bool /*connected*/,
-                                      const te::common::AccessPolicy)
+                                      const te::common::AccessPolicy pol)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
-  
-  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
+
+  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
+  if (!ds)
+    return std::auto_ptr<te::da::DataSet>();
 
   std::string sql;
 
@@ -220,14 +228,16 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
 std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& query,
                                       te::common::TraverseType /*travType*/, 
                                       bool /*connected*/,
-                                      const te::common::AccessPolicy)
+                                      const te::common::AccessPolicy pol)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
 
-  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
-
+  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
+  if (!ds)
+    return std::auto_ptr<te::da::DataSet>();
+  
   // Adding FID attribute case "SELECT *"
   std::string queryCopy = query;
   std::size_t pos = queryCopy.find("*");
@@ -417,7 +427,6 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
 
 std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
-  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
   GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return std::auto_ptr<te::dt::Property>();
@@ -444,7 +453,6 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
 
 std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string& datasetName)
 {
-  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
   GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return std::vector<std::string>();
@@ -470,7 +478,6 @@ std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string
 
 std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datasetName)
 {
-  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
   GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return 0;
@@ -493,7 +500,6 @@ std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datase
 
 bool te::ogr::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
-  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
   GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return false;
@@ -524,9 +530,6 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
   {
     if(p->getType() != te::dt::GEOMETRY_TYPE)
     {
-//      if(!l->TestCapability(OLCCreateField))
-//        throw Exception(TE_TR("This dataset do not support add fields operation."));
-
       OGRFieldDefn* nField = Convert2OGR(p);
       OGRErr error = l->CreateField(nField);
 
@@ -628,7 +631,6 @@ void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetNam
     if(err != OGRERR_NONE)
       throw Exception(TE_TR("Fail to to change field type."));
 
-    //std::string name = m_ogrDs->getOGRDataSource()->GetName();
     std::string name = m_ogrDs->getOGRDataSource()->GetDescription();
 
     err = l->SyncToDisk();
