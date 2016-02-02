@@ -551,9 +551,12 @@ void te::qt::af::BaseApplication::onLayerSRSTriggered()
 
   std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
 
-  te::map::AbstractLayerPtr lay = *layers.begin();
+  for (std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin(); it != layers.end(); ++it)
+  {
+    te::map::AbstractLayerPtr lay = *it;
 
-  lay->setSRID(srid.first);
+    lay->setSRID(srid.first);
+  }
 }
 
 void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
