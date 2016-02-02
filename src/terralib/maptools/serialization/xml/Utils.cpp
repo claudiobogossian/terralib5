@@ -103,6 +103,41 @@ std::string te::map::serialize::ReadLayerTitle(te::xml::Reader& reader)
   return title;
 }
 
+std::string te::map::serialize::ReadDataSetName(te::xml::Reader& reader)
+{
+  std::string dataset = "";
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSetName");
+  reader.next();
+  if (reader.getNodeType() == te::xml::VALUE)
+  {
+    dataset = reader.getElementValue();
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  return dataset;
+}
+
+std::string te::map::serialize::ReadDataSourceId(te::xml::Reader& reader)
+{
+  std::string datasourceId = "";
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSourceId");
+  reader.next();
+  if (reader.getNodeType() == te::xml::VALUE)
+  {
+    datasourceId = reader.getElementValue();
+    reader.next();
+  }
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  return datasourceId;
+}
+
 std::string te::map::serialize::ReadLayerVisibility(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -584,6 +619,8 @@ void te::map::serialize::WriteAbstractLayer(const te::map::AbstractLayer* layer,
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("te_map:Title", layer->getTitle());
   writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
+  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
 
   te::map::Grouping* g = layer->getGrouping();
 

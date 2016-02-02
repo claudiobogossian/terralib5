@@ -28,7 +28,6 @@
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/Utils.h"
 #include "../../../../maptools/AbstractLayer.h"
-#include "../../../../maptools/DataSetLayer.h"
 #include "../../../../raster/Band.h"
 #include "../../../../raster/BandProperty.h"
 #include "../../../../raster/Utils.h"
@@ -107,9 +106,8 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(connection_prop, info->getConnInfoAsString().c_str());
 
   // For while, use DataSetLayer to get the DataSource
-  te::map::DataSetLayer* dslayer = dynamic_cast<te::map::DataSetLayer*>(layer);
-  te::da::DataSourcePtr dsource = te::da::GetDataSource(dslayer->getDataSourceId(), false);
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(numofitens_prop, dsource->getNumberOfItems(dslayer->getDataSetName()));
+  te::da::DataSourcePtr dsource = te::da::GetDataSource(layer->getDataSourceId(), false);
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(numofitens_prop, dsource->getNumberOfItems(layer->getDataSetName()));
 
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(llx_prop, QString::number(m_layer->getExtent().getLowerLeftX(), 'f'));
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(lly_prop, QString::number(m_layer->getExtent().getLowerLeftY(), 'f'));
