@@ -31,3 +31,37 @@ get_filename_component(_prefix "${_dir}/../../../" ABSOLUTE)
 include("${_prefix}/lib/cmake/terralib-@TERRALIB_PKG_VERSION@/terralib-exports.cmake")
 
 set(terralib_INCLUDE_DIRS "${_prefix}/include")
+
+# Modules compiled 
+# This code is used to verify the compiled components.
+set (TE_MODULES @TERRALIB_MODULES@)
+
+# This code is used to verify the compiled plugins.
+set (TE_PLUGINS @TERRALIB_PLUGINS@)
+
+list (APPEND TE_MODULES "${TE_PLUGINS}")
+
+set (TERRALIB_LIBRARIES "")
+
+foreach (comp ${TE_PLUGINS})
+  list(APPEND TERRALIB_PLUGINS terralib_mod_${comp})
+endforeach()
+
+if (terralib_FIND_COMPONENTS)
+  foreach (comp ${terralib_FIND_COMPONENTS})
+    list (FIND TE_MODULES ${comp} cmp_found)
+    if (cmp_found EQUAL "-1") # Does not found component
+      set (terralib_${comp}_FOUND 0)
+      if(terralib_FIND_REQUIRED_${comp})
+        message(SEND_ERROR "TerraLib ${comp} not available.")
+      endif()
+    else()                    # Found component.
+      set(terralib_mod_${comp}_FOUND 1)
+      message("TerraLib module ${comp} available.")
+      list (APPEND TERRALIB_LIBRARIES "terralib_mod_${comp}")
+    endif()
+  endforeach()
+endif() 
+
+get_filename_component(CURRENT_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+include ( ${CURRENT_DIR}/terralib_macros.cmake )

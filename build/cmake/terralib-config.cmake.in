@@ -28,3 +28,36 @@
 include("@terralib_BINARY_DIR@/terralib-exports.cmake")
 
 set(terralib_INCLUDE_DIRS "@TERRALIB_ABSOLUTE_ROOT_DIR@/src")
+
+# Modules compiled 
+# This code is used to verify the compiled components.
+set (TE_MODULES @TERRALIB_MODULES@)
+
+# This code is used to verify the compiled plugins.
+set (TE_PLUGINS @TERRALIB_PLUGINS@)
+
+list (APPEND TE_MODULES "${TE_PLUGINS}")
+
+set (TERRALIB_PLUGINS "")
+
+foreach (comp ${TE_PLUGINS})
+  list(APPEND TERRALIB_PLUGINS terralib_mod_${comp})
+endforeach()
+
+if (terralib_FIND_COMPONENTS)
+  foreach (comp ${terralib_FIND_COMPONENTS})
+    list (FIND TE_MODULES ${comp} cmp_found)
+    if (cmp_found EQUAL "-1") # Does not found component
+      set (terralib_${comp}_FOUND 0)
+      if(terralib_FIND_REQUIRED_${comp})
+        message(SEND_ERROR "TerraLib ${comp} not available.")
+      endif()
+    else()                    # Found component.
+      set(terralib_mod_${comp}_FOUND 1)
+      message("TerraLib module ${comp} available.")
+      list (APPEND TE_LIBRARIES "terralib_mod_${comp}")
+    endif()
+  endforeach()
+endif() 
+
+include (@terralib_SOURCE_DIR@/terralib_macros.cmake)
