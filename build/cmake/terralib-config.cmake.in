@@ -55,7 +55,7 @@ if (terralib_FIND_COMPONENTS)
     else()                    # Found component.
       set(terralib_mod_${comp}_FOUND 1)
       message("TerraLib module ${comp} available.")
-      list (APPEND TE_LIBRARIES "terralib_mod_${comp}")
+      list (APPEND TERRALIB_LIBRARIES terralib_mod_${comp})
     endif()
   endforeach()
 endif() 
