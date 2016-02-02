@@ -48,6 +48,12 @@ te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
   reader.next();
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
 
+  /* Grouping */
+  te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
+
+  /* Chart */
+  std::auto_ptr<te::map::Chart> chart(te::map::serialize::ReadLayerChart(reader));
+
   /* DataSetName Element */
   reader.next();
   std::string dataset = te::map::serialize::ReadDataSetName(reader);
@@ -55,12 +61,6 @@ te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
   /* DataSourceId Element */
   reader.next();
   std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
-
-  /* Grouping */
-  te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
-
-  /* Chart */
-  std::auto_ptr<te::map::Chart> chart(te::map::serialize::ReadLayerChart(reader));
 
   /* SRID Element */
   reader.next();
@@ -152,6 +152,8 @@ void te::wms::serialize::LayerWriter(const te::map::AbstractLayer* alayer, te::x
 
   te::map::serialize::WriteAbstractLayer(layer, writer);
 
+  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
