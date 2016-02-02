@@ -169,10 +169,6 @@ void te::qt::plugins::mnt::Plugin::registerActions()
   connect(m_Slope, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Slope->getAction());
 
-  m_ShowValue = new te::qt::plugins::mnt::ShowValuesAction(m_mntMenu);
-  connect(m_ShowValue, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
-  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_ShowValue->getAction());
-
   m_Volume = new te::qt::plugins::mnt::VolumeAction(m_mntMenu);
   connect(m_Volume, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Volume->getAction());
@@ -181,6 +177,9 @@ void te::qt::plugins::mnt::Plugin::registerActions()
   connect(m_Profile, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Profile->getAction());
 
+  m_ShowValue = new te::qt::plugins::mnt::ShowValuesAction(m_mntMenu);
+  connect(m_ShowValue, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_ShowValue->getAction());
 }
 
 void  te::qt::plugins::mnt::Plugin::unRegisterActions()

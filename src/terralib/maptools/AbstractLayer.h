@@ -505,6 +505,20 @@ namespace te
         virtual void setOutOfDate();
 
         /*!
+        \brief
+
+        \return
+        */
+        const std::string& getDataSetName() const;
+
+        /*!
+        \brief
+
+        \param name
+        */
+        void setDataSetName(const std::string& name);
+
+        /*!
           \brief
 
           \return
@@ -520,19 +534,20 @@ namespace te
 
       protected:
 
-        std::string m_id;                 //!< Layer id.
-        std::string m_title;              //!< A brief description of this Layer that can be used by applications to show a text identifying this layer.
-        te::gm::Envelope m_mbr;           //!< The layer bounding box.
-        int m_srid;                       //!< The identifier of the layer spatial reference system.
-        Visibility m_visibility;          //!< It indicates the layer visibility.
-        bool m_visibilityChanged;         //!< It indicates if the layer visibility has changed.
-        te::da::ObjectIdSet* m_selected;  //!< The selected group of the layer.
-        te::se::Style* m_style;           //!< The style to be applied to the geographic objects in the layer.
-        te::map::Grouping* m_grouping;    //!< The grouping information.
-        te::map::Chart* m_chart;          //!< The chart information.
-        std::string m_geomPropertyName;   //!< The name of the referenced geometry property.
-        te::map::CompositionMode m_compositionMode; //!< The composition mode used to merged the canvas.
-        std::string m_datasourceId;               //!< DataSource id;
+        std::string m_id;                            //!< Layer id.
+        std::string m_title;                         //!< A brief description of this Layer that can be used by applications to show a text identifying this layer.
+        te::gm::Envelope m_mbr;                      //!< The layer bounding box.
+        int m_srid;                                  //!< The identifier of the layer spatial reference system.
+        Visibility m_visibility;                     //!< It indicates the layer visibility.
+        bool m_visibilityChanged;                    //!< It indicates if the layer visibility has changed.
+        te::da::ObjectIdSet* m_selected;             //!< The selected group of the layer.
+        te::se::Style* m_style;                      //!< The style to be applied to the geographic objects in the layer.
+        te::map::Grouping* m_grouping;               //!< The grouping information.
+        te::map::Chart* m_chart;                     //!< The chart information.
+        std::string m_geomPropertyName;              //!< The name of the referenced geometry property.
+        te::map::CompositionMode m_compositionMode;  //!< The composition mode used to merged the canvas.
+        std::string m_datasetName;                   //!< The dataset name where we will retrieve the layer objects.
+        std::string m_datasourceId;                  //!< DataSource id;
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;
