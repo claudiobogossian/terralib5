@@ -272,16 +272,6 @@ const std::string& te::map::DataSetAdapterLayer::getType() const
   return sm_type;
 }
 
-const std::string& te::map::DataSetAdapterLayer::getDataSetName() const
-{
-  return m_datasetName;
-}
-
-void te::map::DataSetAdapterLayer::setDataSetName(const std::string& name)
-{
-  m_datasetName = name;
-}
-
 const std::string& te::map::DataSetAdapterLayer::getRendererType() const
 {
   return m_rendererType;

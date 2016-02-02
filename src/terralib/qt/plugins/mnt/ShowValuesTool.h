@@ -49,6 +49,10 @@ namespace te
 
           ~ShowValuesTool();
 
+          void setAction(QAction* action) {
+            m_action = action;
+          };
+
           /** @name AbstractTool Methods
           *  Methods related with tool behavior.
           */
@@ -62,6 +66,7 @@ namespace te
 
           te::map::AbstractLayer* m_layer;
           te::qt::af::BaseApplication* m_app;
+          QAction* m_action;
         };
       }
     }
