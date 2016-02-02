@@ -161,6 +161,7 @@ namespace te
       \param rType The name of the specific driver to create the raster.
 
       \return A valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
+      \note The area outside the polygon will be filled with nodata values.
     */      
     TERASTEREXPORT te::rst::RasterPtr CropRaster(const te::rst::Raster& rin, 
                                                  const te::gm::Polygon& pin,
