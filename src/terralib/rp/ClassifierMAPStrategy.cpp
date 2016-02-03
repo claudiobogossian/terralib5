@@ -82,8 +82,15 @@ te::rp::ClassifierMAPStrategy::~ClassifierMAPStrategy()
 {
 }
 
+std::vector< int > te::rp::ClassifierMAPStrategy::getOutputDataTypes() const
+{
+  std::vector< int > dt;
+  dt.push_back( te::dt::UINT32_TYPE );
+  return dt;
+}
+
 bool te::rp::ClassifierMAPStrategy::initialize(
-  te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
+  te::rp::ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
   m_isInitialized = false;
   m_initParams.reset();

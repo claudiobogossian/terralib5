@@ -71,7 +71,7 @@ namespace te
 
           \brief Classifier Parameters
         */
-        class TERPEXPORT Parameters : public StrategyParameters
+        class TERPEXPORT Parameters : public ClassifierStrategyParameters
         {
           public:
             
@@ -79,7 +79,7 @@ namespace te
             
             std::vector< double > m_maxAngularDistances; //!< This is a vector of maximum acceptable angles (radians) between one pixel spectra and the reference spectra for each class (pixels with angular distance higher than this value will not be classifyed as belonging to each class (common used default:0.1 radians).
 
-            Parameters();
+			Parameters();
 
             ~Parameters();
 
@@ -98,13 +98,16 @@ namespace te
         ~ClassifierSAMStrategy();
 
         //overload
-        bool initialize(StrategyParameters const* const strategyParams) throw(te::rp::Exception);
+        bool initialize(ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception);
 
         //overload
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                      const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                      const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception);
-                     
+        		
+        // overload
+        std::vector< int > getOutputDataTypes() const; 
+
       protected :
         
         bool m_isInitialized; //!< Is this instance initialized?

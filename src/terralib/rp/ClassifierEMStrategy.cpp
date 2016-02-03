@@ -94,7 +94,14 @@ te::rp::ClassifierEMStrategy::~ClassifierEMStrategy()
 {
 }
 
-bool te::rp::ClassifierEMStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
+std::vector< int > te::rp::ClassifierEMStrategy::getOutputDataTypes() const
+{
+  std::vector< int > dt;
+  dt.push_back( te::dt::UINT32_TYPE );
+  return dt;
+}
+
+bool te::rp::ClassifierEMStrategy::initialize(te::rp::ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
   m_isInitialized = false;
 
