@@ -912,8 +912,8 @@ void te::attributefill::VectorToVectorDialog::onSelectAttrToolButtonPressed()
   te::qt::widgets::DoubleListWidget* d = new te::qt::widgets::DoubleListWidget(this);
   d->setInputValues(inputNames);
   d->setOutputValues(outputNames);
-  d->setLeftLabel(tr("Layer Attributes").toStdString());
-  d->setRightLabel(tr("Selected Attributes").toStdString());
+  d->setLeftLabel(tr("Layer Attributes"));
+  d->setRightLabel(tr("Selected Attributes"));
   vLayout->addWidget(d);
 
   QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
