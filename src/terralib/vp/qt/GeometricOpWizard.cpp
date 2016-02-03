@@ -214,6 +214,13 @@ bool te::vp::GeometricOpWizard::execute()
     if(m_geomOpOutputPage->hasPerimeter())
       m_ops.push_back(te::vp::PERIMETER);
 
+// Verify if it has at least one operation checked.
+    if (m_ops.empty())
+    {
+      QMessageBox::information(this, "Geographic Operation", "Check at least one operation.");
+      return false;
+    }
+
 // get the selected properties of input layer
     std::vector<std::string> geoProps = m_geomOpPage->getSelectedProps();
 

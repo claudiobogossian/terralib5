@@ -121,20 +121,6 @@ namespace te
 
           \return
         */
-        const std::string& getDataSetName() const;
-
-        /*!
-          \brief
-
-          \param name
-        */
-        void setDataSetName(const std::string& name);
-
-        /*!
-          \brief
-
-          \return
-        */
         const std::string& getRendererType() const;
 
         /*!
@@ -150,8 +136,6 @@ namespace te
         virtual void setOutOfDate();
 
       private:
-
-        std::string m_datasetName;         //!< The dataset name where we will retrieve the layer objects.
 
         std::string m_rendererType;        //!< A pointer to the internal renderer used to paint this layer.
         mutable LayerSchema* m_schema;     //!< The dataset schema.

@@ -35,7 +35,7 @@
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
 #include "../progress/ProgressViewerDialog.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "RegisterWizard.h"
 #include "TiePointLocatorDialog.h"

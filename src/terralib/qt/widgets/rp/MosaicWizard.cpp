@@ -34,7 +34,7 @@
 #include "../progress/ProgressViewerDialog.h"
 #include "MosaicWizard.h"
 #include "MosaicWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
 

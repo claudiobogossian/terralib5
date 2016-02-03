@@ -34,7 +34,7 @@
 #include "../layer/search/LayerSearchWizardPage.h"
 #include "MixtureModelWizard.h"
 #include "MixtureModelWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
 
