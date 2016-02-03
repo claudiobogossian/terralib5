@@ -67,8 +67,6 @@ const te::rp::ClassifierEMStrategy::Parameters& te::rp::ClassifierEMStrategy::Pa
   m_maxInputPoints = rhs.m_maxInputPoints;
   m_epsilon = rhs.m_epsilon;
   m_clustersMeans = rhs.m_clustersMeans;
-  m_outputNumberBands = rhs.m_outputNumberBands;
-  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -96,17 +94,14 @@ te::rp::ClassifierEMStrategy::~ClassifierEMStrategy()
 {
 }
 
-std::vector< unsigned int > te::rp::ClassifierEMStrategy::getOutputDataType(void)
+std::vector< int > te::rp::ClassifierEMStrategy::getOutputDataTypes() const
 {
-	return m_parameters.m_outputDataType;
+  std::vector< int > dt;
+  dt.push_back( te::dt::UINT32_TYPE );
+  return dt;
 }
 
-unsigned int te::rp::ClassifierEMStrategy::getOutputNumberBands(void)
-{
-	return m_parameters.m_outputNumberBands;
-}
-
-bool te::rp::ClassifierEMStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
+bool te::rp::ClassifierEMStrategy::initialize(te::rp::ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
   m_isInitialized = false;
 

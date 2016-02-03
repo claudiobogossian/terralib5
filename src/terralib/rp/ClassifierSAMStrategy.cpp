@@ -54,8 +54,6 @@ const te::rp::ClassifierSAMStrategy::Parameters& te::rp::ClassifierSAMStrategy::
 
   m_trainSamplesPtr = rhs.m_trainSamplesPtr;
   m_maxAngularDistances = rhs.m_maxAngularDistances;
-  m_outputNumberBands = rhs.m_outputNumberBands;
-  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -82,18 +80,15 @@ te::rp::ClassifierSAMStrategy::~ClassifierSAMStrategy()
 {
 }
 
-std::vector< unsigned int > te::rp::ClassifierSAMStrategy::getOutputDataType(void)
+std::vector< int > te::rp::ClassifierSAMStrategy::getOutputDataTypes() const
 {
-	return m_initParams.m_outputDataType;
-}
-
-unsigned int te::rp::ClassifierSAMStrategy::getOutputNumberBands(void)
-{
-	return m_initParams.m_outputNumberBands;
+  std::vector< int > dt;
+  dt.push_back( te::dt::UINT32_TYPE );
+  return dt;
 }
 
 bool te::rp::ClassifierSAMStrategy::initialize(
-  te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
+  te::rp::ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
   m_isInitialized = false;
   m_initParams.reset();

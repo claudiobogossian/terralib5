@@ -29,7 +29,7 @@
 #include "Algorithm.h"
 #include "Config.h"
 #include "Matrix.h"
-#include "StrategyParameters.h"
+#include "ClassifierStrategyParameters.h"
 
 #include <map>
 
@@ -92,12 +92,12 @@ namespace te
 
               \param p The specific classifier strategy parameters.
             */
-            void setClassifierStrategyParams(const StrategyParameters& p);
+            void setClassifierStrategyParams(const ClassifierStrategyParameters& p);
 
             /*!
               \brief Returns a pointer to the internal specific classifier strategy parameters, or null if no parameters are present.
             */
-            StrategyParameters const* getClassifierStrategyParams() const;
+            ClassifierStrategyParameters const* getClassifierStrategyParams() const;
 
             //overload
             void reset() throw(te::rp::Exception);
@@ -114,7 +114,7 @@ namespace te
             std::vector<unsigned int> m_inputRasterBands;                 //!< Bands to be processed from the input raster.
             std::vector<te::gm::Polygon*> m_inputPolygons;                //!< The polygons to be classified when using object-based image analysis (OBIA).
             std::string m_strategyName;                                   //!< The classifier strategy name see each te::rp::ClassifierStrategyFactory inherited classes documentation for reference.
-            StrategyParameters* m_classifierStrategyParamsPtr;            //!< Internal specific classifier strategy parameters.
+            ClassifierStrategyParameters* m_classifierStrategyParamsPtr;  //!< Internal specific classifier strategy parameters.
 
         };
 

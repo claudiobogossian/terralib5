@@ -56,8 +56,6 @@ const te::rp::ClassifierDummyStrategy::Parameters& te::rp::ClassifierDummyStrate
   reset();
 
   m_dummyParameter = rhs.m_dummyParameter;
-  m_outputNumberBands = rhs.m_outputNumberBands;
-  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -81,17 +79,14 @@ te::rp::ClassifierDummyStrategy::~ClassifierDummyStrategy()
 {
 }
 
-std::vector< unsigned int > te::rp::ClassifierDummyStrategy::getOutputDataType(void)
+std::vector< int > te::rp::ClassifierDummyStrategy::getOutputDataTypes() const
 {
-	return m_parameters.m_outputDataType;
+  std::vector< int > dt;
+  dt.push_back( te::dt::UINT32_TYPE );
+	return dt;
 }
 
-unsigned int te::rp::ClassifierDummyStrategy::getOutputNumberBands(void)
-{
-	return m_parameters.m_outputNumberBands;
-}
-
-bool te::rp::ClassifierDummyStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
+bool te::rp::ClassifierDummyStrategy::initialize(te::rp::ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
   m_isInitialized = false;
 

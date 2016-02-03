@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../raster/Raster.h"
-#include "StrategyParameters.h"
+#include "ClassifierStrategyParameters.h"
 #include "Config.h"
 #include "Exception.h"
 
@@ -57,7 +57,7 @@ namespace te
 
           \return true if OK, false on errors.
         */
-        virtual bool initialize(StrategyParameters const* const strategyParams) throw(te::rp::Exception) = 0;
+        virtual bool initialize(ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception) = 0;
 
         /*!
           \brief Executes the classification strategy.
@@ -74,10 +74,12 @@ namespace te
         virtual bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                              const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                              const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception) = 0;
-
-		virtual std::vector< unsigned int > getOutputDataType(void) = 0; 
-
-		virtual unsigned int getOutputNumberBands(void) = 0;
+                             
+        /*!
+          \brief Returns the output raster pixel data type for each output band.
+          \return Returns the output raster pixel data type for each output band.
+        */
+        virtual std::vector< int > getOutputDataTypes() const = 0; 
 
       protected:
 

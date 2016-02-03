@@ -56,7 +56,7 @@ namespace te
 
           \brief Classifier Parameters
         */
-        class TERPEXPORT Parameters : public StrategyParameters
+        class TERPEXPORT Parameters : public ClassifierStrategyParameters
         {
           public:
             
@@ -75,10 +75,6 @@ namespace te
             std::vector< double > m_prioriProbs; //!< Priori probabilities, one for each class. Values from 0 to 1 (use an empty vector to allow internal calcule of priori probabilities).            
             
             unsigned int m_prioriCalcSampleStep; //!< A positive non-zero sample step used when calculating piori probabilities (default:2 - half of samples will be used);
-    
-		    int m_outputNumberBands;  
-	        
-			std::vector< unsigned int > m_outputDataType;
 
 			Parameters();
 
@@ -99,14 +95,15 @@ namespace te
         ~ClassifierMAPStrategy();
 
         //overload
-        bool initialize(StrategyParameters const* const strategyParams) throw(te::rp::Exception);
+        bool initialize(ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception);
 
         //overload
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                      const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                      const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception);
         		
-		std::vector< unsigned int > getOutputDataType(void); 
+        // overload
+        std::vector< int > getOutputDataTypes() const; 
 
 		unsigned int getOutputNumberBands(void);
 

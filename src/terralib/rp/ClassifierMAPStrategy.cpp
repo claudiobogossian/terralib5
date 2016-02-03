@@ -55,8 +55,6 @@ const te::rp::ClassifierMAPStrategy::Parameters& te::rp::ClassifierMAPStrategy::
   m_trainSamplesPtr = rhs.m_trainSamplesPtr;
   m_prioriProbs = rhs.m_prioriProbs;
   m_prioriCalcSampleStep = rhs.m_prioriCalcSampleStep;
-  m_outputNumberBands = rhs.m_outputNumberBands;
-  m_outputDataType = rhs.m_outputDataType;
 
   return *this;
 }
@@ -84,18 +82,15 @@ te::rp::ClassifierMAPStrategy::~ClassifierMAPStrategy()
 {
 }
 
-std::vector< unsigned int > te::rp::ClassifierMAPStrategy::getOutputDataType(void)
+std::vector< int > te::rp::ClassifierMAPStrategy::getOutputDataTypes() const
 {
-	return m_initParams.m_outputDataType;
-}
-
-unsigned int te::rp::ClassifierMAPStrategy::getOutputNumberBands(void)
-{
-	return m_initParams.m_outputNumberBands;
+  std::vector< int > dt;
+  dt.push_back( te::dt::UINT32_TYPE );
+  return dt;
 }
 
 bool te::rp::ClassifierMAPStrategy::initialize(
-  te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
+  te::rp::ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
   m_isInitialized = false;
   m_initParams.reset();

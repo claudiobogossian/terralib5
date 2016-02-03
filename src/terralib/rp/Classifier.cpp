@@ -57,7 +57,7 @@ te::rp::Classifier::InputParameters::~InputParameters()
   reset();
 }
 
-void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const StrategyParameters& p)
+void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const ClassifierStrategyParameters& p)
 {
   if(m_classifierStrategyParamsPtr)
   {
@@ -65,10 +65,10 @@ void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const Stra
     m_classifierStrategyParamsPtr = 0;
   }
 
-  m_classifierStrategyParamsPtr = (StrategyParameters*)p.clone();
+  m_classifierStrategyParamsPtr = (ClassifierStrategyParameters*)p.clone();
 }
 
-te::rp::StrategyParameters const* te::rp::Classifier::InputParameters::getClassifierStrategyParams() const
+te::rp::ClassifierStrategyParameters const* te::rp::Classifier::InputParameters::getClassifierStrategyParams() const
 {
   return m_classifierStrategyParamsPtr;
 }
@@ -214,13 +214,14 @@ bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(
                             "Unable to initialize the classification strategy");
 
   std::vector<te::rst::BandProperty*> bandsProperties;
+  const std::vector< int > outputDataTypes = strategyPtr->getOutputDataTypes();
 
-  for(unsigned int bands=0; bands <= strategyPtr->getOutputNumberBands(); bands++)
+  for(unsigned int bands=0; bands < outputDataTypes.size(); bands++)
   {
 	  te::rst::BandProperty* newbprop = new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
 		  m_inputParameters.m_inputRasterBands[0])->getProperty()));
 	  newbprop->m_colorInterp = te::rst::GrayIdxCInt;
-	  newbprop->m_type = strategyPtr->getOutputDataType()[bands];
+	  newbprop->m_type = outputDataTypes[bands];
 	  newbprop->m_noDataValue = -1;
 	  bandsProperties.push_back(newbprop);
   }
@@ -236,9 +237,10 @@ bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(
   TERP_TRUE_OR_RETURN_FALSE(outputParamsPtr->m_outputRasterPtr.get(),
     "Output raster creation error");
 
-  TERP_TRUE_OR_RETURN_FALSE(strategyPtr->execute(*m_inputParameters.m_inputRasterPtr, m_inputParameters.m_inputRasterBands,
-                                                 m_inputParameters.m_inputPolygons, *outputParamsPtr->m_outputRasterPtr, strategyPtr->getOutputNumberBands(), true),
-												"Unable to execute the classification strategy");
+  TERP_TRUE_OR_RETURN_FALSE(strategyPtr->execute( *m_inputParameters.m_inputRasterPtr, 
+    m_inputParameters.m_inputRasterBands, m_inputParameters.m_inputPolygons, 
+    *outputParamsPtr->m_outputRasterPtr, 0, 
+    true), "Unable to execute the classification strategy");
 
   return true;
 }

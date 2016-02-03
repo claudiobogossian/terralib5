@@ -60,15 +60,11 @@ namespace te
 
           \brief Classifier Parameters
         */
-        class TERPEXPORT Parameters : public StrategyParameters
+        class TERPEXPORT Parameters : public ClassifierStrategyParameters
         {
           public:
 
             double m_acceptanceThreshold;   //!< The acceptance threshold (the closer to 100\%, few clusters are created).
-
- 		    int m_outputNumberBands;  
-	        
-			std::vector< unsigned int > m_outputDataType;
 
 			Parameters();
 
@@ -142,16 +138,15 @@ namespace te
         ~ClassifierISOSegStrategy();
 
         //overload
-        bool initialize(StrategyParameters const* const strategyParams) throw(te::rp::Exception);
+        bool initialize(ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception);
 
         //overload
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                      const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                      const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception);
 		
-		std::vector< unsigned int > getOutputDataType(void); 
-
-		unsigned int getOutputNumberBands(void);
+        // overload
+        std::vector< int > getOutputDataTypes() const; 
 
       protected:
 
