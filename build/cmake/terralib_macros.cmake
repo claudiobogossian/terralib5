@@ -71,15 +71,6 @@ MACRO(TeInstallQt5Plugins)
     set(_plugins Qt5::QCocoaIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
     TeInstallPlugins("${_plugins}" "platforms")
   endif()
-
-#  if(APPLE)
-#    install (TARGETS
-#      Qt5::QWindowsIntegrationPlugin
-#  	  RUNTIME
-#	  DESTINATION qtplugins/platforms
-#	  COMPONENT runtime
-#    )
- # endif()
   
 ENDMACRO(TeInstallQt5Plugins)
 
@@ -128,3 +119,36 @@ endif()
 
 ENDMACRO(TeInstallQtPlugins)
 
+#
+# Macro TeInstallTerraLibPlugins
+#
+# Description: Installs the required TerraLib plugins. (Used by outter projects.)
+#
+# param plugins List of the names of plugins to be installed.
+#
+# param location Path where the plugins must be installed.
+#
+MACRO(TeInstallTerraLibPlugins plugins location)
+  set(_files "")
+  set(_filesd "")
+  
+  foreach(plugin ${plugins})
+    get_target_property(_loc ${plugin} LOCATION_RELEASE)
+    list(APPEND _files ${_loc})
+    
+    get_target_property(_locd ${plugin} LOCATION_DEBUG)
+    list(APPEND _filesd ${_locd})
+  endforeach()
+  
+  install (FILES ${_files}
+    DESTINATION ${location}
+    CONFIGURATIONS Release
+    COMPONENT runtime
+  )  
+
+  install (FILES ${_filesd}
+    DESTINATION ${location}
+    CONFIGURATIONS Debug
+    COMPONENT runtime
+  )  
+ENDMACRO(TeInstallTerraLibPlugins)

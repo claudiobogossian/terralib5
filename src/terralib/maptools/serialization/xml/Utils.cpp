@@ -619,8 +619,6 @@ void te::map::serialize::WriteAbstractLayer(const te::map::AbstractLayer* layer,
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("te_map:Title", layer->getTitle());
   writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
-  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
-  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
 
   te::map::Grouping* g = layer->getGrouping();
 

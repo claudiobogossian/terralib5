@@ -195,6 +195,12 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
   reader.next();
 
+  /* Grouping */
+  te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
+
+  /* Chart */
+  std::auto_ptr<te::map::Chart> chart(te::map::serialize::ReadLayerChart(reader));
+
   /* DataSetName Element */
   std::string dataset = te::map::serialize::ReadDataSetName(reader);
   reader.next();
@@ -202,12 +208,6 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   /* DataSourceId Element */
   std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
   reader.next();
-
-  /* Grouping */
-  te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
-
-  /* Chart */
-  std::auto_ptr<te::map::Chart> chart(te::map::serialize::ReadLayerChart(reader));
 
   /* SRID Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -300,14 +300,6 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
   reader.next();
 
-  /* DataSetName Element */
-  std::string dataset = te::map::serialize::ReadDataSetName(reader);
-  reader.next();
-
-  /* DataSourceId Element */
-  std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
-  reader.next();
-
   /* Grouping */
   te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
 
@@ -318,6 +310,10 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Select");
   te::da::Select* query = te::serialize::xml::ReadSelect(reader);
+
+  /* DataSourceId Element */
+  std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
+  reader.next();
 
   /* SRID Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -379,7 +375,6 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   reader.next();
 
   std::auto_ptr<te::map::QueryLayer> layer(new te::map::QueryLayer(id, title, 0));
-  layer->setDataSetName(dataset);
   layer->setDataSourceId(datasourceId);
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
@@ -878,6 +873,8 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractW
 
   te::map::serialize::WriteAbstractLayer(layer, writer);
 
+  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
@@ -907,6 +904,11 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWri
   te::map::serialize::WriteAbstractLayer(layer, writer);
 
   te::serialize::xml::Save(layer->getQuery(), writer);
+
+  if (layer->getDataSetName() != "")
+    writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
@@ -1004,7 +1006,9 @@ void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Ab
   writer.writeStartElement("te_map:DataSetAdapterLayer");
 
   te::map::serialize::WriteAbstractLayer(layer, writer);
-  
+
+  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:RendererType", layer->getRendererType());
   writer.writeElement("te_map:CompositionMode", (int)layer->getCompositionMode());
 

@@ -41,6 +41,8 @@ set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
 set(TERRALIB_VERSION "0x050100")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
+set(TERRALIB_MODULES "")
+
 # variable indicating that it will search for 3rd-party libraries and install them
 if(NOT DEFINED TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
   set(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES 0 CACHE BOOL "If \"on\" it will search for 3rd-party libraries and install them when building the install target (e.g.: make install)")
@@ -701,14 +703,8 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_VP_ENABLED "Build the unit test for the
 # process TERRALIB configuration files
 #
 
-configure_file(${CMAKE_SOURCE_DIR}/terralib-config-pkg.cmake.in
-               ${CMAKE_BINARY_DIR}/pkg/terralib-config.cmake @ONLY)
-
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config-version.cmake.in
                ${CMAKE_BINARY_DIR}/terralib-config-version.cmake @ONLY)
-
-configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
-               ${CMAKE_BINARY_DIR}/terralib-config.cmake @ONLY)
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/BuildConfig.h.in
                ${CMAKE_BINARY_DIR}/terralib_buildconfig.h @ONLY)
@@ -749,10 +745,12 @@ endif()
 
 if(TERRALIB_MOD_ADO_ENABLED)
   add_subdirectory(terralib_mod_ado)
+  list(APPEND TERRALIB_PLUGINS ado)
 endif()
 
 if(TERRALIB_MOD_TERRALIB4_ENABLED)
   add_subdirectory(terralib_mod_terralib4)
+  list(APPEND TERRALIB_PLUGINS terralib4)
 endif()
 
 # Turn on multi process compilation
@@ -762,272 +760,340 @@ endif()
 
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
   add_subdirectory(terralib_mod_annotationtext)
+  list(APPEND TERRALIB_MODULES annotationtext)
 endif()
 
 if(TERRALIB_MOD_BINDING_JAVA_ENABLED)
   add_subdirectory(terralib_mod_binding_java)
+  list(APPEND TERRALIB_MODULES binding_java)
 endif()
 
 if(TERRALIB_MOD_BINDING_LUA_ENABLED)
   add_subdirectory(terralib_mod_binding_lua)
+  list(APPEND TERRALIB_MODULES binding_lua)
 endif()
 
 if(TERRALIB_MOD_BINDING_PYTHON_ENABLED)
   add_subdirectory(terralib_mod_binding_python)
+  list(APPEND TERRALIB_MODULES binding_python)
 endif()
 
 if(TERRALIB_MOD_BINDING_R_ENABLED)
   add_subdirectory(terralib_mod_binding_r)
+  list(APPEND TERRALIB_MODULES binding_r)
 endif()
 
 if(TERRALIB_MOD_CELLSPACE_ENABLED)
   add_subdirectory(terralib_mod_cellspace)
+  list(APPEND TERRALIB_PLUGINS cellspace)
 endif()
 
 if(TERRALIB_MOD_CLASSIFICATION_ENABLED)
   add_subdirectory(terralib_mod_classification)
+  list(APPEND TERRALIB_MODULES classification)
 endif()
 
 if(TERRALIB_MOD_COLOR_ENABLED)
   add_subdirectory(terralib_mod_color)
+  list(APPEND TERRALIB_MODULES color)
 endif()
 
 add_subdirectory(terralib_mod_common)
+  list(APPEND TERRALIB_MODULES common)
 
 if(TERRALIB_MOD_DATAACCESS_ENABLED)
   add_subdirectory(terralib_mod_dataaccess)
+  list(APPEND TERRALIB_MODULES dataaccess)
 endif()
 
 if(TERRALIB_MOD_DATATYPE_ENABLED)
   add_subdirectory(terralib_mod_datatype)
+  list(APPEND TERRALIB_MODULES datatype)
 endif()
 
 if(TERRALIB_MOD_FILTER_ENABLED)
   add_subdirectory(terralib_mod_filter)
+  list(APPEND TERRALIB_MODULES filter)
 endif()
 
 if(TERRALIB_MOD_GDAL_ENABLED)
   add_subdirectory(terralib_mod_gdal)
+  list(APPEND TERRALIB_PLUGINS gdal)
 endif()
 
 if(TERRALIB_MOD_GEOMETRY_ENABLED)
   add_subdirectory(terralib_mod_geometry)
+  list(APPEND TERRALIB_MODULES geometry)
 endif()
 
 if(TERRALIB_MOD_GML_ENABLED)
   add_subdirectory(terralib_mod_gml)
+  list(APPEND TERRALIB_MODULES gml)
 endif()
 
 if(TERRALIB_MOD_GRAPH_ENABLED)
   add_subdirectory(terralib_mod_graph)
+  list(APPEND TERRALIB_PLUGINS graph)
 endif()
 
 if(TERRALIB_MOD_MAPTOOLS_ENABLED)
   add_subdirectory(terralib_mod_maptools)
+  list(APPEND TERRALIB_MODULES maptools)
 endif()
 
 if(TERRALIB_MOD_METADATA_ENABLED)
   add_subdirectory(terralib_mod_metadata)
+  list(APPEND TERRALIB_MODULES metadata)
 endif()
 
 if(TERRALIB_MOD_MEMORY_ENABLED)
   add_subdirectory(terralib_mod_memory)
+  list(APPEND TERRALIB_MODULES memory)
 endif()
 
 if(TERRALIB_MOD_OGR_ENABLED)
   add_subdirectory(terralib_mod_ogr)
+  list(APPEND TERRALIB_PLUGINS ogr)
 endif()
 
 if(TERRALIB_MOD_PLUGIN_ENABLED)
   add_subdirectory(terralib_mod_plugin)
+  list(APPEND TERRALIB_MODULES plugin)
 endif()
 
 if(TERRALIB_MOD_POSTGIS_ENABLED)
   add_subdirectory(terralib_mod_postgis)
+  list(APPEND TERRALIB_PLUGINS postgis)
 endif()
 
 if(TERRALIB_MOD_ATTRIBUTEFILL_CORE_ENABLED)
   add_subdirectory(terralib_mod_attributefill_core)
+  list(APPEND TERRALIB_MODULES attributefill_core)
 endif()
 
 if(TERRALIB_MOD_ATTRIBUTEFILL_QT_ENABLED)
   add_subdirectory(terralib_mod_attributefill_qt)
+  list(APPEND TERRALIB_MODULES attributefill_qt)
 endif()
 
 if(TERRALIB_MOD_ADDRESSGEOCODING_CORE_ENABLED)
   add_subdirectory(terralib_mod_addressgeocoding_core)
+  list(APPEND TERRALIB_MODULES addressgeocoding_core)
 endif()
 
 if(TERRALIB_MOD_ADDRESSGEOCODING_QT_ENABLED)
   add_subdirectory(terralib_mod_addressgeocoding_qt)
+  list(APPEND TERRALIB_MODULES addressgeocoding_qt)
 endif()
 
 if(TERRALIB_MOD_QT_APF_ENABLED)
   add_subdirectory(terralib_mod_qt_apf)
+  list(APPEND TERRALIB_MODULES qt_apf)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_CELLSPACE_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_cellspace)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_cellspace)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_ado)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_datasource_ado)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_gdal)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_datasource_gdal)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_terralib4)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_datasource_terralib4)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_ogr)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_datasource_ogr)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_pgis)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_datasource_pgis)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WCS_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_wcs)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_datasource_wcs)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_wfs)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_datasource_wfs)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_wms)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_datasource_wms)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_ADDRESSGEOCODING_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_addressgeocoding)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_addressgeocoding)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_ATTRIBUTEFILL_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_attributefill)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_attributefill)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_vp)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_vp)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_rp)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_rp)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_SA_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_sa)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_sa)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_st)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_st)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_MOBILE_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_mobile)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_mobile)
 endif()
 
 if(TERRALIB_MOD_QT_WIDGETS_ENABLED)
   add_subdirectory(terralib_mod_qt_widgets)
+  list(APPEND TERRALIB_MODULES qt_widgets)
 endif()
 
 if(TERRALIB_MOD_RASTER_ENABLED)
   add_subdirectory(terralib_mod_raster)
+  list(APPEND TERRALIB_MODULES raster)
 endif()
 
 if(TERRALIB_MOD_RP_ENABLED)
   add_subdirectory(terralib_mod_rp)
+  list(APPEND TERRALIB_MODULES rp)
 endif()
 
 if(TERRALIB_MOD_SA_CORE_ENABLED)
   add_subdirectory(terralib_mod_sa_core)
+  list(APPEND TERRALIB_MODULES sa_core)
 endif()
 
 if(TERRALIB_MOD_SAM_ENABLED)
   add_subdirectory(terralib_mod_sam)
+  list(APPEND TERRALIB_MODULES sam)
 endif()
 
 if(TERRALIB_MOD_SRS_ENABLED)
   add_subdirectory(terralib_mod_srs)
+  list(APPEND TERRALIB_MODULES srs)
 endif()
 
 if(TERRALIB_MOD_ST_ENABLED)
   add_subdirectory(terralib_mod_st)
+  list(APPEND TERRALIB_MODULES st)
 endif()
 
 if(TERRALIB_MOD_WCS_ENABLED)
   add_subdirectory(terralib_mod_wcs)
+  list(APPEND TERRALIB_PLUGINS wcs)
 endif()
 
 if(TERRALIB_MOD_WFS_ENABLED)
   add_subdirectory(terralib_mod_wfs)
+  list(APPEND TERRALIB_PLUGINS wfs)
 endif()
 
 if(TERRALIB_MOD_WMS_CORE_ENABLED)
   add_subdirectory(terralib_mod_wms_core)
+  list(APPEND TERRALIB_PLUGINS wms_core)
 endif()
 
 if(TERRALIB_MOD_WMS_QT_ENABLED)
   add_subdirectory(terralib_mod_wms_qt)
+  list(APPEND TERRALIB_PLUGINS wms_qt)
 endif()
 
 if(TERRALIB_MOD_STATISTICS_CORE_ENABLED)
   add_subdirectory(terralib_mod_statistics_core)
+  list(APPEND TERRALIB_MODULES statistics_core)
 endif()
 
 if(TERRALIB_MOD_STMEMORY_ENABLED)
   add_subdirectory(terralib_mod_stmemory)
+  list(APPEND TERRALIB_MODULES stmemory)
 endif()
 
 if(TERRALIB_MOD_STATISTICS_QT_ENABLED)
   add_subdirectory(terralib_mod_statistics_qt)
+  list(APPEND TERRALIB_MODULES statistics_qt)
 endif()
 
 if(TERRALIB_MOD_SYMBOLOGY_ENABLED)
   add_subdirectory(terralib_mod_symbology)
+  list(APPEND TERRALIB_MODULES symbology)
 endif()
 
 if(TERRALIB_MOD_VP_CORE_ENABLED)
   add_subdirectory(terralib_mod_vp_core)
+  list(APPEND TERRALIB_MODULES vp_core)
 endif()
 
 if(TERRALIB_MOD_VP_QT_ENABLED)
   add_subdirectory(terralib_mod_vp_qt)
+  list(APPEND TERRALIB_MODULES vp_qt)
 endif()
 
 if(TERRALIB_MOD_SA_QT_ENABLED)
   add_subdirectory(terralib_mod_sa_qt)
+  list(APPEND TERRALIB_MODULES sa_qt)
 endif()
 
 if(TERRALIB_MOD_XERCES_ENABLED)
   add_subdirectory(terralib_mod_xerces)
+  list(APPEND TERRALIB_PLUGINS xerces)
 endif()
 
 if(TERRALIB_MOD_XLINK_ENABLED)
   add_subdirectory(terralib_mod_xlink)
+  list(APPEND TERRALIB_MODULES xlink)
 endif()
 
 if(TERRALIB_MOD_XML_ENABLED)
   add_subdirectory(terralib_mod_xml)
+  list(APPEND TERRALIB_MODULES xml)
 endif()
 
 if(TERRALIB_MOD_XSD_ENABLED)
   add_subdirectory(terralib_mod_xsd)
+  list(APPEND TERRALIB_MODULES xsd)
 endif()
 
 if(TERRALIB_MOD_EDIT_CORE_ENABLED)
   add_subdirectory(terralib_mod_edit_core)
+  list(APPEND TERRALIB_MODULES edit_core)
 endif()
 
 if(TERRALIB_MOD_EDIT_QT_ENABLED)
   add_subdirectory(terralib_mod_edit_qt)
+  list(APPEND TERRALIB_MODULES edit_qt)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_EDIT_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_edit)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_edit)
 endif()
 
 if(TERRALIB_TERRAVIEW_ENABLED)
@@ -1036,14 +1102,17 @@ endif()
  
 if(TERRALIB_MOD_MNT_CORE_ENABLED)
   add_subdirectory(terralib_mod_mnt_core)
+  list(APPEND TERRALIB_MODULES mnt_core)
 endif()
 
 if(TERRALIB_MOD_MNT_QT_ENABLED)
   add_subdirectory(terralib_mod_mnt_qt)
+  list(APPEND TERRALIB_MODULES mnt_qt)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_MNT_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_mnt)
+  list(APPEND TERRALIB_PLUGINS qt_plugins_mnt)
 endif()
 
 #
@@ -1294,7 +1363,12 @@ if(TERRALIB_UNITTEST_VP_ENABLED)
   add_subdirectory(terralib_unittest_vp)
 endif()
 
+configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
+               ${CMAKE_BINARY_DIR}/terralib-config.cmake @ONLY)
 
+configure_file(${CMAKE_SOURCE_DIR}/terralib-config-pkg.cmake.in
+               ${CMAKE_BINARY_DIR}/pkg/terralib-config.cmake @ONLY)
+               
 #
 # install and targets export
 #
@@ -1318,6 +1392,7 @@ endif()
 
 install(FILES ${terralib_BINARY_DIR}/pkg/terralib-config.cmake
               ${terralib_BINARY_DIR}/terralib-config-version.cmake
+              ${terralib_SOURCE_DIR}/terralib_macros.cmake
         DESTINATION ${TERRALIB_DESTINATION_LIBRARY}/cmake/terralib-${TERRALIB_PKG_VERSION} COMPONENT devel)
 
 install(EXPORT terralib-targets
