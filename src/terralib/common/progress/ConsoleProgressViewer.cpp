@@ -86,12 +86,12 @@ void te::common::ConsoleProgressViewer::cancelTask(int taskId)
 
 void te::common::ConsoleProgressViewer::setTotalValues(int taskId)
 {
-  m_totalSteps += m_tasks[taskId]->getTotalSteps();
+  m_totalSteps = m_tasks[taskId]->getTotalSteps();
 }
 
-void te::common::ConsoleProgressViewer::updateValue(int /*taskId*/)
+void te::common::ConsoleProgressViewer::updateValue(int taskId)
 {
-  m_currentStep++;
+  m_currentStep = m_tasks[taskId]->getCurrentStep();
 
   double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 

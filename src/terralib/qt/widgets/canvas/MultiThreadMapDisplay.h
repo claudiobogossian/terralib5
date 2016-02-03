@@ -106,6 +106,8 @@ namespace te
 
           void setSynchronous(bool on);
 
+          void updateLayer(te::map::AbstractLayerPtr layer);
+
         private:
 
           void updateTransform();

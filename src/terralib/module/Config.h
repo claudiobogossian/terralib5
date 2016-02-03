@@ -18,40 +18,21 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/RasterInfoDialog.cpp
+  \file terralib/module/Config.h
 
-  \brief This file defines a class for a RasterInfoDialog.
+  \brief TerraLib Module Manager configuration flags.
 */
 
-// TerraLib
-#include "RasterInfoDialog.h"
-#include "RasterInfoWidget.h"
-#include "ui_RasterInfoDialogForm.h"
+#ifndef __TERRALIB_MODULE_CONFIG_H__
+#define __TERRALIB_MODULE_CONFIG_H__
 
-// Qt
-#include <QGridLayout>
+#if defined(WIN32) && defined(terralib_mod_manager_EXPORTS)
+    #define TEMODULEEXPORT  __declspec(dllexport)
+#elif defined(WIN32)
+    #define TEMODULEEXPORT  __declspec(dllimport)
+#else
+  #define TEMODULEEXPORT
+#endif
 
-te::qt::widgets::RasterInfoDialog::RasterInfoDialog(QWidget* parent, Qt::WindowFlags f)
-  : QDialog(parent, f),
-  m_ui(new Ui::RasterInfoDialogForm)
-{
-//build form
-  m_ui->setupUi(this);
-
-  QGridLayout* layout = new QGridLayout(m_ui->m_widget);
-  m_widget.reset( new te::qt::widgets::RasterInfoWidget(m_ui->m_widget));
-  layout->addWidget(m_widget.get(), 0, 0);
-  layout->setContentsMargins(0,0,0,0);
-}
-
-te::qt::widgets::RasterInfoDialog::~RasterInfoDialog()
-{
-}
-
-te::qt::widgets::RasterInfoWidget* te::qt::widgets::RasterInfoDialog::getWidget()
-{
-  return m_widget.get();
-}
-
-
+#endif  // __TERRALIB_MODULE_CONFIG_H__
 

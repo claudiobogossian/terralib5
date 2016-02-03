@@ -103,6 +103,41 @@ std::string te::map::serialize::ReadLayerTitle(te::xml::Reader& reader)
   return title;
 }
 
+std::string te::map::serialize::ReadDataSetName(te::xml::Reader& reader)
+{
+  std::string dataset = "";
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSetName");
+  reader.next();
+  if (reader.getNodeType() == te::xml::VALUE)
+  {
+    dataset = reader.getElementValue();
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  return dataset;
+}
+
+std::string te::map::serialize::ReadDataSourceId(te::xml::Reader& reader)
+{
+  std::string datasourceId = "";
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSourceId");
+  reader.next();
+  if (reader.getNodeType() == te::xml::VALUE)
+  {
+    datasourceId = reader.getElementValue();
+    reader.next();
+  }
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  return datasourceId;
+}
+
 std::string te::map::serialize::ReadLayerVisibility(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);

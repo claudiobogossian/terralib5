@@ -31,21 +31,12 @@ void saveUsingOGR(const std::string& filename, const std::string drivername);
 void ExportingOGR()
 {
   std::string data_dir = TERRALIB_DATA_DIR;
-  
-  std::cout << std::endl << "1 - ";
-  openFile(data_dir + "/rasters/cbers_b2_crop.tif", "GDAL");
-
-  std::cout << std::endl << "2 - ";
-  openDirectory(data_dir + "/rasters", "GDAL");
-  
-  std::cout << std::endl << "3 - ";
-  openFile(data_dir + "/shp/munic_2001.shp", "OGR");
-  
-  std::cout << std::endl << "4 - ";
-  openFile(data_dir + "/shp", "OGR");
-  
-  std::cout << std::endl << "5 - ";
-  openFile(data_dir + "/ogr", "OGR");
+  std::string aux;
+  std::map<std::string, std::string> connInfo;
+  std::cout << "Inform a directory to write the data generated\n(ENTER to access the default \'" << TERRALIB_DATA_DIR << "/ogr\'): ";
+  std::getline (std::cin, aux);
+  if (!aux.empty())
+    data_dir = aux;
   
   saveUsingOGR(data_dir + "/ogr/testeOGR.shp", "ESRI Shapefile");
   saveUsingOGR(data_dir + "/ogr/testeOGR.kml", "KML");
@@ -53,8 +44,8 @@ void ExportingOGR()
   saveUsingOGR(data_dir + "/ogr/testeOGR.json", "GeoJSON");
   saveUsingOGR(data_dir + "/ogr/testeOGR.gml", "GML");
   
-  std::cout << std::endl << "6 - ";
-  openDirectory(data_dir + "/ogr", "OGR");
+  std::cout << std::endl << "Checking the directory: \n" << data_dir;
+  openDirectory(data_dir, "OGR");
 }
 
 void openFile(const std::string& filename, const std::string dstype)

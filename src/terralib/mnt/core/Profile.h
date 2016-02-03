@@ -75,13 +75,14 @@ namespace te
 
     public:
 
-      bool runRasterProfile(std::auto_ptr<te::rst::Raster> raster, std::vector<te::gm::LineString*> visadas, std::vector< std::vector<te::gm::LineString*> >& profileSet);
+      bool runRasterProfile(std::auto_ptr<te::rst::Raster> raster, std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
       std::vector<te::gm::LineString*> prepareVector(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &geostype);
     
       std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType);
       std::auto_ptr<te::rst::Raster> getPrepareRaster();
-      void setInput(te::da::DataSourcePtr inRasterDsrc, std::string inRasterName, std::auto_ptr<te::da::DataSetType> inDsetType);
+      void setInput(te::da::DataSourcePtr inRasterDsrc, std::string inRasterName, std::auto_ptr<te::da::DataSetType> inDsetType, double dummy);
       int m_srid;
+      double m_dummy;
       te::da::DataSourcePtr m_inRasterDsrc;
       std::string m_inRasterName;
       std::auto_ptr<te::da::DataSetType> m_inRasterDsType;

@@ -82,9 +82,16 @@ bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
   firstMember.dt = m_firstConverter->getResult();
 
   if (m_firstOidSet == 0)
-    firstMember.ds = te::da::CreateAdapter(m_inFirstDsrc->getDataSet(m_inFirstDsetName).release(), m_firstConverter.get());
+  {
+    firstMember.ds = te::da::CreateAdapter(m_firstDs.release(), m_firstConverter.get());
+  }
   else
-    firstMember.ds = te::da::CreateAdapter(m_inFirstDsrc->getDataSet(m_inFirstDsetName, m_firstOidSet).release(), m_firstConverter.get());
+  {
+    if (m_isFistQuery)
+      firstMember.ds = te::da::CreateAdapter(m_firstDs.release(), m_firstConverter.get());
+    else
+      firstMember.ds = te::da::CreateAdapter(m_inFirstDsrc->getDataSet(m_inFirstDsetName, m_firstOidSet).release(), m_firstConverter.get());
+  }
   
   firstMember.props = firstProps;
 
@@ -92,9 +99,16 @@ bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
   secondMember.dt = m_secondConverter->getResult();
 
   if (m_secondOidSet == 0)
-    secondMember.ds = te::da::CreateAdapter(m_inSecondDsrc->getDataSet(m_inSecondDsetName).release(), m_secondConverter.get());
+  {
+    secondMember.ds = te::da::CreateAdapter(m_secondDs.release(), m_secondConverter.get());
+  }
   else
-    secondMember.ds = te::da::CreateAdapter(m_inSecondDsrc->getDataSet(m_inSecondDsetName, m_secondOidSet).release(), m_secondConverter.get());
+  {
+    if (m_isSecondQuery)
+      secondMember.ds = te::da::CreateAdapter(m_secondDs.release(), m_firstConverter.get());
+    else
+      secondMember.ds = te::da::CreateAdapter(m_inSecondDsrc->getDataSet(m_inSecondDsetName, m_secondOidSet).release(), m_secondConverter.get());
+  }
 
   secondMember.props = getTabularProps(secondMember.dt);
   

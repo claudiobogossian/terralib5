@@ -729,6 +729,9 @@ void TerraView::addPopUpMenu()
   //// Actions for invalid layers
   treeView->addInvalidLayerAction(m_projectChangeLayerDataSource);
   treeView->addInvalidLayerAction(m_projectUpdateLayerDataSource);
+
+  //// Action for multi selected layers
+  treeView->addMultipleSelectionAction(m_layerSRS);
 }
 
 void TerraView::initMenus()
@@ -1913,10 +1916,11 @@ void TerraView::openProject(const QString& prjFileName)
 
   try
   {
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
+
     LoadProject(prjFileName, *m_project, lst);
 
     XMLFormatter::format(m_project, lst, false);
-    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
     getLayerExplorer()->setLayers(lst);
 

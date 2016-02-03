@@ -50,9 +50,7 @@ namespace te
       Q_OBJECT
 
     public:
-      ProfileResultDialog(QString tittle, QString yaxis, std::vector< std::vector<te::gm::LineString*> > &profileSet,
-        QWidget* parent = 0,
-        Qt::WindowFlags f = 0);
+      ProfileResultDialog(QString tittle, QString yaxis, std::vector<te::gm::LineString*> &profileSet, std::vector<te::color::RGBAColor>color, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
       ~ProfileResultDialog();
 

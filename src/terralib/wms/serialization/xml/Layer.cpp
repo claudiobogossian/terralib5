@@ -48,8 +48,6 @@ te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
   reader.next();
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
 
-  reader.next();
-
   /* Grouping */
   te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
 
@@ -57,26 +55,12 @@ te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
   std::auto_ptr<te::map::Chart> chart(te::map::serialize::ReadLayerChart(reader));
 
   /* DataSetName Element */
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSetName");
   reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-
-
-//  url.setEncodedString(reader.getElementValue());
-  std::string dataset = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string dataset = te::map::serialize::ReadDataSetName(reader);
 
   /* DataSourceId Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSourceId");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string datasourceId = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
 
   /* SRID Element */
   reader.next();

@@ -1,0 +1,53 @@
+digraph TerraLib {
+    node[fontname="Helvetica"];
+    annotationtext -> { maptools };
+    color -> { maptools; symbology };
+    common -> { srs; plugin; xml; datatype; color };
+    dataaccess -> { postgis; gdal; ogr; memory; terralib4; qt_widgets; cellspace; classification; maptools; te_graph };
+    datatype -> { geometry; raster; dataaccess };
+    doxygen;
+    filter -> { maptools; symbology }
+    geometry -> { raster; dataaccess; vp; rp; annotationtext; cellspace; filter; gml };
+    gml -> { filter }
+    maptools -> { qt_widgets };
+    memory -> { cellspace; classification };
+    qt_af -> { terraview };
+    qt_help;
+    qt_translations;
+    qt_widgets -> { qt_af };
+    raster -> { rp };
+    symbology -> { maptools }
+    xml -> { xerces };
+
+    annotationtext [label="Annotation\nText", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    cellspace [label="Cellular\nSpace", color=black, fillcolor="#fbb4ae", style=filled, fontcolor=black];
+    classification [label="Classification", color=black, fillcolor="#fbb4ae", style=filled, fontcolor=black];
+    color [label="Color", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    common [label="Common", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    dataaccess [label="Data\nAccess", color=black, fillcolor="#f5f5dc", style=filled, fontcolor=black];
+    datatype [label="DataType", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    doxygen [label="API Documentation\n(Doxygen)", color=black, fillcolor="#ffffff", style=filled, fontcolor=black];
+    filter [label="OGC Filter\nEncoding", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    gdal [label="GDAL\nDriver", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
+    geometry [label="Geometry", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    te_graph [label="Graph", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    gml [label="OGC GML", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    maptools [label="Map Tools", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    memory [label="Memory\nDriver", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
+    ogr [label="OGR\nDriver", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
+    plugin [label="Plugin", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    postgis [label="PostGIS\nDriver", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
+    qt_af [label="Qt Application\nFramework", color=black, fillcolor="#ccebc5", style=filled, fontcolor=black];
+    qt_help [label="Components\nHelp", color=black, fillcolor="#ffffff", style=filled, fontcolor=black];
+    qt_translations [label="GUI\nTranslation", color=black, fillcolor="#ffffff", style=filled, fontcolor=black];
+    qt_widgets [label="Qt\nWidgets", color=black, fillcolor="#ccebc5", style=filled, fontcolor=black];
+    raster [label="Raster", color=black, fillcolor="#f5f5dc", style=filled, fontcolor=black];
+    rp [label="Raster\nProcessing", color=black, fillcolor="#fbb4ae", style=filled, fontcolor=black];
+    srs [label="SRS", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    symbology [label="OGC Symbology\nEncoding", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
+    terralib4 [label="TerraLib 4", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
+    terraview [label="TerraView", color=black, fillcolor="#ffc125", style=filled, fontcolor=black];
+    vp [label="Vector\nProcessing", color=black, fillcolor="#fbb4ae", style=filled, fontcolor=black];
+    xerces [label="Xerces-C", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
+    xml [label="XML", color=black, fillcolor="#f5f5dc", style=filled, fontcolor=black];
+}

@@ -1,0 +1,10 @@
+TerraLib API Documentation
+==========================
+
+This directory contains the Doxygen configuration files for automatic generation of API documention:
+- Doxyfile.in
+
+There is also a GraphViz file with all the modules in a directed graph. In order to generate a PNG picture with the dot tool:
+$ dot -Tpng terralib-modules-graph.gv -o modules-graph.png
+
+

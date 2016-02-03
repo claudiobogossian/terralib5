@@ -34,6 +34,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../mnt/core/CalculateGrid.h"
+#include "../../mnt/core/SplineGrass.h"
+#include "../../mnt/core/SplineGrassMitasova.h"
 #include "../../mnt/core/TINCalculateGrid.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
@@ -165,7 +167,7 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           m_ui->m_interpolatorComboBox->addItem("Nearest Neighbor");
           m_ui->m_interpolatorComboBox->addItem("Bilinear Spline");
           m_ui->m_interpolatorComboBox->addItem("Bicubic Spline");
-         // m_ui->m_interpolatorComboBox->addItem("Mitasova Spline");
+          m_ui->m_interpolatorComboBox->addItem("Mitasova Spline");
 
           m_ui->m_ZcomboBox->show();
           m_ui->m_Zlabel->show();
@@ -502,6 +504,23 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
           delete grid;
         }
+        else if (m_inter == Mitasova)
+        {
+          int mp = m_ui->m_minPtsMitLineEdit->text().toInt();
+          double t = m_ui->m_tensionLineEdit->text().toDouble();
+          double s = m_ui->m_smothLineEdit->text().toDouble();
+          te::mnt::SplineInterpolationGrassMitasova *grid = new te::mnt::SplineInterpolationGrassMitasova(mp, t, s);
+
+          grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
+          grid->setOutput(outdsinfo);
+          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
+          grid->setSRID(srid);
+
+          grid->calculateGrid();
+
+          delete grid;
+
+        }
         else
         {
           unsigned int px = m_ui->m_sepXSpinBox->text().toUInt();
@@ -599,7 +618,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
        // bands[0]->m_noDataValue = dummy;
 
-        te::common::TaskProgress task("Calculating DTM...", te::common::TaskProgress::UNDEFINED, outputHeight*outputWidth);
+        te::common::TaskProgress task("Calculating DTM...", te::common::TaskProgress::UNDEFINED, (int)(outputHeight*outputWidth));
 
         // create raster
         std::auto_ptr<te::rst::Raster> outRst(te::rst::RasterFactory::make("GDAL", grid, bands, outdsinfo));

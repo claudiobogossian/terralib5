@@ -234,12 +234,12 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
 {
   boost::thread_group threadGenerateSegments;
 
-  unsigned steps = vecBlocks.size();
+  int steps = (int)vecBlocks.size();
  // for (unsigned i = 0; i < vecBlocks.size(); ++i)
 
   te::common::TaskProgress task("Creating Isolines...", te::common::TaskProgress::UNDEFINED, steps);
 
-  for (unsigned int vb = 0; vb < vecBlocks.size(); ++vb)
+  for (std::size_t vb = 0; vb < vecBlocks.size(); ++vb)
   {
     task.pulse();
     te::gm::Coord2D coordLowerLeft = raster->getGrid()->gridToGeo(0, vecBlocks[vb].m_finalRow);

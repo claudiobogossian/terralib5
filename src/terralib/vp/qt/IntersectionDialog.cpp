@@ -35,8 +35,13 @@
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/query/And.h"
+#include "../../dataaccess/query/Expression.h"
+#include "../../dataaccess/query/In.h"
+#include "../../dataaccess/query/Where.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
+#include "../../maptools/QueryLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
@@ -215,14 +220,28 @@ void te::vp::IntersectionDialog::updateDoubleListWidget()
   for (std::size_t i = 0; i < firstProps.size(); ++i)
   {
     if (firstProps[i]->getType() != te::dt::GEOMETRY_TYPE)
-      inputValues.push_back(firstSchema->getTitle() + ": " + firstProps[i]->getName());
+    {
+      std::string name = firstSchema->getTitle();
+
+      if (name.empty())
+        name = firstSchema->getName();
+
+      inputValues.push_back(name + ": " + firstProps[i]->getName());
+    }
   }
 
   std::vector<te::dt::Property*> secondProps = secondSchema->getProperties();
   for (std::size_t i = 0; i < secondProps.size(); ++i)
   {
     if (secondProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+    {
+      std::string name = secondSchema->getTitle();
+
+      if (name.empty())
+        name = secondSchema->getName();
+
       inputValues.push_back(secondSchema->getTitle() + ": " + secondProps[i]->getName());
+    }
   }
 
   m_doubleListWidget->setInputValues(inputValues);
@@ -255,18 +274,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::warning(this, TE_TR("Intersection"), TE_TR("Select a first input layer."));
     return;
   }
-  
-  te::map::DataSetLayer* firstDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
-  if(!firstDataSetLayer)
-  {
-    QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of first layer.");
-    return;
-  }
 
   const te::da::ObjectIdSet* firstOidSet = 0;
   if(m_ui->m_firstSelectedCheckBox->isChecked())
   {
-    firstOidSet = firstDataSetLayer->getSelected();
+    firstOidSet = m_firstSelectedLayer->getSelected();
     if(!firstOidSet)
     {
       QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
@@ -274,7 +286,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     }
   }
 
-  te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
+  te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(m_firstSelectedLayer->getDataSourceId(), true);
   if (!firstDataSource.get())
   {
     QMessageBox::information(this, "Intersection", "The selected first input data source can not be accessed.");
@@ -284,13 +296,6 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   if(m_ui->m_secondLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::warning(this, TE_TR("Intersection"), TE_TR("Select a second input layer."));
-    return;
-  }
-  
-  te::map::DataSetLayer* secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_secondSelectedLayer.get());
-  if(!secondDataSetLayer)
-  {
-    QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of second layer.");
     return;
   }
 
@@ -305,7 +310,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     }
   }
 
-  te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
+  te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(m_secondSelectedLayer->getDataSourceId(), true);
   if (!secondDataSource.get())
   {
     QMessageBox::information(this, "Intersection", "The selected second input data source can not be accessed.");
@@ -324,12 +329,46 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     return;
   }
   
-  if ((firstDataSetLayer->getSRID() == TE_UNKNOWN_SRS && secondDataSetLayer->getSRID() != TE_UNKNOWN_SRS) ||
-      (firstDataSetLayer->getSRID() != TE_UNKNOWN_SRS && secondDataSetLayer->getSRID() == TE_UNKNOWN_SRS))
+  if ((m_firstSelectedLayer->getSRID() == TE_UNKNOWN_SRS && m_secondSelectedLayer->getSRID() != TE_UNKNOWN_SRS) ||
+      (m_firstSelectedLayer->getSRID() != TE_UNKNOWN_SRS && m_secondSelectedLayer->getSRID() == TE_UNKNOWN_SRS))
   {
     int ret = QMessageBox::question(this, "Intersection", "The two layers have incompatible SRS. The result might be incorrect. Do you wish to continue?", QMessageBox::No, QMessageBox::Yes);
     if (ret == QMessageBox::No)
       return;
+  }
+
+  te::map::DataSetLayer* firstDataSetLayer = 0;
+  te::map::QueryLayer* firstQueryLayer = 0;
+
+  te::map::DataSetLayer* secondDataSetLayer = 0;
+  te::map::QueryLayer* secondQueryLayer = 0;
+
+  if (m_firstSelectedLayer->getType() == "DATASETLAYER")
+  {
+    firstDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
+  }
+  else if (m_firstSelectedLayer->getType() == "QUERYLAYER")
+  {
+    firstQueryLayer = dynamic_cast<te::map::QueryLayer*>(m_firstSelectedLayer.get());
+  }
+  else
+  {
+    QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of first layer.");
+    return;
+  }
+
+  if (m_secondSelectedLayer->getType() == "DATASETLAYER")
+  {
+    secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_secondSelectedLayer.get());
+  }
+  else if (m_secondSelectedLayer->getType() == "QUERYLAYER")
+  {
+    secondQueryLayer = dynamic_cast<te::map::QueryLayer*>(m_secondSelectedLayer.get());
+  }
+  else
+  {
+    QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of second layer.");
+    return;
   }
 
   //progress
@@ -367,11 +406,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         return;
       }
       
-      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(firstDataSetLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
-      te::da::AssociateDataSetTypeConverterSRID(firstConverter.get(), firstDataSetLayer->getSRID());
+      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(m_firstSelectedLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(firstConverter.get(), m_firstSelectedLayer->getSRID());
 
-      std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(secondDataSetLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
-      te::da::AssociateDataSetTypeConverterSRID(secondConverter.get(), firstDataSetLayer->getSRID());
+      std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(m_secondSelectedLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(secondConverter.get(), m_firstSelectedLayer->getSRID());
 
       this->setCursor(Qt::WaitCursor);
 
@@ -381,9 +420,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       const te::da::DataSourceCapabilities firstDSCapabilities = firstDataSource->getCapabilities();
       const te::da::DataSourceCapabilities secondDSCapabilities = secondDataSource->getCapabilities();
 
-      if( firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
-          secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
-          (firstDataSource->getId() == secondDataSource->getId()))
+      if( (firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() ) && 
+          (firstDataSource->getId() == secondDataSource->getId()) && (firstDataSetLayer && secondDataSetLayer))
       {
         intersectionOp = new te::vp::IntersectionQuery();
       }
@@ -392,9 +431,73 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         intersectionOp = new te::vp::IntersectionMemory();
       }
 
-      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstConverter,
+      /*intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstConverter,
                                 secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
-                                firstOidSet, secondOidSet);
+                                firstOidSet, secondOidSet);*/
+
+      std::string firstName;
+      std::string secondName;
+
+      if (firstDataSetLayer)
+      {
+        firstName = firstDataSetLayer->getDataSetName();
+      }
+      else if (firstQueryLayer)
+      {
+        firstName = firstQueryLayer->getTitle();
+        intersectionOp->setIsFirstQuery();
+      }
+
+      if (secondDataSetLayer)
+      {
+        secondName = secondDataSetLayer->getDataSetName();
+      }
+      else if (secondQueryLayer)
+      {
+        secondName = secondQueryLayer->getTitle();
+        intersectionOp->setIsSecondQuery();
+      }
+
+      if (firstQueryLayer && (firstOidSet != 0))
+      {
+        te::da::Select* query = firstQueryLayer->getQuery();
+        te::da::Where* where = query->getWhere();
+
+        te::da::Expression* originalExp = where->getExp();
+
+        te::da::Expression* in = firstOidSet->getExpressionByInClause();
+
+        te::da::Expression* cloneWhere = originalExp->clone();
+
+        te::da::And* newAnd = new te::da::And(cloneWhere, in);
+
+        te::da::Where* newWhere = new te::da::Where(newAnd);
+
+        query->setWhere(newWhere);
+      }
+
+      if (secondQueryLayer && (secondOidSet != 0))
+      {
+        te::da::Select* query = secondQueryLayer->getQuery();
+        te::da::Where* where = query->getWhere();
+
+        te::da::Expression* originalExp = where->getExp();
+
+        te::da::Expression* in = secondOidSet->getExpressionByInClause();
+
+        te::da::Expression* cloneWhere = originalExp->clone();
+
+        te::da::And* newAnd = new te::da::And(cloneWhere, in);
+
+        te::da::Where* newWhere = new te::da::Where(newAnd);
+
+        query->setWhere(newWhere);
+      }
+
+      intersectionOp->setInput(firstDataSource, firstName, m_firstSelectedLayer->getSchema(), m_firstSelectedLayer->getData(), firstConverter,
+                               secondDataSource, secondName, m_secondSelectedLayer->getSchema(), m_secondSelectedLayer->getData(), secondConverter,
+                               firstOidSet, secondOidSet);
+
       intersectionOp->setOutput(dsOGR, outputdataset);
       intersectionOp->setParams(getSelectedProperties());
 
@@ -445,11 +548,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         return;
       }
 
-      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(firstDataSetLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
-      te::da::AssociateDataSetTypeConverterSRID(firstConverter.get(), firstDataSetLayer->getSRID());
+      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(m_firstSelectedLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(firstConverter.get(), m_firstSelectedLayer->getSRID());
 
-      std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(secondDataSetLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
-      te::da::AssociateDataSetTypeConverterSRID(secondConverter.get(), firstDataSetLayer->getSRID());
+      std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(m_secondSelectedLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(secondConverter.get(), m_firstSelectedLayer->getSRID());
       
       this->setCursor(Qt::WaitCursor);
 
@@ -462,7 +565,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       if( firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
           secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
           (firstDataSource->getId() == secondDataSource->getId()) &&
-          (firstDataSetLayer->getSRID() == secondDataSetLayer->getSRID()))
+          (m_firstSelectedLayer->getSRID() == m_secondSelectedLayer->getSRID()) && (firstDataSetLayer && secondDataSetLayer) )
       {
         intersectionOp = new te::vp::IntersectionQuery();
       }

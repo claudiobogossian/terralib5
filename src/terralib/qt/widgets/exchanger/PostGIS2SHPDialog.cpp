@@ -75,12 +75,7 @@ void te::qt::widgets::PostGIS2SHPDialog::setLayers(std::list<te::map::AbstractLa
   {
     te::map::AbstractLayerPtr l = *it;
 
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
-
-    if(!dsLayer)
-      continue;
-
-    std::string dsName = dsLayer->getDataSourceId();
+    std::string dsName = l->getDataSourceId();
 
     te::da::DataSourcePtr dsPtr = te::da::GetDataSource(dsName);
 
@@ -127,10 +122,8 @@ void te::qt::widgets::PostGIS2SHPDialog::onOkPushButtonClicked()
     //create adapter
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
     
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
-
     if(dsType->size() == 0)
-      te::da::LoadProperties(dsType.get(), dsLayer->getDataSourceId());
+      te::da::LoadProperties(dsType.get(), layer->getDataSourceId());
 
 
     //create data source
