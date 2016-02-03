@@ -100,12 +100,12 @@ namespace te
           /*!
             \brief Sets the label displayed above the left list widget
           */
-          void setLeftLabel(std::string value);
+          void setLeftLabel(const QString& value);
 
           /*!
             \brief Sets the label displayed above the right list widget
           */
-          void setRightLabel(std::string value);
+          void setRightLabel(const QString& value);
 
           /*!
             \brief Returns the selected fields
