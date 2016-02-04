@@ -45,6 +45,7 @@ namespace te
     const ClassifierStrategyParameters& ClassifierStrategyParameters::operator=( 
       const ClassifierStrategyParameters& )
     {
+      return *this;
     }
     
   } // end namespace rp
