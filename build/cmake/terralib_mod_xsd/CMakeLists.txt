@@ -80,4 +80,3 @@ if(TERRALIB_MOD_XML_ENABLED)
           DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/xsd/serialization/xml COMPONENT devel)
 endif()
 
-export(TARGETS terralib_mod_xsd APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

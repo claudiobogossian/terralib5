@@ -141,4 +141,3 @@ install(FILES ${TERRALIB_CORE_TRAJECTORY_HDR_FILES}
          DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/maptools
          COMPONENT devel)
         
-export(TARGETS terralib_mod_st APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

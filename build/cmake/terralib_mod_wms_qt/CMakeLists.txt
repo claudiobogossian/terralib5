@@ -87,4 +87,3 @@ install(TARGETS terralib_mod_wms_qt
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/wms/qt COMPONENT devel)
 
-export(TARGETS terralib_mod_wms_qt APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

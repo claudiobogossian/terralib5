@@ -215,4 +215,3 @@ if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
         
 endif()
 
-export(TARGETS terraview APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
