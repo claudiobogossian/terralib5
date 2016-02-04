@@ -729,6 +729,9 @@ void TerraView::addPopUpMenu()
   //// Actions for invalid layers
   treeView->addInvalidLayerAction(m_projectChangeLayerDataSource);
   treeView->addInvalidLayerAction(m_projectUpdateLayerDataSource);
+
+  //// Action for multi selected layers
+  treeView->addMultipleSelectionAction(m_layerSRS);
 }
 
 void TerraView::initMenus()

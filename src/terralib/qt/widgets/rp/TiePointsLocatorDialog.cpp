@@ -732,7 +732,7 @@ namespace te
         const te::gm::Envelope& mapDisplayExtent = 
           m_mapDisplay1->getExtent();
           
-        m_mapDisplay1->getDraftPixmap()->fill( QColor( 0, 0, 0, 0 ) );
+        m_mapDisplay1->getDraftPixmap()->fill(Qt::transparent);
           
         te::qt::widgets::Canvas canvasInstance( m_mapDisplay1->getDraftPixmap() );
         canvasInstance.setWindow( mapDisplayExtent.m_llx,
@@ -802,7 +802,7 @@ namespace te
         const te::gm::Envelope& mapDisplayExtent = 
           m_mapDisplay2->getExtent();
           
-        m_mapDisplay2->getDraftPixmap()->fill( QColor( 0, 0, 0, 0 ) );
+        m_mapDisplay2->getDraftPixmap()->fill(Qt::transparent);
           
         te::qt::widgets::Canvas canvasInstance( m_mapDisplay2->getDraftPixmap() );
         canvasInstance.setWindow( mapDisplayExtent.m_llx,

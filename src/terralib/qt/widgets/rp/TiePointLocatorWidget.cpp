@@ -987,13 +987,13 @@ void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()
 {
   //get displays
   te::qt::widgets::MapDisplay* refDisplay = m_refNavigator->getDisplay();
-  refDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
+  refDisplay->getDraftPixmap()->fill(Qt::transparent);
   const te::gm::Envelope& refMapExt = refDisplay->getExtent();
   te::qt::widgets::Canvas refCanvasInstance(refDisplay->getDraftPixmap());
   refCanvasInstance.setWindow(refMapExt.m_llx, refMapExt.m_lly, refMapExt.m_urx, refMapExt.m_ury);
 
   te::qt::widgets::MapDisplay* adjDisplay = m_adjNavigator->getDisplay();
-  adjDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
+  adjDisplay->getDraftPixmap()->fill(Qt::transparent);
   const te::gm::Envelope& adjMapExt = adjDisplay->getExtent();
   te::qt::widgets::Canvas adjCanvasInstance(adjDisplay->getDraftPixmap());
   adjCanvasInstance.setWindow(adjMapExt.m_llx, adjMapExt.m_lly, adjMapExt.m_urx, adjMapExt.m_ury);

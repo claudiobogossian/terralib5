@@ -422,14 +422,10 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         return;
 
       // Get the data souce info
-      te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.get()->getDataSourceId());
+      te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
       assert(info.get());
 
-      // For while, use DataSetLayer to get the DataSource
-      te::map::DataSetLayer* dslayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
-      assert(dslayer);
-
-      te::da::DataSourcePtr dsource = te::da::GetDataSource(dslayer->getDataSourceId(), true);
+      te::da::DataSourcePtr dsource = te::da::GetDataSource(layer->getDataSourceId(), true);
       assert(dsource.get());
 
       // Start the transactor
@@ -509,7 +505,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
             std::map<std::string, std::string> options;
 
-            t->add(dslayer->getDataSetName(), tempDs, options);
+            t->add(layer->getDataSetName(), tempDs, options);
 
             boost::int64_t id = t->getLastGeneratedId();
 
@@ -579,7 +575,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
         operationds[te::edit::GEOMETRY_UPDATE]->moveBeforeFirst();
 
-        t->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE], properties, oidPropertyPosition);
+        t->update(layer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE], properties, oidPropertyPosition);
       }
 
       if (operationds[te::edit::GEOMETRY_DELETE]->size() > 0)
@@ -588,7 +584,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
         operationds[te::edit::GEOMETRY_DELETE]->moveBeforeFirst();
 
-        t->remove(dslayer->getDataSetName(), currentOids[te::edit::GEOMETRY_DELETE]);
+        t->remove(layer->getDataSetName(), currentOids[te::edit::GEOMETRY_DELETE]);
 
       }
 
@@ -606,7 +602,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
         operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->moveBeforeFirst();
 
-        t->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], properties, oidPropertyPosition);
+        t->update(layer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], properties, oidPropertyPosition);
       }
 
       env.Union(*operationds[te::edit::GEOMETRY_UPDATE]->getExtent(gpos).get());

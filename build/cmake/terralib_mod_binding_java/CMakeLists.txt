@@ -25,22 +25,17 @@
 
 include ( ${SWIG_USE_FILE} )
 
-file (GLOB TERRALIB_SWIG_SCRIPT_FILE "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/TerraLibJAVA.i")
+file (GLOB TERRALIB_SWIG_SCRIPT_FILE "../../../src/terralib/binding/swig/TerraLibJAVA.i")
 
-set_source_files_properties (${TERRALIB_SWIG_SCRIPT_FILE} PROPERTIES CPLUSPLUS ON)
+set_source_files_properties (${TERRALIB_SWIG_SCRIPT_FILE} PROPERTIES CPLUSPLUS ON CMAKE_SWIG_FLAGS "-includeall")
 
 include_directories (
   "${TERRALIB_ABSOLUTE_ROOT_DIR}/src"
   "${CMAKE_BINARY_DIR}"
   "${Boost_INCLUDE_DIR}"
   "${JAVA_INCLUDE_PATH}"
+  "${JAVA_INCLUDE_PATH2}"
 )
-
-if( NOT APPLE )
-  include_directories (
-    "${JAVA_INCLUDE_PATH2}"
-  )
-endif()
 
 set (TERRALIB_CHDR 
   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/MultiImager.h
@@ -62,9 +57,9 @@ set (
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set (CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/br/inpe/terralib5 CACHE PATH "Directory for swig output.")
+set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/br/inpe/terralib5" CACHE PATH "Directory for swig output.")
 
-set (CMAKE_SWIG_FLAGS -package br.inpe.terralib5)
+set (CMAKE_SWIG_FLAGS -package "br.inpe.terralib5")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qt.conf.in ${CMAKE_CURRENT_BINARY_DIR}/qt.conf COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tlib.qrc.in ${CMAKE_CURRENT_BINARY_DIR}/tlib.qrc COPYONLY)
@@ -101,7 +96,6 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_java
   ${Boost_FILESYSTEM_LIBRARY} 
   ${Boost_SYSTEM_LIBRARY}
   ${Boost_THREAD_LIBRARY}
-  ${JAVA_LIBRARY}
 )
 
 qt5_use_modules(terralib_mod_binding_java Widgets)
@@ -115,31 +109,15 @@ if(WIN32)
   )
 endif()
 
-if(UNIX)
-  add_custom_command(
+add_custom_command(
     TARGET terralib_mod_binding_java
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory bin
-    COMMAND find ARGS . -name "*.java" -type f -exec echo {} > files.txt \;
-    COMMAND ${Java_JAVAC_EXECUTABLE} -d ${CMAKE_CURRENT_BINARY_DIR}/bin -sourcepath ${CMAKE_CURRENT_BINARY_DIR} @files.txt
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/bin
+  COMMAND "${Java_JAVAC_EXECUTABLE}" -d ${CMAKE_CURRENT_BINARY_DIR}/bin ${CMAKE_SWIG_OUTDIR}/*.java 
     COMMAND "${Java_JAVADOC_EXECUTABLE}" -sourcepath ${CMAKE_CURRENT_BINARY_DIR} -d ${CMAKE_CURRENT_BINARY_DIR}/doc -use -splitindex -windowtitle "TerraLib 5 Java Binding API Specification" -J-Xmx180m br.inpe.terralib5
     COMMAND "${Java_JAR_EXECUTABLE}" cf ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar -C ${CMAKE_CURRENT_BINARY_DIR}/bin br
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Building java..." VERBATIM
-  )
-elseif(WIN32)
-  add_custom_command(
-    TARGET terralib_mod_binding_java
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory bin
-    COMMAND dir ARGS br\\*.java /b /s > files.txt 
-    COMMAND ${Java_JAVAC_EXECUTABLE} -d ${CMAKE_CURRENT_BINARY_DIR}/bin -sourcepath ${CMAKE_CURRENT_BINARY_DIR} @files.txt
-    COMMAND "${Java_JAVADOC_EXECUTABLE}" -sourcepath ${CMAKE_CURRENT_BINARY_DIR} -d ${CMAKE_CURRENT_BINARY_DIR}/doc -use -splitindex -windowtitle "TerraLib 5 Java Binding API Specification" -J-Xmx180m br.inpe.terralib5
-    COMMAND "${Java_JAR_EXECUTABLE}" cf ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar -C ${CMAKE_CURRENT_BINARY_DIR}/bin br
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Building java..." VERBATIM
-  )
-endif()
+)
 
 install (
   FILES ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar 

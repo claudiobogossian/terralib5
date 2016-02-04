@@ -551,9 +551,12 @@ void te::qt::af::BaseApplication::onLayerSRSTriggered()
 
   std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
 
-  te::map::AbstractLayerPtr lay = *layers.begin();
+  for (std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin(); it != layers.end(); ++it)
+  {
+    te::map::AbstractLayerPtr lay = *it;
 
-  lay->setSRID(srid.first);
+    lay->setSRID(srid.first);
+  }
 }
 
 void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
@@ -1012,6 +1015,9 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
   initAction(m_mapUnknownSRID, "srs-unknown", "Map.UnknownSRID", tr("&Set Unknown SRS"), tr("Set the Map SRS to unknown"), true, false, true, m_menubar);
   initAction(m_mapStopDrawing, "map-draw-cancel", "Map.Stop Drawing", tr("&Stop Drawing"), tr("Stop all drawing tasks"), true, false, true, m_menubar);
+
+  onSelectionToggled(true);
+  m_mapSelection->setChecked(true);
 }
 
 void te::qt::af::BaseApplication::initMenus()

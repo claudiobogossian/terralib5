@@ -139,6 +139,28 @@ void te::qt::widgets::MultiThreadMapDisplay::setSynchronous(bool on)
   m_synchronous = on;
 }
 
+void te::qt::widgets::MultiThreadMapDisplay::updateLayer(te::map::AbstractLayerPtr layer)
+{
+  // Checking the visibility...
+  if (layer->getVisibility() == te::map::NOT_VISIBLE)
+    return;
+
+  double curScale = getScale();
+
+  std::size_t i = 0;
+  std::list<te::map::AbstractLayerPtr>::reverse_iterator it;
+  for (it = m_visibleLayers.rbegin(); it != m_visibleLayers.rend(); ++it) // for each layer
+  {
+    if (it->get() == layer.get())
+    {
+      m_threads[i]->draw(it->get(), m_extent, m_srid, curScale, size(), i);
+      break;
+    }
+
+    i++;
+  }
+}
+
 void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
 {
   if(!m_extent.isValid())
