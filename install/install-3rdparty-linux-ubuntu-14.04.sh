@@ -307,7 +307,7 @@ valid $? "Error: could not enter 3rd-party libraries dir (terralib-3rdparty-linu
 # Check installation dir
 #
 if [ "$TERRALIB_DEPENDENCIES_DIR" == "" ]; then
-  TERRALIB_DEPENDENCIES_DIR = "/opt/terralib"
+  TERRALIB_DEPENDENCIES_DIR="/opt/terralib"
 fi
 
 export PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/bin"

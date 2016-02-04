@@ -84,12 +84,12 @@ void te::qt::widgets::FieldsDialog::setFixedOutputValues(std::vector<std::string
   m_fieldsWidget->setFixedOutputValues(values, iconName);
 }
 
-void te::qt::widgets::FieldsDialog::setLeftLabel(std::string value)
+void te::qt::widgets::FieldsDialog::setLeftLabel(const QString& value)
 {
   m_fieldsWidget->setLeftLabel(value);
 }
 
-void te::qt::widgets::FieldsDialog::setRightLabel(std::string value)
+void te::qt::widgets::FieldsDialog::setRightLabel(const QString& value)
 {
   m_fieldsWidget->setRightLabel(value);
 }

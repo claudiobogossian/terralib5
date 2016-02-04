@@ -114,11 +114,11 @@ valid $? "Error: could not enter 3rd-party libraries dir (terralib-3rdparty-maco
 # Check installation dir
 #
 if [ "$TERRALIB_DEPENDENCIES_DIR" == "" ]; then
-  TERRALIB_DEPENDENCIES_DIR = "/opt/terralib" > /dev/null
+  TERRALIB_DEPENDENCIES_DIR="/opt/terralib"
 fi
 
-export PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/bin" > /dev/null
-export LD_LIBRARY_PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/lib" > /dev/null
+export PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/bin"
+export LD_LIBRARY_PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/lib"
 
 echo "installing 3rd-party libraries to '$TERRALIB_DEPENDENCIES_DIR' ..."
 sleep 1s

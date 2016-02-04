@@ -80,8 +80,15 @@ te::rp::ClassifierSAMStrategy::~ClassifierSAMStrategy()
 {
 }
 
+std::vector< int > te::rp::ClassifierSAMStrategy::getOutputDataTypes() const
+{
+  std::vector< int > dt;
+  dt.push_back( te::dt::UINT32_TYPE );
+  return dt;
+}
+
 bool te::rp::ClassifierSAMStrategy::initialize(
-  te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
+  te::rp::ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
   m_isInitialized = false;
   m_initParams.reset();
