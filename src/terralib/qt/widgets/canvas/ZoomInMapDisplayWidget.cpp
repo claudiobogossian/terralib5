@@ -114,7 +114,7 @@ void te::qt::widgets::ZoomInMapDisplayWidget::drawCursorPosition(double x, doubl
   if(!m_isEnabled)
     return;
 
-  m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
+  m_mapDisplay->getDraftPixmap()->fill(Qt::transparent);
   const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
   te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
   canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
