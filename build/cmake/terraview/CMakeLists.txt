@@ -195,23 +195,29 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terraview/
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terraview COMPONENT runtime)
 
 if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
-  TeInstallQt5Plugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite;qwindows;qcocoa")
-
-  if(APPLE)
-
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-         "[Paths]\nBinaries = MacOS\nPlugins = qtplugins\nTranslations = share/terralib/translations")
-
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-            DESTINATION terraview.app/Contents/Resources COMPONENT runtime)
-
-  elseif(WIN32)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-         "[Paths]\nBinaries = .\nPlugins = ../qtplugins\nTranslations = ../share/terralib/translations")
-         
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-            DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime)
-  endif()
-        
+  TeInstallQt5Plugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite;qwindows;qcocoa")        
 endif()
+
+if(APPLE)
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+       "[Paths]\nBinaries = MacOS\nPlugins = qtplugins\nTranslations = share/terralib/translations")
+
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+          DESTINATION terraview.app/Contents/Resources COMPONENT runtime)
+
+elseif(WIN32)
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+       "[Paths]\nBinaries = .\nPlugins = ../qtplugins\nTranslations = ../share/terralib/translations")
+         
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+          DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime)
+elseif(UNIX)
+  set(_qtDir ${Qt5_DIR}/../../..)
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+       "[Paths]\nBinaries = ${_qtDir}/bin\nPlugins = ${_qtDir}/plugins\nTranslations = ../share/terralib/translations")
+         
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+          DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime)
+endif()
+
 
