@@ -154,14 +154,14 @@ void te::qt::widgets::DoubleListWidget::setFixedOutputValues(std::vector<std::st
   }
 }
 
-void te::qt::widgets::DoubleListWidget::setLeftLabel(std::string value)
+void te::qt::widgets::DoubleListWidget::setLeftLabel(const QString& value)
 {
-  m_ui->m_leftItemsLabel->setText(value.c_str());
+  m_ui->m_leftItemsLabel->setText(value);
 }
 
-void te::qt::widgets::DoubleListWidget::setRightLabel(std::string value)
+void te::qt::widgets::DoubleListWidget::setRightLabel(const QString& value)
 {
-  m_ui->m_rightItemsLabel->setText(value.c_str());
+  m_ui->m_rightItemsLabel->setText(value);
 }
 
 std::vector<std::string> te::qt::widgets::DoubleListWidget::getOutputValues()

@@ -103,14 +103,6 @@ namespace te
             void addNewLayer(te::map::AbstractLayerPtr layer);
 
             /*!
-              \brief Get the selected layer from layer explorer in app
-
-              \return The layer auto pointer
-
-            */
-            te::map::AbstractLayerPtr getCurrentLayer();
-
-            /*!
               \brief Get the list of layers from app
 
               \return The list pf layer auto pointers

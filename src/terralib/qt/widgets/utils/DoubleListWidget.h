@@ -62,9 +62,9 @@ namespace te
 
           Ui::DoubleListWidgetForm* getForm() const;
 
-          void setLeftLabel(std::string value);
+          void setLeftLabel(const QString& value);
 
-          void setRightLabel(std::string value);
+          void setRightLabel(const QString& value);
 
           void setInputValues(std::vector<std::string> values);
 
