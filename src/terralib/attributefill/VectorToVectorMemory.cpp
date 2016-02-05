@@ -1499,12 +1499,18 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
   switch(geomType)
   {
     case te::gm::PointType:
+    case te::gm::PointZType:
+    case te::gm::PointMType:
+    case te::gm::PointZMType:
     {
       te::gm::Point* g = dynamic_cast<te::gm::Point*>(geom);
       result.push_back(g);
       break;
     }
     case te::gm::MultiPointType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZMType:
     {
       te::gm::MultiPoint* g = dynamic_cast<te::gm::MultiPoint*>(geom);
       for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
@@ -1517,6 +1523,9 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       break;
     }
     case te::gm::PolygonType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZMType:
     {
       te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
 
@@ -1536,6 +1545,9 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       break;
     }
     case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZMType:
     {
       te::gm::MultiPolygon* g = dynamic_cast<te::gm::MultiPolygon*>(geom);
 
@@ -1549,6 +1561,9 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       break;
     }
     case te::gm::LineStringType:
+    case te::gm::LineStringZType:
+    case te::gm::LineStringMType:
+    case te::gm::LineStringZMType:
     {
       te::gm::LineString* g = dynamic_cast<te::gm::LineString*>(geom);
 
@@ -1560,6 +1575,9 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       break;
     }
     case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZMType:
     {
       te::gm::MultiLineString* g = dynamic_cast<te::gm::MultiLineString*>(geom);
 
