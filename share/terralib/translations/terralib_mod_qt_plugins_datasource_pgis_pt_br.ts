@@ -61,7 +61,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="291"/>
         <source>Client Encoding</source>
-        <translation type="unfinished">Client Encoding</translation>
+        <translation>Codificação do Cliente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="317"/>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="474"/>
         <source>Connection Pooling</source>
-        <translation type="unfinished">Pool de conexão</translation>
+        <translation>Pool de Conexão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="484"/>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="532"/>
         <source>Max Idle Time</source>
-        <translation type="unfinished">Max Idle Time</translation>
+        <translation>Tempo Max Idle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="571"/>
@@ -154,7 +154,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="14"/>
         <source>PostGIS Creator</source>
-        <translation type="unfinished">Criador PostGIS</translation>
+        <translation>Criador PostGIS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="50"/>

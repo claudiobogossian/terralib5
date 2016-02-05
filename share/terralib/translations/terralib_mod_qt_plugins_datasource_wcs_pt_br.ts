@@ -51,7 +51,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/wcs/ui/WCSConnectorDialogForm.ui" line="151"/>
         <source>&amp;Close</source>
-        <translation>&amp;Fechar</translation>
+        <translation type="unfinished">&amp;Fechar</translation>
     </message>
 </context>
 <context>
