@@ -18,7 +18,7 @@
  */
 
 /*!
-\file terralib/qt/widgets/layer/utils/CreateLayerWidget.cpp
+\file terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp
 
 \brief This interface is used to create a new layer based on a layer with selected objects.
 */
@@ -35,8 +35,8 @@
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../../../qt/widgets/property/NewPropertyWidget.h"
 #include "../../layer/utils/DataSet2Layer.h"
-#include "SaveLayerAsWidget.h"
-#include "ui_SaveLayerAsWidgetForm.h"
+#include "SaveSelectedObjectsWidget.h"
+#include "ui_SaveSelectedObjectsWidgetForm.h"
 
 // Qt
 #include <QFileDialog>
@@ -49,9 +49,9 @@
 #include <boost/uuid/uuid_io.hpp>
 
 
-te::qt::widgets::SaveLayerAsWidget::SaveLayerAsWidget(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::SaveSelectedObjectsWidget::SaveSelectedObjectsWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-  m_ui(new Ui::SaveLayerAsWidgetForm)
+  m_ui(new Ui::SaveSelectedObjectsWidgetForm)
 {
   // add controls
   m_ui->setupUi(this);
@@ -64,12 +64,12 @@ te::qt::widgets::SaveLayerAsWidget::SaveLayerAsWidget(QWidget* parent, Qt::Windo
 
 }
 
-te::qt::widgets::SaveLayerAsWidget::~SaveLayerAsWidget()
+te::qt::widgets::SaveSelectedObjectsWidget::~SaveSelectedObjectsWidget()
 {
 }
 
 /*! \brief Set parameters execute the operation. */
-void te::qt::widgets::SaveLayerAsWidget::setParameters(te::map::AbstractLayerPtr layer)
+void te::qt::widgets::SaveSelectedObjectsWidget::setParameters(te::map::AbstractLayerPtr layer)
 {
   //Set layer.
   m_layer = layer;
@@ -90,7 +90,7 @@ void te::qt::widgets::SaveLayerAsWidget::setParameters(te::map::AbstractLayerPtr
 }
 
 /*! \brief Update the components window with current values. */
-void te::qt::widgets::SaveLayerAsWidget::updateWindowComponents()
+void te::qt::widgets::SaveSelectedObjectsWidget::updateWindowComponents()
 {
   // Set to QLineEdit the layer name.
   m_ui->m_layerNameLineEdit->setText(QString(m_layer->getDataSetName().c_str()));
@@ -107,7 +107,7 @@ void te::qt::widgets::SaveLayerAsWidget::updateWindowComponents()
   m_ui->m_NumSelectedObjLabel->setText(QString(boost::lexical_cast<std::string>(num).c_str()));
 }
 
-void te::qt::widgets::SaveLayerAsWidget::save(te::da::DataSource* dataSource, te::da::DataSet* dataSet, te::da::DataSetType* dataSetType)
+void te::qt::widgets::SaveSelectedObjectsWidget::save(te::da::DataSource* dataSource, te::da::DataSet* dataSet, te::da::DataSetType* dataSetType)
 {
   // do any adaptation necessary to persist the output dataset
   //te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType, source->getCapabilities());
@@ -157,12 +157,12 @@ void te::qt::widgets::SaveLayerAsWidget::save(te::da::DataSource* dataSource, te
   }
 }
 
-te::map::AbstractLayerPtr te::qt::widgets::SaveLayerAsWidget::getLayer()
+te::map::AbstractLayerPtr te::qt::widgets::SaveSelectedObjectsWidget::getLayer()
 {
   return m_layerResult;
 }
 
-bool te::qt::widgets::SaveLayerAsWidget::execute(std::string& errorMessage)
+bool te::qt::widgets::SaveSelectedObjectsWidget::execute(std::string& errorMessage)
 {
   if (!m_oidSet)
   {
@@ -217,7 +217,7 @@ bool te::qt::widgets::SaveLayerAsWidget::execute(std::string& errorMessage)
   return true;
 }
 
-void te::qt::widgets::SaveLayerAsWidget::onTargetDatasourceToolButtonPressed()
+void te::qt::widgets::SaveSelectedObjectsWidget::onTargetDatasourceToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_newLayerNameLineEdit->setEnabled(true);
@@ -243,7 +243,7 @@ void te::qt::widgets::SaveLayerAsWidget::onTargetDatasourceToolButtonPressed()
   m_toFile = false;
 }
 
-void te::qt::widgets::SaveLayerAsWidget::onTargetFileToolButtonPressed()
+void te::qt::widgets::SaveSelectedObjectsWidget::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
