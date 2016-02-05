@@ -62,6 +62,11 @@ te::qt::widgets::SaveLayerAsDialog::~SaveLayerAsDialog()
 
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::SaveLayerAsDialog::getLayer()
+{
+  return m_layerResult;
+}
+
 void te::qt::widgets::SaveLayerAsDialog::setParameters(te::map::AbstractLayerPtr layer)
 {
   std::auto_ptr<te::map::LayerSchema> dsType(layer->getSchema());
@@ -81,6 +86,8 @@ void te::qt::widgets::SaveLayerAsDialog::onOkPushButtonClicked()
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
     return;
   }
+
+  m_layerResult = m_saveLayerAsWidget->getLayer();
 
   QMessageBox::information(this, tr("Warning"), tr("Layer was saved."));
 

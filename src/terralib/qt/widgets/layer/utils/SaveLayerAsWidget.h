@@ -74,7 +74,7 @@ namespace te
 
           void save(te::da::DataSource* dataSource, te::da::DataSet* dataSet, te::da::DataSetType* dataSetType);
 
-          //void setDataSource(te::da::DataSourceInfoPtr dsInfo);
+          te::map::AbstractLayerPtr getLayer();
 
           bool execute(std::string& errorMessage);
 
@@ -95,6 +95,8 @@ namespace te
           const te::da::ObjectIdSet* m_oidSet;                //!< Object Id Set.
 
           te::da::DataSourceInfoPtr m_outputDatasource;
+
+          te::map::AbstractLayerPtr m_layerResult;
 
           bool m_toFile;
 

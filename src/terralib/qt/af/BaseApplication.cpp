@@ -749,15 +749,14 @@ void te::qt::af::BaseApplication::onLayerSaveAsTriggered()
     if (dlg.exec() != QDialog::Accepted)
       return;
 
-    //te::map::AbstractLayerPtr layer = dlg.getLayer();
+    te::map::AbstractLayerPtr layer = dlg.getLayer();
 
-    //if (!layer)
-    //  return;
+    if (!layer)
+      return;
 
-    //int reply = QMessageBox::question(0, tr("Save layer as"), tr("The layer was save successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+    te::qt::af::evt::LayerAdded evt(layer.get());
+    emit triggered(&evt);
 
-    //if (reply == QMessageBox::Yes)
-    //  addNewLayer(layer);
   }
   catch(const std::exception& e)
   {

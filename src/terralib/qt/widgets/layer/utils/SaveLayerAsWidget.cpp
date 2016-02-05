@@ -157,6 +157,11 @@ void te::qt::widgets::SaveLayerAsWidget::save(te::da::DataSource* dataSource, te
   }
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::SaveLayerAsWidget::getLayer()
+{
+  return m_layerResult;
+}
+
 bool te::qt::widgets::SaveLayerAsWidget::execute(std::string& errorMessage)
 {
   if (!m_oidSet)
@@ -202,11 +207,15 @@ bool te::qt::widgets::SaveLayerAsWidget::execute(std::string& errorMessage)
   te::da::DataSourcePtr outputDataSource = te::da::GetDataSource(m_outputDatasource->getId());
 
   save(outputDataSource.get(), dataSet.get(), dsType.get());
+
+  te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+
+  te::da::DataSetTypePtr dt(dsType);
+
+  m_layerResult = converter(dt);
   
   return true;
 }
-
-
 
 void te::qt::widgets::SaveLayerAsWidget::onTargetDatasourceToolButtonPressed()
 {

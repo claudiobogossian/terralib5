@@ -63,6 +63,8 @@ namespace te
 
         public:
 
+          te::map::AbstractLayerPtr getLayer();
+
           /*! \brief Set a layer. */
           void setParameters(te::map::AbstractLayerPtr layer);
 
@@ -77,6 +79,8 @@ namespace te
           std::auto_ptr<Ui::SaveLayerAsDialogForm> m_ui;
 
           te::qt::widgets::SaveLayerAsWidget* m_saveLayerAsWidget;
+
+          te::map::AbstractLayerPtr m_layerResult;
       }; 
     }     // end namespace widgets
   }       // end namespace qt
