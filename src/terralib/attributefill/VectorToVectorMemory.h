@@ -495,6 +495,8 @@ namespace te
 
         bool checkGeometries(te::gm::Geometry* fromGeom, std::size_t fromPos, te::gm::Geometry* toGeom);
 
+        bool isToLayerOGR();
+
       private:
 
         std::map<std::size_t, te::gm::Geometry*> m_mapGeom; // All geometries of "From" Layer.
