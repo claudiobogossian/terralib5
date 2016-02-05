@@ -29,7 +29,7 @@
 #include "ui_SaveLayerAsDialogForm.h"
 
 // Qt
-#include <QGridLayout.h>
+#include <QGridLayout>
 #include <QMessageBox>
 
 
