@@ -677,6 +677,12 @@ void TerraView::addPopUpMenu()
   actionFitSep->setSeparator(true);
   treeView->addVectorLayerAction(actionFitSep);
 
+  treeView->addVectorLayerAction(m_layerSaveAs);
+
+  QAction* actionSaveAsSep = new QAction(this);
+  actionSaveAsSep->setSeparator(true);
+  treeView->addVectorLayerAction(actionSaveAsSep);
+
   treeView->addVectorLayerAction(m_layerSRS);
 
   QAction* actionSRSSep = new QAction(this);
