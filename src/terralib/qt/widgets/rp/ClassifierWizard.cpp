@@ -41,7 +41,7 @@
 #include "../progress/ProgressViewerDialog.h"
 #include "ClassifierWizard.h"
 #include "ClassifierWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
 

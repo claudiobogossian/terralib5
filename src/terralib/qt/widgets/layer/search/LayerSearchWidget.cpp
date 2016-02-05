@@ -170,6 +170,9 @@ void te::qt::widgets::LayerSearchWidget::fillTreeView(std::list<te::map::Abstrac
     //layer type
     item->setText(2, l->getType().c_str());
 
+    if (it == layerList.begin())
+      m_ui->m_treeWidget->setItemSelected(item, true);
+
     ++it;
   }
 

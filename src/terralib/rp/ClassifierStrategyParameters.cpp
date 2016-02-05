@@ -18,40 +18,36 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/RasterInfoDialog.cpp
-
-  \brief This file defines a class for a RasterInfoDialog.
+  \file terralib/rp/ClassifierStrategyParameters.cpp
+  \brief Raster Classifier strategy parameters base class.
 */
 
-// TerraLib
-#include "RasterInfoDialog.h"
-#include "RasterInfoWidget.h"
-#include "ui_RasterInfoDialogForm.h"
+#include "ClassifierStrategyParameters.h"
 
-// Qt
-#include <QGridLayout>
-
-te::qt::widgets::RasterInfoDialog::RasterInfoDialog(QWidget* parent, Qt::WindowFlags f)
-  : QDialog(parent, f),
-  m_ui(new Ui::RasterInfoDialogForm)
+namespace te
 {
-//build form
-  m_ui->setupUi(this);
-
-  QGridLayout* layout = new QGridLayout(m_ui->m_widget);
-  m_widget.reset( new te::qt::widgets::RasterInfoWidget(m_ui->m_widget));
-  layout->addWidget(m_widget.get(), 0, 0);
-  layout->setContentsMargins(0,0,0,0);
-}
-
-te::qt::widgets::RasterInfoDialog::~RasterInfoDialog()
-{
-}
-
-te::qt::widgets::RasterInfoWidget* te::qt::widgets::RasterInfoDialog::getWidget()
-{
-  return m_widget.get();
-}
-
-
+  namespace rp
+  {
+    ClassifierStrategyParameters::ClassifierStrategyParameters()
+    {
+    }
+    
+    ClassifierStrategyParameters::~ClassifierStrategyParameters()
+    {
+    }
+    
+    ClassifierStrategyParameters::ClassifierStrategyParameters( 
+      const ClassifierStrategyParameters& other )
+    {
+      operator=( other );
+    }    
+    
+    const ClassifierStrategyParameters& ClassifierStrategyParameters::operator=( 
+      const ClassifierStrategyParameters& )
+    {
+      return *this;
+    }
+    
+  } // end namespace rp
+}   // end namespace te    
 

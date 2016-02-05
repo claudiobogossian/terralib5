@@ -677,6 +677,12 @@ void TerraView::addPopUpMenu()
   actionFitSep->setSeparator(true);
   treeView->addVectorLayerAction(actionFitSep);
 
+  treeView->addVectorLayerAction(m_layerSaveAs);
+
+  QAction* actionSaveAsSep = new QAction(this);
+  actionSaveAsSep->setSeparator(true);
+  treeView->addVectorLayerAction(actionSaveAsSep);
+
   treeView->addVectorLayerAction(m_layerSRS);
 
   QAction* actionSRSSep = new QAction(this);
@@ -729,6 +735,9 @@ void TerraView::addPopUpMenu()
   //// Actions for invalid layers
   treeView->addInvalidLayerAction(m_projectChangeLayerDataSource);
   treeView->addInvalidLayerAction(m_projectUpdateLayerDataSource);
+
+  //// Action for multi selected layers
+  treeView->addMultipleSelectionAction(m_layerSRS);
 }
 
 void TerraView::initMenus()

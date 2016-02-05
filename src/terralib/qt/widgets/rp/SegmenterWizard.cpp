@@ -39,7 +39,7 @@
 #include "SegmenterWizard.h"
 #include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "ui_SegmenterAdvancedOptionsWizardPageForm.h"
 #include "Utils.h"

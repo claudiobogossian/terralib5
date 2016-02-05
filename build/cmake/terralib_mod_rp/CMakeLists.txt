@@ -66,4 +66,3 @@ install(FILES ${TERRALIB_HDR_FILES}
 install(FILES ${TERRALIB_RADAR_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/rp/radar COMPONENT devel)        
 
-export(TARGETS terralib_mod_rp APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

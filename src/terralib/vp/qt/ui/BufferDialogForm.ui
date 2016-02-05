@@ -6,17 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>549</width>
-    <height>603</height>
+    <width>479</width>
+    <height>631</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Buffer Operation</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_6">
+  <layout class="QGridLayout" name="gridLayout_8">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_5">
-     <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
       <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
         <string notr="true">QWidget { background: white }</string>
@@ -73,7 +73,7 @@
        </layout>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item>
       <widget class="QGroupBox" name="m_inputGroupBox">
        <property name="title">
         <string>Input Layer</string>
@@ -95,12 +95,12 @@
        </layout>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item>
       <widget class="QGroupBox" name="m_distanceGroupBox">
        <property name="title">
         <string>Distance</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout_18">
+       <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
          <widget class="QRadioButton" name="m_fixedRadioButton">
           <property name="text">
@@ -111,32 +111,30 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1" rowspan="2">
-         <layout class="QGridLayout" name="gridLayout_17">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <widget class="QLineEdit" name="m_fixedDistanceLineEdit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <widget class="QComboBox" name="m_fromAttDistanceComboBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="m_fixedDistanceLineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>The buffer distance should be given in  layer' SRS unit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="unitLabel">
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QRadioButton" name="m_fromAttRadioButton">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>This option is not implemented yet</string>
           </property>
           <property name="text">
            <string>From an attribute</string>
@@ -146,10 +144,17 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="m_fromAttDistanceComboBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="minimumSize">
         <size>
@@ -185,89 +190,83 @@
         <attribute name="title">
          <string>Rule for polygons</string>
         </attribute>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>10</y>
-           <width>322</width>
-           <height>77</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <property name="leftMargin">
-           <number>10</number>
-          </property>
-          <property name="topMargin">
-           <number>10</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="m_ruleInOutRadioButton">
-            <property name="text">
-             <string>Inside and Outside</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="0" column="2" rowspan="3">
-           <widget class="QLabel" name="m_ruleImgLabel">
-            <property name="minimumSize">
-             <size>
-              <width>150</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Image for Rule</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="m_ruleOnlyOutRadioButton">
-            <property name="text">
-             <string>Only Outside</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="1" column="1" rowspan="2">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="2" column="0">
-           <widget class="QRadioButton" name="m_ruleOnlyInRadioButton">
-            <property name="text">
-             <string>Only Inside</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-         </layout>
-        </widget>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout_7">
+           <property name="leftMargin">
+            <number>10</number>
+           </property>
+           <property name="topMargin">
+            <number>10</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="m_ruleInOutRadioButton">
+             <property name="text">
+              <string>Inside and Outside</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="0" column="2" rowspan="3">
+            <widget class="QLabel" name="m_ruleImgLabel">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>48</width>
+               <height>48</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Image for Rule</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QRadioButton" name="m_ruleOnlyOutRadioButton">
+             <property name="text">
+              <string>Only Outside</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="1" column="1" rowspan="2">
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="0">
+            <widget class="QRadioButton" name="m_ruleOnlyInRadioButton">
+             <property name="text">
+              <string>Only Inside</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </widget>
        <widget class="QWidget" name="m_boundBufferTab">
         <attribute name="title">
@@ -408,7 +407,7 @@
        </widget>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item>
       <widget class="QGroupBox" name="m_outputGroupBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -420,35 +419,8 @@
         <string>Output</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="2" column="0">
-         <widget class="QLabel" name="m_layerNameLabel">
-          <property name="text">
-           <string>Layer Name:</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0">
          <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
-        </item>
-        <item row="1" column="1">
-         <widget class="QToolButton" name="m_targetFileToolButton">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLineEdit" name="m_repositoryLineEdit">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
         </item>
         <item row="0" column="0">
          <widget class="QLabel" name="m_repositoryLabel">
@@ -470,10 +442,37 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="1">
+         <widget class="QToolButton" name="m_targetFileToolButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="m_repositoryLineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="m_layerNameLabel">
+          <property name="text">
+           <string>Layer Name:</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item>
       <layout class="QGridLayout" name="gridLayout_14">
        <item row="0" column="0">
         <widget class="Line" name="line_2">

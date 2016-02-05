@@ -57,4 +57,3 @@ install(TARGETS terralib_mod_memory
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/memory COMPONENT devel)
 
-export(TARGETS terralib_mod_memory APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
