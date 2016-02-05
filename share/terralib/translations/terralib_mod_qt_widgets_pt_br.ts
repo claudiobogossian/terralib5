@@ -6,72 +6,72 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="14"/>
         <source>Add Column to Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona Coluna a Tabela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="22"/>
         <source>Column informations</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações da Coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="32"/>
         <source>Table name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Tabela:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="50"/>
         <source>Column data type: </source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de dado da coluna: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="58"/>
         <source>Integer</source>
-        <translation type="unfinished"></translation>
+        <translation>Inteiro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="63"/>
         <source>Real</source>
-        <translation type="unfinished"></translation>
+        <translation>Real</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="68"/>
         <source>String</source>
-        <translation type="unfinished"></translation>
+        <translation>Caractere</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="73"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="85"/>
         <source>Size :</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho :</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="95"/>
         <source>30</source>
-        <translation type="unfinished"></translation>
+        <translation>30</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="106"/>
         <source>Column name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Coluna:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="138"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="158"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AddColumnDialogForm.ui" line="168"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancela</translation>
     </message>
 </context>
 <context>
@@ -79,62 +79,62 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="23"/>
         <source>Change column data</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar dados da coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="33"/>
         <source>Selected column: </source>
-        <translation type="unfinished"></translation>
+        <translation>Coluna selecionada: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="49"/>
         <source>To modify</source>
-        <translation type="unfinished"></translation>
+        <translation>Para modificar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="57"/>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>Todas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="67"/>
         <source>Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="79"/>
         <source>Operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="104"/>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="123"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="142"/>
         <source>x</source>
-        <translation type="unfinished"></translation>
+        <translation>x</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="161"/>
         <source>/</source>
-        <translation type="unfinished"></translation>
+        <translation>/</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="225"/>
         <source>&amp;Execute</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Executar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/AlterDataDialogForm.ui" line="232"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fechar</translation>
     </message>
 </context>
 <context>
@@ -142,148 +142,148 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="14"/>
         <source>Arithmetic Operations</source>
-        <translation type="unfinished"></translation>
+        <translation>Operações Aritméticas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="20"/>
         <source>Operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="36"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Pardrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="44"/>
         <source>Layers</source>
-        <translation type="unfinished"></translation>
+        <translation>Camadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="57"/>
         <source>A:</source>
-        <translation type="unfinished"></translation>
+        <translation>A:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="67"/>
         <source>B:</source>
-        <translation type="unfinished"></translation>
+        <translation>B:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="108"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="115"/>
         <source>Band:</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="156"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="167"/>
         <source>Gain * A + Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Ganho * A + Offset</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="177"/>
         <source>Gain * ( A + B ) + Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Ganho * ( A + B ) + Offset</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="184"/>
         <source>Gain * ( A - B ) + Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Ganho * ( A - B ) + Offset</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="191"/>
         <source>Gain * ( A * B ) + Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Ganho * ( A * B ) + Offset</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="198"/>
         <source>Gain * ( A / B ) + Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Ganho * ( A / B ) + Offset</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="205"/>
         <source>( Gain * ( A - B ) / ( A + B )) + Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>( Ganho * ( A - B ) / ( A + B )) + Offset</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="217"/>
         <source>Params</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="230"/>
         <source>Gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Ganho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="237"/>
         <source>1.0</source>
-        <translation type="unfinished"></translation>
+        <translation>1.0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="251"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Offset</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="258"/>
         <source>0.0</source>
-        <translation type="unfinished"></translation>
+        <translation>0.0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="270"/>
         <source>Normalize</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalizar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="285"/>
         <source>User Defined</source>
-        <translation type="unfinished"></translation>
+        <translation>Definido pelo Usuário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="295"/>
         <source>Operator</source>
-        <translation type="unfinished"></translation>
+        <translation>Operador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="306"/>
         <source>(</source>
-        <translation type="unfinished"></translation>
+        <translation>(</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="313"/>
         <source>)</source>
-        <translation type="unfinished"></translation>
+        <translation>)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="320"/>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="327"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="334"/>
         <source>*</source>
-        <translation type="unfinished"></translation>
+        <translation>*</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="341"/>
         <source>/</source>
-        <translation type="unfinished"></translation>
+        <translation>/</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="353"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="374"/>
@@ -293,17 +293,17 @@
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="491"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="498"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="388"/>
         <source>Raster / Band / ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz / Banda / ID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ArithmeticOpWizardPageForm.ui" line="444"/>
         <source>Expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Expressão</translation>
     </message>
 </context>
 <context>
@@ -311,17 +311,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicFillDialogForm.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Diálogo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicFillDialogForm.ui" line="40"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicFillDialogForm.ui" line="47"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -329,12 +329,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicFillWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Form</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicFillWidgetForm.ui" line="40"/>
         <source>Opacity %</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade %</translation>
     </message>
 </context>
 <context>
@@ -342,17 +342,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeDialogForm.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Diálogo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeDialogForm.ui" line="50"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeDialogForm.ui" line="57"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -360,32 +360,32 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeWidgetForm.ui" line="14"/>
         <source>Widget</source>
-        <translation type="unfinished"></translation>
+        <translation>Ferramenta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeWidgetForm.ui" line="44"/>
         <source>Opacity %</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade %</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeWidgetForm.ui" line="85"/>
         <source>Width:</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeWidgetForm.ui" line="121"/>
         <source>Dash:</source>
-        <translation type="unfinished"></translation>
+        <translation>Traço:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeWidgetForm.ui" line="146"/>
         <source>Join:</source>
-        <translation type="unfinished"></translation>
+        <translation>Join:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/BasicStrokeWidgetForm.ui" line="221"/>
         <source>Cap:</source>
-        <translation type="unfinished"></translation>
+        <translation>Cap:</translation>
     </message>
 </context>
 <context>
@@ -394,42 +394,42 @@
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="23"/>
         <source>Channel Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção de Canal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="51"/>
         <source>Red</source>
-        <translation type="unfinished"></translation>
+        <translation>Vermelho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="64"/>
         <source>Green</source>
-        <translation type="unfinished"></translation>
+        <translation>Verde</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="77"/>
         <source>Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Azul</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="90"/>
         <source>Mono</source>
-        <translation type="unfinished"></translation>
+        <translation>Monocromático</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="118"/>
         <source>Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="163"/>
         <source>RGB Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor RGB</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ChannelSelectionWidgetForm.ui" line="170"/>
         <source>GrayScale</source>
-        <translation type="unfinished"></translation>
+        <translation>Níveis de Cinza</translation>
     </message>
 </context>
 <context>
@@ -437,22 +437,22 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDialogForm.ui" line="14"/>
         <source>Chart creation</source>
-        <translation type="unfinished"></translation>
+        <translation>Criação de gráficos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDialogForm.ui" line="50"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDialogForm.ui" line="70"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDialogForm.ui" line="77"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -460,12 +460,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDisplayWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDisplayWidgetForm.ui" line="35"/>
         <source>Graphic Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo de Gráfico</translation>
     </message>
 </context>
 <context>
@@ -473,27 +473,27 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="14"/>
         <source>Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>Pizza</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="44"/>
         <source>This operation creates a chart representation in a selected layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta operação cria uma representação gráfica em uma camada selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="75"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="95"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="105"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
 </context>
 <context>
@@ -501,64 +501,64 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="14"/>
         <source>Chart Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada Gráfica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="22"/>
         <source>Chart Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros Gráficos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="32"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="52"/>
         <source>Summary Function:</source>
-        <translation type="unfinished"></translation>
+        <translation>Função Resumo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="73"/>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="83"/>
         <source>Contour Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura de Contorno</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="138"/>
         <source>Contour Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor do Contorno</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="150"/>
         <source>Avoid conflicts</source>
-        <translation type="unfinished"></translation>
+        <translation>Evitar Conflitos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="169"/>
         <source>Chart Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades do Gráfico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="179"/>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="215"/>
         <source>Attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="210"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="225"/>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerWidgetForm.ui" line="232"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
 </context>
 <context>
@@ -566,32 +566,32 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartPropertiesDialogForm.ui" line="32"/>
         <source>Chart Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo Gráfico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartPropertiesDialogForm.ui" line="111"/>
         <source>Tab 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Tab 1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartPropertiesDialogForm.ui" line="116"/>
         <source>Tab 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Tab 2</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartPropertiesDialogForm.ui" line="128"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartPropertiesDialogForm.ui" line="148"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartPropertiesDialogForm.ui" line="155"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -599,12 +599,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleFrameWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleFrameWidgetForm.ui" line="50"/>
         <source>Chart Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo Gráfico</translation>
     </message>
 </context>
 <context>
@@ -612,82 +612,82 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="26"/>
         <source>Raster Classifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificador Matricial (Raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="41"/>
         <source>ISOSeg</source>
-        <translation type="unfinished"></translation>
+        <translation>ISOSeg</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="73"/>
         <source>Acceptance Threshold (%)</source>
-        <translation type="unfinished"></translation>
+        <translation>Limite de Aceitação (%)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="89"/>
         <source>The contrast type.</source>
-        <translation type="unfinished"></translation>
+        <translation>O tipo de contraste.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="93"/>
         <source>75</source>
-        <translation type="unfinished"></translation>
+        <translation>75</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="98"/>
         <source>90</source>
-        <translation type="unfinished"></translation>
+        <translation>90</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="103"/>
         <source>95</source>
-        <translation type="unfinished"></translation>
+        <translation>95</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="108"/>
         <source>99</source>
-        <translation type="unfinished"></translation>
+        <translation>99</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="113"/>
         <source>99.9</source>
-        <translation type="unfinished"></translation>
+        <translation>99.9</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="118"/>
         <source>100</source>
-        <translation type="unfinished"></translation>
+        <translation>100</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="144"/>
         <source>Input raster bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas Matriciais de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="166"/>
         <source>Bands to be processed from the input raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas a serem processadas a partir da entrada matricial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="179"/>
         <source>Other algorithms</source>
-        <translation type="unfinished"></translation>
+        <translation>Outros algortimos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="203"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="235"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierForm.ui" line="254"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancela</translation>
     </message>
 </context>
 <context>
@@ -695,158 +695,158 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="14"/>
         <source>Classifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="22"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="61"/>
         <source>ISOSeg</source>
-        <translation type="unfinished"></translation>
+        <translation>ISOSeg</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="73"/>
         <source>Acceptance Threshold(%)</source>
-        <translation type="unfinished"></translation>
+        <translation>Limite de Aceitação (%)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="84"/>
         <source>75</source>
-        <translation type="unfinished"></translation>
+        <translation>75</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="89"/>
         <source>90</source>
-        <translation type="unfinished"></translation>
+        <translation>90</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="94"/>
         <source>95</source>
-        <translation type="unfinished"></translation>
+        <translation>95</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="99"/>
         <source>99</source>
-        <translation type="unfinished"></translation>
+        <translation>99</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="104"/>
         <source>99.9</source>
-        <translation type="unfinished"></translation>
+        <translation>99.9</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="109"/>
         <source>100</source>
-        <translation type="unfinished"></translation>
+        <translation>100</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="121"/>
         <source>Layer of Polygons</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de Polígonos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="160"/>
         <source>KMeans</source>
-        <translation type="unfinished"></translation>
+        <translation>KMédia</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="172"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="373"/>
         <source>Number of Clusters</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Agrupamentos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="182"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="383"/>
         <source>Maximum of Iterations</source>
-        <translation type="unfinished"></translation>
+        <translation>Máximo de Iterações</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="192"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="393"/>
         <source>Maximum Input Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos de Entrada Máximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="202"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="403"/>
         <source>Epsilon - Stop Criteria</source>
-        <translation type="unfinished"></translation>
+        <translation>Epsilon - Critério de Parada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="242"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="446"/>
         <source>1000</source>
-        <translation type="unfinished"></translation>
+        <translation>1000</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="252"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="456"/>
         <source>15.0</source>
-        <translation type="unfinished"></translation>
+        <translation>15.0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="288"/>
         <source>MAP (Maximum a Posteriori Probability)</source>
-        <translation type="unfinished"></translation>
+        <translation>MAP (Maximum a Posteriori Probability)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="309"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="511"/>
         <source>Acquire samples</source>
-        <translation type="unfinished"></translation>
+        <translation>Adquirir amostras</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="312"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="514"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="336"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="538"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="341"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="543"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Rótulo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="346"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="548"/>
         <source>Samples</source>
-        <translation type="unfinished"></translation>
+        <translation>Amostras</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="363"/>
         <source>EM (Expectation Maximization)</source>
-        <translation type="unfinished"></translation>
+        <translation>EM (Expectation Maximization)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="490"/>
         <source>SAM (Spectral Angle Mapper)</source>
-        <translation type="unfinished"></translation>
+        <translation>SAM (Spectral Angle Mapper)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="553"/>
         <source>Angle (Pi)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ângulo (Pi)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="577"/>
         <source>Input Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClassifierWizardPageForm.ui" line="589"/>
         <source>Bands to be processed from the input raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas a serem processadas a partir da entrada matricial</translation>
     </message>
 </context>
 <context>
@@ -854,82 +854,82 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="14"/>
         <source>WizardPage</source>
-        <translation type="unfinished"></translation>
+        <translation>Assistente de página</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="28"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="65"/>
         <source>Extent</source>
-        <translation type="unfinished"></translation>
+        <translation>Extensão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="80"/>
         <source>Lower Left X</source>
-        <translation type="unfinished"></translation>
+        <translation>Inferior Esquerdo X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="98"/>
         <source>Lower Left Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Inferior Esquerdo Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="116"/>
         <source>Upper Right X</source>
-        <translation type="unfinished"></translation>
+        <translation>Superior Direito X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="134"/>
         <source>Upper Right Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Superior Direito Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="180"/>
         <source>Dimension</source>
-        <translation type="unfinished"></translation>
+        <translation>Dimensão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="195"/>
         <source>Initial Row</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha Inicial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="213"/>
         <source>Initial Column</source>
-        <translation type="unfinished"></translation>
+        <translation>Coluna Inicial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="231"/>
         <source>Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Altura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="249"/>
         <source>Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="295"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="311"/>
         <source>Aggregate all geometries</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar todas as geometrias</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="323"/>
         <source>Group By Attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Agrupar por Atributo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ClippingWizardPageForm.ui" line="367"/>
         <source>Use selecteds geometries</source>
-        <translation type="unfinished"></translation>
+        <translation>Use geometrias selecionadas</translation>
     </message>
 </context>
 <context>
@@ -937,32 +937,32 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ui/ColorCatalogWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ui/ColorCatalogWidgetForm.ui" line="23"/>
         <source>Color Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ui/ColorCatalogWidgetForm.ui" line="37"/>
         <source>Use Schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar Esquema</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ui/ColorCatalogWidgetForm.ui" line="64"/>
         <source>Catalog</source>
-        <translation type="unfinished"></translation>
+        <translation>Catálogo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ui/ColorCatalogWidgetForm.ui" line="94"/>
         <source>Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Grupo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ui/ColorCatalogWidgetForm.ui" line="126"/>
         <source>Schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Esquema</translation>
     </message>
 </context>
 <context>
@@ -971,82 +971,82 @@
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="330"/>
         <source>Color Map</source>
-        <translation type="unfinished"></translation>
+        <translation>Mapa de Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="24"/>
         <source>Import Layer Grouping</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar Camada Agrupada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="38"/>
         <source>Layer:</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="55"/>
         <source>Import</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="67"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="86"/>
         <source>Min Value:</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Mínimo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="112"/>
         <source>Max Value:</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Máximo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="145"/>
         <source>Transformation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="165"/>
         <source>Steps:</source>
-        <translation type="unfinished"></translation>
+        <translation>Passos:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="188"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="208"/>
         <source>Precision:</source>
-        <translation type="unfinished"></translation>
+        <translation>Precisão:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="237"/>
         <source>Band:</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="299"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="343"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="348"/>
         <source>From</source>
-        <translation type="unfinished"></translation>
+        <translation>De</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ColorMapWidgetForm.ui" line="353"/>
         <source>To</source>
-        <translation type="unfinished"></translation>
+        <translation>Para</translation>
     </message>
 </context>
 <context>
@@ -1054,32 +1054,32 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="14"/>
         <source>Color Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação de Cores</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="20"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="57"/>
         <source>RGB - IHS</source>
-        <translation type="unfinished"></translation>
+        <translation>RGB - IHS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="73"/>
         <source>Red</source>
-        <translation type="unfinished"></translation>
+        <translation>Vermelho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="83"/>
         <source>Green</source>
-        <translation type="unfinished"></translation>
+        <translation>Verde</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="93"/>
         <source>Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Azul</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="145"/>
@@ -1089,51 +1089,51 @@
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="384"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="391"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="217"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="449"/>
         <source>Minimum RGB Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Mínimo do RGB</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="227"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="459"/>
         <source>Maximum RGB Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Máximo do RGB</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="241"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="473"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="251"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="483"/>
         <source>255</source>
-        <translation type="unfinished"></translation>
+        <translation>255</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="289"/>
         <source>IHS - RGB</source>
-        <translation type="unfinished"></translation>
+        <translation>IHS - RGB</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="305"/>
         <source>Intensity</source>
-        <translation type="unfinished"></translation>
+        <translation>Intensidade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="315"/>
         <source>Hue</source>
-        <translation type="unfinished"></translation>
+        <translation>Matiz</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ColorTransformWizardPageForm.ui" line="325"/>
         <source>Saturation</source>
-        <translation type="unfinished"></translation>
+        <translation>Saturação</translation>
     </message>
 </context>
 <context>
@@ -1141,44 +1141,44 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="14"/>
         <source>Compose / Decompose Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Compõe / Decompõe Bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="27"/>
         <source>Compose Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Compõe Bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="41"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="143"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="46"/>
         <source>Layer / Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada / Matriz (raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="56"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="63"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="87"/>
         <source>Interpolator</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpolador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="112"/>
         <source>Decompose Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Decompõe Bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ComposeBandsWizardPageForm.ui" line="120"/>
         <source>Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz (raster)</translation>
     </message>
 </context>
 <context>
@@ -1187,12 +1187,12 @@
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="14"/>
         <source>Composition Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo de Composição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="44"/>
         <source>Defines the composition mode to render this layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Define o modo de composição para renderizar essa camada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="63"/>
@@ -1200,192 +1200,192 @@
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="63"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="423"/>
         <source>Imagem</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="75"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="75"/>
         <source>Composition Modes</source>
-        <translation type="unfinished"></translation>
+        <translation>Modos de Composição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="90"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="90"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="103"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="103"/>
         <source>Destination In</source>
-        <translation type="unfinished"></translation>
+        <translation>Destination In</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="116"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="116"/>
         <source>Plus</source>
-        <translation type="unfinished"></translation>
+        <translation>Plus</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="129"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="129"/>
         <source>Color Dodge</source>
-        <translation type="unfinished"></translation>
+        <translation>Color Dodge</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="142"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="142"/>
         <source>Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Source</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="155"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="155"/>
         <source>Source Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Source Out</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="168"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="168"/>
         <source>Multiply</source>
-        <translation type="unfinished"></translation>
+        <translation>Multiply</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="181"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="181"/>
         <source>Color Burn</source>
-        <translation type="unfinished"></translation>
+        <translation>Color Burn</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="194"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="194"/>
         <source>Destination</source>
-        <translation type="unfinished"></translation>
+        <translation>Destination</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="207"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="207"/>
         <source>Destination Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Destination Out</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="220"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="220"/>
         <source>Screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Screen</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="233"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="233"/>
         <source>Hard Light</source>
-        <translation type="unfinished"></translation>
+        <translation>Hard Light</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="246"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="246"/>
         <source>Source Over (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Source Over (default)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="262"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="262"/>
         <source>Source At Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Source At Top</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="275"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="275"/>
         <source>Overlay</source>
-        <translation type="unfinished"></translation>
+        <translation>Overlay</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="288"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="288"/>
         <source>Soft Light</source>
-        <translation type="unfinished"></translation>
+        <translation>Soft Light</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="301"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="301"/>
         <source>Destination Over</source>
-        <translation type="unfinished"></translation>
+        <translation>Destination Over</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="314"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="314"/>
         <source>Destination At Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Destination At Top</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="327"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="327"/>
         <source>Darken</source>
-        <translation type="unfinished"></translation>
+        <translation>Darken</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="340"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="340"/>
         <source>Difference</source>
-        <translation type="unfinished"></translation>
+        <translation>Difference</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="353"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="353"/>
         <source>Source In</source>
-        <translation type="unfinished"></translation>
+        <translation>Source In</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="366"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="366"/>
         <source>XOR</source>
-        <translation type="unfinished"></translation>
+        <translation>XOR</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="379"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="379"/>
         <source>Lighten</source>
-        <translation type="unfinished"></translation>
+        <translation>Lighten</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="392"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="392"/>
         <source>Exclusion</source>
-        <translation type="unfinished"></translation>
+        <translation>Exclusion</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="402"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="402"/>
         <source>Diagram</source>
-        <translation type="unfinished"></translation>
+        <translation>Diagrama</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="433"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="433"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="469"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="469"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="489"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="489"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="496"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CompositionModeDialogForm.ui" line="496"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/CompositionModeDialogForm.ui" line="44"/>
         <source>Defines the composition mode to render the selected layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Define o modo de composição para renderizar a camada selecionada.</translation>
     </message>
 </context>
 <context>
@@ -1394,12 +1394,12 @@
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintWidgetForm.ui" line="23"/>
         <source>Constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintWidgetForm.ui" line="36"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
 </context>
 <context>
@@ -1407,42 +1407,42 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesListWidgetForm.ui" line="14"/>
         <source>Constraints and Indexes List</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista de Restrições e Índice</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesListWidgetForm.ui" line="23"/>
         <source>Constraints / Indexes</source>
-        <translation type="unfinished"></translation>
+        <translation>Restrições / Índices</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesListWidgetForm.ui" line="46"/>
         <source>Add a unique key</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar uma chave única</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesListWidgetForm.ui" line="59"/>
         <source>Remove unique key</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover chave única</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesListWidgetForm.ui" line="72"/>
         <source>Edit unique key</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar chave única</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesListWidgetForm.ui" line="116"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesListWidgetForm.ui" line="121"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesListWidgetForm.ui" line="126"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades</translation>
     </message>
 </context>
 <context>
@@ -1450,47 +1450,47 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="14"/>
         <source>Constraint and Indexes Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades das Restrições e Índices</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="41"/>
         <source>Constraint and Index Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade da Restrição e Índice</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="51"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="57"/>
         <source>Primary Key</source>
-        <translation type="unfinished"></translation>
+        <translation>Chave Primária</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="64"/>
         <source>Unique Key</source>
-        <translation type="unfinished"></translation>
+        <translation>Chave Única</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="71"/>
         <source>Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Índice</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="102"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="122"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/ConstraintsIndexesPropertyDialogForm.ui" line="132"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
 </context>
 <context>
@@ -1499,17 +1499,17 @@
         <location filename="../../../src/terralib/qt/widgets/se/ui/ContrastEnhancementWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ContrastEnhancementWidgetForm.ui" line="26"/>
         <source>Contrast Enhancement</source>
-        <translation type="unfinished"></translation>
+        <translation>Realçe de Contraste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ContrastEnhancementWidgetForm.ui" line="45"/>
         <source>Gamma</source>
-        <translation type="unfinished"></translation>
+        <translation>Gamma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ContrastEnhancementWidgetForm.ui" line="58"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
 </context>
 <context>
@@ -1517,123 +1517,123 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="26"/>
         <source>Raster contrast</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraste Matricial (Raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="55"/>
         <source>Contrast Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de Contraste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="71"/>
         <source>The contrast type.</source>
-        <translation type="unfinished"></translation>
+        <translation>O tipo de contraste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="75"/>
         <source>Histogram Equalization</source>
-        <translation type="unfinished"></translation>
+        <translation>Equalização de Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="80"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="155"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="85"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="279"/>
         <source>Mean and standard deviation</source>
-        <translation type="unfinished"></translation>
+        <translation>Média e desvio padrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="111"/>
         <source>Input raster bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas de entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="133"/>
         <source>Bands to be processed from the input raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas a serem processadas do dado matricial de entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="170"/>
         <source>Minimum input value</source>
-        <translation type="unfinished"></translation>
+        <translation>Mínimo valor de entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="186"/>
         <source>The contrast minimum input greyscale value.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor mínimo do contraste de entrada em níveis de cinza</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="189"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="270"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="351"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="208"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="251"/>
         <source>Maximum input value</source>
-        <translation type="unfinished"></translation>
+        <translation>Máximo valor de entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="224"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="267"/>
         <source>The contrast maximum input greyscale value.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor máximo do contraste de entrada em níveis de cinza</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="227"/>
         <source>255</source>
-        <translation type="unfinished"></translation>
+        <translation>255</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="236"/>
         <source>Histogram equalization</source>
-        <translation type="unfinished"></translation>
+        <translation>Equalização de Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="294"/>
         <source>Target standard deviation</source>
-        <translation type="unfinished"></translation>
+        <translation>Desvio padrão alvo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="310"/>
         <source>The standard deviation to be applied in the contrast image.</source>
-        <translation type="unfinished"></translation>
+        <translation>O desvio padrão para ser aplicado à imagem de contraste.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="313"/>
         <source>4</source>
-        <translation type="unfinished"></translation>
+        <translation>4</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="332"/>
         <source>Target mean value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor médio alvo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="348"/>
         <source>The mean greyscale to be applied in the contrast image</source>
-        <translation type="unfinished"></translation>
+        <translation>O valor médio em níveis de cinza para ser aplicado à imagem de contraste.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="375"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="407"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastForm.ui" line="426"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancela</translation>
     </message>
 </context>
 <context>
@@ -1641,42 +1641,42 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastWizardPageForm.ui" line="14"/>
         <source>Contrast</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastWizardPageForm.ui" line="34"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastWizardPageForm.ui" line="70"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastWizardPageForm.ui" line="87"/>
         <source>Histogram</source>
-        <translation type="unfinished"></translation>
+        <translation>Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastWizardPageForm.ui" line="130"/>
         <source>Raster Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas Matriciais (Raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastWizardPageForm.ui" line="136"/>
         <source>Use the &quot;Enter&quot; key to confirm changes to the table fields.</source>
-        <translation type="unfinished"></translation>
+        <translation>Use a tecla &quot;Enter&quot; para confirmar alterações nos campos da tabela.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastWizardPageForm.ui" line="171"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/ContrastWizardPageForm.ui" line="179"/>
         <source>Select a row to view its respective histogram.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione uma linha para ver seu respectivo histograma.</translation>
     </message>
 </context>
 <context>
@@ -1684,32 +1684,32 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerDialogForm.ui" line="14"/>
         <source>Create Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Criação de Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerDialogForm.ui" line="41"/>
         <source>Creates a empty layer...</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar uma camada vazia...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerDialogForm.ui" line="60"/>
         <source>Imagem</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerDialogForm.ui" line="89"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerDialogForm.ui" line="96"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerDialogForm.ui" line="116"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -1717,48 +1717,48 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="14"/>
         <source>Create Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Criação de Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="28"/>
         <source>Data Souce</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="41"/>
         <source>Repository:</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositório:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="51"/>
         <source>Layer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Camada:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="80"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="129"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="93"/>
         <source>DB</source>
-        <translation type="unfinished"></translation>
+        <translation>DB</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="116"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="179"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/CreateLayerWidgetForm.ui" line="184"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
 </context>
 <context>
@@ -1766,37 +1766,37 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataExchangeSummaryWizardPageForm.ui" line="14"/>
         <source>WizardPage</source>
-        <translation type="unfinished"></translation>
+        <translation>WizardPage</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataExchangeSummaryWizardPageForm.ui" line="17"/>
         <source>Data exchange summary</source>
-        <translation type="unfinished"></translation>
+        <translation>Resumo do intercâmbio de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataExchangeSummaryWizardPageForm.ui" line="20"/>
         <source>Your data was successfully transferred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Seu dado foi transferido com sucesso !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataExchangeSummaryWizardPageForm.ui" line="36"/>
         <source>Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Situação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataExchangeSummaryWizardPageForm.ui" line="41"/>
         <source>Dataset</source>
-        <translation type="unfinished"></translation>
+        <translation>Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataExchangeSummaryWizardPageForm.ui" line="46"/>
         <source>Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataExchangeSummaryWizardPageForm.ui" line="51"/>
         <source>Comments</source>
-        <translation type="unfinished"></translation>
+        <translation>Comentários</translation>
     </message>
 </context>
 <context>
@@ -1804,7 +1804,7 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataExchangerWizardForm.ui" line="14"/>
         <source>Data Exchange</source>
-        <translation type="unfinished"></translation>
+        <translation>Intercâmbio de Dados</translation>
     </message>
 </context>
 <context>
@@ -1812,22 +1812,22 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesDialogForm.ui" line="14"/>
         <source>Tabular File</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo Tabular</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesDialogForm.ui" line="63"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesDialogForm.ui" line="70"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesDialogForm.ui" line="77"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
 </context>
 <context>
@@ -1835,62 +1835,62 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="14"/>
         <source>Tabular File</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo Tabular</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="61"/>
         <source>Opens a tabular file</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir um arquivo tabular</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="68"/>
         <source>Hint</source>
-        <translation type="unfinished"></translation>
+        <translation>Hint</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="78"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="86"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="109"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="134"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="141"/>
         <source>Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="146"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="170"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="204"/>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/DataPropertiesWidgetForm.ui" line="228"/>
         <source>Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Y</translation>
     </message>
 </context>
 <context>
@@ -1898,27 +1898,27 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/DataSetAdapterWidgetForm.ui" line="14"/>
         <source>Data Set Adapter</source>
-        <translation type="unfinished"></translation>
+        <translation>Apaptador do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/DataSetAdapterWidgetForm.ui" line="23"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/DataSetAdapterWidgetForm.ui" line="53"/>
         <source>Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Situação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/DataSetAdapterWidgetForm.ui" line="58"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/DataSetAdapterWidgetForm.ui" line="63"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
 </context>
 <context>
@@ -1926,52 +1926,52 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="17"/>
         <source>WizardPage</source>
-        <translation type="unfinished"></translation>
+        <translation>WizardPage</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="20"/>
         <source>Transfer Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções de Transferência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="23"/>
         <source>You can provide more information on how the datasets will be transferred and mapped to the target data source</source>
-        <translation type="unfinished"></translation>
+        <translation>Você pode fornecer mais informações sobre como os conjuntos de dados serão transferidos e mapeados para a fonte de dados de destino.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="39"/>
         <source>Selected datasets</source>
-        <translation type="unfinished"></translation>
+        <translation>Dados selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="61"/>
         <source>Target dataset information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações do conjunto de dados de destino</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="71"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="91"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="111"/>
         <source>Input SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="136"/>
         <source>Output SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DataSetOptionsWizardPageForm.ui" line="178"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
 </context>
 <context>
@@ -1979,27 +1979,27 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorDialogForm.ui" line="14"/>
         <source>Dataset Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorDialogForm.ui" line="39"/>
         <source>Data Source Type - Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo da Fonte de Dados - Título</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorDialogForm.ui" line="63"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorDialogForm.ui" line="88"/>
         <source>&amp;Select</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Selecionar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorDialogForm.ui" line="95"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -2007,22 +2007,22 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorWidgetForm.ui" line="23"/>
         <source>DataSource Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorWidgetForm.ui" line="32"/>
         <source>Map Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Pré-visualização do Mapa</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorWidgetForm.ui" line="42"/>
         <source>Data Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Pré-visualização dos dados</translation>
     </message>
 </context>
 <context>
@@ -2030,7 +2030,7 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/ui/DataSetSelectorWizardForm.ui" line="14"/>
         <source>Dataset Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção do Conjunto de Dados</translation>
     </message>
 </context>
 <context>
@@ -2040,18 +2040,18 @@
         <location filename="../../../src/terralib/qt/widgets/query/ui/DataSetWidgetForm.ui" line="22"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/DataSetWidgetForm.ui" line="147"/>
         <source>Data Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/DataSetWidgetForm.ui" line="34"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/DataSetWidgetForm.ui" line="44"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/DataSetWidgetForm.ui" line="152"/>
         <source>Alias</source>
-        <translation type="unfinished"></translation>
+        <translation>Pseudônimo</translation>
     </message>
 </context>
 <context>
@@ -2059,22 +2059,22 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceExplorerDialogForm.ui" line="14"/>
         <source>Data Source Explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>Explorador da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceExplorerDialogForm.ui" line="38"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceExplorerDialogForm.ui" line="63"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceExplorerDialogForm.ui" line="70"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -2082,22 +2082,22 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorDialogForm.ui" line="14"/>
         <source>Data Source Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Seletor da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorDialogForm.ui" line="38"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorDialogForm.ui" line="63"/>
         <source>&amp;Select</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Selecionar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorDialogForm.ui" line="70"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancel</translation>
     </message>
 </context>
 <context>
@@ -2105,42 +2105,42 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.ui" line="120"/>
         <source>Data Source Type...</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo da Fonte de Dados...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.ui" line="132"/>
         <source>Available Data Sources</source>
-        <translation type="unfinished"></translation>
+        <translation>Fontes de dados disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.ui" line="171"/>
         <source>Add a new data source to the system</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar uma nova fonte de dados ao sistema</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.ui" line="184"/>
         <source>Remove the data source from the list of registered ones</source>
-        <translation type="unfinished"></translation>
+        <translation>Remova a fonte de dados a partir da lista de registrados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.ui" line="197"/>
         <source>Edit data source information</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar informações da fonte de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.ui" line="210"/>
         <source>Create a new empty data source and register it in the system</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar uma nova fonte de dados vazia e registrá-la no sistema</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.ui" line="248"/>
         <source>brief description about the data source...</source>
-        <translation type="unfinished"></translation>
+        <translation>breve descrição sobre a fonte de dados ...</translation>
     </message>
 </context>
 <context>
@@ -2148,12 +2148,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/DateTimePropertyWidgetForm.ui" line="14"/>
         <source>Date Tme Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade da Data e Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/DateTimePropertyWidgetForm.ui" line="27"/>
         <source>Date Time Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo da Data e Tempo</translation>
     </message>
 </context>
 <context>
@@ -2162,74 +2162,74 @@
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="72"/>
         <source>Layer Exchanger</source>
-        <translation type="unfinished"></translation>
+        <translation>Intercâmbio de Camadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="58"/>
         <source>Imagem</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="82"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="92"/>
         <source>Input Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="131"/>
         <source>Input Layer SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID da Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="160"/>
         <source>Output Data Source Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo da Fonte de Dados de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="174"/>
         <source>Output Data Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="193"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="225"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="257"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="206"/>
         <source>Data Set Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="240"/>
         <source>Output Data Set SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID do Dados de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="287"/>
         <source>Create Spatial Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar Índice Espacial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="313"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="320"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/DirectExchangerDialogForm.ui" line="340"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -2237,13 +2237,13 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/DoubleListWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/DoubleListWidgetForm.ui" line="24"/>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/DoubleListWidgetForm.ui" line="142"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>TextLabel</translation>
     </message>
 </context>
 <context>
@@ -2251,37 +2251,37 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/FieldsDialogForm.ui" line="23"/>
         <source>Query Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/FieldsDialogForm.ui" line="91"/>
         <source>Left Join</source>
-        <translation type="unfinished"></translation>
+        <translation>Junção Esquerda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/FieldsDialogForm.ui" line="101"/>
         <source>Join</source>
-        <translation type="unfinished"></translation>
+        <translation>Junção</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/FieldsDialogForm.ui" line="117"/>
         <source>Right Join</source>
-        <translation type="unfinished"></translation>
+        <translation>Junção Direita</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/FieldsDialogForm.ui" line="184"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/FieldsDialogForm.ui" line="204"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/FieldsDialogForm.ui" line="211"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -2289,17 +2289,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/FileChooser.ui" line="14"/>
         <source>File chooser</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo Escolhido</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/FileChooser.ui" line="31"/>
         <source>File name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Arquivo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/FileChooser.ui" line="45"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
 </context>
 <context>
@@ -2307,63 +2307,63 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="20"/>
         <source>Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtragem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="46"/>
         <source>Filter Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros de Filtragem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="56"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="77"/>
         <source>Iterations</source>
-        <translation type="unfinished"></translation>
+        <translation>Iterações</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="98"/>
         <source>User Mask Definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Definição de Máscaras do Usuário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="110"/>
         <source>Set a new Mask...</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir uma nova Máscara...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="113"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="126"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="123"/>
         <source>Open a previous Mask...</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir uma Máscara previamente definida</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="139"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="149"/>
         <source>Default Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Padrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="156"/>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FilterWizardPageForm.ui" line="191"/>
         <source>Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas</translation>
     </message>
 </context>
 <context>
@@ -2371,32 +2371,32 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryDialogForm.ui" line="14"/>
         <source>Fix Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Corrigir Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryDialogForm.ui" line="50"/>
         <source>Verify and fix geometries</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificar e corrigir geometrias</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryDialogForm.ui" line="69"/>
         <source>Imagem</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryDialogForm.ui" line="93"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryDialogForm.ui" line="113"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryDialogForm.ui" line="120"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -2404,43 +2404,43 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="22"/>
         <source>Input layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="34"/>
         <source>Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="56"/>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="98"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="72"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="78"/>
         <source>Repository:</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositório:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="111"/>
         <source>BD</source>
-        <translation type="unfinished"></translation>
+        <translation>BD</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/vector/ui/FixGeometryWidgetForm.ui" line="118"/>
         <source>Layer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Camada</translation>
     </message>
 </context>
 <context>
@@ -2448,39 +2448,39 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="14"/>
         <source>Fusion</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="22"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="44"/>
         <source>Common Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros Comuns</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="57"/>
         <source>Interpolator</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpolador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="76"/>
         <source>Crop rasters to overlap area.</source>
-        <translation type="unfinished"></translation>
+        <translation>Recortar dado matricial para recobrir área.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="104"/>
         <source>IHS Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros IHS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="123"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="391"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="545"/>
         <source>Higher Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução Maior</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="135"/>
@@ -2490,7 +2490,7 @@
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="557"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="679"/>
         <source>Layer Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="145"/>
@@ -2498,81 +2498,81 @@
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="567"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="711"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="213"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="481"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="669"/>
         <source>Lower Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução Menor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="235"/>
         <source>R</source>
-        <translation type="unfinished"></translation>
+        <translation>R</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="245"/>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="255"/>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="375"/>
         <source>PCA Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros PCA</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="527"/>
         <source>Wisper Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros Wisper</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="577"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="721"/>
         <source>Sensor Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de Sensor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="637"/>
         <source>Open Spectral Response Function File...</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir Arquivo de Função de Resposta Espectral</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="640"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="822"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="716"/>
         <source>CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="732"/>
         <source>Wavelet</source>
-        <translation type="unfinished"></translation>
+        <translation>Wavelet</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="744"/>
         <source>Filter Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de Filtro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="754"/>
         <source>Decomposition Levels</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/FusionWizardPageForm.ui" line="819"/>
         <source>Show Chart of Spectral Response Function...</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Gráfico da Função de Resposta Espectral</translation>
     </message>
 </context>
 <context>
@@ -2580,17 +2580,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/GeometryPropertyWidgetForm.ui" line="14"/>
         <source>Geometry Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades da Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/GeometryPropertyWidgetForm.ui" line="27"/>
         <source>Geometry Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/GeometryPropertyWidgetForm.ui" line="41"/>
         <source>SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID</translation>
     </message>
 </context>
 <context>
@@ -2598,49 +2598,49 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="25"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="37"/>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="44"/>
         <source>Angle:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ângulo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="94"/>
         <source>Displacement</source>
-        <translation type="unfinished"></translation>
+        <translation>Deslocamento</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="105"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="193"/>
         <source>Y:</source>
-        <translation type="unfinished"></translation>
+        <translation>Y:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="115"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="164"/>
         <source>X:</source>
-        <translation type="unfinished"></translation>
+        <translation>X:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="153"/>
         <source>Anchor Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto de Ancoragem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphGraphicWidgetForm.ui" line="245"/>
         <source>Glyph</source>
-        <translation type="unfinished"></translation>
+        <translation>Glyph</translation>
     </message>
 </context>
 <context>
@@ -2648,17 +2648,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphMarkDialogForm.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Diálogo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphMarkDialogForm.ui" line="50"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphMarkDialogForm.ui" line="57"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -2666,12 +2666,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphMarkWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GlyphMarkWidgetForm.ui" line="27"/>
         <source>Font:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte:</translation>
     </message>
 </context>
 <context>
@@ -2679,17 +2679,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GraphicDialogForm.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Diálogo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GraphicDialogForm.ui" line="50"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GraphicDialogForm.ui" line="60"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -2697,12 +2697,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GraphicFillWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GraphicFillWidgetForm.ui" line="28"/>
         <source>Graphic:</source>
-        <translation type="unfinished"></translation>
+        <translation>Gráfico:</translation>
     </message>
 </context>
 <context>
@@ -2710,12 +2710,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GraphicSelectorWidgetForm.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Diálogo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GraphicSelectorWidgetForm.ui" line="27"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
 </context>
 <context>
@@ -2723,27 +2723,27 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingDialogForm.ui" line="14"/>
         <source>Edit Legend</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Legenda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingDialogForm.ui" line="44"/>
         <source>This operation creates a legend in a selected layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta operação cria uma legenda em uma camada selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingDialogForm.ui" line="88"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingDialogForm.ui" line="98"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingDialogForm.ui" line="105"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -2751,97 +2751,97 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="14"/>
         <source>Grouping</source>
-        <translation type="unfinished"></translation>
+        <translation>Agrupamento</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="24"/>
         <source>Import Layer Grouping</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar Camada com Agrupamento</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="38"/>
         <source>Layer:</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="55"/>
         <source>Import</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="67"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="83"/>
         <source>Standard Deviation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Desvio Padrão:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="90"/>
         <source>Slices:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fatias:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="97"/>
         <source>Precision:</source>
-        <translation type="unfinished"></translation>
+        <translation>Precisão:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="125"/>
         <source>Attribute:</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="135"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="145"/>
         <source>Summary Function:</source>
-        <translation type="unfinished"></translation>
+        <translation>Função Resumo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="245"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="276"/>
         <source>Legend</source>
-        <translation type="unfinished"></translation>
+        <translation>Leganda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="285"/>
         <source>Symbol</source>
-        <translation type="unfinished"></translation>
+        <translation>Símbolo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="290"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="295"/>
         <source>Min</source>
-        <translation type="unfinished"></translation>
+        <translation>Mínimo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="300"/>
         <source>Max</source>
-        <translation type="unfinished"></translation>
+        <translation>Máximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="305"/>
         <source>Count</source>
-        <translation type="unfinished"></translation>
+        <translation>Contagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/GroupingWidgetForm.ui" line="315"/>
         <source>* Manual changes can make the property &quot;Count&quot; invalid.</source>
-        <translation type="unfinished"></translation>
+        <translation>* Alterações manuais podem tornar a função &quot;Count&quot; inválida.</translation>
     </message>
 </context>
 <context>
@@ -2849,27 +2849,27 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDataWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDataWidgetForm.ui" line="28"/>
         <source>Property:</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDataWidgetForm.ui" line="44"/>
         <source>Number of Slices:</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Fatias</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDataWidgetForm.ui" line="54"/>
         <source>Summary Function:</source>
-        <translation type="unfinished"></translation>
+        <translation>Função Resumo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDataWidgetForm.ui" line="75"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:&apos;Calibri Light&apos;;&quot;&gt;When the histogram is based on a raster file, setting the number of slices to 0 means all the of the pixel values will be used to generate the histogram.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:&apos;Calibri Light&apos;;&quot;&gt;Quando o histograma é baseado em um arquivo matricial (raster), definindo o número de fatias para 0, significa que todos os valores de pixel serão utilizados para gerar o histograma.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -2877,12 +2877,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramFrameWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramFrameWidgetForm.ui" line="50"/>
         <source>Histogram Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo de Histograma</translation>
     </message>
 </context>
 <context>
@@ -2890,27 +2890,27 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramStyleWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramStyleWidgetForm.ui" line="28"/>
         <source>Bar Fill:</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de Preenchimento:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramStyleWidgetForm.ui" line="38"/>
         <source>Fill...</source>
-        <translation type="unfinished"></translation>
+        <translation>Preenchimento...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramStyleWidgetForm.ui" line="64"/>
         <source>Bar Stroke:</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de Parada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramStyleWidgetForm.ui" line="74"/>
         <source>Stroke...</source>
-        <translation type="unfinished"></translation>
+        <translation>Parada...</translation>
     </message>
 </context>
 <context>
@@ -2918,12 +2918,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/HorizontalSliderWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/HorizontalSliderWidgetForm.ui" line="32"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Rótulo</translation>
     </message>
 </context>
 <context>
@@ -2932,22 +2932,22 @@
         <location filename="../../../src/terralib/qt/widgets/se/ui/ImageOutlineWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ImageOutlineWidgetForm.ui" line="23"/>
         <source>Image Outline</source>
-        <translation type="unfinished"></translation>
+        <translation>Contorno da Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ImageOutlineWidgetForm.ui" line="36"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ImageOutlineWidgetForm.ui" line="46"/>
         <source>Polygon Symbolizer</source>
-        <translation type="unfinished"></translation>
+        <translation>Polígono Simbólico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ImageOutlineWidgetForm.ui" line="83"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Pré-visualização</translation>
     </message>
 </context>
 <context>
@@ -2956,17 +2956,17 @@
         <location filename="../../../src/terralib/qt/widgets/property/ui/IndexWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/property/ui/IndexWidgetForm.ui" line="23"/>
         <source>Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Índice</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/IndexWidgetForm.ui" line="41"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/IndexWidgetForm.ui" line="55"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
 </context>
 <context>
@@ -2974,17 +2974,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/LayerAttributesWidgetForm.ui" line="14"/>
         <source>Layer Attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributos da Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/LayerAttributesWidgetForm.ui" line="23"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/LayerAttributesWidgetForm.ui" line="33"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome:</translation>
     </message>
 </context>
 <context>
@@ -2992,22 +2992,22 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchDialogForm.ui" line="14"/>
         <source>Layer Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Pesquisa de Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchDialogForm.ui" line="43"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchDialogForm.ui" line="63"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchDialogForm.ui" line="70"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -3015,52 +3015,52 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="14"/>
         <source>Layer Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Pesquisa de Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="40"/>
         <source>List of Layers</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista de Camadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="65"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="70"/>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="75"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="88"/>
         <source>Filter By Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrar por Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="110"/>
         <source>Filter By Representation</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrar por Representação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="124"/>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>Tudo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="140"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSearchWidgetForm.ui" line="153"/>
         <source>Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz</translation>
     </message>
 </context>
 <context>
@@ -3068,17 +3068,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSelectorWidgetForm.ui" line="20"/>
         <source>Layer Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Seletor de Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSelectorWidgetForm.ui" line="35"/>
         <source>Input Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/ui/LayerSelectorWidgetForm.ui" line="46"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
 </context>
 <context>
@@ -3086,67 +3086,67 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="20"/>
         <source>Legend Edition</source>
-        <translation type="unfinished"></translation>
+        <translation>Edição de Legenda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="26"/>
         <source>Grouping Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros de Agrupamenrto</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="34"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="51"/>
         <source>Precision:</source>
-        <translation type="unfinished"></translation>
+        <translation>Precisão:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="75"/>
         <source>Slices:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fatias:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="105"/>
         <source>Attribute:</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="122"/>
         <source>Standard Deviation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Desvio Padrão:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="153"/>
         <source>Legend Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor da Legenda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="195"/>
         <source>Opacity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="243"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="273"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="299"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/ui/Legend.ui" line="309"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -3154,17 +3154,17 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LineSymbolizerWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LineSymbolizerWidgetForm.ui" line="27"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LineSymbolizerWidgetForm.ui" line="46"/>
         <source>Stroke</source>
-        <translation type="unfinished"></translation>
+        <translation>Stroke</translation>
     </message>
 </context>
 <context>
@@ -3172,12 +3172,12 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ListWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ListWidgetForm.ui" line="27"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>TextLabel</translation>
     </message>
 </context>
 <context>
@@ -3185,54 +3185,54 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="25"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="36"/>
         <source>Anchor Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto de Ancoragem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="47"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="234"/>
         <source>X:</source>
-        <translation type="unfinished"></translation>
+        <translation>X:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="76"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="224"/>
         <source>Y:</source>
-        <translation type="unfinished"></translation>
+        <translation>Y:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="114"/>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="121"/>
         <source>Angle:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ângulo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="128"/>
         <source>Opacity %</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade %</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="213"/>
         <source>Displacement</source>
-        <translation type="unfinished"></translation>
+        <translation>Deslocamento</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalGraphicWidgetForm.ui" line="274"/>
         <source>Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
 </context>
 <context>
@@ -3240,22 +3240,22 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalImageWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalImageWidgetForm.ui" line="27"/>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
+        <translation>Procurar...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalImageWidgetForm.ui" line="43"/>
         <source>Details</source>
-        <translation type="unfinished"></translation>
+        <translation>Detalhes</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalImageWidgetForm.ui" line="72"/>
         <source>&lt;image&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;image&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/LocalImageWidgetForm.ui" line="100"/>
@@ -3265,7 +3265,12 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt; font-style:italic;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt; font-style:italic;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt; font-style:italic;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt; font-style:italic;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -3273,17 +3278,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MaskDialogForm.ui" line="14"/>
         <source>Mask</source>
-        <translation type="unfinished"></translation>
+        <translation>Máscara</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MaskDialogForm.ui" line="59"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MaskDialogForm.ui" line="66"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -3291,67 +3296,67 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="32"/>
         <source>Raster Mixture Model Decomposition</source>
-        <translation type="unfinished"></translation>
+        <translation>Decomposição da Imagem do Modelo de Mistura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="52"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="63"/>
         <source>Normalize output?</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalizar Saída ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="73"/>
         <source>Create error images?</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar imagem Erro ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="80"/>
         <source>Mixture Model Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de Modelo de Mistura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="97"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="102"/>
         <source>PCA - Principal Component Analysis</source>
-        <translation type="unfinished"></translation>
+        <translation>PCA - Análise de Componentes Principais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="149"/>
         <source>Use mouse scrool for zooming in/out and hit space bar to select a component.</source>
-        <translation type="unfinished"></translation>
+        <translation>Use botão de rolagem do mouse para zoom in / out e teclar a barra de espaço para selecionar um componente.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="197"/>
         <source>Available Raster Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas Matriciais (raster) Disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="217"/>
         <source>Selected Components List</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista de Componentes Selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="240"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="272"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelForm.ui" line="291"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancela</translation>
     </message>
 </context>
 <context>
@@ -3359,79 +3364,79 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="14"/>
         <source>Mixture Model</source>
-        <translation type="unfinished"></translation>
+        <translation>Modelo de Mistura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="36"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="64"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="73"/>
         <source>Normalize output.</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalizar saída.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="83"/>
         <source>Create error images.</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar imagem erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="90"/>
         <source>* Error images will be created inside the output raster.</source>
-        <translation type="unfinished"></translation>
+        <translation>* Imagens Erro serão criadas dentro do matricial (raster) de saída.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="112"/>
         <source>Raster Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas Matriciais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="134"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="139"/>
         <source>Sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Sensor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="164"/>
         <source>Selected Components List</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista de Componentes Selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="185"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="190"/>
         <source>Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Valores</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="200"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="210"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="243"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="207"/>
         <source>Acquire samples</source>
-        <translation type="unfinished"></translation>
+        <translation>Adquirir amostras</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MixtureModelWizardPageForm.ui" line="233"/>
         <source>Remove the selected sample</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover as amostras selecionadas</translation>
     </message>
 </context>
 <context>
@@ -3439,113 +3444,113 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="14"/>
         <source>Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="30"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="52"/>
         <source>Interpolator</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpolador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="74"/>
         <source>Blender</source>
-        <translation type="unfinished"></translation>
+        <translation>Blender</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="96"/>
         <source>No Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Nulo (No Data)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="106"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="118"/>
         <source>Force Input Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="130"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="138"/>
         <source>Auto Equalize</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto Equalizar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="148"/>
         <source>Use Raster Cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar cache matricial (raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="184"/>
         <source>Geo Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Geo Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="190"/>
         <source>No Extra Parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Num. de Parâmetros Extra</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="220"/>
         <source>Tie Points Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos de Controle do Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="230"/>
         <source>Layer A</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada A</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="244"/>
         <source>Layer B</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada B</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="258"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="358"/>
         <source>Geometric Transformation</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação Geométrica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="272"/>
         <source>Tie Points Link Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de link dos pontos de controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="299"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="346"/>
         <source>Sequence Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Sequencia do Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="372"/>
         <source>Reference Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda de Referência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="386"/>
         <source>Mininumum Required Tie-Points Covered Area Percent</source>
-        <translation type="unfinished"></translation>
+        <translation>Mínimo de Pontos de Controle Requeridos Recobrindo a Área</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/MosaicWizardPageForm.ui" line="410"/>
         <source>Tie Point Locator Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros de Localização de Pontos de Controle</translation>
     </message>
 </context>
 <context>
@@ -3553,32 +3558,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionDialogForm.ui" line="14"/>
         <source>Raster Multi Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz Multi Resolução</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionDialogForm.ui" line="44"/>
         <source>Creates multi resolution over a raster...</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar multi resolução sobre um matricial (raster)...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionDialogForm.ui" line="63"/>
         <source>Imagem</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionDialogForm.ui" line="92"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionDialogForm.ui" line="112"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionDialogForm.ui" line="119"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -3586,48 +3591,48 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="34"/>
         <source>Input Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dado de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="47"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="57"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="64"/>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="90"/>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="111"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="134"/>
         <source>Multi Resolution Params</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros Multi Resolução</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="147"/>
         <source>Interpolator:</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpolador:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/MultiResolutionWidgetForm.ui" line="157"/>
         <source>Levels:</source>
-        <translation type="unfinished"></translation>
+        <translation>Niveis:</translation>
     </message>
 </context>
 <context>
@@ -3635,27 +3640,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyDialogForm.ui" line="14"/>
         <source>New Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Nova Propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyDialogForm.ui" line="41"/>
         <source>Create a new property</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar uma nova propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyDialogForm.ui" line="63"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyDialogForm.ui" line="83"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyDialogForm.ui" line="90"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -3663,42 +3668,42 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyWidgetForm.ui" line="14"/>
         <source>New Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Nova Propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyWidgetForm.ui" line="46"/>
         <source>General Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros Gerais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyWidgetForm.ui" line="56"/>
         <source>Data Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de Dado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyWidgetForm.ui" line="70"/>
         <source>Property Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyWidgetForm.ui" line="84"/>
         <source>Default Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Padrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyWidgetForm.ui" line="103"/>
         <source>Is Auto Number</source>
-        <translation type="unfinished"></translation>
+        <translation>É auto numeração</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyWidgetForm.ui" line="113"/>
         <source>Is Required</source>
-        <translation type="unfinished"></translation>
+        <translation>É requerido</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NewPropertyWidgetForm.ui" line="138"/>
         <source>Specific Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros Específicos</translation>
     </message>
 </context>
 <context>
@@ -3706,23 +3711,23 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NumericPropertyWidgetForm.ui" line="14"/>
         <source>Numeric Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade Numérica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NumericPropertyWidgetForm.ui" line="27"/>
         <source>Precision</source>
-        <translation type="unfinished"></translation>
+        <translation>Precisão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NumericPropertyWidgetForm.ui" line="34"/>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NumericPropertyWidgetForm.ui" line="55"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/NumericPropertyWidgetForm.ui" line="48"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Escala</translation>
     </message>
 </context>
 <context>
@@ -3730,32 +3735,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/ObservationPropertiesWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/ObservationPropertiesWidgetForm.ui" line="22"/>
         <source>Temporal  Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade Temporal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/ObservationPropertiesWidgetForm.ui" line="41"/>
         <source>Observed Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Observadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/ObservationPropertiesWidgetForm.ui" line="60"/>
         <source>Aditional Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Adicionais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/ObservationPropertiesWidgetForm.ui" line="94"/>
         <source>ID</source>
-        <translation type="unfinished"></translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/ObservationPropertiesWidgetForm.ui" line="124"/>
         <source>Observed geometry:</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria observada:</translation>
     </message>
 </context>
 <context>
@@ -3763,7 +3768,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/ObservationWizardForm.ui" line="14"/>
         <source>Observation</source>
-        <translation type="unfinished"></translation>
+        <translation>Observação</translation>
     </message>
 </context>
 <context>
@@ -3771,20 +3776,20 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/OrderByWidgetForm.ui" line="14"/>
         <source>Order By</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenado por</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/OrderByWidgetForm.ui" line="25"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/OrderByWidgetForm.ui" line="47"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/OrderByWidgetForm.ui" line="148"/>
         <source>Order</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/OrderByWidgetForm.ui" line="37"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/OrderByWidgetForm.ui" line="143"/>
         <source>Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade</translation>
     </message>
 </context>
 <context>
@@ -3792,18 +3797,18 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/OutputRasterParametersWidgetForm.ui" line="20"/>
         <source>Output Raster Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros Matriciais de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/OutputRasterParametersWidgetForm.ui" line="35"/>
         <source>Output Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matricial de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/OutputRasterParametersWidgetForm.ui" line="50"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/OutputRasterParametersWidgetForm.ui" line="57"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
 </context>
 <context>
@@ -3812,7 +3817,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/se/ui/OverlapBehaviorWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/OverlapBehaviorWidgetForm.ui" line="26"/>
         <source>Overlap Behavior</source>
-        <translation type="unfinished"></translation>
+        <translation>Comportamento de Sobreposição</translation>
     </message>
 </context>
 <context>
@@ -3820,22 +3825,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayDialogForm.ui" line="14"/>
         <source>Overlay</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobreposição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayDialogForm.ui" line="41"/>
         <source>Allows viewing of overlaid  layers...</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite a visualização de camadas sobrepostas...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayDialogForm.ui" line="72"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayDialogForm.ui" line="79"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
 </context>
 <context>
@@ -3843,42 +3848,42 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayWidgetForm.ui" line="14"/>
         <source>Overlay</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobreposição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayWidgetForm.ui" line="27"/>
         <source>Layers</source>
-        <translation type="unfinished"></translation>
+        <translation>Camadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayWidgetForm.ui" line="43"/>
         <source>Upper</source>
-        <translation type="unfinished"></translation>
+        <translation>Superior</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayWidgetForm.ui" line="59"/>
         <source>Lower</source>
-        <translation type="unfinished"></translation>
+        <translation>Inferior</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayWidgetForm.ui" line="95"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayWidgetForm.ui" line="107"/>
         <source>Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>Ferramentas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayWidgetForm.ui" line="117"/>
         <source>Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/ui/OverlayWidgetForm.ui" line="157"/>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Esconder</translation>
     </message>
 </context>
 <context>
@@ -3886,27 +3891,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterDialogForm.ui" line="32"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Diálogo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterDialogForm.ui" line="59"/>
         <source>Parameter Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome de Parâmetro:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterDialogForm.ui" line="66"/>
         <source>Parameter Value:</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor de Parâmetro:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterDialogForm.ui" line="110"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterDialogForm.ui" line="117"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -3914,37 +3919,37 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterTableWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterTableWidgetForm.ui" line="27"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterTableWidgetForm.ui" line="47"/>
         <source>Parameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterTableWidgetForm.ui" line="52"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterTableWidgetForm.ui" line="92"/>
         <source>Add a new item</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona um novo item</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterTableWidgetForm.ui" line="102"/>
         <source>Remove selected item</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove item selecionado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ui/ParameterTableWidgetForm.ui" line="112"/>
         <source>Edit selected item</source>
-        <translation type="unfinished"></translation>
+        <translation>Edita item selecionado</translation>
     </message>
 </context>
 <context>
@@ -3952,214 +3957,214 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="14"/>
         <source>Plugin Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Construtor de Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="33"/>
         <source>Basic Plugin Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações Básicas do Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="36"/>
         <source>These information will be added to your plugin configuration file</source>
-        <translation type="unfinished"></translation>
+        <translation>Estas informações serão adicionadas ao seu arquivo de configuração do plugin.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="50"/>
         <source>Plugin Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="71"/>
         <source>Version</source>
-        <translation type="unfinished"></translation>
+        <translation>Versão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="89"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="119"/>
         <source>Release</source>
-        <translation type="unfinished"></translation>
+        <translation>Release</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="126"/>
         <source>yyyy-MM-dd</source>
-        <translation type="unfinished"></translation>
+        <translation>yyyy-MM-dd</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="141"/>
         <source>Display Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texto de Apresentação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="155"/>
         <source>TerraLib Version</source>
-        <translation type="unfinished"></translation>
+        <translation>Versão TerraLib</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="173"/>
         <source>Plugin Site</source>
-        <translation type="unfinished"></translation>
+        <translation>Local do Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="187"/>
         <source>Description:</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="202"/>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="412"/>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="701"/>
         <source>* All fields on this page are Mandatory.</source>
-        <translation type="unfinished"></translation>
+        <translation>* Todos os campos nesta página são de preenchimento obrigatório.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="212"/>
         <source>Target Programming Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Linguagem de Programação Alvo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="215"/>
         <source>Select a programming language and set specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione uma linguagem de programação e defina os parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="229"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Linguagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="241"/>
         <source>C++</source>
-        <translation type="unfinished"></translation>
+        <translation>C++</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="252"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="269"/>
         <source>Name Space</source>
-        <translation type="unfinished"></translation>
+        <translation>Name Space</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="276"/>
         <source>Macro Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Macro de Exportação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="320"/>
         <source>Plugin&apos;s License &amp; Provider</source>
-        <translation type="unfinished"></translation>
+        <translation>Licença &amp; Desenvolvedor do Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="323"/>
         <source>Choose a license and fill some information about how people can contact plugin&apos;s provider</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha uma licença e preencha algumas informações sobre como as pessoas podem entrar em contato com desenvolvedor do plugin.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="329"/>
         <source>Provider</source>
-        <translation type="unfinished"></translation>
+        <translation>Desenvolvedor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="337"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="351"/>
         <source>Site</source>
-        <translation type="unfinished"></translation>
+        <translation>Site</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="365"/>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>Email</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="382"/>
         <source>License Site</source>
-        <translation type="unfinished"></translation>
+        <translation>Site da Licença</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="396"/>
         <source>License type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de licença</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="433"/>
         <source>Plugin Dependencies</source>
-        <translation type="unfinished"></translation>
+        <translation>Dependências do Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="436"/>
         <source>In order to have your plugin loaded, you must inform if your plugin depends on others</source>
-        <translation type="unfinished"></translation>
+        <translation>Para ter o seu plugin carregado, você deve informar se o seu plugin depende de outros.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="442"/>
         <source>Plugin Category Dependencies</source>
-        <translation type="unfinished"></translation>
+        <translation>Dependências da Categoria de Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="445"/>
         <source>If your plugin must be loaded just afetr a certain cataegory of plugins, please, inform this</source>
-        <translation type="unfinished"></translation>
+        <translation>Se o seu plugin deve ser carregado imediatamente depois de uma determinada categoria de plugins, por favor, informar este</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="451"/>
         <source>Plugin Module Dependencies</source>
-        <translation type="unfinished"></translation>
+        <translation>Dependências do Módulo de Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="454"/>
         <source>We need to know what modules are used by your plugin in order to automatically start them before your plugin gets run</source>
-        <translation type="unfinished"></translation>
+        <translation>Necesssitamos saber que módulos são usados pelo seu plugin a fim de iniciá-los automaticamente antes de seu plugin seja executado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="460"/>
         <source>Plugin Resources</source>
-        <translation type="unfinished"></translation>
+        <translation>Recursos do Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="463"/>
         <source>Please, inform resources that must be bundled with your plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, informe os recursos que devem ser empacotados com o seu plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="469"/>
         <source>Plugin Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros do Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="472"/>
         <source>Some plugins need a default configuration in order to run</source>
-        <translation type="unfinished"></translation>
+        <translation>Alguns plugins precisam de uma configuração padrão para executar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="478"/>
         <source>Plugin Target Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Local de destino do Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="481"/>
         <source>Please, inform where to store the default files for your new plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, informe onde armazenar os arquivos padrão para o seu novo plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="489"/>
         <source>TerraLib</source>
-        <translation type="unfinished"></translation>
+        <translation>TerraLib</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="499"/>
         <source>Include Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Incluir Directório</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="532"/>
@@ -4167,27 +4172,27 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="637"/>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="683"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="545"/>
         <source>Cmake Configure Files Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurar diretório de arquivos do Cmake</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="594"/>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="604"/>
         <source>Source Code Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Localização do Código Fonte</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/ui/PluginBuilderWizardForm.ui" line="650"/>
         <source>Build Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Localização do Build</translation>
     </message>
 </context>
 <context>
@@ -4195,102 +4200,102 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="14"/>
         <source>Plugin Management</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerenciamento de Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="24"/>
         <source>Installed &amp;Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Plugins Instalados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="34"/>
         <source>The following plugins are installed in your system, just check a plugin in order to load it:</source>
-        <translation type="unfinished"></translation>
+        <translation>Os seguintes plugins estão instalados em seu sistema, basta clicar em um plugin para carregá-lo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="58"/>
         <source>Add existing plug-ins.</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar plugins existentes.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="74"/>
         <source>Removes the selected plug-ins.</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover o plugin selecionado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="111"/>
         <source>Enable / disable all plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Habilitar / desabilitar todos os plugins</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="139"/>
         <source>&amp;iPlugins</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;iPlugins</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="147"/>
         <source>You can download and install plugins from the Internet, just check the desired plugins:</source>
-        <translation type="unfinished"></translation>
+        <translation>Você pode fazer o download e instalar plugins a partir da Internet, basta clicar sobre os plugins desejados:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="169"/>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="174"/>
         <source>Version</source>
-        <translation type="unfinished"></translation>
+        <translation>Versão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="179"/>
         <source>License</source>
-        <translation type="unfinished"></translation>
+        <translation>Licença</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="184"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="189"/>
         <source>Site</source>
-        <translation type="unfinished"></translation>
+        <translation>Site</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="194"/>
         <source>Provider</source>
-        <translation type="unfinished"></translation>
+        <translation>Provedor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="199"/>
         <source>Provider site</source>
-        <translation type="unfinished"></translation>
+        <translation>Site do provedor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="204"/>
         <source>Provider e-mail</source>
-        <translation type="unfinished"></translation>
+        <translation>E-mail do Provedor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="209"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="234"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="257"/>
         <source>&amp;Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/ui/PluginManagerDialogForm.ui" line="264"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fechar</translation>
     </message>
 </context>
 <context>
@@ -4298,22 +4303,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/PolygonSymbolizerWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/PolygonSymbolizerWidgetForm.ui" line="27"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/PolygonSymbolizerWidgetForm.ui" line="46"/>
         <source>Fill</source>
-        <translation type="unfinished"></translation>
+        <translation>Preencher</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/PolygonSymbolizerWidgetForm.ui" line="59"/>
         <source>Stroke</source>
-        <translation type="unfinished"></translation>
+        <translation>Stroke</translation>
     </message>
 </context>
 <context>
@@ -4321,52 +4326,52 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="14"/>
         <source>PostGIS2SHP</source>
-        <translation type="unfinished"></translation>
+        <translation>PostGIS2SHP</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="55"/>
         <source>Imagem</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="69"/>
         <source>PostGIS to Shape File</source>
-        <translation type="unfinished"></translation>
+        <translation>PostGIS para Shape File</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="79"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="92"/>
         <source>Input Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="106"/>
         <source>Output File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Arquivo de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="120"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="145"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="165"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/PostGIS2SHPDialogForm.ui" line="172"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -4375,47 +4380,47 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="44"/>
         <source>Property Converter</source>
-        <translation type="unfinished"></translation>
+        <translation>Converter propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="62"/>
         <source>Origin Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Originais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="89"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="94"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="105"/>
         <source>Target Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade Alvo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="124"/>
         <source>Converter</source>
-        <translation type="unfinished"></translation>
+        <translation>Converter</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="149"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="169"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/PropertyConverterDialogForm.ui" line="176"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -4423,321 +4428,321 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="99"/>
         <source>Show hidden column</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar coluna oculta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="112"/>
         <source>Turns column &quot;%1&quot; visible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Faça coluna &quot;%1&quot; visível.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="125"/>
         <source>Show all columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar todas colunas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="61"/>
         <source>Void</source>
-        <translation type="unfinished"></translation>
+        <translation>Vazio</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="65"/>
         <source>Bit</source>
-        <translation type="unfinished"></translation>
+        <translation>Bit</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="69"/>
         <source>Char</source>
-        <translation type="unfinished"></translation>
+        <translation>Caracter</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="73"/>
         <source>Unsigned char</source>
-        <translation type="unfinished"></translation>
+        <translation>Unsigned char</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="29"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="79"/>
         <source>Integer</source>
-        <translation type="unfinished"></translation>
+        <translation>Inteiro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="85"/>
         <source>Unsigned integer</source>
-        <translation type="unfinished"></translation>
+        <translation>Unsigned inteiro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="89"/>
         <source>Boolean</source>
-        <translation type="unfinished"></translation>
+        <translation>Booleano</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="93"/>
         <source>Float</source>
-        <translation type="unfinished"></translation>
+        <translation>Float</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="71"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="97"/>
         <source>Double</source>
-        <translation type="unfinished"></translation>
+        <translation>Double</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="74"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="101"/>
         <source>Numeric</source>
-        <translation type="unfinished"></translation>
+        <translation>Numérico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="75"/>
         <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="33"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="105"/>
         <source>String</source>
-        <translation type="unfinished"></translation>
+        <translation>String</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="109"/>
         <source>Byte array</source>
-        <translation type="unfinished"></translation>
+        <translation>Byte array</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="72"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="113"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="117"/>
         <source>Date time</source>
-        <translation type="unfinished"></translation>
+        <translation>Data hora</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="121"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconhecido</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="31"/>
         <source>Real</source>
-        <translation type="unfinished"></translation>
+        <translation>Real</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="35"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="67"/>
         <source>Enabling</source>
-        <translation type="unfinished"></translation>
+        <translation>Habilitando</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="71"/>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="75"/>
         <source>Version</source>
-        <translation type="unfinished"></translation>
+        <translation>Versão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="79"/>
         <source>License</source>
-        <translation type="unfinished"></translation>
+        <translation>Licença</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="83"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="87"/>
         <source>Site</source>
-        <translation type="unfinished"></translation>
+        <translation>Site</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="91"/>
         <source>Provider</source>
-        <translation type="unfinished"></translation>
+        <translation>Provedor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="95"/>
         <source>Provider site</source>
-        <translation type="unfinished"></translation>
+        <translation>Site do provedor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="99"/>
         <source>Provider email</source>
-        <translation type="unfinished"></translation>
+        <translation>Email do provedor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginsModel.cpp" line="103"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="113"/>
         <source>Unloading &lt;b&gt;%1&lt;/b&gt; will also unload the plugins: &lt;ul&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Descarregando &lt;b&gt;%1&lt;/b&gt; também irá descarregar os plugins:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="122"/>
         <source>&lt;/ul&gt; Did you want to continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/ul&gt; Você deseja continuar ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="136"/>
         <source>In order to be able to load &lt;b&gt;%1&lt;/b&gt; plugin, the following plugins must also be enabled: &lt;ul&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Para carregar o plugin &lt;b&gt;% 1&lt;/b&gt; , os seguintes plugins também deve ser habilitados: &lt;ul&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="145"/>
         <source>&lt;/ul&gt; Allow them to be anabled?</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/ul&gt; Permitir que sejam habilitados ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="163"/>
         <source>Remove plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover plugins</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="183"/>
         <source>Unload plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Descarregar plugins</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="215"/>
         <source>Enable plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar plugins</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="227"/>
         <source>Fail to load plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha ao carregar plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/help/AssistantHelpManagerImpl.cpp" line="97"/>
         <source>Help failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda falhou</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/help/AssistantHelpManagerImpl.cpp" line="97"/>
         <source>Could not find help files</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível encontrar os arquivos de ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/help/AssistantHelpManagerImpl.cpp" line="122"/>
         <source>Simple Text Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Simples visualizador de texto</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/help/AssistantHelpManagerImpl.cpp" line="122"/>
         <source>Unable to launch Qt Assistant (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível iniciar Qt Assistant (%1)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="68"/>
         <source>Array</source>
-        <translation type="unfinished"></translation>
+        <translation>Array</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="69"/>
         <source>Byte Array</source>
-        <translation type="unfinished"></translation>
+        <translation>Byte Array</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="70"/>
         <source>Date and Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Data e Hora</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="73"/>
         <source>Int 32</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ColorBar.cpp" line="61"/>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ColorBar.cpp" line="62"/>
         <source>Equal Step</source>
-        <translation type="unfinished"></translation>
+        <translation>Passo Igual</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ColorBar.cpp" line="71"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ColorBar.cpp" line="73"/>
         <location filename="../../../src/terralib/qt/widgets/colorbar/ColorBar.cpp" line="74"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="40"/>
         <source>Pie Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>Gráfico de Pizza</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="44"/>
         <source>Bar Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>Gráfico de Barra</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="48"/>
         <source>Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>Gráfico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartSliceItem.cpp" line="39"/>
         <source>Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="117"/>
         <source>Categorization</source>
-        <translation type="unfinished"></translation>
+        <translation>Categorização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="119"/>
         <source>Interpolation</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpolação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="121"/>
         <source>Recode</source>
-        <translation type="unfinished"></translation>
+        <translation>Recode</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="123"/>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/GroupingItem.cpp" line="49"/>
         <source>Classification by</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificação por</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="22"/>
         <source>DataSet</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="38"/>
         <source>Connection Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações de Conecção</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="55"/>
         <source>SRID: </source>
-        <translation type="unfinished"></translation>
+        <translation>SRID: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="67"/>
         <source>Invalid Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada Inválida</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/LegendItem.cpp" line="118"/>
         <source>Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo</translation>
     </message>
 </context>
 <context>
@@ -4745,27 +4750,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="26"/>
         <source>Wizard</source>
-        <translation type="unfinished"></translation>
+        <translation>Assistente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="36"/>
         <source>Query Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Editor de Consultas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="39"/>
         <source>Creates a query</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar uma consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="47"/>
         <source>Data Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="61"/>
         <source>SQL Dialect</source>
-        <translation type="unfinished"></translation>
+        <translation>Linguagem SQL</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="73"/>
@@ -4775,77 +4780,82 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;SQL query dialect accepted &lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;Linguagem de consulta SQL aceita. &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="93"/>
         <source>Data Sets (FROM)</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados (DE)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="96"/>
         <source>Select data sets</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar conjunto de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="104"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="209"/>
         <source>Data Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="116"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="126"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="214"/>
         <source>Alias</source>
-        <translation type="unfinished"></translation>
+        <translation>Apelido</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="228"/>
         <source>Properties (FIELDS)</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades (CAMPOS)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="231"/>
         <source>Select attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar atributos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="237"/>
         <source>Where Clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Cláusula Where</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="240"/>
         <source>Defines a restriction clause.</source>
-        <translation type="unfinished"></translation>
+        <translation>Defina uma cláusula de restrição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="248"/>
         <source>Criteria</source>
-        <translation type="unfinished"></translation>
+        <translation>Critério</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="272"/>
         <source>Restrict Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Restrito</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="308"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="524"/>
         <source>Operator</source>
-        <translation type="unfinished"></translation>
+        <translation>Operador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="337"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="358"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="529"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="351"/>
@@ -4853,40 +4863,40 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="580"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="686"/>
         <source>Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="427"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="534"/>
         <source>Connector</source>
-        <translation type="unfinished"></translation>
+        <translation>Conector</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="548"/>
         <source>Group by</source>
-        <translation type="unfinished"></translation>
+        <translation>Group by</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="551"/>
         <source>Creates a grouping.</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar um agrupamento</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="557"/>
         <source>Order By</source>
-        <translation type="unfinished"></translation>
+        <translation>Order By</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="560"/>
         <source>Ordering the query result.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenando o resultado da consulta.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="568"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="590"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryBuilderWizardForm.ui" line="691"/>
         <source>Order</source>
-        <translation type="unfinished"></translation>
+        <translation>Order</translation>
     </message>
 </context>
 <context>
@@ -4894,27 +4904,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="14"/>
         <source>Query Datasource</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="38"/>
         <source>Datasource / Dataset</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de dados / Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="54"/>
         <source>Datasource:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="84"/>
         <source>Base Dataset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Base de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="117"/>
         <source>SQL Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Editor SQL</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="137"/>
@@ -4923,7 +4933,11 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="157"/>
@@ -4934,119 +4948,119 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="526"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="622"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="198"/>
         <source>Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="211"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="557"/>
         <source>Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="221"/>
         <source>LOG</source>
-        <translation type="unfinished"></translation>
+        <translation>LOG</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="235"/>
         <source>DataSet</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="249"/>
         <source>DataSets</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjuntos de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="276"/>
         <source>Attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="296"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="313"/>
         <source>Layer Selection (Relative to Base Dataset)</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção de Camada (Relativa a Base de Dados)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="346"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="497"/>
         <source>Layer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Camada:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="368"/>
         <source>Selection:</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="398"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="414"/>
         <source>New</source>
-        <translation type="unfinished"></translation>
+        <translation>Novo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="444"/>
         <source>Layer Selection...</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção de Camada...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="465"/>
         <source>New Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Nova Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="480"/>
         <source>Primary Key:</source>
-        <translation type="unfinished"></translation>
+        <translation>Chave Primária:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="487"/>
         <source>Repository:</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositório:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="539"/>
         <source>BD</source>
-        <translation type="unfinished"></translation>
+        <translation>BD</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="577"/>
         <source>Attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="619"/>
         <source>Create new layer...</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar nova camada...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="651"/>
         <source>Preview (Relative to Base Dataset)</source>
-        <translation type="unfinished"></translation>
+        <translation>Pre-visualização (Relativa a Base de Dados)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="695"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="718"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
 </context>
 <context>
@@ -5054,52 +5068,52 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="14"/>
         <source>Query</source>
-        <translation type="unfinished"></translation>
+        <translation>Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="22"/>
         <source>Input Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="44"/>
         <source>Layer Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção de Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="67"/>
         <source>Highlight:</source>
-        <translation type="unfinished"></translation>
+        <translation>Highlight:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="94"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="101"/>
         <source>New</source>
-        <translation type="unfinished"></translation>
+        <translation>Nova</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="111"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="135"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="155"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDialogForm.ui" line="162"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar</translation>
     </message>
 </context>
 <context>
@@ -5107,17 +5121,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerDialogForm.ui" line="14"/>
         <source>ROI Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerenciar ROI</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerDialogForm.ui" line="43"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerDialogForm.ui" line="63"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar</translation>
     </message>
 </context>
 <context>
@@ -5125,17 +5139,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="14"/>
         <source>ROI Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerenciador de ROI</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="28"/>
         <source>Load ROI Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar dados ROI</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="39"/>
         <source>Open ROI Set from a Data Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir Dados ROI de um Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="42"/>
@@ -5145,57 +5159,57 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="207"/>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="236"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="70"/>
         <source>Add ROI Class Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona Item a Classe ROI</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="78"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Rótulo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="101"/>
         <source>Add ROI</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona ROI</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="122"/>
         <source>ROI Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto ROI</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="128"/>
         <source>Remove entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="155"/>
         <source>ROI</source>
-        <translation type="unfinished"></translation>
+        <translation>ROI</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="163"/>
         <source>To make the acquisition of samples, first select an ROI class and then use the tool to draw polygons on the image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Para fazer a aquisição de amostras, primeiro selecione uma classe ROI e em seguida utilizar a ferramenta para desenhar polígonos na imagem.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="182"/>
         <source>Export ROI Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar Conjunto ROI</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="204"/>
         <source>Save ROI Set to File</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar conjunto ROI para Arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ui/ROIManagerWidgetForm.ui" line="225"/>
         <source>Draw Vectorial Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Desenhar Camada Vetorial</translation>
     </message>
 </context>
 <context>
@@ -5203,22 +5217,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramDialogForm.ui" line="14"/>
         <source>Histogram</source>
-        <translation type="unfinished"></translation>
+        <translation>Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramDialogForm.ui" line="41"/>
         <source>Allows viewing a raster histogram...</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite visualizar um histograma de um matricial (raster)...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramDialogForm.ui" line="72"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramDialogForm.ui" line="79"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
 </context>
 <context>
@@ -5227,12 +5241,12 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/HistogramWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="45"/>
         <source>Band:</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/HistogramWidgetForm.ui" line="41"/>
@@ -5241,7 +5255,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/HistogramWidgetForm.ui" line="122"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="78"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
 </context>
 <context>
@@ -5249,22 +5263,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoDialogForm.ui" line="14"/>
         <source>Raster Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações do Matricial (Raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoDialogForm.ui" line="43"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoDialogForm.ui" line="63"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoDialogForm.ui" line="70"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -5273,53 +5287,53 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="32"/>
         <source>Raster Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações do Matricial (Raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="42"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="69"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="88"/>
         <source>Select a folder to save the raster file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleciona uma pasta para salvar o arquivo matricial (raster).</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="91"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="150"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="101"/>
         <source>Defines the raster file extension.</source>
-        <translation type="unfinished"></translation>
+        <translation>Define a extensão do arquivo matricial.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="119"/>
         <source>Memory</source>
-        <translation type="unfinished"></translation>
+        <translation>Memória</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="135"/>
         <source>Data Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="147"/>
         <source>Select a data source to save the raster.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione uma fonte de dados para salvar o dado matricial.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterInfoWidgetForm.ui" line="175"/>
         <source>Overwrite</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobrescrever</translation>
     </message>
 </context>
 <context>
@@ -5327,12 +5341,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="14"/>
         <source>Raster Navigator</source>
-        <translation type="unfinished"></translation>
+        <translation>Navegador Matricial (Raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="70"/>
         <source>Show Auxiliary Displays</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra Telas Auxiliares</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="73"/>
@@ -5342,57 +5356,57 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="326"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="339"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="89"/>
         <source>Zoom Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoom Menos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="108"/>
         <source>Pan</source>
-        <translation type="unfinished"></translation>
+        <translation>Mover</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="134"/>
         <source>Point Picker</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto Picker</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="153"/>
         <source>Read Pixel</source>
-        <translation type="unfinished"></translation>
+        <translation>Ler Pixel</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="172"/>
         <source>Draw Polygon</source>
-        <translation type="unfinished"></translation>
+        <translation>Desenha Polígono</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="191"/>
         <source>Recompose</source>
-        <translation type="unfinished"></translation>
+        <translation>Recompor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="204"/>
         <source>Zoom In</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoom Mais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="223"/>
         <source>Extent Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Estender a Seleção</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="249"/>
         <source>Apply to preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar para pré-visualização.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="252"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Pré-visualização.</translation>
     </message>
 </context>
 <context>
@@ -5400,47 +5414,47 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="38"/>
         <source>Raster Symbolizer</source>
-        <translation type="unfinished"></translation>
+        <translation>Raster Symbolizer</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="154"/>
         <source>Overlap Behavior</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobreposição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="189"/>
         <source>Shaded Relief</source>
-        <translation type="unfinished"></translation>
+        <translation>Relevo Sombreado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="205"/>
         <source>Visual</source>
-        <translation type="unfinished"></translation>
+        <translation>Visual</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="224"/>
         <source>Image Outline</source>
-        <translation type="unfinished"></translation>
+        <translation>Contorno da Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="240"/>
         <source>Color Map</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor do Mapa</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="313"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="333"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerDialogForm.ui" line="340"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -5448,62 +5462,62 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="14"/>
         <source>Raster Symbolizer</source>
-        <translation type="unfinished"></translation>
+        <translation>Raster Symbolizer</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="59"/>
         <source>Enhancement</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="181"/>
         <source>Gain:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ganho:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="301"/>
         <source>Offset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Offset:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="318"/>
         <source>Channel Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção de Canal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="327"/>
         <source>Mono</source>
-        <translation type="unfinished"></translation>
+        <translation>Monocromático</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="493"/>
         <source>Red Channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal Vermelho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="500"/>
         <source>Green Channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal Verde</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="507"/>
         <source>Blue Channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal Azul</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="514"/>
         <source>Composition</source>
-        <translation type="unfinished"></translation>
+        <translation>Composição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="524"/>
         <source>Contrast Enhancement</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce de Contraste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/RasterSymbolizerWidgetForm.ui" line="747"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
 </context>
 <context>
@@ -5511,142 +5525,142 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="14"/>
         <source>Rasterization</source>
-        <translation type="unfinished"></translation>
+        <translation>Rasterização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="36"/>
         <source>Layer:</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="48"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="58"/>
         <source>Attribute:</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="68"/>
         <source>Precision:</source>
-        <translation type="unfinished"></translation>
+        <translation>Precisão:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="142"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="172"/>
         <source>Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="183"/>
         <source>Resolution:</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="197"/>
         <source>Res X:</source>
-        <translation type="unfinished"></translation>
+        <translation>Res X:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="207"/>
         <source>Cols:</source>
-        <translation type="unfinished"></translation>
+        <translation>Cols:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="235"/>
         <source>Res Y:</source>
-        <translation type="unfinished"></translation>
+        <translation>Res Y:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="245"/>
         <source>Rowss:</source>
-        <translation type="unfinished"></translation>
+        <translation>Lins</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="295"/>
         <source>SRS:</source>
-        <translation type="unfinished"></translation>
+        <translation>SRS:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="342"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="350"/>
         <source>Repository:</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositório:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="372"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="381"/>
         <source>Layer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Camada:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="411"/>
         <source>Legend</source>
-        <translation type="unfinished"></translation>
+        <translation>Legenda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="424"/>
         <source>Class Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Classe</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="429"/>
         <source>R</source>
-        <translation type="unfinished"></translation>
+        <translation>R</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="434"/>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="439"/>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="444"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="449"/>
         <source>Select</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="459"/>
         <source>Save...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="466"/>
         <source>Load...</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="486"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar todos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterizationWizardPageForm.ui" line="493"/>
         <source>Unselect All</source>
-        <translation type="unfinished"></translation>
+        <translation>Desmarcar todos</translation>
     </message>
 </context>
 <context>
@@ -5654,17 +5668,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RenameColumnDialogForm.ui" line="14"/>
         <source>Rename column</source>
-        <translation type="unfinished"></translation>
+        <translation>Renomear coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RenameColumnDialogForm.ui" line="24"/>
         <source>Old name: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nome antigo: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RenameColumnDialogForm.ui" line="55"/>
         <source>New name: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nome novo: </translation>
     </message>
 </context>
 <context>
@@ -5672,129 +5686,129 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="14"/>
         <source>Change column data type</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar o tipo de dados da coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="22"/>
         <source>Previous type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo anterior</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="32"/>
         <source>Table name: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Tabela: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="50"/>
         <source>Column name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da coluna:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="68"/>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="123"/>
         <source>Type: </source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="88"/>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="160"/>
         <source>Size: </source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="115"/>
         <source>New type</source>
-        <translation type="unfinished"></translation>
+        <translation>Novo tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="137"/>
         <source>INT</source>
-        <translation type="unfinished"></translation>
+        <translation>INT</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="142"/>
         <source>REAL</source>
-        <translation type="unfinished"></translation>
+        <translation>REAL</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="147"/>
         <source>STRING</source>
-        <translation type="unfinished"></translation>
+        <translation>STRING</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="152"/>
         <source>DATETIME</source>
-        <translation type="unfinished"></translation>
+        <translation>DATA TEMPO</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="177"/>
         <source>1</source>
-        <translation type="unfinished"></translation>
+        <translation>1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="182"/>
         <source>5</source>
-        <translation type="unfinished"></translation>
+        <translation>5</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="187"/>
         <source>10</source>
-        <translation type="unfinished"></translation>
+        <translation>10</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="192"/>
         <source>15</source>
-        <translation type="unfinished"></translation>
+        <translation>15</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="197"/>
         <source>20</source>
-        <translation type="unfinished"></translation>
+        <translation>20</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="202"/>
         <source>25</source>
-        <translation type="unfinished"></translation>
+        <translation>25</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="207"/>
         <source>30</source>
-        <translation type="unfinished"></translation>
+        <translation>30</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="212"/>
         <source>50</source>
-        <translation type="unfinished"></translation>
+        <translation>50</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="217"/>
         <source>100</source>
-        <translation type="unfinished"></translation>
+        <translation>100</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="222"/>
         <source>150</source>
-        <translation type="unfinished"></translation>
+        <translation>150</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="227"/>
         <source>200</source>
-        <translation type="unfinished"></translation>
+        <translation>200</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="232"/>
         <source>255</source>
-        <translation type="unfinished"></translation>
+        <translation>255</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="277"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/ui/RetypeColumnDialogForm.ui" line="284"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancela</translation>
     </message>
 </context>
 <context>
@@ -5802,52 +5816,52 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="14"/>
         <source>SHP2ADO</source>
-        <translation type="unfinished"></translation>
+        <translation>SHP2ADO</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="55"/>
         <source>Imagem</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="69"/>
         <source>Shape File to ADO</source>
-        <translation type="unfinished"></translation>
+        <translation>Shape File para ADO</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="79"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="92"/>
         <source>Input Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="106"/>
         <source>Output Data Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="120"/>
         <source>Data Set Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="148"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="168"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2ADODialogForm.ui" line="175"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -5855,57 +5869,57 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="14"/>
         <source>SHP2PostGIS</source>
-        <translation type="unfinished"></translation>
+        <translation>SHP2PostGIS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="55"/>
         <source>Imagem</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="69"/>
         <source>Shape File to PostGIS</source>
-        <translation type="unfinished"></translation>
+        <translation>Shape File para PostGIS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="79"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="92"/>
         <source>Input Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="106"/>
         <source>Output Data Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="120"/>
         <source>Data Set Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="132"/>
         <source>Create Spatial Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar Índice Espacial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="158"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="178"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/ui/SHP2PostGISDialogForm.ui" line="185"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -5913,80 +5927,80 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="17"/>
         <source>Spatial Reference Systems for Coordinates Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Sistema de Referência Espacial para Gerenciar Coordenadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="42"/>
         <source>Select a Spatial Reference System (SRS)</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um Sistema de Referência Espacial (SRS)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="52"/>
         <source>SRSs recently used</source>
-        <translation type="unfinished"></translation>
+        <translation>SRS s recentemente utilizado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="90"/>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="166"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="95"/>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="171"/>
         <source>ID</source>
-        <translation type="unfinished"></translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="100"/>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="176"/>
         <source>Authority</source>
-        <translation type="unfinished"></translation>
+        <translation>Autoridade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="111"/>
         <source>SRSs available</source>
-        <translation type="unfinished"></translation>
+        <translation>SRSs disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="121"/>
         <source>Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="189"/>
         <source>Add a new SRS definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona um novo SRS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="202"/>
         <source>Remove a SRS definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove um SRS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="215"/>
         <source>Edit a SRS definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Edita um SRS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="245"/>
         <source>Proj4 description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição Proj4</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="279"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="299"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSManagerDialogForm.ui" line="306"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -5994,32 +6008,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDataWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDataWidgetForm.ui" line="31"/>
         <source>Property X:</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade X:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDataWidgetForm.ui" line="66"/>
         <source>Property Y:</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade Y:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDataWidgetForm.ui" line="95"/>
         <source>Summary Function:</source>
-        <translation type="unfinished"></translation>
+        <translation>Função Resumo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDataWidgetForm.ui" line="111"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, every row and column of the given raster will be read, otherwise, 10% of the points will be randomly read instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Se marcado, cada linha e coluna do dado matricial (raster) será lido, caso contrário, 10% dos pontos serão lidos aleatoriamente.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDataWidgetForm.ui" line="114"/>
         <source>Read all data</source>
-        <translation type="unfinished"></translation>
+        <translation>Ler todos os dados</translation>
     </message>
 </context>
 <context>
@@ -6027,12 +6041,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterFrameWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterFrameWidgetForm.ui" line="27"/>
         <source>Scatter Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo do Gráfico de Dispersão (Scatter)</translation>
     </message>
 </context>
 <context>
@@ -6040,17 +6054,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterStyleWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterStyleWidgetForm.ui" line="28"/>
         <source>Symbol:</source>
-        <translation type="unfinished"></translation>
+        <translation>Símbolo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterStyleWidgetForm.ui" line="44"/>
         <source>Style...</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo...</translation>
     </message>
 </context>
 <context>
@@ -6058,83 +6072,83 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="14"/>
         <source>Segmenter Advanced Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções Avançadas de Segmentação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="29"/>
         <source>Advanced Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções Avançadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="37"/>
         <source>Block Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções do Bloco</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="48"/>
         <source>The original raster will be splitted into small blocks, each one will be segmented independently and the result will be merged at the end</source>
-        <translation type="unfinished"></translation>
+        <translation>O matricial (raster) original será dividido em pequenos blocos e cada um será segmentado de forma independente, de modo que o resultado será fundida no final</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="51"/>
         <source>Enable block processing</source>
-        <translation type="unfinished"></translation>
+        <translation>Habilitar o processamento de bloco</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="73"/>
         <source>Maximum block size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho máximo de bloco</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="89"/>
         <source>The input image will be split into blocks with this width for processing, This parameter tells the maximum block lateral size (width or height), the default: 0 - the size will be defined following the current system resources and physical processors number)</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem de entrada será dividida em blocos com essa largura para processamento. Este parâmetro informa o tamanho do bloco máximo lateral (largura ou altura). Para padrão : 0 - o tamanho do bloco será definido de acordo com os recursos do sistema atual e número de processadores físicos)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="92"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="222"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="112"/>
         <source>Blocks Overlap Percent:</source>
-        <translation type="unfinished"></translation>
+        <translation>Percentagem de sobreposição dos blocos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="154"/>
         <source>The default value &quot;0&quot; for &quot;Blocks Overlap Percent&quot; indicates that no merge will be done.</source>
-        <translation type="unfinished"></translation>
+        <translation>O valor padrão &quot;0&quot; para &quot;Percentagem de sobreposição dos blocos&quot; indica que nenhuma fusão será feita.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="169"/>
         <source>Thread Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções de &quot;Thread&quot;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="180"/>
         <source>Threaded processing will be performed (best with multi-core or multi-processor systems</source>
-        <translation type="unfinished"></translation>
+        <translation>Processamento Threaded será realizado (melhor com os sistemas multi-core ou multi-processadores</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="183"/>
         <source>Enable threaded processing</source>
-        <translation type="unfinished"></translation>
+        <translation>Permitir o processamento &quot;thread&quot;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="203"/>
         <source>Maximum threads number:</source>
-        <translation type="unfinished"></translation>
+        <translation>Número máximo de &quot;treads&quot;:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="219"/>
         <source>The maximum number of concurrent segmenter threads (default:0 - automatically found)</source>
-        <translation type="unfinished"></translation>
+        <translation>O número máximo de threads do segmentador concorrente (padrão: 0 - encontrado automaticamente)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterAdvancedOptionsWizardPageForm.ui" line="249"/>
         <source>The default value &quot;0&quot; indicates that the application will calculate the best value based on your system.</source>
-        <translation type="unfinished"></translation>
+        <translation>O valor padrão &quot;0&quot; indica que o aplicativo irá calcular o melhor valor com base no seu sistema.</translation>
     </message>
 </context>
 <context>
@@ -6142,148 +6156,148 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="26"/>
         <source>Raster segmenter</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação Matricial (Raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="51"/>
         <source>Region growing options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções de Crecsimento de Regiões</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="66"/>
         <source>Minimum segment size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho mínimo de segmentos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="82"/>
         <source>A positive minimum segment size (pixels number)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho mínimo de segmento (número de pixels).</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="85"/>
         <source>100</source>
-        <translation type="unfinished"></translation>
+        <translation>100</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="104"/>
         <source>Segments similarity treshold </source>
-        <translation type="unfinished"></translation>
+        <translation>Limiar de similaridade dos segmentos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="120"/>
         <source>Use lower values to merge only those segments that are more similar. Higher values will allow more segments to be merged</source>
-        <translation type="unfinished"></translation>
+        <translation>Use valores baixos para mesclar apenas os segmentos que são mais similares. Valores elevados permitirá mais segmentos a serem incorporados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="123"/>
         <source>0.1</source>
-        <translation type="unfinished"></translation>
+        <translation>0.1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="132"/>
         <source>General options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções gerais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="147"/>
         <source>The original raster will be splitted into small blocks, each one will be segmented independently and the result will be merged at the end</source>
-        <translation type="unfinished"></translation>
+        <translation>O matricial original será dividido em pequenos blocos, de modo que cada um será segmentado de forma independente e o resultado será fundida na final</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="150"/>
         <source>Enable block processing</source>
-        <translation type="unfinished"></translation>
+        <translation>Habilitar o processamento em bloco</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="160"/>
         <source>Threaded processing will be performed (best with multi-core or multi-processor systems</source>
-        <translation type="unfinished"></translation>
+        <translation>Processamento Threaded será realizado (melhor com os sistemas multi-core ou multi-processadores</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="163"/>
         <source>Enable threaded processing</source>
-        <translation type="unfinished"></translation>
+        <translation>Permitir o processamento &quot;thread&quot;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="173"/>
         <source>If true, a block merging procedure will be performed</source>
-        <translation type="unfinished"></translation>
+        <translation>Se verdade, um procedimento de fusão de blocos será realizado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="176"/>
         <source>Enable block merging</source>
-        <translation type="unfinished"></translation>
+        <translation>Habilitar o processamento de bloco</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="188"/>
         <source>Maximum block size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho máximo de blocos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="204"/>
         <source>The input image will be split into blocks with this width for processing, This parameter tells the maximum block lateral size (width or height), the default: 0 - the size will be defined following the current system resources and physical processors number)</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem de entrada será dividida em blocos com essa largura para processamento. Este parâmetro informa o tamanho do bloco máximo lateral (largura ou altura). Para padrão : 0 - o tamanho do bloco será definido de acordo com os recursos do sistema atual e número de processadores físicos)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="207"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="237"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="218"/>
         <source>Maximum threads number</source>
-        <translation type="unfinished"></translation>
+        <translation>Número máximo de &quot;threads&quot;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="234"/>
         <source>The maximum number of concurrent segmenter threads (default:0 - automatically found)</source>
-        <translation type="unfinished"></translation>
+        <translation>O número máximo de threads do segmentador concorrente (padrão: 0 - encontrado automaticamente)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="257"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="270"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="283"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="317"/>
         <source>Input raster bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas matriciais de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="339"/>
         <source>Bands to be processed from the input raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas a serem processadas a partir do matricial (raster) de entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="367"/>
         <source>Sergmenter strategy</source>
-        <translation type="unfinished"></translation>
+        <translation>Estratégia de segmentação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="383"/>
         <source>The segmenter strategy name (see specif parameters below)</source>
-        <translation type="unfinished"></translation>
+        <translation>O nome da imagem segmentada (ver parâmetros específicos abaixo)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="387"/>
         <source>RegionGrowingMean</source>
-        <translation type="unfinished"></translation>
+        <translation>RegionGrowingMean</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterForm.ui" line="392"/>
         <source>RegionGrowingBaatz</source>
-        <translation type="unfinished"></translation>
+        <translation>RegionGrowingBaatz</translation>
     </message>
 </context>
 <context>
@@ -6291,91 +6305,91 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="14"/>
         <source>Segmenter</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="24"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="82"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="245"/>
         <source>Minimum segment size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho mínimo de segmentos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="98"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="255"/>
         <source>Similarity Threshold:</source>
-        <translation type="unfinished"></translation>
+        <translation>Limiar de Similaridade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="130"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="281"/>
         <source>A positive minimum segment size (pixels number)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho mínimo de segmento (número de pixels).</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="133"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="284"/>
         <source>50</source>
-        <translation type="unfinished"></translation>
+        <translation>50</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="199"/>
         <source>Local Mutual Best Fitting</source>
-        <translation type="unfinished"></translation>
+        <translation>Local Mutual Best Fitting</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="206"/>
         <source>Same Iteration Merges</source>
-        <translation type="unfinished"></translation>
+        <translation>Same Iteration Merges</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="61"/>
         <source>Region Growing Mean</source>
-        <translation type="unfinished"></translation>
+        <translation>Region Growing Mean</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="230"/>
         <source>Region Growing Baatz</source>
-        <translation type="unfinished"></translation>
+        <translation>Region Growing Baatz</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="321"/>
         <source>Color Weight:</source>
-        <translation type="unfinished"></translation>
+        <translation>Color Weight:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="331"/>
         <source>Compactness Weight:</source>
-        <translation type="unfinished"></translation>
+        <translation>Peso compacidade:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="384"/>
         <source>Common Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros Comuns</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="395"/>
         <source>Set No Data Value:</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir Valor Nulo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="419"/>
         <source>Input Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandas de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="453"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/SegmenterWizardPageForm.ui" line="466"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Previsualização</translation>
     </message>
 </context>
 <context>
@@ -6383,17 +6397,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SelectedChannelWidgetForm.ui" line="14"/>
         <source>Selected Channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal Selecionado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SelectedChannelWidgetForm.ui" line="26"/>
         <source>Channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SelectedChannelWidgetForm.ui" line="39"/>
         <source>Identifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Identificador</translation>
     </message>
 </context>
 <context>
@@ -6402,17 +6416,17 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/se/ui/ShadedReliefWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ShadedReliefWidgetForm.ui" line="26"/>
         <source>Shaded Relief</source>
-        <translation type="unfinished"></translation>
+        <translation>Relevo Sombreado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ShadedReliefWidgetForm.ui" line="34"/>
         <source>Brightness Only</source>
-        <translation type="unfinished"></translation>
+        <translation>Apenas Brilho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/ShadedReliefWidgetForm.ui" line="43"/>
         <source>Relief Factor</source>
-        <translation type="unfinished"></translation>
+        <translation>Fator de Relevo</translation>
     </message>
 </context>
 <context>
@@ -6420,147 +6434,147 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="23"/>
         <source>Date &amp; Time options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções de Data &amp; Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="67"/>
         <source>Direction</source>
-        <translation type="unfinished"></translation>
+        <translation>Direção</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="79"/>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="580"/>
         <source>Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Para frente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="89"/>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="623"/>
         <source>Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Para trás</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="111"/>
         <source>Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="123"/>
         <source>Loop</source>
-        <translation type="unfinished"></translation>
+        <translation>Loop</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="133"/>
         <source>Go and back</source>
-        <translation type="unfinished"></translation>
+        <translation>Vai e volta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="158"/>
         <source>Animation Interval</source>
-        <translation type="unfinished"></translation>
+        <translation>Intervalo de Animação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="166"/>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="409"/>
         <source>Initial:</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicial:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="188"/>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="228"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Redefinir</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="203"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="212"/>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="436"/>
         <source>Final:</source>
-        <translation type="unfinished"></translation>
+        <translation>Final:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="248"/>
         <source>Animation</source>
-        <translation type="unfinished"></translation>
+        <translation>Animação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="264"/>
         <source>Item:</source>
-        <translation type="unfinished"></translation>
+        <translation>Item:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="280"/>
         <source>Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="330"/>
         <source>To Front</source>
-        <translation type="unfinished"></translation>
+        <translation>Para frente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="349"/>
         <source>To Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Para trás</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="379"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="398"/>
         <source>Remove All</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover todos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="482"/>
         <source>Trajectory</source>
-        <translation type="unfinished"></translation>
+        <translation>Trajetória</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="490"/>
         <source>Draw Trail</source>
-        <translation type="unfinished"></translation>
+        <translation>Desenhar Trilha</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="510"/>
         <source>Auto Pan</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto Pan</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="558"/>
         <source>Color:</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="655"/>
         <source>Icon:</source>
-        <translation type="unfinished"></translation>
+        <translation>Íncone:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="692"/>
         <source>Width:</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="706"/>
         <source>height:</source>
-        <translation type="unfinished"></translation>
+        <translation>Altura:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="718"/>
         <source>Icon Rotate</source>
-        <translation type="unfinished"></translation>
+        <translation>Girar Ícone</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="779"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
 </context>
 <context>
@@ -6568,22 +6582,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/StringPropertyWidgetForm.ui" line="14"/>
         <source>String Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade da Cadeia de Caracteres (String)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/StringPropertyWidgetForm.ui" line="27"/>
         <source>String Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de Cadeia de Caracteres</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/StringPropertyWidgetForm.ui" line="41"/>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ui/StringPropertyWidgetForm.ui" line="48"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
 </context>
 <context>
@@ -6591,13 +6605,13 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>De</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="43"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="76"/>
         <source>Change the current symbol position</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar a posição atual do símbolo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="46"/>
@@ -6607,32 +6621,32 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="146"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="162"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="63"/>
         <source>Update the MapDisplay</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizar o MapDisplay</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="89"/>
         <source>Add a new symbol to the selected rule</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar um novo símbolo para a regra selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="102"/>
         <source>Change the preview size</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar o tamanho da pré-visualização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="143"/>
         <source>Remove the selected symbol</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover o símbolo selecionado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/StyleControllerWidgetForm.ui" line="159"/>
         <source>Open the library manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir o gerenciador de biblioteca</translation>
     </message>
 </context>
 <context>
@@ -6640,22 +6654,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolEditorWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolEditorWidgetForm.ui" line="27"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolEditorWidgetForm.ui" line="34"/>
         <source>Layers</source>
-        <translation type="unfinished"></translation>
+        <translation>Camadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolEditorWidgetForm.ui" line="91"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades</translation>
     </message>
 </context>
 <context>
@@ -6663,42 +6677,42 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolInfoDialogForm.ui" line="14"/>
         <source>Symbol Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações do Símbolo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolInfoDialogForm.ui" line="24"/>
         <source>Identifier:</source>
-        <translation type="unfinished"></translation>
+        <translation>Identificador:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolInfoDialogForm.ui" line="38"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolInfoDialogForm.ui" line="48"/>
         <source>Author:</source>
-        <translation type="unfinished"></translation>
+        <translation>Autor:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolInfoDialogForm.ui" line="58"/>
         <source>Tags:</source>
-        <translation type="unfinished"></translation>
+        <translation>Marcações:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolInfoDialogForm.ui" line="72"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolInfoDialogForm.ui" line="109"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolInfoDialogForm.ui" line="116"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -6706,62 +6720,62 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="20"/>
         <source>Symbol Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Seletor de Símbolo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="30"/>
         <source>Search:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pesquisa:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="65"/>
         <source>Author</source>
-        <translation type="unfinished"></translation>
+        <translation>Autor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="70"/>
         <source>Tags</source>
-        <translation type="unfinished"></translation>
+        <translation>Marcações</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="75"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="85"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Previsualização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="92"/>
         <source>Information...</source>
-        <translation type="unfinished"></translation>
+        <translation>Informação...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="102"/>
         <source>Edit Symbol...</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Símbolo...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="112"/>
         <source>Load Library...</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar Biblioteca...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="147"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="167"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/SymbolSelectorDialogForm.ui" line="174"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -6769,69 +6783,69 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="17"/>
         <source>Table Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Conexão de Tabela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="28"/>
         <source>DataSet 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados 1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="36"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="92"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="46"/>
         <source>Linked column:</source>
-        <translation type="unfinished"></translation>
+        <translation>Coluna de ligação:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="82"/>
         <source>DataSet 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados 2</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="102"/>
         <source>Alias</source>
-        <translation type="unfinished"></translation>
+        <translation>Apelido</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="112"/>
         <source>Linked Column:</source>
-        <translation type="unfinished"></translation>
+        <translation>Coluna de ligação:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="153"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="181"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="168"/>
         <source>Output Layer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Camada de Saída:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="202"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="222"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="229"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/ui/TableLinkDialogForm.ui" line="240"/>
         <source>DataSet 2 - Data Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados 2 - Previsualização</translation>
     </message>
 </context>
 <context>
@@ -6839,152 +6853,152 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="488"/>
         <source>Hide column</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocultar coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="489"/>
         <source>Hides the selected column.</source>
-        <translation type="unfinished"></translation>
+        <translation>Oculta a coluna selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="504"/>
         <source>Reset columns order</source>
-        <translation type="unfinished"></translation>
+        <translation>Reorganizar colunas.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="505"/>
         <source>Put all columns in the original order.</source>
-        <translation type="unfinished"></translation>
+        <translation>Coloque todas as colunas na ordem original.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="511"/>
         <source>Sort data ASC</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar Ascendente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="512"/>
         <source>Sort data in ascendent order using selected columns.</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificar dados em ordem crescente usando colunas selecionadas.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="516"/>
         <source>Sort data DESC</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar descendente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="517"/>
         <source>Sort data in descendent order using selected columns.</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificar dados em ordem descendente usando colunas selecionadas.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="523"/>
         <source>Histogram</source>
-        <translation type="unfinished"></translation>
+        <translation>Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="524"/>
         <source>Creates a new histogram based on the data of the selected colunm.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cria um novo histograma com base nos dados da coluna seleccionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="528"/>
         <source>Normal Probability</source>
-        <translation type="unfinished"></translation>
+        <translation>Probabilidade Normal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="529"/>
         <source>Show a chart that displays the normal probability curve.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar um gráfico que apresente a curva de probabilidade normal.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="533"/>
         <source>Statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Estatística</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="534"/>
         <source>Show the statistics summary of the selected colunm.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar resumo estatístico da coluna selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="557"/>
         <source>Add column</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="558"/>
         <source>Adds a column to the table.</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona uma coluna à tabela.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="563"/>
         <source>Remove column</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="564"/>
         <source>Removes a column from the table.</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover uma coluna da tabela.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="569"/>
         <source>Rename column</source>
-        <translation type="unfinished"></translation>
+        <translation>Renomear coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="570"/>
         <source>Renames a column of the table.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mudar o nome de uma coluna da tabela.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="574"/>
         <source>Change column type</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar tipo de coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="575"/>
         <source>Changes the type of a column of the table.</source>
-        <translation type="unfinished"></translation>
+        <translation>Altera o tipo de uma coluna da tabela.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="580"/>
         <source>Change column data</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar dados de uma coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="581"/>
         <source>Changes the data of a column of the table.</source>
-        <translation type="unfinished"></translation>
+        <translation>Altera os dados de uma coluna da tabela.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="586"/>
         <source>Save editions</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar edições</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="587"/>
         <source>Save pendent editions to layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar edições pendentes da camada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="615"/>
         <source>Enable auto scroll</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar auto rolagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="616"/>
         <source>Goes to the selected row.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vai para a linha selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="626"/>
         <source>Enable promotion</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar promoção</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="627"/>
         <source>Enables promotion of selected rows.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar promoção das linhas selecionadas.</translation>
     </message>
 </context>
 <context>
@@ -6992,67 +7006,67 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="22"/>
         <source>Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="30"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="40"/>
         <source>Datetime Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo Data hora:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="50"/>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="105"/>
         <source>Advanced</source>
-        <translation type="unfinished"></translation>
+        <translation>Avançado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="119"/>
         <source>Result Time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Resultado Tempo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="129"/>
         <source>Valid Time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tempo Válido:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="172"/>
         <source>Ordinal Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Tempo Ordinal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="187"/>
         <source>Ordinal Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo Ordinal:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="215"/>
         <source>Datetime Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução da Data hora</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="223"/>
         <source>Unit: </source>
-        <translation type="unfinished"></translation>
+        <translation>Unidade: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TemporalPropertiesWidgetForm.ui" line="230"/>
         <source>Value:</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor:</translation>
     </message>
 </context>
 <context>
@@ -7060,209 +7074,209 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="20"/>
         <source>Tie Point Locator Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros de Localização de Pontos de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="42"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="60"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="73"/>
         <source>Enable/disable the geometry filter/outliers remotion</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar / desativar a remoção de geometrias por filtro / discrepantes</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="63"/>
         <source>Geometry Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrar Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="76"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="111"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="95"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="108"/>
         <source>Enable/Disable the use of multi-threads</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar / Desativar a utilização de multi-threads</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="98"/>
         <source>Multi-Thread</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi-Thread</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="130"/>
         <source>Interest Points Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Localização de Pontos de Interesse</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="141"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="355"/>
         <source>Moravec</source>
-        <translation type="unfinished"></translation>
+        <translation>Moravec</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="146"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="503"/>
         <source>Surf</source>
-        <translation type="unfinished"></translation>
+        <translation>Surf</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="166"/>
         <source>Geometric Transformation</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação Geométrica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="191"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="204"/>
         <source>Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - Use 0-zero to let this number be automatically found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Acurácia geometria (percentagem de acurácia livre de erros) - intervalo válido (0-1) - Use zero (0) para permitir que este número seja encontrado automaticamente.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="194"/>
         <source>Geometry Filter Assurance</source>
-        <translation type="unfinished"></translation>
+        <translation>Acurácia do Filtro Geométrico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="223"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="236"/>
         <source>The maximum allowed transformation error (pixel units)</source>
-        <translation type="unfinished"></translation>
+        <translation>O erro de transformação máximo permitido (unidades de pixel)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="226"/>
         <source>Transformation Max Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação de Erro Max</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="255"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="268"/>
         <source>The raster interpolator method</source>
-        <translation type="unfinished"></translation>
+        <translation>O método de interpolação matricial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="258"/>
         <source>Interpolator</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpolador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="272"/>
         <source>NearestNeighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vizinho mais Próximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="277"/>
         <source>Bilinear</source>
-        <translation type="unfinished"></translation>
+        <translation>Bi-linear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="282"/>
         <source>Bicubic</source>
-        <translation type="unfinished"></translation>
+        <translation>Bi-cúbico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="302"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="315"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="334"/>
         <source>The maximum number of tie-points to generate (0 - Automatically found)</source>
-        <translation type="unfinished"></translation>
+        <translation>Número máximo de pontos de controle para gerar (0 - encontrar automaticamente)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="305"/>
         <source>Maximum TiePoints</source>
-        <translation type="unfinished"></translation>
+        <translation>Máximo de Pontos de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="337"/>
         <source>Sub-sampled Search Rescale Factor</source>
-        <translation type="unfinished"></translation>
+        <translation>Fator de sub-amostragem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="347"/>
         <source>Sub-sampled optimization tie-points search rescale factor ( 1 - subsample optimization disabled, valid range: non-zero positive values)</source>
-        <translation type="unfinished"></translation>
+        <translation>Sub-sampled optimization tie-points search rescale factor (1 - otimização de subamostra desativada, intervalo válido: valores positivos não nulos)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="373"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="400"/>
         <source>The Moravec window width used to locate canditate tie-points (minimum 3)</source>
-        <translation type="unfinished"></translation>
+        <translation>A largura da janela Moravec usada para localizar pontos de controle candidatos (mínimo 3)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="376"/>
         <source>Moravec Window Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura da Janela Moravec</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="386"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="426"/>
         <source>The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter)</source>
-        <translation type="unfinished"></translation>
+        <translation>O número de iterações de ruído Gaussiano, quando aplicável (utilizados para remover o ruído de imagem, zero desativar o filtro Gaussiano)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="393"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="451"/>
         <source>The minimum acceptable absolute correlation value when matching features (valid range: [0,1])</source>
-        <translation type="unfinished"></translation>
+        <translation>O valor de correlação absoluta mínimo aceitável quando as características são correspondentes (intervalo válido: [0,1])</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="407"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="476"/>
         <source>The correlation window width used to correlate points between the images (minimum 3)</source>
-        <translation type="unfinished"></translation>
+        <translation>A largura da janela de correlação utilizada para correlacionar os pontos entre as imagens (mínimo 3)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="429"/>
         <source>Gaussian Filter Iterations</source>
-        <translation type="unfinished"></translation>
+        <translation>Iterações do Filtro Gaussiano</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="454"/>
         <source>Minimum Correlation</source>
-        <translation type="unfinished"></translation>
+        <translation>Correlação Mínima</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="479"/>
         <source>Correlation Window Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura da Janela de Correlação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="521"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="534"/>
         <source>The maximum acceptable euclidean distance when matching features (when applicable), valid range: [0,1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Distância euclidiana máximo aceitável quando há correspondência de características (quando aplicável), intervalo válido: [0,1]</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="524"/>
         <source>Maximum Euclidean Distance</source>
-        <translation type="unfinished"></translation>
+        <translation>Distância Euclidiana Máxima</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="553"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="566"/>
         <source>The number of octaves to generate (Minimum: 1)</source>
-        <translation type="unfinished"></translation>
+        <translation>O número de oitavas para gerar (Mínimo: 1)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="556"/>
         <source>Octaves Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de oitavas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="585"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="598"/>
         <source>The number of sub-sampling scales to generate (minimum:3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de sub-amostragem escalas para gerar (mínimo: 3)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="588"/>
         <source>Scales Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Escalas</translation>
     </message>
 </context>
 <context>
@@ -7270,17 +7284,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="14"/>
         <source>Tie Point Locator</source>
-        <translation type="unfinished"></translation>
+        <translation>Localizador de Ponto de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="48"/>
         <source>Tie Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="90"/>
         <source>Refresh tie-points</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizar pontos de controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="93"/>
@@ -7291,183 +7305,183 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="143"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="197"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="100"/>
         <source>Auto Acquire Tie Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto Adquirir Pontos de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="110"/>
         <source>Delete Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar Selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="120"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar Todos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="130"/>
         <source>Unselect All</source>
-        <translation type="unfinished"></translation>
+        <translation>Desmarcar Todos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="140"/>
         <source>Finishes the tie-points acquiring and return</source>
-        <translation type="unfinished"></translation>
+        <translation>Finaliza os pontos de controle adquiridos e retorna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="157"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="255"/>
         <source>Y2</source>
-        <translation type="unfinished"></translation>
+        <translation>Y2</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="164"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="250"/>
         <source>X2</source>
-        <translation type="unfinished"></translation>
+        <translation>X2</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="177"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="245"/>
         <source>Y1</source>
-        <translation type="unfinished"></translation>
+        <translation>Y1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="184"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="240"/>
         <source>X1</source>
-        <translation type="unfinished"></translation>
+        <translation>X1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="225"/>
         <source>ID</source>
-        <translation type="unfinished"></translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="230"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="235"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="282"/>
         <source>Informations</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="295"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="319"/>
         <source>Reference Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda de Referência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="341"/>
         <source>Adjust Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="394"/>
         <source>Input SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="404"/>
         <source>Input Resolution X</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução de Entrada X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="417"/>
         <source>Input Resolution Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução de Entrada Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="515"/>
         <source>Output SRID...</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID de Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="559"/>
         <source>Output Resolution X</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução de Saída X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="609"/>
         <source>Output Resolution Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução de Saída Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="687"/>
         <source>Tie points Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Pontos de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="703"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="728"/>
         <source>Transformation RMSE (all)</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformation RMSE (todos)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="744"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="785"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="826"/>
         <source>N/A</source>
-        <translation type="unfinished"></translation>
+        <translation>N/A</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="769"/>
         <source>Transformation RMSE (selected)</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação RMSE (selecionada)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="810"/>
         <source>Transformation RMSE (unselected)</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação RMSE (não selecionado)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="854"/>
         <source>Legend:</source>
-        <translation type="unfinished"></translation>
+        <translation>Legenda:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="893"/>
         <source>Tie Point Mark.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos Marcados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="932"/>
         <source>Tie Point Selected Mark.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos Selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="971"/>
         <source>Reference Tie Point.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos de Referência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="1005"/>
         <source>Reference</source>
-        <translation type="unfinished"></translation>
+        <translation>Referência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorWidgetForm.ui" line="1042"/>
         <source>Adjust</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar</translation>
     </message>
 </context>
 <context>
@@ -7475,213 +7489,213 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="20"/>
         <source>Tie Points Locator Advanced Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções Avançadas do Localizador de Pontos de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="33"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="41"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="51"/>
         <source>Enable/disable the geometry filter/outliers remotion</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar / desativar a remoção do filtro / discrepantes da geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="44"/>
         <source>Geometry Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro Geométrico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="54"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="78"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="65"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="75"/>
         <source>Enable/Disable the use of multi-threads</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar / Desativar o uso de multi-threads</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="68"/>
         <source>Multi-Thread</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi-Thread</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="89"/>
         <source>Interest Points Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Localização dos Pontos de Interesse</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="97"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="226"/>
         <source>Moravec</source>
-        <translation type="unfinished"></translation>
+        <translation>Moravec</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="102"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="317"/>
         <source>Surf</source>
-        <translation type="unfinished"></translation>
+        <translation>Surf</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="114"/>
         <source>Geometric Transformation</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação Geométrica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="128"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="138"/>
         <source>Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - Use 0-zero to let this number be automatically found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Acurácia geometria (percentagem de acurácia livre de erros) - intervalo válido (0-1) - Use zero (0) para permitir que este número seja encontrado automaticamente.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="131"/>
         <source>Geometry Filter Assurance</source>
-        <translation type="unfinished"></translation>
+        <translation>Acurácia do Filtro Geométrico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="149"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="159"/>
         <source>The maximum allowed transformation error (pixel units)</source>
-        <translation type="unfinished"></translation>
+        <translation>O erro de transformação máximo permitido (unidades de pixel)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="152"/>
         <source>Transformation Max Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação de Erra Máximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="170"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="180"/>
         <source>The raster interpolator method</source>
-        <translation type="unfinished"></translation>
+        <translation>Método de interpolação matricial (raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="173"/>
         <source>Interpolator</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpolador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="184"/>
         <source>NearestNeighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vizinho mais próximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="189"/>
         <source>Bilinear</source>
-        <translation type="unfinished"></translation>
+        <translation>Bilinear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="194"/>
         <source>Bicubic</source>
-        <translation type="unfinished"></translation>
+        <translation>Bicúbico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="206"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="216"/>
         <source>The maximum number of tie-points to generate (0 - Automatically found)</source>
-        <translation type="unfinished"></translation>
+        <translation>Múmero máximo de pontos de controle para gerar (0 - Encontrar Automaticamente)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="209"/>
         <source>Maximum TiePoints</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos de Controle Máximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="234"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="244"/>
         <source>The correlation window width used to correlate points between the images (minimum 3)</source>
-        <translation type="unfinished"></translation>
+        <translation>A largura da janela de correlação utilizada para correlacionar os pontos entre as imagens (mínimo 3)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="237"/>
         <source>Correlation Window Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura da Janela de Correlação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="255"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="265"/>
         <source>The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter)</source>
-        <translation type="unfinished"></translation>
+        <translation>O número de iterações de ruído Gaussiano, quando aplicável (utilizados para remover o ruído de imagem, zero desativar o filtro Gaussiano)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="258"/>
         <source>Gaussian Filter Iterations</source>
-        <translation type="unfinished"></translation>
+        <translation>Iterações do Filtro Gaussiano</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="276"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="286"/>
         <source>The minimum acceptable absolute correlation value when matching features (valid range: [0,1])</source>
-        <translation type="unfinished"></translation>
+        <translation>O valor de correlação absoluta mínimo aceitável quando as características são correspondentes (intervalo válido: [0,1])</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="279"/>
         <source>Minimum Correlation</source>
-        <translation type="unfinished"></translation>
+        <translation>Correlação Mínima</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="297"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="307"/>
         <source>The Moravec window width used to locate canditate tie-points (minimum 3)</source>
-        <translation type="unfinished"></translation>
+        <translation>A largura da janela Moravec usada para localizar pontos de controle candidatos (mínimo 3)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="300"/>
         <source>Moravec Window Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura da Janela Moravec</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="325"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="335"/>
         <source>The maximum acceptable euclidean distance when matching features (when applicable), valid range: [0,1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Distância euclidiana máximo aceitável quando há correspondência de características (quando aplicável), intervalo válido: [0,1]</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="328"/>
         <source>Maximum Euclidean Distance</source>
-        <translation type="unfinished"></translation>
+        <translation>Distância Euclidiana Máxima</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="346"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="356"/>
         <source>The number of octaves to generate (Minimum: 1)</source>
-        <translation type="unfinished"></translation>
+        <translation>O número de oitavas para gerar (Mínimo: 1)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="349"/>
         <source>Octaves Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Oitavas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="367"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="377"/>
         <source>The number of sub-sampling scales to generate (minimum:3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de sub-amostragem escalas para gerar (mínimo: 3)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="370"/>
         <source>Scales Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Escalas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="411"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="443"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="462"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancela</translation>
     </message>
 </context>
 <context>
@@ -7689,160 +7703,160 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="20"/>
         <source>Tie Points Locator</source>
-        <translation type="unfinished"></translation>
+        <translation>Localizador de Pontos  de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="43"/>
         <source>Image 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem 1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="86"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="202"/>
         <source>Line</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="110"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="226"/>
         <source>Column</source>
-        <translation type="unfinished"></translation>
+        <translation>Coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="134"/>
         <source>Image 1 Reference Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem 1 Banda de Referência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="159"/>
         <source>Image 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem 2</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="250"/>
         <source>Image 2 Reference Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem 2 Banda de Referência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="269"/>
         <source>Tie Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos de Controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="298"/>
         <source>ID</source>
-        <translation type="unfinished"></translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="303"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="308"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="313"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="382"/>
         <source>X1</source>
-        <translation type="unfinished"></translation>
+        <translation>X1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="318"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="392"/>
         <source>Y1</source>
-        <translation type="unfinished"></translation>
+        <translation>Y1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="323"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="402"/>
         <source>X2</source>
-        <translation type="unfinished"></translation>
+        <translation>X2</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="328"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="412"/>
         <source>Y2</source>
-        <translation type="unfinished"></translation>
+        <translation>Y2</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="336"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar todos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="343"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Desmarcar todos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="350"/>
         <source>Delete selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="422"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="440"/>
         <source>Auto acquire tie points</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto aquisição de pontos de controle</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="453"/>
         <source>Advanced options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções avançadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="464"/>
         <source>Tie points Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Pontos de Cantrole</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="486"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="499"/>
         <source>Transformation RMSE (all)</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação RMSE (todos)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="521"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="556"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="591"/>
         <source>N/A</source>
-        <translation type="unfinished"></translation>
+        <translation>N/A</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="534"/>
         <source>Transformation RMSE (selected)</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação RMSE (selecionados)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="569"/>
         <source>Transformation RMSE (unselected)</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação RMSE (desmarcados)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="629"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="661"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorForm.ui" line="680"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -7850,22 +7864,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesDataWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesDataWidgetForm.ui" line="22"/>
         <source>Value:</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesDataWidgetForm.ui" line="35"/>
         <source>Date &amp; Time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Data &amp; Tempo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesDataWidgetForm.ui" line="51"/>
         <source>Id:</source>
-        <translation type="unfinished"></translation>
+        <translation>Id:</translation>
     </message>
 </context>
 <context>
@@ -7873,12 +7887,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesFrameWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesFrameWidgetForm.ui" line="27"/>
         <source>TimeSeries Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo da Série Temporal</translation>
     </message>
 </context>
 <context>
@@ -7886,32 +7900,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesPropertiesWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesPropertiesWidgetForm.ui" line="20"/>
         <source>Temporal  Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade Temporal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesPropertiesWidgetForm.ui" line="39"/>
         <source>Time Series Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades da Série Temporal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesPropertiesWidgetForm.ui" line="47"/>
         <source>ID:</source>
-        <translation type="unfinished"></translation>
+        <translation>ID:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesPropertiesWidgetForm.ui" line="57"/>
         <source>Value:</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesPropertiesWidgetForm.ui" line="67"/>
         <source>Localtion:</source>
-        <translation type="unfinished"></translation>
+        <translation>Localização:</translation>
     </message>
 </context>
 <context>
@@ -7919,17 +7933,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesStyleWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesStyleWidgetForm.ui" line="28"/>
         <source>Stroke:</source>
-        <translation type="unfinished"></translation>
+        <translation>Stroke:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesStyleWidgetForm.ui" line="44"/>
         <source>Stroke...</source>
-        <translation type="unfinished"></translation>
+        <translation>Stroke...</translation>
     </message>
 </context>
 <context>
@@ -7937,7 +7951,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesWizardForm.ui" line="14"/>
         <source>Time Series</source>
-        <translation type="unfinished"></translation>
+        <translation>Séries Temporal</translation>
     </message>
 </context>
 <context>
@@ -7945,24 +7959,24 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSliderWidgetForm.ui" line="26"/>
         <source>Time Slider</source>
-        <translation type="unfinished"></translation>
+        <translation>Controle de Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSliderWidgetForm.ui" line="49"/>
         <source>DateTime:</source>
-        <translation type="unfinished"></translation>
+        <translation>DataTempo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSliderWidgetForm.ui" line="72"/>
         <source>Duration(ms):</source>
-        <translation type="unfinished"></translation>
+        <translation>Duração(ms)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSliderWidgetForm.ui" line="112"/>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSliderWidgetForm.ui" line="135"/>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSliderWidgetForm.ui" line="145"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
 </context>
 <context>
@@ -7970,27 +7984,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TrajectoryPropertiesWidgetForm.ui" line="14"/>
         <source>Trajectory</source>
-        <translation type="unfinished"></translation>
+        <translation>Trajetória</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TrajectoryPropertiesWidgetForm.ui" line="20"/>
         <source>Temporal  Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Temporais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TrajectoryPropertiesWidgetForm.ui" line="39"/>
         <source>Trajectory Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades da Trajetória</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TrajectoryPropertiesWidgetForm.ui" line="47"/>
         <source>ID:</source>
-        <translation type="unfinished"></translation>
+        <translation>ID:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TrajectoryPropertiesWidgetForm.ui" line="80"/>
         <source>Observed geometry:</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria observada:</translation>
     </message>
 </context>
 <context>
@@ -7998,7 +8012,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TrajectoryWizardForm.ui" line="14"/>
         <source>Trajectory</source>
-        <translation type="unfinished"></translation>
+        <translation>Trajetória</translation>
     </message>
 </context>
 <context>
@@ -8006,52 +8020,52 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="14"/>
         <source>Vectorization</source>
-        <translation type="unfinished"></translation>
+        <translation>Vetorização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="22"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="34"/>
         <source>Layer:</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="44"/>
         <source>Band:</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="101"/>
         <source>Set the maximum number of geometries:</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de geometrias máxima:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="128"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="136"/>
         <source>Repository:</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositório</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="158"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="171"/>
         <source>BD</source>
-        <translation type="unfinished"></translation>
+        <translation>BD</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/VectorizationWizardPageForm.ui" line="180"/>
         <source>Layer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Camada:</translation>
     </message>
 </context>
 <context>
@@ -8059,54 +8073,54 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="25"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="36"/>
         <source>Anchor Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto de Ancoragem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="47"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="231"/>
         <source>X:</source>
-        <translation type="unfinished"></translation>
+        <translation>X:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="76"/>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="221"/>
         <source>Y:</source>
-        <translation type="unfinished"></translation>
+        <translation>Y:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="114"/>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="121"/>
         <source>Angle:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ângulo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="128"/>
         <source>Opacity %</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade %</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="210"/>
         <source>Displacement</source>
-        <translation type="unfinished"></translation>
+        <translation>Deslocamento</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownGraphicWidgetForm.ui" line="271"/>
         <source>Mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Marca</translation>
     </message>
 </context>
 <context>
@@ -8114,17 +8128,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownMarkDialogForm.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Diálogo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownMarkDialogForm.ui" line="53"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownMarkDialogForm.ui" line="60"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -8132,22 +8146,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownMarkWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownMarkWidgetForm.ui" line="27"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownMarkWidgetForm.ui" line="46"/>
         <source>Fill</source>
-        <translation type="unfinished"></translation>
+        <translation>Preencher</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ui/WellKnownMarkWidgetForm.ui" line="59"/>
         <source>Stroke</source>
-        <translation type="unfinished"></translation>
+        <translation>Stroke</translation>
     </message>
 </context>
 <context>
@@ -8155,78 +8169,78 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="14"/>
         <source>Where Clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Cláusula &quot;Where&quot;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="34"/>
         <source>Criteria</source>
-        <translation type="unfinished"></translation>
+        <translation>Critério</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="51"/>
         <source>Attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="67"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="141"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="387"/>
         <source>Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="97"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="252"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="392"/>
         <source>Operator</source>
-        <translation type="unfinished"></translation>
+        <translation>Operador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="127"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="148"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="397"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="206"/>
         <source>Spatial</source>
-        <translation type="unfinished"></translation>
+        <translation>Espacial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="222"/>
         <source>Geometry Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade Geométrica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="282"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="304"/>
         <source>Use Selected Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizar Objetos Selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="337"/>
         <source>Add the defined restriction expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar a expressão de restrição definida</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="369"/>
         <source>Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="402"/>
         <source>Connector</source>
-        <translation type="unfinished"></translation>
+        <translation>Conector</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="411"/>
         <source>SQL</source>
-        <translation type="unfinished"></translation>
+        <translation>SQL</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="420"/>
@@ -8235,12 +8249,16 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="437"/>
         <source>Clear all restriction expressions</source>
-        <translation type="unfinished"></translation>
+        <translation>Limpar todas as expressões de restrição</translation>
     </message>
 </context>
 <context>
@@ -8248,17 +8266,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWizardPageForm.ui" line="14"/>
         <source>WizardPage</source>
-        <translation type="unfinished"></translation>
+        <translation>WizardPage</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWizardPageForm.ui" line="17"/>
         <source>Data Source Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceSelectorWizardPageForm.ui" line="20"/>
         <source>Please, select the data source where the data is stored</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione a fonte de dados onde os dados serão armazenados</translation>
     </message>
 </context>
 <context>
@@ -8266,48 +8284,48 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="24"/>
         <source>Title:</source>
-        <translation type="unfinished"></translation>
+        <translation>Título:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="34"/>
         <source>Title Style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo do Título</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="44"/>
         <source>Label x:</source>
-        <translation type="unfinished"></translation>
+        <translation>Rótulo x:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="54"/>
         <source>Label y:</source>
-        <translation type="unfinished"></translation>
+        <translation>Rótulo y:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="64"/>
         <source>label Style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo do Rótulo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="74"/>
         <source>Background Color:</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor de Fundo:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="84"/>
         <source>Grid:</source>
-        <translation type="unfinished"></translation>
+        <translation>Grade:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="117"/>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartStyleWidgetForm.ui" line="166"/>
         <source>Style...</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo...</translation>
     </message>
 </context>
 <context>
@@ -8320,27 +8338,27 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ArithmeticOpWizard.cpp" line="194"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ArithmeticOpWizard.cpp" line="204"/>
         <source>Arithmetic Operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação Aritmética</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ArithmeticOpWizard.cpp" line="167"/>
         <source>Arithmetic Operation ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação Aritmética terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ArithmeticOpWizard.cpp" line="171"/>
         <source>Arithmetic Operation execution error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação Aritmética com erro de execução.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ArithmeticOpWizard.cpp" line="182"/>
         <source>Arithmetic Operation initialization error</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação Aritmética iniciou com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ArithmeticOpWizard.cpp" line="204"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção!</translation>
     </message>
 </context>
 <context>
@@ -8348,12 +8366,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ArithmeticOpWizardPage.cpp" line="51"/>
         <source>Arithmetic Operations</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação Aritmética</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ArithmeticOpWizardPage.cpp" line="52"/>
         <source>Select the type of arithmetic operation and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de operação aritmética e definir os seus parâmetros específicos.</translation>
     </message>
 </context>
 <context>
@@ -8362,17 +8380,17 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/se/BasicFillPropertyItem.cpp" line="44"/>
         <location filename="../../../src/terralib/qt/widgets/se/BasicFillPropertyItem.cpp" line="59"/>
         <source>Basic Fill</source>
-        <translation type="unfinished"></translation>
+        <translation>Preenchimento Básico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicFillPropertyItem.cpp" line="47"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicFillPropertyItem.cpp" line="52"/>
         <source>Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade</translation>
     </message>
 </context>
 <context>
@@ -8380,7 +8398,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicFillWidget.cpp" line="90"/>
         <source>Basic Fill</source>
-        <translation type="unfinished"></translation>
+        <translation>Preenchimento Básico</translation>
     </message>
 </context>
 <context>
@@ -8389,37 +8407,37 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/se/BasicStrokePropertyItem.cpp" line="53"/>
         <location filename="../../../src/terralib/qt/widgets/se/BasicStrokePropertyItem.cpp" line="95"/>
         <source>Basic Stroke</source>
-        <translation type="unfinished"></translation>
+        <translation>Basic Stroke</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicStrokePropertyItem.cpp" line="56"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicStrokePropertyItem.cpp" line="61"/>
         <source>Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicStrokePropertyItem.cpp" line="69"/>
         <source>Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicStrokePropertyItem.cpp" line="78"/>
         <source>Dash</source>
-        <translation type="unfinished"></translation>
+        <translation>Traço</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicStrokePropertyItem.cpp" line="84"/>
         <source>Join</source>
-        <translation type="unfinished"></translation>
+        <translation>Unir</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/BasicStrokePropertyItem.cpp" line="90"/>
         <source>Cap</source>
-        <translation type="unfinished"></translation>
+        <translation>Capa</translation>
     </message>
 </context>
 <context>
@@ -8428,27 +8446,27 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/charts/ChartLayerWidget.cpp" line="123"/>
         <location filename="../../../src/terralib/qt/widgets/charts/ChartLayerWidget.cpp" line="246"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ChartLayerWidget.cpp" line="123"/>
         <source>No attribute selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum atributo selecionado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ChartLayerWidget.cpp" line="198"/>
         <source>Pie Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>Gráfico de Pizza</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ChartLayerWidget.cpp" line="199"/>
         <source>Bar Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>Gráfico de Barra</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ChartLayerWidget.cpp" line="246"/>
         <source>Attribute already selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributo já selecionado.</translation>
     </message>
 </context>
 <context>
@@ -8456,7 +8474,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/CheckConstraintItem.cpp" line="68"/>
         <source>&amp;Open check-constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir check-constraint</translation>
     </message>
 </context>
 <context>
@@ -8464,27 +8482,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierDialog.cpp" line="84"/>
         <source>Invalid input raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada Matricial (raster) inválida</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierDialog.cpp" line="101"/>
         <source>Invalid number of bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de bandas inválidas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierDialog.cpp" line="132"/>
         <source>Classifier initialization error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na inicialização do classificador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierDialog.cpp" line="138"/>
         <source>Classifier execution error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na execução do classificador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierDialog.cpp" line="143"/>
         <source>Classification ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificação terminou com sucesso</translation>
     </message>
 </context>
 <context>
@@ -8495,22 +8513,22 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="176"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="188"/>
         <source>Classifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="172"/>
         <source>Classifier ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificação terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="176"/>
         <source>Classifier execution error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na execução do classificador</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="188"/>
         <source>Classifier initialization error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na inicialização do classificador</translation>
     </message>
 </context>
 <context>
@@ -8518,22 +8536,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizardPage.cpp" line="72"/>
         <source>Classifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizardPage.cpp" line="73"/>
         <source>Select the type of classifier and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de classificador e definir parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizardPage.cpp" line="284"/>
         <source>ISOSeg</source>
-        <translation type="unfinished"></translation>
+        <translation>ISOSeg</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizardPage.cpp" line="285"/>
         <source>KMeans</source>
-        <translation type="unfinished"></translation>
+        <translation>KMédia</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizardPage.cpp" line="286"/>
@@ -10455,142 +10473,142 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="40"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="41"/>
         <source>Geometry Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="42"/>
         <source>Geometry M</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="43"/>
         <source>Geometry ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="45"/>
         <source>Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="46"/>
         <source>Point Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="47"/>
         <source>Point M</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="48"/>
         <source>Point ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="49"/>
         <source>Point K dimensions</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto K dimensões</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="51"/>
         <source>Line String</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha String</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="52"/>
         <source>Line String Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha String Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="53"/>
         <source>Line String M</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha String M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="54"/>
         <source>Line String ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha String ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="56"/>
         <source>Circular String</source>
-        <translation type="unfinished"></translation>
+        <translation>Circular String</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="57"/>
         <source>Circular String Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Circular String Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="58"/>
         <source>Circular String M</source>
-        <translation type="unfinished"></translation>
+        <translation>Circular String M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="59"/>
         <source>Circular String ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Circular String ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="61"/>
         <source>Compound Curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva Composta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="62"/>
         <source>Compound Curve Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva Composta Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="63"/>
         <source>Compound Curve M</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva Composta M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="64"/>
         <source>Compound Curve ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva Composta ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="66"/>
         <source>Polygon</source>
-        <translation type="unfinished"></translation>
+        <translation>Polígono</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="67"/>
         <source>Polygon Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Polígono Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="68"/>
         <source>Polygon M</source>
-        <translation type="unfinished"></translation>
+        <translation>Polígono M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="69"/>
         <source>Polygon ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Polígono ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="71"/>
         <source>Curve Polygon</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva Polígono</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="72"/>
         <source>Curve Polygon Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva Polígono Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="73"/>
         <source>Curve Polygon M</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva Polígono M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="74"/>

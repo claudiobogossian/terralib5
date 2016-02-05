@@ -72,7 +72,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4FinalPageWizardPageForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Form</translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4FinalPageWizardPageForm.ui" line="20"/>
@@ -115,7 +115,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4LayerSelectionWizardPageForm.ui" line="66"/>
         <source>imgVector</source>
-        <translation type="unfinished">imgVector</translation>
+        <translation>imgVector</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4LayerSelectionWizardPageForm.ui" line="73"/>
@@ -148,7 +148,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4NameResolveWizardPageForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Form</translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4NameResolveWizardPageForm.ui" line="21"/>
@@ -166,7 +166,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4RasterFolderSelectionWizardPageForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Form</translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4RasterFolderSelectionWizardPageForm.ui" line="23"/>
@@ -179,7 +179,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4ThemeSelectionWizardPageForm.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Form</translation>
+        <translation>Formulário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/ui/TL4ThemeSelectionWizardPageForm.ui" line="20"/>
@@ -373,7 +373,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="515"/>
         <source>Could not valid layer names in target data source!</source>
-        <translation type="unfinished">Não são válidos nomes de camadas na fonte de dados alvo.</translation>
+        <translation>Não há nomes de camadas válidas na fonte de dados alvo.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="522"/>

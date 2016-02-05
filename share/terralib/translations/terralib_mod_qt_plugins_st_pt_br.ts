@@ -6,7 +6,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/st/ObservationAction.cpp" line="49"/>
         <source>Observation...</source>
-        <translation type="unfinished"></translation>
+        <translation>Observação...</translation>
     </message>
 </context>
 <context>
@@ -14,7 +14,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/st/Plugin.cpp" line="128"/>
         <source>Add Temporal Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona Camada Temporal</translation>
     </message>
 </context>
 <context>
@@ -22,7 +22,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/st/TimeSeriesAction.cpp" line="49"/>
         <source>Time Series...</source>
-        <translation type="unfinished"></translation>
+        <translation>Séries Temporais...</translation>
     </message>
 </context>
 <context>
@@ -30,7 +30,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/st/TimeSliderWidgetAction.cpp" line="39"/>
         <source>Time Slider...</source>
-        <translation type="unfinished"></translation>
+        <translation>Time Slider (animação)...</translation>
     </message>
 </context>
 <context>
@@ -38,7 +38,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/st/TrajectoryAction.cpp" line="52"/>
         <source>Trajectory...</source>
-        <translation type="unfinished"></translation>
+        <translation>Trajetória...</translation>
     </message>
 </context>
 </TS>
