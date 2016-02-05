@@ -192,7 +192,7 @@ bool te::qt::widgets::SaveLayerAsWidget::execute(std::string& errorMessage)
  
   std::map<std::string, std::string> nopt;
 
-  std::auto_ptr<const te::map::LayerSchema> schema = m_layer->getSchema();
+  std::auto_ptr<te::map::LayerSchema> schema = m_layer->getSchema();
   
   std::vector<te::dt::Property*> propsVec = schema->getProperties();
   

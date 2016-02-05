@@ -33,9 +33,6 @@
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../Config.h"
 
-//STL
-#include <memory>
-
 // Qt
 #include <QAction>
 #include <QMenu>
