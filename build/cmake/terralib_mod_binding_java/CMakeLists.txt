@@ -107,17 +107,29 @@ if(WIN32)
     LIBRARY DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
     ARCHIVE DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
   )
+
+  add_custom_command(
+    TARGET terralib_mod_binding_java
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/bin
+    COMMAND "${Java_JAVAC_EXECUTABLE}" -d ${CMAKE_CURRENT_BINARY_DIR}/bin ${CMAKE_SWIG_OUTDIR}/*.java 
+    COMMAND "${Java_JAVADOC_EXECUTABLE}" -sourcepath ${CMAKE_CURRENT_BINARY_DIR} -d ${CMAKE_CURRENT_BINARY_DIR}/doc -use -splitindex -windowtitle "TerraLib 5 Java Binding API Specification" -J-Xmx180m br.inpe.terralib5
+    COMMAND "${Java_JAR_EXECUTABLE}" cf ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar -C ${CMAKE_CURRENT_BINARY_DIR}/bin br
+    COMMENT "Building java..." VERBATIM
+  )
+elseif(UNIX)
+  add_custom_command(
+    TARGET terralib_mod_binding_java
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/bin
+    COMMAND find -name *.java > .javaFiles
+    COMMAND "${Java_JAVAC_EXECUTABLE}" -d ${CMAKE_CURRENT_BINARY_DIR}/bin @.javaFiles 
+    COMMAND "${Java_JAVADOC_EXECUTABLE}" -sourcepath ${CMAKE_CURRENT_BINARY_DIR} -d ${CMAKE_CURRENT_BINARY_DIR}/doc -use -splitindex -windowtitle "TerraLib 5 Java Binding API Specification" -J-Xmx180m br.inpe.terralib5
+    COMMAND "${Java_JAR_EXECUTABLE}" cf ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar -C ${CMAKE_CURRENT_BINARY_DIR}/bin br
+    COMMENT "Building java..." VERBATIM
+  )
 endif()
 
-add_custom_command(
-  TARGET terralib_mod_binding_java
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/bin
-  COMMAND "${Java_JAVAC_EXECUTABLE}" -d ${CMAKE_CURRENT_BINARY_DIR}/bin ${CMAKE_SWIG_OUTDIR}/*.java 
-  COMMAND "${Java_JAVADOC_EXECUTABLE}" -sourcepath ${CMAKE_CURRENT_BINARY_DIR} -d ${CMAKE_CURRENT_BINARY_DIR}/doc -use -splitindex -windowtitle "TerraLib 5 Java Binding API Specification" -J-Xmx180m br.inpe.terralib5
-  COMMAND "${Java_JAR_EXECUTABLE}" cf ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar -C ${CMAKE_CURRENT_BINARY_DIR}/bin br
-  COMMENT "Building java..." VERBATIM
-)
 
 install (
   FILES ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar 

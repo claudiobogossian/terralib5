@@ -70,4 +70,3 @@ if(${TERRALIB_TRACK_3RDPARTY_DEPENDENCIES})
           COMPONENT devel)        
 endif()
 
-export(TARGETS terralib_mod_ogr APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

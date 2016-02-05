@@ -52,4 +52,3 @@ install(TARGETS terralib_mod_manager
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/module COMPONENT devel)
 
-export(TARGETS terralib_mod_manager APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -57,4 +57,3 @@ install(TARGETS terralib_mod_xerces
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/xerces COMPONENT devel)
 
-export(TARGETS terralib_mod_xerces APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

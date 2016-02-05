@@ -143,7 +143,7 @@ elseif(APPLE)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic ")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
 endif()
 
 # Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
@@ -785,7 +785,7 @@ endif()
 
 if(TERRALIB_MOD_CELLSPACE_ENABLED)
   add_subdirectory(terralib_mod_cellspace)
-  list(APPEND TERRALIB_PLUGINS cellspace)
+  list(APPEND TERRALIB_MODULES cellspace)
 endif()
 
 if(TERRALIB_MOD_CLASSIFICATION_ENABLED)
@@ -833,7 +833,7 @@ endif()
 
 if(TERRALIB_MOD_GRAPH_ENABLED)
   add_subdirectory(terralib_mod_graph)
-  list(APPEND TERRALIB_PLUGINS graph)
+  list(APPEND TERRALIB_MODULES graph)
 endif()
 
 if(TERRALIB_MOD_MAPTOOLS_ENABLED)
@@ -1445,6 +1445,11 @@ if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
   add_subdirectory(fix_bundle)
 endif()
 
+set(_mods "")
+
+GetTerraLibModules(_mods)
+
+export( TARGETS ${_mods} FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
 
 #
 # CPack

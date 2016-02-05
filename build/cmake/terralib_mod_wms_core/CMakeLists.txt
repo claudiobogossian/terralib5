@@ -87,4 +87,3 @@ endif()
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.wms.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 
-export(TARGETS terralib_mod_wms_core APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

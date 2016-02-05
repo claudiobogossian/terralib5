@@ -341,7 +341,7 @@ void te::qt::widgets::MixtureModelDialog::on_mapDisplay_extentChanged()
 // get canvas to draw the "x" on selected points
   const te::gm::Envelope& mapDisplayExtent = m_mapDisplay->getExtent();
 
-  m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
+  m_mapDisplay->getDraftPixmap()->fill(Qt::transparent);
 
   te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
   canvasInstance.setWindow(mapDisplayExtent.m_llx, mapDisplayExtent.m_lly,

@@ -57,7 +57,7 @@ te::rp::Classifier::InputParameters::~InputParameters()
   reset();
 }
 
-void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const StrategyParameters& p)
+void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const ClassifierStrategyParameters& p)
 {
   if(m_classifierStrategyParamsPtr)
   {
@@ -65,10 +65,10 @@ void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const Stra
     m_classifierStrategyParamsPtr = 0;
   }
 
-  m_classifierStrategyParamsPtr = (StrategyParameters*)p.clone();
+  m_classifierStrategyParamsPtr = (ClassifierStrategyParameters*)p.clone();
 }
 
-te::rp::StrategyParameters const* te::rp::Classifier::InputParameters::getClassifierStrategyParams() const
+te::rp::ClassifierStrategyParameters const* te::rp::Classifier::InputParameters::getClassifierStrategyParams() const
 {
   return m_classifierStrategyParamsPtr;
 }
@@ -155,6 +155,7 @@ te::rp::Classifier::~Classifier()
 {
 }
 
+/*
 bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(te::rp::Exception)
 {
   if(!m_instanceInitialized)
@@ -165,11 +166,21 @@ bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(
   TERP_TRUE_OR_RETURN_FALSE(outputParamsPtr, "Invalid parameters");
 
   std::vector<te::rst::BandProperty*> bandsProperties;
-  bandsProperties.push_back(new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
+/*  bandsProperties.push_back(new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
     m_inputParameters.m_inputRasterBands[0])->getProperty())));
   bandsProperties[0]->m_colorInterp = te::rst::GrayIdxCInt;
   bandsProperties[0]->m_type = te::dt::UINT32_TYPE;
   bandsProperties[0]->m_noDataValue = 0;
+
+	for(int bands=0; bands <=outputParamsPtr->m_nband; bands++)
+	{
+	  te::rst::BandProperty* newbprop = new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
+		  m_inputParameters.m_inputRasterBands[0])->getProperty()));
+	  newbprop->m_colorInterp = te::rst::GrayIdxCInt;
+	  newbprop->m_type = te::dt::DOUBLE_TYPE;
+	  newbprop->m_noDataValue = -1;
+	  bandsProperties.push_back(newbprop);
+	}
 
   te::rst::Grid* newgrid = new te::rst::Grid(*(m_inputParameters.m_inputRasterPtr->getGrid()));
 
@@ -186,6 +197,50 @@ bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(
   TERP_TRUE_OR_RETURN_FALSE(strategyPtr->execute(*m_inputParameters.m_inputRasterPtr, m_inputParameters.m_inputRasterBands,
                                                  m_inputParameters.m_inputPolygons, *outputParamsPtr->m_outputRasterPtr, 0, true),
                             "Unable to execute the classification strategy");
+
+  return true;
+}*/
+
+bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(te::rp::Exception)
+{
+  if(!m_instanceInitialized)
+    return false;
+
+  // instantiating the classification strategy
+  boost::shared_ptr<te::rp::ClassifierStrategy> strategyPtr(ClassifierStrategyFactory::make(m_inputParameters.m_strategyName));
+  TERP_TRUE_OR_RETURN_FALSE(strategyPtr.get(), "Unable to create the classifier strategy");
+
+  TERP_TRUE_OR_RETURN_FALSE(strategyPtr->initialize( m_inputParameters.getClassifierStrategyParams()),
+                            "Unable to initialize the classification strategy");
+
+  std::vector<te::rst::BandProperty*> bandsProperties;
+  const std::vector< int > outputDataTypes = strategyPtr->getOutputDataTypes();
+
+  for(unsigned int bands=0; bands < outputDataTypes.size(); bands++)
+  {
+	  te::rst::BandProperty* newbprop = new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
+		  m_inputParameters.m_inputRasterBands[0])->getProperty()));
+	  newbprop->m_colorInterp = te::rst::GrayIdxCInt;
+	  newbprop->m_type = outputDataTypes[bands];
+	  newbprop->m_noDataValue = -1;
+	  bandsProperties.push_back(newbprop);
+  }
+ 
+  // creating the output raster
+  te::rp::Classifier::OutputParameters* outputParamsPtr = dynamic_cast<te::rp::Classifier::OutputParameters*>(&outputParams);
+  TERP_TRUE_OR_RETURN_FALSE(outputParamsPtr, "Invalid parameters");
+
+  te::rst::Grid* newgrid = new te::rst::Grid(*(m_inputParameters.m_inputRasterPtr->getGrid()));
+
+  outputParamsPtr->m_outputRasterPtr.reset(
+    te::rst::RasterFactory::make(outputParamsPtr->m_rType, newgrid, bandsProperties, outputParamsPtr->m_rInfo, 0, 0));
+  TERP_TRUE_OR_RETURN_FALSE(outputParamsPtr->m_outputRasterPtr.get(),
+    "Output raster creation error");
+
+  TERP_TRUE_OR_RETURN_FALSE(strategyPtr->execute( *m_inputParameters.m_inputRasterPtr, 
+    m_inputParameters.m_inputRasterBands, m_inputParameters.m_inputPolygons, 
+    *outputParamsPtr->m_outputRasterPtr, 0, 
+    true), "Unable to execute the classification strategy");
 
   return true;
 }

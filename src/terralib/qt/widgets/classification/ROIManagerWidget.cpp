@@ -184,8 +184,8 @@ void te::qt::widgets::ROIManagerWidget::drawROISet()
 
   te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
 
-  mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
-
+  mapDisplay->getDraftPixmap()->fill(Qt::transparent);
+  
   const te::gm::Envelope& mapExt = mapDisplay->getExtent();
 
   te::qt::widgets::Canvas canvasInstance(mapDisplay->getDraftPixmap());

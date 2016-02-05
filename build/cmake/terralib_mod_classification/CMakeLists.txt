@@ -55,4 +55,3 @@ install(TARGETS terralib_mod_classification
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/classification COMPONENT devel)
 
-export(TARGETS terralib_mod_classification APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -41,8 +41,8 @@ te::qt::widgets::ObservationPropertiesWidget::ObservationPropertiesWidget(QWidge
 
   //Adjusting the doubleListWidget that will be used to configure the query's fields.
   m_obsWidget.reset(new DoubleListWidget(m_ui->m_obsPropFrame));
-  m_obsWidget->setLeftLabel("Properties");
-  m_obsWidget->setRightLabel("Observed Properties");
+  m_obsWidget->setLeftLabel(tr("Properties"));
+  m_obsWidget->setRightLabel(tr("Observed Properties"));
   QGridLayout* obsLayout = new QGridLayout(m_ui->m_obsPropFrame);
   obsLayout->addWidget(m_obsWidget.get());
   obsLayout->setContentsMargins(0, 0, 0, 0);
