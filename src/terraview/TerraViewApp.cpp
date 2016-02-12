@@ -17,7 +17,7 @@ bool TerraViewApp::notify(QObject* receiver, QEvent* event)
   }
   catch (const std::exception& ex)
   {
-    std::cout << "Exception catched\n";
+    std::cout << std::endl << "Exception catched: " << ex.what() << std::endl;
   }
   catch (...)
   {
