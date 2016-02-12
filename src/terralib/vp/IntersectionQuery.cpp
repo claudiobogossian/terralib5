@@ -191,18 +191,24 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
 
   for(size_t i = 0; i < firstProps.size(); ++i)
   {
-    te::dt::Property* prop = firstProps[i]->clone();
-    if (!m_inFirstDsetName.empty())
-      prop->setName(te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + prop->getName());
-    outDataSetType->add(prop);
+    if (isSelectedProperty(m_inFirstDsetName, firstProps[i]))
+    {
+      te::dt::Property* prop = firstProps[i]->clone();
+      if (!m_inFirstDsetName.empty())
+        prop->setName(te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + prop->getName());
+      outDataSetType->add(prop);
+    }
   }
 
   for(size_t i = 0; i < secondProps.size(); ++i)
   {
-    te::dt::Property* prop = secondProps[i]->clone();
-    if (!m_inSecondDsetName.empty())
-      prop->setName(te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + prop->getName());
-    outDataSetType->add(prop);
+    if (isSelectedProperty(m_inSecondDsetName, secondProps[i]))
+    {
+      te::dt::Property* prop = secondProps[i]->clone();
+      if (!m_inSecondDsetName.empty())
+        prop->setName(te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + prop->getName());
+      outDataSetType->add(prop);
+    }
   }
 
   te::gm::GeomType newType = setGeomResultType( te::da::GetFirstGeomProperty(m_firstConverter->getResult())->getGeometryType(),
