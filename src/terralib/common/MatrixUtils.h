@@ -471,14 +471,14 @@ namespace te
       }
 
 // writing output matrices
-      eigenValuesMatrix.resize(fat, 1);
+      eigenValuesMatrix.resize(dim, 1);
       eigenValuesMatrix.clear();
       k = 0;
       for (i = 0; i < dim; i++)
         for (j = 0; j < dim; j++)
           eigenVectorsMatrix(j, i) = e_vec[k++];
-      for (i = 0; i < fat; i++)
-        eigenValuesMatrix(i, 0) = e_val[i];
+      for (i = 0; i < dim; i++)
+        eigenValuesMatrix(i, 0) = e_val[(i * (i + 1)) / 2 + i];
 
       delete []cov;
       delete []e_vec;
