@@ -20,7 +20,7 @@
 // Adapt the source and target datasource information to your environment!
 bool VectorToRaster()
 {
-  std::string filename(""TERRALIB_DATA_DIR"/shp/SP_cities.shp");
+  std::string filename(TERRALIB_DATA_DIR "/shp/SP_cities.shp");
   
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
@@ -54,7 +54,7 @@ bool VectorToRaster()
   int columns = 1000;
   int rows = 1000;
   
-  boost::filesystem::path uri(""TERRALIB_DATA_DIR"/rasters/vector2raster.tif");
+  boost::filesystem::path uri(TERRALIB_DATA_DIR "/rasters/vector2raster.tif");
   std::string dsName = "vector2raster";
 
   if (boost::filesystem::exists(uri))

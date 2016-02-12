@@ -127,7 +127,7 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
     default:
     {
       newProperty = 0;
-      return false;
+      return nullptr;
     }
   }
   return newProperty;
