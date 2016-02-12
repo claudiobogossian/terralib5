@@ -19,20 +19,20 @@ void ResampleRaster()
     std::map<std::string, std::string> rinfo;
 
 // set input raster name
-    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
 
 // open input raster
     te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
 // set output raster names
     std::map<std::string, std::string> nnname;
-    nnname["URI"] = ""TERRALIB_DATA_DIR"/rasters/resampled_nn_scale_plus2.tif";
+    nnname["URI"] = TERRALIB_DATA_DIR "/rasters/resampled_nn_scale_plus2.tif";
 
     std::map<std::string, std::string> biliname;
-    biliname["URI"] = ""TERRALIB_DATA_DIR"/rasters/resampled_bili_scale_minus2.tif";
+    biliname["URI"] = TERRALIB_DATA_DIR "/rasters/resampled_bili_scale_minus2.tif";
 
     std::map<std::string, std::string> bicname;
-    bicname["URI"] = ""TERRALIB_DATA_DIR"/rasters/resampled_bic_scale_minus3.tif";
+    bicname["URI"] = TERRALIB_DATA_DIR "/rasters/resampled_bic_scale_minus3.tif";
 
 // applies the interpolation
     te::rst::Raster* nnraster = inraster->resample(te::rst::NearestNeighbor, 2, nnname);
