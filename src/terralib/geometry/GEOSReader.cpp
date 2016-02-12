@@ -179,14 +179,18 @@ te::gm::Polygon* te::gm::GEOSReader::read(const geos::geom::Polygon* geosPoly)
   if(geosPoly->isEmpty())
     return new Polygon(0, PolygonType, geosPoly->getSRID());
 
+  int coordDimension = geosPoly->getCoordinateDimension();
+
   te::gm::GeomType gtype;
-  if (geosPoly->getDimension() == geos::geom::Dimension::A)
-	gtype = PolygonZType;
+
+  if (coordDimension == 3)
+    gtype = PolygonZType;
+  else if(coordDimension == 4)
+    gtype = PolygonZMType;
   else
 	gtype = PolygonType;
 
   std::size_t holesSize = geosPoly->getNumInteriorRing();
-
 
   Polygon* poly = new Polygon(holesSize + 1, gtype, geosPoly->getSRID(), 0);
 

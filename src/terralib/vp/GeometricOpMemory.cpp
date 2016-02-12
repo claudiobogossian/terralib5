@@ -336,14 +336,10 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               {
                 std::auto_ptr<te::gm::Geometry> convexHull(in_geom->convexHull());
                 convexHull->setSRID(geomProp->getSRID());
-//Adapt while fix N types of geometries.
-                convexHull.reset(GetValidMultiPolygon(convexHull.get()));
-                std::vector<te::gm::Geometry*> geomVec;
-                Multi2Single(convexHull.release(), geomVec);
-//----------------------------------
-                if (geomVec[0]->getGeomTypeId() == te::gm::PolygonType)
+
+                if (convexHull->getGeomTypeId() == te::gm::PolygonType)
                 {
-                  item->setGeometry("convex_hull", geomVec[0]);
+                  item->setGeometry("convex_hull", convexHull.release());
                   geom = true;
                 }
                 else
@@ -526,13 +522,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
               std::auto_ptr<te::gm::Geometry> convexHull(seedGeom->convexHull());
               convexHull->setSRID(geomProp->getSRID());
 
-              //Adapt while fix N types of geometries.
-              convexHull.reset(GetValidMultiPolygon(convexHull.get()));
-              std::vector<te::gm::Geometry*> geomVec;
-              Multi2Single(convexHull.release(), geomVec);
-              //----------------------------------
-
-              item->setGeometry("convex_hull", geomVec[0]);
+              item->setGeometry("convex_hull", convexHull.release());
             }
           }
           break;
@@ -769,13 +759,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
                 std::auto_ptr<te::gm::Geometry> convexHull(itGeom->second->convexHull());
                 convexHull->setSRID(seedGeom->getSRID());
                 
-                //Adapt while fix N types of geometries.
-                convexHull.reset(GetValidMultiPolygon(convexHull.get()));
-                std::vector<te::gm::Geometry*> geomVec;
-                Multi2Single(convexHull.release(), geomVec);
-                //----------------------------------
-                
-                outItem->setGeometry("convex_hull", geomVec[0]);
+                outItem->setGeometry("convex_hull", convexHull.release());
               }
             }
             break;
