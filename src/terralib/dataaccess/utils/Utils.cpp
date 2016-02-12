@@ -217,8 +217,9 @@ te::da::DataSet* te::da::GetDataSet(const std::string& name, const std::string& 
   //DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
 
   DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
+  
   if(datasource.get() == 0)
-    return false;
+    return nullptr;
 
   std::auto_ptr<DataSet> dataset(datasource->getDataSet(name));
 
@@ -230,8 +231,9 @@ te::da::DataSetType* te::da::GetDataSetType(const std::string& name, const std::
   assert(!datasourceId.empty());
 
   DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
+  
   if(datasource.get() == 0)
-    return false;
+    return nullptr;
 
   std::auto_ptr<DataSetType> datasettype(datasource->getDataSetType(name));
 

@@ -61,7 +61,7 @@ int main(int /*argc*/, char** /*argv*/)
   {
     /* OGC Symbology Encoding */
 
-    std::string path = ""TERRALIB_DATA_DIR"/xml/style.xml";
+    std::string path = TERRALIB_DATA_DIR "/xml/style.xml";
 
     EncodeStyle(path); // Creates a Style and encodes it to XML format.
 
@@ -71,7 +71,7 @@ int main(int /*argc*/, char** /*argv*/)
     /* XSD Schema */
 
     std::cout << "Decoding schema..." << std::endl;
-    DecodeSchema(""TERRALIB_DATA_DIR"/xml/plugin_info.xsd");
+    DecodeSchema(TERRALIB_DATA_DIR "/xml/plugin_info.xsd");
   }
   catch(const std::exception& e)
   {

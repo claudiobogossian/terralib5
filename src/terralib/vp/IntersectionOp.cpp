@@ -245,3 +245,16 @@ void te::vp::IntersectionOp::setIsSecondQuery()
 {
   m_isSecondQuery = true;
 }
+
+bool te::vp::IntersectionOp::isSelectedProperty(const std::string& dsName, te::dt::Property* prop)
+{
+  for (std::size_t i = 0; i < m_attributeVec.size(); ++i)
+  {
+    std::pair<std::string, std::string> p = m_attributeVec[i];
+
+    if (p.first == dsName && p.second == prop->getName())
+      return true;
+  }
+
+  return false;
+}
