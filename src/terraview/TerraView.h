@@ -146,8 +146,6 @@ class TerraView : public te::qt::af::BaseApplication
 
     void onProjectPropertiesTriggered();
 
-    void onChangeLayerDataSourceTriggered();
-
     void onUpdateLayerDataSourceTriggered();
 
     void onRecentProjectsTriggered(QAction* proj);
@@ -221,7 +219,6 @@ class TerraView : public te::qt::af::BaseApplication
     QAction* m_projectAddLayerTabularDataSet;
     QAction* m_projectAddLayerGraph;
     QAction* m_projectAddFolderLayer;
-    QAction* m_projectChangeLayerDataSource;
     QAction* m_projectUpdateLayerDataSource;
     QAction* m_projectProperties;
 
