@@ -376,7 +376,6 @@ void TerraView::initActions()
   initAction(m_projectAddFolderLayer, "folderlayer-new", "Project.New Folder Layer", tr("Add &Folder Layer..."), tr("Add a new folder layer"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "view-filter", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerTabularDataSet, "view-data-table", "Project.Add Layer.Tabular File", tr("&Tabular File..."), tr("Add a new layer from a Tabular file"), true, false, true, m_menubar);
-  initAction(m_projectChangeLayerDataSource, "", "Project.Change Layer Data Source", tr("&Change Layer Data Source"), tr("Chanage layer Data Source"), true, false, true, this);
   initAction(m_projectUpdateLayerDataSource, "", "Project.Update Layer Data Source", tr("&Update Layer Data Source"), tr("Update layer Data Source"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
 
@@ -436,7 +435,6 @@ void TerraView::initSlotsConnections()
   connect(m_projectAddLayerTabularDataSet, SIGNAL(triggered()), SLOT(onAddTabularLayerTriggered()));
   connect(m_projectAddFolderLayer, SIGNAL(triggered()), SLOT(onAddFolderLayerTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
-  connect(m_projectChangeLayerDataSource, SIGNAL(triggered()), SLOT(onChangeLayerDataSourceTriggered()));
   connect(m_projectUpdateLayerDataSource, SIGNAL(triggered()), SLOT(onUpdateLayerDataSourceTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
 
@@ -733,7 +731,6 @@ void TerraView::addPopUpMenu()
   treeView->addRasterLayerAction(m_layerProperties);
 
   //// Actions for invalid layers
-  treeView->addInvalidLayerAction(m_projectChangeLayerDataSource);
   treeView->addInvalidLayerAction(m_projectUpdateLayerDataSource);
 
   //// Action for multi selected layers
@@ -1582,55 +1579,6 @@ void TerraView::onProjectPropertiesTriggered()
     // Set window title
     if(m_project->m_changed)
       projectChanged();
-  }
-}
-
-void TerraView::onChangeLayerDataSourceTriggered()
-{
-  try
-  {
-    std::list<te::qt::widgets::TreeItem*> selectedLayerItems = getLayerExplorer()->getSelectedItems();
-
-    // Get Data Source
-    std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
-
-    QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
-
-    if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
-      dselector->setDataSourceToUse(dsTypeSett);
-
-    int retval = dselector->exec();
-
-    if(retval == QDialog::Rejected)
-      return;
-
-    std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
-
-    if(selectedDatasources.empty())
-      return;
-
-    dselector.reset(0);
-
-    const std::string& dsId = selectedDatasources.front()->getId();
-
-    te::map::AbstractLayerPtr layer = ((te::qt::widgets::LayerItem*) selectedLayerItems.front())->getLayer();
-
-    te::map::DataSetLayer* dsl = (te::map::DataSetLayer*)layer.get();
-
-    if(dsl)
-      dsl->setDataSourceId(dsId);
-
-    projectChanged();
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-  catch(...)
-  {
-    QMessageBox::warning(this,
-                         m_app->getAppTitle(),
-                         tr("Unknown error while trying to change a layer data source!"));
   }
 }
 
