@@ -96,6 +96,9 @@ namespace te
           /*! \brief This method returns the layer handled by this thread. */
           te::map::AbstractLayer* getLayer() const;
 
+          /*! \brief This method returns the image result of the drawn layer. */
+          QImage getImage() const;
+
         protected:
 
           /* \brief Starts the thread. i.e. performs the layer draw. */
