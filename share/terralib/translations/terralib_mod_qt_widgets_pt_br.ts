@@ -8556,17 +8556,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizardPage.cpp" line="286"/>
         <source>MAP - Maximum a Posteriori Probability</source>
-        <translation type="unfinished"></translation>
+        <translation>MAP - Maximum a Posteriori Probability</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizardPage.cpp" line="287"/>
         <source>EM - Expectation Maximization</source>
-        <translation type="unfinished"></translation>
+        <translation>EM - Expectation Maximization</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizardPage.cpp" line="288"/>
         <source>SAM - Spectral Angle Mapper</source>
-        <translation type="unfinished"></translation>
+        <translation>SAM - Spectral Angle Mapper</translation>
     </message>
 </context>
 <context>
@@ -8579,37 +8579,37 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizard.cpp" line="215"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizard.cpp" line="254"/>
         <source>Clipping</source>
-        <translation type="unfinished"></translation>
+        <translation>Recorte</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizard.cpp" line="102"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizard.cpp" line="102"/>
         <source>Select at least one band.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione pelo menos uma banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizard.cpp" line="150"/>
         <source>File already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo já existe.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizard.cpp" line="183"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizard.cpp" line="215"/>
         <source>Selected area do not intersects the raster extent.</source>
-        <translation type="unfinished"></translation>
+        <translation>Área selecionada não intersepta a extensão do matricial (raster).</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizard.cpp" line="254"/>
         <source>Selected area beyond the raster boundaries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Área selecionada para além dos limites do dado matricial.</translation>
     </message>
 </context>
 <context>
@@ -8617,27 +8617,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="82"/>
         <source>Clipping</source>
-        <translation type="unfinished"></translation>
+        <translation>Recorte</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="83"/>
         <source>Select the type of clipping and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de recorte e os parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="456"/>
         <source>Extent</source>
-        <translation type="unfinished"></translation>
+        <translation>Extensão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="457"/>
         <source>Dimension</source>
-        <translation type="unfinished"></translation>
+        <translation>Dimensão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="458"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada</translation>
     </message>
 </context>
 <context>
@@ -8645,73 +8645,73 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="171"/>
         <source>Categorize</source>
-        <translation type="unfinished"></translation>
+        <translation>Categorizar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="172"/>
         <source>Interpolate</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpolar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="173"/>
         <source>Recode</source>
-        <translation type="unfinished"></translation>
+        <translation>Recodificar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="175"/>
         <source>Equal Steps</source>
-        <translation type="unfinished"></translation>
+        <translation>Passo Igual</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="176"/>
         <source>Unique Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Único</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="973"/>
         <source>Classification</source>
-        <translation type="unfinished"></translation>
+        <translation>Classificação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="974"/>
         <source>Set the colors for the min and max values of this range. Also necessary to change the colors equivalents at another level to maintain consistency.</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir as cores para os valores mínimo e máximo deste intervalo. Também é necessário alterar as cores equivalentes no outro nível para manter a consistência.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="1086"/>
         <source>Grouping</source>
-        <translation type="unfinished"></translation>
+        <translation>Agrupamento</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="1086"/>
         <source>There are no other layers with Grouping!</source>
-        <translation type="unfinished"></translation>
+        <translation>Não há outras camadas com Agrupamento !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="1159"/>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="1165"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="1160"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="1161"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="1166"/>
         <source>From</source>
-        <translation type="unfinished"></translation>
+        <translation>De</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ColorMapWidget.cpp" line="1167"/>
         <source>To</source>
-        <translation type="unfinished"></translation>
+        <translation>Para</translation>
     </message>
 </context>
 <context>
@@ -8719,12 +8719,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ColorPickerToolButton.h" line="123"/>
         <source>Basic Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Cores Básicas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ColorPickerToolButton.h" line="150"/>
         <source>More Colors...</source>
-        <translation type="unfinished"></translation>
+        <translation>Mais Cores...</translation>
     </message>
 </context>
 <context>
@@ -8732,7 +8732,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ColorPickerToolButton.cpp" line="36"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
 </context>
 <context>
@@ -8744,22 +8744,22 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizard.cpp" line="159"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizard.cpp" line="169"/>
         <source>Color Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação de Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizard.cpp" line="144"/>
         <source>Color Transform ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação de cor terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizard.cpp" line="148"/>
         <source>Color Transform execution error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação de cor com erro de execução.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizard.cpp" line="169"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção !</translation>
     </message>
 </context>
 <context>
@@ -8767,22 +8767,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizardPage.cpp" line="53"/>
         <source>Color Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformação de Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizardPage.cpp" line="54"/>
         <source>Select the type of color transformation and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de transformação de cores e defina os parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizardPage.cpp" line="253"/>
         <source>RGB - IHS</source>
-        <translation type="unfinished"></translation>
+        <translation>RGB - IHS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ColorTransformWizardPage.cpp" line="254"/>
         <source>IHS - RGB</source>
-        <translation type="unfinished"></translation>
+        <translation>IHS - RGB</translation>
     </message>
 </context>
 <context>
@@ -8790,30 +8790,30 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizard.cpp" line="58"/>
         <source>Compose / Decompose Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Compor / Decompor Bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizard.cpp" line="121"/>
         <source>Allows selection of layers using filters for selection. Select one layer for DECOMPOSITION or multi layers for COMPOSITION.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite a seleção de camadas usando filtros para a seleção. Selecione uma camada de decomposição ou multi-camadas para a composição.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizard.cpp" line="165"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizard.cpp" line="175"/>
         <source>Compose</source>
-        <translation type="unfinished"></translation>
+        <translation>Compor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizard.cpp" line="175"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizard.cpp" line="253"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizard.cpp" line="243"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizard.cpp" line="253"/>
         <source>Decompose</source>
-        <translation type="unfinished"></translation>
+        <translation>Decompõe</translation>
     </message>
 </context>
 <context>
@@ -8821,32 +8821,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizardPage.cpp" line="58"/>
         <source>Compose / Decompose Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Compor / Decompor Bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizardPage.cpp" line="59"/>
         <source>Select the operation (Compose / Decompose) and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione a operação (Compor / Decompor) e defina seus parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizardPage.cpp" line="167"/>
         <source>Band </source>
-        <translation type="unfinished"></translation>
+        <translation>Banda </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizardPage.cpp" line="347"/>
         <source>Nearest Neighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vizinho mais Próximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizardPage.cpp" line="348"/>
         <source>Bilinear</source>
-        <translation type="unfinished"></translation>
+        <translation>Bilinear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ComposeBandsWizardPage.cpp" line="349"/>
         <source>Bicubic</source>
-        <translation type="unfinished"></translation>
+        <translation>Bicúbico</translation>
     </message>
 </context>
 <context>
@@ -8854,122 +8854,122 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="240"/>
         <source>The pixels in the destination are cleared (set to fully transparent) independent of the source.</source>
-        <translation type="unfinished"></translation>
+        <translation>Os pixels na imagem destino são apagados (definido como totalmente transparente) independente da fonte.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="252"/>
         <source>The output is the source pixel. (This means a basic copy operation and is identical to SourceOver when the source pixel is opaque).</source>
-        <translation type="unfinished"></translation>
+        <translation>A saída é o pixel da imagem fonte. (Isto significa uma operação de cópia básica e será idêntica com a imagem fonte quando o pixel de origem é opaco).</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="264"/>
         <source>The output is the destination pixel. This means that the blending has no effect. This mode is the inverse of Source.</source>
-        <translation type="unfinished"></translation>
+        <translation>A saída é o pixel da imagem destino. Isto significa que a mistura não tem qualquer efeito. Este modo é o inverso da Fonte.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="276"/>
         <source>This is the default mode. The alpha of the source is used to blend the pixel on top of the destination.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este é o modo padrão. O alfa da imagem fonte é utilizado para misturar-se o pixel em cima do destino.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="288"/>
         <source>The alpha of the destination is used to blend it on top of the source pixels. This mode is the inverse of Source Over.</source>
-        <translation type="unfinished"></translation>
+        <translation>O alfa do destino é usado para misturá-la em cima dos pixels da imagem origem. Este modo é o inverso da Fonte.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="300"/>
         <source>The output is the source, where the alpha is reduced by that of the destination.</source>
-        <translation type="unfinished"></translation>
+        <translation>A saída é a fonte, em que a alfa é reduzida por aquela do destino.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="312"/>
         <source>The output is the destination, where the alpha is reduced by that of the source. This mode is the inverse of Source In.</source>
-        <translation type="unfinished"></translation>
+        <translation>A saída é o destino, em que o alfa é reduzida por aquela da fonte. Este modo é o inverso da Fonte.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="324"/>
         <source>The output is the source, where the alpha is reduced by the inverse of destination.</source>
-        <translation type="unfinished"></translation>
+        <translation>A saída é a fonte, em que a alfa é reduzida pelo inverso do destino.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="336"/>
         <source>The output is the destination, where the alpha is reduced by the inverse of the source. This mode is the inverse of Source Out.</source>
-        <translation type="unfinished"></translation>
+        <translation>A saída é o destino, em que o alfa é reduzida pelo inverso da fonte. Este modo é o inverso da fonte.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="348"/>
         <source>The source pixel is blended on top of the destination, with the alpha of the source pixel reduced by the alpha of the destination pixel.</source>
-        <translation type="unfinished"></translation>
+        <translation>O pixel da imagem fonte é misturado na parte superior do destino, com o alfa do pixel de fonte reduzida pela alfa do pixel de destino.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="360"/>
         <source>The destination pixel is blended on top of the source, with the alpha of the destination pixel is reduced by the alpha of the destination pixel. This mode is the inverse of Source A top.</source>
-        <translation type="unfinished"></translation>
+        <translation>O pixel destino é misturado no topo da fonte, com o alfa do pixel de destino é reduzida pela alfa do pixel de destino. Este modo é o inverso da Fonte.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="372"/>
         <source>The source, whose alpha is reduced with the inverse of the destination alpha, is merged with the destination, whose alpha is reduced by the inverse of the source alpha. Xor is not the same as the bitwise Xor.</source>
-        <translation type="unfinished"></translation>
+        <translation>A fonte, cujo alfa é reduzida com o inverso da alfa destino, é fundida com o destino, cujo alfa é reduzida pelo inverso do alfa fonte. Xor não é o mesmo que o XOR.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="384"/>
         <source>Both the alpha and color of the source and destination pixels are added together.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tanto o alfa como a cor da fonte e de destino pixels são somados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="396"/>
         <source>The output is the source color multiplied by the destination. Multiplying a color with white leaves the color unchanged, while multiplying a color with black produces black.</source>
-        <translation type="unfinished"></translation>
+        <translation>A saída é a cor fonte multiplicado pelo destino. A multiplicação de uma cor com folhas brancas a cor inalterada, enquanto multiplica uma cor com preto produz preto.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="408"/>
         <source>The source and destination colors are inverted and then multiplied. Screening a color with white produces white, whereas screening a color with black leaves the color unchanged.</source>
-        <translation type="unfinished"></translation>
+        <translation>As cores de origem e destino são invertidos e depois multiplicado. A apresentação de uma cor com branco produz branco, enquanto de uma cor com o preto deixa a cor inalterada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="420"/>
         <source>Multiplies or screens the colors depending on the destination color. The destination color is mixed with the source color to reflect the lightness or darkness of the destination.</source>
-        <translation type="unfinished"></translation>
+        <translation>Múltiplos ou telas de cores, dependendo da cor de destino. A cor destino é misturada com a cor de origem para refletir a luminosidade ou a escuridão do destino.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="432"/>
         <source>The darker of the source and destination colors is selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>A maior escuridão das cores origem e de destino estão selecionadas.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="444"/>
         <source>The lighter of the source and destination colors is selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>A maior claridade das cores origem e de destino estão selecionadas.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="456"/>
         <source>The destination color is brightened to reflect the source color. A black source color leaves the destination color unchanged.</source>
-        <translation type="unfinished"></translation>
+        <translation>A cor destino é iluminada para refletir a cor de origem. A cor de origem negra deixa a cor de destino inalterada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="468"/>
         <source>The destination color is darkened to reflect the source color. A white source color leaves the destination color unchanged.</source>
-        <translation type="unfinished"></translation>
+        <translation>A cor destino é escurecida para refletir a cor de origem. A cor de origem branco deixa a cor de destino inalterada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="480"/>
         <source>Multiplies or screens the colors depending on the source color. A light source color will lighten the destination color, whereas a dark source color will darken the destination color.</source>
-        <translation type="unfinished"></translation>
+        <translation>Múltiplos ou telas de cores dependem da cor da fonte. A cor fonte de luz vai clarear a cor de destino, enquanto uma cor escura da fonte vai escurecer a cor de destino.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="492"/>
         <source>Darkens or lightens the colors depending on the source color. Similar to Hard Light.</source>
-        <translation type="unfinished"></translation>
+        <translation>Escurece ou clareia as cores, dependendo da cor de origem. Semelhante ao Hard Light.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="504"/>
         <source>Subtracts the darker of the colors from the lighter. Painting with white inverts the destination color, whereas painting with black leaves the destination color unchanged.</source>
-        <translation type="unfinished"></translation>
+        <translation>Subtrai o mais escuro das cores claras. A pintura com branco inverte a cor de destino, enquanto a pintura com preto deixa a cor de destino inalterada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeDialog.cpp" line="516"/>
         <source>Similar to Difference, but with a lower contrast. Painting with white inverts the destination color, whereas painting with black leaves the destination color unchanged.</source>
-        <translation type="unfinished"></translation>
+        <translation>Semelhante a diferença, mas com um menor contraste. A pintura com branco inverte a cor de destino, enquanto a pintura com preto deixa a cor de destino inalterada.</translation>
     </message>
 </context>
 <context>
@@ -8977,22 +8977,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeMenuWidget.cpp" line="37"/>
         <source>Composition Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo de Composição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeMenuWidget.cpp" line="40"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Padrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeMenuWidget.cpp" line="42"/>
         <source>Plus</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CompositionModeMenuWidget.cpp" line="44"/>
         <source>Advanced...</source>
-        <translation type="unfinished"></translation>
+        <translation>Avançado...</translation>
     </message>
 </context>
 <context>
@@ -9000,28 +9000,28 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ConstraintWidget.cpp" line="44"/>
         <source>Available Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ConstraintWidget.cpp" line="45"/>
         <source>Selected Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Selecionadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ConstraintWidget.cpp" line="80"/>
         <location filename="../../../src/terralib/qt/widgets/property/ConstraintWidget.cpp" line="91"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ConstraintWidget.cpp" line="80"/>
         <source>Constraint name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome de restrição não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/ConstraintWidget.cpp" line="91"/>
         <source>No property selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma propriedade selecionada.</translation>
     </message>
 </context>
 <context>
@@ -9030,7 +9030,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/property/ConstraintsIndexesPropertyDialog.cpp" line="103"/>
         <location filename="../../../src/terralib/qt/widgets/property/ConstraintsIndexesPropertyDialog.cpp" line="124"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar</translation>
     </message>
 </context>
 <context>
@@ -9038,7 +9038,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/ConstraintsItem.cpp" line="77"/>
         <source>&amp;Open constraints</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir restrições</translation>
     </message>
 </context>
 <context>
@@ -9046,42 +9046,42 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastDialog.cpp" line="132"/>
         <source>Histogram Equalization</source>
-        <translation type="unfinished"></translation>
+        <translation>Equalização de Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastDialog.cpp" line="140"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastDialog.cpp" line="150"/>
         <source>Mean and standard deviation</source>
-        <translation type="unfinished"></translation>
+        <translation>Média e Desvio Padrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastDialog.cpp" line="183"/>
         <source>Contrast enhencement ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce de contraste terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastDialog.cpp" line="187"/>
         <source>Contrast enhencement execution error</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce de contraste executou com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastDialog.cpp" line="192"/>
         <source>Contrast enhencement initialization error</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce de contraste iniciou com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastDialog.cpp" line="197"/>
         <source>Invalid number of bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Número inválido de bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastDialog.cpp" line="202"/>
         <source>Invalid input raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz (raster) de entrada inválida</translation>
     </message>
 </context>
 <context>
@@ -9089,17 +9089,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ContrastEnhancementWidget.cpp" line="82"/>
         <source>Normalize</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalizar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ContrastEnhancementWidget.cpp" line="84"/>
         <source>Histogram</source>
-        <translation type="unfinished"></translation>
+        <translation>Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ContrastEnhancementWidget.cpp" line="86"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum</translation>
     </message>
 </context>
 <context>
@@ -9113,42 +9113,42 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="210"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="220"/>
         <source>Contrast</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="96"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="96"/>
         <source>Select at least one band.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione pelo menos uma banda.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="144"/>
         <source>File already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo já existe.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="186"/>
         <source>Contrast enhencement ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce de contraste terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="190"/>
         <source>Contrast enhencement execution error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce de contraste executou com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="200"/>
         <source>Contrast enhencement initialization error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce de contraste iniciou com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizard.cpp" line="220"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção!</translation>
     </message>
 </context>
 <context>
@@ -9156,69 +9156,69 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="80"/>
         <source>Contrast</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="81"/>
         <source>Select the type of contrast and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de contraste e defina os seus parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="300"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="300"/>
         <source>Constrast error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro de Contraste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="310"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="311"/>
         <source>Histogram Equalization</source>
-        <translation type="unfinished"></translation>
+        <translation>Equalização de Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="312"/>
         <source>Square Constrast</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraste Quadrado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="313"/>
         <source>Square Root Constrast</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraste Raiz Quadrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="314"/>
         <source>Log Constrast</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraste Log</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="315"/>
         <source>Mean and Standard Deviation</source>
-        <translation type="unfinished"></translation>
+        <translation>Média e Desvio Padrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="316"/>
         <source>Decorrelation Enhancement</source>
-        <translation type="unfinished"></translation>
+        <translation>Realce por Decorrelação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="344"/>
         <source>Band </source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="378"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="386"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="409"/>
         <source>Minimum</source>
-        <translation type="unfinished"></translation>
+        <translation>Mínimo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="379"/>
@@ -9227,7 +9227,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="421"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="438"/>
         <source>Maximum</source>
-        <translation type="unfinished"></translation>
+        <translation>Máximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="385"/>
@@ -9235,34 +9235,34 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="447"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="481"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="415"/>
         <source>Use left button to set minimum value and right button to define maximum value over the histogram.</source>
-        <translation type="unfinished"></translation>
+        <translation>Use o botão esquerdo para definir o valor mínimo e o botão direito para definir o valor máximo sobre o histograma.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="442"/>
         <source>Use left button to set maximum value over the histogram.</source>
-        <translation type="unfinished"></translation>
+        <translation>Use o botão esquerdo para definir o valor máximo sobre o histograma.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="448"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="470"/>
         <source>Mean</source>
-        <translation type="unfinished"></translation>
+        <translation>Média</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="449"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="471"/>
         <source>Std Dev</source>
-        <translation type="unfinished"></translation>
+        <translation>Desvio Padrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ContrastWizardPage.cpp" line="476"/>
         <source>Use left button to set Mean value and right button to define Std Dev value over the histogram.</source>
-        <translation type="unfinished"></translation>
+        <translation>Use o botão esquerdo para definir o valor Médio e o botão direito para definir o valor Desvio Padrão sobre o histograma.</translation>
     </message>
 </context>
 <context>
@@ -9271,12 +9271,12 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CreateLayerDialog.cpp" line="70"/>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CreateLayerDialog.cpp" line="74"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CreateLayerDialog.cpp" line="74"/>
         <source>Layer Created</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada Criada</translation>
     </message>
 </context>
 <context>
@@ -9284,12 +9284,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CreateLayerWidget.cpp" line="249"/>
         <source>Save as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar como...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/CreateLayerWidget.cpp" line="249"/>
         <source>Shapefile (*.shp *.SHP);;</source>
-        <translation type="unfinished"></translation>
+        <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
 </context>
 <context>
@@ -9297,7 +9297,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangeSummaryWizardPage.cpp" line="113"/>
         <source>Successfully transferred</source>
-        <translation type="unfinished"></translation>
+        <translation>Transferido com sucesso</translation>
     </message>
 </context>
 <context>
@@ -9305,37 +9305,37 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="72"/>
         <source>Data Source Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecção da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="73"/>
         <source>Please, select the data source where the data is stored</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione a fonte de dados onde os dados estão armazenados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="84"/>
         <source>Dataset Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="85"/>
         <source>Please, select the datasets you want to transfer to another data source</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione os conjuntos de dados que você deseja transferir para outra fonte de dados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="89"/>
         <source>Target Data Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados Alvo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="90"/>
         <source>Please, select the target data source</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione a fonte de dados alvo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="280"/>
         <source>Unknown error!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido!</translation>
     </message>
 </context>
 <context>
@@ -9343,107 +9343,107 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="156"/>
         <source>Array</source>
-        <translation type="unfinished"></translation>
+        <translation>Array</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="157"/>
         <source>Bit</source>
-        <translation type="unfinished"></translation>
+        <translation>Bit</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="158"/>
         <source>Boolean</source>
-        <translation type="unfinished"></translation>
+        <translation>Booleano</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="159"/>
         <source>Byte Array</source>
-        <translation type="unfinished"></translation>
+        <translation>Byte Array</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="160"/>
         <source>Char</source>
-        <translation type="unfinished"></translation>
+        <translation>Caracter</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="161"/>
         <source>Composite</source>
-        <translation type="unfinished"></translation>
+        <translation>Composto</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="162"/>
         <source>Data Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="163"/>
         <source>Date and Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Data e Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="164"/>
         <source>Double</source>
-        <translation type="unfinished"></translation>
+        <translation>Double</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="165"/>
         <source>Float</source>
-        <translation type="unfinished"></translation>
+        <translation>Float</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="166"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="167"/>
         <source>Int 16</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="168"/>
         <source>Int 32</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="169"/>
         <source>Int 64</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 64</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="170"/>
         <source>Numeric</source>
-        <translation type="unfinished"></translation>
+        <translation>Numérico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="171"/>
         <source>Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matricial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="172"/>
         <source>String</source>
-        <translation type="unfinished"></translation>
+        <translation>String</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="173"/>
         <source>U Char</source>
-        <translation type="unfinished"></translation>
+        <translation>U Char</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="174"/>
         <source>U Int 16</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="175"/>
         <source>U Int 32</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="176"/>
         <source>U Int 64</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 64</translation>
     </message>
 </context>
 <context>
@@ -9451,7 +9451,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSetCategoryGroupItem.cpp" line="87"/>
         <source>&amp;Open datasets</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir conjunto de dados</translation>
     </message>
 </context>
 <context>
@@ -9459,7 +9459,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSetCategoryItem.cpp" line="87"/>
         <source>&amp;Open datasets</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir conjunto de dados</translation>
     </message>
 </context>
 <context>
@@ -9476,7 +9476,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.cpp" line="296"/>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.cpp" line="302"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.cpp" line="98"/>
@@ -9485,7 +9485,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.cpp" line="186"/>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.cpp" line="303"/>
         <source>Unknown error in dataset explorer model!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido no modelo explorador do conjunto de dados!</translation>
     </message>
 </context>
 <context>
@@ -9494,12 +9494,12 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/mapdisplay/DataSetDisplay.cpp" line="81"/>
         <location filename="../../../src/terralib/qt/widgets/mapdisplay/DataSetDisplay.cpp" line="87"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/mapdisplay/DataSetDisplay.cpp" line="88"/>
         <source>Unknown error when displaying dataset!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido ao exibir conjunto de dados!</translation>
     </message>
 </context>
 <context>
@@ -9507,7 +9507,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetExplorer.cpp" line="35"/>
         <source>Dataset Explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>Explorador do conjunto de dados</translation>
     </message>
 </context>
 <context>
@@ -9515,7 +9515,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSetGroupItem.cpp" line="86"/>
         <source>&amp;Open datasets</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir conjunto de dados</translation>
     </message>
 </context>
 <context>
@@ -9523,7 +9523,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSetItem.cpp" line="105"/>
         <source>&amp;Open dataset</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir conjunto de dados</translation>
     </message>
 </context>
 <context>
@@ -9532,23 +9532,23 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.cpp" line="189"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.cpp" line="195"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.cpp" line="189"/>
         <source>Invalid output Layer SRID.</source>
-        <translation type="unfinished"></translation>
+        <translation>Inválido SRID da camada de saída.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.cpp" line="195"/>
         <source>Invalid input Layer SRID.</source>
-        <translation type="unfinished"></translation>
+        <translation>Inválido SRID da camada de entrada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.cpp" line="244"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.cpp" line="256"/>
         <source>Choose the SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha o SRS</translation>
     </message>
 </context>
 <context>
@@ -9556,12 +9556,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/DataSetSelectorDialog.cpp" line="70"/>
         <source>Dataset Selection - %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção do Conjunto de Dados - %1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/DataSetSelectorDialog.cpp" line="80"/>
         <source>%1 - %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - %2</translation>
     </message>
 </context>
 <context>
@@ -9572,19 +9572,20 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/DataSetSelectorWidget.cpp" line="140"/>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/DataSetSelectorWidget.cpp" line="152"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/DataSetSelectorWidget.cpp" line="133"/>
         <source>Unknown error when showing datasets!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido ao mostrar conjuntos de dados!</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/DataSetSelectorWidget.cpp" line="141"/>
         <location filename="../../../src/terralib/qt/widgets/dataset/selector/DataSetSelectorWidget.cpp" line="153"/>
         <source>Not implemented yet!
 We will provide it soon!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ainda não implementado!
+Iremos fornecer em breve!</translation>
     </message>
 </context>
 <context>
@@ -9592,17 +9593,17 @@ We will provide it soon!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="571"/>
         <source>Invalid int value.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Int inválido</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="583"/>
         <source>Invalid double value.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Double inválido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="602"/>
         <source>Edition Failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha de Edição</translation>
     </message>
 </context>
 <context>
@@ -9610,136 +9611,136 @@ We will provide it soon!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1037"/>
         <source>This operation is not available for this type of data</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta operação não está disponível para este tipo de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1038"/>
         <source>TNormal Probability</source>
-        <translation type="unfinished"></translation>
+        <translation>Probabilidade TNormal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1066"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1114"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1158"/>
         <source>Fail to get data source.</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha na obtenção da fonte de dados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1070"/>
         <source>Invalid column name. Choose another.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da coluna inválido. Escolha outro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1070"/>
         <source>TerraView</source>
-        <translation type="unfinished"></translation>
+        <translation>TerraView</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1080"/>
         <source>Rename Column</source>
-        <translation type="unfinished"></translation>
+        <translation>Renomear Coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1080"/>
         <source>The column could not be renamed: </source>
-        <translation type="unfinished"></translation>
+        <translation>A coluna não pode ser renomeada: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1101"/>
         <source>Fail to get property of the dataset.</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha ao obter a propriedade do conjunto de dados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1151"/>
         <source>This is a string column, use single quotes</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta é uma coluna do tipo String, usar aspas simples</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1267"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1271"/>
         <source>Updating data failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizando falha de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1271"/>
         <source>Data source operation fail for unknown reason.</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação da fonte de dados falhou por motivo desconhecido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1419"/>
         <source>Sort operation not supported by the source of data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação de ordenar não suportada por esta fonte de dados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1436"/>
         <source>Sorting columns failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenação de colunas falharam</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1436"/>
         <source>Could not sort data: </source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível ordenar os dados:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1467"/>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1505"/>
         <source>Fail to get data source of the layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não consegue obter fonte de dados da camada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1472"/>
         <source>Name must not be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome não pode estar vazio.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1475"/>
         <source>The property name is invalid.</source>
-        <translation type="unfinished"></translation>
+        <translation>O nome da propriedade está inválido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1478"/>
         <source>There already exists a property with this name.</source>
-        <translation type="unfinished"></translation>
+        <translation>Já existe uma propriedade com este nome.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1492"/>
         <source>Creating column failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Criação de coluna falhou</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1492"/>
         <source>The column could not be created: </source>
-        <translation type="unfinished"></translation>
+        <translation>A coluna não pôde ser criada: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1500"/>
         <source>Remove column</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1500"/>
         <source>Are you sure you want to remove this column?</source>
-        <translation type="unfinished"></translation>
+        <translation>Tem certeza de que deseja remover esta coluna ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1523"/>
         <source>Removing column failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Remoção de coluna falhou</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1523"/>
         <source>The column could not be removed: </source>
-        <translation type="unfinished"></translation>
+        <translation>A coluna não pôde ser removida: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1576"/>
         <source>Fail to get data source from layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Não consegue obter fonte de dados da camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1590"/>
         <source>Save edition failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar a edição falhou</translation>
     </message>
 </context>
 <context>
@@ -9756,7 +9757,7 @@ We will provide it soon!</source>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetTreeModel.cpp" line="299"/>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetTreeModel.cpp" line="305"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetTreeModel.cpp" line="97"/>
@@ -9765,7 +9766,7 @@ We will provide it soon!</source>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetTreeModel.cpp" line="185"/>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetTreeModel.cpp" line="306"/>
         <source>Unknown error in dataset explorer model!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido no modelo explorador do conjunto de dados !</translation>
     </message>
 </context>
 <context>
@@ -9773,7 +9774,7 @@ We will provide it soon!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/dataset/explorer/DataSetTreeView.cpp" line="315"/>
         <source>Organize by category</source>
-        <translation type="unfinished"></translation>
+        <translation>Organizar por categoria</translation>
     </message>
 </context>
 <context>
@@ -9781,34 +9782,34 @@ We will provide it soon!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWidget.cpp" line="126"/>
         <source>Query Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Editor de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWidget.cpp" line="126"/>
         <source>Data Set Alias already defined!</source>
-        <translation type="unfinished"></translation>
+        <translation>Apelido do Conjunto de Dados já definido !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWidget.cpp" line="192"/>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWidget.cpp" line="198"/>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWidget.cpp" line="214"/>
         <source>Query Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Construtor de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWidget.cpp" line="192"/>
         <source>Data Set not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados não selecionado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWidget.cpp" line="198"/>
         <source>Data Set Alias not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Apelido do Conjunto de Dados não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWidget.cpp" line="214"/>
         <source>Data Set Alias already defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Apelido do Conjunto de Dados já definido.</translation>
     </message>
 </context>
 <context>
@@ -9816,12 +9817,12 @@ We will provide it soon!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWizardPage.cpp" line="45"/>
         <source>Data Set Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/DataSetWizardPage.cpp" line="46"/>
         <source>Select the datasets to be searched.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o conjunto de dados para ser pesquisado.</translation>
     </message>
 </context>
 <context>
@@ -9829,7 +9830,7 @@ We will provide it soon!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSourceExplorer.cpp" line="35"/>
         <source>Data Source Explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>Explorador da Fonte de Dados</translation>
     </message>
 </context>
 <context>
@@ -9838,12 +9839,12 @@ We will provide it soon!</source>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceExplorerDialog.cpp" line="88"/>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceExplorerDialog.cpp" line="96"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceExplorerDialog.cpp" line="97"/>
         <source>Unknown error while selecting a data source!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido ao selecionar uma fonte de dados !</translation>
     </message>
 </context>
 <context>
@@ -9851,7 +9852,7 @@ We will provide it soon!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSourceItem.cpp" line="75"/>
         <source>&amp;Open data source</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir fonte de dados</translation>
     </message>
 </context>
 <context>
@@ -9860,12 +9861,12 @@ We will provide it soon!</source>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.cpp" line="92"/>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.cpp" line="100"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.cpp" line="101"/>
         <source>Unknown error while selecting a data source!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido ao selecionar uma fonte de dados !</translation>
     </message>
 </context>
 <context>
@@ -9881,29 +9882,30 @@ We will provide it soon!</source>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.cpp" line="542"/>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.cpp" line="630"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.cpp" line="326"/>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.cpp" line="543"/>
         <source>Unknown error while adding a new data source!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido ao adicionar uma nova fonte de dados !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.cpp" line="409"/>
         <source>Unknown error while removing a data source!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido ao remover uma fonte de dados !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.cpp" line="482"/>
         <source>Unknown error while updating data source information!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido ao atualizar informações de uma fonte de dados !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.cpp" line="631"/>
         <source>The selected data source is not registered in the system.
 This may be an error on the connector implementation!</source>
-        <translation type="unfinished"></translation>
+        <translation>A fonte de dados selecionado não está registrada no sistema.
+Pode ser um erro no conector da aplicação !</translation>
     </message>
 </context>
 <context>
@@ -9911,12 +9913,12 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWizardPage.cpp" line="46"/>
         <source>Data Source Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Selector de fonte de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWizardPage.cpp" line="47"/>
         <source>Select the datasource to be explored.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione a fonte de dados a ser explorada.</translation>
     </message>
 </context>
 <context>
@@ -9933,7 +9935,7 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSourceTreeModel.cpp" line="308"/>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSourceTreeModel.cpp" line="314"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSourceTreeModel.cpp" line="105"/>
@@ -9942,7 +9944,7 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSourceTreeModel.cpp" line="193"/>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSourceTreeModel.cpp" line="315"/>
         <source>Unknown error in data source explorer!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido no explorador da fonte de dados !</translation>
     </message>
 </context>
 <context>
@@ -9950,32 +9952,32 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="255"/>
         <source>Open Textual File</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir Arquivo Textual</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="255"/>
         <source>Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.DBF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.DBF)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="301"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="301"/>
         <source>The file could not be read!</source>
-        <translation type="unfinished"></translation>
+        <translation>O arquivo não pôde ser lido !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="431"/>
         <source>Tabular File</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo Tabular</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="438"/>
         <source>Choose the SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha o SRS</translation>
     </message>
 </context>
 <context>
@@ -9983,42 +9985,42 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DateTimePropertyWidget.cpp" line="40"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DateTimePropertyWidget.cpp" line="41"/>
         <source>Date Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Período da Data</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DateTimePropertyWidget.cpp" line="42"/>
         <source>Date Durantion</source>
-        <translation type="unfinished"></translation>
+        <translation>Duração da Data</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DateTimePropertyWidget.cpp" line="43"/>
         <source>Time Duration</source>
-        <translation type="unfinished"></translation>
+        <translation>Duração do Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DateTimePropertyWidget.cpp" line="44"/>
         <source>Time Instante</source>
-        <translation type="unfinished"></translation>
+        <translation>Instante de Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DateTimePropertyWidget.cpp" line="45"/>
         <source>Time Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Período de Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DateTimePropertyWidget.cpp" line="46"/>
         <source>Time Instante wih Zone</source>
-        <translation type="unfinished"></translation>
+        <translation>Instante de Tempo com Zona</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DateTimePropertyWidget.cpp" line="47"/>
         <source>Time Period with Zone</source>
-        <translation type="unfinished"></translation>
+        <translation>Período de Tempo com Zona</translation>
     </message>
 </context>
 <context>
@@ -10037,25 +10039,25 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="705"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="711"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="159"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="308"/>
         <source>Input layer not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de entrada não selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="168"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="317"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="648"/>
         <source>Error getting selected layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na obtenção da camada selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="174"/>
         <source>Output File Name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do arquivo de saída não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="211"/>
@@ -10067,25 +10069,25 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="567"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="579"/>
         <source>Exchanger</source>
-        <translation type="unfinished"></translation>
+        <translation>Intercambiar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="211"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="399"/>
         <source>Layer name invalid for output datasource. Would you like to normalize the name?</source>
-        <translation type="unfinished"></translation>
+        <translation>O arquivo não pôde ser lido !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="221"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="409"/>
         <source>Layer name invalid for output datasource!</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da camada inválido para a fonte de dados de saída !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="238"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="426"/>
         <source>Some property name is invalid for output datasource. Would you like to normalize the name?</source>
-        <translation type="unfinished"></translation>
+        <translation>Alguma propriedade inválida no nome da fonte de dados de saída. Gostaria de normalizar o nome ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="256"/>
@@ -10093,64 +10095,64 @@ This may be an error on the connector implementation!</source>
         <source>Some property name is invalid for output datasource:
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Alguma propriedade do nome está inválida para fonte de dados de saída:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="286"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="567"/>
         <source>Layer exported successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada exportada com sucesso.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="290"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="575"/>
         <source>Error during exchanger. The reported error is: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro durante a troca de dados. O erro relatado é:%1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="325"/>
         <source>Output data source not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de dados de saída não selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="334"/>
         <source>Error getting selected data source.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao receber fonte de dados selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="340"/>
         <source>Data Set name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do conjunto de dados não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="671"/>
         <source>Save as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar como...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="672"/>
         <source>Shapefile (*.shp *.SHP);;Mapinfo File (*.mif *.MIF);;KML (*.kml *.KML);;GeoJSON (*.geojson *.GEOJSON);;GML (*.gml *.GML);;DXF (*.dxf *.DXF);;DGN (*.dgn *.DGN);;</source>
-        <translation type="unfinished"></translation>
+        <translation>Shapefile (*.shp *.SHP);;Mapinfo File (*.mif *.MIF);;KML (*.kml *.KML);;GeoJSON (*.geojson *.GEOJSON);;GML (*.gml *.GML);;DXF (*.dxf *.DXF);;DGN (*.dgn *.DGN);;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="696"/>
         <source>Output Layer SRID not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID da camada de saída não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="705"/>
         <source>Invalid output Layer SRID.</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID da camada de saída inválido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="711"/>
         <source>Invalid input Layer SRID.</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID da camada de entrada inválido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="753"/>
         <source>Choose the SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha o SRS</translation>
     </message>
 </context>
 <context>
@@ -10159,13 +10161,13 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="116"/>
         <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="123"/>
         <source>The layer</source>
-        <translation type="unfinished"></translation>
+        <translation>A camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="116"/>
         <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="123"/>
         <source>could not be drawn! Details:</source>
-        <translation type="unfinished"></translation>
+        <translation>não pode ser desenhada ! Detalhes:</translation>
     </message>
 </context>
 <context>
@@ -10173,22 +10175,22 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/FieldsWizardPage.cpp" line="47"/>
         <source>Attribute Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção de Atributos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/FieldsWizardPage.cpp" line="48"/>
         <source>Select the attributes to be listed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione os atributos a serem listados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/FieldsWizardPage.cpp" line="50"/>
         <source>Available Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/FieldsWizardPage.cpp" line="51"/>
         <source>Used Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Utilizadas</translation>
     </message>
 </context>
 <context>
@@ -10196,12 +10198,12 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/FileChooser.cpp" line="113"/>
         <source>Choose file</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha o arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/FileChooser.cpp" line="119"/>
         <source>Choose directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha o diretório</translation>
     </message>
 </context>
 <context>
@@ -10212,22 +10214,22 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizard.cpp" line="169"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizard.cpp" line="181"/>
         <source>Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizard.cpp" line="165"/>
         <source>Filter ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtragem terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizard.cpp" line="169"/>
         <source>Filter execution error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtragem executou com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizard.cpp" line="181"/>
         <source>Filter initialization error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtragem inicializou com erro.</translation>
     </message>
 </context>
 <context>
@@ -10235,68 +10237,68 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="57"/>
         <source>Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtragem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="58"/>
         <source>Select the type of filter and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de filtro e defina os seus parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="182"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="224"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="182"/>
         <source>No band was selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma banda foi selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="224"/>
         <source>Filter error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtragem com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="260"/>
         <source>Sobel</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobel</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="261"/>
         <source>Roberts</source>
-        <translation type="unfinished"></translation>
+        <translation>Roberts</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="262"/>
         <source>Mean</source>
-        <translation type="unfinished"></translation>
+        <translation>Média</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="263"/>
         <source>Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Moda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="264"/>
         <source>Median</source>
-        <translation type="unfinished"></translation>
+        <translation>Mediana</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="265"/>
         <source>Dilation</source>
-        <translation type="unfinished"></translation>
+        <translation>Dilatação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="266"/>
         <source>Erosion</source>
-        <translation type="unfinished"></translation>
+        <translation>Erosão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FilterWizardPage.cpp" line="267"/>
         <source>User Defined</source>
-        <translation type="unfinished"></translation>
+        <translation>Definido pelo Usuário</translation>
     </message>
 </context>
 <context>
@@ -10304,7 +10306,7 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/ForeignKeyItem.cpp" line="68"/>
         <source>&amp;Open foreign-key</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir chave extrageira</translation>
     </message>
 </context>
 <context>
@@ -10327,45 +10329,45 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="500"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="513"/>
         <source>Fusion</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="145"/>
         <source>Allows selection of layers using filters for selection. Select the layer with a LOWER raster resolution.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite a seleção de camadas usando filtros para a seleção. Selecione a camada com uma resolução de matriz INFERIOR.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="147"/>
         <source>Allows selection of layers using filters for selection. Select the layer with a HIGHER raster resolution.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite a seleção de camadas usando filtros para a seleção. Selecione a camada com uma resolução de matriz SUPERIOR.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="219"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="343"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="466"/>
         <source>Fusion ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusão terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="223"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="347"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="470"/>
         <source>Fusion execution error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusão executou com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="238"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="362"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="485"/>
         <source>Fusion initialization error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusão inicializou com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="266"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="390"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizard.cpp" line="513"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção !</translation>
     </message>
 </context>
 <context>
@@ -10373,99 +10375,99 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="78"/>
         <source>Wavelength in Microns</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprimento de Onda em Microns</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="79"/>
         <source>Reflectance</source>
-        <translation type="unfinished"></translation>
+        <translation>Reflectância</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="89"/>
         <source>Fusion</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="90"/>
         <source>Select the type of fusion and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de fusão e defina os seus parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="288"/>
         <source>High Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Alta Resolução</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="343"/>
         <source>Low Resolution - Band </source>
-        <translation type="unfinished"></translation>
+        <translation>Baixa Resolução - Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="379"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="403"/>
         <source>Open Spectral Response Function File</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir o Arquivo Função de Resposta Espectral</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="379"/>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="403"/>
         <source>CSV Files (*.csv *.CSV)</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV Files (*.csv *.CSV)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="417"/>
         <source>IHS</source>
-        <translation type="unfinished"></translation>
+        <translation>IHS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="418"/>
         <source>PCA</source>
-        <translation type="unfinished"></translation>
+        <translation>PCA</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="419"/>
         <source>WISPER</source>
-        <translation type="unfinished"></translation>
+        <translation>WISPER</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="423"/>
         <source>Nearest Neighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vizinho mais Próximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="424"/>
         <source>Bilinear</source>
-        <translation type="unfinished"></translation>
+        <translation>Bilinear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="425"/>
         <source>Bicubic</source>
-        <translation type="unfinished"></translation>
+        <translation>Bicúbico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="469"/>
         <source>Spline</source>
-        <translation type="unfinished"></translation>
+        <translation>Spline</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="470"/>
         <source>Triangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Triangulo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="471"/>
         <source>Invalid</source>
-        <translation type="unfinished"></translation>
+        <translation>Inválido</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="508"/>
         <source>Band </source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/FusionWizardPage.cpp" line="519"/>
         <source>Open Spectral Response Function File...</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir o Arquivo Função de Resposta Espectral...</translation>
     </message>
 </context>
 <context>
@@ -10613,152 +10615,152 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="74"/>
         <source>Curve Polygon ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva Polígono ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="76"/>
         <source>Geometry Collection</source>
-        <translation type="unfinished"></translation>
+        <translation>Coleção de Geometrias</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="77"/>
         <source>Geometry Collection Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Coleção de Geometrias Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="78"/>
         <source>Geometry Collection M</source>
-        <translation type="unfinished"></translation>
+        <translation>Coleção de Geometrias M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="79"/>
         <source>Geometry Collection ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Coleção de Geometrias ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="81"/>
         <source>Multi Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Pontos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="82"/>
         <source>Multi Point Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Pontos Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="83"/>
         <source>Multi Point M</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Pontos M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="84"/>
         <source>Multi Point ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Pontos ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="86"/>
         <source>Multi Line String</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Linhas String</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="87"/>
         <source>Multi Line String Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Linhas String Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="88"/>
         <source>Multi Line String M</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Linhas String M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="89"/>
         <source>Multi Line String ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Linhas String ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="91"/>
         <source>Multi Polygon</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Polígonos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="92"/>
         <source>Multi Polygon Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Polígonos Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="93"/>
         <source>Multi Polygon M</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Polígonos M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="94"/>
         <source>Multi Polygon ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi Polígonos ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="96"/>
         <source>Polyhedral Surface</source>
-        <translation type="unfinished"></translation>
+        <translation>Superfície Poliédrica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="97"/>
         <source>Polyhedral Surface Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Superfície Poliédrica Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="98"/>
         <source>Polyhedral Surface M</source>
-        <translation type="unfinished"></translation>
+        <translation>Superfície Poliédrica M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="99"/>
         <source>Polyhedral Surface ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Superfície Poliédrica ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="101"/>
         <source>TIN</source>
-        <translation type="unfinished"></translation>
+        <translation>TIN</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="102"/>
         <source>TIN Z</source>
-        <translation type="unfinished"></translation>
+        <translation>TIN Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="103"/>
         <source>TIN M</source>
-        <translation type="unfinished"></translation>
+        <translation>TIN M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="104"/>
         <source>TIN ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>TIN ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="106"/>
         <source>Triangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Triângulo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="107"/>
         <source>Triangle Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Triângulo Z</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="108"/>
         <source>Triangle M</source>
-        <translation type="unfinished"></translation>
+        <translation>Triângulo M</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="109"/>
         <source>Triangle ZM</source>
-        <translation type="unfinished"></translation>
+        <translation>Triângulo ZM</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/GeometryPropertyWidget.cpp" line="111"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconhecido</translation>
     </message>
 </context>
 <context>
@@ -10766,7 +10768,7 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GlyphGraphicWidget.cpp" line="104"/>
         <source>Glyph Marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Glyph Marker</translation>
     </message>
 </context>
 <context>
@@ -10775,27 +10777,27 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/se/GlyphMarkPropertyItem.cpp" line="53"/>
         <location filename="../../../src/terralib/qt/widgets/se/GlyphMarkPropertyItem.cpp" line="65"/>
         <source>Glyph Mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Glyph Marker</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GlyphMarkPropertyItem.cpp" line="56"/>
         <source>Font</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GlyphMarkPropertyItem.cpp" line="60"/>
         <source>Char</source>
-        <translation type="unfinished"></translation>
+        <translation>Caracter</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GlyphMarkPropertyItem.cpp" line="190"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GlyphMarkPropertyItem.cpp" line="196"/>
         <source>Char Map</source>
-        <translation type="unfinished"></translation>
+        <translation>Mapa de Caracter</translation>
     </message>
 </context>
 <context>
@@ -10803,7 +10805,7 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GraphicFillWidget.cpp" line="84"/>
         <source>Graphic Fill</source>
-        <translation type="unfinished"></translation>
+        <translation>Gráfico de Preencher</translation>
     </message>
 </context>
 <context>
@@ -10812,22 +10814,22 @@ This may be an error on the connector implementation!</source>
         <location filename="../../../src/terralib/qt/widgets/se/GraphicPropertyItem.cpp" line="45"/>
         <location filename="../../../src/terralib/qt/widgets/se/GraphicPropertyItem.cpp" line="85"/>
         <source>Graphic</source>
-        <translation type="unfinished"></translation>
+        <translation>Gráfico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GraphicPropertyItem.cpp" line="48"/>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GraphicPropertyItem.cpp" line="57"/>
         <source>Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Ângulo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GraphicPropertyItem.cpp" line="66"/>
         <source>Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade</translation>
     </message>
 </context>
 <context>
@@ -10835,22 +10837,22 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/GroupByWizardPage.cpp" line="47"/>
         <source>Group By Definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Grupo por Definição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/GroupByWizardPage.cpp" line="48"/>
         <source>Choose the attributes to be grouped.</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha os atributos a serem agrupados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/GroupByWizardPage.cpp" line="50"/>
         <source>Available Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/GroupByWizardPage.cpp" line="51"/>
         <source>Used Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Utilizadas</translation>
     </message>
 </context>
 <context>
@@ -10858,7 +10860,7 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingDialog.cpp" line="68"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada</translation>
     </message>
 </context>
 <context>
@@ -10866,84 +10868,85 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="149"/>
         <source>Equal Steps</source>
-        <translation type="unfinished"></translation>
+        <translation>Passo Igual</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="150"/>
         <source>Quantil</source>
-        <translation type="unfinished"></translation>
+        <translation>Quantil</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="151"/>
         <source>Standard Deviation</source>
-        <translation type="unfinished"></translation>
+        <translation>Desvio Padrão</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="152"/>
         <source>Unique Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor Único</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="197"/>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="209"/>
         <source>Symbol</source>
-        <translation type="unfinished"></translation>
+        <translation>Símbolo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="198"/>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="210"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="199"/>
         <source>Min</source>
-        <translation type="unfinished"></translation>
+        <translation>Min</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="200"/>
         <source>Max</source>
-        <translation type="unfinished"></translation>
+        <translation>Max</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="201"/>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="212"/>
         <source>Count</source>
-        <translation type="unfinished"></translation>
+        <translation>Conta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="211"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="428"/>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1303"/>
         <source>Manual changes will be lost. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterações manuais serão perdidas. Continuar ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="428"/>
         <source>Edit Legend</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Legenda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1297"/>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1303"/>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1333"/>
         <source>Grouping</source>
-        <translation type="unfinished"></translation>
+        <translation>Agrupamento</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1297"/>
         <source>There are no other layers with Grouping!</source>
-        <translation type="unfinished"></translation>
+        <translation>Não há outras camadas com Agrupamento !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1331"/>
         <source>There is no grouping that can be imported!
 The layer must have an attribute with the same name of the attribute used to make the reference layer grouping: </source>
-        <translation type="unfinished"></translation>
+        <translation>Não há agrupamento que pode ser importado !
+A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer o agrupamento da camada de referência : </translation>
     </message>
 </context>
 <context>
@@ -10951,7 +10954,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/help/HelpPushButton.cpp" line="34"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
 </context>
 <context>
@@ -10959,7 +10962,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/IndexGroupItem.cpp" line="71"/>
         <source>&amp;Open indexes</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir indices</translation>
     </message>
 </context>
 <context>
@@ -10967,7 +10970,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/IndexItem.cpp" line="69"/>
         <source>&amp;Open index</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir índice</translation>
     </message>
 </context>
 <context>
@@ -10975,48 +10978,48 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="45"/>
         <source>B Tree</source>
-        <translation type="unfinished"></translation>
+        <translation>B Tree</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="46"/>
         <source>R Tree</source>
-        <translation type="unfinished"></translation>
+        <translation>R Tree</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="47"/>
         <source>Quad Tree</source>
-        <translation type="unfinished"></translation>
+        <translation>Quad Tree</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="48"/>
         <source>Hash</source>
-        <translation type="unfinished"></translation>
+        <translation>Hash</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="53"/>
         <source>Available Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="54"/>
         <source>Selected Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Selecionadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="129"/>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="138"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="129"/>
         <source>Index name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do índice não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/IndexWidget.cpp" line="138"/>
         <source>No property selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma propriedade selecionada.</translation>
     </message>
 </context>
 <context>
@@ -11024,47 +11027,47 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="70"/>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="77"/>
         <source>Property</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="77"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="168"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="305"/>
         <source>Line</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="309"/>
         <source>Column</source>
-        <translation type="unfinished"></translation>
+        <translation>Coluna</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="313"/>
         <source>Coordinate X</source>
-        <translation type="unfinished"></translation>
+        <translation>Coordenada X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="317"/>
         <source>Coordinate Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Coordenada Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Info.cpp" line="328"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
 </context>
 <context>
@@ -11072,12 +11075,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/LayerAttributesWizardPage.cpp" line="37"/>
         <source>Layer Attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Atributos da Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/LayerAttributesWizardPage.cpp" line="38"/>
         <source>Used to define all layer attributes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Usado para definir todos os atributos da camada.</translation>
     </message>
 </context>
 <context>
@@ -11085,17 +11088,17 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItemModel.cpp" line="586"/>
         <source>Layers</source>
-        <translation type="unfinished"></translation>
+        <translation>Camadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItemModel.cpp" line="612"/>
         <source>Invalid data associated to the layer model!</source>
-        <translation type="unfinished"></translation>
+        <translation>Dados inválidos associados ao modelo de camada !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItemModel.cpp" line="620"/>
         <source>The layer item is not an AbstractTreeItem!</source>
-        <translation type="unfinished"></translation>
+        <translation>O item camada não é uma AbstractTreeItem !</translation>
     </message>
 </context>
 <context>
@@ -11104,193 +11107,193 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="41"/>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="98"/>
         <source>Layer properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades da camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="44"/>
         <source>Id</source>
-        <translation type="unfinished"></translation>
+        <translation>Id</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="48"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="53"/>
         <source>SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="59"/>
         <source>Bounding box</source>
-        <translation type="unfinished"></translation>
+        <translation>Retângulo envolvente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="61"/>
         <source>Lower left x</source>
-        <translation type="unfinished"></translation>
+        <translation>Inferior esquerdo x</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="62"/>
         <source>Lower left y</source>
-        <translation type="unfinished"></translation>
+        <translation>Inferior esquerdo y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="63"/>
         <source>Upper right x</source>
-        <translation type="unfinished"></translation>
+        <translation>Superior direito x</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="64"/>
         <source>Upper right y</source>
-        <translation type="unfinished"></translation>
+        <translation>Superior direito y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="79"/>
         <source>Visibility</source>
-        <translation type="unfinished"></translation>
+        <translation>Visibilidade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="81"/>
         <source>Not visible</source>
-        <translation type="unfinished"></translation>
+        <translation>Não visível</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="81"/>
         <source>visible</source>
-        <translation type="unfinished"></translation>
+        <translation>visível</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="81"/>
         <source>Partially visible</source>
-        <translation type="unfinished"></translation>
+        <translation>Parcialmente visível</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="140"/>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="275"/>
         <source>Raster properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades do Matricial (raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="143"/>
         <source>Number of Lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Linhas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="144"/>
         <source>Number of Columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Colunas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="145"/>
         <source>Number of Bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="146"/>
         <source>Resolution X</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="147"/>
         <source>Resolution Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="148"/>
         <source>Access Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Política de Acesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="149"/>
         <source>Multi Resolution Levels</source>
-        <translation type="unfinished"></translation>
+        <translation>Níveis de Multi Resolução</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="180"/>
         <source>No Access</source>
-        <translation type="unfinished"></translation>
+        <translation>Sem acesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="182"/>
         <source>Read Only Access</source>
-        <translation type="unfinished"></translation>
+        <translation>Acesso de somente leitura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="184"/>
         <source>Write Only Access</source>
-        <translation type="unfinished"></translation>
+        <translation>Acesso de somente escrita</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="186"/>
         <source>Read and Write Access</source>
-        <translation type="unfinished"></translation>
+        <translation>Acesso de Leitura e Escrita</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="195"/>
         <source>Band </source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="198"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="199"/>
         <source>Data Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="200"/>
         <source>Dummy Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor nulo (dummy)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="201"/>
         <source>Color Interpretation</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpretação colorida</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="202"/>
         <source>Pallete Interpretation</source>
-        <translation type="unfinished"></translation>
+        <translation>Interpretação paleta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="226"/>
         <source>Block properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades do bloco</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="228"/>
         <source>Number of blocks in X</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de blocos em X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="229"/>
         <source>Number of blocks in Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de blocos em Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="230"/>
         <source>Block Width (pixels)</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura de Blocos (pixels)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="231"/>
         <source>Block Height (pixels)</source>
-        <translation type="unfinished"></translation>
+        <translation>Altura de Blocos (pixels)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="253"/>
         <source>Name of categories</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome de categorias</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="258"/>
         <source>Category </source>
-        <translation type="unfinished"></translation>
+        <translation>Categoria</translation>
     </message>
 </context>
 <context>
@@ -11298,7 +11301,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfoWidget.cpp" line="12"/>
         <source>Layer properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades da Camada</translation>
     </message>
 </context>
 <context>
@@ -11306,12 +11309,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/LayerSearchWizardPage.cpp" line="47"/>
         <source>Layer Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Pesquisar Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/LayerSearchWizardPage.cpp" line="48"/>
         <source>Allows selection of layers using filters for selection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite a seleção de camadas usando filtros para a seleção.</translation>
     </message>
 </context>
 <context>
@@ -11319,7 +11322,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LineSymbolizerWidget.cpp" line="45"/>
         <source>Basic Line</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha Básica</translation>
     </message>
 </context>
 <context>
@@ -11327,7 +11330,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalGraphicWidget.cpp" line="107"/>
         <source>Local Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem Local</translation>
     </message>
 </context>
 <context>
@@ -11336,32 +11339,32 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/se/LocalImagePropertyItem.cpp" line="55"/>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImagePropertyItem.cpp" line="63"/>
         <source>Local Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem Local</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImagePropertyItem.cpp" line="58"/>
         <source>Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImagePropertyItem.cpp" line="114"/>
         <source>Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagens</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImagePropertyItem.cpp" line="120"/>
         <source>Select an Image File</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um Arquivo Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImagePropertyItem.cpp" line="128"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImagePropertyItem.cpp" line="128"/>
         <source>The selected image cannot be loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem selecionada não pode ser carregada.</translation>
     </message>
 </context>
 <context>
@@ -11369,53 +11372,53 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="48"/>
         <source>Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagens</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="91"/>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="120"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="91"/>
         <source>The referenced image cannot be loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem de referência não pode ser carregada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="97"/>
         <source>Format: </source>
-        <translation type="unfinished"></translation>
+        <translation>Formato: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="98"/>
         <source>bits per pixel</source>
-        <translation type="unfinished"></translation>
+        <translation>bits por pixel</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="100"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Sim</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="100"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Não</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="101"/>
         <source>Alpha Channel: </source>
-        <translation type="unfinished"></translation>
+        <translation>Canal Alpha: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="112"/>
         <source>Select an Image File</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um Arquivo Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/LocalImageWidget.cpp" line="120"/>
         <source>The selected image cannot be loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem selecionada não pode ser carregada.</translation>
     </message>
 </context>
 <context>
@@ -11424,17 +11427,17 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/MaskDialog.cpp" line="119"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MaskDialog.cpp" line="133"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MaskDialog.cpp" line="119"/>
         <source>Matrix empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz vazia</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MaskDialog.cpp" line="133"/>
         <source>Matrix with empty values.</source>
-        <translation type="unfinished"></translation>
+        <translation>Matrix com valores vazios.</translation>
     </message>
 </context>
 <context>
@@ -11442,17 +11445,17 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Measure.cpp" line="192"/>
         <source>Distance: </source>
-        <translation type="unfinished"></translation>
+        <translation>Distância: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Measure.cpp" line="197"/>
         <source>Angle: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ângulo: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Measure.cpp" line="228"/>
         <source>Area: </source>
-        <translation type="unfinished"></translation>
+        <translation>Área:</translation>
     </message>
 </context>
 <context>
@@ -11460,22 +11463,22 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelDialog.cpp" line="197"/>
         <source>Invalid input raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor inválido do matricial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelDialog.cpp" line="275"/>
         <source>MixtureModel initialization error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na inicialização do Modelo de Mistura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelDialog.cpp" line="282"/>
         <source>MixtureModel execution error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na execução do Modelo de Mistura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelDialog.cpp" line="287"/>
         <source>Mixture model decomposition ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Decomposição do Modelo de Mistura terminou com sucesso</translation>
     </message>
 </context>
 <context>
@@ -11488,32 +11491,32 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizard.cpp" line="182"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizard.cpp" line="192"/>
         <source>Mixture Model</source>
-        <translation type="unfinished"></translation>
+        <translation>Modelo de Mistura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizard.cpp" line="140"/>
         <source>File already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo já existe.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizard.cpp" line="157"/>
         <source>The number of components must be the same as the number of selected bands</source>
-        <translation type="unfinished"></translation>
+        <translation>O número de componentes deve ser o mesmo que o número de bandas seleccionadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizard.cpp" line="178"/>
         <source>Mixture Model ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Modelo de Mistura terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizard.cpp" line="182"/>
         <source>Mixture Model execution error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Modelo de Mistura executou com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizard.cpp" line="192"/>
         <source>Mixture Model initialization error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Modelo de Mistura inicializou com erro.</translation>
     </message>
 </context>
 <context>
@@ -11521,58 +11524,58 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="97"/>
         <source>Display</source>
-        <translation type="unfinished"></translation>
+        <translation>Apresentar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="109"/>
         <source>Mixture Model</source>
-        <translation type="unfinished"></translation>
+        <translation>Modelo de Mistrura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="110"/>
         <source>Select the type of mixture model and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo do modelo de mistura e defina os seus parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="330"/>
         <source>Error parsing: </source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao analisar: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="332"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="340"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="346"/>
         <source>Save MixModel Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar Componentes do Modelo de Mistura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="354"/>
         <source>Load MixModel Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar Componentes do Modelo de Mistura</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="396"/>
         <source>Component </source>
-        <translation type="unfinished"></translation>
+        <translation>Componente </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="487"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="488"/>
         <source>PCA - Principal Component Analysis</source>
-        <translation type="unfinished"></translation>
+        <translation>PCA - Análise de Componentes Principais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MixtureModelWizardPage.cpp" line="520"/>
         <source>Band </source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
 </context>
 <context>
@@ -11595,35 +11598,35 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="484"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="496"/>
         <source>Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="194"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="323"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="452"/>
         <source>Mosaic ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Mosaico terminou com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="198"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="327"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="456"/>
         <source>Mosaic execution error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mosaico executou com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="212"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="339"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="470"/>
         <source>Mosaic initialization error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mosaico inicializou com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="238"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="361"/>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizard.cpp" line="496"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção !</translation>
     </message>
 </context>
 <context>
@@ -11631,67 +11634,67 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="58"/>
         <source>Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="59"/>
         <source>Select the type of mosaic and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de mosaico e defina os seus parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="297"/>
         <source>Geo Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Geo Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="298"/>
         <source>Tie Points Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos de Controle do Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="299"/>
         <source>Sequence Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Sequência de Mosaico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="304"/>
         <source>Nearest Neighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vizinho mais Próximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="305"/>
         <source>Bilinear</source>
-        <translation type="unfinished"></translation>
+        <translation>Bilinear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="306"/>
         <source>Bicubic</source>
-        <translation type="unfinished"></translation>
+        <translation>Bicúbibo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="311"/>
         <source>No blending performed</source>
-        <translation type="unfinished"></translation>
+        <translation>Mistura não realizada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="312"/>
         <source>Euclidean distance method</source>
-        <translation type="unfinished"></translation>
+        <translation>Método de distância Euclidiana</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="313"/>
         <source>Sum method</source>
-        <translation type="unfinished"></translation>
+        <translation>Método Soma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="319"/>
         <source>Linking adjacent raster pairs</source>
-        <translation type="unfinished"></translation>
+        <translation>Ligando pares de dados matriciais adjacentes</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/MosaicWizardPage.cpp" line="320"/>
         <source>Linking any raster to the first raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Ligando qualquer matriz a primeira matriz</translation>
     </message>
 </context>
 <context>
@@ -11708,92 +11711,92 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="209"/>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="224"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="106"/>
         <source>Layer not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada não selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="116"/>
         <source>Invalid layer selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada inválida selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="126"/>
         <source>Selected layer does not have raster representation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada selecionada não tem representação matricial (raster).</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="134"/>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="165"/>
         <source>Error creating multi resolution.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao criar multi resolução.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="137"/>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="168"/>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="215"/>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="137"/>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="168"/>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="215"/>
         <source>Multi resolution created.</source>
-        <translation type="unfinished"></translation>
+        <translation>Multi resolução criada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="146"/>
         <source>File not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo não selecionado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="157"/>
         <source>Invalid file selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo selecionado inválido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="177"/>
         <source>Folder not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasta não selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="224"/>
         <source>Invalid Raster.</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz (raster) inválido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="255"/>
         <source>Nearest Neighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vizinho mais Próximo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="256"/>
         <source>Bilinear</source>
-        <translation type="unfinished"></translation>
+        <translation>Bilinear</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="257"/>
         <source>Bicubic</source>
-        <translation type="unfinished"></translation>
+        <translation>Bicúbico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="262"/>
         <source>Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo Imagem (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="264"/>
         <source>Open Raster File</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir Arquivo Matricial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/MultiResolutionWidget.cpp" line="274"/>
         <source>Select a directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um diretório</translation>
     </message>
 </context>
 <context>
@@ -11801,93 +11804,93 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="87"/>
         <source>Boolean</source>
-        <translation type="unfinished"></translation>
+        <translation>Booleano</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="93"/>
         <source>Char</source>
-        <translation type="unfinished"></translation>
+        <translation>Caracter</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="102"/>
         <source>Date and Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Data e Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="105"/>
         <source>Double</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="108"/>
         <source>Float</source>
-        <translation type="unfinished"></translation>
+        <translation>Float</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="111"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="114"/>
         <source>Int 16</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="117"/>
         <source>Int 32</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="120"/>
         <source>Int 64</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 64</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="123"/>
         <source>Numeric</source>
-        <translation type="unfinished"></translation>
+        <translation>Numérico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="129"/>
         <source>String</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="132"/>
         <source>U Char</source>
-        <translation type="unfinished"></translation>
+        <translation>U Caracter</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="135"/>
         <source>U Int 16</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="138"/>
         <source>U Int 32</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="141"/>
         <source>U Int 64</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 64</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="160"/>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="166"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="160"/>
         <source>Type not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo não selecionado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/NewPropertyWidget.cpp" line="166"/>
         <source>Name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome não definido.</translation>
     </message>
 </context>
 <context>
@@ -11895,32 +11898,32 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ObservationWizard.cpp" line="70"/>
         <source>Data Source Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ObservationWizard.cpp" line="71"/>
         <source>Please, select the data source where the data is stored</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione a fonte de dados, onde os dados são armazenados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ObservationWizard.cpp" line="78"/>
         <source>Dataset Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ObservationWizard.cpp" line="79"/>
         <source>Please, select the datasets you want to transfer to another data source</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione os conjuntos de dados que você deseja transferir para outra fonte de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ObservationWizard.cpp" line="84"/>
         <source>Observation Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades de observação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ObservationWizard.cpp" line="85"/>
         <source>Please, adjust the temporal properties of the new Observation Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, ajuste as propriedades temporais da nova camada de observação</translation>
     </message>
 </context>
 <context>
@@ -11928,22 +11931,22 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/OrderByWidget.cpp" line="44"/>
         <source>ASC</source>
-        <translation type="unfinished"></translation>
+        <translation>ASC</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/OrderByWidget.cpp" line="45"/>
         <source>DESC</source>
-        <translation type="unfinished"></translation>
+        <translation>DESC</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/OrderByWidget.cpp" line="133"/>
         <source>Query Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Contrutor de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/OrderByWidget.cpp" line="133"/>
         <source>Property value not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor da propriedade não definida.</translation>
     </message>
 </context>
 <context>
@@ -11951,12 +11954,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/OrderByWizardPage.cpp" line="45"/>
         <source>Order By Definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordem por definição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/OrderByWizardPage.cpp" line="46"/>
         <source>Choose the attributes to sort the search result.</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha os atributos para classificar o resultado da pesquisa.</translation>
     </message>
 </context>
 <context>
@@ -11964,12 +11967,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/OutputRasterParametersWidget.cpp" line="128"/>
         <source>Save Raster to File</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar Matriz para Arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/OutputRasterParametersWidget.cpp" line="128"/>
         <source>GDAL File (*.tif *.TIF)</source>
-        <translation type="unfinished"></translation>
+        <translation>GDAL File (*.tif *.TIF)</translation>
     </message>
 </context>
 <context>
@@ -11977,27 +11980,27 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/OverlapBehaviorWidget.cpp" line="73"/>
         <source>Latest on Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Últimas sobre Top</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/OverlapBehaviorWidget.cpp" line="75"/>
         <source>Earliest on Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Recentes no Topo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/OverlapBehaviorWidget.cpp" line="77"/>
         <source>Average</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/OverlapBehaviorWidget.cpp" line="79"/>
         <source>Random</source>
-        <translation type="unfinished"></translation>
+        <translation>Aleatória</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/OverlapBehaviorWidget.cpp" line="81"/>
         <source>No Behavior</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum Comportamento</translation>
     </message>
 </context>
 <context>
@@ -12005,7 +12008,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/canvas/OverlayDialog.cpp" line="47"/>
         <source>Overlay</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobreposição</translation>
     </message>
 </context>
 <context>
@@ -12013,12 +12016,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ParameterTableWidget.cpp" line="117"/>
         <source>Add new parameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar novo parâmetro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ParameterTableWidget.cpp" line="158"/>
         <source>Edit parameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar parâmetro</translation>
     </message>
 </context>
 <context>
@@ -12026,62 +12029,62 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="110"/>
         <source>&amp;Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Configurações</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="114"/>
         <source>Available Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugins disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="115"/>
         <source>Required Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugins requeridos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="123"/>
         <source>Available plugin categories</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoria de plugin disponível</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="124"/>
         <source>Required categories for your plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Categorias necessárias para seu plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="133"/>
         <source>Available modules</source>
-        <translation type="unfinished"></translation>
+        <translation>Módulos disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="134"/>
         <source>Required modules for your plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Módulos requeridos para seu plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="142"/>
         <source>Resources</source>
-        <translation type="unfinished"></translation>
+        <translation>Recursos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="187"/>
         <source>Select the Include directory of TerraLib</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o diretório da TerraLib</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="197"/>
         <source>Select the Cmake Configure Files directory of TerraLib</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o diretório de arquivos de configuração do Cmake da TerraLib</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="207"/>
         <source>Select the location to create the source code files</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o local para criar os arquivos de código fonte</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="217"/>
         <source>Select the location to create the build files</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o local para criar os arquivos de compilação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="229"/>
@@ -12099,77 +12102,77 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="324"/>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="408"/>
         <source>Plugin Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Construtor de Plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="229"/>
         <source>Plugin Name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome de Plugin não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="248"/>
         <source>Plugin Version not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Versão de Plugin não definida.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="254"/>
         <source>Plugin Display Text not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Texto de apresentação do Plugin não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="260"/>
         <source>Plugin Site not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Site do Plugin não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="266"/>
         <source>Plugin Description not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição do Plugin não definida.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="277"/>
         <source>License Site not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Site de Licença não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="283"/>
         <source>Provider Name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Provedor não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="289"/>
         <source>Provider Site not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Site do Provedor não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="295"/>
         <source>Provider Email not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Email do Provedor não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="306"/>
         <source>TerraLib Include dir not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diretório de Include TerraLib não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="312"/>
         <source>TerraLib Cmake dir not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diretório de Cmake TerraLib não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="318"/>
         <source>Plugin Source dir not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diretório fonte do Plugin não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="324"/>
         <source>Plugin Build dir not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diretório de Compilação do Plugin não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.cpp" line="408"/>
         <source>Plugin built successfully!</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin criado com sucesso !</translation>
     </message>
 </context>
 <context>
@@ -12177,38 +12180,38 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="268"/>
         <source>Manage Application Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerenciador de Aplicações Plugins</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="404"/>
         <source>TerraLib Plug-in Files (*.teplg *.TEPLG)</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo TerraLib Plug-in (*.teplg *.TEPLG)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="418"/>
         <source>There&apos;s no resource selected, no plugins found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não há nenhum recurso selecionado, nenhum plugins encontrados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="430"/>
         <source>There&apos;s no plugins found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não há plugins encontrados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="443"/>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="451"/>
         <source>Fail to load plugin files</source>
-        <translation type="unfinished"></translation>
+        <translation>Falhar ao carregar arquivos do plugin</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="467"/>
         <source>Remove installed plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover plugins instalados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.cpp" line="468"/>
         <source>There are NOT selected plugins.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não existem plugins selecionados.</translation>
     </message>
 </context>
 <context>
@@ -12218,48 +12221,48 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="114"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="120"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="105"/>
         <source>Input layer not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de entrada não selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="114"/>
         <source>Error getting selected layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao receber camada selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="120"/>
         <source>Output File Name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Arquivo de Saída não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="165"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="173"/>
         <source>Exchanger</source>
-        <translation type="unfinished"></translation>
+        <translation>Intercâmbio de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="165"/>
         <source>Layer exported successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada exportada com sucesso.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="169"/>
         <source>Error during exchanger. The reported error is: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro durante a troca de dados. O erro relatado é: %1</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="181"/>
         <source>Save as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar como...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.cpp" line="182"/>
         <source>Shapefile (*.shp *.SHP);;</source>
-        <translation type="unfinished"></translation>
+        <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
 </context>
 <context>
@@ -12267,7 +12270,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/PrimaryKeyItem.cpp" line="69"/>
         <source>&amp;Open primary key</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir chave primária</translation>
     </message>
 </context>
 <context>
@@ -12275,107 +12278,107 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="153"/>
         <source>Array</source>
-        <translation type="unfinished"></translation>
+        <translation>Array</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="154"/>
         <source>Bit</source>
-        <translation type="unfinished"></translation>
+        <translation>Bit</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="155"/>
         <source>Boolean</source>
-        <translation type="unfinished"></translation>
+        <translation>Booleano</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="156"/>
         <source>Byte Array</source>
-        <translation type="unfinished"></translation>
+        <translation>Byte Array</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="157"/>
         <source>Char</source>
-        <translation type="unfinished"></translation>
+        <translation>Caracter</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="158"/>
         <source>Composite</source>
-        <translation type="unfinished"></translation>
+        <translation>Composto</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="159"/>
         <source>Data Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="160"/>
         <source>Date and Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Data e Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="161"/>
         <source>Double</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="162"/>
         <source>Float</source>
-        <translation type="unfinished"></translation>
+        <translation>Float</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="163"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="164"/>
         <source>Int 16</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="165"/>
         <source>Int 32</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="166"/>
         <source>Int 64</source>
-        <translation type="unfinished"></translation>
+        <translation>Int 64</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="167"/>
         <source>Numeric</source>
-        <translation type="unfinished"></translation>
+        <translation>Numérico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="168"/>
         <source>Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz (raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="169"/>
         <source>String</source>
-        <translation type="unfinished"></translation>
+        <translation>String</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="170"/>
         <source>U Char</source>
-        <translation type="unfinished"></translation>
+        <translation>U Char</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="171"/>
         <source>U Int 16</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="172"/>
         <source>U Int 32</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/PropertyConverterDialog.cpp" line="173"/>
         <source>U Int 64</source>
-        <translation type="unfinished"></translation>
+        <translation>U Int 64</translation>
     </message>
 </context>
 <context>
@@ -12383,7 +12386,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/PropertyGroupItem.cpp" line="72"/>
         <source>&amp;Open properties</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir propriedades</translation>
     </message>
 </context>
 <context>
@@ -12391,7 +12394,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/PropertyItem.cpp" line="69"/>
         <source>&amp;Open property</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir propriedades</translation>
     </message>
 </context>
 <context>
@@ -12400,98 +12403,98 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="69"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="75"/>
         <source>Available Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Disponíveis</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="70"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="76"/>
         <source>Used Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades Utilizadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="226"/>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="227"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="228"/>
         <source>*</source>
-        <translation type="unfinished"></translation>
+        <translation>*</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="229"/>
         <source>/</source>
-        <translation type="unfinished"></translation>
+        <translation>/</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="230"/>
         <source>=</source>
-        <translation type="unfinished"></translation>
+        <translation>=</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="231"/>
         <source>&lt;&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="232"/>
         <source>&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="233"/>
         <source>&gt;=</source>
-        <translation type="unfinished"></translation>
+        <translation>&gt;=</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="234"/>
         <source>&lt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="235"/>
         <source>&lt;=</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;=</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="250"/>
         <source>---</source>
-        <translation type="unfinished"></translation>
+        <translation>---</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="251"/>
         <source>AND</source>
-        <translation type="unfinished"></translation>
+        <translation>AND</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="252"/>
         <source>OR</source>
-        <translation type="unfinished"></translation>
+        <translation>OR</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="253"/>
         <source>NOT</source>
-        <translation type="unfinished"></translation>
+        <translation>NOT</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="254"/>
         <source>LIKE</source>
-        <translation type="unfinished"></translation>
+        <translation>LIKE</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="273"/>
         <source>ASC</source>
-        <translation type="unfinished"></translation>
+        <translation>ASC</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="274"/>
         <source>DESC</source>
-        <translation type="unfinished"></translation>
+        <translation>DESC</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="291"/>
@@ -12506,58 +12509,58 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="446"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="495"/>
         <source>Query Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Contrutor de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="291"/>
         <source>Data Source not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados não selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="308"/>
         <source>No Data Set selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum conjunto de dados selecionado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="323"/>
         <source>No Property selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma Propriedade selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="336"/>
         <source>No Where Clause defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma cláusula Where definida.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="375"/>
         <source>Data Set not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados não selecionado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="381"/>
         <source>Data Set Alias not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Apelido do Conjunto de Dados não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="397"/>
         <source>Data Set Alias already defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Apelido do Conjunto de Dados já definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="428"/>
         <source>Restrict value not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor restrito não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="437"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="446"/>
         <source>Value not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryBuilderWizard.cpp" line="495"/>
         <source>Property value not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor da propriedade não definido.</translation>
     </message>
 </context>
 <context>
@@ -12565,13 +12568,13 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="473"/>
         <source>Set a SQL file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um arquivo SQL...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="473"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="498"/>
         <source>SQL File *.sql</source>
-        <translation type="unfinished"></translation>
+        <translation>SQL File *.sql</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="483"/>
@@ -12586,12 +12589,12 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="809"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
         <source>Query DataSource</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de Dados de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="498"/>
         <source>Select a SQL file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um arquivo SQL...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="531"/>
@@ -12599,74 +12602,74 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="623"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="629"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="531"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="617"/>
         <source>SQL not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>SQL não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="540"/>
         <source>No layer selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma camada selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="570"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="659"/>
         <source>Error executing SQL.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na execução do SQL.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="605"/>
         <source>Error selecting objects: </source>
-        <translation type="unfinished"></translation>
+        <translation>Erro na seleção de objetos: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
         <source>Selection done.</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção feita.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="623"/>
         <source>Define a repository for the result.</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir um repositório para o resultado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="629"/>
         <source>Define a name for the resulting layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Defina um nome para a camada resultante.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="665"/>
         <source>Query result is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Resultado da consulta está vazio.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="775"/>
         <source>Error creating output dataset.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao criar conjunto de dados de saída.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="809"/>
         <source>Error creating layer. </source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao criar camada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
         <source>Layer created.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada criada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="842"/>
         <source>Save as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar como...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="842"/>
         <source>Shapefile (*.shp *.SHP);;</source>
-        <translation type="unfinished"></translation>
+        <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
 </context>
 <context>
@@ -12675,12 +12678,12 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/query/QueryDialog.cpp" line="358"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDialog.cpp" line="421"/>
         <source>Query</source>
-        <translation type="unfinished"></translation>
+        <translation>Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDialog.cpp" line="358"/>
         <source>Add a restriction expression first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar uma expressão de restrição em primeiro lugar.</translation>
     </message>
 </context>
 <context>
@@ -12688,17 +12691,17 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryLayerBuilderWizard.cpp" line="75"/>
         <source>Query Layer Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Construtor de Camada de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryLayerBuilderWizard.cpp" line="147"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryLayerBuilderWizard.cpp" line="147"/>
         <source>Layer name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome de camada não definido.</translation>
     </message>
 </context>
 <context>
@@ -12714,64 +12717,64 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="544"/>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="552"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="275"/>
         <source>Error extracting ROISet Information. Invalid layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao extrair informações do ROISet. Camada inválida.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="307"/>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="576"/>
         <source>Sample</source>
-        <translation type="unfinished"></translation>
+        <translation>Amostra</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="334"/>
         <source>ROI Label is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rótulo do ROI está vazio.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="375"/>
         <source>Select a item first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um item primeiramente.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="415"/>
         <source>Save ROI Set to File</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar o conjunto ROI para arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="415"/>
         <source>Shape Files (*.shp *.SHP)</source>
-        <translation type="unfinished"></translation>
+        <translation>Shape Files (*.shp *.SHP)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="467"/>
         <source>File name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome de arquivo não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="474"/>
         <source>ROI Set is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto ROI está vazio.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="488"/>
         <source>Error exporting ROI Set.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao exportar conjunto ROI.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="492"/>
         <source>ROI Set exported successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto ROI exportado com sucesso.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="544"/>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="552"/>
         <source>Select a ROI item first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um item ROI primeiramente</translation>
     </message>
 </context>
 <context>
@@ -12779,7 +12782,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterHistogramDialog.cpp" line="47"/>
         <source>RasterHistogram</source>
-        <translation type="unfinished"></translation>
+        <translation>Histograma Matricial</translation>
     </message>
 </context>
 <context>
@@ -12787,22 +12790,22 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterHistogramWidget.cpp" line="63"/>
         <source>Gray Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Nível de Cinza</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterHistogramWidget.cpp" line="64"/>
         <source>Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterHistogramWidget.cpp" line="84"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterHistogramWidget.cpp" line="92"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Saída</translation>
     </message>
 </context>
 <context>
@@ -12810,12 +12813,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterInfoWidget.cpp" line="59"/>
         <source>Extra parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parâmetros extras</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterInfoWidget.cpp" line="288"/>
         <source>Open Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir Diretório</translation>
     </message>
 </context>
 <context>
@@ -12823,12 +12826,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterInfoWizardPage.cpp" line="44"/>
         <source>Raster Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informação Matricial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterInfoWizardPage.cpp" line="45"/>
         <source>Defines the parameters of raster creation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Define os parâmetros de criação da matriz (raster).</translation>
     </message>
 </context>
 <context>
@@ -12836,12 +12839,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterNavigatorWidget.cpp" line="473"/>
         <source>Column: </source>
-        <translation type="unfinished"></translation>
+        <translation>Coluna: </translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterNavigatorWidget.cpp" line="475"/>
         <source>Line: </source>
-        <translation type="unfinished"></translation>
+        <translation>Linha: </translation>
     </message>
 </context>
 <context>
@@ -12849,12 +12852,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterNavigatorWizardPage.cpp" line="44"/>
         <source>Raster Navigator</source>
-        <translation type="unfinished"></translation>
+        <translation>Navegação Matricial (Raster)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterNavigatorWizardPage.cpp" line="45"/>
         <source>Allows  navigate and interact over a raster.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite navegar e interagir sobre uma matriz.</translation>
     </message>
 </context>
 <context>
@@ -12862,7 +12865,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/RasterSymbolizerDialog.cpp" line="180"/>
         <source>Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade</translation>
     </message>
 </context>
 <context>
@@ -12870,22 +12873,22 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/RasterSymbolizerWidget.cpp" line="62"/>
         <source>Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Opacidade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/RasterSymbolizerWidget.cpp" line="267"/>
         <source>Normalize</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalizar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/RasterSymbolizerWidget.cpp" line="269"/>
         <source>Histogram</source>
-        <translation type="unfinished"></translation>
+        <translation>Histograma</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/RasterSymbolizerWidget.cpp" line="271"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum</translation>
     </message>
 </context>
 <context>
@@ -12896,22 +12899,22 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="179"/>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="294"/>
         <source>Rasterization</source>
-        <translation type="unfinished"></translation>
+        <translation>Rasterização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="179"/>
         <source>None legend was created!</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma leganda foi criada !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="236"/>
         <source>Rasterize</source>
-        <translation type="unfinished"></translation>
+        <translation>Rasterizar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizard.cpp" line="236"/>
         <source>Rasterize operation canceled!</source>
-        <translation type="unfinished"></translation>
+        <translation>Operação de rasterização cancelada !</translation>
     </message>
 </context>
 <context>
@@ -12919,86 +12922,86 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="87"/>
         <source>Rasterization</source>
-        <translation type="unfinished"></translation>
+        <translation>Rasterização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="88"/>
         <source>Define the rasterization parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Defina os parâmetros de rasterização.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="175"/>
         <source>Edit Legend</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Leganda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="175"/>
         <source>Manual changes will be lost. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterações manuais serão perdidas. Continuar ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="323"/>
         <source>Open...</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="324"/>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="396"/>
         <source>LEG (*.leg *.LEG);;</source>
-        <translation type="unfinished"></translation>
+        <translation>LEG (*.leg *.LEG);;</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="395"/>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="904"/>
         <source>Save as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar como...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="642"/>
         <source>Class</source>
-        <translation type="unfinished"></translation>
+        <translation>Class</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="643"/>
         <source>R</source>
-        <translation type="unfinished"></translation>
+        <translation>R</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="644"/>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="645"/>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="646"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="647"/>
         <source>Select</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="839"/>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="857"/>
         <source>Cellular Spaces</source>
-        <translation type="unfinished"></translation>
+        <translation>Espaço Celular</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="839"/>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="857"/>
         <source>Invalid bounding box.</source>
-        <translation type="unfinished"></translation>
+        <translation>Retângulo envolvente inválido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RasterizationWizardPage.cpp" line="905"/>
         <source>TIFF (*.tif *.TIF);;</source>
-        <translation type="unfinished"></translation>
+        <translation>TIFF (*.tif *.TIF);;</translation>
     </message>
 </context>
 <context>
@@ -13013,47 +13016,47 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="249"/>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="259"/>
         <source>Register</source>
-        <translation type="unfinished"></translation>
+        <translation>Registro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="118"/>
         <source>Tie Points not aquired.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos de Controle não adquirido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="154"/>
         <source>Allows selection of layers using filters for selection. Select the layer to be used as REFERENCE.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite a seleção de camadas usando filtros para a seleção. Selecione a camada a ser utilizada como REFERÊNCIA.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="156"/>
         <source>Allows selection of layers using filters for selection. Select the layer to be used as ADJUST.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite a seleção de camadas usando filtros para a seleção. Escolha da camada a ser utilizada como AJUSTE.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="164"/>
         <source>File already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo já existe.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="215"/>
         <source>Algorithm initialization error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicialização do algoritmo com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="227"/>
         <source>Register Error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Registro com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="238"/>
         <source>Register Done!</source>
-        <translation type="unfinished"></translation>
+        <translation>Registro realizado !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/RegisterWizard.cpp" line="259"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção !</translation>
     </message>
 </context>
 <context>
@@ -13061,32 +13064,32 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ResourceChooser.cpp" line="20"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ResourceChooser.cpp" line="21"/>
         <source>Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Diretório</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ResourceChooser.cpp" line="63"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ResourceChooser.cpp" line="64"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ResourceChooser.cpp" line="65"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/utils/ResourceChooser.cpp" line="82"/>
         <source>Choose a xml file or a directory containing xml plug-in files</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha um arquivo xml ou um diretório contendo arquivos de plug-in xml</translation>
     </message>
 </context>
 <context>
@@ -13098,48 +13101,48 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="155"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="161"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="129"/>
         <source>Input layer not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de entrada não selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="138"/>
         <source>Error getting selected layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao obter camada selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="146"/>
         <source>Output data source not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de dados de saída não selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="155"/>
         <source>Error getting selected data source.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao obter fonte de dados selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="161"/>
         <source>Data Set name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do conjunto de dados não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="195"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="203"/>
         <source>Exchanger</source>
-        <translation type="unfinished"></translation>
+        <translation>Intercâmbiar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="195"/>
         <source>Layer exported successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada exportada com sucesso.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2ADODialog.cpp" line="199"/>
         <source>Error during exchanger. The reported error is: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro durante intercâmbio de dados. O erro relatado é: %1</translation>
     </message>
 </context>
 <context>
@@ -13151,48 +13154,48 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="155"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="161"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="129"/>
         <source>Input layer not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada de entrada não selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="138"/>
         <source>Error getting selected layer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao obter camada selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="146"/>
         <source>Output data source not selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de dados de saída não selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="155"/>
         <source>Error getting selected data source.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao obter fonte de dados selecionada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="161"/>
         <source>Data Set name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do conjunto de dados não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="214"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="222"/>
         <source>Exchanger</source>
-        <translation type="unfinished"></translation>
+        <translation>Intercambiar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="214"/>
         <source>Layer exported successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada exportada com sucesso.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.cpp" line="218"/>
         <source>Error during exchanger. The reported error is: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro durante intercâmbio de dados. O erro relatado é: %1</translation>
     </message>
 </context>
 <context>
@@ -13200,22 +13203,22 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="98"/>
         <source>Geoographic SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>SRS Geográfico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="99"/>
         <source>Projected SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>SRS Projetado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="100"/>
         <source>User defined SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>SRS definido pelo usuário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="257"/>
         <source>Not implemented yet!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ainda não implementado !</translation>
     </message>
 </context>
 <context>
@@ -13223,12 +13226,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterAdvancedOptionsWizardPage.cpp" line="39"/>
         <source>Segmenter Advanced Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções Avançadas de Segmentação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterAdvancedOptionsWizardPage.cpp" line="40"/>
         <source>Used to set the segmenter advanced options.</source>
-        <translation type="unfinished"></translation>
+        <translation>Usado para definir as opções avançadas de segmentação.</translation>
     </message>
 </context>
 <context>
@@ -13236,27 +13239,27 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterDialog.cpp" line="154"/>
         <source>Segmentation ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação finalizada com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterDialog.cpp" line="158"/>
         <source>Segmentation execution error</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação executada com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterDialog.cpp" line="163"/>
         <source>Segmentation initialization error</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação iniciada com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterDialog.cpp" line="168"/>
         <source>Invalid number of bands</source>
-        <translation type="unfinished"></translation>
+        <translation>Número inválido de bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterDialog.cpp" line="173"/>
         <source>Invalid input raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz (raster) de entrada inválida</translation>
     </message>
 </context>
 <context>
@@ -13270,47 +13273,47 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="224"/>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="234"/>
         <source>Segmenter</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="103"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="103"/>
         <source>Select at least one band.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione pelo menos uma banda.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="153"/>
         <source>File already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo já existe.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="197"/>
         <source>Segmenter ended sucessfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação finalizada com sucesso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="197"/>
         <source>seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>segundos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="201"/>
         <source>Segmenter execution error</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação executada com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="212"/>
         <source>Segmenter initialization error</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação inicializada com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="234"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção !</translation>
     </message>
 </context>
 <context>
@@ -13318,48 +13321,48 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="69"/>
         <source>Segmenter</source>
-        <translation type="unfinished"></translation>
+        <translation>Segmentação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="70"/>
         <source>Select the type of segmenter and set their specific parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o tipo de segmentação e defina os seus parâmetros específicos.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="215"/>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="223"/>
         <source>Band</source>
-        <translation type="unfinished"></translation>
+        <translation>Banda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="224"/>
         <source>Weight</source>
-        <translation type="unfinished"></translation>
+        <translation>Peso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="299"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="299"/>
         <source>Constrast error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraste com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="314"/>
         <source>Region Growing Mean</source>
-        <translation type="unfinished"></translation>
+        <translation>Crescimento de Região Médio</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="315"/>
         <source>Region Growing Baatz</source>
-        <translation type="unfinished"></translation>
+        <translation>Crescimento de Região Baatz</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="343"/>
         <source>Band </source>
-        <translation type="unfinished"></translation>
+        <translation>Banda </translation>
     </message>
 </context>
 <context>
@@ -13367,12 +13370,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Selection.cpp" line="259"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/tools/Selection.cpp" line="259"/>
         <source>The selection cannot be retrieved from the layer. Details:</source>
-        <translation type="unfinished"></translation>
+        <translation>A selecção não pode ser recuperada a partir da camada. Detalhes:</translation>
     </message>
 </context>
 <context>
@@ -13380,17 +13383,17 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/StringPropertyWidget.cpp" line="41"/>
         <source>String</source>
-        <translation type="unfinished"></translation>
+        <translation>String</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/StringPropertyWidget.cpp" line="42"/>
         <source>Fixed String</source>
-        <translation type="unfinished"></translation>
+        <translation>String Fixo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/StringPropertyWidget.cpp" line="40"/>
         <source>Var String</source>
-        <translation type="unfinished"></translation>
+        <translation>String variével</translation>
     </message>
 </context>
 <context>
@@ -13403,30 +13406,30 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="167"/>
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="180"/>
         <source>Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="96"/>
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="180"/>
         <source>Select a rule first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione uma regra primeiramente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="123"/>
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="154"/>
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="167"/>
         <source>Select a symbol first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um símbolo primeiramente.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="132"/>
         <source>The rule must have at least one symbol.</source>
-        <translation type="unfinished"></translation>
+        <translation>A regra deve ter pelo menos um símbolo.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleControllerWidget.cpp" line="184"/>
         <source>Symbol Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Seletor de Símbolo</translation>
     </message>
 </context>
 <context>
@@ -13434,22 +13437,22 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleDockWidget.cpp" line="97"/>
         <source>Polygons</source>
-        <translation type="unfinished"></translation>
+        <translation>Polígonos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleDockWidget.cpp" line="102"/>
         <source>Lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Linhas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleDockWidget.cpp" line="107"/>
         <source>Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Pontos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleDockWidget.cpp" line="112"/>
         <source>Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Matriz</translation>
     </message>
 </context>
 <context>
@@ -13457,37 +13460,37 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleExplorer.cpp" line="47"/>
         <source>Polygon Symbol</source>
-        <translation type="unfinished"></translation>
+        <translation>Símbolo de Polígono</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleExplorer.cpp" line="48"/>
         <source>Line Symbol</source>
-        <translation type="unfinished"></translation>
+        <translation>Símbolo de Linha</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleExplorer.cpp" line="49"/>
         <source>Point Symbol</source>
-        <translation type="unfinished"></translation>
+        <translation>Símbolo de Ponto</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleExplorer.cpp" line="50"/>
         <source>Raster Symbol</source>
-        <translation type="unfinished"></translation>
+        <translation>Símbolo Matricial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleExplorer.cpp" line="75"/>
         <source>Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleExplorer.cpp" line="85"/>
         <source>Rule</source>
-        <translation type="unfinished"></translation>
+        <translation>Regra</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleExplorer.cpp" line="93"/>
         <source>Unknown Symbol</source>
-        <translation type="unfinished"></translation>
+        <translation>Símbolo desconhecido</translation>
     </message>
 </context>
 <context>
@@ -13495,18 +13498,19 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/SymbolSelectorDialog.cpp" line="125"/>
         <source>Select a TerraLib Symbol Library File</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um Arquivo de Símbolo da Biblioteca TerraLib</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/SymbolSelectorDialog.cpp" line="136"/>
         <source>The selected symbol library could not be loaded.
  Details: )</source>
-        <translation type="unfinished"></translation>
+        <translation>A biblioteca de símbolo selecionada não pôde ser carregada.
+  Detalhes: )</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/SymbolSelectorDialog.cpp" line="138"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro</translation>
     </message>
 </context>
 <context>
@@ -13514,35 +13518,35 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="64"/>
         <source>View dataset rows</source>
-        <translation type="unfinished"></translation>
+        <translation>Exibir linhas do conjunto de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="66"/>
         <source>View advanced options</source>
-        <translation type="unfinished"></translation>
+        <translation>Exibir opções avançadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="305"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="310"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="315"/>
         <source>Tabular File</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo Tabular</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="335"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="341"/>
         <source>Table link error</source>
-        <translation type="unfinished"></translation>
+        <translation>Link da tabela com erro</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="336"/>
         <source>This function is not available for the selected datasource</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta função não está disponível para a fonte de dados selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="342"/>
         <source>This function is not available for datasets without a primary key</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta função não está disponível para este conjuntos de dados sem uma chave primária</translation>
     </message>
 </context>
 <context>
@@ -13550,82 +13554,82 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="42"/>
         <source>Date Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Data Tempo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="43"/>
         <source>Ordinal</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordinal</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="44"/>
         <source>String</source>
-        <translation type="unfinished"></translation>
+        <translation>String</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="46"/>
         <source>Ordinal Instant</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordinal Instantâneo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="47"/>
         <source>Ordinal Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordinal Período</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="48"/>
         <source>User defined</source>
-        <translation type="unfinished"></translation>
+        <translation>Definido pelo usuário</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="50"/>
         <source>Year</source>
-        <translation type="unfinished"></translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="51"/>
         <source>Month</source>
-        <translation type="unfinished"></translation>
+        <translation>Mês</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="52"/>
         <source>Day</source>
-        <translation type="unfinished"></translation>
+        <translation>Dia</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="53"/>
         <source>Hour</source>
-        <translation type="unfinished"></translation>
+        <translation>Hora</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="54"/>
         <source>Minute</source>
-        <translation type="unfinished"></translation>
+        <translation>Minuto</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="55"/>
         <source>Second</source>
-        <translation type="unfinished"></translation>
+        <translation>Segundo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="56"/>
         <source>Week</source>
-        <translation type="unfinished"></translation>
+        <translation>Semana</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="57"/>
         <source>Day of the Week</source>
-        <translation type="unfinished"></translation>
+        <translation>Dia da semana</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="58"/>
         <source>Day of the Year</source>
-        <translation type="unfinished"></translation>
+        <translation>Dia do ano</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TemporalPropertiesWidget.cpp" line="59"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconhecido</translation>
     </message>
 </context>
 <context>
@@ -13633,7 +13637,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorDialog.cpp" line="45"/>
         <source>Tie Points Locator</source>
-        <translation type="unfinished"></translation>
+        <translation>Localizador de Pontos de Controle</translation>
     </message>
 </context>
 <context>
@@ -13651,62 +13655,62 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="251"/>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="258"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="177"/>
         <source>Geometry assurance not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Geometria não definida.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="184"/>
         <source>Transformation error not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro de transformação não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="198"/>
         <source>Maximum number of tie-points not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Múmero máximo de pontos de controle não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="205"/>
         <source>Sub-sampled search rescale factor not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fator de sub-amostragem de escala não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="214"/>
         <source>Maximum euclidean distance not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Distância euclidiana máximanão definida.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="221"/>
         <source>Octaves number not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de oitavas não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="228"/>
         <source>Scales number not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de escalas não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="237"/>
         <source>Correlation window width not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura da janela de correlação não definida.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="244"/>
         <source>Gaussian filter iterations not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Iterações de filtro Gaussiano não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="251"/>
         <source>Minimum correlation value not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor de correlação mínimo não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorParametersWidget.cpp" line="258"/>
         <source>Moravec window width not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura da janela Moravec não definida.</translation>
     </message>
 </context>
 <context>
@@ -13714,7 +13718,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="118"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opções</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="482"/>
@@ -13724,52 +13728,52 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="628"/>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="635"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="482"/>
         <source>Output SRID not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>SRID de Saída não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="488"/>
         <source>Output resolution not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução de saída não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="618"/>
         <source>None tie points was located.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum ponto de controle foi localizado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="635"/>
         <source>Error locating tie points.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao localizar pontos de controle.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="747"/>
         <source>Choose the SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha o SRS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="817"/>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Manual</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="821"/>
         <source>Automatic</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="957"/>
         <source>Reference</source>
-        <translation type="unfinished"></translation>
+        <translation>Referência</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointLocatorWidget.cpp" line="973"/>
         <source>Adjust</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuste</translation>
     </message>
 </context>
 <context>
@@ -13777,12 +13781,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointsLocatorDialog.cpp" line="590"/>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Manual</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/TiePointsLocatorDialog.cpp" line="594"/>
         <source>Automatic</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático</translation>
     </message>
 </context>
 <context>
@@ -13790,22 +13794,22 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TimeSeriesWizard.cpp" line="72"/>
         <source>Data Source Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TimeSeriesWizard.cpp" line="73"/>
         <source>Please, select the data source where the data is stored</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione a fonte de dados onde os dados são armazenados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TimeSeriesWizard.cpp" line="80"/>
         <source>Dataset Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TimeSeriesWizard.cpp" line="81"/>
         <source>Please, select the datasets you want to transfer to another data source</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione os conjuntos de dados que você deseja transferir para outra fonte de dados.</translation>
     </message>
 </context>
 <context>
@@ -13813,12 +13817,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1206"/>
         <source>Select File</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione Arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1206"/>
         <source>Images (*.png *.xpm *.jpg *.gif)</source>
-        <translation type="unfinished"></translation>
+        <translation>Images (*.png *.xpm *.jpg *.gif)</translation>
     </message>
 </context>
 <context>
@@ -13826,32 +13830,32 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TrajectoryWizard.cpp" line="69"/>
         <source>Data Source Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TrajectoryWizard.cpp" line="70"/>
         <source>Please, select the data source where the data is stored</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione a fonte de dados onde os dados são armazenados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TrajectoryWizard.cpp" line="77"/>
         <source>Dataset Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção do Conjunto de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TrajectoryWizard.cpp" line="78"/>
         <source>Please, select the datasets you want to transfer to another data source</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, selecione os conjuntos de dados que você deseja transferir para outra fonte de dados.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TrajectoryWizard.cpp" line="83"/>
         <source>Trajectory Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades de Trajetória</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/TrajectoryWizard.cpp" line="84"/>
         <source>Please, adjust the temporal properties of the new Trajectory Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, ajuste as propriedades temporais da nova camada de Trajetória</translation>
     </message>
 </context>
 <context>
@@ -13859,7 +13863,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/UniqueKeyItem.cpp" line="69"/>
         <source>&amp;Open unique-key</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir chave única</translation>
     </message>
 </context>
 <context>
@@ -13867,7 +13871,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="54"/>
         <source>Vectorization</source>
-        <translation type="unfinished"></translation>
+        <translation>Vetorização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="122"/>
@@ -13877,27 +13881,27 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="238"/>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="244"/>
         <source>Vectorizer</source>
-        <translation type="unfinished"></translation>
+        <translation>Vetorizar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="122"/>
         <source>Output dataset name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do conjunto de saída não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="130"/>
         <source>Output repository name not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do repositório de saída não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="203"/>
         <source>An exception has occurred!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="244"/>
         <source>An exception has occurred saving geometries!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu uma exceção ao salvar geometrias !</translation>
     </message>
 </context>
 <context>
@@ -13905,22 +13909,22 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizardPage.cpp" line="46"/>
         <source>Vectorization</source>
-        <translation type="unfinished"></translation>
+        <translation>Vetorização</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizardPage.cpp" line="47"/>
         <source>Define the vectorization parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Defina os parâmetros de vetorização.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizardPage.cpp" line="172"/>
         <source>Save as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar como...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizardPage.cpp" line="173"/>
         <source>Shapefile (*.shp *.SHP);;</source>
-        <translation type="unfinished"></translation>
+        <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
 </context>
 <context>
@@ -13928,7 +13932,7 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/WellKnownGraphicWidget.cpp" line="111"/>
         <source>Well Known Marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Marcador conhecido</translation>
     </message>
 </context>
 <context>
@@ -13936,17 +13940,17 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/WellKnownMarkPropertyItem.cpp" line="42"/>
         <source>WellKnown Mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Marcador conhecido</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/WellKnownMarkPropertyItem.cpp" line="45"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/WellKnownMarkPropertyItem.cpp" line="49"/>
         <source>Mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Marca</translation>
     </message>
 </context>
 <context>
@@ -13960,49 +13964,49 @@ The layer must have an attribute with the same name of the attribute used to mak
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="506"/>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="519"/>
         <source>Query Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Construtor de Consulta</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="348"/>
         <source>Restrict value not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor restrito não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="358"/>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="368"/>
         <source>Value not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="378"/>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="487"/>
         <source>Operator not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Operador não definido.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="413"/>
         <source>and</source>
-        <translation type="unfinished"></translation>
+        <translation>and</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="506"/>
         <source>Selected layer has no geometry property.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada selecionada não tem nenhuma propriedade geometria.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="519"/>
         <source>Selected layer has no selected geometries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada selecionada não tem geometrias selecionadas.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="552"/>
         <source>Geometry Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor da Geometria</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="570"/>
         <source>or</source>
-        <translation type="unfinished"></translation>
+        <translation>or</translation>
     </message>
 </context>
 <context>
@@ -14010,12 +14014,12 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWizardPage.cpp" line="45"/>
         <source>Where Clause Definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Definição da cláusula Where</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWizardPage.cpp" line="46"/>
         <source>Define the restriction clauses to search.</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir as cláusulas de restrição da pesquisa.</translation>
     </message>
 </context>
 </TS>
