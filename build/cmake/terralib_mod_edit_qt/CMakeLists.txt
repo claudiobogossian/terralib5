@@ -135,6 +135,3 @@ install(
   FILES_MATCHING PATTERN "*.h"
   )
   
-export(TARGETS terralib_mod_edit_qt APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
-  
-

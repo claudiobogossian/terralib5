@@ -198,11 +198,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       std::auto_ptr<te::gm::Geometry> resultGeom;
 
       if (currGeom->isValid() && secGeom->isValid())
-      {
         resultGeom.reset(currGeom->intersection(secGeom.get()));
-        resultGeom.reset(GetValidMultiPolygon(resultGeom.get()));
-      }
-       
       
       if(resultGeom.get()!=0 && resultGeom->isValid())
       {

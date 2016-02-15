@@ -83,5 +83,3 @@ if(TERRALIB_MOD_XML_ENABLED)
   install(FILES ${TERRALIB_XML_HDR_FILES}
           DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/raster/serialization/xml COMPONENT devel)
 endif()
-
-export(TARGETS terralib_mod_raster APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -152,3 +152,11 @@ MACRO(TeInstallTerraLibPlugins plugins location)
     COMPONENT runtime
   )  
 ENDMACRO(TeInstallTerraLibPlugins)
+
+MACRO(GetTerraLibModules _modules)
+  set(allModules "${TERRALIB_MODULES}" "${TERRALIB_PLUGINS}")
+
+  foreach(module ${allModules})
+    list(APPEND ${_modules} terralib_mod_${module})
+  endforeach()
+ENDMACRO(GetTerraLibModules)

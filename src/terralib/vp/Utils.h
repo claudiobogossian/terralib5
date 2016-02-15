@@ -65,10 +65,6 @@ namespace te
 
     te::gm::GeomType GetSimpleType(te::gm::GeomType geomType);
 
-    te::gm::Polygon* GetValidPolygon(te::gm::Polygon* gm);
-
-    te::gm::Geometry* GetValidMultiPolygon(const te::gm::Geometry* g);
-
   } // end namespace vp
 }   // end namespace te
 

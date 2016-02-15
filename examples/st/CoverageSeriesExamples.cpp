@@ -25,7 +25,7 @@ void CoverageSeriesExamples()
     
     //Load the centroide of the Angra city -> from a shapefile with the Angra city
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TERRALIB_DATA_DIR"/st/coverage/angra_city.shp" ; 
+    connInfo["URI"] = TERRALIB_DATA_DIR "/st/coverage/angra_city.shp" ;
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
     ds->setConnectionInfo(connInfo); 
     ds->open();

@@ -163,7 +163,7 @@
     <message>
         <location filename="../../../src/terralib/qt/af/settings/SettingsWidgetsFactory.h" line="61"/>
         <source>Fail to find QWidget factory</source>
-        <translation type="unfinished">xxx</translation>
+        <translation type="unfinished">Falha ao encontrar QWidget factory</translation>
     </message>
 </context>
 <context>

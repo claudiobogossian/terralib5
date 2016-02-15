@@ -91,4 +91,3 @@ install(FILES ${TERRALIB_URI_HDR_FILES}
 install(FILES ${TERRALIB_PROGRESS_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/common/progress COMPONENT devel)
 
-export(TARGETS terralib_mod_common APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -154,4 +154,3 @@ install(FILES ${TERRALIB_LOADER_HDR_FILES}
 install(FILES ${TERRALIB_MAPTOOLS_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/maptools COMPONENT devel)
 
-export(TARGETS terralib_mod_graph APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

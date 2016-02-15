@@ -136,7 +136,7 @@ void te::vp::BufferDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers
   while(it != m_layers.end())
   {
     std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasGeom())
+    if(dsType.get() && dsType->hasGeom())
       m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
@@ -538,7 +538,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         bufferOp = new te::vp::BufferMemory();
       }
 
-      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       bufferOp->setOutput(aux, outputdataset);
       bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
 

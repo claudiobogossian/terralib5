@@ -248,7 +248,7 @@ Iremos fornecer em breve!</translation>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="330"/>
         <source>Layer SRS check</source>
-        <translation type="unfinished">Camada SRS verificada</translation>
+        <translation>SRS da Camada verificada</translation>
     </message>
 </context>
 </TS>

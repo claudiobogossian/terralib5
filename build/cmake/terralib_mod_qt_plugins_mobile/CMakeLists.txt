@@ -107,4 +107,3 @@ install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_CORE_HDR_FILES} ${TERRALIB_QT_HDR
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.mobile.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 
-export(TARGETS terralib_mod_qt_plugins_mobile APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

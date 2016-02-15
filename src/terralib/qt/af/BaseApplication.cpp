@@ -19,6 +19,7 @@
 #include "../widgets/layer/explorer/LayerItem.h"
 
 #include "../widgets/layer/info/LayerPropertiesInfoWidget.h"
+#include "../widgets/layer/utils/SaveSelectedObjectsDialog.h"
 #include "../widgets/tools/Info.h"
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/Selection.h"
@@ -713,6 +714,57 @@ void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
   display->setExtent(newExtent);
 }
 
+void te::qt::af::BaseApplication::onLayerSaveSelectedObjectsTriggered()
+{
+  try
+  {
+    std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::widgets::GetSelectedLayersOnly(getLayerExplorer());
+
+    if (selectedLayers.empty())
+    {
+      QString msg = tr("Select one layer to accomplish this operation!");
+      QMessageBox::warning(this, m_app->getAppTitle(), msg);
+      return;
+    }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+      if (!it->get()->isValid())
+      {
+        QMessageBox::warning(this, m_app->getAppTitle(),
+          tr("This is a invalid layer selected!"));
+        return;
+      }
+    }
+
+    te::map::AbstractLayerPtr selectedLayer = *selectedLayers.begin();
+
+    te::qt::widgets::SaveSelectedObjectsDialog dlg(this);
+
+    dlg.setWindowTitle(dlg.windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() + ")");
+
+    dlg.setParameters(selectedLayer);
+
+    if (dlg.exec() != QDialog::Accepted)
+      return;
+
+    te::map::AbstractLayerPtr layer = dlg.getLayer();
+
+    if (!layer)
+      return;
+
+    te::qt::af::evt::LayerAdded evt(layer.get());
+    emit triggered(&evt);
+
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+
+}
+
 
 void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)
 {
@@ -1000,6 +1052,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerSaveSelectedObjects, "layer-save-selected-obj", "Layer.Save Selected Objects", tr("Save Selected Objects..."), tr("Save a new layer based on the selected objects from this layer"), true, false, true, this);
 
   initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
   initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
@@ -1054,6 +1107,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerFitSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitSelectedOnMapDisplayTriggered()));
   connect(m_layerPanToSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerPanToSelectedOnMapDisplayTriggered()));
   connect(m_layerShowTable, SIGNAL(triggered()), SLOT(onLayerShowTableTriggered()));
+  connect(m_layerSaveSelectedObjects, SIGNAL(triggered()), SLOT(onLayerSaveSelectedObjectsTriggered()));
 
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapUnknownSRID, SIGNAL(triggered()), SLOT(onMapSetUnknwonSRIDTriggered()));

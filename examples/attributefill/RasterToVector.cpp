@@ -19,7 +19,7 @@
 bool RasterToVectorInSHP()
 {
 // Input Raster
-  std::string dataDirRaster(""TERRALIB_DATA_DIR"/rasters");
+  std::string dataDirRaster(TERRALIB_DATA_DIR  "/rasters");
   std::string fileNameRaster = "cbers2b_rgb342_crop.tif";
 
   std::map<std::string, std::string> connInfoRaster;
@@ -34,7 +34,7 @@ bool RasterToVectorInSHP()
 
 
 // Input Vector
-  std::string dataDirVector(""TERRALIB_DATA_DIR"/shp/shapeTeste.shp");
+  std::string dataDirVector(TERRALIB_DATA_DIR "/shp/shapeTeste.shp");
   std::string fileNameVector = "shapeTeste";
 
   std::map<std::string, std::string> connInfoVector;
@@ -112,7 +112,7 @@ bool RasterToVectorInSHP()
 bool RasterToVectorInPGIS()
 {
   // Input Raster
-  std::string dataDirRaster(""TERRALIB_DATA_DIR"/rasters");
+  std::string dataDirRaster(TERRALIB_DATA_DIR "/rasters");
   std::string fileNameRaster = "cbers2b_rgb342_crop.tif";
 
   std::map<std::string, std::string> connInfoRaster;
@@ -127,7 +127,7 @@ bool RasterToVectorInPGIS()
 
 
   // Input Vector
-  std::string dataDirVector(""TERRALIB_DATA_DIR"/shp/shapeTeste.shp");
+  std::string dataDirVector(TERRALIB_DATA_DIR "/shp/shapeTeste.shp");
   std::string fileNameVector = "shapeTeste";
 
   std::map<std::string, std::string> connInfoVector;

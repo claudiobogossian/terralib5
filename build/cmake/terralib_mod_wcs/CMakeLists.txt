@@ -60,4 +60,3 @@ install(FILES ${TERRALIB_HDR_FILES}
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.wcs.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 
-export(TARGETS terralib_mod_wcs APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

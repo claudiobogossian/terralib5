@@ -187,7 +187,7 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
     if(currentId != vId)
     {
       //verify if its already in cache
-      if(gc->checkCacheByVertexId(vId) == false)
+      if(gc->checkCacheByVertexId(vId) == nullptr)
       {
         v = new te::graph::Vertex(vId, false);
 
