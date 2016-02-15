@@ -18,38 +18,38 @@
  */
 
 /*!
-\file terralib/qt/widgets/layer/utils/SaveLayerAsDialog.cpp
+\file terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp
 
 \brief This interface is used to create a new layer based on a layer with selected objects.
 */
 
 // TerraLib
-#include "SaveLayerAsDialog.h"
-#include "SaveLayerAsWidget.h"
-#include "ui_SaveLayerAsDialogForm.h"
+#include "SaveSelectedObjectsDialog.h"
+#include "SaveSelectedObjectsWidget.h"
+#include "ui_SaveSelectedObjectsDialogForm.h"
 
 // Qt
 #include <QGridLayout>
 #include <QMessageBox>
 
 
-te::qt::widgets::SaveLayerAsDialog::SaveLayerAsDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::SaveSelectedObjectsDialog::SaveSelectedObjectsDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-  m_ui(new Ui::SaveLayerAsDialogForm),
-  m_saveLayerAsWidget(0)
+  m_ui(new Ui::SaveSelectedObjectsDialogForm),
+  m_saveSelectedObjectsWidget(0)
 {
   // add controls
   m_ui->setupUi(this);
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("layer-save-as").pixmap(50, 50));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("layer-save-selected-obj").pixmap(50, 50));
 
   //add new property widget
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
   layout->setContentsMargins(0, 0, 0, 0);
 
   //Fill Widget
-  m_saveLayerAsWidget = new te::qt::widgets::SaveLayerAsWidget(m_ui->m_widget);
+  m_saveSelectedObjectsWidget = new te::qt::widgets::SaveSelectedObjectsWidget(m_ui->m_widget);
 
-  layout->addWidget(m_saveLayerAsWidget);
+  layout->addWidget(m_saveSelectedObjectsWidget);
 
   //connects
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
@@ -57,24 +57,29 @@ te::qt::widgets::SaveLayerAsDialog::SaveLayerAsDialog(QWidget* parent, Qt::Windo
 
 }
 
-te::qt::widgets::SaveLayerAsDialog::~SaveLayerAsDialog()
+te::qt::widgets::SaveSelectedObjectsDialog::~SaveSelectedObjectsDialog()
 {
 
 }
 
-void te::qt::widgets::SaveLayerAsDialog::setParameters(te::map::AbstractLayerPtr layer)
+te::map::AbstractLayerPtr te::qt::widgets::SaveSelectedObjectsDialog::getLayer()
+{
+  return m_layerResult;
+}
+
+void te::qt::widgets::SaveSelectedObjectsDialog::setParameters(te::map::AbstractLayerPtr layer)
 {
   std::auto_ptr<te::map::LayerSchema> dsType(layer->getSchema());
 
-  m_saveLayerAsWidget->setParameters(layer);
-  m_saveLayerAsWidget->updateWindowComponents();
+  m_saveSelectedObjectsWidget->setParameters(layer);
+  m_saveSelectedObjectsWidget->updateWindowComponents();
 }
 
-void te::qt::widgets::SaveLayerAsDialog::onOkPushButtonClicked()
+void te::qt::widgets::SaveSelectedObjectsDialog::onOkPushButtonClicked()
 {
   std::string errorMessage = "";
 
-  bool res = m_saveLayerAsWidget->execute(errorMessage);
+  bool res = m_saveSelectedObjectsWidget->execute(errorMessage);
 
   if (!res)
   {
@@ -82,12 +87,14 @@ void te::qt::widgets::SaveLayerAsDialog::onOkPushButtonClicked()
     return;
   }
 
+  m_layerResult = m_saveSelectedObjectsWidget->getLayer();
+
   QMessageBox::information(this, tr("Warning"), tr("Layer was saved."));
 
   accept();
 }
 
-void te::qt::widgets::SaveLayerAsDialog::onCancelPushButtonClicked()
+void te::qt::widgets::SaveSelectedObjectsDialog::onCancelPushButtonClicked()
 {
   reject();
 }

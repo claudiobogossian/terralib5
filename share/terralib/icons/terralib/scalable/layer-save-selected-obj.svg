@@ -9,7 +9,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="layer-save-as.svg"
+   sodipodi:docname="layer-save-selected-obj.svg"
    height="16"
    width="16"
    sodipodi:version="0.32"
@@ -42,16 +42,6 @@
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient2485"
-       id="linearGradient6207"
-       gradientUnits="userSpaceOnUse"
-       x1="974.19751"
-       y1="182.46863"
-       x2="979.80444"
-       y2="184.8026"
-       gradientTransform="translate(-964.99995,-167.00002)" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient5704"
        id="linearGradient6209"
        gradientUnits="userSpaceOnUse"
@@ -60,16 +50,6 @@
        x2="977.93347"
        y2="181.70978"
        gradientTransform="translate(-964.99995,-167.00002)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient2485"
-       id="linearGradient6367"
-       gradientUnits="userSpaceOnUse"
-       x1="974.19751"
-       y1="182.46863"
-       x2="979.80444"
-       y2="184.8026"
-       gradientTransform="translate(-964.99995,-173.00002)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient5704"
@@ -457,7 +437,7 @@ http://www.inkscape.org/</dc:description>
             <dc:title>Inkscape Developers</dc:title>
           </cc:Agent>
         </dc:rights>
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
       <cc:License
          rdf:about="http://creativecommons.org/licenses/GPL/2.0/">
@@ -477,15 +457,15 @@ http://www.inkscape.org/</dc:description>
     </rdf:RDF>
   </metadata>
   <g
-     id="g3840">
+     id="g3438">
     <path
-       style="color:#000000;display:inline;fill:url(#linearGradient6207);fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient6209);stroke-width:0.99994737;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none"
+       style="color:#000000;display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient6209);stroke-width:0.99994737;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none"
        d="m 4.50005,15.49998 11,0 -4,-5 -11,0 4,5 z"
        id="use5800"
        sodipodi:nodetypes="ccccc"
        inkscape:connector-curvature="0" />
     <path
-       style="color:#000000;display:inline;opacity:0.48093842;fill:url(#linearGradient6367);fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient6373);stroke-width:1.0000962;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none"
+       style="color:#000000;display:inline;opacity:0.48093842;fill:#00ff00;fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient6373);stroke-width:1.0000962;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none"
        d="m 4.50005,12.49998 11,0 -4,-5 -11,0 4,5 z"
        id="use5864"
        sodipodi:nodetypes="ccccc"

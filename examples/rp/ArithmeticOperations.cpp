@@ -16,7 +16,7 @@ void ArithmeticOperations()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
     std::auto_ptr<te::rst::Raster> rin(te::rst::RasterFactory::open(rinfo)); 
   
 // defining input parameters, the arithmetic operation will be 
@@ -29,7 +29,7 @@ void ArithmeticOperations()
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/arithmetic_operations_result.tif";
+    orinfo["URI"] = TERRALIB_DATA_DIR "/rasters/arithmetic_operations_result.tif";
 
 // defining output parameters
     te::rp::ArithmeticOperations::OutputParameters outputParams;

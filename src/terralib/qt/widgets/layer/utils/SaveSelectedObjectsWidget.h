@@ -18,13 +18,13 @@
  */
 
 /*!
-\file terralib/qt/widgets/layer/utils/CreateLayerWidget.h
+\file terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.h
 
-\brief This interface is used to create new layer operation.
+\brief This interface is used to create a new layer based on a layer with selected objects.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVELAYERASWIDGET_H
-#define __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVELAYERASWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVESELECTEDOBJECTSWIDGET_H
+#define __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVESELECTEDOBJECTSWIDGET_H
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
@@ -39,7 +39,7 @@
 #include <QSignalMapper>
 #include <QWidget>
 
-namespace Ui { class SaveLayerAsWidgetForm; }
+namespace Ui { class SaveSelectedObjectsWidgetForm; }
 
 namespace te
 {
@@ -52,17 +52,17 @@ namespace te
 
         \brief This interface is used to create a new layer based on a layer with selected objects.
       */
-      class TEQTWIDGETSEXPORT SaveLayerAsWidget : public QWidget
+      class TEQTWIDGETSEXPORT SaveSelectedObjectsWidget : public QWidget
       {
         Q_OBJECT
 
         public:
 
           /*! Default Constructor */
-          SaveLayerAsWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          SaveSelectedObjectsWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! Default Destructor */
-          ~SaveLayerAsWidget();
+          ~SaveSelectedObjectsWidget();
 
         public:
           
@@ -74,7 +74,7 @@ namespace te
 
           void save(te::da::DataSource* dataSource, te::da::DataSet* dataSet, te::da::DataSetType* dataSetType);
 
-          //void setDataSource(te::da::DataSourceInfoPtr dsInfo);
+          te::map::AbstractLayerPtr getLayer();
 
           bool execute(std::string& errorMessage);
 
@@ -86,7 +86,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::SaveLayerAsWidgetForm> m_ui;
+          std::auto_ptr<Ui::SaveSelectedObjectsWidgetForm> m_ui;
 
           te::map::AbstractLayerPtr m_layer;                  //!< TerraLib layer auto ptr
 
@@ -95,6 +95,8 @@ namespace te
           const te::da::ObjectIdSet* m_oidSet;                //!< Object Id Set.
 
           te::da::DataSourceInfoPtr m_outputDatasource;
+
+          te::map::AbstractLayerPtr m_layerResult;
 
           bool m_toFile;
 
@@ -105,4 +107,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVELAYERASWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVESELECTEDOBJECTSWIDGET_H

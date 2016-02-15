@@ -38,6 +38,7 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -105,10 +106,21 @@ void te::attributefill::RasterToVectorDialog::setLayers(std::list<te::map::Abstr
   while(it != m_layers.end())
   {
     std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasRaster())
+    if (dsType->hasRaster())
+    {
       m_ui->m_inRasterComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-    if(dsType->hasGeom())
-      m_ui->m_inVectorComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    }
+    if (dsType->hasGeom())
+    {
+      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
+      if (geomProp->getGeometryType() == te::gm::PolygonType ||
+          geomProp->getGeometryType() == te::gm::MultiPolygonType ||
+          geomProp->getGeometryType() == te::gm::PointType ||
+          geomProp->getGeometryType() == te::gm::MultiPointType)
+      {
+        m_ui->m_inVectorComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+      }
+    }
     ++it;
   }
 }
@@ -195,6 +207,19 @@ std::vector<te::stat::StatisticalSummary> te::attributefill::RasterToVectorDialo
   return vecStatistics;
 }
 
+bool te::attributefill::RasterToVectorDialog::getValueOption()
+{
+  for (int i = 0; i < m_ui->m_statisticsListWidget->count(); ++i)
+  {
+    if (m_ui->m_statisticsListWidget->isItemSelected(m_ui->m_statisticsListWidget->item(i)))
+    {
+      return true;
+    }
+    return false;
+  }
+
+}
+
 void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
@@ -220,25 +245,6 @@ void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
   for(std::size_t b = 0; b < n_bands; ++b)
     m_ui->m_bandsListWidget->addItem(boost::lexical_cast<std::string>(b).c_str());
 
-
-  m_ui->m_statisticsListWidget->clear();
-
-  m_ui->m_statisticsListWidget->addItem("Minimum value");
-  m_ui->m_statisticsListWidget->addItem("Maximum value");
-  m_ui->m_statisticsListWidget->addItem("Mean");
-  m_ui->m_statisticsListWidget->addItem("Sum of values");
-  m_ui->m_statisticsListWidget->addItem("Total number of values");
-  m_ui->m_statisticsListWidget->addItem("Total not null values");
-  m_ui->m_statisticsListWidget->addItem("Standard deviation");
-  m_ui->m_statisticsListWidget->addItem("Variance");
-  m_ui->m_statisticsListWidget->addItem("Skewness");
-  m_ui->m_statisticsListWidget->addItem("Kurtosis");
-  m_ui->m_statisticsListWidget->addItem("Amplitude");
-  m_ui->m_statisticsListWidget->addItem("Median");
-  m_ui->m_statisticsListWidget->addItem("Coefficient variation");
-  m_ui->m_statisticsListWidget->addItem("Mode");
-  m_ui->m_statisticsListWidget->addItem("Percent of each class by area");
-
 }
 
 void te::attributefill::RasterToVectorDialog::onVectorComboBoxChanged(int index)
@@ -249,9 +255,43 @@ void te::attributefill::RasterToVectorDialog::onVectorComboBoxChanged(int index)
 
   while(it != m_layers.end())
   {
-    if(layerID == it->get()->getId().c_str())
+    if (layerID == it->get()->getId().c_str())
+    {
       m_vectorLayer = it->get();
-    
+      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+        
+      m_ui->m_statisticsListWidget->clear();
+
+      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
+
+      if (geomProp->getGeometryType() == te::gm::PolygonType || geomProp->getGeometryType() == te::gm::MultiPolygonType)
+      {
+        m_ui->m_statisticsListWidget->addItem("Minimum value");
+        m_ui->m_statisticsListWidget->addItem("Maximum value");
+        m_ui->m_statisticsListWidget->addItem("Mean");
+        m_ui->m_statisticsListWidget->addItem("Sum of values");
+        m_ui->m_statisticsListWidget->addItem("Total number of values");
+        m_ui->m_statisticsListWidget->addItem("Total not null values");
+        m_ui->m_statisticsListWidget->addItem("Standard deviation");
+        m_ui->m_statisticsListWidget->addItem("Variance");
+        m_ui->m_statisticsListWidget->addItem("Skewness");
+        m_ui->m_statisticsListWidget->addItem("Kurtosis");
+        m_ui->m_statisticsListWidget->addItem("Amplitude");
+        m_ui->m_statisticsListWidget->addItem("Median");
+        m_ui->m_statisticsListWidget->addItem("Coefficient variation");
+        m_ui->m_statisticsListWidget->addItem("Mode");
+        m_ui->m_statisticsListWidget->addItem("Percent of each class by area");
+
+        m_ui->m_textureCheckBox->setEnabled(true);
+      }
+      else
+      {
+        m_ui->m_statisticsListWidget->addItem("Value");
+
+        m_ui->m_textureCheckBox->setChecked(false);
+        m_ui->m_textureCheckBox->setEnabled(false);
+      }
+    }
     ++it;
   }
 }
@@ -353,8 +393,10 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
 
   std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
   m_texture = m_ui->m_textureCheckBox->isChecked();
-
-  if(vecStatistics.empty() && m_texture == false)
+  
+  bool isValueOptionSelected = getValueOption();
+  
+  if (isValueOptionSelected == false && vecStatistics.empty() && m_texture == false)
   {
     QMessageBox::information(this, "Fill", "Select at least one statistic operation or select the texture checkbox.");
     return;

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/utils/SaveLayerAsDialog.h
+  \file terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.h
 
   \brief This interface is used to create a new layer based on a layer with selected objects.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVELAYERASDIALOG_H
-#define __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVELAYERASDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVESELECTEDOBJECTSDIALOG_H
+#define __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVESELECTEDOBJECTSDIALOG_H
 
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
@@ -36,7 +36,7 @@
 // Qt
 #include <QDialog>
 
-namespace Ui { class SaveLayerAsDialogForm; }
+namespace Ui { class SaveSelectedObjectsDialogForm; }
 
 namespace te
 {
@@ -44,24 +44,26 @@ namespace te
   {
     namespace widgets
     {
-      class SaveLayerAsWidget;
+      class SaveSelectedObjectsWidget;
 
       /*!
         \class CreateLayerDialog
 
         \brief This interface is used to create a new layer based on a layer with selected objects.
       */
-      class TEQTWIDGETSEXPORT SaveLayerAsDialog : public QDialog
+      class TEQTWIDGETSEXPORT SaveSelectedObjectsDialog : public QDialog
       {
         Q_OBJECT
 
         public:
 
-          SaveLayerAsDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          SaveSelectedObjectsDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~SaveLayerAsDialog();
+          ~SaveSelectedObjectsDialog();
 
         public:
+
+          te::map::AbstractLayerPtr getLayer();
 
           /*! \brief Set a layer. */
           void setParameters(te::map::AbstractLayerPtr layer);
@@ -74,13 +76,15 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::SaveLayerAsDialogForm> m_ui;
+          std::auto_ptr<Ui::SaveSelectedObjectsDialogForm> m_ui;
 
-          te::qt::widgets::SaveLayerAsWidget* m_saveLayerAsWidget;
+          te::qt::widgets::SaveSelectedObjectsWidget* m_saveSelectedObjectsWidget;
+
+          te::map::AbstractLayerPtr m_layerResult;
       }; 
     }     // end namespace widgets
   }       // end namespace qt
 }         // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVELAYERASDIALOG_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVESELECTEDOBJECTSDIALOG_H
 

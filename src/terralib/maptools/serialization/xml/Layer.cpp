@@ -129,7 +129,7 @@ te::dt::SimpleProperty* GetProperty(std::string name, int dataType, int geomType
     default:
     {
       simpleProperty = 0;
-      return false;
+      return nullptr;
     }
   }
 

@@ -138,8 +138,6 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
 
                 if(outGeom.get() && outGeom->isValid())
                 {
-                  outGeom.reset(GetValidMultiPolygon(outGeom.get()));
-
                   if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
                   {
                     dataSetItem->setGeometry(j+2, outGeom.release());
@@ -189,8 +187,6 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
 
             if(outGeom.get() && outGeom->isValid())
             {
-              outGeom.reset(GetValidMultiPolygon(outGeom.get()));
-
               if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
               {
                 dataSetItem->setGeometry(3, outGeom.release());
@@ -324,7 +320,6 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
             }
           }
         }
-        geom = GetValidMultiPolygon(geom);
         rtree.insert(*(geom->getMBR()), geom);
       }
       //task1.pulse();
@@ -400,7 +395,6 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
         
       if(currentVec[j]->getGeomTypeId() == te::gm::MultiPolygonType)
       {
-        currentVec[j] = GetValidMultiPolygon(currentVec[j]);
         dataSetItem->setGeometry(3, currentVec[j]);
       }
       else

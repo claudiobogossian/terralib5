@@ -103,6 +103,9 @@ namespace te
       // it defines the type of the result considering the input geometries.
       te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
       
+      bool isSelectedProperty(const std::string& dsName, te::dt::Property* prop);
+
+    protected:
       te::da::DataSourcePtr m_inFirstDsrc;
       std::string m_inFirstDsetName;
       std::auto_ptr<te::da::DataSetTypeConverter> m_firstConverter;

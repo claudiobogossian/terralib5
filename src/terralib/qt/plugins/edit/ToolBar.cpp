@@ -51,6 +51,7 @@
 #include "../../../memory/DataSet.h"
 #include "../../../memory/DataSetItem.h"
 #include "../../widgets/canvas/MapDisplay.h"
+#include "../../widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/events/MapEvents.h"
@@ -623,7 +624,12 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     te::qt::af::evt::GetMapDisplay e;
     emit triggered(&e);
 
-    e.m_display->getDisplay()->refresh();
+    //update layer
+    te::qt::widgets::MultiThreadMapDisplay* mtmp = dynamic_cast<te::qt::widgets::MultiThreadMapDisplay*>(e.m_display->getDisplay());
+    if (mtmp)
+      mtmp->updateLayer(layer);
+    else
+      e.m_display->getDisplay()->refresh();
 
     m_layerIsStashed = false;
 

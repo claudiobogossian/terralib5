@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../../common/StringUtils.h"
 #include "../../../../dataaccess/utils/Utils.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../widgets/utils/DoubleListWidget.h"
 #include "../../../widgets/utils/ScopedCursor.h"
@@ -42,6 +43,8 @@
 
 //Boost
 #include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::qt::plugins::terramobile::GeoPackageBuilderWizard::GeoPackageBuilderWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f)
@@ -191,6 +194,9 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
+   std::string dataSourceId = (*it)->getDataSourceId();
+   te::da::DataSourceInfoPtr dsInfo = te::da::DataSourceInfoManager::getInstance().get(dataSourceId);
+
     bool aux = false;
 
     if (!visible && !aux)
@@ -205,7 +211,8 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
     m_outputPage->appendLogMesssage("Exporting gathering layer " + dsType->getName());
 
-    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position') values('" + dsType->getName() + "', " + boost::lexical_cast<std::string>(aux)+", " + boost::lexical_cast<std::string>(pos)+"); ";
+    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position', 'uri') values('" + dsType->getName() + "', " +
+    boost::lexical_cast<std::string>(aux)+", " + boost::lexical_cast<std::string>(pos)+", '" + dsInfo->getConnInfoAsString() + "'); ";
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++pos;
 
@@ -214,6 +221,9 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   for (it = inputLayers.begin(); it != inputLayers.end(); ++it)
   {
+    std::string dataSourceId = (*it)->getDataSourceId();
+    te::da::DataSourceInfoPtr dsInfo = te::da::DataSourceInfoManager::getInstance().get(dataSourceId);
+
     visible = (*it)->getVisibility();
 
     std::auto_ptr<te::da::DataSetType> dsType = (*it)->getSchema();
@@ -231,7 +241,8 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
     m_outputPage->appendLogMesssage("Exporting input layer " + name);
 
-    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position') values('" + name + "', " + boost::lexical_cast<std::string>(visible)+", " + boost::lexical_cast<std::string>(pos)+"); ";
+    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position', 'uri') values('" + name + "', " + boost::lexical_cast<std::string>(visible)+", " +
+    boost::lexical_cast<std::string>(pos)+", '" + dsInfo->getConnInfoAsString() + "'); ";
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
     te::qt::plugins::terramobile::queryGPKG("select * from sqlite_master", dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
@@ -256,8 +267,6 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   //Settings - Exporting the visible area if it is valid
   if (m_outputPage->useVisibleArea() && m_extent.isValid() && m_srid != 0)
   {
-    std::string sqlCreate1 = "CREATE TABLE IF NOT EXISTS tm_settings(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, key TEXT, value TEXT); ";
-
     m_extent.transform(m_srid, 4326);
 
     std::string minX, minY, maxX, maxY;
@@ -271,12 +280,19 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     std::string insert3 = "INSERT INTO tm_settings ('key', 'value') values ('default_xmax', '" + maxX + "');";
     std::string insert4 = "INSERT INTO tm_settings ('key', 'value') values ('default_ymax', '" + maxY + "');";
 
-    te::qt::plugins::terramobile::queryGPKG(sqlCreate1, dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert1, dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert2, dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert3, dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert4, dsGPKG.get());
   }
+
+  //Generating a unique id for the geopackage file
+  boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id_ds = boost::uuids::to_string(u);
+
+  std::string insert = "INSERT INTO tm_settings ('key', 'value') values ('gpkg_id', '" + id_ds + "');";
+  te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
 
   //Removing trigggers and tables that could generate problems on the mobile application
   std::vector<std::string> triggers = te::qt::plugins::terramobile::getItemNames("trigger", dsGPKG.get());

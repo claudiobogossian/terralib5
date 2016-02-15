@@ -119,7 +119,11 @@ void TsTreeItem::iterateChildren()
   te::common::TreeItem* child2 = new te::common::TreeItem(parent);
   te::common::TreeItem* child3 = new te::common::TreeItem(parent);
 
-  int indexes[4] = { child0->getIndex(), child1->getIndex(), child2->getIndex(), child3->getIndex() }; 
+  int indexes[4];
+  indexes[0] = child0->getIndex();
+  indexes[1] = child1->getIndex();
+  indexes[2] = child2->getIndex();
+  indexes[3] = child3->getIndex();
   
   int idx = 0;
   for(te::common::TreeItem::const_iterator it = parent->begin(); it != parent->end(); ++it)
