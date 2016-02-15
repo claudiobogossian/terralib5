@@ -538,7 +538,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         bufferOp = new te::vp::BufferMemory();
       }
 
-      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       bufferOp->setOutput(aux, outputdataset);
       bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
 
