@@ -157,6 +157,14 @@ MACRO(GetTerraLibModules _modules)
   set(allModules "${TERRALIB_MODULES}" "${TERRALIB_PLUGINS}")
 
   foreach(module ${allModules})
-    list(APPEND ${_modules} terralib_mod_${module})
+    set (_mod_name terralib_mod_${module})
+    
+    string(FIND ${_mod_name} python _py_ok)
+        
+    if(${_py_ok} GREATER 0)
+      set(_mod_name _${_mod_name})
+    endif()
+    
+    list(APPEND ${_modules} ${_mod_name})
   endforeach()
 ENDMACRO(GetTerraLibModules)

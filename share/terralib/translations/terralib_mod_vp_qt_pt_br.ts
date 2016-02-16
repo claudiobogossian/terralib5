@@ -132,102 +132,117 @@
         <translation>Fixado em</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="142"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="120"/>
+        <source>The buffer distance should be given in  layer&apos; SRS unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="127"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="137"/>
+        <source>This option is not implemented yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="140"/>
         <source>From an attribute</source>
         <translation>De um atributo</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="186"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="191"/>
         <source>Rule for polygons</source>
         <translation>Regras para polígonos</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="207"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="205"/>
         <source>Inside and Outside</source>
         <translation>Dentro e Fora</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="232"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="230"/>
         <source>Image for Rule</source>
         <translation>Imagem para regra</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="239"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="237"/>
         <source>Only Outside</source>
         <translation>Somente Fora</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="262"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="260"/>
         <source>Only Inside</source>
         <translation>Somente Dentro</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="274"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="273"/>
         <source>Boundaries between buffers</source>
         <translation>Fronteiras entre as áreas de influências</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="307"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="306"/>
         <source>Dissolve</source>
         <translation>Dissolver</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="357"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="356"/>
         <source>Not Dissolve</source>
         <translation>Não Dissolver</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="367"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="366"/>
         <source>Copy input columns</source>
         <translation>Copiar colunas de entrada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="378"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="377"/>
         <source>Multiple Levels</source>
         <translation>Múltiplos Níveis</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="399"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="398"/>
         <source>Number of levels:</source>
         <translation>Número de níveis:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="420"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="419"/>
         <source>Output</source>
         <translation>Saída</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="426"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="468"/>
         <source>Layer Name:</source>
         <translation>Nome da Camada:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="442"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="454"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="456"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="428"/>
         <source>Repository:</source>
         <translation>Repositório</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="469"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="441"/>
         <source>BD</source>
         <translation>BD</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="503"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="502"/>
         <source>&amp;Ok</source>
         <translation>&amp;Ok</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="510"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="509"/>
         <source>Help</source>
         <translation>Ajuda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="517"/>
+        <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="516"/>
         <source>Cancel</source>
         <translation>Cancela</translation>
     </message>
@@ -255,9 +270,13 @@
         <translation>Centróide</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/GeometricOpOutputWizardPageForm.ui" line="60"/>
         <source>Minimum Bounding Rectangle (MBR)</source>
-        <translation>Mínimo Retângulo Envolvente (MBR)</translation>
+        <translation type="vanished">Mínimo Retângulo Envolvente (MBR)</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/GeometricOpOutputWizardPageForm.ui" line="60"/>
+        <source>Minimum Bounding Rectangle</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/GeometricOpOutputWizardPageForm.ui" line="70"/>
@@ -336,78 +355,93 @@
         <translation>Operação de Interseção</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="47"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="20"/>
+        <source>Attribute Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="30"/>
+        <source>Overlay Layer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="52"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="138"/>
+        <source>Only Selected Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="87"/>
         <source>Computes a geometric intersection of the objects in two distinct layers</source>
         <translation>Calcula uma intersecção geométrica dos objectos de duas camadas distintas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="66"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="106"/>
         <source>Imagem</source>
         <translation>Imagem</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="88"/>
         <source>Input</source>
-        <translation>Entrada</translation>
+        <translation type="vanished">Entrada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="102"/>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="135"/>
         <source>Only Selected</source>
-        <translation>Somente Selecionados</translation>
+        <translation type="vanished">Somente Selecionados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="109"/>
         <source>Input layer</source>
-        <translation>Camada de entrada</translation>
+        <translation type="vanished">Camada de entrada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="120"/>
         <source>Overlay layer</source>
-        <translation>Camada de saída</translation>
+        <translation type="vanished">Camada de saída</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="142"/>
         <source>Include attributes of input layer</source>
-        <translation>Inclui atributos da camada de entrada</translation>
+        <translation type="vanished">Inclui atributos da camada de entrada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="175"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="116"/>
+        <source>Input Layer</source>
+        <translation type="unfinished">Camada de Entrada</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="156"/>
         <source>Output</source>
         <translation>Saída</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="181"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="162"/>
         <source>Repository:</source>
         <translation>Repositório:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="191"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="172"/>
         <source>Layer Name:</source>
         <translation>Nome da Camada:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="204"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="185"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="220"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="201"/>
         <source>BD</source>
         <translation>BD</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="239"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="220"/>
         <source>Help</source>
         <translation>Ajuda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="259"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="240"/>
         <source>&amp;Ok</source>
         <translation>&amp;Ok</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="266"/>
+        <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="247"/>
         <source>Cancel</source>
         <translation>Cancela</translation>
     </message>
@@ -887,12 +921,12 @@
 <context>
     <name>te::vp::AggregationDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="604"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="580"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="605"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="581"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -900,12 +934,12 @@
 <context>
     <name>te::vp::BufferDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/BufferDialog.cpp" line="317"/>
+        <location filename="../../../src/terralib/vp/qt/BufferDialog.cpp" line="325"/>
         <source>Save as...</source>
         <translation>Salavar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/BufferDialog.cpp" line="318"/>
+        <location filename="../../../src/terralib/vp/qt/BufferDialog.cpp" line="326"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -923,7 +957,7 @@
         <translation>Escolha os parâmetros de saída que compreendem a camada de saída.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="234"/>
+        <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="233"/>
         <source>Open Directory</source>
         <translation>Abrir Diretório</translation>
     </message>
@@ -952,12 +986,12 @@
 <context>
     <name>te::vp::IntersectionDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="453"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="652"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="454"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="653"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
