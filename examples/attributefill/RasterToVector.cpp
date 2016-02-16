@@ -30,7 +30,11 @@ bool RasterToVectorInSHP()
   dsGDAL->setConnectionInfo(connInfoRaster);
   dsGDAL->open();
 
-  std::auto_ptr<te::da::DataSetType>dsTypeRaster = dsGDAL->getDataSetType(fileNameRaster);
+  std::auto_ptr<te::da::DataSet> dsRaster = dsGDAL->getDataSet(fileNameRaster);
+
+  std::size_t rpos = te::da::GetFirstPropertyPos(dsRaster.get(), te::dt::RASTER_TYPE);
+
+  std::auto_ptr<te::rst::Raster> inputRst = dsRaster->getRaster(rpos);
 
 
 // Input Vector
@@ -46,6 +50,8 @@ bool RasterToVectorInSHP()
   dsOGR->open();
 
   std::auto_ptr<te::da::DataSetType>dsTypeVector = dsOGR->getDataSetType(fileNameVector);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converterVector(new te::da::DataSetTypeConverter(dsTypeVector.get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
   
   // Params
   std::vector<unsigned int> vecBands;
@@ -84,8 +90,8 @@ bool RasterToVectorInSHP()
 // Processing
   te::attributefill::RasterToVector* rst2vec = new te::attributefill::RasterToVector();
   
-  rst2vec->setInput(dsGDAL, fileNameRaster, dsTypeRaster, 
-                    dsOGR, fileNameVector, dsTypeVector);
+  rst2vec->setInput(inputRst.get(),
+                    dsOGR, fileNameVector, converterVector);
   rst2vec->setParams(vecBands, vecStat, false);
   rst2vec->setOutput(outDataSource, outputdataset);
 
@@ -123,7 +129,11 @@ bool RasterToVectorInPGIS()
   dsGDAL->setConnectionInfo(connInfoRaster);
   dsGDAL->open();
 
-  std::auto_ptr<te::da::DataSetType>dsTypeRaster = dsGDAL->getDataSetType(fileNameRaster);
+  std::auto_ptr<te::da::DataSet> dsRaster = dsGDAL->getDataSet(fileNameRaster);
+
+  std::size_t rpos = te::da::GetFirstPropertyPos(dsRaster.get(), te::dt::RASTER_TYPE);
+
+  std::auto_ptr<te::rst::Raster> inputRst = dsRaster->getRaster(rpos);
 
 
   // Input Vector
@@ -139,6 +149,8 @@ bool RasterToVectorInPGIS()
   dsOGR->open();
 
   std::auto_ptr<te::da::DataSetType>dsTypeVector = dsOGR->getDataSetType(fileNameVector);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converterVector(new te::da::DataSetTypeConverter(dsTypeVector.get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
 
 
   // Params
@@ -177,8 +189,8 @@ bool RasterToVectorInPGIS()
   // Processing
   te::attributefill::RasterToVector* rst2vec = new te::attributefill::RasterToVector();
 
-  rst2vec->setInput(dsGDAL, fileNameRaster, dsTypeRaster,
-                    dsOGR, fileNameVector, dsTypeVector);
+  rst2vec->setInput(inputRst.get(),
+                    dsOGR, fileNameVector, converterVector);
   rst2vec->setParams(vecBands, vecStat, false);
   rst2vec->setOutput(outDataSource, outputdataset);
 
