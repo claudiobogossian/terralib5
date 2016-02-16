@@ -164,6 +164,8 @@ bool te::attributefill::RasterToVector::run()
 
 // Geometry
     std::auto_ptr<te::gm::Geometry> geom = dsVector->getGeometry(geomIdx);
+    if (!geom->isValid())
+      continue;
 
     if (remap)
       geom->transform(m_inRaster->getSRID());

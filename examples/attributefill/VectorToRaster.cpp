@@ -75,9 +75,11 @@ bool VectorToRaster()
     return false;
   }
 
+  std::auto_ptr<te::da::DataSetTypeConverter> converterVector(new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+
   te::attributefill::VectorToRaster* vec2rst = new te::attributefill::VectorToRaster();
   
-  vec2rst->setInput(srcDs, inDset, dsType);
+  vec2rst->setInput(srcDs, inDset, converterVector);
   vec2rst->setParams( propName, 
                       resolutionX, 
                       resolutionY, 

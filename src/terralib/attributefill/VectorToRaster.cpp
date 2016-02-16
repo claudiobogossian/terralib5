@@ -20,6 +20,7 @@
 /*!
  \file VectorToRaster.cpp
  */
+// Terralib
 
 #include "../common.h"
 #include "../common/progress/TaskProgress.h"
@@ -54,6 +55,9 @@
 #include "Exception.h"
 #include "VectorToRaster.h"
 
+// BOOST
+#include <boost/lexical_cast.hpp>
+
 
 te::attributefill::VectorToRaster::VectorToRaster()
 {
@@ -61,7 +65,7 @@ te::attributefill::VectorToRaster::VectorToRaster()
 
 void te::attributefill::VectorToRaster::setInput( te::da::DataSourcePtr inVectorDsrc,
                                                   std::string inVectorName,
-                                                  std::auto_ptr<te::da::DataSetType> inVectorDsType)
+                                                  std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType)
 {
   m_inVectorDsrc = inVectorDsrc;
   m_inVectorName = inVectorName;
@@ -116,8 +120,8 @@ bool te::attributefill::VectorToRaster::paramsAreValid()
 bool te::attributefill::VectorToRaster::run()
 {
   std::auto_ptr<te::da::DataSet> inDataSet = m_inVectorDsrc->getDataSet(m_inVectorName);
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inVectorDsType.get());
-  std::size_t propPos = m_inVectorDsType->getPropertyPosition(geomProp->getName());
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inVectorDsType->getResult());
+  std::size_t propPos = boost::lexical_cast<std::size_t>(m_inVectorDsType->getResult()->getPropertyPosition(geomProp->getName()));
 
   te::gm::Envelope* env = inDataSet->getExtent(propPos).release();
   
