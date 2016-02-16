@@ -86,7 +86,7 @@ te::module::ModuleManager::remove(const std::string& module_name)
 }
 
 te::module::ModuleManager::ModuleManager()
-  : m_pimpl(nullptr)
+  : m_pimpl(false)
 {
   m_pimpl = new Impl;
 }

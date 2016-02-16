@@ -153,7 +153,7 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
     if(currentId != vId)
     {
       //verify if its already in cache
-      if(gc->checkCacheByVertexId(vId) == nullptr)
+      if(gc->checkCacheByVertexId(vId) == false)
       {
         v = new te::graph::Vertex(vId, false);
 

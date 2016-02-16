@@ -65,7 +65,7 @@ te::module::LibraryManager::instance()
 }
 
 te::module::LibraryManager::LibraryManager()
-  : m_pimpl(nullptr)
+  : m_pimpl(false)
 {
   m_pimpl = new Impl;
 }

@@ -68,7 +68,7 @@ bool te::module::Library::Impl::added_search_path_(false);
 
 te::module::Library::Impl::Impl(const std::string& slib_file_name)
   : slib_file_name(slib_file_name),
-    module(nullptr)
+    module(false)
 {
 }
 
@@ -101,7 +101,7 @@ static std::string te_get_os_error()
 
   const char* err_msg = dlerror();
 
-  return (err_msg == nullptr) ? std::string("Shared Library: could not determine the Operational System report error!") : std::string(err_msg);
+  return (err_msg == false) ? std::string("Shared Library: could not determine the Operational System report error!") : std::string(err_msg);
 
 #else
 
@@ -111,7 +111,7 @@ static std::string te_get_os_error()
 }
 
 te::module::Library::Library(const std::string& slib_file_name, bool delay_load)
-  : m_pimpl(nullptr)
+  : m_pimpl(false)
 {
   m_pimpl = new Impl(slib_file_name);
 
@@ -141,7 +141,7 @@ te::module::Library::~Library()
 void
 te::module::Library::load()
 {
-  if(m_pimpl->module != nullptr)
+  if(m_pimpl->module != false)
     return;
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
@@ -158,7 +158,7 @@ te::module::Library::load()
 
 #endif
 
-  if(m_pimpl->module == nullptr)
+  if(m_pimpl->module == false)
   {
     boost::format err_msg("Could not load library: %1%, due to following error: %2%.");
 
@@ -169,7 +169,7 @@ te::module::Library::load()
 void
 te::module::Library::unload()
 {
-  if(m_pimpl->module == nullptr)
+  if(m_pimpl->module == false)
     return;
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
@@ -198,13 +198,13 @@ te::module::Library::unload()
 
 #endif
 
-  m_pimpl->module = nullptr;
+  m_pimpl->module = false;
 }
 
 bool
 te::module::Library::isLoaded() const
 {
-  return (m_pimpl->module != nullptr);
+  return (m_pimpl->module != false);
 }
 
 const std::string&
@@ -232,7 +232,7 @@ te::module::Library::getAddress(const char* symbol) const
 
 #endif
 
-  if(f == nullptr)
+  if(f == false)
   {
     boost::format err_msg("Could not find symbol: %1%, in the library %2%, due to the following error: %3%.");
 
@@ -298,7 +298,7 @@ te::module::Library::addSearchDir(const std::string& dir_name)
   const char* ldLibraryPath = getenv("DYLD_LIBRARY_PATH");
 #endif
 
-  if(ldLibraryPath == nullptr)
+  if(ldLibraryPath == false)
   {
 // XX_LIBRARY_PATH doesn't exist
 #if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
@@ -410,7 +410,7 @@ te::module::Library::getSearchPath()
   const char* ldLibraryPath = getenv("DYLD_LIBRARY_PATH");
 #endif
 
-  return (ldLibraryPath == nullptr) ? std::string("") : std::string(ldLibraryPath);
+  return (ldLibraryPath == false) ? std::string("") : std::string(ldLibraryPath);
 
 #else
 

@@ -219,7 +219,7 @@ te::da::DataSet* te::da::GetDataSet(const std::string& name, const std::string& 
   DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
   
   if(datasource.get() == 0)
-    return nullptr;
+    return false;
 
   std::auto_ptr<DataSet> dataset(datasource->getDataSet(name));
 
@@ -233,7 +233,7 @@ te::da::DataSetType* te::da::GetDataSetType(const std::string& name, const std::
   DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
   
   if(datasource.get() == 0)
-    return nullptr;
+    return false;
 
   std::auto_ptr<DataSetType> datasettype(datasource->getDataSetType(name));
 
@@ -1115,10 +1115,10 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
     return false;
   }
 
-  ff = name.find("¨");
+  ff = name.find("ï¿½");
   if(ff >= 0)
   {
-    invalidChar += "invalid symbol: '¨'\n";
+    invalidChar += "invalid symbol: 'ï¿½'\n";
     return false;
   }
 
@@ -1158,11 +1158,11 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
   }
 
   std::vector<std::string> vecInvalidChars;
-  vecInvalidChars.push_back("ª");
-  vecInvalidChars.push_back("º");
-  vecInvalidChars.push_back("¹");
-  vecInvalidChars.push_back("²");
-  vecInvalidChars.push_back("³");
+  vecInvalidChars.push_back("ï¿½");
+  vecInvalidChars.push_back("ï¿½");
+  vecInvalidChars.push_back("ï¿½");
+  vecInvalidChars.push_back("ï¿½");
+  vecInvalidChars.push_back("ï¿½");
 
   for(unsigned int i = 0; i < vecInvalidChars.size(); ++i)
   {
@@ -1324,7 +1324,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
         v = (v + values[meio-1]) / 2.;
     }
   }
-  else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores
+  else if(sumary == "MODE")  // nao dï¿½ porque pode gerar nenhum ou vï¿½rios valores
   {
   }
 
