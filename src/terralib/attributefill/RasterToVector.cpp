@@ -151,6 +151,10 @@ bool te::attributefill::RasterToVector::run()
   task.setTotalSteps((int)dsVector->size() * (int)m_statSum.size() * (int)m_bands.size());
   task.useTimer(true);
 
+  bool remap = false;
+
+  if (raster->getSRID() != vectorProp->getSRID())
+    remap = true;
 
   dsVector->moveBeforeFirst();
   while(dsVector->moveNext())
@@ -165,6 +169,10 @@ bool te::attributefill::RasterToVector::run()
 
 // Geometry
     std::auto_ptr<te::gm::Geometry> geom = dsVector->getGeometry(vectorProp->getName());
+
+    if (remap)
+      geom->transform(raster->getSRID());
+
     double area = 0;
 
 // Values from raster
