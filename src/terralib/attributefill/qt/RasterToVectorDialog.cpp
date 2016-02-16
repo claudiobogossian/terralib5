@@ -30,6 +30,7 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -45,6 +46,7 @@
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/Utils.h"
+#include "../../raster/Grid.h"
 #include "../../raster/RasterProperty.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
@@ -352,27 +354,25 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  std::auto_ptr<te::da::DataSet> rasterDataSet = m_rasterLayer->getData();
 
-  te::map::DataSetLayer* dsRasterLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterLayer.get());
+  std::size_t rpos = te::da::GetFirstPropertyPos(rasterDataSet.get(), te::dt::RASTER_TYPE);
 
-  if(!dsRasterLayer)
+  std::auto_ptr<te::rst::Raster> inputRst = rasterDataSet->getRaster(rpos);
+
+  if (m_rasterLayer->getSRID() == 0 || m_vectorLayer->getSRID() == 0)
   {
-    QMessageBox::information(this, "Fill", "Can not execute this operation on this type of layer.");
+    QMessageBox::information(this, "Fill", "Input layer with invalid SRID information.");
     return;
   }
+
+  inputRst->getGrid()->setSRID(m_rasterLayer->getSRID());
 
   te::map::DataSetLayer* dsVectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorLayer.get());
 
   if(!dsVectorLayer)
   {
     QMessageBox::information(this, "Fill", "Can not execute this operation on this type of layer.");
-    return;
-  }
-  
-  te::da::DataSourcePtr inRasterDataSource = te::da::GetDataSource(dsRasterLayer->getDataSourceId(), true);
-  if (!inRasterDataSource.get())
-  {
-    QMessageBox::information(this, "Fill", "The selected raster data source can not be accessed.");
     return;
   }
 
@@ -450,15 +450,17 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converterVector(new te::da::DataSetTypeConverter(m_vectorLayer->getSchema().get(), inVectorDataSource->getCapabilities(), inVectorDataSource->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converterVector.get(), m_vectorLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       te::attributefill::RasterToVector* rst2vec = new te::attributefill::RasterToVector();
-      rst2vec->setInput(inRasterDataSource, 
-                        dsRasterLayer->getDataSetName(), 
-                        dsRasterLayer->getSchema(),
+      rst2vec->setInput(inputRst.get(),
                         inVectorDataSource, 
                         dsVectorLayer->getDataSetName(),
-                        dsVectorLayer->getSchema());
+                        converterVector);
 
       rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
@@ -514,14 +516,16 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
       }
       this->setCursor(Qt::WaitCursor);
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converterVector(new te::da::DataSetTypeConverter(m_vectorLayer->getSchema().get(), inVectorDataSource->getCapabilities(), inVectorDataSource->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converterVector.get(), m_vectorLayer->getSRID());
+
       te::attributefill::RasterToVector* rst2vec = new te::attributefill::RasterToVector();
       
-      rst2vec->setInput(inRasterDataSource, 
-                        dsRasterLayer->getDataSetName(), 
-                        dsRasterLayer->getSchema(),
-                        inVectorDataSource, 
+      rst2vec->setInput(inputRst.get(),
+                        inVectorDataSource,
                         dsVectorLayer->getDataSetName(),
-                        dsVectorLayer->getSchema());
+                        converterVector);
 
       rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
