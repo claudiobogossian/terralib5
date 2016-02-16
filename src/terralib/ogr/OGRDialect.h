@@ -16,5 +16,6 @@ mydialect->insert("not", new te::da::UnaryOpEncoder("NOT"));
 mydialect->insert("like", new te::da::BinaryOpEncoder("LIKE"));
 
 mydialect->insert("st_envelopeintersects", new te::da::FunctionEncoder("Intersection"));
+mydialect->insert("st_intersects", new te::da::FunctionEncoder("Intersection"));
 
 DataSource::setDialect(mydialect);
