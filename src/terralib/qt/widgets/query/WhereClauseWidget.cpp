@@ -300,6 +300,11 @@ void te::qt::widgets::WhereClauseWidget::setConnectorsList(const std::vector<std
   }
 }
 
+void te::qt::widgets::WhereClauseWidget::setCriteriaTabEnabled(int index, bool enable)
+{
+  m_ui->m_criteriaTabWidget->setTabEnabled(index, enable);
+}
+
 void te::qt::widgets::WhereClauseWidget::clear()
 {
   te::common::FreeContents(m_mapExp);
