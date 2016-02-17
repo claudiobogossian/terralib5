@@ -59,15 +59,9 @@ namespace te
 
     void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
-    void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);
-
     bool IsMultiType(te::gm::GeomType geomType);
 
     te::gm::GeomType GetSimpleType(te::gm::GeomType geomType);
-
-    te::gm::Polygon* GetValidPolygon(te::gm::Polygon* gm);
-
-    te::gm::Geometry* GetValidMultiPolygon(const te::gm::Geometry* g);
 
   } // end namespace vp
 }   // end namespace te

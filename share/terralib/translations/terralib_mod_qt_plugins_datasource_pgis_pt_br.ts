@@ -203,8 +203,12 @@
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="240"/>
+        <source>Database Template</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>PostGIS Template</source>
-        <translation>Template PostGIS</translation>
+        <translation type="vanished">Template PostGIS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="265"/>

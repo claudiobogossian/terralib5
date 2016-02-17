@@ -409,9 +409,6 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
   dst->setName(m_outDset);
   dst->setTitle(m_outDset);
 
-  if (isToLayerOGR())
-    dst->remove(dst->getProperty("FID"));
-
   std::vector<te::dt::Property*> outProps = dst->getProperties();
 
   te::da::PrimaryKey* pk = dst->getPrimaryKey();

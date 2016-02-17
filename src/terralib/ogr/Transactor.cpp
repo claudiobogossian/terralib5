@@ -908,8 +908,15 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
   dt->setName(newLayer->GetName());
 
 // add the properties
-  for(size_t i = 0; i < dt->size(); ++i)
-    addProperty(dt->getName(), dt->getProperty(i));
+  for (size_t i = 0; i < dt->size(); ++i)
+  {
+    te::dt::Property* p = dt->getProperty(i);
+
+    if (p->getName() == "FID")
+      continue;
+
+    addProperty(dt->getName(), p);
+  }
 }
 
 void te::ogr::Transactor::cloneDataSet(const std::string& name,

@@ -20,6 +20,7 @@
 /*!
  \file VectorToRaster.cpp
  */
+// Terralib
 
 #include "../common.h"
 #include "../common/progress/TaskProgress.h"
@@ -38,7 +39,11 @@
 #include "../datatype/StringProperty.h"
 
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/Line.h"
+#include "../geometry/LineString.h"
 #include "../geometry/Polygon.h"
+#include "../geometry/Point.h"
+#include "../geometry/Utils.h"
 
 #include "../memory/DataSetItem.h"
 
@@ -54,6 +59,9 @@
 #include "Exception.h"
 #include "VectorToRaster.h"
 
+// BOOST
+#include <boost/lexical_cast.hpp>
+
 
 te::attributefill::VectorToRaster::VectorToRaster()
 {
@@ -61,7 +69,7 @@ te::attributefill::VectorToRaster::VectorToRaster()
 
 void te::attributefill::VectorToRaster::setInput( te::da::DataSourcePtr inVectorDsrc,
                                                   std::string inVectorName,
-                                                  std::auto_ptr<te::da::DataSetType> inVectorDsType)
+                                                  std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType)
 {
   m_inVectorDsrc = inVectorDsrc;
   m_inVectorName = inVectorName;
@@ -116,8 +124,8 @@ bool te::attributefill::VectorToRaster::paramsAreValid()
 bool te::attributefill::VectorToRaster::run()
 {
   std::auto_ptr<te::da::DataSet> inDataSet = m_inVectorDsrc->getDataSet(m_inVectorName);
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inVectorDsType.get());
-  std::size_t propPos = m_inVectorDsType->getPropertyPosition(geomProp->getName());
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inVectorDsType->getResult());
+  std::size_t propPos = boost::lexical_cast<std::size_t>(m_inVectorDsType->getResult()->getPropertyPosition(geomProp->getName()));
 
   te::gm::Envelope* env = inDataSet->getExtent(propPos).release();
   
@@ -141,6 +149,8 @@ bool te::attributefill::VectorToRaster::run()
 
 // create raster
   std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", grid, vecBandProp, conInfo));
+
+  te::rst::FillRaster(rst.get(), rst->getBand(0)->getProperty()->m_noDataValue);
 
 // get vector data
   std::string geomName = geomProp->getName();
@@ -170,22 +180,151 @@ bool te::attributefill::VectorToRaster::run()
 
     while(vectorIt != vectorMap.end())
     {
-      te::gm::Polygon* polygon = static_cast<te::gm::Polygon*>(vectorIt->first);
-      polygon->setSRID(geomProp->getSRID());
-
-      if(!polygon)
-        continue;
-
-      te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(rst.get(), polygon);
-      te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(rst.get(), polygon);
-      
-      while (it != itend)
+      switch (vectorIt->first->getGeomTypeId())
       {
-        rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
-        ++it;
-      }
+      case te::gm::PolygonType:
+      case te::gm::MultiPolygonType:
+      {
+                                     std::vector<te::gm::Geometry*> geomVec;
 
+                                     if (vectorIt->first->getGeomTypeId() == te::gm::MultiPolygonType)
+                                       te::gm::Multi2Single(vectorIt->first, geomVec);
+                                     else
+                                       geomVec.push_back(vectorIt->first);
+                                     
+                                     for (std::size_t g = 0; g < geomVec.size(); ++g)
+                                     {
+                                       te::gm::Polygon* polygon = dynamic_cast<te::gm::Polygon*>(geomVec[g]);
+
+                                       if (!polygon)
+                                         continue;
+
+                                       polygon->setSRID(geomProp->getSRID());
+
+                                       te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(rst.get(), polygon);
+                                       te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(rst.get(), polygon);
+
+                                       while (it != itend)
+                                       {
+                                         rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
+                                         ++it;
+                                       }
+                                     }
+                                     break;
+      }
+      case te::gm::LineStringType:
+      case te::gm::MultiLineStringType:
+      {
+                                        std::vector<te::gm::Geometry*> geomVec;
+
+                                        if (vectorIt->first->getGeomTypeId() == te::gm::MultiLineStringType)
+                                          te::gm::Multi2Single(vectorIt->first, geomVec);
+                                        else
+                                          geomVec.push_back(vectorIt->first);
+
+
+                                        for (std::size_t g = 0; g < geomVec.size(); ++g)
+                                        {
+                                          te::gm::LineString* lineString = static_cast<te::gm::LineString*>(geomVec[g]);
+
+                                          if (!lineString)
+                                            continue;
+
+                                          std::size_t nPoints = lineString->getNPoints();
+                                          
+                                          for (std::size_t n = 0; n < nPoints - 1; ++n)
+                                          {
+                                            std::auto_ptr<te::gm::Line> line(new te::gm::Line(*lineString->getPointN(n),
+                                                                                              *lineString->getPointN(n + 1),
+                                                                                              te::gm::LineStringType,
+                                                                                              geomProp->getSRID()));
+
+                                            te::rst::LineIterator<double> it = te::rst::LineIterator<double>::begin(rst.get(), line.get());
+                                            te::rst::LineIterator<double> itend = te::rst::LineIterator<double>::end(rst.get(), line.get());
+
+                                            while (it != itend)
+                                            {
+                                              double val = (*it)[0];
+                                              rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
+                                              ++it;
+                                            }
+                                          }
+                                        }
+                                        //te::gm::LineString* lineString = 0;
+
+                                        //if (vectorIt->first->getGeomTypeId() == te::gm::MultiLineStringType)
+                                        //{
+                                        //  te::gm::MultiLineString* mLineString = dynamic_cast<te::gm::MultiLineString*>(vectorIt->first);
+                                        //  lineString = dynamic_cast<te::gm::LineString*>(mLineString->getGeometryN(0));
+                                        //}
+                                        //else
+                                        //{
+                                        //  lineString = static_cast<te::gm::LineString*>(vectorIt->first);
+                                        //}
+
+                                        //if (!lineString)
+                                        //  continue;
+
+                                        //std::size_t nPoints = lineString->getNPoints();
+                                        //
+                                        //for (std::size_t n = 0; n < nPoints-1; ++n)
+                                        //{
+                                        //  std::auto_ptr<te::gm::Line> line(new te::gm::Line(*lineString->getPointN(n),
+                                        //                                                     *lineString->getPointN(n + 1),
+                                        //                                                     te::gm::LineStringType,
+                                        //                                                     geomProp->getSRID()));
+                                        //  te::rst::LineIterator<double> it = te::rst::LineIterator<double>::begin(rst.get(), line.get());
+                                        //  te::rst::LineIterator<double> itend = te::rst::LineIterator<double>::end(rst.get(), line.get());
+                                        //  
+                                        //  while (it != itend)
+                                        //  {
+                                        //    rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
+                                        //    ++it;
+                                        //  }
+                                        //}
+                                        
+                                        break;
+      }
+      case te::gm::PointType:
+      case te::gm::MultiPointType:
+      {
+                                   std::vector<te::gm::Geometry*> geomVec;
+
+                                   if (vectorIt->first->getGeomTypeId() == te::gm::MultiPointType)
+                                     te::gm::Multi2Single(vectorIt->first, geomVec);
+                                   else
+                                     geomVec.push_back(vectorIt->first);
+
+                                   for (std::size_t g = 0; g < geomVec.size(); ++g)
+                                   {
+                                     std::vector<te::gm::Point*> pointVec;
+                                     te::gm::Point* point = static_cast<te::gm::Point*>(geomVec[g]);
+
+                                     if (!point)
+                                       continue;
+
+                                     pointVec.push_back(point);
+
+                                     point->setSRID(geomProp->getSRID());
+
+                                     te::rst::PointSetIterator<double> it = te::rst::PointSetIterator<double>::begin(rst.get(), pointVec);
+                                     te::rst::PointSetIterator<double> itend = te::rst::PointSetIterator<double>::end(rst.get(), pointVec);
+
+                                     while (it != itend)
+                                     {
+                                       rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
+                                       ++it;
+                                     }
+                                   }
+                                   
+                                   break;
+      }
+      default:
+        break;
+      }
+      
       ++vectorIt;
+
       task.pulse();
     }
 

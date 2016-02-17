@@ -92,47 +92,45 @@ Iremos fornecer em breve!</translation>
 <context>
     <name>te::qt::plugins::gdal::GDALConnectorDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="150"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="157"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="188"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="194"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="200"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="235"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="154"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="161"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="192"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="198"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="204"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="240"/>
         <source>TerraLib Qt Components</source>
         <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="158"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="162"/>
         <source>Unknown error while opening dataset via GDAL!</source>
         <translation>Erro desconhecido durante abertura do conjunto de dados via GDAL !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="189"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="193"/>
         <source>Data source is ok!</source>
         <translation>Fonte de Dados está ok !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="201"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="205"/>
         <source>Unknown error while testing GDAL data source!</source>
         <translation>Erro desconhecido durante teste da fonte de dados GDAL !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="209"/>
         <source>Open Geo Spatial File</source>
-        <translation>Abrir Arquivo Geo Espacial</translation>
+        <translation type="vanished">Abrir Arquivo Geo Espacial</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="210"/>
         <source>Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)</source>
-        <translation>Arquivo Imagem (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; Todos Arquivos (*.*)</translation>
+        <translation type="vanished">Arquivo Imagem (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; Todos Arquivos (*.*)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="223"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="228"/>
         <source>Select a directory with image files</source>
         <translation>Selecione um diretório com arquivos de imagem</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="236"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="241"/>
         <source>Sorry, network files are not implemented yet!
 We will provide it soon!</source>
         <translation>Desculpe, arquivos de rede não estão implementados ainda !
@@ -142,24 +140,21 @@ Iremos fornecer em breve!</translation>
 <context>
     <name>te::qt::plugins::gdal::Plugin</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="116"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="114"/>
         <source>Raster File...</source>
         <translation>Arquivo Matricial (raster)...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="148"/>
         <source>Raster File</source>
-        <translation>Arquivo Matricial (raster)</translation>
+        <translation type="vanished">Arquivo Matricial (raster)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="148"/>
         <source>Error: there is no opened project!</source>
-        <translation>Erro: não há nenhum projeto aberto !</translation>
+        <translation type="vanished">Erro: não há nenhum projeto aberto !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="154"/>
         <source>Open Raster File</source>
-        <translation>Abrir Arquivo Matricial (raster)</translation>
+        <translation type="vanished">Abrir Arquivo Matricial (raster)</translation>
     </message>
 </context>
 </TS>

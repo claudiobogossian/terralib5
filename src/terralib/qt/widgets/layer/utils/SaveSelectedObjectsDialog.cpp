@@ -78,8 +78,12 @@ void te::qt::widgets::SaveSelectedObjectsDialog::setParameters(te::map::Abstract
 void te::qt::widgets::SaveSelectedObjectsDialog::onOkPushButtonClicked()
 {
   std::string errorMessage = "";
-
+  
+  this->setCursor(Qt::WaitCursor);
+  
   bool res = m_saveSelectedObjectsWidget->execute(errorMessage);
+  
+  this->setCursor(Qt::ArrowCursor);
 
   if (!res)
   {

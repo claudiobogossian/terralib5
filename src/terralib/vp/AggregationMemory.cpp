@@ -368,8 +368,6 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
         ++itNumeric;
       }
 
-      geometry = GetValidMultiPolygon(geometry);
-
       outDSetItem->setGeometry("geom", geometry);
       outDataset->add(outDSetItem);
     }

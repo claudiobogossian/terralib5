@@ -109,9 +109,6 @@ void te::qt::widgets::SaveSelectedObjectsWidget::updateWindowComponents()
 
 void te::qt::widgets::SaveSelectedObjectsWidget::save(te::da::DataSource* dataSource, te::da::DataSet* dataSet, te::da::DataSetType* dataSetType)
 {
-  // do any adaptation necessary to persist the output dataset
-  //te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType, source->getCapabilities());
-  //te::da::DataSetType* dsTypeResult = converter->getResult();
 
   std::auto_ptr<te::da::DataSourceTransactor> t = dataSource->getTransactor();
 

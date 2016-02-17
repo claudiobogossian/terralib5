@@ -574,9 +574,14 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         intersectionOp = new te::vp::IntersectionMemory();
       }
 
-      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstConverter,
-                                secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
-                                firstOidSet, secondOidSet);
+      //intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstConverter,
+      //                          secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
+      //                          firstOidSet, secondOidSet);
+
+      intersectionOp->setInput(firstDataSource, firstDataSetLayer->getDataSetName(), m_firstSelectedLayer->getSchema(), m_firstSelectedLayer->getData(), firstConverter,
+        secondDataSource, secondDataSetLayer->getDataSetName(), m_secondSelectedLayer->getSchema(), m_secondSelectedLayer->getData(), secondConverter,
+        firstOidSet, secondOidSet);
+
       intersectionOp->setOutput(aux, outputdataset);
       intersectionOp->setParams(getSelectedProperties());
 

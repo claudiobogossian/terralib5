@@ -87,6 +87,11 @@ te::map::AbstractLayer* te::qt::widgets::DrawLayerThread::getLayer() const
   return m_layer;
 }
 
+QImage te::qt::widgets::DrawLayerThread::getImage() const
+{
+  return m_image;
+}
+
 void te::qt::widgets::DrawLayerThread::run()
 {
   // Prepares the canvas
@@ -145,7 +150,7 @@ void te::qt::widgets::DrawLayerThread::sendFeedback()
 
 void te::qt::widgets::DrawLayerThread::onFinished()
 {
-  emit drawLayerFinished(m_index, m_image);
-  m_image.fill(qRgba(0, 0, 0, 0));
+  emit drawLayerFinished(m_index, QImage(m_image));
+  //m_image.fill(qRgba(0, 0, 0, 0));
   m_feedback.stop();
 }
