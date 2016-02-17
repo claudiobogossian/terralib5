@@ -69,28 +69,28 @@ void te::gm::WKTActions::reset()
 
 void te::gm::WKTActions::createPoint(const boost::fusion::vector2<double, double>& c)
 {
-  te::gm::Point* p = new te::gm::Point(c.m0, c.m1);
+  te::gm::Point* p = new te::gm::Point(boost::fusion::at_c<0>(c), boost::fusion::at_c<1>(c));
   m_points.push_back(p);
   m_g = p;
 }
 
 void te::gm::WKTActions::createPointZ(const boost::fusion::vector3<double, double, double>& c)
 {
-  te::gm::PointZ* p = new te::gm::PointZ(c.m0, c.m1, c.m2);
+  te::gm::PointZ* p = new te::gm::PointZ(boost::fusion::at_c<0>(c), boost::fusion::at_c<1>(c), boost::fusion::at_c<2>(c));
   m_points.push_back(p);
   m_g = p;
 }
 
 void te::gm::WKTActions::createPointM(const boost::fusion::vector3<double, double, double>& c)
 {
-  te::gm::PointM* p = new te::gm::PointM(c.m0, c.m1, c.m2);
+  te::gm::PointM* p = new te::gm::PointM(boost::fusion::at_c<0>(c), boost::fusion::at_c<1>(c), boost::fusion::at_c<2>(c));
   m_points.push_back(p);
   m_g = p;
 }
 
 void te::gm::WKTActions::createPointZM(const boost::fusion::vector4<double, double, double, double>& c)
 {
-  te::gm::PointZM* p = new te::gm::PointZM(c.m0, c.m1, c.m2, c.m3);
+  te::gm::PointZM* p = new te::gm::PointZM(boost::fusion::at_c<0>(c), boost::fusion::at_c<1>(c), boost::fusion::at_c<2>(c), boost::fusion::at_c<3>(c));
   m_points.push_back(p);
   m_g = p;
 }

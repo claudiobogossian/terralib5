@@ -166,7 +166,7 @@ bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(
   TERP_TRUE_OR_RETURN_FALSE(outputParamsPtr, "Invalid parameters");
 
   std::vector<te::rst::BandProperty*> bandsProperties;
-/*  bandsProperties.push_back(new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
+  bandsProperties.push_back(new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
     m_inputParameters.m_inputRasterBands[0])->getProperty())));
   bandsProperties[0]->m_colorInterp = te::rst::GrayIdxCInt;
   bandsProperties[0]->m_type = te::dt::UINT32_TYPE;
