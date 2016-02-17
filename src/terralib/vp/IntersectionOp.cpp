@@ -20,6 +20,7 @@
 /*!
  \file IntersectionOp.cpp
  */
+#include "../common/StringUtils.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSource.h"
@@ -222,7 +223,15 @@ te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
 
     p->setName(m_attributeVec[i].first + "_" + p->getName());
 
-    dsType->add(p->clone());
+    te::dt::Property* pClone = p->clone();
+
+    std::vector<std::string> tokens;
+    te::common::Tokenize(pClone->getName(), tokens, ".");
+
+    if (tokens.size() > 1)
+      pClone->setName(tokens[1]);
+
+    dsType->add(pClone);
   }
 
   te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(m_firstDsType.get())->getGeometryType(), te::da::GetFirstGeomProperty(m_secondDsType.get())->getGeometryType());
