@@ -339,18 +339,6 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
   }
 }
 
-void te::vp::Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms)
-{
-  te::gm::GeometryCollection* gc = dynamic_cast<te::gm::GeometryCollection*>(g);
-  if(gc)
-  {
-    for(std::size_t i = 0; i < gc->getNumGeometries(); ++i)
-      Multi2Single(gc->getGeometryN(i), geoms);
-  }
-  else
-    geoms.push_back(g);
-}
-
 bool te::vp::IsMultiType(te::gm::GeomType geomType)
 {
   switch(geomType)

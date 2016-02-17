@@ -30,6 +30,8 @@
 #include "Config.h"
 #include "Enums.h"
 
+#include "../geometry/Geometry.h"
+
 // STL
 #include <list>
 #include <string>
