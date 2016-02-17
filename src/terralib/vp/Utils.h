@@ -59,8 +59,6 @@ namespace te
 
     void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
-    void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);
-
     bool IsMultiType(te::gm::GeomType geomType);
 
     te::gm::GeomType GetSimpleType(te::gm::GeomType geomType);

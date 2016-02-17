@@ -29,6 +29,8 @@
 #include "Enums.h"
 #include "Utils.h"
 
+#include "../geometry/GeometryCollection.h"
+
 std::string te::attributefill::GetOperationFullName(const int& e)
 {
   switch(e)

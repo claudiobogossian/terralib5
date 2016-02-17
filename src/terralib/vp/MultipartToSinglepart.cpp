@@ -108,7 +108,7 @@ bool te::vp::MultipartToSinglepart::runAll()
     std::auto_ptr<te::gm::Geometry> geom = inDs->getGeometry(geomPos);
 
     std::vector<te::gm::Geometry*> geoms;
-    te::vp::Multi2Single(geom.release(), geoms);
+    te::gm::Multi2Single(geom.release(), geoms);
 
     if(geoms.size() == 1)
     {
@@ -187,7 +187,7 @@ bool te::vp::MultipartToSinglepart::runSelected()
 
     if(m_oidSet->contains(geomOid))
     {
-      te::vp::Multi2Single(geom.release(), geoms);
+      te::gm::Multi2Single(geom.release(), geoms);
 
       for(std::size_t i = 0; i < geoms.size(); ++i)
       {
