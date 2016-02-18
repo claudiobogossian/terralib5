@@ -124,6 +124,7 @@ namespace te
         std::string m_path;                                           //!< Output layer path;
         bool m_toFile;
         bool m_texture;
+        bool m_isStatistical;
     };
   }   // end namespace attributefill
 }     // end namespace te
