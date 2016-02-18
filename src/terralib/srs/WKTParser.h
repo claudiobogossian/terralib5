@@ -155,6 +155,16 @@ namespace te
         {
           toWGS84 = (toWGS84Tag >> leftDelimiter >> sevenParams >> rigthDelimiter)[boost::bind(&WKTActions::endToWGS84, &m_a)];
           sevenParams = dx >> ',' >> dy >> ',' >> dz >> ',' >> ex >> ',' >> ey >> ',' >> ez >> ',' >> ppm;
+
+#if BOOST_VERSION < 106000
+           dx = double_[boost::bind(&WKTActions::setDx, &m_a, ::_1)];
+           dy = double_[boost::bind(&WKTActions::setDy, &m_a, ::_1)];
+           dz = double_[boost::bind(&WKTActions::setDz, &m_a, ::_1)];
+           ex = double_[boost::bind(&WKTActions::setEx, &m_a, ::_1)];
+           ey = double_[boost::bind(&WKTActions::setEy, &m_a, ::_1)];
+           ez = double_[boost::bind(&WKTActions::setEz, &m_a, ::_1)];
+           ppm = double_[boost::bind(&WKTActions::setPPM, &m_a, ::_1)];
+#else
           dx = double_[boost::bind(&WKTActions::setDx, &m_a, boost::placeholders::_1)];
           dy = double_[boost::bind(&WKTActions::setDy, &m_a, boost::placeholders::_1)];
           dz = double_[boost::bind(&WKTActions::setDz, &m_a, boost::placeholders::_1)];
@@ -162,6 +172,7 @@ namespace te
           ey = double_[boost::bind(&WKTActions::setEy, &m_a, boost::placeholders::_1)];
           ez = double_[boost::bind(&WKTActions::setEz, &m_a, boost::placeholders::_1)];
           ppm = double_[boost::bind(&WKTActions::setPPM, &m_a, boost::placeholders::_1)];
+#endif
         }
 
         void initProjection()
@@ -211,6 +222,23 @@ namespace te
 
         void initQuotedNames()
         {
+#if BOOST_VERSION < 106000
+          unitName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setUnitName, &m_a, ::_1)] >> '"';
+          
+          spheroidName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setSpheroidName, &m_a, ::_1)] >> '"';
+          
+          projectionName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setProjectionName, &m_a, ::_1)] >> '"';
+          
+          datumName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setDatumName, &m_a, ::_1)] >> '"';
+          
+          axisName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setAxisName, &m_a, ::_1)] >> '"';
+          
+          axisValue = as_string[(+(char_ - ']'))][boost::bind(&WKTActions::setAxisValue, &m_a, ::_1)];
+
+          csName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setName, &m_a, ::_1)] >> '"';
+          
+          parameterName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setParameter, &m_a, ::_1)] >> '"';
+#else
           unitName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setUnitName, &m_a, boost::placeholders::_1)] >> '"';
           
           spheroidName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setSpheroidName, &m_a, boost::placeholders::_1)] >> '"';
@@ -226,12 +254,25 @@ namespace te
           csName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setName, &m_a, boost::placeholders::_1)] >> '"';
           
           parameterName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setParameter, &m_a, boost::placeholders::_1)] >> '"';
+#endif
           
           primeMeridianName = '"' >> (+(char_ - '"')) >> '"';
         }
 
         void initDoubleValues()
         {
+#if BOOST_VERSION < 106000
+          value = double_[boost::bind(&WKTActions::setParameterValue, &m_a, ::_1)];
+          
+          semiMajorAxis = double_[boost::bind(&WKTActions::setSemiMajorAxis, &m_a, ::_1)];
+          
+          longitude = double_[boost::bind(&WKTActions::setPrimeMeridian, &m_a, ::_1)];
+          
+          invFlattening = double_[boost::bind(&WKTActions::setInverseFlattening, &m_a, ::_1)];
+          
+          conversionFactor = double_[boost::bind(&WKTActions::setConversionFactor, &m_a, ::_1)];
+
+#else
           value = double_[boost::bind(&WKTActions::setParameterValue, &m_a, boost::placeholders::_1)];
           
           semiMajorAxis = double_[boost::bind(&WKTActions::setSemiMajorAxis, &m_a, boost::placeholders::_1)];
@@ -241,13 +282,19 @@ namespace te
           invFlattening = double_[boost::bind(&WKTActions::setInverseFlattening, &m_a, boost::placeholders::_1)];
           
           conversionFactor = double_[boost::bind(&WKTActions::setConversionFactor, &m_a, boost::placeholders::_1)];
+#endif
         }
 
         void initAuthority()
         {
           authority = authorityTag >> leftDelimiter >> authorityName >> ',' >> authorityCode >> rigthDelimiter;
+#if BOOST_VERSION < 106000
+          authorityName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setAuthorityName, &m_a, ::_1)] >> '"';
+          authorityCode = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setAuthorityCode, &m_a, ::_1)] >> '"';
+#else
           authorityName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setAuthorityName, &m_a, boost::placeholders::_1)] >> '"';
           authorityCode = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setAuthorityCode, &m_a, boost::placeholders::_1)] >> '"';
+#endif
         }
 
         void initAxis()

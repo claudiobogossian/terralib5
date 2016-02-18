@@ -185,6 +185,17 @@ namespace te
          */
         void initCoordinates()
         {
+#if BOOST_VERSION < 106000
+          // (x,y)
+          coordinate = (double_ >> double_)[boost::bind(&WKTActions::createPoint, &m_a, ::_1)]; // It is an action!
+          // (x,y,z)
+          coordinateZ = (double_ >> double_ >> double_)[boost::bind(&WKTActions::createPointZ, &m_a, ::_1)];
+          // (x,y,m)
+          coordinateM = (double_ >> double_ >> double_)[boost::bind(&WKTActions::createPointM, &m_a, ::_1)];
+          // (x,y,z,m)
+          coordinateZM = (double_ >> double_ >> double_ >> double_)[boost::bind(&WKTActions::createPointZM, &m_a, ::_1)];
+
+#else
           // (x,y)
           coordinate = (double_ >> double_)[boost::bind(&WKTActions::createPoint, &m_a, boost::placeholders::_1)]; // It is an action!
           // (x,y,z)
@@ -193,6 +204,7 @@ namespace te
           coordinateM = (double_ >> double_ >> double_)[boost::bind(&WKTActions::createPointM, &m_a, boost::placeholders::_1)];
           // (x,y,z,m)
           coordinateZM = (double_ >> double_ >> double_ >> double_)[boost::bind(&WKTActions::createPointZM, &m_a, boost::placeholders::_1)];
+#endif
         }
 
         /*! 
