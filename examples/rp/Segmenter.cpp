@@ -29,7 +29,7 @@ void Segmenter()
     if (!aux.empty())
       rinfo["URI"] = aux;
     else
-      rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+      rinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
@@ -40,7 +40,7 @@ void Segmenter()
     if (!aux.empty())
       orinfo["URI"] = aux;
     else
-      orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedMean.tif";
+      orinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop_segmentedMean.tif";
 
 // define segmentation parameters
 
@@ -103,7 +103,7 @@ void Segmenter()
     if (!aux.empty())
       rinfo["URI"] = aux;
     else
-      rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+      rinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
     
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
     
@@ -114,7 +114,7 @@ void Segmenter()
     if (!aux.empty())
       orinfo["URI"] = aux;
     else
-      orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif";
+      orinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif";
 
 // define segmentation parameters
 

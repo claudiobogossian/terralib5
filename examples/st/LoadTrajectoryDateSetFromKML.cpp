@@ -18,7 +18,7 @@ void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& 
     te::da::DataSourceInfo dsinfo;
 
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TERRALIB_DATA_DIR"/st/trajectory/t_40_41.kml" ; 
+    connInfo["URI"] = TERRALIB_DATA_DIR "/st/trajectory/t_40_41.kml" ; 
     dsinfo.setConnInfo(connInfo);
     dsinfo.setType("OGR");
 
