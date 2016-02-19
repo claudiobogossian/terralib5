@@ -224,7 +224,7 @@ if(WIN32)
 
   find_package(ADO)
 
-  find_package(Terralib4)
+  find_package(terralib4)
 
 endif()
 
