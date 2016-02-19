@@ -27,12 +27,15 @@ set B_DIR=%CD%\boost_1_58_0
 
   call bootstrap.bat vc12 setup-amd64 >nul 2>nul
   
-  b2 -j4 toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged install  >nul 2>nul
+  b2 toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged install  >nul 2>nul
   
   echo done.
 
   cd %B_DIR%\..
 :: ====
+
+:: Setting parallel processing 
+set CL=/MP
 
 :: BZIP2
 ::  =========================================
