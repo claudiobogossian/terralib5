@@ -91,6 +91,13 @@ namespace te
         */
         std::vector<te::stat::StatisticalSummary> getSelectedStatistics();
 
+        /*!
+        \brief Get the  based on selected QListWidgetItem.
+
+        \return a Vector with selected statistics.
+        */
+        bool getValueOption();
+
 
       protected slots:
 
@@ -117,6 +124,7 @@ namespace te
         std::string m_path;                                           //!< Output layer path;
         bool m_toFile;
         bool m_texture;
+        bool m_isStatistical;
     };
   }   // end namespace attributefill
 }     // end namespace te

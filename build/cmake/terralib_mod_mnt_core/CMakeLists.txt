@@ -51,7 +51,3 @@ install(TARGETS terralib_mod_mnt_core
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/mnt/core COMPONENT devel)
  
-#
-# Register module in CMake export file.
-#
-export(TARGETS terralib_mod_mnt_core APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

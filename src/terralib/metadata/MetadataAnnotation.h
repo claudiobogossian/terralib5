@@ -38,7 +38,7 @@ namespace te
     /*!
      \class MetadataAnnotation
      
-     \brief A class o relate a metadata annotation to a TerraLib element (or entity).
+     \brief A class to relate a metadata annotation to a TerraLib element (or entity).
      */
     class TEMDEXPORT MetadataAnnotation 
     {

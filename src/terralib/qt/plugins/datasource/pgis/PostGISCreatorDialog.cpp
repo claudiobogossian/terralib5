@@ -252,8 +252,13 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::
 // get Encoding
   qstr = m_ui->m_encodingComboBox->currentText().trimmed();
   
-  if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_ENCODING"] = qstr.toStdString();
+  if (!qstr.isEmpty())
+  {
+    if (qstr.toStdString() == "UTF-8")
+      connInfo["PG_NEWDB_ENCODING"] = "UTF8";
+    else
+      connInfo["PG_NEWDB_ENCODING"] = qstr.toStdString();
+  }
 
 // get Tablespace
   qstr = m_ui->m_tablespaceLineEdit->text().trimmed();

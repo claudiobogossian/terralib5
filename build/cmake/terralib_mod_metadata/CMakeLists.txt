@@ -96,4 +96,3 @@ if(TERRALIB_MOD_XML_ENABLED)
           DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/metadata/serialization/xml COMPONENT devel)
 endif()
 
-export(TARGETS terralib_mod_metadata APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

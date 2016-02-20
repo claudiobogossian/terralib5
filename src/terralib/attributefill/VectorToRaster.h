@@ -62,7 +62,7 @@ namespace te
 
       void setInput(te::da::DataSourcePtr inVectorDsrc,
                     std::string inVectorName,
-                    std::auto_ptr<te::da::DataSetType> inVectorDsType);
+                    std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType);
 
       void setParams( std::vector<std::string> selectedAttVec,
                       double resolutionX,
@@ -82,7 +82,7 @@ namespace te
 
       te::da::DataSourcePtr m_inVectorDsrc;
       std::string m_inVectorName;
-      std::auto_ptr<te::da::DataSetType> m_inVectorDsType;
+      std::auto_ptr<te::da::DataSetTypeConverter> m_inVectorDsType;
 
       std::vector<std::string> m_selectedAttVec;
       double m_resolutionX;

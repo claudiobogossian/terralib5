@@ -26,10 +26,10 @@ void ArithmeticWithRaster()
 
 // set raster names
     std::map<std::string, std::string> sri, srndvi, srndvin, srden;
-    sri["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
-    srndvi["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_ndvi.tif";
-    srndvin["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_ndvi_normalized.tif";
-    std::string base_path = ""TERRALIB_DATA_DIR"/rasters/";
+    sri["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+    srndvi["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_ndvi.tif";
+    srndvin["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_ndvi_normalized.tif";
+    std::string base_path = TERRALIB_DATA_DIR "/rasters/";
 
 // open input raster (band 0 = Red, band 1 = IRed, band 2 = Blue)
     te::rst::Raster* ri = te::rst::RasterFactory::open(sri);

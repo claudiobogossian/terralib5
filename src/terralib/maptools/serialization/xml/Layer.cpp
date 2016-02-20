@@ -129,7 +129,7 @@ te::dt::SimpleProperty* GetProperty(std::string name, int dataType, int geomType
     default:
     {
       simpleProperty = 0;
-      return false;
+      return nullptr;
     }
   }
 
@@ -189,11 +189,10 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   /* Title Element */
   reader.next();
   std::string title = te::map::serialize::ReadLayerTitle(reader);
-
-  /* Visible Element */
   reader.next();
+  
+  /* Visible Element */
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
-
   reader.next();
 
   /* Grouping */
@@ -203,26 +202,14 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   std::auto_ptr<te::map::Chart> chart(te::map::serialize::ReadLayerChart(reader));
 
   /* DataSetName Element */
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSetName");
+  std::string dataset = te::map::serialize::ReadDataSetName(reader);
   reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string dataset = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   /* DataSourceId Element */
+  std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSourceId");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string datasourceId = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   /* SRID Element */
-  reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "SRID");
   reader.next();
@@ -325,16 +312,10 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   te::da::Select* query = te::serialize::xml::ReadSelect(reader);
 
   /* DataSourceId Element */
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSourceId");
+  std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
   reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string datasourceId = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   /* SRID Element */
-  reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "SRID");
   reader.next();
@@ -394,6 +375,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   reader.next();
 
   std::auto_ptr<te::map::QueryLayer> layer(new te::map::QueryLayer(id, title, 0));
+  layer->setDataSourceId(datasourceId);
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
   layer->setVisibility(te::map::serialize::GetVisibility(visible));
@@ -468,8 +450,15 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
   reader.next();
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
 
-  /* ConnectionInfo Element */
+  /* DataSetName Element */
+  std::string dataset = te::map::serialize::ReadDataSetName(reader);
   reader.next();
+
+  /* DataSourceId Element */
+  std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
+  reader.next();
+
+  /* ConnectionInfo Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ConnectionInfo");
 
@@ -568,6 +557,8 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
   reader.next();
 
   std::auto_ptr<te::map::RasterLayer> layer(new te::map::RasterLayer(id, title, 0));
+  layer->setDataSetName(dataset);
+  layer->setDataSourceId(datasourceId);
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
   layer->setRasterInfo(conninfo);
@@ -590,37 +581,14 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
   /* Visible Element */
   reader.next();
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
-
   reader.next();
 
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSetName");
-
+  /* DataSetName Element */
+  std::string dataSetName = te::map::serialize::ReadDataSetName(reader);
   reader.next();
 
-  assert(reader.getNodeType() == te::xml::VALUE);
-
-  std::string dataSetName = reader.getElementValue();
-
-  reader.next();
-
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);  // DataSetName
-
-  reader.next();
-
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSourceId");
-
-  reader.next();
-
-  assert(reader.getNodeType() == te::xml::VALUE);
-
-  std::string dataSourceId = reader.getElementValue();
-
-  reader.next();
-
-  assert(reader.getNodeType() == te::xml::END_ELEMENT); // DataSourceId
-
+  /* DataSourceId Element */
+  std::string dataSourceId = te::map::serialize::ReadDataSourceId(reader);
   reader.next();
 
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -806,11 +774,9 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
 
   std::vector<std::string> functionsNames;
 
-  int teste = 0;
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
         reader.getElementLocalName() == "FunctionName")
   {
-    ++teste;
 
     reader.next();
 
@@ -888,6 +854,7 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
       assert(geom);
       env->Union(*geom->getMBR());
     }
+    result->setSRID(gp->getSRID());
   }
 
   result->setExtent(*env);
@@ -937,6 +904,10 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWri
   te::map::serialize::WriteAbstractLayer(layer, writer);
 
   te::serialize::xml::Save(layer->getQuery(), writer);
+
+  if (layer->getDataSetName() != "")
+    writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
@@ -1035,7 +1006,7 @@ void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Ab
   writer.writeStartElement("te_map:DataSetAdapterLayer");
 
   te::map::serialize::WriteAbstractLayer(layer, writer);
-  
+
   writer.writeElement("te_map:DataSetName", layer->getDataSetName());
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:RendererType", layer->getRendererType());

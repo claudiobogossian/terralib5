@@ -109,41 +109,17 @@ te::vp::AggregationDialog::~AggregationDialog()
 {
 }
 
-void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers, te::map::AbstractLayerPtr selectedLayer)
+void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
-  if (!selectedLayer)
-  {
-    m_layers = layers;
-    std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  m_layers = layers;
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
-    while (it != m_layers.end())
-    {
-      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-      if (dsType->hasGeom())
-        m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-      ++it;
-    }
-  }
-  else
+  while (it != m_layers.end())
   {
-    m_layers = layers;
-
-    std::auto_ptr<te::da::DataSetType> dsType = selectedLayer->getSchema();
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
     if (dsType->hasGeom())
-      m_ui->m_layersComboBox->addItem(QString(selectedLayer->getTitle().c_str()), QVariant(selectedLayer->getId().c_str()));
-    
-    std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-
-    while (it != m_layers.end())
-    {
-      if (*it != selectedLayer)
-      {
-        std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-        if (dsType->hasGeom())
-          m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-      }
-      ++it;
-    }
+      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    ++it;
   }
 }
 

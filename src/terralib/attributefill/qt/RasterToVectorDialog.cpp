@@ -30,6 +30,7 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -38,12 +39,14 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/Utils.h"
+#include "../../raster/Grid.h"
 #include "../../raster/RasterProperty.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
@@ -105,10 +108,21 @@ void te::attributefill::RasterToVectorDialog::setLayers(std::list<te::map::Abstr
   while(it != m_layers.end())
   {
     std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasRaster())
+    if (dsType->hasRaster())
+    {
       m_ui->m_inRasterComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-    if(dsType->hasGeom())
-      m_ui->m_inVectorComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    }
+    if (dsType->hasGeom())
+    {
+      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
+      if (geomProp->getGeometryType() == te::gm::PolygonType ||
+          geomProp->getGeometryType() == te::gm::MultiPolygonType ||
+          geomProp->getGeometryType() == te::gm::PointType ||
+          geomProp->getGeometryType() == te::gm::MultiPointType)
+      {
+        m_ui->m_inVectorComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+      }
+    }
     ++it;
   }
 }
@@ -195,6 +209,19 @@ std::vector<te::stat::StatisticalSummary> te::attributefill::RasterToVectorDialo
   return vecStatistics;
 }
 
+bool te::attributefill::RasterToVectorDialog::getValueOption()
+{
+  for (int i = 0; i < m_ui->m_statisticsListWidget->count(); ++i)
+  {
+    if (m_ui->m_statisticsListWidget->isItemSelected(m_ui->m_statisticsListWidget->item(i)))
+    {
+      return true;
+    }
+    return false;
+  }
+
+}
+
 void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
@@ -220,25 +247,6 @@ void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
   for(std::size_t b = 0; b < n_bands; ++b)
     m_ui->m_bandsListWidget->addItem(boost::lexical_cast<std::string>(b).c_str());
 
-
-  m_ui->m_statisticsListWidget->clear();
-
-  m_ui->m_statisticsListWidget->addItem("Minimum value");
-  m_ui->m_statisticsListWidget->addItem("Maximum value");
-  m_ui->m_statisticsListWidget->addItem("Mean");
-  m_ui->m_statisticsListWidget->addItem("Sum of values");
-  m_ui->m_statisticsListWidget->addItem("Total number of values");
-  m_ui->m_statisticsListWidget->addItem("Total not null values");
-  m_ui->m_statisticsListWidget->addItem("Standard deviation");
-  m_ui->m_statisticsListWidget->addItem("Variance");
-  m_ui->m_statisticsListWidget->addItem("Skewness");
-  m_ui->m_statisticsListWidget->addItem("Kurtosis");
-  m_ui->m_statisticsListWidget->addItem("Amplitude");
-  m_ui->m_statisticsListWidget->addItem("Median");
-  m_ui->m_statisticsListWidget->addItem("Coefficient variation");
-  m_ui->m_statisticsListWidget->addItem("Mode");
-  m_ui->m_statisticsListWidget->addItem("Percent of each class by area");
-
 }
 
 void te::attributefill::RasterToVectorDialog::onVectorComboBoxChanged(int index)
@@ -249,9 +257,45 @@ void te::attributefill::RasterToVectorDialog::onVectorComboBoxChanged(int index)
 
   while(it != m_layers.end())
   {
-    if(layerID == it->get()->getId().c_str())
+    if (layerID == it->get()->getId().c_str())
+    {
       m_vectorLayer = it->get();
-    
+      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+        
+      m_ui->m_statisticsListWidget->clear();
+
+      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
+
+      if (geomProp->getGeometryType() == te::gm::PolygonType || geomProp->getGeometryType() == te::gm::MultiPolygonType)
+      {
+        m_ui->m_statisticsListWidget->addItem("Minimum value");
+        m_ui->m_statisticsListWidget->addItem("Maximum value");
+        m_ui->m_statisticsListWidget->addItem("Mean");
+        m_ui->m_statisticsListWidget->addItem("Sum of values");
+        m_ui->m_statisticsListWidget->addItem("Total number of values");
+        m_ui->m_statisticsListWidget->addItem("Total not null values");
+        m_ui->m_statisticsListWidget->addItem("Standard deviation");
+        m_ui->m_statisticsListWidget->addItem("Variance");
+        m_ui->m_statisticsListWidget->addItem("Skewness");
+        m_ui->m_statisticsListWidget->addItem("Kurtosis");
+        m_ui->m_statisticsListWidget->addItem("Amplitude");
+        m_ui->m_statisticsListWidget->addItem("Median");
+        m_ui->m_statisticsListWidget->addItem("Coefficient variation");
+        m_ui->m_statisticsListWidget->addItem("Mode");
+        m_ui->m_statisticsListWidget->addItem("Percent of each class by area");
+
+        m_isStatistical = true;
+        m_ui->m_textureCheckBox->setEnabled(true);
+      }
+      else
+      {
+        m_ui->m_statisticsListWidget->addItem("Value");
+
+        m_isStatistical = false;
+        m_ui->m_textureCheckBox->setChecked(false);
+        m_ui->m_textureCheckBox->setEnabled(false);
+      }
+    }
     ++it;
   }
 }
@@ -312,27 +356,25 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  std::auto_ptr<te::da::DataSet> rasterDataSet = m_rasterLayer->getData();
 
-  te::map::DataSetLayer* dsRasterLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterLayer.get());
+  std::size_t rpos = te::da::GetFirstPropertyPos(rasterDataSet.get(), te::dt::RASTER_TYPE);
 
-  if(!dsRasterLayer)
+  std::auto_ptr<te::rst::Raster> inputRst = rasterDataSet->getRaster(rpos);
+
+  if (m_rasterLayer->getSRID() == 0 || m_vectorLayer->getSRID() == 0)
   {
-    QMessageBox::information(this, "Fill", "Can not execute this operation on this type of layer.");
+    QMessageBox::information(this, "Fill", "Input layer with invalid SRID information.");
     return;
   }
+
+  inputRst->getGrid()->setSRID(m_rasterLayer->getSRID());
 
   te::map::DataSetLayer* dsVectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorLayer.get());
 
   if(!dsVectorLayer)
   {
     QMessageBox::information(this, "Fill", "Can not execute this operation on this type of layer.");
-    return;
-  }
-  
-  te::da::DataSourcePtr inRasterDataSource = te::da::GetDataSource(dsRasterLayer->getDataSourceId(), true);
-  if (!inRasterDataSource.get())
-  {
-    QMessageBox::information(this, "Fill", "The selected raster data source can not be accessed.");
     return;
   }
 
@@ -350,11 +392,16 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  std::vector<te::stat::StatisticalSummary> vecStatistics;
+  
+  if (m_isStatistical)
+    vecStatistics = getSelectedStatistics();
 
-  std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
   m_texture = m_ui->m_textureCheckBox->isChecked();
-
-  if(vecStatistics.empty() && m_texture == false)
+  
+  bool isValueOptionSelected = getValueOption();
+  
+  if (isValueOptionSelected == false && vecStatistics.empty() && m_texture == false)
   {
     QMessageBox::information(this, "Fill", "Select at least one statistic operation or select the texture checkbox.");
     return;
@@ -408,15 +455,17 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converterVector(new te::da::DataSetTypeConverter(m_vectorLayer->getSchema().get(), inVectorDataSource->getCapabilities(), inVectorDataSource->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converterVector.get(), m_vectorLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       te::attributefill::RasterToVector* rst2vec = new te::attributefill::RasterToVector();
-      rst2vec->setInput(inRasterDataSource, 
-                        dsRasterLayer->getDataSetName(), 
-                        dsRasterLayer->getSchema(),
+      rst2vec->setInput(inputRst.get(),
                         inVectorDataSource, 
                         dsVectorLayer->getDataSetName(),
-                        dsVectorLayer->getSchema());
+                        converterVector);
 
       rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
@@ -472,14 +521,16 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
       }
       this->setCursor(Qt::WaitCursor);
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converterVector(new te::da::DataSetTypeConverter(m_vectorLayer->getSchema().get(), inVectorDataSource->getCapabilities(), inVectorDataSource->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converterVector.get(), m_vectorLayer->getSRID());
+
       te::attributefill::RasterToVector* rst2vec = new te::attributefill::RasterToVector();
       
-      rst2vec->setInput(inRasterDataSource, 
-                        dsRasterLayer->getDataSetName(), 
-                        dsRasterLayer->getSchema(),
-                        inVectorDataSource, 
+      rst2vec->setInput(inputRst.get(),
+                        inVectorDataSource,
                         dsVectorLayer->getDataSetName(),
-                        dsVectorLayer->getSchema());
+                        converterVector);
 
       rst2vec->setParams(vecBands, vecStatistics, m_texture);
 

@@ -34,6 +34,8 @@
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../dataaccess/datasource/DataSourceInfo.h"
+#include "../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/StringProperty.h"
 #include "../datatype/SimpleData.h"
@@ -384,6 +386,18 @@ bool te::attributefill::VectorToVectorMemory::run()
   return true;
 }
 
+bool te::attributefill::VectorToVectorMemory::isToLayerOGR()
+{
+  std::string id = m_toLayer->getDataSourceId();
+
+  std::string type = te::da::DataSourceInfoManager::getInstance().get(id)->getType();
+
+  if (type == "OGR")
+    return true;
+  else
+    return false;
+}
+
 te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetType()
 {
   std::auto_ptr<te::da::DataSet> fromDs = m_fromLayer->getData();
@@ -396,7 +410,13 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
   dst->setTitle(m_outDset);
 
   std::vector<te::dt::Property*> outProps = dst->getProperties();
-  std::vector<te::dt::Property*> pkProps = dst->getPrimaryKey()->getProperties();
+
+  te::da::PrimaryKey* pk = dst->getPrimaryKey();
+
+  std::vector<te::dt::Property*> pkProps;
+
+  if (pk)
+    pkProps = dst->getPrimaryKey()->getProperties();
 
   // Keep only the properties that the user selected
   for(std::size_t i = 0; i < outProps.size(); ++i)
@@ -1270,18 +1290,29 @@ double te::attributefill::VectorToVectorMemory::getArea(te::gm::Geometry* geom)
   switch(geomType)
   {
     case te::gm::PolygonType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZMType:
     {
       te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
       area = g->getArea();
       break;
     }
+
     case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZMType:
     {
       te::gm::MultiPolygon* g = dynamic_cast<te::gm::MultiPolygon*>(geom);
       area = g->getArea();
       break;
     }
+
     case te::gm::MultiSurfaceType:
+    case te::gm::MultiSurfaceZType:
+    case te::gm::MultiSurfaceMType:
+    case te::gm::MultiSurfaceZMType:
     {
       te::gm::MultiSurface* col = dynamic_cast<te::gm::MultiSurface*>(geom);
       for (std::size_t j = 0; j < col->getNumGeometries(); ++j)
@@ -1300,6 +1331,9 @@ double te::attributefill::VectorToVectorMemory::getArea(te::gm::Geometry* geom)
       break;
     }
     case te::gm::GeometryCollectionType:
+    case te::gm::GeometryCollectionZType:
+    case te::gm::GeometryCollectionMType:
+    case te::gm::GeometryCollectionZMType:
     {
       te::gm::GeometryCollection* col = dynamic_cast<te::gm::GeometryCollection*>(geom);
       for(std::size_t j = 0; j < col->getNumGeometries(); ++j)
@@ -1462,12 +1496,18 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
   switch(geomType)
   {
     case te::gm::PointType:
+    case te::gm::PointZType:
+    case te::gm::PointMType:
+    case te::gm::PointZMType:
     {
       te::gm::Point* g = dynamic_cast<te::gm::Point*>(geom);
       result.push_back(g);
       break;
     }
     case te::gm::MultiPointType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZMType:
     {
       te::gm::MultiPoint* g = dynamic_cast<te::gm::MultiPoint*>(geom);
       for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
@@ -1480,6 +1520,9 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       break;
     }
     case te::gm::PolygonType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZMType:
     {
       te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
 
@@ -1499,6 +1542,9 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       break;
     }
     case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZMType:
     {
       te::gm::MultiPolygon* g = dynamic_cast<te::gm::MultiPolygon*>(geom);
 
@@ -1512,6 +1558,9 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       break;
     }
     case te::gm::LineStringType:
+    case te::gm::LineStringZType:
+    case te::gm::LineStringMType:
+    case te::gm::LineStringZMType:
     {
       te::gm::LineString* g = dynamic_cast<te::gm::LineString*>(geom);
 
@@ -1523,6 +1572,9 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       break;
     }
     case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZMType:
     {
       te::gm::MultiLineString* g = dynamic_cast<te::gm::MultiLineString*>(geom);
 

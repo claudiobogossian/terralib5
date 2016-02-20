@@ -6,72 +6,72 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="14"/>
         <source>GDAL Connector</source>
-        <translation type="unfinished"></translation>
+        <translation>Conector GDAL</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="39"/>
         <source>GDAL - Geospatial Data Abstraction Library</source>
-        <translation type="unfinished"></translation>
+        <translation>GDAL - Geospatial Data Abstraction Library</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="51"/>
         <source>&amp;Dataset access information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações de Acesso ao Banco de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="77"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="92"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="102"/>
         <source>Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Diretório</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="112"/>
         <source>URL</source>
-        <translation type="unfinished"></translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="124"/>
         <source>Data Source Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="134"/>
         <source>Data Source Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição da Fonte de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="153"/>
         <source>A more detailed description about the data source</source>
-        <translation type="unfinished"></translation>
+        <translation>Uma descrição mais detalhada sobre a fonte de dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="169"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="191"/>
         <source>&amp;Test</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Teste</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="198"/>
         <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/ui/GDALConnectorDialogForm.ui" line="205"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fechar</translation>
     </message>
 </context>
 <context>
@@ -79,75 +79,82 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnector.cpp" line="76"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnector.cpp" line="77"/>
         <source>Not implemented yet!
 We will provide it soon!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ainda não implementado!
+Iremos fornecer em breve!</translation>
     </message>
 </context>
 <context>
     <name>te::qt::plugins::gdal::GDALConnectorDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="150"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="157"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="188"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="194"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="200"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="235"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="154"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="161"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="192"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="198"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="204"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="240"/>
         <source>TerraLib Qt Components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="158"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="162"/>
         <source>Unknown error while opening dataset via GDAL!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido durante abertura do conjunto de dados via GDAL !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="189"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="193"/>
         <source>Data source is ok!</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte de Dados está ok !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="201"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="205"/>
         <source>Unknown error while testing GDAL data source!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido durante teste da fonte de dados GDAL !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="209"/>
         <source>Open Geo Spatial File</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Abrir Arquivo Geo Espacial</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="210"/>
         <source>Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Arquivo Imagem (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; Todos Arquivos (*.*)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="223"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="228"/>
         <source>Select a directory with image files</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um diretório com arquivos de imagem</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="236"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="241"/>
         <source>Sorry, network files are not implemented yet!
 We will provide it soon!</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, arquivos de rede não estão implementados ainda !
+Iremos fornecer em breve!</translation>
     </message>
 </context>
 <context>
     <name>te::qt::plugins::gdal::Plugin</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="112"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="114"/>
         <source>Raster File...</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo Matricial (raster)...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="164"/>
+        <source>Raster File</source>
+        <translation type="vanished">Arquivo Matricial (raster)</translation>
+    </message>
+    <message>
+        <source>Error: there is no opened project!</source>
+        <translation type="vanished">Erro: não há nenhum projeto aberto !</translation>
+    </message>
+    <message>
         <source>Open Raster File</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Abrir Arquivo Matricial (raster)</translation>
     </message>
 </context>
 </TS>

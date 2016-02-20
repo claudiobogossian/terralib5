@@ -272,8 +272,13 @@ std::auto_ptr<te::gm::Geometry> te::ogr::DataSet::getGeometry(std::size_t /*i*/)
 {
   char* wkb = (char*)getWKB();
 
-  te::gm::Geometry* geom = te::gm::WKBReader::read(wkb);
-  geom->setSRID(m_srid);
+  te::gm::Geometry* geom = 0;
+
+  if (wkb)
+  {
+    geom = te::gm::WKBReader::read(wkb);
+    geom->setSRID(m_srid);
+  }
 
   return std::auto_ptr<te::gm::Geometry>(geom);
 }
@@ -336,8 +341,13 @@ bool te::ogr::DataSet::isNull(std::size_t i) const
 
 const unsigned char* te::ogr::DataSet::getWKB() const
 {
+  OGRGeometry* geom;
+
   // The OGR library supports only one geometry field
-  OGRGeometry* geom = m_currentFeature->GetGeometryRef()->clone();
+  if (m_currentFeature->GetGeometryRef())
+    geom = m_currentFeature->GetGeometryRef()->clone();
+  else
+    return 0;
 
   if(geom == 0)
     return 0;

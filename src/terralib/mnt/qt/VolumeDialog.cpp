@@ -24,17 +24,23 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 //terralib
+#include "../../common/Exception.h"
+#include "../../common/progress/ProgressManager.h"
+#include "../../common/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
+#include "../../mnt/core/Utils.h"
 #include "../../mnt/core/Volume.h"
 #include "../../qt/af/ApplicationController.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
 #include "../../raster.h"
+
 
 #include "VolumeDialog.h"
 #include "VolumeResultDialog.h"
@@ -171,101 +177,94 @@ void te::mnt::VolumeDialog::onHelpPushButtonClicked()
 
 void te::mnt::VolumeDialog::onOkPushButtonClicked()
 {
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
-  if (!m_rasterinputLayer.get() || !m_vectorinputLayer.get())
+  try
   {
-    QMessageBox::information(this, tr("Volume"), tr("Select an input layer!"));
-    return;
-  }
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
-  if (m_rasterinputLayer->getSRID() != m_vectorinputLayer->getSRID())
-  {
-    QMessageBox::information(this, tr("Volume"), tr("Can not execute this operation with different SRIDs geometries!"));
-    return;
-  }
+    if (!m_rasterinputLayer.get() || !m_vectorinputLayer.get())
+      throw te::common::Exception(TE_TR("Select an input layer!"));
 
-  te::map::DataSetLayer* indsrasterLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterinputLayer.get());
-  if (!indsrasterLayer)
-  {
-    QMessageBox::information(this, tr("Volume"), tr("Can not execute this operation on this type of layer!"));
-    return;
-  }
+    if (m_rasterinputLayer->getSRID() != m_vectorinputLayer->getSRID())
+      throw te::common::Exception(TE_TR("Can not execute this operation with different SRIDs geometries!"));
 
-  te::da::DataSourcePtr inrasterDataSource = te::da::GetDataSource(indsrasterLayer->getDataSourceId(), true);
-  if (!inrasterDataSource.get())
-  {
-    QMessageBox::information(this, tr("Volume"), tr("The selected input data source can not be accessed!"));
-    return;
-  }
+    te::map::DataSetLayer* indsrasterLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterinputLayer.get());
+    if (!indsrasterLayer)
+      throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
 
-  std::string inrasterDsetName = indsrasterLayer->getDataSetName();
-  std::auto_ptr<te::da::DataSetType> inrasterDsetType(inrasterDataSource->getDataSetType(inrasterDsetName));
+    te::da::DataSourcePtr inrasterDataSource = te::da::GetDataSource(indsrasterLayer->getDataSourceId(), true);
+    if (!inrasterDataSource.get())
+      throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
 
+    std::string inrasterDsetName = indsrasterLayer->getDataSetName();
+    std::auto_ptr<te::da::DataSetType> inrasterDsetType(inrasterDataSource->getDataSetType(inrasterDsetName));
 
-  const te::da::ObjectIdSet* OidSet = 0;
-  if (m_ui->m_selectCheckBox->isChecked())
-  {
-    OidSet = m_vectorinputLayer->getSelected();
-    if (!OidSet)
+    const te::da::ObjectIdSet* OidSet = 0;
+    if (m_ui->m_selectCheckBox->isChecked())
     {
-      QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
-      return;
+      OidSet = m_vectorinputLayer->getSelected();
+      if (!OidSet)
+        throw te::common::Exception(TE_TR("Select the layer objects to perform the intersection operation."));
     }
-  }
 
-  te::map::DataSetLayer* indsvectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorinputLayer.get());
-  if (!indsvectorLayer)
+    te::map::DataSetLayer* indsvectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorinputLayer.get());
+    if (!indsvectorLayer)
+      throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
+
+    te::da::DataSourcePtr invectorDataSource = te::da::GetDataSource(indsvectorLayer->getDataSourceId(), true);
+    if (!invectorDataSource.get())
+      throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
+
+    std::string invectorDsetName = indsvectorLayer->getDataSetName();
+    std::auto_ptr<te::da::DataSetType> invectorDsetType(invectorDataSource->getDataSetType(invectorDsetName));
+
+    Volume *calvol = new te::mnt::Volume();
+
+    std::string attr = m_ui->m_attributeComboBox->currentText().toStdString();
+
+    int srid = m_vectorinputLayer->getSRID();
+    calvol->setSRID(srid);
+    calvol->setInput(inrasterDataSource, inrasterDsetName, inrasterDsetType, invectorDataSource, invectorDsetName, invectorDsetType, OidSet);
+    calvol->setParams(m_ui->m_quotaLineEdit->text().toDouble(), attr, m_ui->m_dummylineEdit->text().toDouble());
+
+    if (calvol->run())
+    {
+      QApplication::restoreOverrideCursor();
+      std::vector<std::string> polyvec;
+      std::vector<std::string> cortevec;
+      std::vector<std::string> aterrovec;
+      std::vector<std::string> areavec;
+      std::vector<std::string> iquotavec;
+      calvol->getResults(polyvec, cortevec, aterrovec, areavec, iquotavec);
+
+      te::mnt::VolumeResultDialog result(polyvec,
+        cortevec,
+        aterrovec,
+        areavec,
+        iquotavec,
+        attr,
+        this->parentWidget());
+
+      if (result.exec() != QDialog::Accepted)
+      {
+        te::common::ProgressManager::getInstance().removeViewer(id);
+        return;
+      }
+    }
+    delete calvol;
+  }
+  catch (const std::exception& e)
   {
-    QMessageBox::information(this, tr("Volume"), tr("Can not execute this operation on this type of layer!"));
+    QApplication::restoreOverrideCursor();
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    QMessageBox::information(this, tr("Volume "), e.what());
     return;
   }
 
-  te::da::DataSourcePtr invectorDataSource = te::da::GetDataSource(indsvectorLayer->getDataSourceId(), true);
-  if (!invectorDataSource.get())
-  {
-    QMessageBox::information(this, tr("Volume"), tr("The selected input data source can not be accessed!"));
-    return;
-  }
-
-  std::string invectorDsetName = indsvectorLayer->getDataSetName();
-  std::auto_ptr<te::da::DataSetType> invectorDsetType(invectorDataSource->getDataSetType(invectorDsetName));
-  
-  Volume *calvol = new te::mnt::Volume();
-
-  std::string attr = m_ui->m_attributeComboBox->currentText().toStdString();
-
-  calvol->setSRID(m_vectorinputLayer->getSRID());
-  calvol->setInput(inrasterDataSource, inrasterDsetName, inrasterDsetType, invectorDataSource, invectorDsetName, invectorDsetType, OidSet);
-  calvol->setParams(m_ui->m_quotaLineEdit->text().toDouble(), attr, m_ui->m_dummylineEdit->text().toDouble());
-
-  this->setCursor(Qt::WaitCursor);
-  if (calvol->run())
-  { 
-    this->setCursor(Qt::ArrowCursor);
-    std::vector<std::string> polyvec;
-    std::vector<std::string> cortevec;
-    std::vector<std::string> aterrovec;
-    std::vector<std::string> areavec;
-    std::vector<std::string> iquotavec;
-    calvol->getResults(polyvec, cortevec, aterrovec, areavec, iquotavec);
-
-    te::mnt::VolumeResultDialog result(polyvec,
-                                       cortevec,
-                                       aterrovec,
-                                       areavec,
-                                       iquotavec,
-                                       attr,
-                                       this->parentWidget());
-
-    if (result.exec() != QDialog::Accepted)
-      return;
-
-  }
-
-  delete calvol;
-
-  this->setCursor(Qt::ArrowCursor);
-
+  te::common::ProgressManager::getInstance().removeViewer(id);
   accept();
 
 }

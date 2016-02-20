@@ -18,7 +18,7 @@ void MakeRasterCrop()
 
     std::map<std::string, std::string> irinfo;
 
-    irinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    irinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* inraster = te::rst::RasterFactory::open(irinfo);
 
@@ -29,7 +29,7 @@ void MakeRasterCrop()
 
     std::map<std::string, std::string> orinfo;
 
-    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/raster-crop.tif";
+    orinfo["URI"] = TERRALIB_DATA_DIR "/rasters/raster-crop.tif";
 
     te::rst::Raster* outraster = inraster->trim(blenv, orinfo);
 

@@ -64,7 +64,7 @@ namespace te
 
           \brief Classifier Parameters
         */
-        class TERPEXPORT Parameters : public StrategyParameters
+        class TERPEXPORT Parameters : public ClassifierStrategyParameters
         {
           public:
 
@@ -95,12 +95,15 @@ namespace te
         ~ClassifierEMStrategy();
 
         //overload
-        bool initialize(StrategyParameters const* const strategyParams) throw(te::rp::Exception);
+        bool initialize(ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception);
 
         //overload
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                      const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                      const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception);
+
+        // overload
+        std::vector< int > getOutputDataTypes() const; 
 
       protected:
 

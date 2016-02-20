@@ -71,12 +71,7 @@ void te::qt::widgets::SHP2ADODialog::setLayers(std::list<te::map::AbstractLayerP
   {
     te::map::AbstractLayerPtr l = *it;
 
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
-
-    if(!dsLayer)
-      continue;
-
-    std::string dsName = dsLayer->getDataSourceId();
+    std::string dsName = l->getDataSourceId();
 
     te::da::DataSourcePtr dsPtr = te::da::GetDataSource(dsName);
 
@@ -166,11 +161,9 @@ void te::qt::widgets::SHP2ADODialog::onOkPushButtonClicked()
   {
     //create adapter
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
-    
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
 
     if(dsType->size() == 0)
-      te::da::LoadProperties(dsType.get(), dsLayer->getDataSourceId());
+      te::da::LoadProperties(dsType.get(), layer->getDataSourceId());
 
     te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo()); 
 

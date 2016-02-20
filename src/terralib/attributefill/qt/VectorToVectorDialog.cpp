@@ -175,12 +175,10 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::string                        fromDataSetName = fromLayer->getDataSetName();
   std::auto_ptr<te::da::DataSetType> fromSchema = fromLayer->getSchema();
   std::auto_ptr<te::da::DataSet>     fromData = fromLayer->getData();
   te::da::DataSourcePtr              fromSource = te::da::GetDataSource(fromLayer->getDataSourceId(), true);
 
-  std::string                        toDataSetName = toLayer->getDataSetName();
   std::auto_ptr<te::da::DataSetType> toSchema = fromLayer->getSchema();
   std::auto_ptr<te::da::DataSet>     toData = toLayer->getData();
   te::da::DataSourcePtr              toSource = te::da::GetDataSource(toLayer->getDataSourceId(), true);
@@ -262,8 +260,6 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
     v2v->setOutput(aux, outDataSetName);
 
   }
-
-  std::map<std::string, std::vector<te::attributefill::OperationType> > selections = getSelections();
 
   v2v->setParams(getSelections(), m_outputAttributes);
 
@@ -912,8 +908,8 @@ void te::attributefill::VectorToVectorDialog::onSelectAttrToolButtonPressed()
   te::qt::widgets::DoubleListWidget* d = new te::qt::widgets::DoubleListWidget(this);
   d->setInputValues(inputNames);
   d->setOutputValues(outputNames);
-  d->setLeftLabel(tr("Layer Attributes").toStdString());
-  d->setRightLabel(tr("Selected Attributes").toStdString());
+  d->setLeftLabel(tr("Layer Attributes"));
+  d->setRightLabel(tr("Selected Attributes"));
   vLayout->addWidget(d);
 
   QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);

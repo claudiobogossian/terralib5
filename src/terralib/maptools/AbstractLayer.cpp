@@ -344,3 +344,13 @@ void te::map::AbstractLayer::setDataSourceId(const std::string& id)
 {
   m_datasourceId = id;
 }
+
+const std::string& te::map::AbstractLayer::getDataSetName() const
+{
+  return m_datasetName;
+}
+
+void te::map::AbstractLayer::setDataSetName(const std::string& name)
+{
+  m_datasetName = name;
+}

@@ -55,4 +55,3 @@ install(TARGETS terralib_mod_statistics_core
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/statistics/core COMPONENT devel)
 
-export(TARGETS terralib_mod_statistics_core APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

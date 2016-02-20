@@ -462,7 +462,7 @@ void te::qt::widgets::ClippingWizardPage::drawGeom()
 {
   te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
 
-  mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0).rgba());
+  mapDisplay->getDraftPixmap()->fill(Qt::transparent);
 
   const te::gm::Envelope& mapExt = mapDisplay->getExtent();
 

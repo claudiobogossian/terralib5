@@ -141,6 +141,8 @@ namespace te
 
         void onLayerPanToSelectedOnMapDisplayTriggered();
 
+        void onLayerSaveSelectedObjectsTriggered();
+
         void onFullScreenToggled(bool checked);
 
         void onLayerExplorerVisibilityChanged(bool visible);
@@ -210,6 +212,7 @@ namespace te
         QAction* m_layerFitOnMapDisplay;
         QAction* m_layerFitSelectedOnMapDisplay;
         QAction* m_layerPanToSelectedOnMapDisplay;
+        QAction* m_layerSaveSelectedObjects;
 
         QAction* m_viewDataTable;
         QAction* m_viewLayerExplorer;

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32"
+   height="32"
+   viewBox="0 0 32 32.000001"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="mnt-processing-tin.svg">
+  <defs
+     id="defs4">
+    <filter
+       y="-0.25"
+       height="1.5"
+       inkscape:menu-tooltip="Darkens the edge with an inner blur and adds a flexible glow"
+       inkscape:menu="Shadows and Glows"
+       inkscape:label="Dark And Glow"
+       style="color-interpolation-filters:sRGB;"
+       id="filter4412">
+      <feGaussianBlur
+         stdDeviation="5"
+         result="result6"
+         id="feGaussianBlur4414" />
+      <feComposite
+         result="result8"
+         in="SourceGraphic"
+         operator="atop"
+         in2="result6"
+         id="feComposite4416" />
+      <feComposite
+         result="result9"
+         operator="over"
+         in2="SourceAlpha"
+         in="result8"
+         id="feComposite4418" />
+      <feColorMatrix
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 "
+         result="result10"
+         id="feColorMatrix4420" />
+      <feBlend
+         in="result10"
+         mode="normal"
+         in2="result6"
+         id="feBlend4422" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.8272727"
+     inkscape:cx="13"
+     inkscape:cy="11"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1281"
+     inkscape:window-height="821"
+     inkscape:window-x="254"
+     inkscape:window-y="114"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1020.3622)">
+    <image
+       y="1020.3856"
+       x="0.088923559"
+       id="image4359"
+       xlink:href="data:image/png;base64,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
+AElFTkSuQmCC
+"
+       preserveAspectRatio="none"
+       height="32"
+       width="32"
+       style="filter:url(#filter4412)" />
+  </g>
+</svg>

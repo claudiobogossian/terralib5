@@ -24,6 +24,7 @@
 */
 
 #include "../../../../dataaccess/dataset/DataSet.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/Utils.h"
 #include "../../../../maptools/AbstractLayer.h"
@@ -54,6 +55,16 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   layerInfo_prop->addSubProperty(srid_prop);
   srid_prop->setPropertyName("srid");
   srid_prop->setEnabled(false);
+
+  QtProperty* connection_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Connection"));
+  layerInfo_prop->addSubProperty(connection_prop);
+  connection_prop->setPropertyName("connection");
+  connection_prop->setEnabled(false);
+
+  QtProperty* numofitens_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->addProperty(tr("Num of Itens"));
+  layerInfo_prop->addSubProperty(numofitens_prop);
+  numofitens_prop->setPropertyName("numofitens");
+  numofitens_prop->setEnabled(false);
 
   /// Bounding Box
   QtProperty* bbox_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Bounding box"));
@@ -89,6 +100,15 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(id_prop, m_layer->getId().c_str());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(title_prop, m_layer->getTitle().c_str());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(srid_prop, m_layer->getSRID());
+
+  // Get the data souce info
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(connection_prop, info->getConnInfoAsString().c_str());
+
+  // For while, use DataSetLayer to get the DataSource
+  te::da::DataSourcePtr dsource = te::da::GetDataSource(layer->getDataSourceId(), false);
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(numofitens_prop, dsource->getNumberOfItems(layer->getDataSetName()));
+
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(llx_prop, QString::number(m_layer->getExtent().getLowerLeftX(), 'f'));
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(lly_prop, QString::number(m_layer->getExtent().getLowerLeftY(), 'f'));
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(urx_prop, QString::number(m_layer->getExtent().getUpperRightX(), 'f'));

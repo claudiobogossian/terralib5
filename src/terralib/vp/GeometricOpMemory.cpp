@@ -337,7 +337,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
                 std::auto_ptr<te::gm::Geometry> convexHull(in_geom->convexHull());
                 convexHull->setSRID(geomProp->getSRID());
 
-                if(convexHull->getGeomTypeId() == te::gm::PolygonType)
+                if (convexHull->getGeomTypeId() == te::gm::PolygonType)
                 {
                   item->setGeometry("convex_hull", convexHull.release());
                   geom = true;
@@ -521,6 +521,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
             {
               std::auto_ptr<te::gm::Geometry> convexHull(seedGeom->convexHull());
               convexHull->setSRID(geomProp->getSRID());
+
               item->setGeometry("convex_hull", convexHull.release());
             }
           }
@@ -757,6 +758,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
               {
                 std::auto_ptr<te::gm::Geometry> convexHull(itGeom->second->convexHull());
                 convexHull->setSRID(seedGeom->getSRID());
+                
                 outItem->setGeometry("convex_hull", convexHull.release());
               }
             }

@@ -19,23 +19,14 @@
 #include <string>
 #include <vector>
 
+std::auto_ptr<te::da::DataSource> GetPostGISConnection();
+
 void ObjectId()
 {
-  // let's give the minimal server connection information needed to connect to the database server
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "terralib4";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4";
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1";
+  std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+  if (!ds.get())
+    return;
   
-  // create a data source using the data source factory and set connection info
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-  ds->setConnectionInfo(connInfo);
-
-  // as we are going to use the data source, let's open it using the connection info above!
   ds->open();
   
   // get a transactor to interact to the data source in the next examples
@@ -60,8 +51,8 @@ void ObjectId()
   std::auto_ptr<te::da::DataSet> identified = transactor->getDataSet("public.br_munic_2001",oids);
   assert(identified.get());
   assert(dataset->size() == identified->size());
-  /*bool ini = */identified->moveBeforeFirst();
-  /*bool ini1 = */dataset->moveBeforeFirst(); //otherwise if will be at the end of the dataset and nothing will be printed
+  identified->moveBeforeFirst();
+  dataset->moveBeforeFirst(); //otherwise if will be at the end of the dataset and nothing will be printed
  
   std::cout << "== DataSet Retrieved From Box == " << std::endl;
   PrintDataSet("public.br_munic_2001", dataset.get());
@@ -70,7 +61,7 @@ void ObjectId()
   PrintDataSet("munic_2001_identified",identified.get());
 
 // Another way to get oids using DataSetType...tries to use the pk, uk or all properties (less geom) if pk and uk do not exist.
-  /*bool ini2 =*/ dataset->moveBeforeFirst();
+  dataset->moveBeforeFirst();
   std::auto_ptr<te::da::DataSetType> dt1 =  transactor->getDataSetType("public.br_munic_2001");
   te::da::ObjectIdSet* oids1 = te::da::GenerateOIDSet( dataset.get(), dt1.get());
   std::auto_ptr<te::da::DataSet> identified1 = transactor->getDataSet("public.br_munic_2001",oids1);
@@ -78,48 +69,15 @@ void ObjectId()
   std::cout << "== DataSet Retrieved From ObjectIdSet using dataSetType to discover pk == " << std::endl;
   PrintDataSet("munic_2001_identified",identified1.get());
 
-  // Another test: Not knowing primary key - using all property names except geom
-  // -> DOES NOT WORK -> only 14 oids are identified when string name are used to compose oids2
-
-  std::auto_ptr<te::da::DataSet> dataset2 = transactor->getDataSet("br_munic_2001_wout_pk", "geom", &box, te::gm::INTERSECTS);
- 
-  assert(dataset2.get());
-  std::cout << "DataSet size: " << dataset2->size() << std::endl;
-
-  std::vector<std::string> pnames;
-  std::vector<int> ptypes; 
-  std::auto_ptr<te::da::DataSetType> dt2 =  transactor->getDataSetType("br_munic_2001_wout_pk");
-
-  te::da::GetOIDPropertyNames(dt2.get(),pnames); //It will return pk or uk or all non geom properties
-  te::da::ObjectIdSet* oids2 = te::da::GenerateOIDSet( dataset2.get(), pnames);
-
-  std::auto_ptr<te::da::DataSet> identified2 = transactor->getDataSet("public.br_munic_2001_wout_pk",oids2);
-  std::cout << "== DataSet Retrieved From ObjectIdSet == " << std::endl;
-  PrintDataSet("munic_2001_identified_only14",identified2.get());
-  
   // Cleaning All
   delete oids1;
-  delete oids2;
 }
 
 void ObjectId_query()
 {
-// let's give the minimal server connection information needed to connect to the database server
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "terralib4";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4";
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1";
- 
-  // create a data source using the data source factory and set connection info
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-  ds->setConnectionInfo(connInfo);
-
-  // as we are going to use the data source, let's open it using the connection info above!
-  ds->open();
+  std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+  if (!ds.get())
+    return;
 
   // get a transactor to interact to the data source in the next examples
   std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();

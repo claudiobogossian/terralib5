@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/RasterInfoDialog.h
+  \file terralib/qt/widgets/raster/RasterInfoDialog.h
 
   \brief This file defines a class for a RasterInfoDialog.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERINFODIALOG_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERINFODIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_RASTER_INTERNAL_RASTERINFODIALOG_H
+#define __TERRALIB_QT_WIDGETS_RASTER_INTERNAL_RASTERINFODIALOG_H
 
 // TerraLib
 #include "../Config.h"
@@ -54,7 +54,7 @@ namespace te
       {
         public:
 
-          RasterInfoDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          RasterInfoDialog(const bool outputMode, QWidget* parent, Qt::WindowFlags f);
 
           ~RasterInfoDialog();
 
@@ -70,4 +70,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERINFODIALOG_H
+#endif  // __TERRALIB_QT_WIDGETS_RASTER_INTERNAL_RASTERINFODIALOG_H

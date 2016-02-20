@@ -36,7 +36,7 @@
 #include "../layer/search/LayerSearchWizardPage.h"
 #include "ArithmeticOpWizard.h"
 #include "ArithmeticOpWizardPage.h"
-#include "RasterInfoWidget.h"
+#include "../raster/RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
 

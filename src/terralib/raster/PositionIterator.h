@@ -925,6 +925,9 @@ namespace te
           if (te::gm::SatisfySpatialRelation(inrasterline, pixelboxgeometry, te::gm::INTERSECTS))
             m_pixelsinline.push_back(new te::gm::Point(c, r, srid));
         }
+
+        if (m_pixelsinline.empty())
+          setEnd();
     }
 
     template<class T> te::rst::LineIterator<T>::LineIterator(const LineIterator<T>& rhs)

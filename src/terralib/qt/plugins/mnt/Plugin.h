@@ -56,6 +56,7 @@ namespace te
         class SmoothAction;
         class TINGenerationAction;
         class VolumeAction;
+        class ProfileAction;
 
         class Plugin : public QObject, public te::plugin::Plugin
         {
@@ -101,6 +102,7 @@ namespace te
             SmoothAction*         m_Smooth;           //!< Smooth Isolines Action
             TINGenerationAction*  m_TINGeneration;    //!< TIN Generation Action
             VolumeAction*         m_Volume;
+            ProfileAction*        m_Profile;
         };
       } // end namespace mnt
     }   // end namespace plugins

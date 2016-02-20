@@ -88,8 +88,8 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
 
   std::vector<te::dt::Property*> firstProps = getTabularProps(m_firstConverter->getResult());
   std::vector<te::dt::Property*> secondProps;
-  if(m_copyInputColumns)
-    secondProps = getTabularProps(m_secondConverter->getResult());
+
+  secondProps = getTabularProps(m_secondConverter->getResult());
 
 // Get DataSetType from DataSource to compare geometry SRID with DataSetType from Layer.
   std::auto_ptr<te::da::DataSetType>firstDsTypeSource(m_inFirstDsrc->getDataSetType(m_inFirstDsetName));
@@ -191,18 +191,24 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
 
   for(size_t i = 0; i < firstProps.size(); ++i)
   {
-    te::dt::Property* prop = firstProps[i]->clone();
-    if (!m_inFirstDsetName.empty())
-      prop->setName(te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + prop->getName());
-    outDataSetType->add(prop);
+    if (isSelectedProperty(m_inFirstDsetName, firstProps[i]))
+    {
+      te::dt::Property* prop = firstProps[i]->clone();
+      if (!m_inFirstDsetName.empty())
+        prop->setName(te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + prop->getName());
+      outDataSetType->add(prop);
+    }
   }
 
   for(size_t i = 0; i < secondProps.size(); ++i)
   {
-    te::dt::Property* prop = secondProps[i]->clone();
-    if (!m_inSecondDsetName.empty())
-      prop->setName(te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + prop->getName());
-    outDataSetType->add(prop);
+    if (isSelectedProperty(m_inSecondDsetName, secondProps[i]))
+    {
+      te::dt::Property* prop = secondProps[i]->clone();
+      if (!m_inSecondDsetName.empty())
+        prop->setName(te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + prop->getName());
+      outDataSetType->add(prop);
+    }
   }
 
   te::gm::GeomType newType = setGeomResultType( te::da::GetFirstGeomProperty(m_firstConverter->getResult())->getGeometryType(),

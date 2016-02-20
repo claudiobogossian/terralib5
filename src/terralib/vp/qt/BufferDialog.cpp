@@ -28,6 +28,7 @@
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
+#include "../../common/UnitsOfMeasureManager.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -46,7 +47,7 @@
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
-#include "../../srs/Config.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
 #include "../Exception.h"
 #include "../BufferMemory.h"
 #include "BufferDialog.h"
@@ -135,7 +136,7 @@ void te::vp::BufferDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers
   while(it != m_layers.end())
   {
     std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasGeom())
+    if(dsType.get() && dsType->hasGeom())
       m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
@@ -243,7 +244,14 @@ void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
         m_ui->m_ruleOnlyInRadioButton->setEnabled(true);
         m_ui->m_ruleInOutRadioButton->setChecked(true);
       }
-
+      unsigned int srid = dsLayer->getSRID();
+      if (srid != TE_UNKNOWN_SRS)
+      {
+        te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid);
+        m_ui->unitLabel->setText(unit->getSymbol().c_str());
+      }
+      else
+        m_ui->unitLabel->setText("");
       return;
     }
     ++it;
@@ -530,7 +538,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         bufferOp = new te::vp::BufferMemory();
       }
 
-      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       bufferOp->setOutput(aux, outputdataset);
       bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
 

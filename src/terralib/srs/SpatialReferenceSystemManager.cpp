@@ -344,4 +344,19 @@ bool te::srs::SpatialReferenceSystemManager::isInitialized()
   return initialized;
 }
 
-
+std::string te::srs::SpatialReferenceSystemManager::getNewUserDefinedSRID()
+{
+  boost::multi_index::nth_index<srs_set,4>::type::iterator it = boost::multi_index::get<4>(m_set).find("USER");
+  if (it==boost::multi_index::get<4>(m_set).end())
+    return "100001";
+  
+  int val = it->m_auth_id;
+  ++it;
+  while (it != boost::multi_index::get<4>(m_set).end())
+  {
+    if (it->m_auth_id > val)
+      val = it->m_auth_id;
+    ++it;
+  }
+  return boost::lexical_cast<std::string>(val+1);
+}

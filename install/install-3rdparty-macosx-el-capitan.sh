@@ -52,7 +52,7 @@ function fixRPath()
     
     for _FILE2 in $_FILES;
     do
-      install_name_tool -change `basename "$_FILE"` $_FILE $_FILE2
+      install_name_tool -change @rpath/`basename "$_FILE"` $_FILE $_FILE2
     done
   done
 }
@@ -114,11 +114,11 @@ valid $? "Error: could not enter 3rd-party libraries dir (terralib-3rdparty-maco
 # Check installation dir
 #
 if [ "$TERRALIB_DEPENDENCIES_DIR" == "" ]; then
-  TERRALIB_DEPENDENCIES_DIR = "/opt/terralib" > /dev/null
+  TERRALIB_DEPENDENCIES_DIR="/opt/terralib"
 fi
 
-export PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/bin" > /dev/null
-export LD_LIBRARY_PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/lib" > /dev/null
+export PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/bin"
+export LD_LIBRARY_PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/lib"
 
 echo "installing 3rd-party libraries to '$TERRALIB_DEPENDENCIES_DIR' ..."
 sleep 1s
@@ -623,11 +623,11 @@ if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libboost_thread.dylib" ]; then
 
   sleep 1s
 
-  tar xzvf boost_1_58_0.tar.gz > /dev/null 2> /dev/null
-  valid $? "Error: could not uncompress boost_1_58_0.tar.gz!"
+  tar xzvf boost_1_60_0.tar.gz > /dev/null 2> /dev/null
+  valid $? "Error: could not uncompress boost_1_60_0.tar.gz!"
 
-  cd boost_1_58_0 > /dev/null
-  valid $? "Error: could not enter boost_1_58_0!"
+  cd boost_1_60_0 > /dev/null
+  valid $? "Error: could not enter boost_1_60_0!"
 
   ./bootstrap.sh --with-toolset=clang --prefix=$TERRALIB_DEPENDENCIES_DIR > /dev/null 2>> ../build.log
   valid $? "Error: could not configure Boost!"
@@ -640,7 +640,7 @@ if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libboost_thread.dylib" ]; then
   valid $? "Error: could not make boost"
 
   cd .. > /dev/null
-  
+
   fixRPath "`ls $TERRALIB_DEPENDENCIES_DIR/lib/libboost*.dylib`" > /dev/null
 fi
 

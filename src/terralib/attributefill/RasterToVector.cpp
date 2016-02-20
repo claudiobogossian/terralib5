@@ -61,16 +61,12 @@ te::attributefill::RasterToVector::RasterToVector()
 {
 }
 
-void te::attributefill::RasterToVector::setInput(te::da::DataSourcePtr inRasterDsrc,
-                                              std::string inRasterName,
-                                              std::auto_ptr<te::da::DataSetType> inRasterDsType,
+void te::attributefill::RasterToVector::setInput(te::rst::Raster* inRaster,
                                               te::da::DataSourcePtr inVectorDsrc,
                                               std::string inVectorName,
-                                              std::auto_ptr<te::da::DataSetType> inVectorDsType)
+                                              std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType)
 {
-  m_inRasterDsrc = inRasterDsrc;
-  m_inRasterName = inRasterName;
-  m_inRasterDsType = inRasterDsType;
+  m_inRaster = inRaster;
   m_inVectorDsrc = inVectorDsrc;
   m_inVectorName = inVectorName;
   m_inVectorDsType = inVectorDsType;
@@ -96,7 +92,7 @@ bool te::attributefill::RasterToVector::paramsAreValid()
   if (!m_inVectorDsType.get())
     return false;
   
-  if (!m_inVectorDsType->hasGeom())
+  if (!m_inVectorDsType->getResult()->hasGeom())
     return false;
 
   if (m_outDset.empty() || !m_outDsrc.get())
@@ -108,18 +104,16 @@ bool te::attributefill::RasterToVector::paramsAreValid()
 bool te::attributefill::RasterToVector::run()
 {
 // prepare vector
-  te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType.get());
-  std::auto_ptr<te::da::DataSet> dsVector = m_inVectorDsrc->getDataSet(m_inVectorName);
+  te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType->getResult());
+  std::size_t geomIdx = boost::lexical_cast<std::size_t>(m_inVectorDsType->getResult()->getPropertyPosition(vectorProp->getName()));
+  std::auto_ptr<te::da::DataSet> dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName);
+  std::auto_ptr<te::da::DataSetAdapter> dsVector(te::da::CreateAdapter(dataSetVector.get(), m_inVectorDsType.get()));
   
 // prepare raster
-  te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(m_inRasterDsType.get());
+  double resX = m_inRaster->getResolutionX();
+  double resY = m_inRaster->getResolutionY();
   
-  std::auto_ptr<te::da::DataSet> dsRaster = m_inRasterDsrc->getDataSet(m_inRasterName);
-  std::auto_ptr<te::rst::Raster> raster = dsRaster->getRaster(rasterProp->getName());
-  double resX = raster->getResolutionX();
-  double resY = raster->getResolutionY();
-  
-  te::gm::Envelope* env = raster->getExtent();
+  te::gm::Envelope* env = m_inRaster->getExtent();
 
 // raster Attributes
   te::rp::RasterAttributes* rasterAtt = 0;
@@ -131,7 +125,7 @@ bool te::attributefill::RasterToVector::run()
   std::vector<te::stat::StatisticalSummary>::iterator it = std::find(m_statSum.begin(), m_statSum.end(), te::stat::PERCENT_EACH_CLASS_BY_AREA);
   if (it != m_statSum.end())
   {
-    pixelDistinct = getPixelDistinct(raster.get(), m_bands);
+    pixelDistinct = getPixelDistinct(m_inRaster, m_bands);
     percentByArea = true;
   }
 
@@ -151,20 +145,31 @@ bool te::attributefill::RasterToVector::run()
   task.setTotalSteps((int)dsVector->size() * (int)m_statSum.size() * (int)m_bands.size());
   task.useTimer(true);
 
+  bool remap = false;
+
+  if (m_inRaster->getSRID() != vectorProp->getSRID())
+    remap = true;
 
   dsVector->moveBeforeFirst();
   while(dsVector->moveNext())
   {
     te::mem::DataSetItem* outDSetItem = new te::mem::DataSetItem(outDataset.get());
     
-    std::vector<te::dt::Property*> vecProp = m_inVectorDsType->getProperties();
+    std::vector<te::dt::Property*> vecProp = m_inVectorDsType->getResult()->getProperties();
     for(std::size_t i = 0; i < vecProp.size(); ++i)
     {
-      outDSetItem->setValue(i, dsVector->getValue(i).release());
+      if (!dsVector->isNull(i))
+        outDSetItem->setValue(i, dsVector->getValue(i).release());
     }
 
 // Geometry
-    std::auto_ptr<te::gm::Geometry> geom = dsVector->getGeometry(vectorProp->getName());
+    std::auto_ptr<te::gm::Geometry> geom = dsVector->getGeometry(geomIdx);
+    if (!geom->isValid())
+      continue;
+
+    if (remap)
+      geom->transform(m_inRaster->getSRID());
+
     double area = 0;
 
 // Values from raster
@@ -173,68 +178,114 @@ bool te::attributefill::RasterToVector::run()
 
 // Contains
     bool contains = true;
+    bool isPoint = false;
 
-    if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+    switch (geom->getGeomTypeId())
     {
-      te::gm::MultiPolygon* mPolygon = dynamic_cast< te::gm::MultiPolygon* >(geom.get());
-      contains = env->contains(*mPolygon->getMBR());
-
-      if (percentByArea)
-        area = mPolygon->getArea();
-
-      std::size_t n_geom = mPolygon->getNumGeometries();
-
-      for(std::size_t n = 0; n < n_geom; ++n)
+      case te::gm::MultiPolygonType:
       {
-        te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(mPolygon->getGeometryN(n));
-        std::vector<std::vector<double> > tempValues = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
-        
+                                     te::gm::MultiPolygon* mPolygon = dynamic_cast< te::gm::MultiPolygon* >(geom.get());
+                                     contains = env->contains(*mPolygon->getMBR());
 
-        for(std::size_t band = 0; band < tempValues.size(); ++band)
-        {
-          std::vector<double>::iterator it;
-          it = valuesFromRaster[band].end();
+                                     if (percentByArea)
+                                       area = mPolygon->getArea();
 
-          valuesFromRaster[band].insert(it,
-                                        tempValues[band].begin(),
-                                        tempValues[band].end());
-        }
+                                     std::size_t n_geom = mPolygon->getNumGeometries();
+
+                                     for (std::size_t n = 0; n < n_geom; ++n)
+                                     {
+                                       te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(mPolygon->getGeometryN(n));
+                                       std::vector<std::vector<double> > tempValues = rasterAtt->getValuesFromRaster(*m_inRaster, *polygon, m_bands);
+
+
+                                       for (std::size_t band = 0; band < tempValues.size(); ++band)
+                                       {
+                                         std::vector<double>::iterator it;
+                                         it = valuesFromRaster[band].end();
+
+                                         valuesFromRaster[band].insert(it,
+                                           tempValues[band].begin(),
+                                           tempValues[band].end());
+                                       }
+                                     }
+
+                                     isPoint = false;
+
+                                     break;
+      }
+      case te::gm::PolygonType:
+      {
+                                te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(geom.get());
+                                contains = env->contains(*polygon->getMBR());
+
+                                if (percentByArea)
+                                  area = polygon->getArea();
+
+                                valuesFromRaster = rasterAtt->getValuesFromRaster(*m_inRaster, *polygon, m_bands);
+
+                                isPoint = false;
+
+                                break;
+      }
+      case te::gm::MultiPointType:
+      {
+                              te::gm::MultiPoint* mPoint = dynamic_cast<te::gm::MultiPoint*>(geom.get());
+
+                              std::size_t n_geom = mPoint->getNumGeometries();
+
+                              for (std::size_t n = 0; n < n_geom; ++n)
+                              {
+                                te::gm::Point* point = dynamic_cast<te::gm::Point*>(mPoint->getGeometryN(n));
+
+                                const double coordX = point->getX();
+                                const double coordY = point->getY();
+
+                                te::gm::Coord2D coord2d = m_inRaster->getGrid()->geoToGrid(coordX, coordY);
+
+                                std::vector<double> values;
+
+                                for (std::size_t band = 0; band < m_inRaster->getNumberOfBands(); ++band)
+                                {
+                                  double value;
+                                  m_inRaster->getValue((int)coord2d.getX(), (int)coord2d.getY(), value, band);
+
+                                  values.push_back(value);
+
+                                  std::vector<double>::iterator it;
+                                  it = valuesFromRaster[band].end();
+
+                                  valuesFromRaster[band].insert(it,
+                                                                values.begin(),
+                                                                values.end());
+
+                                }
+
+                                isPoint = true;
+                              }
+                              break;
       }
     }
-    else if(geom->getGeomTypeId() == te::gm::PolygonType)
-    {
-      te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(geom.get());
-      contains = env->contains(*polygon->getMBR());
 
-      if (percentByArea)
-        area = polygon->getArea();
-
-      valuesFromRaster = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
-      
-    }
-    else
-    {
-      return false;
-    }
-
-    std::size_t init_index = m_inVectorDsType->getProperties().size();
+    std::size_t init_index = m_inVectorDsType->getResult()->getProperties().size();
 
 // Statistics set value
-    for(std::size_t band = 0; band < valuesFromRaster.size(); ++band)
+    if (!isPoint)
     {
-      te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
-      
-      if (percentByArea)
-        te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary, contains);
-
-      std::size_t current_index = init_index + m_statSum.size();
-
-      for(std::size_t it = 0, i = init_index; i < current_index; ++it, ++i)
+      for (std::size_t band = 0; band < valuesFromRaster.size(); ++band)
       {
-        te::stat::StatisticalSummary ss = m_statSum[it];
+        te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
 
-        switch(ss)
+        if (percentByArea)
+          te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary, contains);
+
+        std::size_t current_index = init_index + m_statSum.size();
+
+        for (std::size_t it = 0, i = init_index; i < current_index; ++it, ++i)
         {
+          te::stat::StatisticalSummary ss = m_statSum[it];
+
+          switch (ss)
+          {
           case te::stat::MIN_VALUE:
             outDSetItem->setDouble(i, summary.m_minVal);
             break;
@@ -276,104 +327,115 @@ bool te::attributefill::RasterToVector::run()
             break;
           case te::stat::MODE:
           {
-            std::string mode;
+                               std::string mode;
 
-            if (!summary.m_mode.empty())
-            {
-              mode = boost::lexical_cast<std::string>(summary.m_mode[0]);
-              for(std::size_t m=1; m<summary.m_mode.size(); ++m)
-              {
-                mode += ",";
-                mode += boost::lexical_cast<std::string>(summary.m_mode[m]);
-              }
-              outDSetItem->setString(i, mode);
-            }
-            else
-            {
-              outDSetItem->setString(i, "");
-            }
-            break;
+                               if (!summary.m_mode.empty())
+                               {
+                                 mode = boost::lexical_cast<std::string>(summary.m_mode[0]);
+                                 for (std::size_t m = 1; m < summary.m_mode.size(); ++m)
+                                 {
+                                   mode += ",";
+                                   mode += boost::lexical_cast<std::string>(summary.m_mode[m]);
+                                 }
+                                 outDSetItem->setString(i, mode);
+                               }
+                               else
+                               {
+                                 outDSetItem->setString(i, "");
+                               }
+                               break;
           }
           case te::stat::PERCENT_EACH_CLASS_BY_AREA:
           {
-            std::set<int>::iterator itPixelDistinct = pixelDistinct[band].begin();
-            std::map<double, double>::iterator itPercent = summary.m_percentEachClass.begin();
+                                                     std::set<int>::iterator itPixelDistinct = pixelDistinct[band].begin();
+                                                     std::map<double, double>::iterator itPercent = summary.m_percentEachClass.begin();
 
-            while (itPixelDistinct != pixelDistinct[band].end())
-            {
-              if (itPercent != summary.m_percentEachClass.end())
-              {
-                std::string name = outDSetItem->getPropertyName(i);
-                std::vector<std::string> splitString;
-                boost::split(splitString, name, boost::is_any_of("_"));
-                if (splitString[1] == boost::lexical_cast<std::string>(itPercent->first))
-                {
-                  outDSetItem->setDouble(i, itPercent->second);
-                  ++itPercent;
-                }
-                else
-                {
-                  outDSetItem->setDouble(i, 0);
-                }
-              }
-              else
-              {
-                outDSetItem->setDouble(i, 0);
-              }
-              ++itPixelDistinct;
-              ++i;
-            }
-            current_index += pixelDistinct[band].size() - 1;
-            break;
+                                                     while (itPixelDistinct != pixelDistinct[band].end())
+                                                     {
+                                                       if (itPercent != summary.m_percentEachClass.end())
+                                                       {
+                                                         std::string name = outDSetItem->getPropertyName(i);
+                                                         std::vector<std::string> splitString;
+                                                         boost::split(splitString, name, boost::is_any_of("_"));
+                                                         if (splitString[1] == boost::lexical_cast<std::string>(itPercent->first))
+                                                         {
+                                                           outDSetItem->setDouble(i, itPercent->second);
+                                                           ++itPercent;
+                                                         }
+                                                         else
+                                                         {
+                                                           outDSetItem->setDouble(i, 0);
+                                                         }
+                                                       }
+                                                       else
+                                                       {
+                                                         outDSetItem->setDouble(i, 0);
+                                                       }
+                                                       ++itPixelDistinct;
+                                                       ++i;
+                                                     }
+                                                     current_index += pixelDistinct[band].size() - 1;
+                                                     break;
           }
           default:
             continue;
+          }
+          task.pulse();
         }
-        task.pulse();
-      }
 
-      // texture
-      std::vector<te::rp::Texture> metrics;
-      init_index = current_index;
+        // texture
+        std::vector<te::rp::Texture> metrics;
+        init_index = current_index;
 
-      if(m_texture == true)
-      {
-        metrics = getTexture(raster.get(), geom.get(), (int)m_bands.size());
-        current_index += 5;
-        for (std::size_t t = 0, i = init_index; i < current_index; ++t, ++i)
+        if (m_texture == true)
         {
-          switch (t)
+          metrics = getTexture(m_inRaster, geom.get(), (int)m_bands.size());
+          current_index += 5;
+          for (std::size_t t = 0, i = init_index; i < current_index; ++t, ++i)
           {
+            switch (t)
+            {
             case 0:
             {
-              outDSetItem->setDouble(i, metrics[band].m_contrast);
-              break;
+                    outDSetItem->setDouble(i, metrics[band].m_contrast);
+                    break;
             }
             case 1:
             {
-              outDSetItem->setDouble(i, metrics[band].m_dissimilarity);
-              break;
+                    outDSetItem->setDouble(i, metrics[band].m_dissimilarity);
+                    break;
             }
             case 2:
             {
-              outDSetItem->setDouble(i, metrics[band].m_energy);
-              break;
+                    outDSetItem->setDouble(i, metrics[band].m_energy);
+                    break;
             }
             case 3:
             {
-              outDSetItem->setDouble(i, metrics[band].m_entropy);
-              break;
+                    outDSetItem->setDouble(i, metrics[band].m_entropy);
+                    break;
             }
             case 4:
             {
-              outDSetItem->setDouble(i, metrics[band].m_homogeneity);
-              break;
+                    outDSetItem->setDouble(i, metrics[band].m_homogeneity);
+                    break;
+            }
             }
           }
         }
-      }
 
-      init_index = current_index;
+        init_index = current_index;
+      }
+    }
+    else
+    {
+      for (std::size_t i = 0; i < valuesFromRaster.size(); ++i)
+      {
+        for (std::size_t j = 0; j < valuesFromRaster[i].size(); ++j)
+        {
+          outDSetItem->setDouble(init_index, valuesFromRaster[i][j]);
+        }
+      }
     }
 
     outDataset->add(outDSetItem);
@@ -413,7 +475,7 @@ std::vector<std::set<int> > te::attributefill::RasterToVector::getPixelDistinct(
 
 std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSetType(std::vector<std::set<int> > pixelDistinct)
 {
-  std::auto_ptr<te::da::DataSetType> outdsType(new te::da::DataSetType(*m_inVectorDsType));
+  std::auto_ptr<te::da::DataSetType> outdsType(new te::da::DataSetType(*m_inVectorDsType->getResult()));
   outdsType->setCompositeName(m_outDset);
   outdsType->setName(m_outDset);
   outdsType->setTitle(m_outDset);
@@ -424,100 +486,108 @@ std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSet
   name += "_" + m_outDset;
   pk->setName(name);
 
-  for(std::size_t b = 0; b < m_bands.size(); ++b)
+  for (std::size_t b = 0; b < m_bands.size(); ++b)
   {
-    for(std::size_t i = 0; i < m_statSum.size(); ++i)
+    if (!m_statSum.empty() || m_texture == true)
     {
-      te::dt::SimpleProperty* prop;
-      switch(m_statSum[i])
+      for (std::size_t i = 0; i < m_statSum.size(); ++i)
       {
+        te::dt::SimpleProperty* prop;
+        switch (m_statSum[i])
+        {
         case 0:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Min_Value", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Min_Value", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 1:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Max_Value", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Max_Value", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 2:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Mean", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Mean", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 3:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Sum", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Sum", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 4:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Count", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Count", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 5:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Valid_Count", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Valid_Count", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 6:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Standard_Deviation", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Standard_Deviation", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 7:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Variance", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Variance", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 8:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Skewness", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Skewness", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 9:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Kurtosis", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Kurtosis", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 10:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Amplitude", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Amplitude", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 11:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Median", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Median", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 12:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Var_Coeff", te::dt::DOUBLE_TYPE);
+          prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Var_Coeff", te::dt::DOUBLE_TYPE);
           outdsType->add(prop);
           break;
         case 13:
-          prop = new te::dt::StringProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Mode");
+          prop = new te::dt::StringProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Mode");
           outdsType->add(prop);
           break;
         case 14:
-          {
-            std::set<int>::iterator it = pixelDistinct[b].begin();
-            while (it != pixelDistinct[b].end())
-            {
-              prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_"+ boost::lexical_cast<std::string>(*it), te::dt::DOUBLE_TYPE);
-              outdsType->add(prop);
-              ++it;
-            }
-          }
+        {
+                 std::set<int>::iterator it = pixelDistinct[b].begin();
+                 while (it != pixelDistinct[b].end())
+                 {
+                   prop = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_" + boost::lexical_cast<std::string>(*it), te::dt::DOUBLE_TYPE);
+                   outdsType->add(prop);
+                   ++it;
+                 }
+        }
           break;
         default:
           continue;
+        }
+      }
+      if (m_texture == true)
+      {
+        te::dt::SimpleProperty* propContrast = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Contrast", te::dt::DOUBLE_TYPE);
+        outdsType->add(propContrast);
+
+        te::dt::SimpleProperty* propDissimilarity = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Dissimilarity", te::dt::DOUBLE_TYPE);
+        outdsType->add(propDissimilarity);
+
+        te::dt::SimpleProperty* propEnergy = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Energy", te::dt::DOUBLE_TYPE);
+        outdsType->add(propEnergy);
+
+        te::dt::SimpleProperty* propEntropy = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Entropy", te::dt::DOUBLE_TYPE);
+        outdsType->add(propEntropy);
+
+        te::dt::SimpleProperty* propHomogeneity = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Homogeneity", te::dt::DOUBLE_TYPE);
+        outdsType->add(propHomogeneity);
       }
     }
-    if(m_texture == true)
+    else
     {
-      te::dt::SimpleProperty* propContrast = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Contrast", te::dt::DOUBLE_TYPE);
-      outdsType->add(propContrast);
-
-      te::dt::SimpleProperty* propDissimilarity = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Dissimilarity", te::dt::DOUBLE_TYPE);
-      outdsType->add(propDissimilarity);
-
-      te::dt::SimpleProperty* propEnergy = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Energy", te::dt::DOUBLE_TYPE);
-      outdsType->add(propEnergy);
-
-      te::dt::SimpleProperty* propEntropy = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Entropy", te::dt::DOUBLE_TYPE);
-      outdsType->add(propEntropy);
-
-      te::dt::SimpleProperty* propHomogeneity = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Homogeneity", te::dt::DOUBLE_TYPE);
-      outdsType->add(propHomogeneity);
+      te::dt::SimpleProperty* propValue = new te::dt::SimpleProperty("B" + boost::lexical_cast<std::string>(m_bands[b]) + "_Value", te::dt::DOUBLE_TYPE);
+      outdsType->add(propValue);
     }
   }
 
@@ -555,25 +625,21 @@ std::vector<te::rp::Texture> te::attributefill::RasterToVector::getTexture( te::
 
 bool te::attributefill::RasterToVector::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
 {
-  // do any adaptation necessary to persist the output dataset
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
-  te::da::DataSetType* dsTypeResult = converter->getResult();
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
-  
   std::map<std::string, std::string> options;
+ 
   // create the dataset
-  m_outDsrc->createDataSet(dsTypeResult, options);
+  m_outDsrc->createDataSet(outDsType.get(), options);
   
   // copy from memory to output datasource
   result->moveBeforeFirst();
-  m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
+  m_outDsrc->add(outDsType->getName(), result.get(), options);
   
   // create the primary key if it is possible
   if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
   {
-    std::string pk_name = dsTypeResult->getName() + "_pkey";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
+    std::string pk_name = outDsType->getName() + "_pkey";
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, outDsType.get());
+    pk->add(outDsType->getProperty(0));
     m_outDsrc->addPrimaryKey(m_outDset,pk);
   }
   

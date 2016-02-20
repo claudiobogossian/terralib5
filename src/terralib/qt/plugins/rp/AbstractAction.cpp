@@ -110,8 +110,35 @@ te::map::AbstractLayerPtr te::qt::plugins::rp::AbstractAction::getCurrentLayer()
 std::list<te::map::AbstractLayerPtr> te::qt::plugins::rp::AbstractAction::getLayers()
 {
   te::qt::af::evt::GetAvailableLayers e;
+  te::qt::af::evt::GetLayerSelected ed;
 
   emit triggered(&e);
+  emit triggered(&ed);
 
-  return e.m_layers;
+  std::list<te::map::AbstractLayerPtr> allLayers = e.m_layers;
+
+  std::list<te::map::AbstractLayerPtr> layers;
+
+  for (std::list<te::map::AbstractLayerPtr>::iterator it = allLayers.begin(); it != allLayers.end(); ++it)
+  {
+    if ((*it)->isValid())
+      layers.push_back(*it);
+  }
+
+  te::map::AbstractLayerPtr selectedlayer = ed.m_layer;
+
+  if (!selectedlayer || !selectedlayer->isValid())
+    return layers;
+
+  std::list<te::map::AbstractLayerPtr> result;
+
+  result.push_back(selectedlayer);
+
+  for (std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin(); it != layers.end(); ++it)
+  {
+    if ((*it)->getId() != selectedlayer->getId())
+      result.push_back(*it);
+  }
+
+  return result;
 }

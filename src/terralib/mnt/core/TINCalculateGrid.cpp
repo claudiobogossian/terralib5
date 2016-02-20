@@ -8,6 +8,7 @@
 #include "TINCalculateGrid.h"
 #include "Utils.h"
 
+#include "../../common/progress/TaskProgress.h"
 #include "../../raster.h"
 #include "../../raster/BandProperty.h"
 #include "../../raster/Grid.h"
@@ -81,9 +82,12 @@ bool te::mnt::TINCalculateGrid::run()
   short j;
   double	coef[27];
 
+  te::common::TaskProgress task("Generating DTM...", te::common::TaskProgress::UNDEFINED, (int)m_triang.size());
+
   //  To each triangle
   for (unsigned int i = 0; i < m_triang.size(); i++)
   { // Find Triangle Box
+    task.pulse();
     if (!NodesId((int32_t)i, nodesid)) 
       continue;
     if (!DefineInterLinesColumns(nodesid, flin, llin, fcol, lcol))
@@ -173,9 +177,7 @@ bool te::mnt::TINCalculateGrid::FillGridLinear(int32_t triid, te::gm::PointZ *p3
     detx, dety, detz;
   double zvalue;
   int32_t nlin, ncol;
-  double dummyvalue = m_rst->getBand(0)->getProperty()->m_noDataValue;
-
-  x1_x0 = p3da[1].getX() - p3da[0].getX();
+   x1_x0 = p3da[1].getX() - p3da[0].getX();
   x2_x0 = p3da[2].getX() - p3da[0].getX();
   y1_y0 = p3da[1].getY() - p3da[0].getY();
   y2_y0 = p3da[2].getY() - p3da[0].getY();

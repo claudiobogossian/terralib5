@@ -38,6 +38,7 @@
 #include "../datatype/Property.h"
 
 #include "../memory/DataSet.h"
+#include "../raster/Raster.h"
 #include "../rp/Texture.h"
 #include "../statistics/core/Enums.h"
 
@@ -62,12 +63,10 @@ namespace te
       
       ~RasterToVector() {}
 
-      void setInput(te::da::DataSourcePtr inRasterDsrc,
-                    std::string inRasterName,
-                    std::auto_ptr<te::da::DataSetType> inRasterDsType,
+      void setInput(te::rst::Raster* inRaster,
                     te::da::DataSourcePtr inVectorDsrc,
                     std::string inVectorName,
-                    std::auto_ptr<te::da::DataSetType> inVectorDsType);
+                    std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType);
 
       void setParams(std::vector<unsigned int> bands,
                      std::vector<te::stat::StatisticalSummary> statSum,
@@ -91,12 +90,10 @@ namespace te
 
       bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
 
-      te::da::DataSourcePtr m_inRasterDsrc;
-      std::string m_inRasterName;
-      std::auto_ptr<te::da::DataSetType> m_inRasterDsType;
+      te::rst::Raster* m_inRaster;
       te::da::DataSourcePtr m_inVectorDsrc;
       std::string m_inVectorName;
-      std::auto_ptr<te::da::DataSetType> m_inVectorDsType;
+      std::auto_ptr<te::da::DataSetTypeConverter> m_inVectorDsType;
 
       std::vector<te::stat::StatisticalSummary> m_statSum;
       std::vector<unsigned int> m_bands;

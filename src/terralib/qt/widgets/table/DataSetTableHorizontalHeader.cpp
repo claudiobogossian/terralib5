@@ -103,23 +103,18 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
 
       QItemSelectionModel* sel = m_view->selectionModel();
 
-      if(c > 0)
-      {
-        QItemSelectionModel::SelectionFlag selF = (sel->isColumnSelected(c, QModelIndex())) ? QItemSelectionModel::Deselect : QItemSelectionModel::Select;
+      QItemSelectionModel::SelectionFlag selF = (sel->isColumnSelected(c, QModelIndex())) ? QItemSelectionModel::Deselect : QItemSelectionModel::Select;
 
-        if(m_view->selectionMode() == QAbstractItemView::SingleSelection)
-          sel->clear();
-
-
-        QModelIndex tl = m_view->model()->index(0, c);
-        QModelIndex br = m_view->model()->index(model()->rowCount()-1, c);
-
-        QItemSelection newSel(tl, br);
-
-        sel->select(newSel, selF);
-      }
-      else
+      if(m_view->selectionMode() == QAbstractItemView::SingleSelection)
         sel->clear();
+
+
+      QModelIndex tl = m_view->model()->index(0, c);
+      QModelIndex br = m_view->model()->index(model()->rowCount()-1, c);
+
+      QItemSelection newSel(tl, br);
+
+      sel->select(newSel, selF);
     }
     else
     {

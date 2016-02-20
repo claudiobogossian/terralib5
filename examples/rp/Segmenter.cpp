@@ -21,14 +21,26 @@ void Segmenter()
     std::cout << "Region growing Segmentation example using Raster Processing module." << std::endl << std::endl;
 
 // open input raster
+    std::string data_dir = TERRALIB_DATA_DIR;
+    std::string aux("");
+    std::cout << "Inform your input image (ENTER to accept default \'" << (data_dir + "rasters/cbers2b_rgb342_crop.tif") << "\'): ";
+    std::getline (std::cin, aux);
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    if (!aux.empty())
+      rinfo["URI"] = aux;
+    else
+      rinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
+    std::cout << "Inform your output image (ENTER to accept default \'" << (data_dir + "/rasters/cbers2b_rgb342_crop_segmentedMean.tif") << "\'): ";
+    std::getline (std::cin, aux);
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedMean.tif";
+    if (!aux.empty())
+      orinfo["URI"] = aux;
+    else
+      orinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop_segmentedMean.tif";
 
 // define segmentation parameters
 
@@ -82,15 +94,27 @@ void Segmenter()
   {
     std::cout << "Region growing Segmentation (Baatz features) example using Raster Processing module." << std::endl << std::endl;
 
-// open input raster
+    // open input raster
+    std::string data_dir = TERRALIB_DATA_DIR;
+    std::string aux("");
+    std::cout << "Inform your input image (ENTER to accept default \'" << (data_dir + "/rasters/cbers2b_rgb342_crop.tif") << "\'): ";
+    std::getline (std::cin, aux);
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
-
+    if (!aux.empty())
+      rinfo["URI"] = aux;
+    else
+      rinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+    
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
-
-// create output raster info
+    
+    // create output raster info
+    std::cout << "Inform your output image (ENTER to accept default \'" << (data_dir + "/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif") << "\'): ";
+    std::getline (std::cin, aux);
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif";
+    if (!aux.empty())
+      orinfo["URI"] = aux;
+    else
+      orinfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif";
 
 // define segmentation parameters
 

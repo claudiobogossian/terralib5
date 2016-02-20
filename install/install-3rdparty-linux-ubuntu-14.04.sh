@@ -307,11 +307,12 @@ valid $? "Error: could not enter 3rd-party libraries dir (terralib-3rdparty-linu
 # Check installation dir
 #
 if [ "$TERRALIB_DEPENDENCIES_DIR" == "" ]; then
-  TERRALIB_DEPENDENCIES_DIR = "/opt/terralib"
+  TERRALIB_DEPENDENCIES_DIR="/opt/terralib"
 fi
 
 export PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/bin"
 export LD_LIBRARY_PATH="$PATH:$TERRALIB_DEPENDENCIES_DIR/lib"
+export LDFLAGS=-Wl,-rpath=$TERRALIB_DEPENDENCIES_DIR/lib,--enable-new-dtags
 
 echo "installing 3rd-party libraries to '$TERRALIB_DEPENDENCIES_DIR' ..."
 echo ""
@@ -789,11 +790,11 @@ if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libboost_thread.so" ]; then
   echo ""
   sleep 1s
 
-  tar xzvf boost_1_58_0.tar.gz
-  valid $? "Error: could not uncompress boost_1_58_0.tar.gz!"
+  tar xzvf boost_1_60_0.tar.gz
+  valid $? "Error: could not uncompress boost_1_60_0.tar.gz!"
 
-  cd boost_1_58_0
-  valid $? "Error: could not enter boost_1_58_0!"
+  cd boost_1_60_0
+  valid $? "Error: could not enter boost_1_60_0!"
 
   ./bootstrap.sh
   valid $? "Error: could not configure Boost!"

@@ -54,7 +54,7 @@ te::graph::LayerRenderer::LayerRenderer()
 te::graph::LayerRenderer::~LayerRenderer()
 {}
 
-void te::graph::LayerRenderer::draw(te::map::AbstractLayer* layer, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
+void te::graph::LayerRenderer::draw(te::map::AbstractLayer* layer, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale)
 {
   // Is our business?
   te::graph::Layer* l = dynamic_cast<Layer*>(layer);

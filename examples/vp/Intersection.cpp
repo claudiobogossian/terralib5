@@ -87,7 +87,7 @@ bool IntersectionOGRToOGR()
 
   intersectionOp->setInput(srcDs1, inDsetName1, firstConverter, srcDs2, inDsetName2, secondConverter);
   intersectionOp->setOutput(trgDs, outDS);
-  intersectionOp->setParams(copyInputColumns);
+  //intersectionOp->setParams(copyInputColumns);
   
   bool result;
 
@@ -181,7 +181,7 @@ bool IntersectionOGRToPGIS()
 
   intersectionOp->setInput(srcDs1, inDsetName1, firstConverter, srcDs2, inDsetName2, secondConverter);
   intersectionOp->setOutput(trgDs, outDS);
-  intersectionOp->setParams(copyInputColumns);
+  //intersectionOp->setParams(copyInputColumns);
   
   bool result;
 
@@ -261,7 +261,7 @@ bool IntersectionPGISToPGIS()
 
   intersectionOp->setInput(srcDs1, inDsetName1, firstConverter, srcDs2, inDsetName2, secondConverter);
   intersectionOp->setOutput(trgDs, outDS);
-  intersectionOp->setParams(copyInputColumns);
+  //intersectionOp->setParams(copyInputColumns);
   
   bool result;
 
@@ -351,7 +351,7 @@ bool IntersectionPGISToOGR()
 
   intersectionOp->setInput(srcDs1, inDsetName1, firstConverter, srcDs2, inDsetName2, secondConverter);
   intersectionOp->setOutput(trgDs, outDSet);
-  intersectionOp->setParams(copyInputColumns);
+  //intersectionOp->setParams(copyInputColumns);
   
   bool result;
 

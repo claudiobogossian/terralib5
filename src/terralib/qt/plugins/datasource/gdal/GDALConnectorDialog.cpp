@@ -32,6 +32,8 @@
 #include "../../../af/Utils.h"
 #include "../../../widgets/Exception.h"
 #include "../../../widgets/Utils.h"
+#include "../../../widgets/raster/RasterInfoDialog.h"
+#include "../../../widgets/raster/RasterInfoWidget.h"
 #include "GDALConnectorDialog.h"
 #include "ui_GDALConnectorDialogForm.h"
 
@@ -45,6 +47,8 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QMessageBox>
+
+#include <memory>
 
 te::qt::plugins::gdal::GDALConnectorDialog::GDALConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -206,17 +210,18 @@ void te::qt::plugins::gdal::GDALConnectorDialog::searchDatasetToolButtonPressed(
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Geo Spatial File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
-      tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
-
-    if(fileName.isEmpty())
+    std::auto_ptr< te::qt::widgets::RasterInfoDialog > diagPtr( 
+      new te::qt::widgets::RasterInfoDialog( false,
+      this, 0 ) );
+    diagPtr->exec();
+    if( diagPtr->getWidget()->getFullName().empty() )
+    {
       return;
+    }    
+    
+    te::qt::widgets::AddFilePathToSettings(QString( diagPtr->getWidget()->getPath().c_str() ), "raster");
 
-    QFileInfo info(fileName);
-
-    te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "raster");
-
-    m_ui->m_datasetLineEdit->setText(fileName);
+    m_ui->m_datasetLineEdit->setText(QString(diagPtr->getWidget()->getFullName().c_str()));
   }
   else if(m_ui->m_dirRadioButton->isChecked())
   {

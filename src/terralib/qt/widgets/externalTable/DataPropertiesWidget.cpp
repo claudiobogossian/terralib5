@@ -71,6 +71,7 @@ void buidTypeMap(std::map<int, std::string>& typeMap)
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, QObject::tr("Geometry").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toStdString()));
 }
@@ -126,7 +127,7 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
     default:
     {
       newProperty = 0;
-      return false;
+      return nullptr;
     }
   }
   return newProperty;
@@ -234,7 +235,6 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
   if(gp && !m_ui->m_sridLineEdit->text().isEmpty())
     gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
 
-  te::da::DataSourceManager::getInstance().insert(m_dataSource);
   return m_dsConverter;
 }
 
@@ -282,12 +282,20 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     dsInfo->setAccessDriver("OGR");
     dsInfo->setType("OGR");
 
-    te::da::DataSourceInfoManager::getInstance().add(dsInfo);
-
     m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
     m_dataSource->setConnectionInfo(dsInfo->getConnInfo());
 
-    m_dataSource->setId(boost::uuids::to_string(u));
+    if(te::da::DataSourceInfoManager::getInstance().add(dsInfo))
+    {
+      m_dataSource->setId(boost::uuids::to_string(u));
+      te::da::DataSourceManager::getInstance().insert(m_dataSource);
+    }
+    else
+    {
+      dsInfo = te::da::DataSourceInfoManager::getInstance().getByConnInfo(dsInfo->getConnInfoAsString());
+      m_dataSource->setId(dsInfo->getId());
+    }
+
     m_dataSource->open();
 
     //Creating the DataSet and DataType
@@ -485,7 +493,7 @@ void te::qt::widgets::DatapPropertiesWidget::onPropertyTypeChanged(int row)
   }
   else
   {
-    if((type <= te::dt::INT16_TYPE && type >= te::dt::UINT64_TYPE) || type != te::dt::FLOAT_TYPE || type != te::dt::DOUBLE_TYPE)
+    if((type <= te::dt::INT16_TYPE || type >= te::dt::UINT64_TYPE) && type != te::dt::FLOAT_TYPE && type != te::dt::DOUBLE_TYPE)
     {
       m_ui->m_xAxisComboBox->removeItem(xyAxis);
       m_ui->m_yAxisComboBox->removeItem(xyAxis);

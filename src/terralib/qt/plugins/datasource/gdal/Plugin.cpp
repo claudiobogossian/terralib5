@@ -36,6 +36,8 @@
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
+#include "../../../widgets/raster/RasterInfoDialog.h"
+#include "../../../widgets/raster/RasterInfoWidget.h"
 #include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
@@ -158,16 +160,29 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 //    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Raster File"), tr("Error: there is no opened project!"));
 //    return;
 //  }
-
-  QStringList fileNames = QFileDialog::getOpenFileNames(
-    te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(),
-    tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
-    te::qt::widgets::GetDiskRasterFileSelFilter());
-
-  if(fileNames.isEmpty())
+  
+  std::auto_ptr< te::qt::widgets::RasterInfoDialog > diagPtr( 
+    new te::qt::widgets::RasterInfoDialog( false,
+    te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), 0 ) );
+  diagPtr->exec();
+  if( diagPtr->getWidget()->getShortName().empty() )
+  {
     return;
+  }
+  
+  QFileInfo info( diagPtr->getWidget()->getFullName().c_str() );
+  QStringList fileNames;
+  fileNames << diagPtr->getWidget()->getFullName().c_str();
 
-  QFileInfo info(fileNames.value(0));
+//   QStringList fileNames = QFileDialog::getOpenFileNames(
+//     te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(),
+//     tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
+//     te::qt::widgets::GetDiskRasterFileSelFilter());
+// 
+//   if(fileNames.isEmpty())
+//     return;
+// 
+//   QFileInfo info(fileNames.value(0));
 
   te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "raster");
 

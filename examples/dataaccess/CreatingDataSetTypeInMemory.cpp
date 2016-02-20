@@ -34,7 +34,6 @@ te::da::DataSetType* CreateDataSetTypeInMemory(const std::string& datasettypenam
   dt->add(prop01);
   dt->add(prop02);
   dt->add(prop03);
-  //dt->setDefaultGeomProperty(prop03);
   dt->add(prop04);
   dt->add(prop05);
     

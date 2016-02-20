@@ -473,10 +473,18 @@ double te::qt::widgets::MapDisplay::getScale() const
       }
       else
       {
-        te::gm::Envelope planarEnvelope = te::map::GetWorldBoxInPlanar(envelope, m_srid);
+        try
+        {
+          te::gm::Envelope planarEnvelope = te::map::GetWorldBoxInPlanar(envelope, m_srid);
 
-        wdx = planarEnvelope.getWidth();
-        wdy = planarEnvelope.getHeight();
+          wdx = planarEnvelope.getWidth();
+          wdy = planarEnvelope.getHeight();
+        }
+        catch (...)
+        {
+          wdx = envelope.getWidth() * 111133.;
+          wdy = envelope.getHeight() * 111133.;
+        }
       }
 
       unit ="METRE";
