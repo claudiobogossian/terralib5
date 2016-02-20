@@ -240,6 +240,10 @@ namespace te
 
     TERRAMOBILEPLUGINSDLLEXPORT std::string RemoveSpatialSql(const std::string& sql);
 
+    TERRAMOBILEPLUGINSDLLEXPORT void createGeopackage(std::string outFileName);
+
+    TERRAMOBILEPLUGINSDLLEXPORT void copyToGeopackage(te::rst::Raster* raster, std::string outFileName);
+
   } // end namespace ogr
 }   // end namespace te
 

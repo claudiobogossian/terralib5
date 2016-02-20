@@ -115,18 +115,6 @@ void te::qt::plugins::terramobile::Plugin::startup()
   te::gpkg::DataSource::setDialect(mydialect);
 
   m_initialized = true;
-
-  //test
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = "d:/testing.gpkg";
-
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GPKG");
-  ds->setConnectionInfo(connInfo);
-  ds->open();
-
-  std::vector<std::string> dsnames = ds->getDataSetNames();
-
-  std::size_t size = dsnames.size();
 }
 
 void te::qt::plugins::terramobile::Plugin::shutdown()

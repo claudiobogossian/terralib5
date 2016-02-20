@@ -36,13 +36,23 @@
 #include "../../../../datatype/Property.h"
 #include "../../../../datatype/SimpleProperty.h"
 #include "../../../../datatype/StringProperty.h"
+#include "../../../../gdal/Raster.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../geometry/Geometry.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../geometry/WKBReader.h"
+#include "../../../../raster/BandProperty.h"
+#include "../../../../raster/Grid.h"
+#include "../../../../raster/RasterFactory.h"
+#include "../../../../raster/RasterProperty.h"
 #include "../../../../srs/SpatialReferenceSystemManager.h"
 #include "../../../../srs/Config.h"
 #include "Utils.h"
+
+
+
+// GDAL
+#include <gdal_priv.h>
 
 // OGR
 #include <ogrsf_frmts.h>
@@ -692,4 +702,57 @@ std::string te::gpkg::RemoveSpatialSql(const std::string& sql)
 
   return newQuery;
 }
+
+void te::gpkg::createGeopackage(std::string outFileName)
+{
+  const char *gpkgFormat = "GPKG";
+
+  GDALDriver *gpkgDriver;
+
+  gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
+
+  char **papszOptions = NULL;
+
+  GDALDataset *poDstDS;
+  poDstDS = gpkgDriver->Create(outFileName.c_str(), 0, 0, 0, GDT_Unknown, papszOptions);
+  GDALClose((GDALDatasetH)poDstDS);
+}
+
+void te::gpkg::copyToGeopackage(te::rst::Raster* raster, std::string outFileName)
+{
+  te::gdal::Raster* gdalRaster = dynamic_cast<te::gdal::Raster*>(raster);
+
+  const char *gpkgFormat = "GPKG";
+  GDALDriver *gpkgDriver;
+  gpkgDriver = GetGDALDriverManager()->GetDriverByName(gpkgFormat);
+
+  char **papszOptions = NULL;
+  papszOptions = CSLSetNameValue(papszOptions, "APPEND_SUBDATASET", "YES");
+  papszOptions = CSLSetNameValue(papszOptions, "TILING_SCHEME", "GoogleMapsCompatible");
+  papszOptions = CSLSetNameValue(papszOptions, "ZOOM_LEVEL_STRATEGY", "LOWER");
+
+  GDALDataset *poDstDS = gpkgDriver->CreateCopy(outFileName.c_str(), gdalRaster->getGDALDataset(), FALSE, papszOptions, NULL, NULL);;
+
+  unsigned int levels = gdalRaster->getMultiResLevelsCount();
+  if (levels > 0)
+  {
+    boost::scoped_array< int > overviewsIndexes(new int[levels]);
+
+    for (unsigned int overViewIdx = 1; overViewIdx <= levels; ++overViewIdx)
+    {
+      /*
+      Power of two overview factors(2, 4, 8, 16, ...) should be favored to be conformant
+      with the baseline GeoPackage specification as mentioned in gdal documentation.
+      */
+      unsigned int index = (unsigned int)std::pow(2, overViewIdx);
+      overviewsIndexes[(overViewIdx - 1)] = index;
+    }
+
+    poDstDS->BuildOverviews("NEAREST", (int)levels, overviewsIndexes.get(), 0, NULL, NULL, NULL);
+  }
+
+  CSLDestroy(papszOptions);
+  GDALClose((GDALDatasetH)poDstDS);
+}
+
 
