@@ -27,7 +27,14 @@
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
 #include "../../../common/StringUtils.h"
+#include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../dataaccess/query/BinaryOpEncoder.h"
+#include "../../../dataaccess/query/FunctionEncoder.h"
+#include "../../../dataaccess/query/UnaryOpEncoder.h"
+#include "../../../dataaccess/query/SQLDialect.h"
 #include "../../../qt/af/ApplicationController.h"
+#include "../mobile/geopackage/DataSource.h"
 
 #include "Plugin.h"
 
@@ -81,7 +88,45 @@ void te::qt::plugins::terramobile::Plugin::startup()
 // register actions
   registerActions();
 
+  //gpkg
+
+  // it initializes the OGR Factory support
+  te::da::DataSourceFactory::add(GPKG_DRIVER_IDENTIFIER, te::gpkg::Build);
+
+  //define dialect
+  te::da::SQLDialect* mydialect = new te::da::SQLDialect;
+
+  mydialect->insert("+", new te::da::BinaryOpEncoder("+"));
+  mydialect->insert("-", new te::da::BinaryOpEncoder("-"));
+  mydialect->insert("*", new te::da::BinaryOpEncoder("*"));
+  mydialect->insert("/", new te::da::BinaryOpEncoder("/"));
+  mydialect->insert("=", new te::da::BinaryOpEncoder("="));
+  mydialect->insert("<>", new te::da::BinaryOpEncoder("<>"));
+  mydialect->insert(">", new te::da::BinaryOpEncoder(">"));
+  mydialect->insert("<", new te::da::BinaryOpEncoder("<"));
+  mydialect->insert(">=", new te::da::BinaryOpEncoder(">="));
+  mydialect->insert("<=", new te::da::BinaryOpEncoder("<="));
+  mydialect->insert("and", new te::da::BinaryOpEncoder("AND"));
+  mydialect->insert("or", new te::da::BinaryOpEncoder("OR"));
+  mydialect->insert("not", new te::da::UnaryOpEncoder("NOT"));
+
+  mydialect->insert("st_envelopeintersects", new te::da::FunctionEncoder("Intersection"));
+
+  te::gpkg::DataSource::setDialect(mydialect);
+
   m_initialized = true;
+
+  //test
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = "d:/testing.gpkg";
+
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GPKG");
+  ds->setConnectionInfo(connInfo);
+  ds->open();
+
+  std::vector<std::string> dsnames = ds->getDataSetNames();
+
+  std::size_t size = dsnames.size();
 }
 
 void te::qt::plugins::terramobile::Plugin::shutdown()
@@ -94,6 +139,14 @@ void te::qt::plugins::terramobile::Plugin::shutdown()
 
 // unregister actions
   unRegisterActions();
+
+  // it finalizes the OGR factory support.
+  te::da::DataSourceFactory::remove(GPKG_DRIVER_IDENTIFIER);
+
+  // free OGR registered drivers
+  te::da::DataSourceManager::getInstance().detachAll(GPKG_DRIVER_IDENTIFIER);
+
+  te::gpkg::DataSource::setDialect(0);
 
   TE_LOG_TRACE(TE_TR("Terra Mobile Plugin shutdown!"));
 

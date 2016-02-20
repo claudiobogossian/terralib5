@@ -66,6 +66,13 @@
 #define TE_QT_PLUGIN_TERRAMOBILE_PLUGIN_NAME "te.qt.terramobile"
 
 /*!
+\def GPKG_DRIVER_IDENTIFIER
+
+\brief The OGR driver identifier string.
+*/
+#define GPKG_DRIVER_IDENTIFIER "GPKG"
+
+/*!
   \def TEQTPLUGINTERRAMOBILEEXPORT
 
   \brief You can use this macro in order to export/import classes and functions from all plug-ins files.
