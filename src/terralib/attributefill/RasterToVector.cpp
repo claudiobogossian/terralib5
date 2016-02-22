@@ -64,12 +64,14 @@ te::attributefill::RasterToVector::RasterToVector()
 void te::attributefill::RasterToVector::setInput(te::rst::Raster* inRaster,
                                               te::da::DataSourcePtr inVectorDsrc,
                                               std::string inVectorName,
-                                              std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType)
+                                              std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType,
+                                              const te::da::ObjectIdSet* oidSet)
 {
   m_inRaster = inRaster;
   m_inVectorDsrc = inVectorDsrc;
   m_inVectorName = inVectorName;
   m_inVectorDsType = inVectorDsType;
+  m_oidSet = oidSet;
 }
 
 void te::attributefill::RasterToVector::setParams(std::vector<unsigned int> bands,
@@ -117,7 +119,11 @@ bool te::attributefill::RasterToVector::run()
   te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType->getResult());
   std::size_t geomIdx = boost::lexical_cast<std::size_t>(m_inVectorDsType->getResult()->getPropertyPosition(vectorProp->getName()));
 
-  std::auto_ptr<te::da::DataSet> dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName);
+  std::auto_ptr<te::da::DataSet> dataSetVector;
+  if(m_oidSet == 0)
+    dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName);
+  else
+    dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName, m_oidSet);
 
   std::auto_ptr<te::da::DataSetAdapter> dsVector(te::da::CreateAdapter(dataSetVector.get(), m_inVectorDsType.get()));
 
