@@ -284,12 +284,14 @@ void te::attributefill::RasterToVectorDialog::onVectorComboBoxChanged(int index)
         m_ui->m_statisticsListWidget->addItem("Mode");
         m_ui->m_statisticsListWidget->addItem("Percent of each class by area");
 
+        m_isStatistical = true;
         m_ui->m_textureCheckBox->setEnabled(true);
       }
       else
       {
         m_ui->m_statisticsListWidget->addItem("Value");
 
+        m_isStatistical = false;
         m_ui->m_textureCheckBox->setChecked(false);
         m_ui->m_textureCheckBox->setEnabled(false);
       }
@@ -390,8 +392,11 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  std::vector<te::stat::StatisticalSummary> vecStatistics;
+  
+  if (m_isStatistical)
+    vecStatistics = getSelectedStatistics();
 
-  std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
   m_texture = m_ui->m_textureCheckBox->isChecked();
   
   bool isValueOptionSelected = getValueOption();

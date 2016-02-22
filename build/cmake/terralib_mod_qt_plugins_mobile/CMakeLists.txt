@@ -61,6 +61,12 @@ file(GLOB TERRALIB_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt
 source_group("Source Files\\utils"  FILES ${TERRALIB_UTILS_SRC_FILES})
 source_group("Header Files\\utils"  FILES ${TERRALIB_UTILS_HDR_FILES})
 
+file(GLOB TERRALIB_GPKG_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/mobile/geopackage/*.cpp)
+file(GLOB TERRALIB_GPKG_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/mobile/geopackage/*.h)
+
+source_group("Source Files\\geopackage"  FILES ${TERRALIB_GPKG_SRC_FILES})
+source_group("Header Files\\geopackage"  FILES ${TERRALIB_GPKG_HDR_FILES})
+
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/mobile/qt/ui/*.ui)
 
 source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
@@ -82,6 +88,8 @@ if(Qt5_FOUND)
                          ${TERRALIB_QT_HDR_FILES}
                          ${TERRALIB_UTILS_SRC_FILES}
                          ${TERRALIB_UTILS_HDR_FILES}
+						 ${TERRALIB_GPKG_SRC_FILES}
+						 ${TERRALIB_GPKG_HDR_FILES}
                          ${TERRALIB_GEN_HDR_FILES})
 
   add_library(terralib_mod_qt_plugins_mobile SHARED ${TERRALIB_FILES})

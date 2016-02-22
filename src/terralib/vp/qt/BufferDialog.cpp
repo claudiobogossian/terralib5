@@ -101,6 +101,9 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_fixedDistanceLineEdit->setEnabled(true);
   m_ui->m_fixedDistanceLineEdit->setValidator(new QDoubleValidator(this));
 
+  m_ui->m_fromAttRadioButton->setVisible(false);
+  m_ui->m_fromAttDistanceComboBox->setVisible(false);
+
   setPossibleLevels();
 
 //signals
