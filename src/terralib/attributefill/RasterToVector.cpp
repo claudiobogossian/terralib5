@@ -120,6 +120,12 @@ bool te::attributefill::RasterToVector::run()
   std::auto_ptr<te::da::DataSet> dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName);
 
   std::auto_ptr<te::da::DataSetAdapter> dsVector(te::da::CreateAdapter(dataSetVector.get(), m_inVectorDsType.get()));
+
+// Verify if mode was checked to calculating.
+  bool mode = false;
+  std::vector<te::stat::StatisticalSummary>::iterator it_mode = std::find(m_statSum.begin(), m_statSum.end(), te::stat::MODE);
+  if (it_mode != m_statSum.end())
+    mode = true;
   
 
 // Parameters to get the percentage of classes by area
@@ -287,6 +293,9 @@ bool te::attributefill::RasterToVector::run()
       for (std::size_t band = 0; band < valuesFromRaster.size(); ++band)
       {
         te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
+
+        if (mode)
+          te::stat::Mode(valuesFromRaster[band], summary);
 
         if (percentByArea)
           te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary, contains);

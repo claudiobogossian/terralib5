@@ -805,9 +805,10 @@ namespace te
           for (int r = -1 * (int) (H / 2); r <= (int) (H / 2); r++)
             for (int c = -1 * (int) (W / 2); c <= (int) (W / 2); c++)
               pixels_in_window.push_back(it.getValue(c, r));
-          std::vector<double> vector_mode = te::stat::Mode(pixels_in_window);
-          if (vector_mode.size() > 0)
-            pixel_mode = vector_mode[0];
+          te::stat::NumericStatisticalSummary nss;
+          te::stat::Mode(pixels_in_window, nss);
+          if (nss.m_mode.size() > 0)
+            pixel_mode = nss.m_mode[0];
         }
 
         pixel_mode = std::max( pixel_mode, dstBandAllowedMin );

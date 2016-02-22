@@ -157,6 +157,17 @@ std::map<std::string,double> te::vp::AggregationMemory::calculateNumStats(const 
       result.insert( std::map<std::string, double>::value_type(propName + "_MEDIAN", ss.m_median));
       result.insert( std::map<std::string, double>::value_type(propName + "_VAR_COEFF", ss.m_varCoeff));
       
+
+      bool mode = false;
+      for(std::size_t m = 0; m < it->second.size(); ++m)
+      {
+        if(it->second[m] == te::stat::MODE)
+            mode = true;
+      }
+
+      if (mode)
+        te::stat::Mode(values, ss);
+
       if (!ss.m_mode.empty())
       {
         modeProp = boost::lexical_cast<std::string>(ss.m_mode[0]);
