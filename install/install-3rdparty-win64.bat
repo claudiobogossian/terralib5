@@ -34,6 +34,8 @@ set B_DIR=%CD%\boost_1_58_0
   cd %B_DIR%\..
 :: ====
 
+set CL=/MP
+
 :: BZIP2
 ::  =========================================
 set BZIP2_DIR=%CD%\bzip2-1.0.6
