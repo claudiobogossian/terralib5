@@ -56,7 +56,8 @@ namespace te
   {
     bool DoubleComplexCompare(std::complex< double > x, std::complex< double > y)
     {
-      return (x.real() < y.real()) || (x.real() == y.real() && x.imag() < y.imag());
+      return (x.real() < y.real()) ||
+          (x.real() == y.real() && x.imag() < y.imag());
     }
   }
 }
