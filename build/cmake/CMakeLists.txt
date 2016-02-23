@@ -224,8 +224,8 @@ if(WIN32)
 
   find_package(ADO)
 
-  find_package(terralib4)
-
+  find_package(terralib4 COMPONENTS ado REQUIRED )
+  
 endif()
 
 find_package(GDAL)
@@ -406,6 +406,10 @@ endif()
 
 if(JNI_FOUND)
   set(TERRALIB_JNI_ENABLED ON)
+endif()
+
+if(terralib4_FOUND)
+  set(TERRALIB4_FOUND ON)
 endif()
 
 #

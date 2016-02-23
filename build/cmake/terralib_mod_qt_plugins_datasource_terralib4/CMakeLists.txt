@@ -26,7 +26,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${TERRALIB4_INCLUDE_DIRS})
+include_directories(${TE_INCLUDE_DIRS})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 if(WIN32)
@@ -51,7 +51,7 @@ if(Qt5_FOUND)
   target_link_libraries(terralib_mod_qt_plugins_datasource_terralib4 terralib_mod_qt_widgets
                                                                      terralib_mod_qt_apf
                                                                      terralib_mod_terralib4
-                                                                     ${TERRALIB4_LIBRARIES})
+                                                                     ${TE_LIBRARIES})
 
   qt5_use_modules(terralib_mod_qt_plugins_datasource_terralib4 Widgets)
 
