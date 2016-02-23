@@ -790,11 +790,11 @@ if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libboost_thread.so" ]; then
   echo ""
   sleep 1s
 
-  tar xzvf boost_1_58_0.tar.gz
-  valid $? "Error: could not uncompress boost_1_58_0.tar.gz!"
+  tar xzvf boost_1_60_0.tar.gz
+  valid $? "Error: could not uncompress boost_1_60_0.tar.gz!"
 
-  cd boost_1_58_0
-  valid $? "Error: could not enter boost_1_58_0!"
+  cd boost_1_60_0
+  valid $? "Error: could not enter boost_1_60_0!"
 
   ./bootstrap.sh
   valid $? "Error: could not configure Boost!"

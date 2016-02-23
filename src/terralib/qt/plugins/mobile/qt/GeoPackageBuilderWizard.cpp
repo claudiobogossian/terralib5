@@ -1,21 +1,21 @@
 /*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+TerraLib is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+TerraLib is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
- */
+You should have received a copy of the GNU Lesser General Public License
+along with TerraLib. See COPYING. If not, write to
+TerraLib Team at <terralib-team@terralib.org>.
+*/
 
 /*!
 \file src/terraMobilePlugin/qt/GeoPackageBuilderWizard.h
@@ -47,7 +47,7 @@
 #include <boost/uuid/uuid_io.hpp>
 
 te::qt::plugins::terramobile::GeoPackageBuilderWizard::GeoPackageBuilderWizard(QWidget* parent, Qt::WindowFlags f)
-  : QWizard(parent, f)
+: QWizard(parent, f)
 {
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
@@ -194,8 +194,8 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
-   std::string dataSourceId = (*it)->getDataSourceId();
-   te::da::DataSourceInfoPtr dsInfo = te::da::DataSourceInfoManager::getInstance().get(dataSourceId);
+    std::string dataSourceId = (*it)->getDataSourceId();
+    te::da::DataSourceInfoPtr dsInfo = te::da::DataSourceInfoManager::getInstance().get(dataSourceId);
 
     bool aux = false;
 
@@ -212,7 +212,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     m_outputPage->appendLogMesssage("Exporting gathering layer " + dsType->getName());
 
     std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position', 'uri') values('" + dsType->getName() + "', " +
-    boost::lexical_cast<std::string>(aux)+", " + boost::lexical_cast<std::string>(pos)+", '" + dsInfo->getConnInfoAsString() + "'); ";
+      boost::lexical_cast<std::string>(aux)+", " + boost::lexical_cast<std::string>(pos)+", '" + dsInfo->getConnInfoAsString() + "'); ";
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++pos;
 
@@ -242,7 +242,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     m_outputPage->appendLogMesssage("Exporting input layer " + name);
 
     std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position', 'uri') values('" + name + "', " + boost::lexical_cast<std::string>(visible)+", " +
-    boost::lexical_cast<std::string>(pos)+", '" + dsInfo->getConnInfoAsString() + "'); ";
+      boost::lexical_cast<std::string>(pos)+", '" + dsInfo->getConnInfoAsString() + "'); ";
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
     te::qt::plugins::terramobile::queryGPKG("select * from sqlite_master", dsGPKG.get());
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
@@ -259,7 +259,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   {
     std::string jsonStr = te::qt::plugins::terramobile::Write(itb->second);
 
-    std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form', 'tm_media_table' )  values('" + itb->first + "', '" + jsonStr + "', '" + "" + "');";
+    std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form', 'tm_media_table', 'tm_state' )  values('" + itb->first + "', '" + jsonStr + "', '" + "" + "', '" + boost::lexical_cast<std::string>(0) + "');";
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++itb;
   }
@@ -291,8 +291,11 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   boost::uuids::uuid u = gen();
   std::string id_ds = boost::uuids::to_string(u);
 
-  std::string insert = "INSERT INTO tm_settings ('key', 'value') values ('gpkg_id', '" + id_ds + "');";
-  te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
+  std::string insGPKGID = "INSERT INTO tm_settings ('key', 'value') values ('gpkg_id', '" + id_ds + "');";
+  te::qt::plugins::terramobile::queryGPKG(insGPKGID, dsGPKG.get());
+
+  std::string insDbVr = "INSERT INTO tm_settings ('key', 'value') values ('db_version', '0.1');";
+  te::qt::plugins::terramobile::queryGPKG(insDbVr, dsGPKG.get());
 
   //Removing trigggers and tables that could generate problems on the mobile application
   std::vector<std::string> triggers = te::qt::plugins::terramobile::getItemNames("trigger", dsGPKG.get());

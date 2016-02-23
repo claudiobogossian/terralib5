@@ -178,32 +178,32 @@ Comentários, sugestões e feedbacks podem ser enviadas para equipe da TerraLib 
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../src/terraview/Project.cpp" line="155"/>
+        <location filename="../../../src/terraview/Project.cpp" line="163"/>
         <source>Could not read project file: </source>
         <translation>Não foi possível ler arquivo de projeto: </translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/Project.cpp" line="166"/>
+        <location filename="../../../src/terraview/Project.cpp" line="174"/>
         <source>Could not read project information in the file: </source>
         <translation>Não foi possível ler as informações do projeto no arquivo: </translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/Project.cpp" line="172"/>
+        <location filename="../../../src/terraview/Project.cpp" line="180"/>
         <source>Error reading the document </source>
         <translation>Erro ao ler o documento </translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/Project.cpp" line="172"/>
+        <location filename="../../../src/terraview/Project.cpp" line="180"/>
         <source>, the start element wasn&apos;t found.</source>
         <translation>, o elemento inicial não foi encontrado.</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/Project.cpp" line="178"/>
+        <location filename="../../../src/terraview/Project.cpp" line="186"/>
         <source>The first tag in the document </source>
         <translation>A primeira tag no documento</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/Project.cpp" line="178"/>
+        <location filename="../../../src/terraview/Project.cpp" line="186"/>
         <source> is not &apos;Project&apos;.</source>
         <translation> não é &apos;Projeto&apos;.</translation>
     </message>
@@ -357,331 +357,328 @@ Comentários, sugestões e feedbacks podem ser enviadas para equipe da TerraLib 
         <translation>Adiciona uma nova camada de um arquivo tabular</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="379"/>
         <source>&amp;Change Layer Data Source</source>
-        <translation>&amp;Alterar Fonte de Dados da Camada</translation>
+        <translation type="vanished">&amp;Alterar Fonte de Dados da Camada</translation>
+    </message>
+    <message>
+        <source>Chanage layer Data Source</source>
+        <translation type="vanished">Alterar Fonte de Dados da Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terraview/TerraView.cpp" line="379"/>
-        <source>Chanage layer Data Source</source>
-        <translation>Alterar Fonte de Dados da Camada</translation>
-    </message>
-    <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="380"/>
         <source>&amp;Update Layer Data Source</source>
         <translation>&amp;Atualizar Fonte de Dados da Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="380"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="379"/>
         <source>Update layer Data Source</source>
         <translation>Atualizar Fonte de Dados da Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="381"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="380"/>
         <source>&amp;Properties...</source>
         <translation>&amp;Propriedades...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="381"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="380"/>
         <source>Show the project properties</source>
         <translation>Mostra as propriedades do projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="384"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="383"/>
         <source>&amp;Edit Legend...</source>
         <translation>&amp;Editar Legenda...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="385"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="384"/>
         <source>&amp;Histogram...</source>
         <translation>&amp;Histograma...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="386"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="385"/>
         <source>&amp;Scatter...</source>
         <translation>Gráfico de Dispersão (&amp;Scatter)</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="387"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="386"/>
         <source>&amp;Pie/Bar Chart...</source>
         <translation>Gráfico &amp;Pizza/Barra</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="388"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="387"/>
         <source>Query...</source>
         <translation>Consulta...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="389"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="388"/>
         <source>&amp;Link...</source>
         <translation>&amp;Link...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="390"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="389"/>
         <source>&amp;Composition Mode...</source>
         <translation>Mode &amp;Composição...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="390"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="389"/>
         <source>Set the composition mode to renderer the selected layer</source>
         <translation>Defina o modo de composição para processar a camada selecionada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="393"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="392"/>
         <source>&amp;New Project...</source>
         <translation>&amp;Novo Projeto...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="394"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="393"/>
         <source>&amp;Save Project</source>
         <translation>&amp;Salvar Projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="395"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="394"/>
         <source>Save Project &amp;As...</source>
         <translation>Salvar Projeto &amp;Como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="396"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="395"/>
         <source>&amp;Open Project...</source>
         <translation>&amp;Abrir Projeto...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="397"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="396"/>
         <source>&amp;Restart System...</source>
         <translation>&amp;Reiniciar Sistema...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="397"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="396"/>
         <source>Restart the system.</source>
         <translation>Reiniciar o sistema.</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="398"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="397"/>
         <source>E&amp;xit</source>
         <translation>&amp;Sair</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="399"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="398"/>
         <source>Print Pre&amp;view...</source>
         <translation>Pré-&amp;visualização de Impressão...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="400"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="399"/>
         <source>&amp;Print...</source>
         <translation>&amp;Imprimir...</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="403"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="402"/>
         <source>Measure &amp;Distance</source>
         <translation>Medida de &amp;Distância</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="404"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="403"/>
         <source>Measure &amp;Area</source>
         <translation>Medida de &amp;Área</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="405"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="404"/>
         <source>Measure &amp;Angle</source>
         <translation>Medida de &amp;Ângulo</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="458"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="456"/>
         <source>&amp;File</source>
         <translation>&amp;Arquivo</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="461"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="459"/>
         <source>Recent &amp;Projects</source>
         <translation>&amp;Projetos Recentes</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="484"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="482"/>
         <source>&amp;View</source>
         <translation>&amp;Exibir</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="487"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="485"/>
         <source>&amp;Toolbars</source>
         <translation>&amp;Barra de Ferramentas</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="499"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="497"/>
         <source>&amp;Project</source>
         <translation>&amp;Projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="502"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="500"/>
         <source>&amp;Add Layer</source>
         <translation>Adiciona Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="517"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="515"/>
         <source>&amp;Layer</source>
         <translation>&amp;Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="540"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="538"/>
         <source>&amp;Map</source>
         <translation>&amp;Mapa</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="579"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="577"/>
         <source>&amp;Tools</source>
         <translation>&amp;Ferramentas</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="582"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="580"/>
         <source>&amp;Data Exchanger</source>
         <translation>Intercâmbio de &amp;Dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="596"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="594"/>
         <source>Pl&amp;ugins</source>
         <translation>Pl&amp;ugins</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="603"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="601"/>
         <source>&amp;Help</source>
         <translation>A&amp;juda</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="837"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="843"/>
         <source>The system will be restarted.</source>
         <translation>O sistema será reiniciado.</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="838"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="844"/>
         <source>Do you want to continue?</source>
         <translation>Você deseja continuar ?</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="839"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="845"/>
         <source>Restart system</source>
         <translation>Reiniciar sistema</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="855"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="861"/>
         <source>Default Project</source>
         <translation>Projeto Padrão</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="871"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="877"/>
         <source>Open project file</source>
         <translation>Abrir arquivo de projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="882"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="888"/>
         <source>Fail to open project.</source>
         <translation>Falha ao abrir projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="897"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="903"/>
         <source>TerraView project(*.</source>
         <translation>Projeto TerraView(*.</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="899"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="905"/>
         <source>Save project</source>
         <translation>Salvar projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="939"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="945"/>
         <source>Save Project File</source>
         <translation>Salvar Arquivo de Projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="987"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1040"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1097"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1271"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="993"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1046"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1103"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1277"/>
         <source>Select a layer in the layer explorer!</source>
         <translation>Selecione uma camada no explorador de camadas !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="996"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1050"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1106"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1165"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1219"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1283"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1002"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1056"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1112"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1171"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1225"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1289"/>
         <source>There are invalid layers selected!</source>
         <translation>Há camadas inválidas selecionadas !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1027"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1492"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1531"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1033"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1498"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1537"/>
         <source>Unknown error while trying to add a layer from a queried dataset!</source>
         <translation>Erro desconhecido ao tentar adicionar uma camada de um conjunto de dados de consulta !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1066"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1122"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1176"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1072"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1128"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1182"/>
         <source>Layer</source>
         <translation>Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1073"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1079"/>
         <source>Histogram</source>
         <translation>Histograma</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1130"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1136"/>
         <source>Scatter</source>
         <translation>Gráfico de Dispersão</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1155"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1210"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1766"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1161"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1216"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1723"/>
         <source>Select a single layer in the layer explorer!</source>
         <translation>Selecione uma única camada no explorador de camadas !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1444"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1450"/>
         <source>Unknown error while trying to add a layer from a dataset!</source>
         <translation>Erro desconhecido ao tentar adicionar uma camada de um conjunto de dados !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1543"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1549"/>
         <source>Folder layer name:</source>
         <translation>Nome da pasta de camada:</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1544"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1550"/>
         <source>Enter folder layer name</source>
         <translation>Entre com o nome da pasta de camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1551"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1557"/>
         <source>Enter the layer name!</source>
         <translation>Entre com o nome da camada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1564"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1570"/>
         <source>There&apos;s no current project!</source>
         <translation>Não há nenhum projeto atual !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1624"/>
         <source>Unknown error while trying to change a layer data source!</source>
-        <translation>Erro desconhecido ao tentar alterar uma fonte de dados da camada !</translation>
+        <translation type="vanished">Erro desconhecido ao tentar alterar uma fonte de dados da camada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1678"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1635"/>
         <source>Unknown error while trying to update a layer data source!</source>
         <translation>Erro desconhecido ao tentar atualizar uma fonte de dados da camada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1860"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1817"/>
         <source>DataSetExplorer Error!</source>
         <translation>Erro no Explorador de Dados !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1897"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1854"/>
         <source>The current project has unsaved changes. Do you want to save them?</source>
         <translation>O projeto atual tem alterações não salvas. Você deseja salvá-las ?</translation>
     </message>

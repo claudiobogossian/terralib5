@@ -18,20 +18,20 @@
  */
 
 // TerraLib
-#include "../common/Translator.h"
-#include "../dataaccess/dataset/ObjectId.h"
-#include "../dataaccess/dataset/ObjectIdSet.h"
-#include "../dataaccess/query/DataSetName.h"
-#include "../dataaccess/query/Query.h"
-#include "../dataaccess/query/Select.h"
-#include "../dataaccess/utils/Utils.h"
-#include "../datatype/ByteArray.h"
-#include "../datatype/Date.h"
-#include "../datatype/TimeInstant.h"
-#include "../geometry/Envelope.h"
-#include "../geometry/GeometryProperty.h"
-#include "../srs/SpatialReferenceSystemManager.h"
-#include "../srs/Config.h"
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/dataset/ObjectId.h"
+#include "../../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../../dataaccess/query/DataSetName.h"
+#include "../../../../dataaccess/query/Query.h"
+#include "../../../../dataaccess/query/Select.h"
+#include "../../../../dataaccess/utils/Utils.h"
+#include "../../../../datatype/ByteArray.h"
+#include "../../../../datatype/Date.h"
+#include "../../../../datatype/TimeInstant.h"
+#include "../../../../geometry/Envelope.h"
+#include "../../../../geometry/GeometryProperty.h"
+#include "../../../../srs/SpatialReferenceSystemManager.h"
+#include "../../../../srs/Config.h"
 #include "DataSource.h"
 #include "DataSet.h"
 #include "SQLVisitor.h"
@@ -74,27 +74,27 @@ OGRFieldType GetOGRType(int te_type)
   return OFTInteger;
 }
 
-te::ogr::Transactor::Transactor(DataSource* ds)
+te::gpkg::Transactor::Transactor(DataSource* ds)
   : te::da::DataSourceTransactor(),
     m_ogrDs(ds),
     m_fid(0)
 {
 }
 
-te::ogr::Transactor::~Transactor()
+te::gpkg::Transactor::~Transactor()
 {
 }
 
-te::da::DataSource* te::ogr::Transactor::getDataSource() const
+te::da::DataSource* te::gpkg::Transactor::getDataSource() const
 {
   return 0;
 }
 
-void te::ogr::Transactor::begin()
+void te::gpkg::Transactor::begin()
 {
 }
 
-void te::ogr::Transactor::commit()
+void te::gpkg::Transactor::commit()
 {
   if (!m_ogrDs->getOGRDataSource())
     return;
@@ -102,27 +102,25 @@ void te::ogr::Transactor::commit()
   m_ogrDs->getOGRDataSource()->FlushCache();
 }
 
-void te::ogr::Transactor::rollBack()
+void te::gpkg::Transactor::rollBack()
 {
 }
 
-bool te::ogr::Transactor::isInTransaction() const
+bool te::gpkg::Transactor::isInTransaction() const
 {
   return false;
 }
 
-std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string& name, 
+std::auto_ptr<te::da::DataSet> te::gpkg::Transactor::getDataSet(const std::string& name, 
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/,
-                                          const te::common::AccessPolicy pol)
+                                          const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
-
-  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
-  if (!ds)
-    return std::auto_ptr<te::da::DataSet>();
+  
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -133,21 +131,19 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));
 }
 
-std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string& name,
+std::auto_ptr<te::da::DataSet> te::gpkg::Transactor::getDataSet(const std::string& name,
                                           const std::string& /*propertyName*/,
                                           const te::gm::Envelope* e,
                                           te::gm::SpatialRelation /*r*/,
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/,
-                                          const te::common::AccessPolicy pol)
+                                          const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
-  if (!ds)
-    return std::auto_ptr<te::da::DataSet>();
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -160,21 +156,19 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));
 }
 
-std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string& name,
+std::auto_ptr<te::da::DataSet> te::gpkg::Transactor::getDataSet(const std::string& name,
                                           const std::string& /*propertyName*/,
                                           const te::gm::Geometry* g,
                                           te::gm::SpatialRelation /*r*/,
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/,
-                                          const te::common::AccessPolicy pol)
+                                          const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
-  if (!ds)
-    return std::auto_ptr<te::da::DataSet>();
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -191,18 +185,16 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));
 }
 
-std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& q,
+std::auto_ptr<te::da::DataSet> te::gpkg::Transactor::query(const te::da::Select& q,
                                       te::common::TraverseType /*travType*/, 
                                       bool /*connected*/,
-                                      const te::common::AccessPolicy pol)
+                                      const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
-
-  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
-  if (!ds)
-    return std::auto_ptr<te::da::DataSet>();
+  
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
 
   std::string sql;
 
@@ -225,19 +217,17 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));
 }
 
-std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& query,
+std::auto_ptr<te::da::DataSet> te::gpkg::Transactor::query(const std::string& query,
                                       te::common::TraverseType /*travType*/, 
                                       bool /*connected*/,
-                                      const te::common::AccessPolicy pol)
+                                      const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
 
-  unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
-  if (!ds)
-    return std::auto_ptr<te::da::DataSet>();
-  
+  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_UPDATE, NULL, NULL, NULL);
+
   // Adding FID attribute case "SELECT *"
   std::string queryCopy = query;
   std::size_t pos = queryCopy.find("*");
@@ -255,7 +245,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& que
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));
 }
 
-void te::ogr::Transactor::execute(const te::da::Query& command)
+void te::gpkg::Transactor::execute(const te::da::Query& command)
 {
   std::string sql;
   SQLVisitor v(*m_ogrDs->getDialect(), sql);
@@ -265,7 +255,7 @@ void te::ogr::Transactor::execute(const te::da::Query& command)
   execute(sql);
 }
 
-void te::ogr::Transactor::execute(const std::string& command)
+void te::gpkg::Transactor::execute(const std::string& command)
 {
   if (!m_ogrDs->getOGRDataSource())
     return;
@@ -276,31 +266,31 @@ void te::ogr::Transactor::execute(const std::string& command)
     m_ogrDs->getOGRDataSource()->ReleaseResultSet(layer);
 }
 
-std::auto_ptr<te::da::PreparedQuery> te::ogr::Transactor::getPrepared(const std::string& /*qName*/)
+std::auto_ptr<te::da::PreparedQuery> te::gpkg::Transactor::getPrepared(const std::string& /*qName*/)
 {
   return std::auto_ptr<te::da::PreparedQuery>(0);
 }
 
-std::auto_ptr<te::da::BatchExecutor> te::ogr::Transactor::getBatchExecutor()
+std::auto_ptr<te::da::BatchExecutor> te::gpkg::Transactor::getBatchExecutor()
 {
   return std::auto_ptr<te::da::BatchExecutor>(0);
 }
 
-void te::ogr::Transactor::cancel()
+void te::gpkg::Transactor::cancel()
 {
 }
 
-boost::int64_t te::ogr::Transactor::getLastGeneratedId()
+boost::int64_t te::gpkg::Transactor::getLastGeneratedId()
 {
   return m_fid;
 }
 
-std::string te::ogr::Transactor::escape(const std::string& value)
+std::string te::gpkg::Transactor::escape(const std::string& value)
 {
   return value;
 }
 
-std::vector<std::string> te::ogr::Transactor::getDataSetNames()
+std::vector<std::string> te::gpkg::Transactor::getDataSetNames()
 {
   std::vector<std::string> names;
   
@@ -313,7 +303,7 @@ std::vector<std::string> te::ogr::Transactor::getDataSetNames()
   return names;
 }
 
-std::size_t te::ogr::Transactor::getNumberOfDataSets()
+std::size_t te::gpkg::Transactor::getNumberOfDataSets()
 {
   if (!m_ogrDs->getOGRDataSource())
     return 0;
@@ -321,7 +311,7 @@ std::size_t te::ogr::Transactor::getNumberOfDataSets()
   return m_ogrDs->getOGRDataSource()->GetLayerCount();
 }
     
-std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::gpkg::Transactor::getDataSetType(const std::string& name)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSetType>();
@@ -350,7 +340,7 @@ std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std
     pk->add(type->getProperty(pos));
   }
 
-  int srs = te::ogr::Convert2TerraLibProjection(l->GetSpatialRef());
+  int srs = te::gpkg::Convert2TerraLibProjection(l->GetSpatialRef());
 
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(type.get());
   
@@ -362,7 +352,7 @@ std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std
   return type;
 }
 
-std::auto_ptr<te::da::DataSetTypeCapabilities> te::ogr::Transactor::getCapabilities(const std::string &name)
+std::auto_ptr<te::da::DataSetTypeCapabilities> te::gpkg::Transactor::getCapabilities(const std::string &name)
 {
   std::auto_ptr<te::da::DataSetTypeCapabilities> cap(new te::da::DataSetTypeCapabilities);
 
@@ -378,7 +368,7 @@ std::auto_ptr<te::da::DataSetTypeCapabilities> te::ogr::Transactor::getCapabilit
   return cap;
 }
 
-boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std::string& datasetName)
+boost::ptr_vector<te::dt::Property> te::gpkg::Transactor::getProperties(const std::string& datasetName)
 {
   boost::ptr_vector<te::dt::Property> ps;
 
@@ -392,7 +382,7 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
 
   if(l!=0)
   {
-    int srs = te::ogr::Convert2TerraLibProjection(l->GetSpatialRef());
+    int srs = te::gpkg::Convert2TerraLibProjection(l->GetSpatialRef());
     std::auto_ptr<te::da::DataSetType> dt(Convert2TerraLib(l->GetLayerDefn(),srs));
     std::vector<te::dt::Property*> props = dt->getProperties();
     std::vector<te::dt::Property*>::iterator it;
@@ -406,7 +396,7 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
   return ps;
 }
 
-std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::string& datasetName, const std::string& name)
+std::auto_ptr<te::dt::Property> te::gpkg::Transactor::getProperty(const std::string& datasetName, const std::string& name)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::dt::Property>();
@@ -425,8 +415,9 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
   return getProperty(datasetName, idx);
 }
 
-std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
+std::auto_ptr<te::dt::Property> te::gpkg::Transactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
+  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
   GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return std::auto_ptr<te::dt::Property>();
@@ -451,8 +442,9 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
   return res;
 }
 
-std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string& datasetName)
+std::vector<std::string> te::gpkg::Transactor::getPropertyNames(const std::string& datasetName)
 {
+  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
   GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return std::vector<std::string>();
@@ -476,8 +468,9 @@ std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string
   return res;
 }
 
-std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datasetName)
+std::size_t te::gpkg::Transactor::getNumberOfProperties(const std::string& datasetName)
 {
+  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
   GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return 0;
@@ -498,8 +491,9 @@ std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datase
   return res;
 }
 
-bool te::ogr::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
+bool te::gpkg::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
+  //OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
   GDALDataset* ogrds = m_ogrDs->getOGRDataSource();
   if (!ogrds)
     return false;
@@ -519,7 +513,7 @@ bool te::ogr::Transactor::propertyExists(const std::string& datasetName, const s
   return res;
 }
 
-void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Property* p)
+void te::gpkg::Transactor::addProperty(const std::string& datasetName, te::dt::Property* p)
 {
   if (!m_ogrDs->getOGRDataSource())
     return;
@@ -530,6 +524,9 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
   {
     if(p->getType() != te::dt::GEOMETRY_TYPE)
     {
+//      if(!l->TestCapability(OLCCreateField))
+//        throw Exception(TE_TR("This dataset do not support add fields operation."));
+
       OGRFieldDefn* nField = Convert2OGR(p);
       OGRErr error = l->CreateField(nField);
 
@@ -546,7 +543,7 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
   }
 }
 
-void te::ogr::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
+void te::gpkg::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
 {
   OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
@@ -572,7 +569,7 @@ void te::ogr::Transactor::dropProperty(const std::string& datasetName, const std
   }
 }
 
-void te::ogr::Transactor::renameProperty(const std::string& datasetName,
+void te::gpkg::Transactor::renameProperty(const std::string& datasetName,
                             const std::string& propertyName,
                             const std::string& newPropertyName)
 {
@@ -601,7 +598,7 @@ void te::ogr::Transactor::renameProperty(const std::string& datasetName,
   }
 }
 
-void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
+void te::gpkg::Transactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
 {
   if (!m_ogrDs->getOGRDataSource())
     return;
@@ -631,13 +628,14 @@ void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetNam
     if(err != OGRERR_NONE)
       throw Exception(TE_TR("Fail to to change field type."));
 
+    //std::string name = m_ogrDs->getOGRDataSource()->GetName();
     std::string name = m_ogrDs->getOGRDataSource()->GetDescription();
 
     err = l->SyncToDisk();
   }
 }
 
-std::auto_ptr<te::da::PrimaryKey> te::ogr::Transactor::getPrimaryKey(const std::string& datasetName)
+std::auto_ptr<te::da::PrimaryKey> te::gpkg::Transactor::getPrimaryKey(const std::string& datasetName)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::PrimaryKey>();
@@ -669,136 +667,136 @@ std::auto_ptr<te::da::PrimaryKey> te::ogr::Transactor::getPrimaryKey(const std::
   return res;
 }
 
-bool te::ogr::Transactor::primaryKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+bool te::gpkg::Transactor::primaryKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return false;
 }
 
-void te::ogr::Transactor::addPrimaryKey(const std::string& /*datasetName*/, te::da::PrimaryKey* /*pk*/)
+void te::gpkg::Transactor::addPrimaryKey(const std::string& /*datasetName*/, te::da::PrimaryKey* /*pk*/)
 {
 }
 
-void te::ogr::Transactor::dropPrimaryKey(const std::string& /*datasetName*/)
+void te::gpkg::Transactor::dropPrimaryKey(const std::string& /*datasetName*/)
 {
 }
 
-std::auto_ptr<te::da::ForeignKey> te::ogr::Transactor::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
+std::auto_ptr<te::da::ForeignKey> te::gpkg::Transactor::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return std::auto_ptr<te::da::ForeignKey>();
 }
 
-std::vector<std::string> te::ogr::Transactor::getForeignKeyNames(const std::string& /*datasetName*/)
+std::vector<std::string> te::gpkg::Transactor::getForeignKeyNames(const std::string& /*datasetName*/)
 {
   return std::vector<std::string>();
 }
 
-bool te::ogr::Transactor::foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+bool te::gpkg::Transactor::foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return false;
 }
 
-void te::ogr::Transactor::addForeignKey(const std::string& /*datasetName*/, te::da::ForeignKey* /*fk*/)
+void te::gpkg::Transactor::addForeignKey(const std::string& /*datasetName*/, te::da::ForeignKey* /*fk*/)
 {
 }
 
-void te::ogr::Transactor::dropForeignKey(const std::string& /*datasetName*/, const std::string& /*fkName*/)
+void te::gpkg::Transactor::dropForeignKey(const std::string& /*datasetName*/, const std::string& /*fkName*/)
 {
 }
 
-std::auto_ptr<te::da::UniqueKey> te::ogr::Transactor::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
+std::auto_ptr<te::da::UniqueKey> te::gpkg::Transactor::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return std::auto_ptr<te::da::UniqueKey>();
 }
 
-std::vector<std::string> te::ogr::Transactor::getUniqueKeyNames(const std::string& /*datasetName*/)
+std::vector<std::string> te::gpkg::Transactor::getUniqueKeyNames(const std::string& /*datasetName*/)
 {
   return std::vector<std::string>();
 }
 
-bool te::ogr::Transactor::uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+bool te::gpkg::Transactor::uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return false;
 }
 
-void te::ogr::Transactor::addUniqueKey(const std::string& /*datasetName*/, te::da::UniqueKey* /*uk*/)
+void te::gpkg::Transactor::addUniqueKey(const std::string& /*datasetName*/, te::da::UniqueKey* /*uk*/)
 {
 }
 
-void te::ogr::Transactor::dropUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
+void te::gpkg::Transactor::dropUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
 }
 
-std::auto_ptr<te::da::CheckConstraint> te::ogr::Transactor::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
+std::auto_ptr<te::da::CheckConstraint> te::gpkg::Transactor::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return std::auto_ptr<te::da::CheckConstraint>();
 }
 
-std::vector<std::string> te::ogr::Transactor::getCheckConstraintNames(const std::string& /*datasetName*/)
+std::vector<std::string> te::gpkg::Transactor::getCheckConstraintNames(const std::string& /*datasetName*/)
 {
   return std::vector<std::string>();
 }
 
-bool te::ogr::Transactor::checkConstraintExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+bool te::gpkg::Transactor::checkConstraintExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return false;
 }
 
-void te::ogr::Transactor::addCheckConstraint(const std::string& /*datasetName*/, te::da::CheckConstraint* /*cc*/)
+void te::gpkg::Transactor::addCheckConstraint(const std::string& /*datasetName*/, te::da::CheckConstraint* /*cc*/)
 {
 }
 
-void te::ogr::Transactor::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
+void te::gpkg::Transactor::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
 }
 
-std::auto_ptr<te::da::Index> te::ogr::Transactor::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
+std::auto_ptr<te::da::Index> te::gpkg::Transactor::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return std::auto_ptr<te::da::Index>();
 }
 
-std::vector<std::string> te::ogr::Transactor::getIndexNames(const std::string& /*datasetName*/)
+std::vector<std::string> te::gpkg::Transactor::getIndexNames(const std::string& /*datasetName*/)
 {
   return std::vector<std::string>();
 }
 
-bool te::ogr::Transactor::indexExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+bool te::gpkg::Transactor::indexExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return false;
 }
 
-void te::ogr::Transactor::addIndex(const std::string& /*datasetName*/, te::da::Index* /*idx*/,
+void te::gpkg::Transactor::addIndex(const std::string& /*datasetName*/, te::da::Index* /*idx*/,
                       const std::map<std::string, std::string>& /*options*/)
 {
 }
 
-void te::ogr::Transactor::dropIndex(const std::string& /*datasetName*/, const std::string& /*idxName*/)
+void te::gpkg::Transactor::dropIndex(const std::string& /*datasetName*/, const std::string& /*idxName*/)
 {
 }
 
-std::auto_ptr<te::da::Sequence> te::ogr::Transactor::getSequence(const std::string& /*name*/)
+std::auto_ptr<te::da::Sequence> te::gpkg::Transactor::getSequence(const std::string& /*name*/)
 {
   return std::auto_ptr<te::da::Sequence>();
 }
 
-std::vector<std::string> te::ogr::Transactor::getSequenceNames()
+std::vector<std::string> te::gpkg::Transactor::getSequenceNames()
 {
   return std::vector<std::string>();
 }
 
-bool te::ogr::Transactor::sequenceExists(const std::string& /*name*/)
+bool te::gpkg::Transactor::sequenceExists(const std::string& /*name*/)
 {
   return false;
 }
 
-void te::ogr::Transactor::addSequence(te::da::Sequence* /*sequence*/)
+void te::gpkg::Transactor::addSequence(te::da::Sequence* /*sequence*/)
 {
 }
 
-void te::ogr::Transactor::dropSequence(const std::string& /*name*/)
+void te::gpkg::Transactor::dropSequence(const std::string& /*name*/)
 {
 }
 
-std::auto_ptr<te::gm::Envelope> te::ogr::Transactor::getExtent(const std::string& datasetName,
+std::auto_ptr<te::gm::Envelope> te::gpkg::Transactor::getExtent(const std::string& datasetName,
                                                   const std::string& propertyName)
 {
   if (!m_ogrDs->getOGRDataSource())
@@ -829,13 +827,13 @@ std::auto_ptr<te::gm::Envelope> te::ogr::Transactor::getExtent(const std::string
   return res;
 }
 
-std::auto_ptr<te::gm::Envelope> te::ogr::Transactor::getExtent(const std::string& datasetName,
+std::auto_ptr<te::gm::Envelope> te::gpkg::Transactor::getExtent(const std::string& datasetName,
                                                   std::size_t /*propertyPos*/)
 {
   return getExtent(datasetName, "OGR_GEOMETRY");
 }
 
-std::size_t te::ogr::Transactor::getNumberOfItems(const std::string& datasetName)
+std::size_t te::gpkg::Transactor::getNumberOfItems(const std::string& datasetName)
 {
   if (!m_ogrDs->getOGRDataSource())
     return 0;
@@ -848,7 +846,7 @@ std::size_t te::ogr::Transactor::getNumberOfItems(const std::string& datasetName
   return 0;
 }
 
-bool te::ogr::Transactor::hasDataSets()
+bool te::gpkg::Transactor::hasDataSets()
 {
   if (!m_ogrDs->getOGRDataSource())
     return false;
@@ -856,7 +854,7 @@ bool te::ogr::Transactor::hasDataSets()
   return (m_ogrDs->getOGRDataSource()->GetLayerCount() > 0);
 }
 
-bool te::ogr::Transactor::dataSetExists(const std::string& name)
+bool te::gpkg::Transactor::dataSetExists(const std::string& name)
 {
   if (!m_ogrDs->getOGRDataSource())
     return false;
@@ -864,7 +862,7 @@ bool te::ogr::Transactor::dataSetExists(const std::string& name)
   return (m_ogrDs->getOGRDataSource()->GetLayerByName(name.c_str()) != 0);
 }
 
-void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& /*options*/)
+void te::gpkg::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& /*options*/)
 {
   if (!m_ogrDs->getOGRDataSource())
     return;
@@ -908,18 +906,11 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
   dt->setName(newLayer->GetName());
 
 // add the properties
-  for (size_t i = 0; i < dt->size(); ++i)
-  {
-    te::dt::Property* p = dt->getProperty(i);
-
-    if (p->getName() == "FID")
-      continue;
-
-    addProperty(dt->getName(), p);
-  }
+  for(size_t i = 0; i < dt->size(); ++i)
+    addProperty(dt->getName(), dt->getProperty(i));
 }
 
-void te::ogr::Transactor::cloneDataSet(const std::string& name,
+void te::gpkg::Transactor::cloneDataSet(const std::string& name,
                           const std::string& cloneName,
                           const std::map<std::string, std::string>& /*options*/)
 {
@@ -940,7 +931,7 @@ void te::ogr::Transactor::cloneDataSet(const std::string& name,
     throw Exception(TE_TR("Error when attempting clone the dataset."));
 }
 
-void te::ogr::Transactor::dropDataSet(const std::string& name)
+void te::gpkg::Transactor::dropDataSet(const std::string& name)
 {
   if (!m_ogrDs->getOGRDataSource())
     return;
@@ -961,11 +952,11 @@ void te::ogr::Transactor::dropDataSet(const std::string& name)
     throw Exception(TE_TR("Error when attempting to remove the dataset."));
 }
 
-void te::ogr::Transactor::renameDataSet(const std::string& /*name*/, const std::string& /*newName*/)
+void te::gpkg::Transactor::renameDataSet(const std::string& /*name*/, const std::string& /*newName*/)
 {
 }
 
-void te::ogr::Transactor::add(const std::string& datasetName,
+void te::gpkg::Transactor::add(const std::string& datasetName,
                   te::da::DataSet* d,
                   const std::map<std::string, std::string>& options,
                   std::size_t limit)
@@ -1124,7 +1115,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
   }
 }
 
-void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
+void te::gpkg::Transactor::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
 {
   if(!m_ogrDs->getOGRDataSource())
     return;
@@ -1162,7 +1153,7 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
 }
 
 
-void te::ogr::Transactor::update(const std::string& datasetName,
+void te::gpkg::Transactor::update(const std::string& datasetName,
                     te::da::DataSet* /*dataset*/,
                     const std::vector<std::size_t>& properties,
                     const te::da::ObjectIdSet* /*oids*/,
@@ -1171,7 +1162,7 @@ void te::ogr::Transactor::update(const std::string& datasetName,
 {
 }
 
-void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet *dataset, const std::vector< std::set<int> >& properties,
+void te::gpkg::Transactor::update(const std::string &datasetName, te::da::DataSet *dataset, const std::vector< std::set<int> >& properties,
                                  const std::vector<size_t>& ids)
 {
   if(m_ogrDs->getOGRDataSource() == 0)
@@ -1218,7 +1209,7 @@ void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet
         case te::dt::GEOMETRY_TYPE:
         {
           std::auto_ptr<te::gm::Geometry> gm = dataset->getGeometry(fpos);
-          feat->SetGeometry(te::ogr::Convert2OGR(gm.get()));
+          feat->SetGeometry(te::gpkg::Convert2OGR(gm.get()));
         }
       }
     }
@@ -1231,11 +1222,11 @@ void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet
   l->SyncToDisk();
 }
 
-void te::ogr::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
+void te::gpkg::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
 }
 
-te::common::CharEncoding te::ogr::Transactor::getEncoding()
+te::common::CharEncoding te::gpkg::Transactor::getEncoding()
 {
   return te::common::LATIN1;
 }

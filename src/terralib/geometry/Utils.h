@@ -30,6 +30,9 @@
 #include "Config.h"
 #include "Enums.h"
 
+// STL
+#include <vector>
+
 namespace te
 {
   namespace gm
@@ -121,6 +124,16 @@ namespace te
       \return It returns a target Coord2D in the line.
     */
     TEGEOMEXPORT Coord2D* locateAlong(const LineString* line, double initial, double final, double target);
+    
+    /*!
+    \brief It will get a GeometryCollection and distribute in a vector.
+
+    \param g      Input GeometryCollection.
+    \param geoms  Output Geometry Vector.
+
+    \note If the geomSource is not a te::gm::GeometryCollectionType it will return an empty vector.
+    */
+    TEGEOMEXPORT void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);
 
   } // end namespace gm
 }   // end namespace te

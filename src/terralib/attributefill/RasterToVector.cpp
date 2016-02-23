@@ -61,19 +61,17 @@ te::attributefill::RasterToVector::RasterToVector()
 {
 }
 
-void te::attributefill::RasterToVector::setInput(te::da::DataSourcePtr inRasterDsrc,
-                                              std::string inRasterName,
-                                              std::auto_ptr<te::da::DataSetType> inRasterDsType,
+void te::attributefill::RasterToVector::setInput(te::rst::Raster* inRaster,
                                               te::da::DataSourcePtr inVectorDsrc,
                                               std::string inVectorName,
-                                              std::auto_ptr<te::da::DataSetType> inVectorDsType)
+                                              std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType,
+                                              const te::da::ObjectIdSet* oidSet)
 {
-  m_inRasterDsrc = inRasterDsrc;
-  m_inRasterName = inRasterName;
-  m_inRasterDsType = inRasterDsType;
+  m_inRaster = inRaster;
   m_inVectorDsrc = inVectorDsrc;
   m_inVectorName = inVectorName;
   m_inVectorDsType = inVectorDsType;
+  m_oidSet = oidSet;
 }
 
 void te::attributefill::RasterToVector::setParams(std::vector<unsigned int> bands,
@@ -96,7 +94,7 @@ bool te::attributefill::RasterToVector::paramsAreValid()
   if (!m_inVectorDsType.get())
     return false;
   
-  if (!m_inVectorDsType->hasGeom())
+  if (!m_inVectorDsType->getResult()->hasGeom())
     return false;
 
   if (m_outDset.empty() || !m_outDsrc.get())
@@ -107,23 +105,34 @@ bool te::attributefill::RasterToVector::paramsAreValid()
 
 bool te::attributefill::RasterToVector::run()
 {
-// prepare vector
-  te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType.get());
-  std::auto_ptr<te::da::DataSet> dsVector = m_inVectorDsrc->getDataSet(m_inVectorName);
-  
 // prepare raster
-  te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(m_inRasterDsType.get());
-  
-  std::auto_ptr<te::da::DataSet> dsRaster = m_inRasterDsrc->getDataSet(m_inRasterName);
-  std::auto_ptr<te::rst::Raster> raster = dsRaster->getRaster(rasterProp->getName());
-  double resX = raster->getResolutionX();
-  double resY = raster->getResolutionY();
-  
-  te::gm::Envelope* env = raster->getExtent();
+  double resX = m_inRaster->getResolutionX();
+  double resY = m_inRaster->getResolutionY();
+
+  te::gm::Envelope* env = m_inRaster->getExtent();
 
 // raster Attributes
   te::rp::RasterAttributes* rasterAtt = 0;
 
+
+// prepare vector
+  te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType->getResult());
+  std::size_t geomIdx = boost::lexical_cast<std::size_t>(m_inVectorDsType->getResult()->getPropertyPosition(vectorProp->getName()));
+
+  std::auto_ptr<te::da::DataSet> dataSetVector;
+  if(m_oidSet == 0)
+    dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName);
+  else
+    dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName, m_oidSet);
+
+  std::auto_ptr<te::da::DataSetAdapter> dsVector(te::da::CreateAdapter(dataSetVector.get(), m_inVectorDsType.get()));
+
+// Verify if mode was checked to calculating.
+  bool mode = false;
+  std::vector<te::stat::StatisticalSummary>::iterator it_mode = std::find(m_statSum.begin(), m_statSum.end(), te::stat::MODE);
+  if (it_mode != m_statSum.end())
+    mode = true;
+  
 
 // Parameters to get the percentage of classes by area
   bool percentByArea = false;
@@ -131,7 +140,7 @@ bool te::attributefill::RasterToVector::run()
   std::vector<te::stat::StatisticalSummary>::iterator it = std::find(m_statSum.begin(), m_statSum.end(), te::stat::PERCENT_EACH_CLASS_BY_AREA);
   if (it != m_statSum.end())
   {
-    pixelDistinct = getPixelDistinct(raster.get(), m_bands);
+    pixelDistinct = getPixelDistinct(m_inRaster, m_bands);
     percentByArea = true;
   }
 
@@ -151,20 +160,39 @@ bool te::attributefill::RasterToVector::run()
   task.setTotalSteps((int)dsVector->size() * (int)m_statSum.size() * (int)m_bands.size());
   task.useTimer(true);
 
+  bool remap = false;
+
+  if (m_inRaster->getSRID() != vectorProp->getSRID())
+    remap = true;
 
   dsVector->moveBeforeFirst();
   while(dsVector->moveNext())
   {
     te::mem::DataSetItem* outDSetItem = new te::mem::DataSetItem(outDataset.get());
     
-    std::vector<te::dt::Property*> vecProp = m_inVectorDsType->getProperties();
+    std::vector<te::dt::Property*> vecProp = m_inVectorDsType->getResult()->getProperties();
     for(std::size_t i = 0; i < vecProp.size(); ++i)
     {
-      outDSetItem->setValue(i, dsVector->getValue(i).release());
+      if (!dsVector->isNull(i))
+        outDSetItem->setValue(i, dsVector->getValue(i).release());
     }
 
 // Geometry
-    std::auto_ptr<te::gm::Geometry> geom = dsVector->getGeometry(vectorProp->getName());
+    std::auto_ptr<te::gm::Geometry> geom = dsVector->getGeometry(geomIdx);
+    if (!geom->isValid())
+      continue;
+
+    if (remap)
+      geom->transform(m_inRaster->getSRID());
+
+
+// Add Item in DataSet if geom does not intersects the raster envelope and continue to the next dataSet item.
+    if(!env->intersects(*geom->getMBR()))
+    {
+      outDataset->add(outDSetItem);
+      continue;
+    }
+
     double area = 0;
 
 // Values from raster
@@ -190,7 +218,7 @@ bool te::attributefill::RasterToVector::run()
                                      for (std::size_t n = 0; n < n_geom; ++n)
                                      {
                                        te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(mPolygon->getGeometryN(n));
-                                       std::vector<std::vector<double> > tempValues = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
+                                       std::vector<std::vector<double> > tempValues = rasterAtt->getValuesFromRaster(*m_inRaster, *polygon, m_bands);
 
 
                                        for (std::size_t band = 0; band < tempValues.size(); ++band)
@@ -216,7 +244,7 @@ bool te::attributefill::RasterToVector::run()
                                 if (percentByArea)
                                   area = polygon->getArea();
 
-                                valuesFromRaster = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
+                                valuesFromRaster = rasterAtt->getValuesFromRaster(*m_inRaster, *polygon, m_bands);
 
                                 isPoint = false;
 
@@ -235,14 +263,14 @@ bool te::attributefill::RasterToVector::run()
                                 const double coordX = point->getX();
                                 const double coordY = point->getY();
 
-                                te::gm::Coord2D coord2d = raster->getGrid()->geoToGrid(coordX, coordY);
+                                te::gm::Coord2D coord2d = m_inRaster->getGrid()->geoToGrid(coordX, coordY);
 
                                 std::vector<double> values;
 
-                                for (std::size_t band = 0; band < raster->getNumberOfBands(); ++band)
+                                for (std::size_t band = 0; band < m_inRaster->getNumberOfBands(); ++band)
                                 {
                                   double value;
-                                  raster->getValue((int)coord2d.getX(), (int)coord2d.getY(), value, band);
+                                  m_inRaster->getValue((int)coord2d.getX(), (int)coord2d.getY(), value, band);
 
                                   values.push_back(value);
 
@@ -255,15 +283,15 @@ bool te::attributefill::RasterToVector::run()
 
                                 }
 
-                                //valuesFromRaster.push_back(values);
-
                                 isPoint = true;
                               }
                               break;
       }
+      default:
+        continue;
     }
 
-    std::size_t init_index = m_inVectorDsType->getProperties().size();
+    std::size_t init_index = m_inVectorDsType->getResult()->getProperties().size();
 
 // Statistics set value
     if (!isPoint)
@@ -271,6 +299,9 @@ bool te::attributefill::RasterToVector::run()
       for (std::size_t band = 0; band < valuesFromRaster.size(); ++band)
       {
         te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
+
+        if (mode)
+          te::stat::Mode(valuesFromRaster[band], summary);
 
         if (percentByArea)
           te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary, contains);
@@ -386,7 +417,7 @@ bool te::attributefill::RasterToVector::run()
 
         if (m_texture == true)
         {
-          metrics = getTexture(raster.get(), geom.get(), (int)m_bands.size());
+          metrics = getTexture(m_inRaster, geom.get(), (int)m_bands.size());
           current_index += 5;
           for (std::size_t t = 0, i = init_index; i < current_index; ++t, ++i)
           {
@@ -472,7 +503,7 @@ std::vector<std::set<int> > te::attributefill::RasterToVector::getPixelDistinct(
 
 std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSetType(std::vector<std::set<int> > pixelDistinct)
 {
-  std::auto_ptr<te::da::DataSetType> outdsType(new te::da::DataSetType(*m_inVectorDsType));
+  std::auto_ptr<te::da::DataSetType> outdsType(new te::da::DataSetType(*m_inVectorDsType->getResult()));
   outdsType->setCompositeName(m_outDset);
   outdsType->setName(m_outDset);
   outdsType->setTitle(m_outDset);
@@ -485,7 +516,7 @@ std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSet
 
   for (std::size_t b = 0; b < m_bands.size(); ++b)
   {
-    if (m_statSum.empty() && m_texture == false)
+    if (!m_statSum.empty() || m_texture == true)
     {
       for (std::size_t i = 0; i < m_statSum.size(); ++i)
       {
@@ -622,25 +653,21 @@ std::vector<te::rp::Texture> te::attributefill::RasterToVector::getTexture( te::
 
 bool te::attributefill::RasterToVector::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
 {
-  // do any adaptation necessary to persist the output dataset
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
-  te::da::DataSetType* dsTypeResult = converter->getResult();
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
-  
   std::map<std::string, std::string> options;
+ 
   // create the dataset
-  m_outDsrc->createDataSet(dsTypeResult, options);
+  m_outDsrc->createDataSet(outDsType.get(), options);
   
   // copy from memory to output datasource
   result->moveBeforeFirst();
-  m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
+  m_outDsrc->add(outDsType->getName(), result.get(), options);
   
   // create the primary key if it is possible
   if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
   {
-    std::string pk_name = dsTypeResult->getName() + "_pkey";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
+    std::string pk_name = outDsType->getName() + "_pkey";
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, outDsType.get());
+    pk->add(outDsType->getProperty(0));
     m_outDsrc->addPrimaryKey(m_outDset,pk);
   }
   

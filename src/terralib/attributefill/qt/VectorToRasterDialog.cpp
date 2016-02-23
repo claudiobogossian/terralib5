@@ -30,6 +30,7 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -398,10 +399,14 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
       return;
     }
 
+    std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), inDataSource->getCapabilities(), inDataSource->getEncoding()));
+
+    te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
     this->setCursor(Qt::WaitCursor);
 
     te::attributefill::VectorToRaster* vec2rst = new te::attributefill::VectorToRaster();
-    vec2rst->setInput(inDataSource, dsLayer->getTitle(), dsLayer->getSchema());
+    vec2rst->setInput(inDataSource, dsLayer->getTitle(), converter);
     vec2rst->setParams( m_widget->getOutputValues(), 
                         m_ui->m_resXLineEdit->text().toDouble(),
                         m_ui->m_resYLineEdit->text().toDouble(),

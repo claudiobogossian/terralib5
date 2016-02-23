@@ -18,33 +18,38 @@
  */
 
 /*!
-  \file terralib/statistics/core/Utils.h
-
-  \brief Utility functions for Statistics.
+  \file terralib/ogr/Globals.h
+   
+  \brief An static class with global definitions.
 */
 
-#ifndef __TERRALIB_ATTRIBUTEFILL_CORE_INTERNAL_UTILS_H
-#define __TERRALIB_ATTRIBUTEFILL_CORE_INTERNAL_UTILS_H
+#ifndef __TERRALIB_GPKG_INTERNAL_GLOBALS_H
+#define __TERRALIB_GPKG_INTERNAL_GLOBALS_H
 
-// Terralib
-#include "Config.h"
-#include "Enums.h"
-
-#include "../geometry/Geometry.h"
+// TerraLib
+#include "../../../../common/Static.h"
+#include "../Config.h"
 
 // STL
-#include <list>
 #include <string>
-#include <vector>
 
 namespace te
 {
-  namespace attributefill
+  namespace gpkg
   {
-    
-    TEATTRIBUTEFILLEXPORT std::string GetOperationFullName(const int& e);
+    /*!
+      \class Globals
 
-  } // end namespace attributefill
+      \brief An static class with global definitions.
+    */
+    class TERRAMOBILEPLUGINSDLLEXPORT Globals : public te::common::Static
+    {
+      public:
+
+        static const std::string m_driverIdentifier;  //!< The OGR driver identifier.
+    };
+
+  } // end namespace ogr
 }   // end namespace te
 
-#endif  // __TERRALIB_ATTRIBUTEFILL_CORE_INTERNAL_UTILS_H
+#endif  // __TERRALIB_GPKG_INTERNAL_GLOBALS_H

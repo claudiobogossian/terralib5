@@ -29,6 +29,7 @@
 #include "Envelope.h"
 #include "Exception.h"
 #include "Geometry.h"
+#include "GeometryCollection.h"
 #include "LinearRing.h"
 #include "LineString.h"
 #include "Point.h"
@@ -226,4 +227,16 @@ te::gm::Coord2D* te::gm::locateAlong(const LineString* line, double initial, dou
   targetCoord->y = ((pd*(p2->getY()-p1->getY()))/td)+p1->getY();
 
   return targetCoord;
+}
+
+void te::gm::Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms)
+{
+  te::gm::GeometryCollection* gc = dynamic_cast<te::gm::GeometryCollection*>(g);
+  if (gc)
+  {
+    for (std::size_t i = 0; i < gc->getNumGeometries(); ++i)
+      Multi2Single(gc->getGeometryN(i), geoms);
+  }
+  else
+    geoms.push_back(g);
 }

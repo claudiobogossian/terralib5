@@ -303,8 +303,8 @@ void TesteGEOS()
 void GenerateTIN()
 {
   //Lendo shape das Isolinhas
-  std::string filename_iso(""TERRALIB_DATA_DIR"/mnt/Isolinhas.shp");
-  std::string filename_pts(""TERRALIB_DATA_DIR"/mnt/Pontos_cotados.shp");
+  std::string filename_iso(TERRALIB_DATA_DIR "/mnt/Isolinhas.shp");
+  std::string filename_pts(TERRALIB_DATA_DIR "/mnt/Pontos_cotados.shp");
 
   int SRID = 32723;
   double tol = 20;// 0.00018000000;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
@@ -346,7 +346,7 @@ void GenerateTIN()
   std::auto_ptr<te::da::DataSet> inDsetpts = srcDspts->getDataSet(inDsetNamepts);
   std::auto_ptr<te::da::DataSetType> inDsetTypepts(srcDspts->getDataSetType(inDsetNamepts));
 
-  std::string file_result = ""TERRALIB_DATA_DIR"/mnt/TIN.shp";
+  std::string file_result = TERRALIB_DATA_DIR "/mnt/TIN.shp";
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = file_result;
@@ -384,7 +384,7 @@ void GenerateTIN()
 
 void GenerateIso()
 {
-  std::string filename = ""TERRALIB_DATA_DIR"/mnt/TIN.shp";
+  std::string filename = TERRALIB_DATA_DIR "/mnt/TIN.shp";
 
   int SRID = 32723;
   double tol = 2;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
@@ -412,7 +412,7 @@ void GenerateIso()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
 
-  std::string file_result = ""TERRALIB_DATA_DIR"/mnt/TIN_iso.shp";
+  std::string file_result = TERRALIB_DATA_DIR "/mnt/TIN_iso.shp";
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = file_result;
@@ -447,7 +447,7 @@ void GenerateIso()
 
 void CalculateGrid()
 {
-  std::string filename = ""TERRALIB_DATA_DIR"/mnt/TIN.shp";
+  std::string filename = TERRALIB_DATA_DIR "/mnt/TIN.shp";
 
   int SRID = 32723;
   double tol = 2;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
@@ -471,7 +471,7 @@ void CalculateGrid()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType(srcDs->getDataSetType(inDsetName));
 
-  boost::filesystem::path uri(""TERRALIB_DATA_DIR"/mnt/TIN_GRD_quint1.tif");
+  boost::filesystem::path uri(TERRALIB_DATA_DIR "/mnt/TIN_GRD_quint1.tif");
   std::string dsName = "TIN_GRD_quint";
 
   if (boost::filesystem::exists(uri))

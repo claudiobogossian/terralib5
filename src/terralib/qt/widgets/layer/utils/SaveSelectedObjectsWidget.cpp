@@ -109,9 +109,6 @@ void te::qt::widgets::SaveSelectedObjectsWidget::updateWindowComponents()
 
 void te::qt::widgets::SaveSelectedObjectsWidget::save(te::da::DataSource* dataSource, te::da::DataSet* dataSet, te::da::DataSetType* dataSetType)
 {
-  // do any adaptation necessary to persist the output dataset
-  //te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType, source->getCapabilities());
-  //te::da::DataSetType* dsTypeResult = converter->getResult();
 
   std::auto_ptr<te::da::DataSourceTransactor> t = dataSource->getTransactor();
 
@@ -203,6 +200,19 @@ bool te::qt::widgets::SaveSelectedObjectsWidget::execute(std::string& errorMessa
   
   for (std::size_t i = 0; i < propsVec.size(); ++i)
     dsType->add(propsVec[i]->clone());
+
+  if (!m_toFile)
+  {
+    te::da::PrimaryKey* pk = schema->getPrimaryKey();
+
+    if (pk)
+    {
+      te::da::PrimaryKey* newPk = dynamic_cast<te::da::PrimaryKey*>(pk->clone());
+      newPk->setName(dsTypeName + "_pk");
+      dsType->setPrimaryKey(newPk);
+    }
+      
+  }
 
   te::da::DataSourcePtr outputDataSource = te::da::GetDataSource(m_outputDatasource->getId());
 

@@ -97,8 +97,6 @@ void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te:
       ++ss.m_validCount;
     }
   }
-  
-  ss.m_mode = Mode(values);
 }
 
 void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss, double nulValue)
@@ -158,8 +156,6 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
     ss.m_median = (values[(ss.m_count/2)] + values[(ss.m_count/2-1)])/2;
   else
     ss.m_median = values[(ss.m_count-1)/2];
-  
-  ss.m_mode = Mode(values);
 }
 
 void te::stat::GetNumericComplexStatisticalSummary(std::vector<std::complex<double> >& values, te::stat::NumericStatisticalComplexSummary& ss)
@@ -274,11 +270,12 @@ void te::stat::GetPercentOfEachClassByArea( std::vector<double>& values,
   ss.m_percentEachClass = percentMap;
 }
 
-std::vector<double> te::stat::Mode(const std::vector<double>& values)
+void te::stat::Mode(const std::vector<double>& values,
+                    te::stat::NumericStatisticalSummary& ss)
 {
   std::vector<double> mode;
   if (values.empty())
-    return mode;
+    return;
   
   bool found;
   std::map<double, int> mapMode;
@@ -332,13 +329,14 @@ std::vector<double> te::stat::Mode(const std::vector<double>& values)
     ++itMode;
   }
   
-  return mode;
+  ss.m_mode = mode;
 }
 
-std::string te::stat::Mode(const std::vector<std::string>& values)
+void te::stat::Mode(const std::vector<std::string>& values,
+                    te::stat::StringStatisticalSummary& ss)
 {
   if (values.empty())
-    return "";
+    return;
   
   bool found;
   std::string mode = "";
@@ -385,7 +383,7 @@ std::string te::stat::Mode(const std::vector<std::string>& values)
     ++itMode;
   }
   
-  return mode;
+  ss.m_mode = mode;
 }
 
 void te::stat::GetStringStatisticalSummaryQuery(const std::string& inDataset,

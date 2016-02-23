@@ -208,6 +208,7 @@ bool te::attributefill::VectorToVectorMemory::run()
         {
           numValues = getNumValues(dataValues, propPos);
           te::stat::GetNumericStatisticalSummary(numValues, ssNum);
+          te::stat::Mode(numValues, ssNum);
         }
 
         std::vector<te::attributefill::OperationType> funcs = it->second;
@@ -408,9 +409,6 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
   te::da::DataSetType* dst = new te::da::DataSetType(*toScheme.get());
   dst->setName(m_outDset);
   dst->setTitle(m_outDset);
-
-  if (isToLayerOGR())
-    dst->remove(dst->getProperty("FID"));
 
   std::vector<te::dt::Property*> outProps = dst->getProperties();
 
@@ -889,6 +887,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 
       te::stat::NumericStatisticalSummary ssNum;
       te::stat::GetNumericStatisticalSummary(intVec, ssNum);
+      te::stat::Mode(intVec, ssNum);
       std::string strVal = boost::lexical_cast<std::string>(ssNum.m_minVal);
       return getDataBasedOnType(strVal, propType);
     }

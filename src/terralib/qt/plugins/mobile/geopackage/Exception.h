@@ -18,33 +18,27 @@
  */
 
 /*!
-  \file terralib/statistics/core/Utils.h
+  \file terralib/ogr/Exception.h
 
-  \brief Utility functions for Statistics.
+  \brief An exception class for the OGR module.
 */
 
-#ifndef __TERRALIB_ATTRIBUTEFILL_CORE_INTERNAL_UTILS_H
-#define __TERRALIB_ATTRIBUTEFILL_CORE_INTERNAL_UTILS_H
+#ifndef __TERRALIB_GPKG_INTERNAL_EXCEPTION_H
+#define __TERRALIB_GPKG_INTERNAL_EXCEPTION_H
 
-// Terralib
-#include "Config.h"
-#include "Enums.h"
+// TerraLib
+#include "../../../../common/Exception.h"
+#include "../Config.h"
 
-#include "../geometry/Geometry.h"
-
-// STL
-#include <list>
-#include <string>
-#include <vector>
 
 namespace te
 {
-  namespace attributefill
+  namespace gpkg
   {
-    
-    TEATTRIBUTEFILLEXPORT std::string GetOperationFullName(const int& e);
+    TE_DECLARE_EXCEPTION_CLASS(TERRAMOBILEPLUGINSDLLEXPORT, Exception, te::common::Exception)
 
-  } // end namespace attributefill
+  } // end namespace da
 }   // end namespace te
 
-#endif  // __TERRALIB_ATTRIBUTEFILL_CORE_INTERNAL_UTILS_H
+#endif  // __TERRALIB_OGR_INTERNAL_EXCEPTION_H
+

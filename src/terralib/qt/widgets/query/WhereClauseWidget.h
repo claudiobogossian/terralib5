@@ -129,10 +129,11 @@ namespace te
 
           void setConnectorsList(const std::vector<std::string>& vec);
 
+          void setCriteriaTabEnabled(int index, bool enable);
+
           void clear();
 
           void resetInterface();
-
 
         public slots:
 

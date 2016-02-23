@@ -12,7 +12,38 @@ namespace te {
   }
 }
 
+%ignore te::da::GetDataSource;
+
 typedef te::common::Singleton< te::da::DataSourceManager > DSMgerSingleton;
+
+#ifdef SWIGPYTHON
+
+%auto_ptr(te::dt::DateTime)
+%auto_ptr(te::dt::AbstractData)
+%auto_ptr(te::dt::ByteArray)
+%auto_ptr(te::dt::Array)
+%auto_ptr(te::da::DataSet)
+%auto_ptr(te::da::DataSource)
+%auto_ptr(te::da::DataSourceTransactor)
+%auto_ptr(te::da::Sequence)
+%auto_ptr(te::da::CheckConstraint)
+%auto_ptr(te::da::ForeignKey)
+%auto_ptr(te::da::PrimaryKey)
+%auto_ptr(te::da::UniqueKey)
+%auto_ptr(te::da::Index)
+%auto_ptr(te::dt::Property)
+%auto_ptr(te::da::DataSetTypeCapabilities)
+%auto_ptr(te::da::DataSetType)
+%auto_ptr(te::gm::Envelope)
+%auto_ptr(te::gm::Geometry)
+%auto_ptr(te::rst::Raster)
+%auto_ptr(te::da::PreparedQuery)
+%auto_ptr(te::da::BatchExecutor)
+%auto_ptr(te::da::Fields)
+%auto_ptr(te::da::Expression)
+%auto_ptr(te::da::Select)
+
+#else
 
 AUTO_PTR_TYPEMAPS(te::dt::DateTime)
 AUTO_PTR_TYPEMAPS(te::dt::AbstractData)
@@ -38,6 +69,8 @@ AUTO_PTR_TYPEMAPS(te::da::DataSetType)
 AUTO_PTR_TYPEMAPS(te::gm::Envelope)
 AUTO_PTR_TYPEMAPS(te::gm::Geometry)
 AUTO_PTR_TYPEMAPS(te::rst::Raster)
+
+#endif // SWIGPYTHON
 
 %nodefaultctor te::da::DataSourceFactory;
 
@@ -66,6 +99,10 @@ static void OpenDataSource(const te::da::DataSourceInfo& info)
 }
 %}
 
+
+//Python doesn't work with namespaces
+#ifndef SWIGPYTHON
+
 %nspace te::da::DataSetType;
 %nspace te::da::DataSet;
 %nspace te::da::ObjectId;
@@ -74,6 +111,8 @@ static void OpenDataSource(const te::da::DataSourceInfo& info)
 %nspace te::da::DataSourceInfo;
 %nspace te::da::DataSourceManager;
 %nspace te::da::DataSourceFactory;
+
+#endif // SWIGPYTHON
 
 %include "terralib/dataaccess/dataset/DataSetType.h"
 %include "terralib/dataaccess/dataset/DataSet.h"

@@ -224,7 +224,7 @@ if(WIN32)
 
   find_package(ADO)
 
-  find_package(Terralib4)
+  find_package(terralib4)
 
 endif()
 
@@ -260,7 +260,7 @@ endif()
 
 find_package(Proj4)
 
-find_package(Qt5 5.1 QUIET COMPONENTS Core Gui Widgets PrintSupport)
+find_package(Qt5 5.1 QUIET COMPONENTS Core Gui Widgets)
 
 if(NOT Qt5_FOUND)
   find_package(Qt4 4.6.3 QUIET COMPONENTS QtCore QtGui)
@@ -417,8 +417,6 @@ endif()
 if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" ON)
 endif()
-
-option(TERRALIB_MOD_MANAGER_ENABLED "Build Module Manager?" OFF)
 
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
@@ -726,10 +724,6 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/COPYING ${CMAKE_BINARY_DIR}/COPYING
 #
 # build modules
 #
-
-if(TERRALIB_MOD_MANAGER_ENABLED)
-  add_subdirectory(terralib_mod_manager)
-endif()
 
 if(TERRALIB_DOXYGEN_ENABLED)
   add_subdirectory(terralib_doxygen)

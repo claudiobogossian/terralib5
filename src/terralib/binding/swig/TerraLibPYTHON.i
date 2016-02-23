@@ -9,6 +9,7 @@
 
 %include "terralib/common/Singleton.h"
 
+%include std_complex.i
 %include stl.i
 %include typemaps.i
 
