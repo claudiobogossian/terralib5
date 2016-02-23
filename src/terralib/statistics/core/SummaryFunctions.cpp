@@ -56,9 +56,8 @@ namespace te
   {
     bool DoubleComplexCompare(std::complex< double > x, std::complex< double > y)
     {
-        return x.real() < y.real() ||
-               x.real() == y.real() && x.imag() < y.imag();
-    };
+      return (x.real() < y.real()) || (x.real() == y.real() && x.imag() < y.imag());
+    }
   }
 }
 
@@ -163,10 +162,6 @@ void te::stat::GetNumericComplexStatisticalSummary(std::vector<std::complex<doub
   if (values.empty())
     return;
   
-  //std::sort(values.begin(), values.end());
-
-  typedef std::complex<double> Complex;
-  
   std::sort(values.begin(), values.end(), DoubleComplexCompare );
 
   ss.m_minVal = *values.begin();
@@ -203,8 +198,6 @@ void te::stat::GetNumericComplexStatisticalSummary(std::vector<std::complex<doub
     ss.m_median = (values[(ss.m_count/2)] + values[(ss.m_count/2-1)])/2.0;
   else
     ss.m_median = values[(ss.m_count-1)/2];
-  
-  //ss.m_mode = Mode(values);
 }
 
 void te::stat::GetPercentOfEachClassByArea( std::vector<double>& values,
