@@ -208,6 +208,7 @@ bool te::attributefill::VectorToVectorMemory::run()
         {
           numValues = getNumValues(dataValues, propPos);
           te::stat::GetNumericStatisticalSummary(numValues, ssNum);
+          te::stat::Mode(numValues, ssNum);
         }
 
         std::vector<te::attributefill::OperationType> funcs = it->second;
@@ -886,6 +887,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 
       te::stat::NumericStatisticalSummary ssNum;
       te::stat::GetNumericStatisticalSummary(intVec, ssNum);
+      te::stat::Mode(intVec, ssNum);
       std::string strVal = boost::lexical_cast<std::string>(ssNum.m_minVal);
       return getDataBasedOnType(strVal, propType);
     }

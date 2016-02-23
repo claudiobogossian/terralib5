@@ -64,12 +64,14 @@ te::attributefill::RasterToVector::RasterToVector()
 void te::attributefill::RasterToVector::setInput(te::rst::Raster* inRaster,
                                               te::da::DataSourcePtr inVectorDsrc,
                                               std::string inVectorName,
-                                              std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType)
+                                              std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType,
+                                              const te::da::ObjectIdSet* oidSet)
 {
   m_inRaster = inRaster;
   m_inVectorDsrc = inVectorDsrc;
   m_inVectorName = inVectorName;
   m_inVectorDsType = inVectorDsType;
+  m_oidSet = oidSet;
 }
 
 void te::attributefill::RasterToVector::setParams(std::vector<unsigned int> bands,
@@ -103,21 +105,34 @@ bool te::attributefill::RasterToVector::paramsAreValid()
 
 bool te::attributefill::RasterToVector::run()
 {
-// prepare vector
-  te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType->getResult());
-  std::size_t geomIdx = boost::lexical_cast<std::size_t>(m_inVectorDsType->getResult()->getPropertyPosition(vectorProp->getName()));
-  std::auto_ptr<te::da::DataSet> dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName);
-  std::auto_ptr<te::da::DataSetAdapter> dsVector(te::da::CreateAdapter(dataSetVector.get(), m_inVectorDsType.get()));
-  
 // prepare raster
   double resX = m_inRaster->getResolutionX();
   double resY = m_inRaster->getResolutionY();
-  
+
   te::gm::Envelope* env = m_inRaster->getExtent();
 
 // raster Attributes
   te::rp::RasterAttributes* rasterAtt = 0;
 
+
+// prepare vector
+  te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType->getResult());
+  std::size_t geomIdx = boost::lexical_cast<std::size_t>(m_inVectorDsType->getResult()->getPropertyPosition(vectorProp->getName()));
+
+  std::auto_ptr<te::da::DataSet> dataSetVector;
+  if(m_oidSet == 0)
+    dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName);
+  else
+    dataSetVector = m_inVectorDsrc->getDataSet(m_inVectorName, m_oidSet);
+
+  std::auto_ptr<te::da::DataSetAdapter> dsVector(te::da::CreateAdapter(dataSetVector.get(), m_inVectorDsType.get()));
+
+// Verify if mode was checked to calculating.
+  bool mode = false;
+  std::vector<te::stat::StatisticalSummary>::iterator it_mode = std::find(m_statSum.begin(), m_statSum.end(), te::stat::MODE);
+  if (it_mode != m_statSum.end())
+    mode = true;
+  
 
 // Parameters to get the percentage of classes by area
   bool percentByArea = false;
@@ -169,6 +184,14 @@ bool te::attributefill::RasterToVector::run()
 
     if (remap)
       geom->transform(m_inRaster->getSRID());
+
+
+// Add Item in DataSet if geom does not intersects the raster envelope and continue to the next dataSet item.
+    if(!env->intersects(*geom->getMBR()))
+    {
+      outDataset->add(outDSetItem);
+      continue;
+    }
 
     double area = 0;
 
@@ -264,6 +287,8 @@ bool te::attributefill::RasterToVector::run()
                               }
                               break;
       }
+      default:
+        continue;
     }
 
     std::size_t init_index = m_inVectorDsType->getResult()->getProperties().size();
@@ -274,6 +299,9 @@ bool te::attributefill::RasterToVector::run()
       for (std::size_t band = 0; band < valuesFromRaster.size(); ++band)
       {
         te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
+
+        if (mode)
+          te::stat::Mode(valuesFromRaster[band], summary);
 
         if (percentByArea)
           te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary, contains);

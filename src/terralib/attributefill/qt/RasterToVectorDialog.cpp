@@ -378,6 +378,18 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  const te::da::ObjectIdSet* oidSet = 0;
+
+  if(m_ui->m_onlySelectedCheckBox->isChecked())
+  {
+    oidSet = dsVectorLayer->getSelected();
+    if(!oidSet)
+    {
+      QMessageBox::information(this, "Fill", "Select the layer objects to perform the raster to vector operation.");
+      return;
+    }
+  }
+
   te::da::DataSourcePtr inVectorDataSource = te::da::GetDataSource(dsVectorLayer->getDataSourceId(), true);
   if (!inVectorDataSource.get())
   {
@@ -465,7 +477,8 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
       rst2vec->setInput(inputRst.get(),
                         inVectorDataSource, 
                         dsVectorLayer->getDataSetName(),
-                        converterVector);
+                        converterVector,
+                        oidSet);
 
       rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
@@ -530,7 +543,8 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
       rst2vec->setInput(inputRst.get(),
                         inVectorDataSource,
                         dsVectorLayer->getDataSetName(),
-                        converterVector);
+                        converterVector,
+                        oidSet);
 
       rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
