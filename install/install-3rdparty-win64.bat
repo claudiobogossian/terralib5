@@ -17,25 +17,6 @@ set INCLUDE=%WIN32MAK_FILEPATH%;%INCLUDE%
 :: Building libraries
 ::  ==================
 
-
-:: BOOST
-set B_DIR=%CD%\boost_1_58_0
-
-  echo | set /p="Installing boost... "<nul
-  
-  cd %B_DIR%
-
-  call bootstrap.bat vc12 setup-amd64 >nul 2>nul
-  
-  b2 -j4 toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged install  >nul 2>nul
-  
-  echo done.
-
-  cd %B_DIR%\..
-:: ====
-
-set CL=/MP
-
 :: BZIP2
 ::  =========================================
 set BZIP2_DIR=%CD%\bzip2-1.0.6
@@ -639,6 +620,24 @@ set XML2D_LIBRARY=%XML2_DIR%\win32\bin.dbg.msvc\libxml2d.lib
 
   cd %XML2_DIR%\..
 ::  ====
+
+
+:: BOOST
+set B_DIR=%CD%\boost_1_58_0
+
+  echo | set /p="Installing boost... "<nul
+  
+  cd %B_DIR%
+
+  call bootstrap.bat vc12 setup-amd64 >nul 2>nul
+  
+  b2 -j4 toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --layout=tagged install  >nul 2>nul
+  
+  echo done.
+
+  cd %B_DIR%\..
+:: ====
+
 
 :: libxslt
 :: set XSLT_DIR=%CD%\libxslt-1.1.28
