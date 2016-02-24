@@ -137,7 +137,7 @@ namespace te {
 
 /* %include "terralib/datatype/DataConverterManager.h"
 
- %include "terralib/datatype/IntegerConverters.h" */
+%include "terralib/datatype/IntegerConverters.h" */
 
 %include "terralib/datatype/NumericProperty.h"
 %include "terralib/datatype/SimpleData.h"
