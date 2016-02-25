@@ -917,6 +917,38 @@ set SPLITED_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\spatialite_id.lib
 :: ====
 
 
+:: GDAL version 2.0.0
+set GDAL_DIR=%CD%\gdal-2.0.0
+set GDAL_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
+set GDAL_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\gdal_i.lib
+set GDALD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\gdal_id.lib
+
+  echo | set /p="Installing gdal... "<nul
+  
+  cd %GDAL_DIR%
+
+  IF EXIST nmake.opt del /s nmake.opt >nul 2>nul  
+  copy nmake.release.opt.in nmake.opt >nul 2>nul
+  
+  nmake -f makefile.vc MSVC_VER=1800 >nul 2>nul
+  
+  nmake -f makefile.vc MSVC_VER=1800 devinstall >nul 2>nul
+
+  nmake /f makefile.vc clean >nul 2>nul
+
+  del /s nmake.opt >nul 2>nul  
+  copy nmake.debug.opt.in nmake.opt >nul 2>nul
+  
+  nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 >nul 2>nul
+  
+  xcopy *.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  copy gdal_id.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+    
+  echo done.
+
+  cd %GDAL_DIR%\..
+:: ====
+
 :: QtPropertyBrowser
 set QBROWSER_DIR=%CD%\qtpropertybrowser
 set QBROWSER_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include\qtpropertybrowser
