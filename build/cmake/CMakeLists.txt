@@ -260,7 +260,7 @@ endif()
 
 find_package(Proj4)
 
-find_package(Qt5 5.1 QUIET COMPONENTS Core Gui Widgets)
+find_package(Qt5 5.1 QUIET COMPONENTS Core Gui Widgets PrintSupport)
 
 if(NOT Qt5_FOUND)
   find_package(Qt4 4.6.3 QUIET COMPONENTS QtCore QtGui)
