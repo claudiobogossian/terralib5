@@ -454,3 +454,8 @@ void te::edit::VertexTool::storeUndoCommand()
     UndoStackManager::getInstance().addUndoStack(command);
 
 }
+
+void te::edit::VertexTool::cancelEditionTool()
+{
+  reset();
+}

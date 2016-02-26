@@ -72,3 +72,6 @@ void te::edit::SplitPolygonTool::onExtentChanged()
 {
   //draw();
 }
+
+void te::edit::SplitPolygonTool::cancelEditionTool()
+{}

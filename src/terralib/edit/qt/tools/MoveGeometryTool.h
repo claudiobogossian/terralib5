@@ -97,6 +97,8 @@ namespace te
 
         //@}
 
+        void cancelEditionTool();
+
       private:
 
         void reset();

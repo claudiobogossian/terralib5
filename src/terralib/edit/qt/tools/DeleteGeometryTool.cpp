@@ -135,3 +135,5 @@ void te::edit::DeleteGeometryTool::updateCursor()
   m_display->setCursor(Qt::ArrowCursor);
 }
 
+void te::edit::DeleteGeometryTool::cancelEditionTool()
+{}

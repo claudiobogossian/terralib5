@@ -232,3 +232,6 @@ void te::edit::MoveGeometryTool::storeUndoCommand()
   UndoStackManager::getInstance().addUndoStack(command);
 
 }
+
+void te::edit::MoveGeometryTool::cancelEditionTool()
+{}

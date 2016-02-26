@@ -70,6 +70,8 @@ namespace te
 
       void setInUse(const bool& status);
 
+      virtual void cancelEditionTool();
+
     Q_SIGNALS:
 
       void geometriesEdited();
