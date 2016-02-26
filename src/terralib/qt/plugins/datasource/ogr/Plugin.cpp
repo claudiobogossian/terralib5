@@ -315,14 +315,14 @@ void te::qt::plugins::ogr::Plugin::showWindow()
         }
         catch (const te::common::Exception& e)
         {
-          QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Erro creating spatial index.");
+          QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Error creating spatial index.");
 
           QApplication::restoreOverrideCursor();
 
         }
         catch (std::exception& e)
         {
-          QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Erro creating spatial index.");
+          QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Error creating spatial index.");
 
           QApplication::restoreOverrideCursor();
         }
