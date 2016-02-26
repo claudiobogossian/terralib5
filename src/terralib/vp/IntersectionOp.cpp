@@ -185,10 +185,8 @@ std::vector<te::dt::Property*> te::vp::IntersectionOp::getTabularProps(te::da::D
   {
     prop = dsType->getProperty(i);
 
-    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE) 
-    {
+    if(prop->getType() != te::dt::GEOMETRY_TYPE)
       props.push_back(prop);
-    }
   }
 
   return props;

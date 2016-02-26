@@ -442,5 +442,8 @@ void te::edit::EditInfoTool::draw()
 void te::edit::EditInfoTool::updateCursor()
 {
   m_display->setCursor(Qt::WhatsThisCursor);
-
 }
+
+void te::edit::EditInfoTool::cancelEditionTool()
+{}
+
