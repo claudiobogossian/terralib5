@@ -17,6 +17,151 @@ set INCLUDE=%WIN32MAK_FILEPATH%;%INCLUDE%
 :: Building libraries
 ::  ==================
 
+:: Expat version 2.1.0
+set EXPAT_DIR=%CD%\expat-2.1.0
+set EXPAT_INCLUDE_DIR=%EXPAT_DIR%\binaries\include
+set EXPAT_LIBRARY=%EXPAT_DIR%\binaries\lib\expat.lib
+set EXPATD_LIBRARY=%EXPAT_DIR%\binaries\lib\expatd.lib
+
+  echo | set /p="Installing expat... "<nul
+  
+  cd %EXPAT_DIR%
+
+  IF NOT EXIST build mkdir build
+
+  cd build
+
+  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%EXPAT_DIR%\binaries^
+ -DCMAKE_INSTALL_PREFIX=%EXPAT_DIR%\binaries^
+ -DCMAKE_DEBUG_POSTFIX=d .. >nul 2>nul
+
+  msbuild /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
+  msbuild /m INSTALL.vcxproj >nul 2>nul
+  
+  xcopy %EXPAT_DIR%\binaries\bin\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+
+  echo done.
+
+  cd %EXPAT_DIR%\..
+:: ====
+
+:: APR-1.5.2
+::  =========================================
+set APACHE_INSTALL_DIR=%CD%\install
+
+set APR_DIR=%CD%\apr-1.5.2
+set APR_INCLUDE_DIR=%APACHE_INSTALL_DIR%\include
+set APR_LIBRARY=%APACHE_INSTALL_DIR%\lib\libapr-1.lib
+set APRD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libapr-1d.lib
+
+  cd %APR_DIR%
+
+  echo | set /p="Installing apr... "<nul
+  
+  IF NOT EXIST building mkdir building
+
+  cd building
+
+  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%APR_DIR%\..\install -DCMAKE_DEBUG_POSTFIX="d" -DINSTALL_PDB=FALSE .. >nul 2>nul 
+
+  msbuild /m INSTALL.vcxproj /p:Configuration=Release >nul 2>nul
+
+  msbuild /m INSTALL.vcxproj /p:Configuration=Debug >nul 2>nul
+   
+  echo done.
+
+  cd ..\..
+::  ================================
+
+:: APRUTIL-1.5.4
+::  =========================================
+set APRUTIL_DIR=%CD%\apr-util-1.5.4
+set APRUTIL_INCLUDE_DIR=%APACHE_INSTALL_DIR%\include
+set APRUTIL_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1.lib
+set APRUTILD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1d.lib
+
+  cd %APRUTIL_DIR%
+
+  echo | set /p="Installing apr-util... "<nul
+  
+  IF NOT EXIST building\Release mkdir building\Release
+  IF NOT EXIST building\Debug mkdir building\Debug
+
+  cd building\Release
+
+  cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%" -DCMAKE_BUILD_TYPE="Release"^
+  -D_OPENSSL_VERSION="1.1.0"^
+  -DOPENSSL_INCLUDE_DIR="%SSL_INCLUDE_DIR%"^
+  -DLIB_EAY_LIBRARY_DEBUG="%EAYD_LIBRARY%"^
+  -DLIB_EAY_LIBRARY_RELEASE="%EAY_LIBRARY%"^
+  -DSSL_EAY_LIBRARY_DEBUG="%SSLD_LIBRARY%"^
+  -DSSL_EAY_LIBRARY_RELEASE="%SSL_LIBRARY%"^
+  -DXMLLIB_LIBRARIES:STRING="debug;%EXPATD_LIBRARY%;optimized;%EXPAT_LIBRARY%"^
+  -DXMLLIB_INCLUDE_DIR="%EXPAT_INCLUDE_DIR%"^
+  -DAPR_INCLUDE_DIR="%APACHE_INSTALL_DIR%/include"^
+  -DAPR_LIBRARIES="%APR_LIBRARY%" ..\.. >nul 2>nul
+  
+  nmake install >nul 2>nul
+   
+  cd ..\Debug
+
+  cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%" -DCMAKE_BUILD_TYPE="Debug"^
+  -D_OPENSSL_VERSION="1.1.0"^
+  -DCMAKE_DEBUG_POSTFIX=d^
+  -DOPENSSL_INCLUDE_DIR="%SSL_INCLUDE_DIR%"^
+  -DLIB_EAY_LIBRARY_DEBUG="%EAYD_LIBRARY%"^
+  -DLIB_EAY_LIBRARY_RELEASE="%EAY_LIBRARY%"^
+  -DSSL_EAY_LIBRARY_DEBUG="%SSLD_LIBRARY%"^
+  -DSSL_EAY_LIBRARY_RELEASE="%SSL_LIBRARY%"^
+  -DXMLLIB_LIBRARIES:STRING="debug;%EXPATD_LIBRARY%;optimized;%EXPAT_LIBRARY%"^
+  -DXMLLIB_INCLUDE_DIR="%EXPAT_INCLUDE_DIR%"^
+  -DAPR_INCLUDE_DIR="%APACHE_INSTALL_DIR%/include"^
+  -DAPR_LIBRARIES="%APRD_LIBRARY%" -DINSTALL_PDB=FALSE ..\.. >nul 2>nul
+  
+  nmake install >nul 2>nul
+     
+  echo done.
+  
+  cd %APRUTIL_DIR%\..
+::  ================================
+
+::log
+
+:: Log4cxx-0.10.0
+::  =========================================
+set LOG4CXX_DIR=%CD%\apache-log4cxx-0.10.0
+
+  cd %LOG4CXX_DIR%\projects
+
+  echo | set /p="Installing log4cxx... "<nul
+  
+  msbuild /m log4cxx.sln /p:Configuration=Release >nul 2>nul
+
+  msbuild /m log4cxx.sln >nul 2>nul
+
+  IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx mkdir %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx
+  
+  xcopy ..\src\main\include\log4cxx %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx /S /Y >nul 2>nul
+
+  copy Debug\log4cxxd.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  copy Debug\log4cxxd.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+
+  copy Release\log4cxx.lib %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  copy Release\log4cxx.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  
+  copy %APACHE_INSTALL_DIR%\bin\libapr-1.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  copy %APACHE_INSTALL_DIR%\bin\libapr-1d.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+
+  copy %APACHE_INSTALL_DIR%\bin\libaprutil-1.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+  copy %APACHE_INSTALL_DIR%\bin\libaprutil-1d.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
+   
+  echo done.
+
+  cd %LOG4CXX_DIR%\..
+::  ================================
+
+::pause
+
 :: BZIP2
 ::  =========================================
 set BZIP2_DIR=%CD%\bzip2-1.0.6
@@ -390,7 +535,6 @@ set MFHDFD_LIBRARY=%HDF4C_DIR%\binaries\lib\mfhdfddll.lib
   cd %HDF4C_DIR%\..
 :: ====
 
-
 ::  TIFF 
 set TIFF_DIR=%CD%\tiff-4.0.3
 set TIFF_INCLUDE_DIR=%TIFF_DIR%\libtiff
@@ -492,7 +636,6 @@ set EAYD_LIBRARY=%SSL_DIR%\out32dll.dbg\libeay32d.lib
   
   cd ..
 ::  ====
-
 
 ::  CURL 
 set CURL_DIR=%CD%\curl-7.42.1
@@ -773,33 +916,6 @@ set SPLITED_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\spatialite_id.lib
   cd %SPLITE_DIR%\..
 :: ====
 
-:: Expat version 2.1.0
-set EXPAT_DIR=%CD%\expat-2.1.0
-set EXPAT_INCLUDE_DIR=%EXPAT_DIR%\binaries\include
-set EXPAT_LIBRARY=%EXPAT_DIR%\binaries\lib\expat.lib
-set EXPATD_LIBRARY=%EXPAT_DIR%\binaries\lib\expatd.lib
-
-  echo | set /p="Installing expat... "<nul
-  
-  cd %EXPAT_DIR%
-
-  IF NOT EXIST build mkdir build
-
-  cd build
-
-  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX=%EXPAT_DIR%\binaries^
- -DCMAKE_INSTALL_PREFIX=%EXPAT_DIR%\binaries^
- -DCMAKE_DEBUG_POSTFIX=d .. >nul 2>nul
-
-  msbuild /m /p:Configuration=Release INSTALL.vcxproj >nul 2>nul
-  msbuild /m INSTALL.vcxproj >nul 2>nul
-  
-  xcopy %EXPAT_DIR%\binaries\bin\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul
-
-  echo done.
-
-  cd %EXPAT_DIR%\..
-:: ====
 
 :: GDAL version 2.0.0
 set GDAL_DIR=%CD%\gdal-2.0.0
