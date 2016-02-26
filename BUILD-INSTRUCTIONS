@@ -4,7 +4,7 @@
 
 The build/cmake folder contains a CMake project for building TerraLib.
 
-Until now its build has been tested on Linux Ubuntu 12.04, Mac OS X Mavericks and Microsoft Windows 7.
+Until now its build has been tested on Linux Ubuntu 12.04, Mac OS X Mavericks and Microsoft Windows 7 and Microsoft Windows 10.
 
 Future releases will be tested on Mac OS X Snow Leopard, Microsoft Windows 8 and others Linux flavours.
 
@@ -72,14 +72,14 @@ a) We will assume that the TerraLib source tree (git clone) is located at:
 
 b) We will assume that the third party libraries for Visual Studio 2013, can be obtained from two places:
    b.1) The tagged version:  
-     http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.0.1-3rdparty-msvc-2013-win64.zip
+     http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.1.0-3rdparty-msvc-2013-win64.zip
            or
-     http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.0.1-3rdparty-msvc-2013-win32.zip
+     http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.1.0-3rdparty-msvc-2013-win32.zip
 		   
    b.2) The most updated version used by developers (might not work with different tags): 
-     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win64.zip
+     http://www.dpi.inpe.br/terralib5-devel/3rdparty-bin/terralib5-3rdparty-msvc-2013-win64.zip
            or
-     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win32.zip
+     http://www.dpi.inpe.br/terralib5-devel/3rdparty-bin/terralib5-3rdparty-msvc-2013-win32.zip
    
 are uncompressed at :
    
@@ -104,39 +104,60 @@ g) Then add an entry called CMAKE_PREFIX_PATH with the libraries location (separ
 
   * TerraLib 5 Third party => C:/terralib/terralib5-3rdparty-msvc-2013-win64
   * Qt CMake => look for the Qt dir containing ''Qt5Config.cmake''
+  * Terralib4 Cmake => look for the dir containing terralib4Config.cmake under TerraLib 5 Third party dir
 
 Example for win64: Press ''AddEntry'' button and inform the name ''CMAKE_PREFIX_PATH'', type ''PATH'' and set its value as:   
-   CMAKE_PREFIX_PATH => C:/terralib5-3rdparty-msvc-2013-win64;C:/Qt/Qt5.4.1/5.4/msvc2013_64/lib/cmake/Qt5
+   CMAKE_PREFIX_PATH => C:/terralib/terralib5-3rdparty-msvc-2013-win64;C:/terralib/terralib5-3rdparty-msvc-2013-win64/lib/cmake/terralib-4.2.2;C:/Qt/Qt5.4.1/5.4/msvc2013_64/lib/cmake/Qt5
  
-Example for win32: Press ''AddEntry'' button and inform the name ''CMAKE_PREFIX_PATH'', type ''PATH'' and set its value as:   
-   CMAKE_PREFIX_PATH => C:/terralib5-3rdparty-msvc-2013-win32;C:/Qt/Qt5.4.1/5.4/msvc2013_opengl/lib/cmake/Qt5
- 
-
 h) Then press "''Configure''" and choose:
   * "''Visual Studio 12 x64''" (win64) or "''Visual Studio 12''" (win32) and 
-  * if no problem occurs press "''Generate''". Otherwise update your environment variable "PATH" with the right location of Qt and third party library (see item "j").
+  * if no problem occurs: 
+  
+   Set the following variables:
+     CPACK => See the CPACK entries and keep ON just the NSIS package generator (used in release). All other kind of packages must be disabled.
+     TERRALIB_BUILD_AS_BUNDLE => ON
+	 TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
+     TERRALIB_QHELP_ENABLED => ON
 
-Note: Some projects may be disabled through the following variables(in this case press again "Configure" and "Generate"):
-        TERRALIB_BUILD_EXAMPLES_ENABLED => OFF
-        TERRALIB_BUILD_UNITTEST_ENABLED => OFF
-
-i) Open the generated ''terralib.sln'' solution at the folder ''C:\terralib\build-win64'' or ''C:\terralib\build-win32''. Then build the "''ALL_BUILD''" project to build all terralib projects, including terraview application. To build the help associated with TerraView application, it is necessary to build "''terralib_qhelp''" and "''terralib_qtranslations''".
+   Some project may be disabled through the following variables:
+     TERRALIB_DOXYGEN_ENABLED => OFF  => if you want to distribute the API documentation this should be turn to on. But keep in mind that this option may take a considerable time, so you should do this only for final tests.
+     TERRALIB_BUILD_EXAMPLES_ENABLED => OFF
+     TERRALIB_BUILD_UNITTEST_ENABLED => OFF
+	   
+   Press ''Configure'' and ''Generate'' again.
+   
+  * Otherwise update your environment variable "PATH" with the right location of Qt and third party library (see item "j").
+   
+i) Open the generated ''terralib.sln'' solution at the folder ''C:\terralib\build-win64'' or ''C:\terralib\build-win32''. 
+Then build the "''ALL_BUILD''" project to build all terralib projects, including ''terraview'' application. 
+To build the help associated with TerraView application, it is necessary to build "''terralib_qhelp''" and 
+to have the translations available it is necessary to build "''terralib_qtranslations''".
    
 j) To be able to debug, add to your environment variable "PATH" the following:
-  For 64 bits: C:\terralib5-3rdparty-msvc-2013-win64\lib;C:\Qt\Qt5.4.1\5.4\msvc2013_64\bin
+  For 64 bits: C:\terralib\terralib5-3rdparty-msvc-2013-win64\lib;C:\Qt\Qt5.4.1\5.4\msvc2013_64\bin
 
 k) To run and debug TerraView application, set terraview module as StartUp Project at Microsoft Visual C++ 2013.
 
-l) To run and debug an terralib_example_* and/or terralib_unitest_*  set it as ''StartUp'' Project and 
+l) If you already have the same TerraView version installed, the environmental variable TERRALIB_HOME is defined, 
+and there are two other files (TerraView-5.x.x.ini and datasources.xml) associated with the installed version (5.x.x): 
+located at C:/Users/username/AppData/Roaming/INPE/TerraView-5.1.0.ini
+           C:/Users/username/AppData/Local/terraview/datasources.xml 
+		   
+To work as a "developer" using Visual Studio to build, please remove TERRALIB_HOME variable to avoid problems 
+related with loading/unloading plugins.
+Also, it is recommended to remove the two files mentioned and uninstall TerraView, before start TerraView under Visual Studio (debug or release).
+
+m) To Start the ''release'' version under Visual Studio, set the Terraview Properties -> Configuration Properties -> Debugging -> Environment with:
+PATH=C:\terralib\terralib5-3rdparty-msvc-2013-win64\lib;C:\Qt\Qt5.4.1\5.4\msvc2013_64\bin
+
+n) To run and debug an terralib_example_* and/or terralib_unitest_*  set it as ''StartUp'' Project and 
    make sure the the data ([[http://www.dpi.inpe.br/terralib5-devel/data.zip| data.zip]]) used are uncompressed at the default directory 
    specified by TERRALIB_DATA_DIR :   
    TERRALIB_DATA_DIR   C:\terralib\build-win32\data     or   C:\terralib\build-win64\data
    
-m) Make sure the default directory used to save the reports generated by the unittests exist, otherwise no report will be saved:
+o) Make sure the default directory used to save the reports generated by the unittests exist, otherwise no report will be saved:
    TERRALIB_REPORT_DIR   C:\terralib\build-win32\report  or C:\terralib\build-win64\report
 
-n) If you have any TerraView version installed, the environmental variable TERRALIB_HOME is defined. 
-To work as a "developer" using Visual Studio to build, please remove this variable to avoid problems related with loading/unloading plugins,
 
 2.2 On MacOs and Linux:
 
@@ -150,7 +171,7 @@ c) We will assume that all the third-party libraries that TerraLib needs to be c
    are installed in your system, and the Qt5 version is used.
    
    Note: Some QT5 related variables may not be automatically set (they have "NOT-FOUND" values) and must be set manually.
-	 Example: QT_QCOLLECTIONGENERATOR_EXECUTABLE (required by the help system) must point the refered executable.
+	 Example: QT_QCOLLECTIONGENERATOR_EXECUTABLE (required by the help system) must point the refereed executable.
          (i.e. "/usr/bin/qcollectiongenerator-qt5")
 
 d) Open CMake-GUI in order to generate a build project for MacOS or Linux:
@@ -190,4 +211,4 @@ k) Make sure the default directory used to save the reports generated by the ter
 For more information on TerraLib, please, visit its main web page at: http://www.terralib.org.
 
 
-  September 2015, TerraLib Team <terralib-team@dpi.inpe.br>
+  February 2016, TerraLib Team <terralib-team@dpi.inpe.br>
