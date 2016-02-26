@@ -40,6 +40,7 @@
 #include "../../../../rp/Functions.h"
 #include "../../../../rp/RasterHandler.h"
 #include "../core/form/Serializer.h"
+#include "../geopackage/Utils.h"
 #include "utils.h"
 
 void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, te::da::DataSetType* dataType, std::auto_ptr<te::da::DataSet> dataset, std::string outFileName)
@@ -190,23 +191,23 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
       if (multiResLevel > 0)
         outRaster->createMultiResolution(multiResLevel, te::rst::NearestNeighbor);
 
-      te::gdal::copyToGeopackage(outRaster, outFileName);
+      te::gpkg::copyToGeopackage(outRaster, outFileName);
     }
     boost::filesystem::remove(file);
   }
   else
-    te::gdal::copyToGeopackage(raster.get(), outFileName);
+    te::gpkg::copyToGeopackage(raster.get(), outFileName);
 }
 
 std::auto_ptr<te::da::DataSource> te::qt::plugins::terramobile::createGeopackage(std::string gpkgName)
 {
-  te::gdal::createGeopackage(gpkgName);
+  te::gpkg::createGeopackage(gpkgName);
 
   //create data source
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = gpkgName;
 
-  std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("OGR");
+  std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("GPKG");
   dsGPKG->setConnectionInfo(connInfo);
   dsGPKG->open();
 
@@ -222,7 +223,7 @@ std::auto_ptr<te::da::DataSource> te::qt::plugins::terramobile::createGeopackage
 
   //Layer Form
   std::string sql3 = "CREATE TABLE IF NOT EXISTS tm_layer_form ";
-  sql3 += "(tm_conf_id INTEGER PRIMARY KEY AUTOINCREMENT, gpkg_layer_identify TEXT NOT NULL, tm_form TEXT, tm_media_table TEXT,";
+  sql3 += "(tm_conf_id INTEGER PRIMARY KEY AUTOINCREMENT, gpkg_layer_identify TEXT NOT NULL, tm_form TEXT, tm_media_table TEXT, tm_state INTEGER  NOT NULL, ";
   sql3 += "CONSTRAINT fk_layer_identify_id FOREIGN KEY (gpkg_layer_identify) REFERENCES gpkg_contents(table_name));";
   
   //General Settings

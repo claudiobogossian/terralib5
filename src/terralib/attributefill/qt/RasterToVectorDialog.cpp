@@ -284,12 +284,14 @@ void te::attributefill::RasterToVectorDialog::onVectorComboBoxChanged(int index)
         m_ui->m_statisticsListWidget->addItem("Mode");
         m_ui->m_statisticsListWidget->addItem("Percent of each class by area");
 
+        m_isStatistical = true;
         m_ui->m_textureCheckBox->setEnabled(true);
       }
       else
       {
         m_ui->m_statisticsListWidget->addItem("Value");
 
+        m_isStatistical = false;
         m_ui->m_textureCheckBox->setChecked(false);
         m_ui->m_textureCheckBox->setEnabled(false);
       }
@@ -376,6 +378,18 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  const te::da::ObjectIdSet* oidSet = 0;
+
+  if(m_ui->m_onlySelectedCheckBox->isChecked())
+  {
+    oidSet = dsVectorLayer->getSelected();
+    if(!oidSet)
+    {
+      QMessageBox::information(this, "Fill", "Select the layer objects to perform the raster to vector operation.");
+      return;
+    }
+  }
+
   te::da::DataSourcePtr inVectorDataSource = te::da::GetDataSource(dsVectorLayer->getDataSourceId(), true);
   if (!inVectorDataSource.get())
   {
@@ -390,8 +404,11 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  std::vector<te::stat::StatisticalSummary> vecStatistics;
+  
+  if (m_isStatistical)
+    vecStatistics = getSelectedStatistics();
 
-  std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
   m_texture = m_ui->m_textureCheckBox->isChecked();
   
   bool isValueOptionSelected = getValueOption();
@@ -460,7 +477,8 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
       rst2vec->setInput(inputRst.get(),
                         inVectorDataSource, 
                         dsVectorLayer->getDataSetName(),
-                        converterVector);
+                        converterVector,
+                        oidSet);
 
       rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
@@ -525,7 +543,8 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
       rst2vec->setInput(inputRst.get(),
                         inVectorDataSource,
                         dsVectorLayer->getDataSetName(),
-                        converterVector);
+                        converterVector,
+                        oidSet);
 
       rst2vec->setParams(vecBands, vecStatistics, m_texture);
 

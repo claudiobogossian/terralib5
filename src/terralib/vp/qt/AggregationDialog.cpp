@@ -191,9 +191,17 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
 
   for(int i = 0; i != m_ui->m_propertieslistWidget->count(); ++i)
   {
-    if(m_ui->m_propertieslistWidget->isItemSelected(m_ui->m_propertieslistWidget->item(i)))
+    QListWidgetItem* item = m_ui->m_propertieslistWidget->item(i);
+
+    if(m_ui->m_propertieslistWidget->isItemSelected(item))
     {
-      selProperties.push_back(m_properties[i]);
+      std::string name = item->text().toStdString();
+
+      for(std::size_t j = 0; j < m_properties.size(); ++j)
+      {
+        if(name == m_properties[j]->getName())
+          selProperties.push_back(m_properties[j]);
+      }
     }
   }
 

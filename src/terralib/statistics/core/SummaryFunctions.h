@@ -94,16 +94,18 @@ namespace te
     /*! Returns the mode of set of numerical values.
      
      \param values  a reference to a set of numerical values. Do not pass empty.
-     \return The mode (most frequent value).
+     \param ss      to return the mode (most frequent value).
      */
-    TESTATEXPORT std::vector<double> Mode(const std::vector<double>& values);
+    TESTATEXPORT void Mode(const std::vector<double>& values,
+                           te::stat::NumericStatisticalSummary& ss);
     
     /*! Returns the mode of set of categorical values.
      
      \param values  a reference to a set of categorical values;
-     \return The mode (most frequent value).
+     \param ss      to return the mode (most frequent value).
      */
-    TESTATEXPORT std::string Mode(const std::vector<std::string>& values);
+    TESTATEXPORT void Mode(const std::vector<std::string>& values,
+                           te::stat::StringStatisticalSummary& ss);
     
     
     /*! Fills the summary statistics structure of a given categorical property from a dataset.

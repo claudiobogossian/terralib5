@@ -18,21 +18,20 @@
  */
 
 /*!
-  \file terralib/module/Config.h
+  \file terralib/ogr/Exception.cpp
 
-  \brief TerraLib Module Manager configuration flags.
+  \brief An exception class for the OGR module.
 */
 
-#ifndef __TERRALIB_MODULE_CONFIG_H__
-#define __TERRALIB_MODULE_CONFIG_H__
+// TerraLib
+#include "Exception.h"
 
-#if defined(WIN32) && defined(terralib_mod_manager_EXPORTS)
-    #define TEMODULEEXPORT  __declspec(dllexport)
-#elif defined(WIN32)
-    #define TEMODULEEXPORT  __declspec(dllimport)
-#else
-  #define TEMODULEEXPORT
-#endif
+namespace te
+{
+  namespace gpkg
+  {
+    TE_DEFINE_EXCEPTION_CLASS(Exception, te::common::Exception, "te::gpkg::Exception")
 
-#endif  // __TERRALIB_MODULE_CONFIG_H__
+  } // end namespace ogr
+}   // end namespace te
 

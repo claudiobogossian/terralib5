@@ -80,25 +80,29 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
     {
       te::stat::GetStringStatisticalSummary(values, ss);
       m_ui->m_statTableWidget->setRowCount(0);
-      
+
+// Minimum value
       m_ui->m_statTableWidget->insertRow(0);
       QTableWidgetItem* itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()));
       QTableWidgetItem* itemValue = new QTableWidgetItem(QString(ss.m_minVal.c_str()));
       m_ui->m_statTableWidget->setItem(0, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(0, 1, itemValue);
 
+// Maximum value
       m_ui->m_statTableWidget->insertRow(1);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()));
       itemValue = new QTableWidgetItem(QString(ss.m_maxVal.c_str()));
       m_ui->m_statTableWidget->setItem(1, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(1, 1, itemValue);
 
+// Total number of values
       m_ui->m_statTableWidget->insertRow(2);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()));
       itemValue = new QTableWidgetItem(QString(QString(boost::lexical_cast<std::string>(m_dset->size()).c_str())));
       m_ui->m_statTableWidget->setItem(2, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(2, 1, itemValue);
 
+// Total not null values
       m_ui->m_statTableWidget->insertRow(3);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()));
       itemValue = new QTableWidgetItem(QString(QString(boost::lexical_cast<std::string>(values.size()).c_str())));
@@ -118,83 +122,99 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
     {
       te::stat::GetNumericStatisticalSummary(values, ss);
 
+// Minimum value
       m_ui->m_statTableWidget->insertRow(0);
       QTableWidgetItem* itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()));
       QTableWidgetItem* itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_minVal).c_str()));
       m_ui->m_statTableWidget->setItem(0, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(0, 1, itemValue);
 
+// Maximum value
       m_ui->m_statTableWidget->insertRow(1);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_maxVal).c_str()));
       m_ui->m_statTableWidget->setItem(1, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(1, 1, itemValue);
 
+// Total number of values
       m_ui->m_statTableWidget->insertRow(2);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(m_dset->size()).c_str()));
       m_ui->m_statTableWidget->setItem(2, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(2, 1, itemValue);
 
+// Total not null values
       m_ui->m_statTableWidget->insertRow(3);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(values.size()).c_str()));
       m_ui->m_statTableWidget->setItem(3, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(3, 1, itemValue);
 
+// Mean of values
       m_ui->m_statTableWidget->insertRow(4);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_mean).c_str()));
       m_ui->m_statTableWidget->setItem(4, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(4, 1, itemValue);
 
+// Sum of values
       m_ui->m_statTableWidget->insertRow(5);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_sum).c_str()));
       m_ui->m_statTableWidget->setItem(5, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(5, 1, itemValue);
 
+// Standard deviation
       m_ui->m_statTableWidget->insertRow(6);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_stdDeviation).c_str()));
       m_ui->m_statTableWidget->setItem(6, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(6, 1, itemValue);
 
+// Variance
       m_ui->m_statTableWidget->insertRow(7);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_variance).c_str()));
       m_ui->m_statTableWidget->setItem(7, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(7, 1, itemValue);
 
+// Skewness
       m_ui->m_statTableWidget->insertRow(8);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::SKEWNESS).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_skewness).c_str()));
       m_ui->m_statTableWidget->setItem(8, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(8, 1, itemValue);
 
+// Kurtosis
       m_ui->m_statTableWidget->insertRow(9);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::KURTOSIS).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_kurtosis).c_str()));
       m_ui->m_statTableWidget->setItem(9, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(9, 1, itemValue);
 
+// Amplitude
       m_ui->m_statTableWidget->insertRow(10);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_amplitude).c_str()));
       m_ui->m_statTableWidget->setItem(10, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(10, 1, itemValue);
 
+// Median
       m_ui->m_statTableWidget->insertRow(11);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_median).c_str()));
       m_ui->m_statTableWidget->setItem(11, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(11, 1, itemValue);
 
+// Coefficient variation.
       m_ui->m_statTableWidget->insertRow(12);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()));
       itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_varCoeff).c_str()));
       m_ui->m_statTableWidget->setItem(12, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(12, 1, itemValue);
+
+// Mode.
+      te::stat::Mode(values, ss);
 
       m_ui->m_statTableWidget->insertRow(13);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()));

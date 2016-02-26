@@ -66,7 +66,8 @@ namespace te
       void setInput(te::rst::Raster* inRaster,
                     te::da::DataSourcePtr inVectorDsrc,
                     std::string inVectorName,
-                    std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType);
+                    std::auto_ptr<te::da::DataSetTypeConverter> inVectorDsType,
+                    const te::da::ObjectIdSet* oidSet = 0);
 
       void setParams(std::vector<unsigned int> bands,
                      std::vector<te::stat::StatisticalSummary> statSum,
@@ -94,6 +95,7 @@ namespace te
       te::da::DataSourcePtr m_inVectorDsrc;
       std::string m_inVectorName;
       std::auto_ptr<te::da::DataSetTypeConverter> m_inVectorDsType;
+      const te::da::ObjectIdSet* m_oidSet;
 
       std::vector<te::stat::StatisticalSummary> m_statSum;
       std::vector<unsigned int> m_bands;
