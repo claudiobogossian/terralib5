@@ -16,6 +16,8 @@
 #include "../../../../se/Style.h"
 #include "../../../../se/Utils.h"
 
+#include "../../../../srs/SpatialReferenceSystemManager.h"
+
 QString GetDataSetName(te::map::AbstractLayerPtr l)
 {
   // Gets the data set name
@@ -54,6 +56,8 @@ QString GetTooltip(te::map::AbstractLayerPtr l)
 
   toolTip += QObject::tr("SRID: ");
   toolTip += QString::number(l->getSRID());
+  toolTip += QObject::tr(" -  ");
+  toolTip += QString(te::srs::SpatialReferenceSystemManager::getInstance().getName(l->getSRID()).c_str());
 
   return toolTip;
 }
