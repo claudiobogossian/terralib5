@@ -243,7 +243,7 @@ void te::qt::af::MapDisplay::fit(const std::list<te::map::AbstractLayerPtr>& lay
 
   m_display->setLayerList(layers);
 
-  m_display->refresh();
+  m_display->refresh(true);
 
   if(m_zoomInDisplay)
     m_zoomInDisplay->setList(visibleLayers, m_display->getSRID());

@@ -109,7 +109,7 @@ namespace te
 
           virtual void setExtent(te::gm::Envelope& e, bool doRefresh = true);
 
-          virtual void refresh();
+          virtual void refresh(bool redraw = false);
 
           unsigned int getWidth() const;
 
@@ -317,7 +317,7 @@ namespace te
           QTimer* m_timer;             //!< Timer to execute redraw on resize action.
           int m_interval;              //!< Timeout interval in milliseconds to redraw.
           bool m_isDrawing;            //!< A flag that indicates if the map display is drawing.
-          std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*> m_layerCanvasMap; //!< A map that associates a layer to a canvas.
+//          std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*> m_layerCanvasMap; //!< A map that associates a layer to a canvas.
           mutable double m_scale;      //!< Current calculated scale
           int m_overridedDpiX;          //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
           int m_overridedDpiY;          //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.

@@ -120,6 +120,8 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
   // Adjust internal renderer transformer
   m_transformer.setTransformationParameters(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury, canvas->getWidth(), canvas->getHeight());
 
+  canvas->setWindow(reprojectedBBOX.m_llx, reprojectedBBOX.m_lly, reprojectedBBOX.m_urx, reprojectedBBOX.m_ury);
+
   // Resets internal renderer state
   reset();
 
@@ -149,7 +151,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     Grouping* grouping = layer->getGrouping();
     if(grouping && grouping->isVisible())
     {
-      drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, srid, scale);
+      drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, layer->getSRID(), scale);
       return;
     }
 
@@ -171,7 +173,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     if(fts == 0)
       throw Exception(TE_TR("The layer style is not a Feature Type Style!"));
 
-    drawLayerGeometries(layer, geometryProperty->getName(), fts, canvas, ibbox, srid, scale);
+    drawLayerGeometries(layer, geometryProperty->getName(), fts, canvas, ibbox, layer->getSRID(), scale);
   }
   else if(schema->hasRaster())
   {

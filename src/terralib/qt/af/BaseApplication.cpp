@@ -348,7 +348,7 @@ void te::qt::af::BaseApplication::onScaleComboBoxActivated()
   if (ok)
   {
     m_display->getDisplay()->setScale(scale);
-    m_display->getDisplay()->refresh();
+    m_display->getDisplay()->refresh(true);
   }
   else
   {
@@ -359,7 +359,7 @@ void te::qt::af::BaseApplication::onScaleComboBoxActivated()
       double scale = var.toDouble();
 
       m_display->getDisplay()->setScale(scale);
-      m_display->getDisplay()->refresh();
+      m_display->getDisplay()->refresh(true);
     }
   }
 }

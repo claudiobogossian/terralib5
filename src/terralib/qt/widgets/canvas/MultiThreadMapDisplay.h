@@ -89,7 +89,7 @@ namespace te
 
           void setExtent(te::gm::Envelope& e, bool doRefresh = true);
 
-          void refresh();
+          void refresh(bool redraw = false);
 
           //@}
 
@@ -107,6 +107,8 @@ namespace te
           void setSynchronous(bool on);
 
           void updateLayer(te::map::AbstractLayerPtr layer);
+
+          void resizeEvent(QResizeEvent* e);
 
         private:
 
@@ -160,7 +162,7 @@ namespace te
 
           std::list<te::map::AbstractLayerPtr> m_visibleLayers; //!< The set of visible layers.
           std::vector<DrawLayerThread*> m_threads;              //!< The set of threads used to draw the layer list.
-          std::map<int, QImage> m_images;                       //!< The set of images built by each thread. It will be used to compose the final result, keeping the layer list order.
+          std::map<std::string, QImage*> m_images;                       //!< The set of images built by each thread. It will be used to compose the final result, keeping the layer list order.
           bool m_showFeedback;                                  //!< A flag that indicates if the map display will show drawing feedback.
           QMatrix m_matrix;                                     //!<  Used to convert screen coordinates to world coordinates.
           bool m_synchronous;                                   //!< A flag that indicates if the map display is  synchronous or asynchronous.

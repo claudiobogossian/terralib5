@@ -94,23 +94,23 @@ te::qt::widgets::MapDisplay::~MapDisplay()
   delete m_displayPixmap;
   delete m_draftPixmap;
 
-  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
-  for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
-    delete it->second;
+//  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
+  //for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+  //  delete it->second;
 
-  m_layerCanvasMap.clear();
+//  m_layerCanvasMap.clear();
 }
 
 void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al, int nsrid)
 {
   // limpe todos os canvas antes usados 
-  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
-  for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
-  {
-    te::map::Canvas* c = getCanvas(it->first);
-    delete c;
-  }
-  m_layerCanvasMap.clear();
+  //std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
+  //for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+  //{
+  //  te::map::Canvas* c = getCanvas(it->first);
+  //  delete c;
+  //}
+  //m_layerCanvasMap.clear();
   m_srid = nsrid;
 
   if(al.get() == 0)
@@ -158,41 +158,41 @@ void te::qt::widgets::MapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
 {
   te::map::MapDisplay::setExtent(e, doRefresh);
 
-  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
-  for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
-  {
-    te::qt::widgets::Canvas* canvas = it->second;
-    canvas->calcAspectRatio(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury, m_hAlign, m_vAlign);
-    canvas->setWindow(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury);
-    canvas->clear();
-    e = m_extent;
-  }
+  //std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
+  //for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+  //{
+  //  te::qt::widgets::Canvas* canvas = it->second;
+  //  canvas->calcAspectRatio(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury, m_hAlign, m_vAlign);
+  //  canvas->setWindow(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury);
+  //  canvas->clear();
+  //  e = m_extent;
+  //}
 
-  if(doRefresh)
-    refresh();
+//  if(doRefresh)
+  refresh();
 
   emit extentChanged();
 }
 
-void te::qt::widgets::MapDisplay::refresh()
+void te::qt::widgets::MapDisplay::refresh(bool redraw)
 {
-  ScopedCursor cursor(Qt::WaitCursor);
+  //ScopedCursor cursor(Qt::WaitCursor);
 
-  m_isDrawing = true;
+  //m_isDrawing = true;
 
-  // Cleaning...
-  m_displayPixmap->fill(m_backgroundColor);
+  //// Cleaning...
+  //m_displayPixmap->fill(m_backgroundColor);
 
-  QPainter painter(m_displayPixmap);
+  //QPainter painter(m_displayPixmap);
 
-  std::list<te::map::AbstractLayerPtr>::reverse_iterator it;
+  //std::list<te::map::AbstractLayerPtr>::reverse_iterator it;
 
-  for(it = m_layerList.rbegin(); it != m_layerList.rend(); ++it) // for each layer
-    draw(it->get(), painter);
+  //for(it = m_layerList.rbegin(); it != m_layerList.rend(); ++it) // for each layer
+  //  draw(it->get(), painter);
 
-  m_isDrawing = false;
+  //m_isDrawing = false;
 
-  update();
+  //update();
 }
 
 unsigned int te::qt::widgets::MapDisplay::getWidth() const
@@ -296,9 +296,6 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& 
 te::qt::widgets::Canvas* te::qt::widgets::MapDisplay::getCanvas(te::map::AbstractLayer* layer, int type)
 {
   // Is there a canvas associated with the given layer?
-  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it = m_layerCanvasMap.find(layer);
-  if(it != m_layerCanvasMap.end())
-    return it->second;
 
   // else, create one!
   te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height(), type);
@@ -306,16 +303,14 @@ te::qt::widgets::Canvas* te::qt::widgets::MapDisplay::getCanvas(te::map::Abstrac
   canvas->setWindow(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury);
   canvas->clear();
 
-  m_layerCanvasMap[layer] = canvas;
-  
   return canvas;
 }
 
 void te::qt::widgets::MapDisplay::resizeAllCanvas()
 {
-  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
-  for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
-    it->second->resize(m_displayPixmap->width(), m_displayPixmap->height());
+  //std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
+  //for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+  //  it->second->resize(m_displayPixmap->width(), m_displayPixmap->height());
 }
 
 void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
@@ -347,14 +342,14 @@ void te::qt::widgets::MapDisplay::resizeEvent(QResizeEvent* e)
 
 QPointF te::qt::widgets::MapDisplay::transform(const QPointF& p)
 {
-  if(m_layerCanvasMap.empty())
+//  if(m_layerCanvasMap.empty())
     return QPointF();
 
-  te::qt::widgets::Canvas* canvas = m_layerCanvasMap.begin()->second;
-  if(canvas == 0)
-    return QPointF();
+//  te::qt::widgets::Canvas* canvas = m_layerCanvasMap.begin()->second;
+  //if(canvas == 0)
+  //  return QPointF();
 
-  return canvas->getMatrix().inverted().map(p);
+  //return canvas->getMatrix().inverted().map(p);
 }
 
 QColor te::qt::widgets::MapDisplay::getBackgroundColor()

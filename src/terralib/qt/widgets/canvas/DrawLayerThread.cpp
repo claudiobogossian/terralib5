@@ -101,13 +101,13 @@ void te::qt::widgets::DrawLayerThread::run()
   canvas.setWindow(m_env.m_llx, m_env.m_lly, m_env.m_urx, m_env.m_ury);
   canvas.clear();
 
-  while(true)
+//  while(true)
   {
     // Let's draw!
     try
     {
       m_layer->draw(&canvas, m_env, m_srid, m_scale);
-      break;
+//      break;
     }
     catch(const te::da::Exception& e)
     {
@@ -120,20 +120,20 @@ void te::qt::widgets::DrawLayerThread::run()
       {
         m_finishedWithSuccess = false;
         m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
-        break; // finish with error
+//        break; // finish with error
       }
     }
     catch(const std::exception& e)
     {
       m_finishedWithSuccess = false;
       m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
-      break; // finish with error
+//      break; // finish with error
     }
     catch (...)
     {
       m_finishedWithSuccess = false;
       m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn!")).arg(m_layer->getTitle().c_str());
-      break; // finish with error
+//      break; // finish with error
     }
   }
 }
@@ -150,7 +150,8 @@ void te::qt::widgets::DrawLayerThread::sendFeedback()
 
 void te::qt::widgets::DrawLayerThread::onFinished()
 {
+  m_feedback.stop();
+
   emit drawLayerFinished(m_index, QImage(m_image));
   //m_image.fill(qRgba(0, 0, 0, 0));
-  m_feedback.stop();
 }

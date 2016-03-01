@@ -137,7 +137,7 @@ namespace te
         virtual void setSRID(const int& srid, bool doRefresh = true) = 0;
 
         /*! \brief It updates the contents in the map display. */
-        virtual void refresh() = 0;
+        virtual void refresh(bool redraw = false) = 0;
 
         /*!
           \brief It returns the MapDisplay current width in pixels.
