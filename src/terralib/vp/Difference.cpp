@@ -82,6 +82,8 @@
 
 // BOOST
 #include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::vp::Difference::Difference()
 {
@@ -184,7 +186,7 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 
 /*Check if the input and output dataSource are the same, if so, 
   persists the result of select query into database with insert command.*/
-  te::da::DataSource* outputDataSource = mainParams->getOutputDataSource();
+  te::da::DataSourcePtr outputDataSource = mainParams->getOutputDataSource();
 
   te::da::DataSourceInfoPtr inDataSourceInfoPtr = te::da::DataSourceInfoManager::getInstance().get(inputParams[0].m_inputDataSource->getId());
   te::da::DataSourceInfoPtr outDataSourceInfoPtr = te::da::DataSourceInfoManager::getInstance().get(outputDataSource->getId());
@@ -192,20 +194,28 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 // Create output dataset
   std::auto_ptr<te::da::DataSourceTransactor> t = outputDataSource->getTransactor();
   std::map<std::string, std::string> options;
-  t->begin();
-  t->createDataSet(getOutputDataSetType(mainParams), options);
-  t->commit();
 
-  if (!inDataSourceInfoPtr)
+  if (outputDataSource->getType() == "OGR")
   {
-    t->rollBack();
-    return false;
+    outputDataSource->createDataSet(getOutputDataSetType(mainParams), options);
   }
-
-  if (!outDataSourceInfoPtr)
+  else
   {
-    t->rollBack();
-    return false;
+    t->begin();
+    t->createDataSet(getOutputDataSetType(mainParams), options);
+    t->commit();
+
+    if (!inDataSourceInfoPtr)
+    {
+      t->rollBack();
+      return false;
+    }
+
+    if (!outDataSourceInfoPtr)
+    {
+      t->rollBack();
+      return false;
+    }
   }
 
   std::string inputConnection = inDataSourceInfoPtr->getConnInfoAsString();
@@ -253,11 +263,17 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 
     outDset->moveBeforeFirst();
 
-    t->add(outputDsName, outDset.get(), options);
-    t->commit();
+    if (outputDataSource->getType() == "OGR")
+    {
+      outputDataSource->add(outputDsName, outDset.get(), options);
+    }
+    else
+    {
+      t->add(outputDsName, outDset.get(), options);
+      t->commit();
+    }
   }
 
-  
   return true;
 }
 
@@ -433,4 +449,3 @@ te::gm::GeomType te::vp::Difference::setGeomResultType(te::gm::GeomType firstGeo
   else
     return te::gm::MultiPolygonType;
 }
-

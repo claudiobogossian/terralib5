@@ -51,13 +51,12 @@ namespace te
       {
         class AggregationAction;
         class BufferAction;
+        class DifferenceAction;
         class GeometricOpAction;
         class IntersectionAction;
         class LineToPolygonAction;
         class MultipartToSinglepartAction;
         class PolygonToLineAction;
-        //class SummarizationAction;
-        //class TransformationAction;
 
         class Plugin : public QObject, public te::plugin::Plugin
         {
@@ -98,6 +97,7 @@ namespace te
 
             AggregationAction* m_aggregation;    //!< Aggregation Operation Action
             BufferAction* m_buffer;    //!< Buffer Operation Action
+            DifferenceAction* m_difference;    //!< Difference Operation Action
             GeometricOpAction* m_geometricOp;    //!< Geometric Operation
             IntersectionAction* m_intersection;    //!< Intersection Operation Action
             LineToPolygonAction* m_lineToPolygon;    //!< Line to Polygon Operation Action

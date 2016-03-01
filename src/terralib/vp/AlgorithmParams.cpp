@@ -21,7 +21,6 @@
  \file AlgorithmParams.cpp
  */
 
-#include "../dataaccess/datasource/DataSource.h"
 #include "AlgorithmParams.h"
 
 te::vp::AlgorithmParams::AlgorithmParams():
@@ -30,7 +29,7 @@ te::vp::AlgorithmParams::AlgorithmParams():
 }
 
 te::vp::AlgorithmParams::AlgorithmParams( const std::vector<te::vp::InputParams>& inputParams,
-                                          te::da::DataSource* outputDataSource,
+                                          te::da::DataSourcePtr outputDataSource,
                                           const std::string& outputDataSetName,
                                           const std::map<std::string, te::dt::AbstractData*>& specificParams)
   : m_inputParams(inputParams),
@@ -50,18 +49,18 @@ std::vector<te::vp::InputParams> te::vp::AlgorithmParams::getInputParams()
   return m_inputParams;
 }
 
-void te::vp::AlgorithmParams::setInputParams( const std::vector<te::vp::InputParams>& inputParams)
+void te::vp::AlgorithmParams::setInputParams(const std::vector<te::vp::InputParams>& inputParams)
 {
   m_inputParams = inputParams;
 }
 
 
-te::da::DataSource* te::vp::AlgorithmParams::getOutputDataSource()
+te::da::DataSourcePtr te::vp::AlgorithmParams::getOutputDataSource()
 {
   return m_outputDataSource;
 }
 
-void te::vp::AlgorithmParams::setOutputDataSource(te::da::DataSource* outputDataSource)
+void te::vp::AlgorithmParams::setOutputDataSource(te::da::DataSourcePtr outputDataSource)
 {
   m_outputDataSource = outputDataSource;
 }
