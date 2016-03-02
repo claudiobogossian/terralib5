@@ -473,7 +473,7 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="14"/>
         <source>Chart</source>
-        <translation>Pizza</translation>
+        <translation>Gráfico de Pizza e Barra</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="44"/>
