@@ -847,12 +847,12 @@
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1054"/>
         <source>Pan to Selected Features</source>
-        <translation>Mover para Feições Selecionadas</translation>
+        <translation>Panorâmica para Feições Selecionadas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1054"/>
         <source>Pan to the selected features on the Map Display</source>
-        <translation>Mover para feições selecionadas na Área de Visualização</translation>
+        <translation>Panorâmica para feições selecionadas na Área de Visualização</translation>
     </message>
     <message>
         <source>Query...</source>
@@ -1019,7 +1019,7 @@
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1060"/>
         <source>&amp;Pan</source>
-        <translation>&amp;Mover</translation>
+        <translation>&amp;Panorâmica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1061"/>

@@ -5520,7 +5520,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="108"/>
         <source>Pan</source>
-        <translation>Mover</translation>
+        <translation>Panorâmica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="134"/>
@@ -6842,7 +6842,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="510"/>
         <source>Auto Pan</source>
-        <translation>Auto Pan</translation>
+        <translation>Auto Panorâmica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="558"/>
