@@ -237,7 +237,7 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
 
       if (boost::filesystem::exists(uri))
       {
-        QMessageBox::information(this, "Buffer", "Output file already exists. Remove it or select a new name and try again.");
+        QMessageBox::information(this, tr("Merge"), tr("Output file already exists. Remove it or select a new name and try again."));
         return;
       }
 
@@ -254,7 +254,7 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
 
       if (dsOGR->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "Buffer", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
+        QMessageBox::information(this, tr("Merge"), tr("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
         return;
       }
 
@@ -272,7 +272,7 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
       if (!res)
       {
         dsOGR->close();
-        QMessageBox::information(this, "Buffer", "Error: could not generate the buffer.");
+        QMessageBox::information(this, tr("Merge"), tr("Error: could not generate the merge."));
       }
       dsOGR->close();
 
@@ -300,12 +300,12 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
       te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
       if (!aux)
       {
-        QMessageBox::information(this, "Buffer", "The selected output datasource can not be accessed.");
+        QMessageBox::information(this, tr("Merge"), tr("The selected output datasource can not be accessed."));
         return;
       }
       if (aux->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "Buffer", "Dataset already exists. Remove it or select a new name and try again. ");
+        QMessageBox::information(this, tr("Merge"), tr("Dataset already exists. Remove it or select a new name and try again."));
         return;
       }
 
