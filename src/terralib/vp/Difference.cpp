@@ -21,6 +21,8 @@
  \file Difference.cpp
  */
 
+#include "../common/Translator.h"
+
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -32,7 +34,6 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 
-#include "../dataaccess/query/And.h"
 #include "../dataaccess/query/Coalesce.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
@@ -41,8 +42,6 @@
 #include "../dataaccess/query/From.h"
 #include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/Insert.h"
-#include "../dataaccess/query/Join.h"
-#include "../dataaccess/query/JoinConditionOn.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Not.h"
 #include "../dataaccess/query/Select.h"
@@ -69,12 +68,8 @@
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Utils.h"
 
-#include "../sam.h"
-
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
-
-#include "../statistics/core/Utils.h"
 
 #include "AlgorithmParams.h"
 #include "Difference.h"
@@ -101,7 +96,7 @@ void te::vp::Difference::setSpecificParams(bool copyInputColumns)
 
 bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams, te::da::DataSet* teste)
 {
-  return false;
+  throw te::common::Exception(TE_TR("This method is under development."));
 }
 
 bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
@@ -109,10 +104,7 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
 
   if (inputParams.size() < 2)
-  {
-    //Return a message: It is necessary more than one item for performing the operation
-    return false;
-  }
+    throw te::common::Exception(TE_TR("It is necessary more than one item for performing the operation."));
 
 // Build Difference Query.
 
@@ -208,13 +200,13 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
     if (!inDataSourceInfoPtr)
     {
       t->rollBack();
-      return false;
+      throw te::common::Exception(TE_TR("Input DataSource ID not found."));
     }
 
     if (!outDataSourceInfoPtr)
     {
       t->rollBack();
-      return false;
+      throw te::common::Exception(TE_TR("Output DataSource ID not found."));
     }
   }
 

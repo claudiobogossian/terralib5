@@ -42,6 +42,7 @@
 #include "../../dataaccess/query/Where.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
+#include "../../datatype/SimpleData.h"
 #include "../../maptools/QueryLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
@@ -247,6 +248,7 @@ std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getS
 
 void te::vp::DifferenceDialog::onOkPushButtonClicked()
 {
+// Validate Input Layer
   if (m_ui->m_inputLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::warning(this, TE_TR("Difference"), TE_TR("Select an input layer."));
@@ -271,6 +273,8 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
     return;
   }
 
+
+// Validate Difference Layer
   if (m_ui->m_differenceLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::warning(this, TE_TR("Difference"), TE_TR("Select a layer to do the difference."));
@@ -295,6 +299,20 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
     return;
   }
 
+
+// Get output attributes.
+  std::vector<std::string> attributesVec = m_doubleListWidget->getOutputValues();
+  std::map<std::string, te::dt::AbstractData*> specificParams;
+
+  for (std::size_t attPos = 0; attPos < attributesVec.size(); ++attPos)
+  {
+    specificParams.insert(std::pair<std::string, te::dt::AbstractData*>(
+      m_ui->m_differenceLayerComboBox->currentText().toStdString(),
+      new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(attributesVec[attPos])));
+  }
+
+
+// Validade output repository.
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
     QMessageBox::warning(this, TE_TR("Difference"), TE_TR("Select a repository for the resulting layer."));
