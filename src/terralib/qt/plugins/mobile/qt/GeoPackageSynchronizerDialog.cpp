@@ -71,7 +71,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGeopackageToo
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = fileName.toStdString();
 
-  std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("OGR");
+  std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("GPKG");
   dsGPKG->setConnectionInfo(connInfo);
   dsGPKG->open();
 
@@ -91,7 +91,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onSynchronizePu
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = m_ui->m_geopackageLineEdit->text().toStdString();
 
-  std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("OGR");
+  std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("GPKG");
   dsGPKG->setConnectionInfo(connInfo);
   dsGPKG->open();
 

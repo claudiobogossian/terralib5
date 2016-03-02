@@ -31,6 +31,7 @@
 #include "../maptools/AbstractLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
+#include "Config.h"
 
 //STL
 #include <map>
@@ -62,6 +63,8 @@ namespace te
     bool IsMultiType(te::gm::GeomType geomType);
 
     te::gm::GeomType GetSimpleType(te::gm::GeomType geomType);
+
+    TEVPEXPORT te::da::DataSourcePtr CreateOGRDataSource(std::string repository);
 
   } // end namespace vp
 }   // end namespace te

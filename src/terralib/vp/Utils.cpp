@@ -30,6 +30,7 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
+#include "../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../geometry/Geometry.h"
@@ -48,6 +49,9 @@
 
 // Boost
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType)
 {
@@ -392,4 +396,29 @@ te::gm::GeomType te::vp::GetSimpleType(te::gm::GeomType geomType)
     default:
       return te::gm::UnknownGeometryType;
   }
+}
+
+te::da::DataSourcePtr te::vp::CreateOGRDataSource(std::string repository)
+{
+  //create new data source
+  boost::filesystem::path uri(repository);
+
+  std::map<std::string, std::string> dsInfo;
+  dsInfo["URI"] = uri.string();
+
+  boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id_ds = boost::uuids::to_string(u);
+
+  te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
+  dsInfoPtr->setConnInfo(dsInfo);
+  dsInfoPtr->setTitle(uri.stem().string());
+  dsInfoPtr->setAccessDriver("OGR");
+  dsInfoPtr->setType("OGR");
+  dsInfoPtr->setDescription(uri.string());
+  dsInfoPtr->setId(id_ds);
+
+  te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
+
+  return te::da::DataSourceManager::getInstance().get(id_ds, "OGR", dsInfoPtr->getConnInfo());
 }

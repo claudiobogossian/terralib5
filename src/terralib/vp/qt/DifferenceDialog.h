@@ -18,17 +18,18 @@
  */
 
 /*!
-  \file terralib/vp/qt/IntersectionDialog.h
+  \file terralib/vp/qt/DifferenceDialog.h
 
-  \brief A dialog intersection operation
+  \brief Difference operation dialog.
 */
 
-#ifndef __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
-#define __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
+#ifndef __TERRALIB_VP_QT_INTERNAL_DIFFERENCEDIALOG_H
+#define __TERRALIB_VP_QT_INTERNAL_DIFFERENCEDIALOG_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../AlgorithmParams.h"
 #include "../Config.h"
 
 // STL
@@ -37,7 +38,7 @@
 // Qt
 #include <QDialog>
 
-namespace Ui { class IntersectionDialogForm; }
+namespace Ui { class DifferenceDialogForm; }
 
 namespace te
 {
@@ -52,19 +53,19 @@ namespace te
   namespace vp
   {
     /*!
-      \class IntersectionDialog
+      \class DifferenceDialog
 
-      \brief A dialog used to execute vector intersection.
+      \brief A dialog used to execute vector difference.
     */
-    class TEVPEXPORT IntersectionDialog : public QDialog
+    class TEVPEXPORT DifferenceDialog : public QDialog
     {
       Q_OBJECT
 
       public:
 
-        IntersectionDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        DifferenceDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~IntersectionDialog();
+        ~DifferenceDialog();
 
         /*!
           \brief Set the layer that can be used
@@ -79,19 +80,21 @@ namespace te
 
         std::vector<std::pair<std::string, std::string> > getSelectedProperties();
 
-        void updateFirstLayerComboBox();
+        void updateInputLayerComboBox();
 
-        void updateSecondLayerComboBox();
+        void updateDifferenceLayerComboBox();
 
         void updateDoubleListWidget();
 
       protected slots:
 
-        void onFirstLayerComboBoxChanged(int index);
+        void onInputLayerComboBoxChanged(int index);
 
-        void onSecondLayerComboBoxChanged(int index);
+        void onDifferenceLayerComboBoxChanged(int index);
 
         void onOkPushButtonClicked();
+        
+        void onCancelPushButtonClicked();
 
         void onTargetDatasourceToolButtonPressed();
 
@@ -99,17 +102,22 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::IntersectionDialogForm> m_ui;
-        std::list<te::map::AbstractLayerPtr> m_layers;    //!< First layer selected.
-        te::map::AbstractLayerPtr m_firstSelectedLayer;   //!< First layer selected.
-        te::map::AbstractLayerPtr m_secondSelectedLayer;  //!< Second layer selected.
-        te::da::DataSourceInfoPtr m_outputDatasource;     //!< DataSource information.
-        std::string m_outputArchive;                      //!< Archive information.
-        te::map::AbstractLayerPtr m_layerResult;          //!< Generated Layer.
-        bool m_toFile;
+        std::auto_ptr<Ui::DifferenceDialogForm> m_ui;
+        std::list<te::map::AbstractLayerPtr> m_layers;        //!< The vector layers in Layer Explorer.
+        te::map::AbstractLayerPtr m_inputSelectedLayer;       //!< Input layer selected.
+        te::map::AbstractLayerPtr m_differenceSelectedLayer;  //!< Difference layer selected.
+
+        std::vector<te::vp::InputParams> m_inputParams;       //!< A vector of input parameters.
+        te::vp::AlgorithmParams* m_params;                    //!< Algorithm parameters.
+
+        te::da::DataSourceInfoPtr m_outputDatasource;         //!< DataSource information.
+        te::map::AbstractLayerPtr m_layerResult;              //!< Generated Layer.
+        
+        bool m_toFile;                                        //!< The result is in a file?
+
         std::auto_ptr<te::qt::widgets::DoubleListWidget> m_doubleListWidget;
     };
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
+#endif  // __TERRALIB_VP_QT_INTERNAL_DIFFERENCEDIALOG_H

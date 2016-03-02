@@ -31,16 +31,15 @@
 #include "../../af/ApplicationController.h"
 #include "../../af/Utils.h"
 #include "AggregationAction.h"
-#include "GeometricOpAction.h"
 #include "BufferAction.h"
+#include "DifferenceAction.h"
+#include "GeometricOpAction.h"
 #include "IntersectionAction.h"
 #include "LineToPolygonAction.h"
 #include "MergeAction.h"
 #include "MultipartToSinglepartAction.h"
 #include "Plugin.h"
 #include "PolygonToLineAction.h"
-//#include "SummarizationAction.h"
-//#include "TransformationAction.h"
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
 //Log4cxx
@@ -69,6 +68,7 @@ te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
     m_vpMenu(0),
     m_aggregation(0),
     m_buffer(0),
+    m_difference(0),
     m_geometricOp(0),
     m_intersection(0),
     m_lineToPolygon(0),
@@ -160,31 +160,31 @@ void te::qt::plugins::vp::Plugin::registerActions()
 {
   m_aggregation = new te::qt::plugins::vp::AggregationAction(m_vpMenu);
   m_buffer = new te::qt::plugins::vp::BufferAction(m_vpMenu);
+  m_difference = new te::qt::plugins::vp::DifferenceAction(m_vpMenu);
   m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
   m_merge = new te::qt::plugins::vp::MergeAction(m_vpMenu);
-  m_multipart2singlepart = new te::qt::plugins::vp::MultipartToSinglepartAction(m_vpMenu);
   m_lineToPolygon = new te::qt::plugins::vp::LineToPolygonAction(m_vpMenu);
+  m_multipart2singlepart = new te::qt::plugins::vp::MultipartToSinglepartAction(m_vpMenu);
   m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
 
   connect(m_aggregation, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_buffer, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_difference, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_geometricOp, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_intersection, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_merge, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
-  connect(m_multipart2singlepart, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_lineToPolygon, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_multipart2singlepart, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_polygonToLine, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
-  //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
-  //m_transformation = new te::qt::plugins::vp::TransformationAction(m_vpMenu);
 
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_aggregation->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_buffer->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_difference->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_geometricOp->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_intersection->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_merge->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_multipart2singlepart->getAction());
-  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_lineToPolygon->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_polygonToLine->getAction());
 }
 
@@ -192,14 +192,14 @@ void  te::qt::plugins::vp::Plugin::unRegisterActions()
 {
   delete m_aggregation;
   delete m_buffer;
+  delete m_difference;
   delete m_geometricOp;
   delete m_intersection;
   delete m_merge;
-  delete m_multipart2singlepart;
   delete m_lineToPolygon;
+  delete m_multipart2singlepart;
   delete m_polygonToLine;
-  //delete m_summarization;
-  //delete m_transformation;
+  
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::vp::Plugin)

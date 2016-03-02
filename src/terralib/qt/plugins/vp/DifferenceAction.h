@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/IntersectionAction.h
+  \file terralib/qt/plugins/vp/DifferenceAction.h
 
-  \brief This file defines the Intersection class
+  \brief This file defines the Difference class
 */
 
-#ifndef __TE_QT_PLUGINS_VP_INTERNAL_INTERSECTIONACTION_H
-#define __TE_QT_PLUGINS_VP_INTERNAL_INTERSECTIONACTION_H
+#ifndef __TE_QT_PLUGINS_VP_INTERNAL_DIFFERENCEACTION_H
+#define __TE_QT_PLUGINS_VP_INTERNAL_DIFFERENCEACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -39,20 +39,20 @@ namespace te
       namespace vp
       {
         /*!
-          \class IntersectionAction
+          \class DifferenceAction
 
           \brief This class register the contrast action into VP Plugin.
 
         */
-        class IntersectionAction : public te::qt::plugins::vp::AbstractAction
+        class DifferenceAction : public te::qt::plugins::vp::AbstractAction
         {
           Q_OBJECT
 
           public:
 
-            IntersectionAction(QMenu* menu);
+            DifferenceAction(QMenu* menu);
 
-            virtual ~IntersectionAction();
+            virtual ~DifferenceAction();
 
           protected slots:
 
@@ -64,4 +64,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_VP_INTERNAL_INTERSECTIONACTION_H
+#endif //__TE_QT_PLUGINS_VP_INTERNAL_DIFFERENCEACTION_H

@@ -73,6 +73,7 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/AggregationDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/BufferDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/DifferenceDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpOutputWizardPage.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpWizard.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpWizardPage.h

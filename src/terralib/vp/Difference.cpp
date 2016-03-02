@@ -21,6 +21,8 @@
  \file Difference.cpp
  */
 
+#include "../common/Translator.h"
+
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -32,7 +34,6 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 
-#include "../dataaccess/query/And.h"
 #include "../dataaccess/query/Coalesce.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
@@ -41,8 +42,6 @@
 #include "../dataaccess/query/From.h"
 #include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/Insert.h"
-#include "../dataaccess/query/Join.h"
-#include "../dataaccess/query/JoinConditionOn.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Not.h"
 #include "../dataaccess/query/Select.h"
@@ -69,12 +68,8 @@
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Utils.h"
 
-#include "../sam.h"
-
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
-
-#include "../statistics/core/Utils.h"
 
 #include "AlgorithmParams.h"
 #include "Difference.h"
@@ -82,6 +77,8 @@
 
 // BOOST
 #include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::vp::Difference::Difference()
 {
@@ -99,7 +96,7 @@ void te::vp::Difference::setSpecificParams(bool copyInputColumns)
 
 bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams, te::da::DataSet* teste)
 {
-  return false;
+  throw te::common::Exception(TE_TR("This method is under development."));
 }
 
 bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
@@ -107,10 +104,7 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
 
   if (inputParams.size() < 2)
-  {
-    //Return a message: It is necessary more than one item for performing the operation
-    return false;
-  }
+    throw te::common::Exception(TE_TR("It is necessary more than one item for performing the operation."));
 
 // Build Difference Query.
 
@@ -184,7 +178,7 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 
 /*Check if the input and output dataSource are the same, if so, 
   persists the result of select query into database with insert command.*/
-  te::da::DataSource* outputDataSource = mainParams->getOutputDataSource();
+  te::da::DataSourcePtr outputDataSource = mainParams->getOutputDataSource();
 
   te::da::DataSourceInfoPtr inDataSourceInfoPtr = te::da::DataSourceInfoManager::getInstance().get(inputParams[0].m_inputDataSource->getId());
   te::da::DataSourceInfoPtr outDataSourceInfoPtr = te::da::DataSourceInfoManager::getInstance().get(outputDataSource->getId());
@@ -192,20 +186,28 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 // Create output dataset
   std::auto_ptr<te::da::DataSourceTransactor> t = outputDataSource->getTransactor();
   std::map<std::string, std::string> options;
-  t->begin();
-  t->createDataSet(getOutputDataSetType(mainParams), options);
-  t->commit();
 
-  if (!inDataSourceInfoPtr)
+  if (outputDataSource->getType() == "OGR")
   {
-    t->rollBack();
-    return false;
+    outputDataSource->createDataSet(getOutputDataSetType(mainParams), options);
   }
-
-  if (!outDataSourceInfoPtr)
+  else
   {
-    t->rollBack();
-    return false;
+    t->begin();
+    t->createDataSet(getOutputDataSetType(mainParams), options);
+    t->commit();
+
+    if (!inDataSourceInfoPtr)
+    {
+      t->rollBack();
+      throw te::common::Exception(TE_TR("Input DataSource ID not found."));
+    }
+
+    if (!outDataSourceInfoPtr)
+    {
+      t->rollBack();
+      throw te::common::Exception(TE_TR("Output DataSource ID not found."));
+    }
   }
 
   std::string inputConnection = inDataSourceInfoPtr->getConnInfoAsString();
@@ -253,11 +255,17 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 
     outDset->moveBeforeFirst();
 
-    t->add(outputDsName, outDset.get(), options);
-    t->commit();
+    if (outputDataSource->getType() == "OGR")
+    {
+      outputDataSource->add(outputDsName, outDset.get(), options);
+    }
+    else
+    {
+      t->add(outputDsName, outDset.get(), options);
+      t->commit();
+    }
   }
 
-  
   return true;
 }
 
@@ -433,4 +441,3 @@ te::gm::GeomType te::vp::Difference::setGeomResultType(te::gm::GeomType firstGeo
   else
     return te::gm::MultiPolygonType;
 }
-
