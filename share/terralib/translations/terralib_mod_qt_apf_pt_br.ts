@@ -6,12 +6,12 @@
     <message>
         <location filename="../../../src/terralib/qt/af/ui/BaseApplicationForm.ui" line="14"/>
         <source>MainWindow</source>
-        <translation type="unfinished"></translation>
+        <translation>MainWindow</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/ui/BaseApplicationForm.ui" line="45"/>
         <source>Layer Explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>Explorador de Camada</translation>
     </message>
 </context>
 <context>
@@ -164,7 +164,7 @@
     <message>
         <location filename="../../../src/terralib/qt/af/settings/SettingsWidgetsFactory.h" line="61"/>
         <source>Fail to find QWidget factory</source>
-        <translation type="unfinished">Falha ao encontrar QWidget factory</translation>
+        <translation>Falha ao encontrar QWidget factory</translation>
     </message>
 </context>
 <context>
@@ -934,72 +934,72 @@
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="380"/>
         <source>Select at least one item to be removed!</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione pelo menos um item a ser removido !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="381"/>
         <source>Remove item</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove item</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="391"/>
         <source>Do you really want to remove the selected item?</source>
-        <translation type="unfinished"></translation>
+        <translation>Você realmente deseja remover o item selecionado ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="392"/>
         <source>Remove Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove Item</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="396"/>
         <source>Do you really want to remove the selected items?</source>
-        <translation type="unfinished"></translation>
+        <translation>Você realmente deseja remover os itens selecionados ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="397"/>
         <source>Remove Items</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove Itens</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="615"/>
         <source>The spatial reference system of the map display and the layer are not compatible!</source>
-        <translation type="unfinished"></translation>
+        <translation>O sistema de referência espacial da área de desenho e da camada não são compativeis !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="725"/>
         <source>Select one layer to accomplish this operation!</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione uma camada para realizar esta operação !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="736"/>
         <source>This is a invalid layer selected!</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta é uma camada selecionada inválida !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="998"/>
         <source>Scale Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informação de Escala</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1046"/>
         <source>&amp;Remove Item(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Remove Item(s)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1046"/>
         <source>Remove items(s) from the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove item(s) do projeto</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1055"/>
         <source>Save Selected Objects...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva Objetos Selecionados...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1055"/>
         <source>Save a new layer based on the selected objects from this layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Salve uma nova camada com base nos objetos selecionados a partir desta camada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1057"/>
@@ -1188,12 +1188,12 @@
     <message>
         <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="104"/>
         <source>Enable pan to selected</source>
-        <translation type="unfinished">Ativar botão Mover para selecionar feição</translation>
+        <translation>Ativar botão Mover para selecionar feição</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="105"/>
         <source>Enable / disable pan to selected operation</source>
-        <translation type="unfinished">Ativar / desativar o Mover para operação selecionada</translation>
+        <translation>Ativar / desativar o Mover para operação selecionada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="447"/>
@@ -1237,7 +1237,7 @@
     <message>
         <location filename="../../../src/terralib/qt/af/settings/SettingsDialog.cpp" line="125"/>
         <source> settings</source>
-        <translation type="unfinished"> configurações</translation>
+        <translation> configurações</translation>
     </message>
 </context>
 <context>
