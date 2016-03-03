@@ -376,7 +376,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
   {
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
-    bool res;
+    bool res = true;
     if (m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
