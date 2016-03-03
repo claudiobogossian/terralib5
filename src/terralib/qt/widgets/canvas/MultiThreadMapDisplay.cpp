@@ -318,9 +318,6 @@ void te::qt::widgets::MultiThreadMapDisplay::onRenderingFinished()
     }
   }
 
-  //if(m_tmger != 0)
-  //  m_tmger->stopProccess();
-
   if(!m_threads.empty())
   {
     te::common::FreeContents(m_threads);
@@ -336,6 +333,5 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawCanceled()
 {
   m_cancel = true;
   m_tmger->stopProccess();
-//  onRenderingFinished();
 }
 
