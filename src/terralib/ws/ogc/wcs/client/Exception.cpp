@@ -18,17 +18,15 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs-dataacess/DataAccessWCS.h
+  \file terralib/ws/ogc/wcs/client/Exception.cpp
 
-  \brief Data Access for WS OGC WCS
+  \brief An exception class for the OGC WCS Client.
+
+  \author Vinicius Campanha
 */
 
-#ifndef __TERRALIB_WS_OGC_WCS_DATAACESS_EXCEPTION_H
-#define __TERRALIB_WS_OGC_WCS_DATAACESS_EXCEPTION_H
-
 // TerraLib
-#include "../../../../common/Exception.h"
-#include "Config.h"
+#include "Exception.h"
 
 namespace te
 {
@@ -36,18 +34,9 @@ namespace te
   {
     namespace ogc
     {
-      namespace wcs
-      {
-        namespace dataaccess
-        {
-          TE_DECLARE_EXCEPTION_CLASS(TEOGCWCSDATAACCESSEXPORT, Exception, te::common::Exception)
+      TE_DEFINE_EXCEPTION_CLASS(Exception, te::common::Exception, "te::ws::ogc::Exception")
 
-        } // end namespace dataaccess
-      } // end namespace wcs
     } // end namespace ogc
-  } // end namespace ws
-} // end namespace te
-
-#endif  // __TERRALIB_WS_OGC_WCS_DATAACESS_EXCEPTION_H
-
+  }   // end namespace ws
+}     // end namespace te
 

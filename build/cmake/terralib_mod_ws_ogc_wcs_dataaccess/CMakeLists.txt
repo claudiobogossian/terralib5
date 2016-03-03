@@ -23,6 +23,8 @@
 #  Author: Vinicius Campanha
 #
 
+include_directories(${Boost_INCLUDE_DIR})
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/dataaccess/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/dataaccess/*.h)
 
@@ -31,4 +33,7 @@ source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_library(terralib_mod_ws_ogc_wcs_dataacess ${TERRALIB_SRC_FILES})
+add_library(terralib_mod_ws_ogc_wcs_dataacess ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
+
+target_link_libraries(terralib_mod_ws_ogc_wcs_dataacess terralib_mod_ws_ogc_wcs_client)

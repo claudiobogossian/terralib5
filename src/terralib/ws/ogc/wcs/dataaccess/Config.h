@@ -18,14 +18,57 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs-client/Config.h
+  \file terralib/ws/ogc/wcs/dataaccess/Config.h
 
-  \brief Configuration flags for the Terrralib WS OGC WCS module.
+  \brief Configuration flags for the Terrralib WS OGC WCS DATA ACCESS module.
+
+  \author Vinicius Campanha
  */
 
-#ifndef __TERRALIB_WS_OGC_WCSCLIENT_CONFIG_H
-#define __TERRALIB_WS_OGC_WCSCLIENT_CONFIG_H
+#ifndef __TERRALIB_WS_OGC_WCS_DATAACCESS_CONFIG_H
+#define __TERRALIB_WS_OGC_WCS_DATAACCESS_CONFIG_H
 
-#define TEOGCWCSEXPORT
+/** @name DLL/LIB Module
+ *  Flags for building TerraLib as a DLL or as a Static Library
+ */
+//@{
 
-#endif // __TERRALIB_WS_OGC_WCSCLIENT_CONFIG_H
+/*!
+  \def TEOGCWCSDATAACCESSEXPORT
+
+  \brief You can use this macro in order to export/import classes and functions from this module.
+
+  \note If you want to compile TerraLib as DLL in Windows, remember to insert TEWCSDATAACCESSDLL into the project's list of defines.
+
+  \note If you want to compile TerraLib as an Static Library under Windows, remember to insert the TEWCSSTATIC flag into the project list of defines.
+*/
+
+#ifdef WIN32
+
+  #ifdef _MSC_VER
+    #pragma warning( disable : 4251 )
+    #pragma warning( disable : 4275 )
+    #pragma warning( disable : 4290 )
+  #endif
+
+  #ifdef TEOGCWCSDATAACCESSSTATIC
+    #define TEOGCWCSDATAACCESSEXPORT                          // Don't need to export/import... it is a static library
+  #elif TEWCSDLL
+    #define TEOGCWCSDATAACCESSEXPORT  __declspec(dllexport)   // export DLL information
+  #else
+    #define TEOGCWCSDATAACCESSEXPORT  __declspec(dllimport)   // import DLL information
+  #endif
+#else
+  #define TEOGCWCSDATAACCESSEXPORT
+#endif
+
+//@}
+
+/*!
+  \def TE_OGC_WCS_DRIVER_IDENTIFIER
+
+  \brief The WCS driver identifier string.
+*/
+#define TE_OGC_WCS_DRIVER_IDENTIFIER "OGC_WCS"
+
+#endif // __TERRALIB_WS_OGC_WCS_DATAACCESS_CONFIG_H

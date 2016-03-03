@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs-client/Exception.h
+  \file terralib/ws/ogc/wcs/client/Exception.h
 
   \brief An exception class for the OGC WCS Client.
 */
 
-#ifndef __TERRALIB_WS_OGC_WCSCLIENT_EXCEPTION_H
-#define __TERRALIB_WS_OGC_WCSCLIENT_EXCEPTION_H
+#ifndef __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
+#define __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
 
 // TerraLib
-#include "../../../common/Exception.h"
+#include "../../../../common/Exception.h"
 #include "Config.h"
 
 namespace te
@@ -42,5 +42,5 @@ namespace te
   }   // end namespace ws
 }     // end namespace te
 
-#endif  // __TERRALIB_WS_OGC_WCSCLIENT_EXCEPTION_H
+#endif  // __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
 

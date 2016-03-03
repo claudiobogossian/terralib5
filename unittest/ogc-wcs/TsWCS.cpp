@@ -24,7 +24,7 @@
  */
 
 // TerraLib
-#include <terralib/ws/ogc/wcs-client/ClientWCS.h>
+#include <terralib/ws/ogc/wcs/client/WCS.h>
 
 // TerraLib Test
 #include "TsWCS.h"
@@ -34,16 +34,19 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsWCS );
 void TsWCS::tsGetCapabilities()
 {
   // http://flanche.net:9090/rasdaman/ows?SERVICE=WCS&VERSION=2.0.1&REQUEST=GetCapabilities
-  te::ws::ogc::ClientWCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
+//  te::ws::ogc::WCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
 
-  CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at getCapabilities().", clientWCS.getCapabilities());
+  // http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=GetCapabilities&version=2.0.1
+  te::ws::ogc::WCS clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
+
+  CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at getCapabilities().", clientWCS.updateCapabilities());
 }
 
 void TsWCS::tsGetCapabilitiesException()
 {
-  te::ws::ogc::ClientWCS clientWCS("http://wrongadress.net:9090", "2.0.1");
+  te::ws::ogc::WCS clientWCS("http://wrongadress.net:9090", "2.0.1");
 
-  CPPUNIT_ASSERT_THROW(clientWCS.getCapabilities(), te::common::Exception);
+  CPPUNIT_ASSERT_THROW(clientWCS.updateCapabilities(), te::common::Exception);
 }
 
 void TsWCS::tsDescribeCoverage()
@@ -51,12 +54,13 @@ void TsWCS::tsDescribeCoverage()
   try
   {
     // http://flanche.net:9090/rasdaman/ows?SERVICE=WCS&VERSION=2.0.1&REQUEST=DescribeCoverage&COVERAGEID=NIR
+//    te::ws::ogc::WCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
+//    QXmlStreamReader* coverageDescribe = clientWCS.describeCoverage("NIR");
 
-    te::ws::ogc::ClientWCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
+    // http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=DescribeCoverage&coverageid=other__wcmc-world-database-of-protected-areas&version=2.0.1
+    te::ws::ogc::WCS clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
+    CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at describeCoverage().",clientWCS.describeCoverage("other__wcmc-world-database-of-protected-areas&version"));
 
-    QXmlStreamReader* coverageDescribe = clientWCS.describeCoverage("NIR");
-
-    CPPUNIT_ASSERT(coverageDescribe);
   }
   catch(...)
   {
@@ -66,7 +70,7 @@ void TsWCS::tsDescribeCoverage()
 
 void TsWCS::tsDescribeCoverageException()
 {
-    te::ws::ogc::ClientWCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
+    te::ws::ogc::WCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
 
     // Requiring the description of a non-existent coverage
     CPPUNIT_ASSERT_THROW(clientWCS.describeCoverage("NONE"), te::common::Exception);

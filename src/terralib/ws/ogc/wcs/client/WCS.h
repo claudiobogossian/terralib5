@@ -18,22 +18,26 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs-client/ClientWCS.h
+  \file terralib/ws/ogc/wcs/client/WCS.h
 
   \brief WS Client for OGC WCS
+
+  \author Vinicius Campanha
 */
 
-#ifndef __TERRALIB_WS_OGC_WCSCLIENT_H
-#define __TERRALIB_WS_OGC_WCSCLIENT_H
+#ifndef __TERRALIB_WS_OGC_WCS_CLIENT_WCS_H
+#define __TERRALIB_WS_OGC_WCS_CLIENT_WCS_H
 
 // STL
 #include <memory>
+#include <vector>
 
 // Qt
 #include <QXmlStreamReader>
 
 // TerraLib
-#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../../dataaccess/dataset/DataSet.h"
+#include "XMLParser.h"
 
 
 namespace te
@@ -42,7 +46,6 @@ namespace te
   {
     namespace ogc
     {
-
       /*! \brief A struct to set the parameters of wanted coverage */
       struct CoverageRequest
       {
@@ -58,7 +61,7 @@ namespace te
 
         \brief A class to retrieve information and data from a Web Coverage Service.
       */
-      class ClientWCS
+      class WCS
       {
       public:
 
@@ -68,17 +71,22 @@ namespace te
           \param uri      The adress of WCS server.
           \param version  The WCS version.
         */
-        ClientWCS(const std::string uri, const std::string version = "2.0.1");
-
-        ~ClientWCS();
-
+        WCS(const std::string uri, const std::string version = "2.0.1");
 
         /*!
-          \brief Method to get the capabilities from a WCS server
-
-          \return A XML with the WCS capabilities of the WCS server
+          \brief Default constructor.
         */
-        QXmlStreamReader*  getCapabilities();
+        WCS();
+
+        ~WCS();
+
+        /*!
+          \brief Method to get the capabilities from a WCS server and store in capabilities_ member
+
+                 To access the information contained in the capabilities_, use the getCapabilities() method.
+
+        */
+        void updateCapabilities();
 
         /*!
           \brief Method to get the information about a coverage in the WCS server
@@ -87,7 +95,7 @@ namespace te
 
           \return Return the information of the coverage in the WCS
         */
-        QXmlStreamReader* describeCoverage(const std::string coverage) const;
+        CoverageDescription describeCoverage(const std::string coverage);
 
         /*!
           \brief Method to get the coverage from the WCS server
@@ -107,20 +115,33 @@ namespace te
         */
         QXmlStreamReader* makeRequest(const std::string url) const;
 
-      private:
+        /*!
+          \brief Executes a request on a WCS server
 
-        ClientWCS(const ClientWCS&);
+          \param url The complete url of request
 
-        ClientWCS& operator=(const ClientWCS&);
+          \return Returns a path to a file
+        */
+        std::string makeFileRequest(const std::string url) const;
 
+
+        /*!
+          \brief Return the capabilities_ member.
+
+                 The capabilities_ will be empty until the updateCapabilities() method its called.
+
+          \return Returns a path to a file
+        */
+        const struct Capabilities& getCapabilities() const;
 
       private:
         std::string uri_;
         std::string version_;
+        struct Capabilities capabilities_;
       };
     }
   }
 }
 
-#endif // __TERRALIB_WS_OGC_WCSCLIENT_H
+#endif // __TERRALIB_WS_OGC_WCS_CLIENT_WCS_H
 

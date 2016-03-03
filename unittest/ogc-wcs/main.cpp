@@ -16,9 +16,23 @@
 // TerraLib
 #include "../Config.h"
 #include "TsWCS.h"
+#include <terralib/common/TerraLib.h>
+#include <terralib/plugin.h>
+#include <terralib/common/PlatformUtils.h>
+
 
 int main(int argc, char *argv[])
 {
+  TerraLib::getInstance().initialize();
+
+  te::plugin::PluginInfo pinfo;
+
+  pinfo.m_name = "TERRALIB_XERCES";
+  pinfo.m_category = "XML";
+  pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
+  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_mod_xerces"));
+
+  te::plugin::PluginManager::getInstance().load(pinfo, true);
 
   // it creates the event manager and test controller
     CPPUNIT_NS::TestResult controller;
@@ -74,6 +88,7 @@ int main(int argc, char *argv[])
 
     bool resultStatus = result.wasSuccessful();
 
+    TerraLib::getInstance().finalize();
 
     return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
