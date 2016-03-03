@@ -180,7 +180,7 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
 
 void te::qt::af::BaseApplication::onDrawTriggered()
 {
-  QApplication::setOverrideCursor(Qt::WaitCursor);
+//  QApplication::setOverrideCursor(Qt::WaitCursor);
 
   te::qt::af::evt::DrawButtonClicked drawClicked;
   emit triggered(&drawClicked);
@@ -191,7 +191,7 @@ void te::qt::af::BaseApplication::onDrawTriggered()
 
   m_display->draw(ls);
 
-  QApplication::restoreOverrideCursor();
+//  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
@@ -933,6 +933,8 @@ void te::qt::af::BaseApplication::makeDialog()
   m_app->addListener(m_display);
   m_app->addListener(m_styleExplorer);
   m_app->addListener(this);
+
+  m_display->getDisplay()->connect(m_mapStopDrawing, SIGNAL(triggered()), SLOT(onDrawCanceled()));
 
   //set app info
   setWindowTitle(m_app->getAppTitle());

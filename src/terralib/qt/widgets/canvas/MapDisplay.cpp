@@ -277,7 +277,7 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& 
   // Draw the current layer
   try
   {
-    layer->draw(canvas, m_extent, m_srid, curScale);
+    layer->draw(canvas, m_extent, m_srid, curScale, &m_cancel);
   }
   catch(...)
   {

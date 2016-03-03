@@ -54,7 +54,7 @@ namespace te
       public:
 
         /*! \brief It initializes a new MapDisplay. */
-        AbstractMapDisplay() { }
+        AbstractMapDisplay():m_cancel(false) { }
 
         /*! \brief Virtual destructor. */
         virtual ~AbstractMapDisplay() { }
@@ -166,6 +166,11 @@ namespace te
           \return The MapDisplay current height in millimeters.
         */
         virtual double getHeightMM() const = 0;
+
+        protected:
+
+          bool m_cancel;
+
 
         //@}
     };

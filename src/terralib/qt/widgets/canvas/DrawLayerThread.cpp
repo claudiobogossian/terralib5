@@ -106,7 +106,7 @@ void te::qt::widgets::DrawLayerThread::run()
     // Let's draw!
     try
     {
-      m_layer->draw(&canvas, m_env, m_srid, m_scale);
+      m_layer->draw(&canvas, m_env, m_srid, m_scale, 0);
 //      break;
     }
     catch(const te::da::Exception& e)

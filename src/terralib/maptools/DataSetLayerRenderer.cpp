@@ -80,7 +80,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
                                          Canvas* canvas,
                                          const te::gm::Envelope& bbox,
                                          int srid, 
-                                         const double& scale)
+                                         const double& scale, bool* cancel)
 {
 // should I render this layer?
   DataSetLayer* dlayer = dynamic_cast<DataSetLayer*>(layer);

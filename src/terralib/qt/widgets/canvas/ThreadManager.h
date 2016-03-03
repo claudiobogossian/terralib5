@@ -26,10 +26,15 @@ TerraLib Team at <terralib-team@terralib.org>.
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_THREADMANAGER_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_THREADMANAGER_H
 
+//Qt
+#include <QObject>
+
 //STL
 #include <vector>
 
 class QRunnable;
+class QThreadPool;
+class QTimer;
 
 namespace te
 {
@@ -37,19 +42,39 @@ namespace te
   {
     namespace widgets
     {
-      class ThreadManager
+      class ThreadManager : public QObject
       {
+        Q_OBJECT
+
       public:
 
-        ThreadManager(const std::vector<QRunnable*>& threads);
+        ThreadManager(const std::vector<QRunnable*>& threads, int interval=-1);
 
         ~ThreadManager();
 
         void run();
 
+        void stopProccess();
+
+      Q_SIGNALS:
+
+        void showFeedback();
+
+        void finished();
+
+      protected slots:
+
+        void onThreadFinished();
+
       protected:
 
         std::vector<QRunnable*> m_threads;
+
+        QThreadPool* m_pool;
+
+        QTimer* m_timer;
+
+        int m_interval;
       };
     }
   }

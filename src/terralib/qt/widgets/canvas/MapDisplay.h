@@ -210,6 +210,8 @@ namespace te
            */
           virtual void restoreDPI();
 
+          virtual void updateLayer(te::map::AbstractLayerPtr layer, bool redraw = true) { }
+
         protected:
 
           /*!

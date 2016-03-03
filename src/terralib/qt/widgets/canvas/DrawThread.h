@@ -28,6 +28,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 // Qt
 #include <QColor>
+#include <QObject>
 #include <QRunnable>
 
 class QPaintDevice;
@@ -50,8 +51,10 @@ namespace te
   {
     namespace widgets
     {
-      class DrawThread : public QRunnable
+      class DrawThread : public QObject, public QRunnable
       {
+        Q_OBJECT
+
       public:
 
         DrawThread(QPaintDevice* dev, te::map::AbstractLayer* layer, te::gm::Envelope* env, const QColor& bckGround, int srid, double scale, 
@@ -60,6 +63,16 @@ namespace te
         ~DrawThread();
 
         void run();
+
+        bool hasFinished() const;
+
+        QString errorMessage() const;
+
+        QString layerId() const;
+
+       Q_SIGNALS:
+
+        void finished();
 
       protected:
 
@@ -78,6 +91,16 @@ namespace te
         te::map::AlignType m_hAlign;                        //!< The display horizontal align.
 
         te::map::AlignType m_vAlign;                        //!< The display vertical align.
+
+      public: 
+
+        bool m_cancel;
+
+      protected:
+
+        bool m_finished;
+
+        QString m_errorMessage;
       };
     }
   }

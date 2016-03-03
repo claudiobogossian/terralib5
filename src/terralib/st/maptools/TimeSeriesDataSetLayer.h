@@ -160,7 +160,7 @@ namespace te
 
         bool isValid() const;
 
-        void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
+        void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
 
         /*!
           \brief It returns the layer type: TIMESERIESDATASETLAYER.

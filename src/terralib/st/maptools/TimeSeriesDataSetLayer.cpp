@@ -230,7 +230,7 @@ bool te::st::TimeSeriesDataSetLayer::isValid() const
   return true;
 }
 
-void te::st::TimeSeriesDataSetLayer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale)
+void te::st::TimeSeriesDataSetLayer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel)
 {
   if(m_rendererType.empty())
     throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
@@ -240,7 +240,7 @@ void te::st::TimeSeriesDataSetLayer::draw(te::map::Canvas* canvas, const te::gm:
   if(renderer.get() == 0)
     throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
-  renderer->draw(this, canvas, bbox, srid, scale);
+  renderer->draw(this, canvas, bbox, srid, scale, cancel);
 }
 
 const std::string& te::st::TimeSeriesDataSetLayer::getType() const

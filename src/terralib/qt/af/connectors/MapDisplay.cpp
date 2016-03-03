@@ -328,9 +328,10 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     }
     break;
 
-    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
+    case te::qt::af::evt::LAYER_CHANGED:
     {
-      // TODO
+      te::qt::af::evt::LayerChanged* lEvent = static_cast<te::qt::af::evt::LayerChanged*>(e);
+      m_display->updateLayer(lEvent->m_layer, false);
     }
     break;
 

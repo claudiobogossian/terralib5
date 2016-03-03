@@ -105,7 +105,7 @@ namespace te
 
         bool isValid() const;
 
-        void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
+        void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
 
         /*!
           \brief It returns the layer type: QUERY_LAYER.

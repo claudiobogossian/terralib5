@@ -479,7 +479,7 @@ namespace te
           \param srid   The SRS to be used to draw the layer objects.
           \param scale  The current scale of display.
         */
-        virtual void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale) = 0;
+        virtual void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel) = 0;
 
         /*!
           \brief It returns the composition mode.

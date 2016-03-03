@@ -169,10 +169,6 @@ bool te::map::FolderLayer::isValid() const
   return true;
 }
 
-void te::map::FolderLayer::draw(Canvas* /*canvas*/, const te::gm::Envelope& /*bbox*/, int /*srid*/, const double& /*scale*/)
-{
-}
-
 const std::string& te::map::FolderLayer::getType() const
 {
   return sm_type;

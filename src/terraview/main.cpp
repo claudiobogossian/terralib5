@@ -58,8 +58,8 @@
 
 int main(int argc, char** argv)
 {
-  QApplication app(argc, argv);
-  //TerraViewApp app(argc, argv);
+//  QApplication app(argc, argv);
+  TerraViewApp app(argc, argv);
 
   QDir dir(QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 
