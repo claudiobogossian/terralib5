@@ -10480,20 +10480,31 @@ Pode ser um erro no conector da aplicação !</translation>
 <context>
     <name>te::qt::widgets::DrawLayerThread</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="122"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="129"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="135"/>
         <source>The layer</source>
-        <translation>A camada</translation>
+        <translation type="vanished">A camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="122"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="129"/>
         <source>could not be drawn! Details:</source>
-        <translation>não pode ser desenhada ! Detalhes:</translation>
+        <translation type="vanished">não pode ser desenhada ! Detalhes:</translation>
+    </message>
+</context>
+<context>
+    <name>te::qt::widgets::DrawThread</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="55"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="59"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="63"/>
+        <source>The layer</source>
+        <translation type="unfinished">A camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="135"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="55"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="59"/>
+        <source>could not be drawn! Details:</source>
+        <translation type="unfinished">não pode ser desenhada ! Detalhes:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="63"/>
         <source>could not be drawn!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13646,13 +13657,13 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
 <context>
     <name>te::qt::widgets::SaveSelectedObjectsDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="86"/>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="90"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="96"/>
         <source>Warning</source>
         <translation type="unfinished">Aviso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="96"/>
         <source>Layer was saved.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13665,12 +13676,12 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="251"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="261"/>
         <source>Save as...</source>
         <translation type="unfinished">Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="251"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="261"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished">Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -14434,55 +14445,55 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
 <context>
     <name>te::qt::widgets::WhereClauseWidget</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="348"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="358"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="368"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="378"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="487"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="506"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="519"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="353"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="363"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="373"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="383"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="492"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="511"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="524"/>
         <source>Query Builder</source>
         <translation>Construtor de Consulta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="348"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="353"/>
         <source>Restrict value not defined.</source>
         <translation>Valor restrito não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="358"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="368"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="363"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="373"/>
         <source>Value not defined.</source>
         <translation>Valor não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="378"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="487"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="383"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="492"/>
         <source>Operator not defined.</source>
         <translation>Operador não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="413"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="418"/>
         <source>and</source>
         <translation>and</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="506"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="511"/>
         <source>Selected layer has no geometry property.</source>
         <translation>Camada selecionada não tem nenhuma propriedade geometria.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="519"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="524"/>
         <source>Selected layer has no selected geometries.</source>
         <translation>Camada selecionada não tem geometrias selecionadas.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="552"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="557"/>
         <source>Geometry Value</source>
         <translation>Valor da Geometria</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="570"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="575"/>
         <source>or</source>
         <translation>or</translation>
     </message>

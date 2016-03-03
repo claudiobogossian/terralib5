@@ -921,12 +921,12 @@
 <context>
     <name>te::vp::AggregationDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="580"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="588"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="581"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="589"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -934,12 +934,12 @@
 <context>
     <name>te::vp::BufferDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/BufferDialog.cpp" line="325"/>
+        <location filename="../../../src/terralib/vp/qt/BufferDialog.cpp" line="328"/>
         <source>Save as...</source>
         <translation>Salavar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/BufferDialog.cpp" line="326"/>
+        <location filename="../../../src/terralib/vp/qt/BufferDialog.cpp" line="329"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -986,12 +986,12 @@
 <context>
     <name>te::vp::IntersectionDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="652"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="657"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="653"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="658"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>

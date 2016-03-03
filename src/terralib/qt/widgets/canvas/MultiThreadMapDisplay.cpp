@@ -28,7 +28,6 @@
 #include "../../../maptools/Utils.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../se/Style.h"
-#include "DrawLayerThread.h"
 #include "MultiThreadMapDisplay.h"
 #include "Canvas.h"
 #include "DrawThread.h"

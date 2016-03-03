@@ -383,7 +383,7 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="525"/>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="792"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="991"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="993"/>
         <source>TerraLib 4.x Converter</source>
         <translation>Conversor TerraLib 4.x</translation>
     </message>
@@ -402,7 +402,7 @@
         <translation>Criação automática de camada falhou !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="992"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="994"/>
         <source>This option is not implemented yet!
 We will provide it soon!</source>
         <translation>Esta opção não está implementada ainda !

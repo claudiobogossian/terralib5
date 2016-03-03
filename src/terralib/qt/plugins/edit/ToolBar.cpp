@@ -92,7 +92,7 @@ QObject(parent),
   m_redoToolAction(0),
   m_undoView(0),
   m_currentTool(0),
-  m_usingStash(true),
+  m_usingStash(false),
   m_layerIsStashed(true)
 {
   initialize();
