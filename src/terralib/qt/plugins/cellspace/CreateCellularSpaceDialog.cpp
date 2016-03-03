@@ -209,7 +209,19 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
     precision = 6;
   }
   showEnvelope(layer->getExtent(),precision);
-  m_ui->m_maskRadioButton->setChecked(true);
+
+  if (layer->getSchema()->hasRaster())
+  {
+    m_ui->m_noMaskRadioButton->setChecked(true);
+    m_ui->m_maskRadioButton->setEnabled(false);
+  }
+  else
+  {
+    m_ui->m_maskRadioButton->setEnabled(true);
+    m_ui->m_maskRadioButton->setEnabled(true);
+  }
+
+  
 }
 
 
