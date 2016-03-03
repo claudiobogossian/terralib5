@@ -36,7 +36,7 @@
 te::qt::plugins::vp::MergeAction::MergeAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Merge...").toStdString(), "vector-processing-aggregation");
+  createAction(tr("Merge...").toStdString(), "vector-processing-merge");
   m_action->setObjectName("Processing.Vector Processing.Merge");
 }
 

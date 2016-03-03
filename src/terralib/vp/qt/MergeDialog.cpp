@@ -65,7 +65,7 @@ te::vp::MergeDialog::MergeDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-aggregation-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-merge-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
@@ -372,7 +372,6 @@ void te::vp::MergeDialog::onSecondLayerComboBoxChanged(int index)
 
 void te::vp::MergeDialog::updateAttrTableWidget()
 {
-  m_ui->m_attributeTableWidget->clear();
   m_ui->m_attributeTableWidget->setRowCount(0);
 
   std::auto_ptr<te::da::DataSetType> firstSchema;
@@ -401,6 +400,7 @@ void te::vp::MergeDialog::updateAttrTableWidget()
       m_ui->m_attributeTableWidget->insertRow(rowCount);
 
       QTableWidgetItem* item = new QTableWidgetItem(firstProps[i]->getName().c_str());
+      item->setFlags(Qt::ItemIsEnabled);
       m_ui->m_attributeTableWidget->setItem(rowCount, 0, item);
 
       QComboBox* cb = getPossibleAttributesComboBox(firstProps[i], secondProps);
@@ -430,6 +430,8 @@ void te::vp::MergeDialog::updateAttrTableWidget()
       m_ui->m_attributeTableWidget->setCellWidget(rowCount, 1, cb);
     }
   }
+
+  m_ui->m_attributeTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 QComboBox* te::vp::MergeDialog::getPossibleAttributesComboBox(te::dt::Property* mainProp, std::vector<te::dt::Property*> props)
