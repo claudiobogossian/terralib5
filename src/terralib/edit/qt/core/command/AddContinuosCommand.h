@@ -18,7 +18,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file AddCommand.h
+\file AddContinuosCommand.h
 
 \brief
 
@@ -46,16 +46,16 @@ namespace te
     \brief Undo/Redo for add one components.
 
     */
-    class TEEDITQTEXPORT AddCommand : public QUndoCommand
+    class TEEDITQTEXPORT AddContinuosCommand : public QUndoCommand
     {
       public:
         // Pass all parameters that the command need to fulfill its task in the constructor
-        AddCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+        AddContinuosCommand(std::vector<Feature*> items, Feature* item, std::vector<te::gm::Coord2D>* coords,te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
         /*!
         \brief Destructor
         */
-        virtual ~AddCommand();
+        virtual ~AddContinuosCommand();
 
         /*!
         \brief Reimplemented from QUndoCommand
@@ -72,10 +72,15 @@ namespace te
         te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
         std::vector<Feature*> m_addItems;
-        void draw();
+        Feature* m_addItem;
+        std::vector<te::gm::Coord2D>* m_coords;
+
+        void draw(const int commandType);
 
         std::size_t m_nextFeature;
         std::size_t m_previousFeature;
+        const int m_redoCommandType;
+        const int m_undoCommandType;
 
     };
   }

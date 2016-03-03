@@ -98,6 +98,11 @@ void te::edit::Feature::setOperation(OperationType operation)
   m_operationType = operation;
 }
 
+void te::edit::Feature::setCoords(std::vector<te::gm::Coord2D> coords)
+{
+  m_coords = coords;
+}
+
 te::da::ObjectId* te::edit::Feature::getId() const
 {
   return m_id;
@@ -116,6 +121,11 @@ const std::map<std::size_t, te::dt::AbstractData*>& te::edit::Feature::getData()
 te::edit::OperationType te::edit::Feature::getOperationType() const
 {
   return m_operationType;
+}
+
+std::vector<te::gm::Coord2D> te::edit::Feature::getCoords() const
+{
+  return m_coords;
 }
 
 bool te::edit::Feature::isEquals(te::da::ObjectId* id)
@@ -148,6 +158,8 @@ te::edit::Feature* te::edit::Feature::clone() const
   f->setData(data);
 
   f->setOperation(m_operationType);
+
+  f->setCoords(m_coords);
 
   return f;
 }

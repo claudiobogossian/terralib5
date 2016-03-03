@@ -75,6 +75,8 @@ namespace te
 
         void setOperation(OperationType operation);
 
+        void setCoords(std::vector<te::gm::Coord2D> coords);
+
         te::da::ObjectId* getId() const;
 
         te::gm::Geometry* getGeometry() const;
@@ -82,6 +84,8 @@ namespace te
         const std::map<std::size_t, te::dt::AbstractData*>& getData() const;
 
         OperationType getOperationType() const;
+
+        std::vector<te::gm::Coord2D> getCoords() const;
 
         bool isEquals(te::da::ObjectId* id);
 
@@ -93,6 +97,7 @@ namespace te
         te::gm::Geometry* m_geom;
         std::map<std::size_t, te::dt::AbstractData*> m_data;
         OperationType m_operationType;
+        std::vector<te::gm::Coord2D> m_coords;
 
     };
 
