@@ -199,12 +199,12 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="226"/>
         <source>New Database Name</source>
-        <translation>Nome do Banco de Dados</translation>
+        <translation>Nome do Novo Banco de Dados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="240"/>
         <source>Database Template</source>
-        <translation type="unfinished"></translation>
+        <translation>Template do Banco de Dados</translation>
     </message>
     <message>
         <source>PostGIS Template</source>

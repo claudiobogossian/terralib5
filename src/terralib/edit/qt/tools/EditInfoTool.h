@@ -50,6 +50,8 @@ namespace te
 
       //@}
 
+      void cancelEditionTool();
+
     private:
 
       void draw();

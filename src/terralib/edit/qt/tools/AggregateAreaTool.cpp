@@ -249,3 +249,6 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
   }
 }
+
+void te::edit::AggregateAreaTool::cancelEditionTool()
+{}

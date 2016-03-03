@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/CreatePolygonTool.cpp
+  \file terralib/edit/qt/tools/CreateContinuosPolygonTool.cpp
 
   \brief This class implements a concrete tool to create polygons.
 */
@@ -33,9 +33,9 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/AddCommand.h"
+#include "../core/command/AddContinuosCommand.h"
 #include "../core/UndoStackManager.h"
-#include "CreatePolygonTool.h"
+#include "CreateContinuosPolygonTool.h"
 
 // Qt
 #include <QMouseEvent>
@@ -46,28 +46,26 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::CreateContinuosPolygonTool::CreateContinuosPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
-    m_addWatches(0),
-    m_geometries(0)
+    m_addWatches(0)
 {
   setCursor(cursor);
 
   draw();
 }
 
-te::edit::CreatePolygonTool::~CreatePolygonTool()
+te::edit::CreateContinuosPolygonTool::~CreateContinuosPolygonTool()
 {
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
   m_addWatches.clear();
-  m_geometries.clear();
 }
 
-bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
+bool te::edit::CreateContinuosPolygonTool::mousePressEvent(QMouseEvent* e)
 {
   if (e->button() != Qt::LeftButton)
     return false;
@@ -86,14 +84,14 @@ bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
 
   m_coords.push_back(coord);
 
-  if (m_coords.size() > 2)
-    m_geometries.push_back(convertGeomType(m_layer,buildPolygon()));
+  storeUndoCommand();
 
   return true;
 }
 
-bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
+bool te::edit::CreateContinuosPolygonTool::mouseMoveEvent(QMouseEvent* e)
 {
+
   if(m_coords.size() < 1 || m_isFinished)
     return false;
 
@@ -109,42 +107,52 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
   m_coords.push_back(coord);
 
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
-
+  /*
   if (e->buttons() & Qt::LeftButton)
     m_continuousMode = true;
   else
     m_continuousMode = false;
+    */
+  if (e->buttons() & Qt::LeftButton)
+  {
+    m_continuousMode = true;
+
+    storeUndoCommand();
+  }
+  else
+    m_continuousMode = false;
+
 
   draw();
 
   return false;
+
 }
-
-bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
+//fazer por opcap , mouserlease ou double clique
+bool te::edit::CreateContinuosPolygonTool::mouseReleaseEvent(QMouseEvent* e)
 {
-  if (e->button() != Qt::LeftButton)
-  {
+  if (e->button() != Qt::RightButton)
     return false;
-  }
 
-  if(m_coords.size() < 3) // Can not stop yet...
+  if (m_coords.size() < 3) // Can not stop yet...
     return false;
 
   m_isFinished = true;
 
   storeNewGeometry();
 
-  storeUndoCommand();
+  UndoStackManager::getInstance().getUndoStack()->clear();
+
+  emit geometriesEdited();
 
   if (m_feature)
-    emit closedPolygon();
+   emit closedPolygon();// TODO switch to geometriesEdited
 
   return true;
 }
 
-void te::edit::CreatePolygonTool::draw()
+void te::edit::CreateContinuosPolygonTool::draw()
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -178,7 +186,7 @@ void te::edit::CreatePolygonTool::draw()
 
 }
 
-void te::edit::CreatePolygonTool::drawPolygon()
+void te::edit::CreateContinuosPolygonTool::drawPolygon()
 {
   // Build the geometry
   te::gm::Geometry* polygon = buildPolygon();
@@ -190,7 +198,7 @@ void te::edit::CreatePolygonTool::drawPolygon()
   delete polygon;
 }
 
-void te::edit::CreatePolygonTool::drawLine()
+void te::edit::CreateContinuosPolygonTool::drawLine()
 {
   // Build the geometry
   te::gm::Geometry* line = buildLine();
@@ -202,17 +210,18 @@ void te::edit::CreatePolygonTool::drawLine()
   delete line;
 }
 
-void te::edit::CreatePolygonTool::clear()
+void te::edit::CreateContinuosPolygonTool::clear()
 {
-  m_geometries.clear();
+  m_feature = 0;
   m_coords.clear();
+  m_addWatches.clear();
 }
 
-te::gm::Geometry* te::edit::CreatePolygonTool::buildPolygon()
+te::gm::Geometry* te::edit::CreateContinuosPolygonTool::buildPolygon()
 {
   // Build the geometry
   te::gm::LinearRing* ring = new te::gm::LinearRing(m_coords.size() + 1, te::gm::LineStringType);
-  for(std::size_t i = 0; i < m_coords.size(); ++i)
+  for (std::size_t i = 0; i < m_coords.size(); ++i)
     ring->setPoint(i, m_coords[i].x, m_coords[i].y);
   ring->setPoint(m_coords.size(), m_coords[0].x, m_coords[0].y); // Closing...
 
@@ -221,7 +230,7 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildPolygon()
 
   polygon->setSRID(m_display->getSRID());
 
-  if(polygon->getSRID() == m_layer->getSRID())
+  if (polygon->getSRID() == m_layer->getSRID())
     return polygon;
 
   // else, need conversion...
@@ -230,7 +239,7 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildPolygon()
   return polygon;
 }
 
-te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
+te::gm::Geometry* te::edit::CreateContinuosPolygonTool::buildLine()
 {
   te::gm::LineString* line = new te::gm::LineString(m_coords.size(), te::gm::LineStringType);
   for(std::size_t i = 0; i < m_coords.size(); ++i)
@@ -247,15 +256,33 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
   return line;
 }
 
-void te::edit::CreatePolygonTool::storeNewGeometry()
+void te::edit::CreateContinuosPolygonTool::storeUndoCommand()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), convertGeomType(m_layer, buildPolygon()), te::edit::GEOMETRY_CREATE);
-  emit geometriesEdited();
+  if (buildPolygon()->getNPoints() < 4)
+    return;
+
+  if (!m_feature)
+    m_feature = new Feature();
+    
+  m_feature->setGeometry(buildPolygon());
+  m_feature->setOperation(te::edit::GEOMETRY_CREATE);
+  m_feature->setCoords(m_coords);
+
+  m_addWatches.push_back(m_feature->clone());
+  
+  QUndoCommand* command = new AddContinuosCommand(m_addWatches, m_feature->clone(), &m_coords, m_display, m_layer);
+  UndoStackManager::getInstance().addUndoStack(command);
+
 }
 
-void te::edit::CreatePolygonTool::onExtentChanged()
+void te::edit::CreateContinuosPolygonTool::storeNewGeometry()
 {
-  if(m_coords.empty())
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), convertGeomType(m_layer, buildPolygon()), te::edit::GEOMETRY_CREATE);
+}
+
+void te::edit::CreateContinuosPolygonTool::onExtentChanged()
+{
+  if (m_coords.empty())
     return;
 
   m_coords.push_back(m_lastPos);
@@ -263,26 +290,7 @@ void te::edit::CreatePolygonTool::onExtentChanged()
   draw();
 }
 
-void te::edit::CreatePolygonTool::storeUndoCommand()
-{
-
-  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), m_layer->getSRID());
-
-  if (m_feature == 0)
-    return;
-
-  for (std::size_t i = 0; i < m_geometries.size(); i++)
-  {
-    m_feature->setGeometry(m_geometries[i]);
-    m_addWatches.push_back(m_feature->clone());
-
-    QUndoCommand* command = new AddCommand(m_addWatches, m_display, m_layer);
-    UndoStackManager::getInstance().addUndoStack(command);
-  }
-
-}
-
-void te::edit::CreatePolygonTool::cancelEditionTool()
+void te::edit::CreateContinuosPolygonTool::cancelEditionTool()
 {
   clear();
 }

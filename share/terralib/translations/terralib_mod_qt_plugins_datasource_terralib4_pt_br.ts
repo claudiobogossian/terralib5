@@ -414,7 +414,7 @@ Iremos fornecer em breve!</translation>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4LayerSelectionWizardPage.cpp" line="103"/>
         <source>Not supported</source>
-        <translation type="unfinished"></translation>
+        <translation>Não suportado</translation>
     </message>
 </context>
 <context>

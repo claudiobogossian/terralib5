@@ -76,8 +76,8 @@ namespace te
       QString createCommandString(QString oid);
       void draw(const int commandType);
 
-      int m_nextFeature;
-      int m_previousFeature;
+      std::size_t m_nextFeature;
+      std::size_t m_previousFeature;
       const int m_redoCommandType;
       const int m_undoCommandType;
 

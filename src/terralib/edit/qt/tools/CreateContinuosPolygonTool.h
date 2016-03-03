@@ -18,48 +18,46 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/MoveGeometryTool.h
+  \file terralib/edit/qt/tools/CreateContinuosPolygonTool.h
 
-  \brief This class implements a concrete tool to move geometries.
+  \brief This class implements a concrete tool to create polygons.
 */
 
-#ifndef __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
-#define __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
+#ifndef __TERRALIB_EDIT_QT_INTERNAL_CREATECONTINUOSPOLYGONTOOL_H
+#define __TERRALIB_EDIT_QT_INTERNAL_CREATECONTINUOSPOLYGONTOOL_H
 
 // TerraLib
-#include "../../../geometry/Envelope.h"
+#include "../../../geometry/Coord2D.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "GeometriesUpdateTool.h"
 #include "../Config.h"
+#include "GeometriesUpdateTool.h"
 
-// Qt
-#include <QPointF>
-
-//STL
-#include <map>
+// STL
+#include <vector>
 
 namespace te
 {
+  namespace gm
+  {
+    class Geometry;
+  }
+
   namespace qt
   {
     namespace widgets
     {
-      class Canvas;
       class MapDisplay;
     }
   }
 
   namespace edit
   {
-// Forward declaration
-    class Feature;
-
     /*!
-      \class MoveGeometryTool
+      \class CreateContinuosPolygonTool
 
-      \brief This class implements a concrete tool to move geometries.
+      \brief This class implements a concrete tool to create polygons.
     */
-    class TEEDITQTEXPORT MoveGeometryTool : public GeometriesUpdateTool
+    class TEEDITQTEXPORT CreateContinuosPolygonTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -71,16 +69,17 @@ namespace te
         //@{
 
         /*!
-          \brief It constructs a move geometry tool associated with the given map display.
+          \brief It constructs a create polygon tool associated with the given map display.
 
           \param display The map display associated with the tool.
           \param parent The tool's parent.
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject *parent = 0);
+        CreateContinuosPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
+
         /*! \brief Destructor. */
-        ~MoveGeometryTool();
+        ~CreateContinuosPolygonTool();
 
         //@}
 
@@ -101,17 +100,19 @@ namespace te
 
       private:
 
-        void reset();
-
-        void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
-
-        te::gm::Envelope buildEnvelope(const QPointF& pos);
-
         void draw();
 
-        void updateCursor();
+        void drawPolygon();
 
-        void storeEditedFeature();
+        void drawLine();
+
+        void clear();
+
+        te::gm::Geometry* buildPolygon();
+
+        te::gm::Geometry* buildLine();
+
+        void storeNewGeometry();
 
         void storeUndoCommand();
 
@@ -119,16 +120,21 @@ namespace te
 
         void onExtentChanged();
 
+      Q_SIGNALS:
+
+        void closedPolygon();
+
       protected:
 
-        bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
-        QPointF m_origin;                   //!< Origin point on mouse pressed.
-        QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
-        QPointF m_deltaSum;                 //!< Sum of all delta
-        std::map<std::string, QList<QPointF> > m_moveWatches;
+        std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
+        te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
+        bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
+        bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
+        std::vector<Feature*> m_addWatches;
+
     };
 
   }   // end namespace edit
 }     // end namespace te
 
-#endif  // __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
+#endif  // __TERRALIB_EDIT_QT_INTERNAL_CreateContinuosPolygonTool_H

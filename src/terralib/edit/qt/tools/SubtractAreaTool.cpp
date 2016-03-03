@@ -248,3 +248,6 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
   }
 }
+
+void te::edit::SubtractAreaTool::cancelEditionTool()
+{}
