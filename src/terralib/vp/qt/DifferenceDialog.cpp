@@ -127,6 +127,31 @@ void te::vp::DifferenceDialog::setLayers(std::list<te::map::AbstractLayerPtr> la
   updateDoubleListWidget();
 }
 
+te::map::AbstractLayerPtr te::vp::DifferenceDialog::getLayer()
+{
+  return m_layerResult;
+}
+
+std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getSelectedProperties()
+{
+  std::vector<std::string> outVec = m_doubleListWidget->getOutputValues();
+  std::vector<std::pair<std::string, std::string> > result;
+
+  for (std::size_t i = 0; i < outVec.size(); ++i)
+  {
+    std::vector<std::string> tok;
+    te::common::Tokenize(outVec[i], tok, ": ");
+
+    std::pair<std::string, std::string> p;
+    p.first = tok[0];
+    p.second = tok[1];
+
+    result.push_back(p);
+  }
+
+  return result;
+}
+
 void te::vp::DifferenceDialog::updateInputLayerComboBox()
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
@@ -171,33 +196,6 @@ void te::vp::DifferenceDialog::updateDifferenceLayerComboBox()
   m_differenceSelectedLayer = layer;
 }
 
-te::map::AbstractLayerPtr te::vp::DifferenceDialog::getLayer()
-{
-  return m_layerResult;
-}
-
-void te::vp::DifferenceDialog::onInputLayerComboBoxChanged(int index)
-{
-  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(index, Qt::UserRole);
-  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
-
-  m_ui->m_differenceLayerComboBox->clear();
-  
-  m_inputSelectedLayer = layer;
-
-  updateDifferenceLayerComboBox();
-
-  updateDoubleListWidget();
-}
-
-void te::vp::DifferenceDialog::onDifferenceLayerComboBoxChanged(int index)
-{
-  QVariant varLayer = m_ui->m_differenceLayerComboBox->itemData(index, Qt::UserRole);
-  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
-
-  m_differenceSelectedLayer = layer;
-}
-
 void te::vp::DifferenceDialog::updateDoubleListWidget()
 {
   std::vector<std::string> inputValues;
@@ -226,24 +224,27 @@ void te::vp::DifferenceDialog::updateDoubleListWidget()
   m_doubleListWidget->setInputValues(inputValues);
 }
 
-std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getSelectedProperties()
+void te::vp::DifferenceDialog::onInputLayerComboBoxChanged(int index)
 {
-  std::vector<std::string> outVec = m_doubleListWidget->getOutputValues();
-  std::vector<std::pair<std::string, std::string> > result;
+  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(index, Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
-  for (std::size_t i = 0; i < outVec.size(); ++i)
-  {
-    std::vector<std::string> tok;
-    te::common::Tokenize(outVec[i], tok, ": ");
+  m_ui->m_differenceLayerComboBox->clear();
+  m_doubleListWidget->clearOutputValues();
+  
+  m_inputSelectedLayer = layer;
 
-    std::pair<std::string, std::string> p;
-    p.first = tok[0];
-    p.second = tok[1];
+  updateDifferenceLayerComboBox();
 
-    result.push_back(p);
-  }
+  updateDoubleListWidget();
+}
 
-  return result;
+void te::vp::DifferenceDialog::onDifferenceLayerComboBoxChanged(int index)
+{
+  QVariant varLayer = m_ui->m_differenceLayerComboBox->itemData(index, Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  m_differenceSelectedLayer = layer;
 }
 
 void te::vp::DifferenceDialog::onOkPushButtonClicked()
@@ -301,14 +302,14 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
 
 
 // Get output attributes.
-  std::vector<std::string> attributesVec = m_doubleListWidget->getOutputValues();
+  std::vector<std::pair<std::string, std::string> > attributesVec = this->getSelectedProperties();
   std::map<std::string, te::dt::AbstractData*> specificParams;
 
   for (std::size_t attPos = 0; attPos < attributesVec.size(); ++attPos)
   {
     specificParams.insert(std::pair<std::string, te::dt::AbstractData*>(
-      m_ui->m_differenceLayerComboBox->currentText().toStdString(),
-      new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(attributesVec[attPos])));
+      boost::lexical_cast<std::string>(attPos),
+      new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(attributesVec[attPos].second)));
   }
 
 
@@ -419,6 +420,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setInputParams(m_inputParams);
       m_params->setOutputDataSource(dsOGR);
       m_params->setOutputDataSetName(outputdataset);
+      m_params->setSpecificParams(specificParams);
 
       te::vp::Difference difference;
 
@@ -497,6 +499,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setInputParams(m_inputParams);
       m_params->setOutputDataSource(aux);
       m_params->setOutputDataSetName(outputdataset);
+      m_params->setSpecificParams(specificParams);
 
       te::vp::Difference difference;
 

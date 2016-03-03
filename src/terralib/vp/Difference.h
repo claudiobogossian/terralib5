@@ -77,9 +77,9 @@ namespace te
 
       std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
 
-      te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
+      te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams, bool withPk = true);
 
-      te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
+      te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom);
 
       // it defines the type of the result considering the input geometries being aggregated
       //te::gm::GeomType getGeomResultType(te::gm::GeomType geom);

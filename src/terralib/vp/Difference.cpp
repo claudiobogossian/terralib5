@@ -145,12 +145,32 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
     new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()),
     subSelectExpression);
 
+
+  te::da::Fields* fieldsExpressions = new te::da::Fields;
+
+  // Tabular attributes.
+  const std::map<std::string, te::dt::AbstractData*> attributesMap = mainParams->getSpecificParams();
+  std::map<std::string, te::dt::AbstractData*>::const_iterator it = attributesMap.begin();
+
+  while (it != attributesMap.end())
+  {
+    te::dt::SimpleData<std::string, te::dt::STRING_TYPE>* sd =
+      dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
+
+    std::string columnName = sd->getValue();
+
+    te::da::Field* f_att = new te::da::Field(dsType_first->getName() + "." + columnName);
+    fieldsExpressions->push_back(f_att);
+
+    ++it;
+  }
+
+// Expression to set geometries as multigeometries.
   te::da::Expression* e_coalesce = new te::da::Coalesce(e_difference,
     new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()));
 
   te::da::Expression* e_multi = new te::da::ST_Multi(*e_coalesce);
 
-  te::da::Fields* fieldsExpressions = new te::da::Fields;
   te::da::Field* f_multi = new te::da::Field(*e_multi, "geom");
   fieldsExpressions->push_back(f_multi);
 
@@ -187,14 +207,19 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   std::auto_ptr<te::da::DataSourceTransactor> t = outputDataSource->getTransactor();
   std::map<std::string, std::string> options;
 
+  std::auto_ptr<te::da::DataSetType> outDataSetType;
+
   if (outputDataSource->getType() == "OGR")
   {
-    outputDataSource->createDataSet(getOutputDataSetType(mainParams), options);
+    outDataSetType.reset(this->getOutputDataSetType(mainParams, false));
+    outputDataSource->createDataSet(outDataSetType.get(), options);
   }
   else
   {
+    outDataSetType.reset(this->getOutputDataSetType(mainParams));
+
     t->begin();
-    t->createDataSet(getOutputDataSetType(mainParams), options);
+    t->createDataSet(outDataSetType.get(), options);
     t->commit();
 
     if (!inDataSourceInfoPtr)
@@ -217,6 +242,23 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   if (inputConnection == outputConnection)
   {
     te::da::Fields* insertFields = new te::da::Fields;
+
+    const std::map<std::string, te::dt::AbstractData*> attributesMap = mainParams->getSpecificParams();
+    std::map<std::string, te::dt::AbstractData*>::const_iterator it = attributesMap.begin();
+
+    while (it != attributesMap.end())
+    {
+      te::dt::SimpleData<std::string, te::dt::STRING_TYPE>* sd =
+        dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
+
+      std::string columnName = sd->getValue();
+
+      te::da::Field* f_att = new te::da::Field(columnName);
+      insertFields->push_back(f_att);
+
+      ++it;
+    }
+
     te::da::Field* f_insert = new te::da::Field("geom");
     insertFields->push_back(f_insert);
 
@@ -232,24 +274,6 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
       throw te::common::Exception("The Layers do not intersect to set difference!");
 
     std::string outputDsName = mainParams->getOutputDataSetName();
-
-    std::auto_ptr<te::da::DataSetType> outDataSetType(new te::da::DataSetType(outputDsName));
-
-    te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDsName + "_id", te::dt::INT32_TYPE);
-    pkProperty->setAutoNumber(true);
-    outDataSetType->add(pkProperty);
-
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(outputDsName + "_pk", outDataSetType.get());
-    pk->add(pkProperty);
-    outDataSetType->setPrimaryKey(pk);
-
-    te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(dsType_first.get())->getGeometryType(),
-                                                te::da::GetFirstGeomProperty(dsType_second.get())->getGeometryType());
-
-    te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
-    newGeomProp->setGeometryType(newType);
-
-    outDataSetType->add(newGeomProp);
 
     std::auto_ptr<te::da::DataSet> outDset(updateGeomType(outDataSetType.get(), dsQuery.release()));
 
@@ -355,20 +379,23 @@ bool te::vp::Difference::isSupportQuery(te::vp::AlgorithmParams* mainParams)
   return true;
 }
 
-te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmParams* mainParams)
+te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmParams* mainParams, bool withPk)
 {
 // Get the output dataset name.
   std::string outputDataSetName = mainParams->getOutputDataSetName();
   te::da::DataSetType* outputDataSetType = new te::da::DataSetType(outputDataSetName);
 
 // Set to output datasettype the primary key property.
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
-  pkProperty->setAutoNumber(true);
-  outputDataSetType->add(pkProperty);
+  if (withPk)
+  {
+    te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
+    pkProperty->setAutoNumber(true);
+    outputDataSetType->add(pkProperty);
 
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(outputDataSetName + "_pk", outputDataSetType);
-  pk->add(pkProperty);
-  outputDataSetType->setPrimaryKey(pk);
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(outputDataSetName + "_pk", outputDataSetType);
+    pk->add(pkProperty);
+    outputDataSetType->setPrimaryKey(pk);
+  }
 
 // Get the first layer SRID to set in output dataSetType.
   std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
@@ -380,17 +407,43 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
   if (!dataSetName.empty())
     dataSetType = dataSource->getDataSetType(dataSetName);
 
+// Get tabular attributes.
+  te::da::DataSetType* dsType = te::da::GetDataSetType(inputParams[0].m_inputDataSetName, inputParams[0].m_inputDataSource->getId());
+
+  const std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
+  std::map<std::string, te::dt::AbstractData*>::const_iterator it = specificParams.begin();
+
+  while (it != specificParams.end())
+  {
+    te::dt::SimpleData<std::string, te::dt::STRING_TYPE>* sd =
+      dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
+
+    std::string columnName = sd->getValue();
+
+    te::dt::Property* prop = dsType->getProperty(columnName);
+
+    if (!prop)
+      continue;
+
+    te::dt::SimpleProperty* currentProperty = new te::dt::SimpleProperty(columnName, prop->getType());
+    outputDataSetType->add(currentProperty);
+
+    ++it;
+  }
+
 // Creating the geometry property
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
+
   te::gm::GeometryProperty* intputGeomProp = te::da::GetFirstGeomProperty(dataSetType.get());
-  newGeomProp->setGeometryType(intputGeomProp->getGeometryType());
+  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(dataSetType.get())->getGeometryType());
+  newGeomProp->setGeometryType(newType);
   newGeomProp->setSRID(intputGeomProp->getSRID());
   outputDataSetType->add(newGeomProp);
 
   return outputDataSetType;
 }
 
-te::gm::GeomType te::vp::Difference::setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom)
+te::gm::GeomType te::vp::Difference::setGeomResultType(te::gm::GeomType firstGeom)
 {
   if ((firstGeom == te::gm::PointType) ||
     (firstGeom == te::gm::PointZType) ||
@@ -398,21 +451,10 @@ te::gm::GeomType te::vp::Difference::setGeomResultType(te::gm::GeomType firstGeo
     (firstGeom == te::gm::PointZMType) ||
     (firstGeom == te::gm::PointKdType) ||
 
-    (secondGeom == te::gm::PointType) ||
-    (secondGeom == te::gm::PointZType) ||
-    (secondGeom == te::gm::PointMType) ||
-    (secondGeom == te::gm::PointZMType) ||
-    (secondGeom == te::gm::PointKdType) ||
-
     (firstGeom == te::gm::MultiPointType) ||
     (firstGeom == te::gm::MultiPointZType) ||
     (firstGeom == te::gm::MultiPointMType) ||
-    (firstGeom == te::gm::MultiPointZMType) ||
-
-    (secondGeom == te::gm::MultiPointType) ||
-    (secondGeom == te::gm::MultiPointZType) ||
-    (secondGeom == te::gm::MultiPointMType) ||
-    (secondGeom == te::gm::MultiPointZMType))
+    (firstGeom == te::gm::MultiPointZMType))
 
     return te::gm::MultiPointType;
 
@@ -421,20 +463,10 @@ te::gm::GeomType te::vp::Difference::setGeomResultType(te::gm::GeomType firstGeo
     (firstGeom == te::gm::LineStringMType) ||
     (firstGeom == te::gm::LineStringZMType) ||
 
-    (secondGeom == te::gm::LineStringType) ||
-    (secondGeom == te::gm::LineStringZType) ||
-    (secondGeom == te::gm::LineStringMType) ||
-    (secondGeom == te::gm::LineStringZMType) ||
-
     (firstGeom == te::gm::MultiLineStringType) ||
     (firstGeom == te::gm::MultiLineStringZType) ||
     (firstGeom == te::gm::MultiLineStringMType) ||
-    (firstGeom == te::gm::MultiLineStringZMType) ||
-
-    (secondGeom == te::gm::MultiLineStringType) ||
-    (secondGeom == te::gm::MultiLineStringZType) ||
-    (secondGeom == te::gm::MultiLineStringMType) ||
-    (secondGeom == te::gm::MultiLineStringZMType))
+    (firstGeom == te::gm::MultiLineStringZMType))
 
     return te::gm::MultiLineStringType;
 
