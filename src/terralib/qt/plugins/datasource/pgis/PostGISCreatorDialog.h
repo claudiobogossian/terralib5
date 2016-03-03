@@ -67,13 +67,13 @@ namespace te
 
           public slots:
 
-            void advancedCreationOptionsCheckBoxToggled(bool t);
+            void onAdvancedCreationOptionsCheckBoxToggled(bool t);
 
-            void applyPushButtonPressed();
+            void onApplyPushButtonPressed();
 
-            void closePushButtonPressed();
+            void onClosePushButtonPressed();
 
-            void passwordLineEditEditingFinished();
+            void onLineEditEditingFinished();
 
           protected:
 
