@@ -31,6 +31,8 @@
 #include "MergeMemory.h"
 #include "Utils.h"
 
+const int BLOCKSIZE = 10000;
+
 te::vp::MergeMemory::MergeMemory()
 {}
 
@@ -40,7 +42,7 @@ te::vp::MergeMemory::~MergeMemory()
 bool te::vp::MergeMemory::run() throw( te::common::Exception )
 {
   std::auto_ptr<te::da::DataSetType> dst(getOutputDst());
-  std::auto_ptr<te::mem::DataSet> ds(new te::mem::DataSet(dst.get()));
+  te::mem::DataSet* ds = new te::mem::DataSet(dst.get());
 
   te::gm::GeometryProperty* fgGrop = te::da::GetFirstGeomProperty(m_firstDst);
   te::gm::GeometryProperty* sgGrop = te::da::GetFirstGeomProperty(m_secondDst);
@@ -51,13 +53,16 @@ bool te::vp::MergeMemory::run() throw( te::common::Exception )
   std::size_t outgPos = dst->getPropertyPosition(outgGrop);
   
   int pkCount = 0;
+  int count = 0;
 
   m_firstDs->moveBeforeFirst();
   m_secondDs->moveBeforeFirst();
 
+  std::map<std::string, std::string> op;
+
   while (m_firstDs->moveNext())
   {
-    te::mem::DataSetItem* item = new te::mem::DataSetItem(ds.get());
+    te::mem::DataSetItem* item = new te::mem::DataSetItem(ds);
     item->setInt32(0, pkCount);
     ++pkCount;
 
@@ -72,11 +77,31 @@ bool te::vp::MergeMemory::run() throw( te::common::Exception )
     item->setGeometry(outgPos, m_firstDs->getGeometry(fgPos).release());
 
     ds->add(item);
+
+    if (count == 0)
+    {
+      te::vp::Save(m_outDsrc.get(), ds, dst.get());
+
+      delete ds;
+
+      ds = new te::mem::DataSet(dst.get());
+    }
+
+    if ((count / BLOCKSIZE) >= 1)
+    {
+      m_outDsrc->add(dst->getName(), ds, op);
+
+      delete ds;
+
+      ds = new te::mem::DataSet(dst.get());
+    }
+
+    ++count;
   }
 
   while (m_secondDs->moveNext())
   {
-    te::mem::DataSetItem* item = new te::mem::DataSetItem(ds.get());
+    te::mem::DataSetItem* item = new te::mem::DataSetItem(ds);
     item->setInt32(0, pkCount);
     ++pkCount;
 
@@ -105,11 +130,24 @@ bool te::vp::MergeMemory::run() throw( te::common::Exception )
     item->setGeometry(outgPos, geom.release());
 
     ds->add(item);
+
+    if ((count / BLOCKSIZE) >= 1)
+    {
+      m_outDsrc->add(dst->getName(), ds, op);
+
+      delete ds;
+
+      ds = new te::mem::DataSet(dst.get());
+    }
+
+    ++count;
   }
 
-  ds->moveBeforeFirst();
-
-  te::vp::Save(m_outDsrc.get(), ds.get(), dst.get());
+  if (ds)
+  {
+    m_outDsrc->add(dst->getName(), ds, op);
+    delete ds;
+  }
 
   return true;
 }
