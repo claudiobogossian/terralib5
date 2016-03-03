@@ -134,17 +134,17 @@
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="120"/>
         <source>The buffer distance should be given in  layer&apos; SRS unit</source>
-        <translation type="unfinished"></translation>
+        <translation>A distância da área de influência deve se dada na unidade do SRS da camada.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="127"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="137"/>
         <source>This option is not implemented yet</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta opção foi implementada ainda.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="140"/>
@@ -276,7 +276,7 @@
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/GeometricOpOutputWizardPageForm.ui" line="60"/>
         <source>Minimum Bounding Rectangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Mínimo Retângulo Envolvente</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/GeometricOpOutputWizardPageForm.ui" line="70"/>
@@ -357,18 +357,18 @@
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="20"/>
         <source>Attribute Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleção de Atributos</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="30"/>
         <source>Overlay Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobreposição de Camada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="52"/>
         <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="138"/>
         <source>Only Selected Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Somente Objetos Selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="87"/>
@@ -403,7 +403,7 @@
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="116"/>
         <source>Input Layer</source>
-        <translation type="unfinished">Camada de Entrada</translation>
+        <translation>Camada de Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/IntersectionDialogForm.ui" line="156"/>
