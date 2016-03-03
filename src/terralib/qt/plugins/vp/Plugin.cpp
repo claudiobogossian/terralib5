@@ -36,6 +36,7 @@
 #include "GeometricOpAction.h"
 #include "IntersectionAction.h"
 #include "LineToPolygonAction.h"
+#include "MergeAction.h"
 #include "MultipartToSinglepartAction.h"
 #include "Plugin.h"
 #include "PolygonToLineAction.h"
@@ -71,6 +72,7 @@ te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
     m_geometricOp(0),
     m_intersection(0),
     m_lineToPolygon(0),
+    m_merge(0),
     m_multipart2singlepart(0),
     m_polygonToLine(0)
 {
@@ -161,6 +163,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
   m_difference = new te::qt::plugins::vp::DifferenceAction(m_vpMenu);
   m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
+  m_merge = new te::qt::plugins::vp::MergeAction(m_vpMenu);
   m_lineToPolygon = new te::qt::plugins::vp::LineToPolygonAction(m_vpMenu);
   m_multipart2singlepart = new te::qt::plugins::vp::MultipartToSinglepartAction(m_vpMenu);
   m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
@@ -170,6 +173,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
   connect(m_difference, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_geometricOp, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_intersection, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_merge, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_lineToPolygon, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_multipart2singlepart, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_polygonToLine, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
@@ -179,7 +183,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_difference->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_geometricOp->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_intersection->getAction());
-  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_lineToPolygon->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_merge->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_multipart2singlepart->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_polygonToLine->getAction());
 }
@@ -191,6 +195,7 @@ void  te::qt::plugins::vp::Plugin::unRegisterActions()
   delete m_difference;
   delete m_geometricOp;
   delete m_intersection;
+  delete m_merge;
   delete m_lineToPolygon;
   delete m_multipart2singlepart;
   delete m_polygonToLine;

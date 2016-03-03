@@ -54,11 +54,13 @@ te::qt::plugins::pgis::PostGISCreatorDialog::PostGISCreatorDialog(QWidget* paren
   m_ui->m_advancedOptionsGroupBox->hide();
 
 // connect signal and slots
-  connect(m_ui->m_advancedOptionsCheckBox, SIGNAL(toggled(bool)), this, SLOT(advancedCreationOptionsCheckBoxToggled(bool)));
-  connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
-  connect(m_ui->m_closePushButton, SIGNAL(pressed()), this, SLOT(closePushButtonPressed()));
-  connect(m_ui->m_userNameLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
-  connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
+  connect(m_ui->m_advancedOptionsCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAdvancedCreationOptionsCheckBoxToggled(bool)));
+  connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(onApplyPushButtonPressed()));
+  connect(m_ui->m_closePushButton, SIGNAL(pressed()), this, SLOT(onClosePushButtonPressed()));
+  connect(m_ui->m_userNameLineEdit, SIGNAL(editingFinished()), this, SLOT(onLineEditEditingFinished()));
+  connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(onLineEditEditingFinished()));
+  connect(m_ui->m_hostNameLineEdit, SIGNAL(editingFinished()), this, SLOT(onLineEditEditingFinished()));
+  connect(m_ui->m_portLineEdit, SIGNAL(editingFinished()), this, SLOT(onLineEditEditingFinished()));
 
   m_ui->m_portLineEdit->setValidator(new QIntValidator(0, 99999, this));
 
@@ -71,7 +73,7 @@ te::qt::plugins::pgis::PostGISCreatorDialog::~PostGISCreatorDialog()
 
 }
 
-void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
+void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
 {
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -190,12 +192,12 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
   accept();
 }
 
-void te::qt::plugins::pgis::PostGISCreatorDialog::closePushButtonPressed()
+void te::qt::plugins::pgis::PostGISCreatorDialog::onClosePushButtonPressed()
 {
   reject();
 }
 
-void te::qt::plugins::pgis::PostGISCreatorDialog::advancedCreationOptionsCheckBoxToggled(bool t)
+void te::qt::plugins::pgis::PostGISCreatorDialog::onAdvancedCreationOptionsCheckBoxToggled(bool t)
 {
   m_ui->m_advancedOptionsGroupBox->setVisible(t);
 }
@@ -293,7 +295,7 @@ const te::da::DataSourcePtr& te::qt::plugins::pgis::PostGISCreatorDialog::getDri
   return m_driver;
 }
 
-void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinished()
+void te::qt::plugins::pgis::PostGISCreatorDialog::onLineEditEditingFinished()
 {
   try
   {
@@ -303,9 +305,13 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinishe
 
       // Get Templates/Databases
       std::vector<std::string> templates = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
-      if(!templates.empty())
-        for(std::size_t i = 0; i < templates.size(); i++)
+      if (!templates.empty())
+      {
+        m_ui->m_templateComboBox->clear();
+
+        for (std::size_t i = 0; i < templates.size(); i++)
           m_ui->m_templateComboBox->addItem(templates[i].c_str());
+      }
 
       m_ui->m_templateComboBox->setCurrentIndex(m_ui->m_templateComboBox->findText("postgis"));
 

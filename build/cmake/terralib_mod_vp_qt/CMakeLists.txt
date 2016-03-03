@@ -82,6 +82,7 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LayerTreeModel.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LegendGroupItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LineToPolygonDialog.h
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/MergeDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/MultipartToSinglepartDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PolygonToLineDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PropertyGroupItem.h

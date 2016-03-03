@@ -67,6 +67,7 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp/GeometricOpAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp/IntersectionAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp/LineToPolygonAction.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp/MergeAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp/MultipartToSinglepartAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp/PolygonToLineAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp/SummarizationAction.h
