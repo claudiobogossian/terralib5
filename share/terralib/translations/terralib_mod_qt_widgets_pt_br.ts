@@ -10491,20 +10491,20 @@ Pode ser um erro no conector da aplicação !</translation>
 <context>
     <name>te::qt::widgets::DrawThread</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="55"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="59"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="63"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="54"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="58"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="62"/>
         <source>The layer</source>
         <translation type="unfinished">A camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="55"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="59"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="54"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="58"/>
         <source>could not be drawn! Details:</source>
         <translation type="unfinished">não pode ser desenhada ! Detalhes:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="63"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="62"/>
         <source>could not be drawn!</source>
         <translation>não pode ser desenhado !</translation>
     </message>

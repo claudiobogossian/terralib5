@@ -986,12 +986,12 @@
 <context>
     <name>te::vp::IntersectionDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="657"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="658"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="658"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="659"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
