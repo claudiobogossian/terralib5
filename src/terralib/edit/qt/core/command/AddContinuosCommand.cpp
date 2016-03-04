@@ -18,7 +18,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file AddCommand.cpp
+\file AddContinuosCommand.cpp
 
 \brief
 
@@ -32,68 +32,57 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../Utils.h"
 #include "../../Renderer.h"
 #include "../UndoStackManager.h"
-#include "AddCommand.h"
+#include "AddContinuosCommand.h"
 
 // STL
 #include <set>
 
-te::edit::AddCommand::AddCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+te::edit::AddContinuosCommand::AddContinuosCommand(std::vector<Feature*> items, Feature* item, std::vector<te::gm::Coord2D>* coords, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
 , m_display(display)
 , m_layer(layer)
 , m_addItems(items)
+, m_addItem(item)
+, m_coords(coords)
 , m_nextFeature(0)
 , m_previousFeature(0)
-{
-  setText(QObject::tr("Add Geometry to %1").arg(QString(m_addItems[0]->getId()->getValueAsString().c_str())));
-}
-
-te::edit::AddCommand::~AddCommand()
+, m_redoCommandType(1)
+, m_undoCommandType(2)
 {}
 
-void  te::edit::AddCommand::undo()
+te::edit::AddContinuosCommand::~AddContinuosCommand()
 {
-  std::size_t count = 0;
+  m_addItem = 0;
+  m_addItems.clear();
+}
 
+void  te::edit::AddContinuosCommand::undo()
+{
   if (m_addItems.empty())
     return;
 
-  std::string lastOid = m_addItems[m_addItems.size() - 1]->getId()->getValueAsString();
-
-  for (std::size_t i = 0; i < m_addItems.size(); i++)
-  {
-    if (m_addItems[i]->getId()->getValueAsString() == lastOid)
-      count++;
-  }
-
-  if (count == 1)
-    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_addItems[m_addItems.size() - 1]->getId());
-
   m_previousFeature = m_addItems.size() - 2;
 
-  if (m_previousFeature < 0) 
-    m_previousFeature = 0;
+  if (m_previousFeature < 0)
+    return;
 
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_addItems[m_previousFeature]->getId()) == true)
-  {
+  m_coords->clear();
 
-    Feature* f = new Feature(m_addItems[m_previousFeature]->getId(), m_addItems[m_previousFeature]->getGeometry(), m_addItems[m_previousFeature]->getOperationType());
+  for (std::size_t i = 0; i < m_addItems.at(m_previousFeature)->clone()->getCoords().size(); i++)
+    m_coords->push_back(m_addItems.at(m_previousFeature)->clone()->getCoords()[i]);
 
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
-
-  }
-
-  draw();
+  draw(m_undoCommandType);
 
 }
 
-void te::edit::AddCommand::redo()
+void te::edit::AddContinuosCommand::redo()
 {
   bool resultFound = false;
 
   if (!UndoStackManager::getInstance().getUndoStack())
     return;
+
 
   for (int i = 0; i < UndoStackManager::getInstance().getUndoStack()->count(); ++i)
   {
@@ -104,24 +93,25 @@ void te::edit::AddCommand::redo()
     }
   }
 
-  m_nextFeature = m_addItems.size() - 1;
+  m_nextFeature = m_addItems.size() -1;
 
   //no makes redo while the command is not on the stack
   if (resultFound)
   {
+    m_addItem->setGeometry(m_addItems.at(m_nextFeature)->clone()->getGeometry());
 
-    Feature* f = new Feature(m_addItems[m_nextFeature]->getId(), m_addItems[m_nextFeature]->getGeometry(), m_addItems[m_nextFeature]->getOperationType());
+    m_coords->clear();
 
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
+    for (std::size_t i = 0; i < m_addItems.at(m_nextFeature)->clone()->getCoords().size(); i++)
+      m_coords->push_back(m_addItems.at(m_nextFeature)->clone()->getCoords()[i]);
 
-    draw();
-
+    draw(m_redoCommandType);
   }
 
-  
+
 }
 
-void te::edit::AddCommand::draw()
+void te::edit::AddContinuosCommand::draw(const int commandType)
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
@@ -134,6 +124,18 @@ void te::edit::AddCommand::draw()
   // Initialize the renderer
   Renderer& renderer = Renderer::getInstance();
   renderer.begin(draft, env, m_display->getSRID());
+
+
+  if (m_addItem->getGeometry()->getNPoints()>3)
+    renderer.draw(m_addItem->getGeometry(), true);
+  else
+    draft->fill(Qt::transparent);
+
+  // Draw the layer edited geometries
+  if (commandType == m_undoCommandType)
+    renderer.draw(m_addItems[m_previousFeature]->getGeometry(), true);
+  else
+    renderer.draw(m_addItems[m_nextFeature]->getGeometry(), true);
 
   // Draw the layer edited geometries
   renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());

@@ -91,7 +91,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
                                           Canvas* canvas,
                                           const te::gm::Envelope& bbox,
                                           int srid,
-                                          const double& scale)
+                                          const double& scale, bool* cancel)
 {
   if(!bbox.isValid())
     throw Exception(TE_TR("The requested box is invalid!"));
@@ -119,6 +119,8 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
 
   // Adjust internal renderer transformer
   m_transformer.setTransformationParameters(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury, canvas->getWidth(), canvas->getHeight());
+
+  canvas->setWindow(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury);
 
   // Resets internal renderer state
   reset();
@@ -149,7 +151,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     Grouping* grouping = layer->getGrouping();
     if(grouping && grouping->isVisible())
     {
-      drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, srid, scale);
+      drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, srid, scale, cancel);
       return;
     }
 
@@ -171,7 +173,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     if(fts == 0)
       throw Exception(TE_TR("The layer style is not a Feature Type Style!"));
 
-    drawLayerGeometries(layer, geometryProperty->getName(), fts, canvas, ibbox, srid, scale);
+    drawLayerGeometries(layer, geometryProperty->getName(), fts, canvas, ibbox, srid, scale, cancel);
   }
   else if(schema->hasRaster())
   {
@@ -228,7 +230,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
                                                          Canvas* canvas,
                                                          const te::gm::Envelope& bbox,
                                                          int srid,
-                                                         const double& scale)
+                                                         const double& scale, bool* cancel)
 {
   assert(!geomPropertyName.empty());
 
@@ -349,9 +351,9 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
 
       // Let's draw! for each data set geometry...
       if(j != nSymbolizers - 1)
-        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, &task);
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, cancel, &task);
       else
-        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), &task); // Here, produces the chart if exists
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), cancel, &task); // Here, produces the chart if exists
 
       // Prepares to draw the other symbolizer
       dataset->moveFirst();
@@ -365,7 +367,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
                                                        const std::string& geomPropertyName,
                                                        Canvas* canvas,
                                                        const te::gm::Envelope& bbox,
-                                                       int srid)
+                                                       int srid, bool* cancel)
 {
   assert(!geomPropertyName.empty());
 
@@ -481,9 +483,9 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
 
       // Let's draw! for each data set geometry...
        if(j != nSymbolizers - 1)
-        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, &task);
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, cancel, &task);
       else
-        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), &task); // Here, produces the chart if exists
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), cancel, &task); // Here, produces the chart if exists
 
       // Prepares to draw the other symbolizer
       dataset->moveFirst();
@@ -503,7 +505,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
                                                           Canvas* canvas,
                                                           const te::gm::Envelope& bbox,
                                                           int srid,
-                                                          const double& scale)
+                                                          const double& scale, bool* cancel)
 {
   assert(!geomPropertyName.empty());
 
@@ -694,6 +696,9 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
         buildChart(chart, dataset.get(), geom.get());
     }
 
+    if(cancel != 0 && (*cancel))
+      return;
+
   } while(dataset->moveNext());
 
   // Let's draw the generated charts
@@ -711,7 +716,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
 
 void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* dataset, const std::size_t& gpos, Canvas* canvas,
                                                           int fromSRID, int toSRID,
-                                                          Chart* chart, te::common::TaskProgress* task)
+                                                          Chart* chart, bool* cancel, te::common::TaskProgress* task)
 {
   assert(dataset);
   assert(canvas);
@@ -726,7 +731,10 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
     if(task)
     {
       if(!task->isActive())
+      {
+        *cancel = true;
         return;
+      }
 
       // update the draw task
       task->pulse();
@@ -755,6 +763,9 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
 
     if(chart)
       buildChart(chart, dataset, geom.get());
+
+    if(cancel != 0 && (*cancel))
+      return;
 
   } while(dataset->moveNext()); // next geometry!
 

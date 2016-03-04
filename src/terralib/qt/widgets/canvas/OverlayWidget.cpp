@@ -126,7 +126,7 @@ void te::qt::widgets::OverlayWidget::onApplyToolButtonClicked()
   canvas.setDevice(m_draft, false);
   canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
 
-  upperLayer->draw(&canvas, env, m_mapDisplay->getSRID(), m_mapDisplay->getScale());
+  upperLayer->draw(&canvas, env, m_mapDisplay->getSRID(), m_mapDisplay->getScale(), 0);
 
   m_mapDisplay->repaint();
 }
@@ -149,7 +149,7 @@ void te::qt::widgets::OverlayWidget::onMapDisplayExtentChanged()
     canvas.setDevice(m_draft, false);
     canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
 
-    upperLayer->draw(&canvas, env, m_mapDisplay->getSRID(), m_mapDisplay->getScale());
+    upperLayer->draw(&canvas, env, m_mapDisplay->getSRID(), m_mapDisplay->getScale(), 0);
   }
 
   m_draftOriginal = new QPixmap(*m_mapDisplay->getDraftPixmap());

@@ -101,20 +101,22 @@ void te::common::TaskProgress::setCurrentStep(int value)
 {
   if(m_isActive)
   {
-    m_currentStep = value;
+    m_hasToUpdate = true;
 
-    double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
-
-    int val = static_cast<int>(100.0 * aux);
-
-    if(val > m_currentPropStep)
+    if(m_totalSteps > 0)
     {
-      m_currentPropStep = val;
-      m_hasToUpdate = true;
-    }
-    else
-    {
-      m_hasToUpdate = false;
+      m_currentStep = value;
+      int val = m_currentStep;
+
+      double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
+      val = static_cast<int>(100.0 * aux);
+
+      if(val > m_currentPropStep)
+        m_currentPropStep = val;
+      else
+      {
+        m_hasToUpdate = false;
+      }
     }
 
     if(m_timer)
