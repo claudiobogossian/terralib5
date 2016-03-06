@@ -87,7 +87,7 @@ namespace te
           \param bbox   The interest area to render the map.
           \param srid   The SRS to be used to draw the layer objects.
          */
-        virtual void draw(te::map::AbstractLayer* layer, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
+        virtual void draw(te::map::AbstractLayer* layer, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
 
         //@}
 
