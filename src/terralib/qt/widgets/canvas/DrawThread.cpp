@@ -5,7 +5,6 @@
 #include "../../../common/Exception.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../maptools/Enums.h"
 #include "../../../srs/Config.h"
 #include "Canvas.h"
 

@@ -26,6 +26,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_DRAWTHREAD_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_DRAWTHREAD_H
 
+//TerraLib
+#include "../../../maptools/Enums.h"
+
 // Qt
 #include <QColor>
 #include <QObject>
@@ -44,7 +47,6 @@ namespace te
   namespace map
   {
     class AbstractLayer;
-    enum AlignType;
   }
 
   namespace qt

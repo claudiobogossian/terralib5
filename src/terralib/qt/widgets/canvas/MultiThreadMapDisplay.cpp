@@ -101,26 +101,7 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh(bool redraw)
   m_cancel = false;
 
   if(m_isDrawing)
-  {
-    m_cancel = true;
-
-    m_tmger->stopProccess();
-
-    te::common::FreeContents(m_images);
-    m_images.clear();
-
-    te::common::FreeContents(m_threads);
-    m_threads.clear();
-
-    m_cancel = false;
-    m_isDrawing = false;
-  }
-
-  m_oldCursor = cursor();
-
-  setCursor(Qt::BusyCursor);
-
-//  MapDisplay::blockSignals(true);
+    return;
 
   m_draftPixmap->fill(Qt::transparent);
 
@@ -191,6 +172,8 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh(bool redraw)
 
   if(!m_threads.empty())
   {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
     int interval = (m_showFeedback) ? 1000 : -1;
 
     m_tmger = new ThreadManager(m_threads, interval);
@@ -282,9 +265,14 @@ void te::qt::widgets::MultiThreadMapDisplay::showFeedback()
   {
     te::map::AbstractLayer* l = (*it).get();
 
+    std::map<std::string, QImage*>::iterator img_it = m_images.find(l->getId());
+
+    if(img_it == m_images.end())
+      continue;
+
     painter.setCompositionMode((QPainter::CompositionMode)l->getCompositionMode());
 
-    painter.drawImage(0, 0, *static_cast<QImage*>(m_images[l->getId()]));
+    painter.drawImage(0, 0, *img_it->second);
   }
 
   repaint(); // or update()? Which is the best here?!
@@ -318,16 +306,13 @@ void te::qt::widgets::MultiThreadMapDisplay::onRenderingFinished()
     }
   }
 
-  //if(m_tmger != 0)
-  //  m_tmger->stopProccess();
-
   if(!m_threads.empty())
   {
     te::common::FreeContents(m_threads);
     m_threads.clear();
   }
 
-  setCursor(m_oldCursor);
+  QApplication::restoreOverrideCursor();
 
   emit drawLayersFinished(errors);
 }
@@ -336,6 +321,5 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawCanceled()
 {
   m_cancel = true;
   m_tmger->stopProccess();
-//  onRenderingFinished();
 }
 
