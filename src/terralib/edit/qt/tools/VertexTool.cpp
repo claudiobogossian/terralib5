@@ -202,8 +202,6 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
         setStage(VERTEX_SEARCH);
       }
 
-      //storeUndoCommand();
-
       return true;
     }
 
@@ -213,7 +211,6 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
 
       setStage(VERTEX_SEARCH);
 
-      //storeUndoCommand();
     }
 
     default:

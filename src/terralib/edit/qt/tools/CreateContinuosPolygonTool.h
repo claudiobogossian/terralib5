@@ -132,6 +132,9 @@ namespace te
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
         std::vector<Feature*> m_addWatches;
 
+        int m_aux;
+        int m_currentIndex;
+
     };
 
   }   // end namespace edit
