@@ -108,10 +108,10 @@ bool te::graph::Layer::isValid() const
   return true;
 }
 
-void te::graph::Layer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale)
+void te::graph::Layer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel)
 {
   assert(m_renderer.get());
-  m_renderer->draw(this, canvas, bbox, srid, scale);
+  m_renderer->draw(this, canvas, bbox, srid, scale, cancel);
 }
 
 te::graph::AbstractGraph* te::graph::Layer::getGraph() const
