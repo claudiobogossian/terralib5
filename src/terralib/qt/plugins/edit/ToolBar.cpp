@@ -540,7 +540,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
                 for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = features[i]->getData().begin(); it != features[i]->getData().end(); ++it)
                 {
                   item->setValue(it->first, it->second);
-                  propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES].insert(it->first);
+                  propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES].insert((int)it->first);
                 }
               }
             }
@@ -872,7 +872,7 @@ void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool checked)
       m_undoView->setWindowTitle(tr("Edition List"));
       m_undoView->setFixedSize(QSize(300, 300));
       m_undoView->show();
-      m_undoView->setAttribute(Qt::WA_QuitOnClose, true);//false);
+      m_undoView->setAttribute(Qt::WA_QuitOnClose, true);
 
     }
 

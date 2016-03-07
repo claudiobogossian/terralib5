@@ -137,7 +137,7 @@ bool te::edit::EditInfoTool::mousePressEvent(QMouseEvent* e)
 
     for (std::size_t i = 0; i < oidPropertyNames.size(); i++)
     {
-      int pType = te::da::GetPropertyPos(m_layer->getSchema().get(), oidPropertyNames[i]);
+      int pType = (int)te::da::GetPropertyPos(m_layer->getSchema().get(), oidPropertyNames[i]);
       oidSet->addProperty(oidPropertyNames[i], pType, m_dataset->getPropertyDataType(pType));
     }
 
@@ -229,7 +229,7 @@ void te::edit::EditInfoTool::getInfo(const te::gm::Envelope& e)
         {
           QTreeWidgetItem* propertyItem = new QTreeWidgetItem;
 
-          int pos = te::da::GetPropertyPos(m_layer->getSchema().get(), m_dataset->getPropertyName(i));
+          int pos = (int)te::da::GetPropertyPos(m_layer->getSchema().get(), m_dataset->getPropertyName(i));
           propertyItem->setText(0, m_dataset->getPropertyName(pos).c_str());
 
           if (m_dataset->getPropertyDataType(pos) == te::dt::GEOMETRY_TYPE)
@@ -284,7 +284,7 @@ void te::edit::EditInfoTool::getInfo(const te::gm::Envelope& e)
         {
           QTreeWidgetItem* propertyItem = new QTreeWidgetItem;
 
-          int pos = te::da::GetPropertyPos(m_layer->getSchema().get(), m_dataset->getPropertyName(i));
+          int pos = (int)te::da::GetPropertyPos(m_layer->getSchema().get(), m_dataset->getPropertyName(i));
           propertyItem->setText(0, m_dataset->getPropertyName(pos).c_str());
 
           it = m_data.find(pos);
@@ -376,7 +376,7 @@ void te::edit::EditInfoTool::onOkPushButtonPressed()
 
   if (m_dataset->moveNext())
   {
-    std::size_t level_item = 0;
+    int level_item = 0;
     for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = m_data.begin(); it != m_data.end(); ++it)
     {
       QTreeWidgetItem* propertyItem = m_infoWidget->topLevelItem(level_item);
@@ -443,7 +443,3 @@ void te::edit::EditInfoTool::updateCursor()
 {
   m_display->setCursor(Qt::WhatsThisCursor);
 }
-
-void te::edit::EditInfoTool::cancelEditionTool()
-{}
-

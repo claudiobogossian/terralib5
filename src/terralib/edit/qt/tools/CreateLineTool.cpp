@@ -201,6 +201,3 @@ void te::edit::CreateLineTool::onExtentChanged()
 
   draw();
 }
-
-void te::edit::CreateLineTool::cancelEditionTool()
-{}
