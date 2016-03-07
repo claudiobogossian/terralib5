@@ -2,14 +2,13 @@ IF NOT EXIST "%TERRALIB_DEPENDENCIES_DIR%" mkdir %TERRALIB_DEPENDENCIES_DIR%
 IF NOT EXIST "%TERRALIB_DEPENDENCIES_DIR%\include" mkdir %TERRALIB_DEPENDENCIES_DIR%\include 
 IF NOT EXIST "%TERRALIB_DEPENDENCIES_DIR%\lib" mkdir %TERRALIB_DEPENDENCIES_DIR%\lib 
 
-del /s *.log >nul 2>nul
+del /Q ..\*.log >nul 2>nul
 
 set ROOT_DIR=%CD%
 
 set BUILD_LOG=%ROOT_DIR%\..\build.log
 set CONFIG_LOG=%ROOT_DIR%\..\config.log
-
-IF NOT DEFINED B2_COMMAND set B2_COMMAND=b2
+set FAILURES_LOG=%ROOT_DIR%\..\failures.log
 
 ::  Setting visual studio environment
 ::  =================================
@@ -71,6 +70,16 @@ ENDLOCAL
 
 goto %2_deps
 
+:: 1-Nome da biblioteca
+:: 2-Mensagem de erro simples.
+:: 3-Desvio, nome do atalho para a próxima biblioteca
+
+:buildFailLog
+set FAIL=1
+echo fail on %2.
+echo %1: fail on %2. >>%FAILURES_LOG%  
+
+goto %3
 
 :begin_libs
 set LIBS_DIR=%TERRALIB_DEPENDENCIES_DIR%\lib
@@ -152,13 +161,13 @@ goto end_cppunit_deps
 
   cd %CPPUNIT_DIR%\src >nul 2>nul
   
-  ( msbuild /m /t:clean /p:Configuration=Release cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || goto build_fail
+  ( msbuild /m /t:clean /p:Configuration=Release cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "clean release" iconv
 
-  ( msbuild /m /t:clean /p:Configuration=Debug cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || goto build_fail
+  ( msbuild /m /t:clean cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "clean debug" iconv
 
-  ( msbuild /m /p:Configuration=Release cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || goto build_fail
-
-  ( msbuild /m /p:Configuration=Debug cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || goto build_fail
+  ( msbuild /m /p:Configuration=Release cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "build release" iconv
+  
+  ( msbuild /m cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "build debug" iconv
    
   IF NOT EXIST %CPPUNIT_INCLUDE_DIR% mkdir %CPPUNIT_INCLUDE_DIR%
   
@@ -209,11 +218,13 @@ goto end_iconv_deps
 
   cd %ICONV_DIR% >nul 2>nul
 
-  ( msbuild /m /p:Configuration=Debug /t:clean >>%BUILD_LOG% 2>nul ) || goto buildFail
-  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "clean debug" expat
 
-  ( msbuild /m /p:Configuration=Debug myIconv.sln >>%BUILD_LOG% 2>nul ) || goto buildFail
-  ( msbuild /m /p:Configuration=Release myIconv.sln >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "clean release" expat
+
+  ( msbuild /m  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build debug" expat
+
+  ( msbuild /m /p:Configuration=Release myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build release" expat
   
   xcopy %ICONV_DIR%\myIconv\include\iconv.h %ICONV_INCLUDE_DIR% /Y >nul 2>nul
 
@@ -267,11 +278,11 @@ goto end_expat_deps
   cd build >nul 2>nul
 
   ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%EXPAT_DIR%\binaries"^
- -DCMAKE_DEBUG_POSTFIX="d" .. >>%CONFIG_LOG% 2>nul ) || goto configFail
+ -DCMAKE_DEBUG_POSTFIX="d" .. >>%CONFIG_LOG% 2>nul ) || call :buildFailLog expat "configuring" apr
 
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build release" apr
   
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build debug" apr
   
   xcopy %EXPAT_DIR%\binaries\bin\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -319,11 +330,11 @@ goto end_apr_deps
 
   cd building >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%" -DCMAKE_DEBUG_POSTFIX="d" -DINSTALL_PDB=OFF .. >>%CONFIG_LOG% 2>nul ) || goto configFail 
+  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%" -DCMAKE_DEBUG_POSTFIX="d" -DINSTALL_PDB=OFF .. >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr "configuring" zlib 
 
-  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build release" zlib
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build debug" zlib
      
   call :append_log_end apr
   
@@ -368,11 +379,11 @@ goto end_zlib_deps
 
   cd build >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%TERRALIB_DEPENDENCIES_DIR%" %ZL_DIR% >>%CONFIG_LOG% 2>nul ) || goto configFail
+  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%TERRALIB_DEPENDENCIES_DIR%" %ZL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog  zlib "configuring" openssl
 
-  ( msbuild /m /p:Configuration=Release zlib.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release zlib.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog zlib "build release" openssl
 
-  ( msbuild /m zlib.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m zlib.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog zlib "build debug" openssl
     
   xcopy %ZL_DIR%\build\Release\*.dll %LIBS_DIR% /Y >nul 2>nul
   
@@ -438,7 +449,7 @@ goto end_openssl_deps
 
   copy ms\ntdll.release.mak.in ms\ntdll.mak /Y >nul 2>nul  
 
-  ( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build release" apr_util
   
 ::  Building debug
   copy ms\libeay32.debug.def.in ms\libeay32.def /Y >nul 2>nul
@@ -449,7 +460,7 @@ goto end_openssl_deps
 
   copy ms\ntdll.debug.mak.in ms\ntdll.mak /Y >nul 2>nul
 
-  ( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build debug" apr_util
   
   xcopy out32dll\ssleay32.dll %LIBS_DIR% /Y >nul 2>nul
   
@@ -516,11 +527,11 @@ goto end_apr_util_deps
   -DXMLLIB_LIBRARIES:STRING="debug;%EXPATD_LIBRARY%;optimized;%EXPAT_LIBRARY%"^
   -DXMLLIB_INCLUDE_DIR="%EXPAT_INCLUDE_DIR%"^
   -DAPR_INCLUDE_DIR="%APACHE_INSTALL_DIR%/include"^
-  -DAPR_LIBRARIES="%APR_LIBRARY%" %APRUTIL_DIR% >>%CONFIG_LOG% 2>nul ) || goto configFail
+  -DAPR_LIBRARIES="%APR_LIBRARY%" %APRUTIL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr-util "configuring" log4cxx 
   
-  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build release" log4cxx
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build debug" log4cxx
   
   call :append_log_end apr_util
   
@@ -558,13 +569,13 @@ goto end_log4cxx_deps
 
   cd %LOG4CXX_DIR%\projects >nul 2>nul
   
-  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "clean release" bzip
 
-  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "clean debug" bzip
   
-  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build release" bzip
 
-  ( msbuild /m >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build debug" bzip
 
   IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx mkdir %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx >nul 2>nul
   
@@ -620,17 +631,17 @@ goto end_bzip_deps
   
   mkdir lib >nul 2>nul
   
-  ( nmake /f makefile.msc lib >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.msc lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "build release" readline
   
   xcopy *.lib lib /Y >nul 2>nul 
   
-  ( nmake /f makefile.msc clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.msc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "clean release" readline
   
-  ( nmake /f makefile.msc DEBUG=1 lib >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.msc DEBUG=1 lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "build debug" readline
 
   xcopy *.lib lib /Y >nul 2>nul 
 
-  ( nmake /f makefile.msc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.msc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "clean debug" readline
   
   del *.lib /Q >nul 2>nul
 
@@ -672,13 +683,13 @@ goto end_readline_deps
 
   cd %READLINE_DIR% >nul 2>nul
 
-  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "clean release" pcre
   
-  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "clean debug" pcre
   
-  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "build release" pcre
   
-  ( msbuild /m >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "build debug" pcre
   
   xcopy %READLINE_DIR%\x64\Release\*.dll %LIBS_DIR% /Y >nul 2>nul
   
@@ -738,11 +749,11 @@ goto end_pcre_deps
  -DZLIB_LIBRARY:STRING="%ZL_LIBRARIES%"^
  -DREADLINE_INCLUDE_DIR="%READLINE_INCLUDE_DIR%"^
  -DREADLINE_LIBRARY:STRING="%READLINE_LIBRARIES%"^
- -DBUILD_SHARED_LIBS=ON %PCRE_DIR% >>%CONFIG_LOG% 2>nul ) || goto configFail
+ -DBUILD_SHARED_LIBS=ON %PCRE_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog pcre "configuring" freexl 
    
-  ( msbuild /m /p:Configuration=Release pcre.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release pcre.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog pcre "build release" freexl
 
-  ( msbuild /m pcre.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m pcre.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog pcre "build debug" freexl
 
   xcopy %PCRE_DIR%\build\Release\pcre.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -792,15 +803,15 @@ goto end_freexl_deps
   
   del *.ilk /S /Q >nul 2>nul
   
-  ( nmake /f makefile.vc >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "build release" proj
 
   xcopy *.lib lib /Y >nul 2>nul
 
   xcopy *.dll lib /Y >nul 2>nul
 
-  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "clean release" proj
   
-  ( nmake /f makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "build debug" proj
   
   xcopy *.lib lib /Y >nul 2>nul
 
@@ -808,7 +819,7 @@ goto end_freexl_deps
 
   xcopy lib\*.dll %LIBS_DIR% /Y >nul 2>nul
 
-  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "clean debug" proj
   
   call :append_log_end freexl
   
@@ -848,17 +859,17 @@ goto end_proj_deps
   
   del *.ilk /S /Q >nul 2>nul
 
-  ( nmake /f makefile.vc install-all INSTDIR=%TERRALIB_DEPENDENCIES_DIR% >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc install-all INSTDIR=%TERRALIB_DEPENDENCIES_DIR% >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "build release" png
   
-  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "clean release" png
   
-  ( nmake /f makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "build debug" png
     
   xcopy src\*d.lib %LIBS_DIR% /Y >nul 2>nul
 
   xcopy src\*d.dll %LIBS_DIR% /Y >nul 2>nul
   
-  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "clean debug" png
 
   call :append_log_end proj
   
@@ -908,11 +919,11 @@ goto end_png_deps
  -DPNG_STATIC=OFF^
  -DPNG_TESTS=OFF^
  -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
- -DZLIB_LIBRARY:STRING="%ZL_LIBRARIES%" %PNG_DIR% >>%CONFIG_LOG% 2>nul ) || goto configFail
+ -DZLIB_LIBRARY:STRING="%ZL_LIBRARIES%" %PNG_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog png "configuring" geos
  
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog png "build release" geos
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog png "build debug" geos
   
   xcopy %PNG_DIR%\deploy\bin\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -957,7 +968,7 @@ goto end_geos_deps
   
   IF NOT EXIST geos_svn_revision.h echo #define GEOS_SVN_REVISION "1.2.1" > geos_svn_revision.h 2>nul
  
-  ( nmake /f makefile.vc WIN64=YES >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc WIN64=YES >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "build release" jpeg
   
   del lib /S /Q >nul 2>nul 
 
@@ -968,17 +979,17 @@ goto end_geos_deps
   xcopy src\*.dll lib /Y >nul 2>nul 
 
 ::  Clean  
-  ( nmake /f makefile.vc WIN64=YES clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc WIN64=YES clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "clean release" jpeg
 
   del capi\*.obj /Q >nul 2>nul
 
-  ( nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "build debug" jpeg
 
   xcopy src\*.dll .\lib /Y >nul 2>nul
 
   xcopy src\*.lib .\lib /Y >nul 2>nul
   
-  ( nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "clean debug" jpeg
 
   del capi\*.obj /Q >nul 2>nul
 
@@ -1036,17 +1047,17 @@ del build /S /Q >nul 2>nul
 
 mkdir build >nul 2>nul
 
-( nmake /f makefile.vc libjpeg.lib >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f makefile.vc libjpeg.lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "build release" hdf4
 
 xcopy *.lib build /Y >nul 2>nul
 
-( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "clean release" hdf4
 
-( nmake /f makefile.vc DEBUG=1 libjpeg.lib >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f makefile.vc DEBUG=1 libjpeg.lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "build debug" hdf4
 
 xcopy *.lib build /Y >nul 2>nul
 
-( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "clean debug" hdf4
 
   call :append_log_end jpeg
   
@@ -1104,11 +1115,11 @@ goto end_hdf4_deps
  -DJPEG_INCLUDE_DIR="%JPG_INCLUDE_DIR%"^
  -DJPEG_LIBRARY="%JPG_LIBRARY%"^
  -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
- -DZLIB_LIBRARY="%ZL_LIBRARY%" %HDF4C_DIR% >>%CONFIG_LOG% 2>nul ) || goto configFail
+ -DZLIB_LIBRARY="%ZL_LIBRARY%" %HDF4C_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog hdf4 "configuring" tiff
 
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLoghdf4 "build release" tiff
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLoghdf4 "build debug" tiff
   
   xcopy %HDF4C_DIR%\binaries\bin\hdf* %LIBS_DIR% /Y >nul 2>nul
 
@@ -1161,21 +1172,21 @@ del *.ilk /S /Q >nul 2>nul
 
 mkdir lib >nul 2>nul
 
-( nmake /f Makefile.vc >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f Makefile.vc >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "build release" geotiff
 
 xcopy *i.lib lib /Y >nul 2>nul
 
 xcopy *.dll lib /Y >nul 2>nul
 
-( nmake /f Makefile.vc clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f Makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "clean release" geotiff
 
-( nmake /f Makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f Makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "build debug" geotiff
 
 xcopy *id.lib lib /Y >nul 2>nul
 
 xcopy *.dll lib /Y >nul 2>nul
 
-( nmake /f Makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f Makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "clean debug" geotiff
 
 xcopy lib\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -1224,15 +1235,15 @@ del lib /S /Q >nul 2>nul
 
 mkdir lib >nul 2>nul
 
-( nmake /f makefile.vc libgeotiff.dll >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f makefile.vc libgeotiff.dll >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "build release" curl
 
 xcopy *i.lib lib /Y >nul 2>nul
 
 xcopy *.dll lib /Y >nul 2>nul
 
-( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "clean release" curl
 
-( nmake /f makefile.vc DEBUG=1 libgeotiffd.dll >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f makefile.vc DEBUG=1 libgeotiffd.dll >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "build debug" curl
 
 xcopy *id.lib lib /Y >nul 2>nul
 
@@ -1240,7 +1251,7 @@ xcopy *.dll lib /Y >nul 2>nul
 
 xcopy lib\*.dll %LIBS_DIR% /Y >nul 2>nul
 
-( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "clean debug" curl
 
 echo done.
 
@@ -1287,9 +1298,9 @@ mkdir %CURL_DIR%\binaries\include >nul 2>nul
 
   cd %CURL_DIR%\winbuild >nul 2>nul
 
-  ( nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=no MACHINE=x64 >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=no MACHINE=x64 >>%BUILD_LOG% 2>nul ) || call :buildFailLog curl "build release" icu
 
-  ( nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=yes MACHINE=x64 >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=yes MACHINE=x64 >>%BUILD_LOG% 2>nul ) || call :buildFailLog curl "build debug" icu
   
   xcopy %CURL_DIR%\builds\libcurl-vc12-x64-debug-dll-ssl-dll-zlib-dll-ipv6-sspi\bin\*.dll %CURL_DIR%\binaries\lib /Y >nul 2>nul 
   
@@ -1344,13 +1355,13 @@ set ICUROOT=%ICU_DIR%
   
   cd %ICU_DIR%\source\allinone >nul 2>nul
   
-  ( msbuild /m /t:clean /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || goto configFail
+  ( msbuild /m /t:clean /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "clean release" xerces
 
-  ( msbuild /m /t:clean /p:Configuration=Debug allinone.sln >>%BUILD_LOG% 2>nul ) || goto configFail
+  ( msbuild /m /t:clean allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "clean debug" xerces
   
-  ( msbuild /m /t:makedata /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || goto configFail
+  ( msbuild /m /t:makedata /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build release" xerces
 
-  ( msbuild /m /t:common /p:Configuration=Debug allinone.sln >>%BUILD_LOG% 2>nul ) || goto configFail
+  ( msbuild /m /t:common allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build debug" xerces
   
   xcopy %ICU_DIR%\bin64\icuuc52.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -1405,13 +1416,13 @@ goto end_xerces_deps
   
   cd %XERCESCROOT%\projects\Win32\VC12\xerces-all >nul 2>nul  
 
-  ( msbuild /m /t:XercesLib /t:clean /p:Configuration="ICU Release" xerces-all.sln >>%BUILD_LOG% 2>nul ) || goto buildFail 
+  ( msbuild /m /t:XercesLib /t:clean /p:Configuration="ICU Release" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "clean release" xml2 
 
-  ( msbuild /m /t:XercesLib /t:clean /p:Configuration="ICU Debug" xerces-all.sln >>%BUILD_LOG% 2>nul ) || goto buildFail 
+  ( msbuild /m /t:XercesLib /t:clean /p:Configuration="ICU Debug" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "clean debug" xml2
   
-  ( msbuild /m /t:XercesLib /p:Configuration="ICU Release" xerces-all.sln >>%BUILD_LOG% 2>nul ) || goto buildFail 
+  ( msbuild /m /t:XercesLib /p:Configuration="ICU Release" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "build release" xml2
 
-  ( msbuild /m /t:XercesLib /p:Configuration="ICU Debug" xerces-all.sln >>%BUILD_LOG% 2>nul ) || goto buildFail 
+  ( msbuild /m /t:XercesLib /p:Configuration="ICU Debug" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "build debug" xml2 
   
 :: Install  
   cd %XERCESCROOT% >nul 2>nul
@@ -1478,9 +1489,9 @@ goto end_xml2_deps
 
   del int.dbg.msvc /S /Q >nul 2>nul 
   
-  ( nmake /f Makefile.msvc libxml >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f Makefile.msvc libxml >>%BUILD_LOG% 2>nul ) || call :buildFailLog xml2 "build release" libboost
   
-  ( nmake /f Makefile.msvc DEBUG=1 libxml >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f Makefile.msvc DEBUG=1 libxml >>%BUILD_LOG% 2>nul ) || call :buildFailLog xml2 "build debug" libboost
   
   xcopy %XML2_DIR%\win32\bin.msvc\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -1523,7 +1534,7 @@ goto end_libboost_deps
 
   ( call bootstrap.bat vc12 setup-amd64 --with-chrono,date_time,filesystem,system,thread,timer,locale >>%CONFIG_LOG% 2>nul ) || goto configFail
   
-  ( %B2_COMMAND% -a toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. install >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( b2 -a toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building" pgis
 
   echo done.
 
@@ -1590,9 +1601,9 @@ goto end_pgis_deps
 
   del Debug /S /Q >nul 2>nul
   
-  ( nmake /f win32.mak CPU="AMD64" USE_SSL=1 >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f win32.mak CPU="AMD64" USE_SSL=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog pgis "build release" netcdf
 
-  ( nmake /f win32.mak CPU="AMD64" USE_SSL=1 DEBUG=1 >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f win32.mak CPU="AMD64" USE_SSL=1 DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog pgis "build debug" netcdf
   
   xcopy libpq-fe.h %TERRALIB_DEPENDENCIES_DIR%\include /Y >nul 2>nul
   
@@ -1667,11 +1678,11 @@ goto end_netcdf_deps
  -DENABLE_HDF4=ON^
  -DUSE_HDF4=ON^
  -DUSE_HDF5=OFF^
- -DENABLE_NETCDF_4=OFF %NETCDF_DIR% >>%CONFIG_LOG% 2>nul ) || goto configFail
+ -DENABLE_NETCDF_4=OFF %NETCDF_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog netcdf "configuring" sqlite
 
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto configFail
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog netcdf "build release" sqlite
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto configFail
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog netcdf "build debug" sqlite
 
   xcopy %NETCDF_DIR%\binaries\bin\net* %LIBS_DIR% /Y >nul 2>nul
 
@@ -1710,9 +1721,9 @@ goto end_sqlite_deps
   
   cd %SQLITE_DIR% >nul 2>nul
 
-  cl sqlite3.c /DSQLITE_API=__declspec(dllexport) -link -dll -out:sqlite3.dll >>%BUILD_LOG% 2>nul || goto buildFail
+  cl sqlite3.c /DSQLITE_API=__declspec(dllexport) -link -dll -out:sqlite3.dll >>%BUILD_LOG% 2>nul || call :buildFailLog sqlite "build release" spatialite
 
-  cl sqlite3.c /DSQLITE_API=__declspec(dllexport) /DSQLITE_DEBUG -link -dll -out:sqlite3d.dll >>%BUILD_LOG% 2>nul || goto buildFail
+  cl sqlite3.c /DSQLITE_API=__declspec(dllexport) /DSQLITE_DEBUG -link -dll -out:sqlite3d.dll >>%BUILD_LOG% 2>nul || call :buildFailLog sqlite "build debug" spatialite
   
   xcopy *.h %TERRALIB_DEPENDENCIES_DIR%\include /Y >nul 2>nul
 
@@ -1762,13 +1773,13 @@ goto end_spatialite_deps
   
   cd %SPLITE_DIR% >nul 2>nul
 
-  ( nmake /f makefile.vc install >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc install >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "build release" gdal
 
-  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "clean release" gdal
 
-  ( nmake /f makefile.vc DEBUG=1 install >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc DEBUG=1 install >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "build debug" gdal
 
-  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "clean debug" gdal
   
   echo done.
 
@@ -1827,21 +1838,21 @@ goto end_gdal_deps
   
   copy nmake.release.opt.in nmake.opt /Y >nul 2>nul
   
-  ( nmake -f makefile.vc MSVC_VER=1800 >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake -f makefile.vc MSVC_VER=1800 >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "build release" property_browser
 
-  ( nmake -f makefile.vc MSVC_VER=1800 devinstall >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake -f makefile.vc MSVC_VER=1800 devinstall >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "install" property_browser
 
-  ( nmake -f makefile.vc MSVC_VER=1800 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake -f makefile.vc MSVC_VER=1800 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "clean release" property_browser
   
   copy nmake.debug.opt.in nmake.opt /Y >nul 2>nul
   
-  ( nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "build debug" property_browser
   
   xcopy *.dll %LIBS_DIR% /Y >nul 2>nul
 
   xcopy gdal_id.lib %LIBS_DIR% /Y >nul 2>nul
     
-  ( nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "clean debug" property_browser
 
   echo done.
 
@@ -1880,13 +1891,13 @@ goto end_property_browser_deps
 
   set TERRALIB_DIR=%TERRALIB_DEPENDENCIES_DIR%
   
-  ( qmake >>%CONFIG_LOG% 2>nul ) || goto configFail
+  ( qmake >>%CONFIG_LOG% 2>nul ) || call :buildFailLog property_browser "configuring" qwt
 
-  ( nmake >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "cleaning" qwt
 
-  ( nmake clean >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "building" qwt
 
-  ( nmake install >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( nmake install >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "installing" qwt
   
   echo done.
 
@@ -1920,13 +1931,13 @@ goto end_qwt_deps
   
   cd %QWT_PATH% >nul 2>nul
 
-  ( qmake qwt.pro -r -spec win32-msvc2013 "QWT_INSTALL_PREFIX_TARGET=%TERRALIB_DEPENDENCIES_DIR%" >>%CONFIG_LOG% 2>nul ) || goto configFail 
+  ( qmake qwt.pro -r -spec win32-msvc2013 "QWT_INSTALL_PREFIX_TARGET=%TERRALIB_DEPENDENCIES_DIR%" >>%CONFIG_LOG% 2>nul ) || call :buildFailLog qwt "configuring" lua 
 
-  ( nmake clean >>%BUILD_LOG% 2>nul ) || goto buildFail 
+  ( nmake clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog  qwt "cleaning" lua
 
-  ( nmake >>%BUILD_LOG% 2>nul ) || goto buildFail 
+  ( nmake >>%BUILD_LOG% 2>nul ) || call :buildFailLog qwt "building" lua 
 
-  ( nmake install >>%BUILD_LOG% 2>nul ) || goto buildFail 
+  ( nmake install >>%BUILD_LOG% 2>nul ) || call :buildFailLog qwt "installing" lua 
 
   echo done.
 
@@ -1976,11 +1987,11 @@ goto end_lua_deps
  -DCMAKE_DEBUG_POSTFIX="d"^
  -DINSTALL_BIN="%LIBS_DIR%"^
  -DREADLINE_INCLUDE_DIR="%READLINE_INCLUDE_DIR%"^
- -DREADLINE_LIBRARY:STRING="debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%" %LUAC_DIR% >>%CONFIG_LOG% 2>nul ) || goto configFail
+ -DREADLINE_LIBRARY:STRING="debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%" %LUAC_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog lua "configuring" terralib4
   
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build release" terralib4
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build debug" terralib4
   
   xcopy %LUAC_DIR%\src\lua.h %LUAC_INCLUDE_DIR% /Y >nul 2>nul
   
@@ -2053,11 +2064,11 @@ set CL=/MP1
  -DJPEG_LIBRARY:STRING="debug;%JPGD_LIBRARY%;optimized;%JPG_LIBRARY%"^
  -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
  -DZLIB_LIBRARIES:STRING="%ZL_LIBRARIES%"^
- -C terralib.conf.cmake %TERRALIB4_DIR%\build\cmake >>%CONFIG_LOG% 2>nul ) || goto configFail
+ -C terralib.conf.cmake %TERRALIB4_DIR%\build\cmake >>%CONFIG_LOG% 2>nul ) || call :buildFailLog terralib4 "configuring" clean_third_directory
 
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog terralib4 "build release" clean_third_directory
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || goto buildFail
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog terralib4 "build debug" clean_third_directory
    
 echo done.
 
@@ -2084,6 +2095,20 @@ del *.pdb /S /Q >nul 2>nul
 
 cd %ROOT_DIR%
 
+IF DEFINED FAIL  (
+echo.
+
+echo **********************************************
+echo *** Dependencies not builded successfully. ***
+echo **********************************************
+
+echo.
+
+pause
+
+exit 1
+)
+
 echo.
 
 echo ******************************************
@@ -2096,21 +2121,3 @@ pause
 
 exit 0
 :: **************************
-
-:configFail
-echo fail configuring.
-
-echo.
-
-pause
-
-exit 1
-
-:buildFail
-echo fail building.
-
-echo.
-
-pause
-
-exit 1
