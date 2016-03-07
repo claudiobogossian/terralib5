@@ -298,7 +298,7 @@ void te::edit::CreateContinuosPolygonTool::onExtentChanged()
   draw();
 }
 
-void te::edit::CreateContinuosPolygonTool::cancelEditionTool()
+void te::edit::CreateContinuosPolygonTool::resetVisualizationTool()
 {
   clear();
 }

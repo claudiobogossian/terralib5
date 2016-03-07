@@ -70,7 +70,7 @@ namespace te
 
       void setInUse(const bool& status);
 
-      virtual void cancelEditionTool();
+      virtual void resetVisualizationTool();
 
     Q_SIGNALS:
 

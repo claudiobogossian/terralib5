@@ -452,7 +452,7 @@ void te::edit::VertexTool::storeUndoCommand()
 
 }
 
-void te::edit::VertexTool::cancelEditionTool()
+void te::edit::VertexTool::resetVisualizationTool()
 {
   reset();
 }

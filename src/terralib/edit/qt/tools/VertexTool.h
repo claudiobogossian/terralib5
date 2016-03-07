@@ -122,7 +122,7 @@ namespace te
 
         //@}
 
-        void cancelEditionTool();
+        void resetVisualizationTool();
 
       private:
 

@@ -282,7 +282,7 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
 
 }
 
-void te::edit::CreatePolygonTool::cancelEditionTool()
+void te::edit::CreatePolygonTool::resetVisualizationTool()
 {
   clear();
 }
