@@ -36,7 +36,7 @@ file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/gdal/*.c
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/gdal/*.h)
 
 add_library(terralib_mod_gdal SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
+message(${GDAL_INCLUDE_DIR})
 target_link_libraries(terralib_mod_gdal terralib_mod_ogr
                                         terralib_mod_dataaccess
                                         terralib_mod_raster

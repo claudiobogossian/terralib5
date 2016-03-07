@@ -32,13 +32,14 @@
 // TerraLib
 #include "Transactor.h"
 #include "../../../../common/Translator.h"
-//#include "../../../../gdal/DataSet.h"
-//#include "../gdal/Utils.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../raster/Grid.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "Exception.h"
-#include "Transactor.h"
-//#include "Utils.h"
+#include "../../../../gdal/DataSet.h"
+#include "../../../../gdal/DataSource.h"
+#include "../../../../gdal/Utils.h"
+#include "../../../../ws/ogc/wcs/client/WCS.h"
 
 
 te::ws::ogc::wcs::dataaccess::Transactor::Transactor(WCS wcs)
@@ -63,18 +64,45 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::dataaccess::Transactor::getData
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  // VINICIUS: check the types allowed for the coverage
-  // VINICIUS: return a dataset with the choosen type
 
+  CoverageDescription coverageDescription = wcs_.describeCoverage(name);
+
+  // VINICIUS: check the types allowed for the coverage ?
+  // getCoverage
+  CoverageRequest coverageRequest;
+  coverageRequest.coverageID = name;
+  coverageRequest.format = "";
+  coverageRequest.mediaType = "";
+
+  SubSet subSet;
+
+  coverageRequest.subSet.push_back(subSet);
+
+  std::string coveragePath = wcs_.getCoverage(coverageRequest);
+
+
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = coveragePath;
+
+  std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL");
+  dsGDAL->setConnectionInfo(connInfo);
+  dsGDAL->open();
+
+  if (!dsGDAL->isOpened() || !dsGDAL->isValid())
+    throw Exception(TE_TR("Fail to build Data Set. GDAL Data Source isn't valid or open!"));
+
+  return dsGDAL->getDataSet(name);
+/*
   // Retrieves the data set type
   std::auto_ptr<te::da::DataSetType> type = getDataSetType(name);
-  /*
+
   // Build the GDAL WCS request
   std::string request = BuildRequest(m_serviceURL, m_coverageName);
 
   return std::auto_ptr<te::da::DataSet>(new te::gdal::DataSet(type, te::common::RAccess, request));
-  */
+
   return std::auto_ptr<te::da::DataSet>();
+  */
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::dataaccess::Transactor::getDataSet(const std::string& name,
@@ -90,12 +118,12 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::dataaccess::Transactor::getData
 
   // Retrieves the data set type
   std::auto_ptr<te::da::DataSetType> type = getDataSetType(name);
-/*
+
   // Build the GDAL WCS request with extent restriction
   std::string request = BuildRequest(m_serviceURL, m_coverageName, e);
 
   return std::auto_ptr<te::da::DataSet>(new te::gdal::DataSet(type, te::common::RAccess, request));
-  */
+
   return std::auto_ptr<te::da::DataSet>();
 }
 
@@ -150,16 +178,16 @@ std::auto_ptr<te::da::DataSetType> te::ws::ogc::wcs::dataaccess::Transactor::get
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-/*
-   // Build the GDAL WCS request
-  std::string request = BuildRequest(m_serviceURL, m_coverageName);
+  // VINICIUS: create a gdal dataset with the coverage
+  GDALDataset* gds;
 
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(request.c_str(), GA_ReadOnly));
+//  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(request.c_str(), GA_ReadOnly));
+
   if(gds == 0)
     throw Exception(TE_TR("The data set type could not be retrieved from data source."));
 
-  te::da::DataSetType* type = new te::da::DataSetType(m_coverageName, 0);
-  type->setTitle(m_coverageName);
+  te::da::DataSetType* type = new te::da::DataSetType(name, 0);
+  type->setTitle(name);
 
   te::rst::Grid* grid = te::gdal::GetGrid(gds);
 
@@ -177,8 +205,6 @@ std::auto_ptr<te::da::DataSetType> te::ws::ogc::wcs::dataaccess::Transactor::get
   GDALClose(gds);
 
   return std::auto_ptr<te::da::DataSetType>(type);
-  */
-  return std::auto_ptr<te::da::DataSetType>();
 }
 
 boost::ptr_vector<te::dt::Property> te::ws::ogc::wcs::dataaccess::Transactor::getProperties(const std::string& datasetName)

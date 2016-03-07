@@ -59,7 +59,15 @@ void TsWCS::tsDescribeCoverage()
 
     // http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=DescribeCoverage&coverageid=other__wcmc-world-database-of-protected-areas&version=2.0.1
     te::ws::ogc::WCS clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
-    CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at describeCoverage().",clientWCS.describeCoverage("other__wcmc-world-database-of-protected-areas&version"));
+    std::string coverage = "other__wcmc-world-database-of-protected-areas";
+    te::ws::ogc::CoverageDescription coverageDescription;
+
+    CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at describeCoverage().", coverageDescription = clientWCS.describeCoverage(coverage));
+
+    if(coverageDescription.coverageId.compare(coverage) != 0)
+    {
+      CPPUNIT_FAIL("Error: Is not the requested coverage!");
+    }
 
   }
   catch(...)

@@ -46,17 +46,6 @@ te::ws::ogc::WCS::~WCS()
 }
 
 
-size_t write_xml_callback(void *ptr, size_t size, size_t nmemb, void *data)
-{
-  size_t sizeRead = size * nmemb;
-
-  std::string* block = (std::string*) data;
-  block->append((char *)ptr, sizeRead);
-
-  return sizeRead;
-}
-
-
 void te::ws::ogc::WCS::updateCapabilities()
 {
   try
@@ -73,7 +62,7 @@ void te::ws::ogc::WCS::updateCapabilities()
     }
 
     // Request the WCS Capabilities XML file
-    std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url);
+    std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url, "capabilities.xml");
 
     // Parse the XML file into a struct
     capabilities_ = parseCapabilities(xmlPath);
@@ -115,7 +104,7 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::s
     }
 
     // Request the WCS Describe Coverage XML file
-    std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url);
+    std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url, "describeCoverage.xml");
 
     // Parse the XML file into a struct
     describeCoverage = parseDescribeCoverage(xmlPath);
@@ -141,28 +130,40 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::s
 }
 
 
-te::da::DataSet* te::ws::ogc::WCS::getCoverage(const CoverageRequest coverage) const
+std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest) const
 {
+  std::string coveragePath;
+
   try
   {
     std::string url;
 
     if(version_ == "2.0.1")
     {
-      url = "WMS:" + uri_ + "&VERSION=" + version_ + "&REQUEST=GetCoverage&COVERAGEID=" + coverage.coverageID;
+      url = "WMS:" + uri_ + "&VERSION=" + version_ + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
 
-      if(!coverage.format.empty())
-        url += "&FORMAT=" + coverage.format;
+      if(!coverageRequest.format.empty())
+        url += "&FORMAT=" + coverageRequest.format;
 
-      if(!coverage.mediaType.empty())
-        url += "&MEDIATYPE=" + coverage.mediaType;
+      if(!coverageRequest.mediaType.empty())
+        url += "&MEDIATYPE=" + coverageRequest.mediaType;
 
-      for(std::map<std::string, std::string>::const_iterator subset = coverage.subset.begin(); subset != coverage.subset.end(); subset++)
+      for(unsigned int i = 0; i < coverageRequest.subSet.size(); i++)
       {
-        url += "&SUBSET=" + subset->first + "(" + subset->second + ")";
+        const SubSet* subSet = &coverageRequest.subSet.at(i);
+
+        url += "&SUBSET=" + subSet->axis + "(";
+
+        if(!subSet->min.empty())
+          url += subSet->min;
+
+        if(!subSet->max.empty())
+          url += "," + subSet->max;
+
+        url += ")";
       }
 
-      for(std::map<std::string, std::string>::const_iterator parameter = coverage.parameters.begin(); parameter != coverage.parameters.end(); parameter++)
+      for(std::map<std::string, std::string>::const_iterator parameter = coverageRequest.additionalParameters.begin(); parameter != coverageRequest.additionalParameters.end(); parameter++)
       {
         url += "&" + parameter->first + "=" + parameter->second;
       }
@@ -172,19 +173,18 @@ te::da::DataSet* te::ws::ogc::WCS::getCoverage(const CoverageRequest coverage) c
       throw te::common::Exception(TE_TR("WCS version not supported!"));
     }
 
-    // VINICIUS: make CURL request
-    // VINICIUS: make a TerraLib Dataset
+    coveragePath = makeFileRequest(url, coverageRequest.coverageID);
 
   }
   catch(const te::common::Exception& e)
   {
-    QString messageError = TE_TR("Error at request! \n Details: \n");
+    QString messageError = TE_TR("Error at get Coverage! \n Details: \n");
     messageError.append(e.what());
     throw te::common::Exception(messageError.toStdString());
   }
   catch(const std::exception& e)
   {
-    QString messageError = TE_TR("Error at request! \n Details: \n");
+    QString messageError = TE_TR("Error get Coverage! \n Details: \n");
     messageError.append(e.what());
     throw te::common::Exception(messageError.toStdString());
   }
@@ -193,13 +193,25 @@ te::da::DataSet* te::ws::ogc::WCS::getCoverage(const CoverageRequest coverage) c
     throw te::common::Exception(TE_TR("Unknow error! \n"));
   }
 
-  return NULL;
+  return coveragePath;
 }
 
 
-QXmlStreamReader* te::ws::ogc::WCS::makeRequest(const std::string url) const
+size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data)
+{
+  size_t sizeRead = size * nmemb;
+
+  std::string* block = (std::string*) data;
+  block->append((char *)ptr, sizeRead);
+
+  return sizeRead;
+}
+
+
+std::string te::ws::ogc::WCS::makeRequest(const std::string url) const
 {
   CURL* curl;
+  std::string callback;
 
   try
   {
@@ -208,14 +220,13 @@ QXmlStreamReader* te::ws::ogc::WCS::makeRequest(const std::string url) const
     curl = curl_easy_init();
 
     CURLcode status;
-    std::string xml;
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
     // Get data to be written
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_xml_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     // Set a pointer to our xml string
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&xml);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&callback);
     /* Perform the request, status will get the return code */
     status = curl_easy_perform(curl);
 
@@ -223,19 +234,9 @@ QXmlStreamReader* te::ws::ogc::WCS::makeRequest(const std::string url) const
     if(status != CURLE_OK)
       throw te::common::Exception(curl_easy_strerror(status));
 
-    QXmlStreamReader* xml_stream_ptr = new QXmlStreamReader(xml.c_str());
-
-    // Check the xml response
-    if(xml_stream_ptr->hasError())
-    {
-      if(xml_stream_ptr)
-        delete xml_stream_ptr;
-      throw te::common::Exception(TE_TR("Error on received XML!"));
-    }
-
     if(curl) curl_easy_cleanup(curl);
 
-    return xml_stream_ptr;
+    return callback;
   }
   catch(const te::common::Exception& e)
   {
@@ -257,7 +258,7 @@ QXmlStreamReader* te::ws::ogc::WCS::makeRequest(const std::string url) const
     throw te::common::Exception(TE_TR("Unknow error! \n"));
   }
 
-  return NULL;
+  return callback;
 }
 
 size_t write_file_callback(void *ptr, size_t size, size_t nmemb, void *data)
@@ -266,12 +267,12 @@ size_t write_file_callback(void *ptr, size_t size, size_t nmemb, void *data)
   return fwrite(ptr, size, nmemb, writehere);
 }
 
-std::string te::ws::ogc::WCS::makeFileRequest(const std::string url) const
+std::string te::ws::ogc::WCS::makeFileRequest(const std::string url, const std::string fileName) const
 {
   CURL* curl;
   std::FILE* file;
-  // VINICIUS: work with temp directory
-  std::string path = "/tmp/capabilities";
+  // VINICIUS: work with temp directory and filename
+  std::string path = "/tmp/" + fileName;
 
   try
   {
@@ -280,7 +281,7 @@ std::string te::ws::ogc::WCS::makeFileRequest(const std::string url) const
     curl = curl_easy_init();
 
     CURLcode status;
-    file = std::fopen(path.c_str(), "wb");
+    file = std::fopen(path .c_str(), "wb");
 
     if(!file)
       throw te::common::Exception(TE_TR("Could not open file to write!"));

@@ -46,14 +46,15 @@ namespace te
   {
     namespace ogc
     {
+
       /*! \brief A struct to set the parameters of wanted coverage */
       struct CoverageRequest
       {
         std::string coverageID;
         std::string format;
         std::string mediaType;
-        std::map< std::string, std::string > subset; //!< The subset axe(key) and the limits(values). The limits should be separated by comma.
-        std::map< std::string, std::string > parameters;
+        std::vector< SubSet > subSet;
+        std::map< std::string, std::string > additionalParameters;
       };
 
       /*!
@@ -104,7 +105,7 @@ namespace te
 
           \return Returns a DataSet that contains the coverage
         */
-        te::da::DataSet* getCoverage(const struct CoverageRequest coverage) const;
+        std::string getCoverage(const struct CoverageRequest coverageRequest) const;
 
         /*!
           \brief Executes a request on a WCS server
@@ -113,7 +114,7 @@ namespace te
 
           \return Returns a XML with info requested
         */
-        QXmlStreamReader* makeRequest(const std::string url) const;
+        std::string makeRequest(const std::string url) const;
 
         /*!
           \brief Executes a request on a WCS server
@@ -122,7 +123,7 @@ namespace te
 
           \return Returns a path to a file
         */
-        std::string makeFileRequest(const std::string url) const;
+        std::string makeFileRequest(const std::string url, const std::string fileName) const;
 
 
         /*!

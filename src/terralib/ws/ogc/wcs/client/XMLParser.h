@@ -29,8 +29,13 @@
 #define __TERRALIB_WS_OGC_WCS_XMLPARSER_WCS_H
 
 // STL
+#include <cctype>
 #include <memory>
+#include <sstream>
 #include <vector>
+
+//BOOST
+#include <boost/algorithm/string.hpp>
 
 // TerraLib
 #include "../../../../xml.h"
@@ -48,11 +53,16 @@ namespace te
         std::vector< std::string > coverages;
       };
 
+      struct SubSet
+      {
+        std::string axis;
+        std::string min;
+        std::string max;
+      };
+
       struct DomainSet
       {
-        std::vector< std::string > axisLabels;
-        std::vector< std::string > low;
-        std::vector< std::string > high;
+        std::vector< SubSet > envelope;
       };
 
       struct BoundedBy
@@ -82,6 +92,7 @@ namespace te
         std::vector< std::string > extension;
       };
 
+
       static Capabilities parseCapabilities(const std::string xmlPath)
       {
         // Read XML file
@@ -97,7 +108,7 @@ namespace te
           throw te::common::Exception(TE_TR("Can not read the Capabilities XML file!"));
         }
 
-        if(reader->getElementLocalName().compare("Capabilities") != 0)
+        if(!boost::iequals(reader->getElementLocalName(), "Capabilities"))
         {
           throw te::common::Exception(TE_TR("Can not find Capabilities on the received XML!"));
         }
@@ -105,16 +116,36 @@ namespace te
         Capabilities capabilities;
         while(reader->next())
         {
-          if(reader->getNodeType() == te::xml::START_ELEMENT && reader->hasAttrs() && reader->getElementLocalName().compare("Operation") == 0)
+          if(reader->getNodeType() == te::xml::START_ELEMENT)
           {
-            capabilities.operations.push_back(reader->getAttr(0));
-          }
-          else if (reader->getNodeType() == te::xml::VALUE && reader->getElementLocalName().compare("CoverageId") == 0)
-          {
-            capabilities.coverages.push_back(reader->getElementValue());
+            if(boost::iequals(reader->getElementLocalName(), "OperationsMetadata"))
+            {
+              while(reader->next() && !(te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "OperationsMetadata")))
+              {
+                if(reader->getNodeType() == te::xml::START_ELEMENT && boost::iequals(reader->getElementLocalName(), "Operation") && reader->hasAttrs())
+                {
+                  capabilities.operations.push_back(reader->getAttr(0));
+                }
+              }
+            }
+            else if(boost::iequals(reader->getElementLocalName(), "Contents"))
+            {
+              while(reader->next() && !(te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "Contents")))
+              {
+                if(boost::iequals(reader->getElementLocalName(), "CoverageSummary"))
+                {
+                  while(reader->next() && !(te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "CoverageSummary")))
+                  {
+                    if(reader->getNodeType() == te::xml::VALUE && boost::iequals(reader->getElementLocalName(), "CoverageId"))
+                    {
+                      capabilities.coverages.push_back(reader->getElementValue());
+                    }
+                  }
+                }
+              }
+            }
           }
         }
-
         return capabilities;
       }
 
@@ -133,7 +164,7 @@ namespace te
           throw te::common::Exception(TE_TR("Can not read the Coverage Descriptions XML file!"));
         }
 
-        if(reader->getElementLocalName().compare("CoverageDescriptions") != 0)
+        if(!boost::algorithm::iequals(reader->getElementLocalName(), "CoverageDescriptions"))
         {
           throw te::common::Exception(TE_TR("Can not find Coverage Descriptions on the received XML!"));
         }
@@ -145,38 +176,114 @@ namespace te
 
         while(reader->next())
         {
-          std::string elementLocalName = reader->getElementLocalName();
-
-          if(reader->getNodeType() == te::xml::START_ELEMENT && reader->hasAttrs())
+          if(reader->getNodeType() == te::xml::START_ELEMENT)
           {
-            if(elementLocalName.compare("Envelope") == 0)
+            if(boost::iequals(reader->getElementLocalName(), "CoverageId"))
             {
-              for(unsigned int i = 0; i < reader->getNumberOfAttrs(); i++)
+              while(reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "CoverageId")))
               {
-                std::string name = reader->getAttrLocalName(i);
+                if(reader->getNodeType() == te::xml::VALUE)
+                {
+                  if(boost::iequals(reader->getElementLocalName(), "CoverageId"))
+                    coverageDescription.coverageId = reader->getElementValue();
+                }
+              }
+            }
+            else if(boost::algorithm::iequals(reader->getElementLocalName(), "boundedBy"))
+            {
+              while(reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "boundedBy")))
+              {
+                if(boost::iequals(reader->getElementLocalName(), "Envelope") && reader->hasAttrs())
+                {
+                  for(unsigned int i = 0; i < reader->getNumberOfAttrs(); i++)
+                  {
+                    std::string name = reader->getAttrLocalName(i);
 
-                if(name.compare("srsName") == 0) boundedBy.srsName = reader->getAttr(i);
-                if(name.compare("axisLabels") == 0) boundedBy.axisLabels = reader->getAttr(i);
-                if(name.compare("uomLabels") == 0) boundedBy.uomLabels = reader->getAttr(i);
-                if(name.compare("srsDimension") == 0) boundedBy.srsDimension = reader->getAttr(i);
+                    if(name.compare("srsName"))
+                      boundedBy.srsName = reader->getAttr(i);
+                    else if(name.compare("axisLabels"))
+                      boundedBy.axisLabels = reader->getAttr(i);
+                    else if(name.compare("uomLabels"))
+                      boundedBy.uomLabels = reader->getAttr(i);
+                    else if(name.compare("srsDimension"))
+                      boundedBy.srsDimension = reader->getAttr(i);
+                  }
+
+                  while(reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "Envelope")))
+                  {
+                    if(reader->getNodeType() == te::xml::VALUE)
+                    {
+                      if(boost::iequals(reader->getElementLocalName(), "lowerCorner"))
+                        boundedBy.lowerCorner.push_back(reader->getElementValue());
+                      else if(boost::iequals(reader->getElementLocalName(), "upperCorner"))
+                        boundedBy.upperCorner.push_back(reader->getElementValue());
+                    }
+                  }
+                }
+              }
+            }
+            else if(boost::iequals(reader->getElementLocalName(), "domainSet"))
+            {
+              std::stringstream axis;
+              std::stringstream low;
+              std::stringstream high;
+
+              while(reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "domainSet")))
+              {
+                if(reader->getNodeType() == te::xml::VALUE)
+                {
+                  if(boost::iequals(reader->getElementLocalName(), "axisLabels"))
+                    axis.str(reader->getElementValue());
+                  else if(boost::iequals(reader->getElementLocalName(), "low"))
+                    low.str(reader->getElementValue());
+                  else if(boost::iequals(reader->getElementLocalName(), "high"))
+                    high.str(reader->getElementValue());
+                }
+              }
+
+              SubSet subSet;
+
+              while(axis.good())
+              {
+                std::string element;
+                axis >> element;
+                subSet.axis = element;
+
+                if(low.good())
+                {
+                  std::string element;
+                  low >> element;
+                  subSet.min = element;
+                }
+
+                if(high.good())
+                {
+                  std::string element;
+                  high >> element;
+                  subSet.max = element;
+                }
+
+                domainSet.envelope.push_back(subSet);
+              }
+            }
+            else if(boost::iequals(reader->getElementLocalName(), "ServiceParameters"))
+            {
+              while(reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "ServiceParameters")))
+              {
+                if(reader->getNodeType() == te::xml::VALUE)
+                {
+                  if(boost::iequals(reader->getElementLocalName(), "CoverageSubtype"))
+                    serviceParameters.coverageSubtype = reader->getElementValue();
+                  else if(boost::iequals(reader->getElementLocalName(), "coverageSubtypeParent"))
+                    serviceParameters.coverageSubtypeParent = reader->getElementValue();
+                  else if(boost::iequals(reader->getElementLocalName(), "nativeFormat"))
+                    serviceParameters.nativeFormat = reader->getElementValue();
+                  else if(boost::iequals(reader->getElementLocalName(), "extension"))
+                    serviceParameters.extension = reader->getElementValue();
+                }
               }
             }
           }
-          else if(reader->getNodeType() == te::xml::VALUE)
-          {
-            // SWITCH CASE
-            if(elementLocalName.compare("lowerCorner") == 0) boundedBy.lowerCorner.push_back(reader->getElementValue());
-            if(elementLocalName.compare("upperCorner") == 0) boundedBy.upperCorner.push_back(reader->getElementValue());
-
-            if(elementLocalName.compare("axisLabels") == 0) domainSet.axisLabels.push_back(reader->getElementValue());
-            if(elementLocalName.compare("low") == 0) domainSet.low.push_back(reader->getElementValue());
-            if(elementLocalName.compare("high") == 0) domainSet.high.push_back(reader->getElementValue());
-
-            if(elementLocalName.compare("CoverageSubtype") == 0) serviceParameters.coverageSubtype = reader->getElementValue();
-            if(elementLocalName.compare("coverageSubtypeParent") == 0) serviceParameters.coverageSubtypeParent = reader->getElementValue();
-            if(elementLocalName.compare("nativeFormat") == 0) serviceParameters.nativeFormat = reader->getElementValue();
-            if(elementLocalName.compare("extension") == 0) serviceParameters.extension = reader->getElementValue();
-         }
         }
 
         coverageDescription.boundedBy = boundedBy;
@@ -185,9 +292,8 @@ namespace te
 
         return coverageDescription;
       }
-
-    }
-  }
-}
+    } // end namespace ogc
+  } // end namespace ws
+} // end namespace te
 
 #endif // __TERRALIB_WS_OGC_WCS_XMLPARSER_WCS_H

@@ -35,7 +35,7 @@ add_executable(terralib_unittest_ws_ogc_wcs ${TERRALIB_SRC_FILES} ${TERRALIB_HDR
 target_link_libraries(terralib_unittest_ws_ogc_wcs terralib_mod_ws_ogc_wcs_client
                                                     terralib_mod_plugin
                                                     ${CPPUNIT_LIBRARY})
-
+#${Boost_SYSTEM_LIBRARY}
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/ogc-wcs COMPONENT devel)
 
