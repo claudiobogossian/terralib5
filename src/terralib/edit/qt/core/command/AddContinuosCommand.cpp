@@ -37,43 +37,49 @@ TerraLib Team at <terralib-team@terralib.org>.
 // STL
 #include <set>
 
-te::edit::AddContinuosCommand::AddContinuosCommand(std::vector<Feature*> items, Feature* item, std::vector<te::gm::Coord2D>* coords, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+te::edit::AddContinuosCommand::AddContinuosCommand(std::vector<Feature*>& items, std::vector<te::gm::Coord2D>& coords, int& aux, int& correntIndex,
+  te::qt::widgets::MapDisplay* display, 
+  const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
 , m_display(display)
 , m_layer(layer)
 , m_addItems(items)
-, m_addItem(item)
 , m_coords(coords)
 , m_nextFeature(0)
 , m_previousFeature(0)
 , m_redoCommandType(1)
 , m_undoCommandType(2)
+, m_aux(aux)
+, m_correntIndex(correntIndex)
 {}
 
 te::edit::AddContinuosCommand::~AddContinuosCommand()
-{
-  m_addItem = 0;
-  m_addItems.clear();
-}
+{}
 
 void  te::edit::AddContinuosCommand::undo()
 {
   if (m_addItems.empty())
     return;
 
-  m_previousFeature = m_addItems.size() - 2;
+  m_aux++;
+
+  m_previousFeature = (int)m_addItems.size() - m_aux - 1;
 
   if (m_previousFeature < 0)
+  {
+    m_aux--;
     return;
+  }
 
-  m_coords->clear();
+  m_correntIndex = m_previousFeature;
+
+  m_coords.clear();
 
   for (std::size_t i = 0; i < m_addItems.at(m_previousFeature)->clone()->getCoords().size(); i++)
-    m_coords->push_back(m_addItems.at(m_previousFeature)->clone()->getCoords()[i]);
+    m_coords.push_back(m_addItems.at(m_previousFeature)->clone()->getCoords()[i]);
 
   draw(m_undoCommandType);
-
 }
 
 void te::edit::AddContinuosCommand::redo()
@@ -82,7 +88,6 @@ void te::edit::AddContinuosCommand::redo()
 
   if (!UndoStackManager::getInstance().getUndoStack())
     return;
-
 
   for (int i = 0; i < UndoStackManager::getInstance().getUndoStack()->count(); ++i)
   {
@@ -93,21 +98,28 @@ void te::edit::AddContinuosCommand::redo()
     }
   }
 
-  m_nextFeature = m_addItems.size() -1;
-
   //no makes redo while the command is not on the stack
   if (resultFound)
   {
-    m_addItem->setGeometry(m_addItems.at(m_nextFeature)->clone()->getGeometry());
+    m_aux--;
 
-    m_coords->clear();
+    m_nextFeature = (int)m_addItems.size() - m_aux - 1;
+    
+    if (m_nextFeature >= (int)m_addItems.size())
+    {
+      m_aux++;
+      return;
+    }
+
+    m_correntIndex = m_nextFeature;
+
+    m_coords.clear();
 
     for (std::size_t i = 0; i < m_addItems.at(m_nextFeature)->clone()->getCoords().size(); i++)
-      m_coords->push_back(m_addItems.at(m_nextFeature)->clone()->getCoords()[i]);
+      m_coords.push_back(m_addItems.at(m_nextFeature)->clone()->getCoords()[i]);
 
     draw(m_redoCommandType);
   }
-
 
 }
 
@@ -124,12 +136,6 @@ void te::edit::AddContinuosCommand::draw(const int commandType)
   // Initialize the renderer
   Renderer& renderer = Renderer::getInstance();
   renderer.begin(draft, env, m_display->getSRID());
-
-
-  if (m_addItem->getGeometry()->getNPoints()>3)
-    renderer.draw(m_addItem->getGeometry(), true);
-  else
-    draft->fill(Qt::transparent);
 
   // Draw the layer edited geometries
   if (commandType == m_undoCommandType)
