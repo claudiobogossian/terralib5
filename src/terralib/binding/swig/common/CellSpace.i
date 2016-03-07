@@ -1,5 +1,5 @@
 /*
- * File: ST.i
+ * File: CellSpace.i
  *
  * Cellular Space module
  */
