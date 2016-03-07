@@ -59,6 +59,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QString>
 #include <QTreeWidget>
 
 // Boost
@@ -211,6 +212,11 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
 te::map::AbstractLayerPtr te::vp::AggregationDialog::getLayer()
 {
   return m_layer;
+}
+
+std::vector<std::string> te::vp::AggregationDialog::getWarnings()
+{
+  return m_warnings;
 }
 
 void te::vp::AggregationDialog::setStatisticalSummary()
@@ -731,6 +737,8 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       }
       dsOGR->close();
 
+      m_warnings = aggregOp->getWarnings();
+
       delete aggregOp;
       
       // let's include the new datasource in the managers
@@ -794,12 +802,17 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       else
         res = aggregOp->run();
 
+      m_warnings = aggregOp->getWarnings();
+
       delete aggregOp;
 
       if (!res)
       {
+        te::common::ProgressManager::getInstance().removeViewer(id);
+
         this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Aggregation", "Error: could not generate the aggregation.");
+        
         reject();
       }
     }
