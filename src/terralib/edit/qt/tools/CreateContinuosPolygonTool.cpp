@@ -140,9 +140,6 @@ bool te::edit::CreateContinuosPolygonTool::mouseReleaseEvent(QMouseEvent* e)
 
   emit geometriesEdited();
 
-  if (m_feature)
-   emit closedPolygon();// TODO switch to geometriesEdited
-
   return true;
 }
 

@@ -120,10 +120,6 @@ namespace te
 
         void onExtentChanged();
 
-      Q_SIGNALS:
-
-        void closedPolygon();
-
       protected:
 
         std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
