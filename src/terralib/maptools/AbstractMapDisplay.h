@@ -54,7 +54,7 @@ namespace te
       public:
 
         /*! \brief It initializes a new MapDisplay. */
-        AbstractMapDisplay() { }
+        AbstractMapDisplay():m_cancel(false) { }
 
         /*! \brief Virtual destructor. */
         virtual ~AbstractMapDisplay() { }
@@ -137,7 +137,7 @@ namespace te
         virtual void setSRID(const int& srid, bool doRefresh = true) = 0;
 
         /*! \brief It updates the contents in the map display. */
-        virtual void refresh() = 0;
+        virtual void refresh(bool redraw = false) = 0;
 
         /*!
           \brief It returns the MapDisplay current width in pixels.
@@ -166,6 +166,11 @@ namespace te
           \return The MapDisplay current height in millimeters.
         */
         virtual double getHeightMM() const = 0;
+
+        protected:
+
+          bool m_cancel;
+
 
         //@}
     };

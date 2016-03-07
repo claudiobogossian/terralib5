@@ -303,8 +303,8 @@ void te::qt::widgets::Info::getRasterInfo(QTreeWidgetItem* layerItem, te::rst::R
   int x = te::rst::Round(coord.x);
   int y = te::rst::Round(coord.y);
 
-  if((x < 0 && x >= static_cast<int>(raster->getNumberOfColumns())) ||
-     (y < 0 && y >= static_cast<int>(raster->getNumberOfRows())))
+  if((x < 0 || x >= static_cast<int>(raster->getNumberOfColumns())) ||
+     (y < 0 || y >= static_cast<int>(raster->getNumberOfRows())))
      return;
 
   // Raster location informations

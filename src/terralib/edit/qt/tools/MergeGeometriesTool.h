@@ -69,6 +69,8 @@ namespace te
       /*! \brief Destructor. */
       ~MergeGeometriesTool();
 
+      void cancelEditionTool();
+
     private:
 
       void draw();

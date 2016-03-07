@@ -108,7 +108,7 @@ void te::qt::widgets::StyleExplorer::updateStyleTree()
       if(j == 0)
       {
         setCurrentItem(symbItem);
-        emit symbolizerClicked(symbs[j]);
+//        emit symbolizerClicked(symbs[j]);
       }
     }
   }

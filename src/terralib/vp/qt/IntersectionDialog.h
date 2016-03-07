@@ -51,9 +51,6 @@ namespace te
 
   namespace vp
   {
-// Forward declarations
-    class LayerTreeModel;
-
     /*!
       \class IntersectionDialog
 

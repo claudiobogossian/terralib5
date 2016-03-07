@@ -473,7 +473,7 @@
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="14"/>
         <source>Chart</source>
-        <translation>Pizza</translation>
+        <translation>Gráfico de Pizza e Barra</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartLayerDialogForm.ui" line="44"/>
@@ -4490,7 +4490,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="74"/>
         <source>Int 64</source>
-        <translation type="unfinished">Int 64</translation>
+        <translation>Int 64</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="75"/>
@@ -5307,157 +5307,157 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="151"/>
         <source>Select the raster file name</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o nome do arquivo matricial</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="176"/>
         <source>Force RAW Binary Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Force RAW Binary Raster</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="195"/>
         <source>RAW Raster Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriedades do Matricial RAW</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="212"/>
         <source>Rows</source>
-        <translation type="unfinished"></translation>
+        <translation>Linhas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="230"/>
         <source>Columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Colunas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="248"/>
         <source>Bands</source>
-        <translation type="unfinished">Bandas</translation>
+        <translation>Bandas</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="266"/>
         <source>Data Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo do Dado</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="274"/>
         <source>Byte</source>
-        <translation type="unfinished"></translation>
+        <translation>Byte</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="279"/>
         <source>UInt16</source>
-        <translation type="unfinished"></translation>
+        <translation>UInt16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="284"/>
         <source>Int16</source>
-        <translation type="unfinished"></translation>
+        <translation>Int16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="289"/>
         <source>UInt32</source>
-        <translation type="unfinished"></translation>
+        <translation>UInt32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="294"/>
         <source>Int32</source>
-        <translation type="unfinished"></translation>
+        <translation>Int32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="299"/>
         <source>Float32</source>
-        <translation type="unfinished"></translation>
+        <translation>Float32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="304"/>
         <source>Float64</source>
-        <translation type="unfinished"></translation>
+        <translation>Float64</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="309"/>
         <source>CInt16</source>
-        <translation type="unfinished"></translation>
+        <translation>CInt16</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="314"/>
         <source>CInt32</source>
-        <translation type="unfinished"></translation>
+        <translation>CInt32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="319"/>
         <source>CFloat32</source>
-        <translation type="unfinished"></translation>
+        <translation>CFloat32</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="324"/>
         <source>CFloat64</source>
-        <translation type="unfinished"></translation>
+        <translation>CFloat64</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="348"/>
         <source>Resolution X</source>
-        <translation type="unfinished">Resolução X</translation>
+        <translation>Resolução X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="366"/>
         <source>Resolution Y</source>
-        <translation type="unfinished">Resolução Y</translation>
+        <translation>Resolução Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="384"/>
         <source>SRID</source>
-        <translation type="unfinished">SRID</translation>
+        <translation>SRID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="398"/>
         <source>Select a SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um SRID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="424"/>
         <source>UpperLeft X</source>
-        <translation type="unfinished"></translation>
+        <translation>SuperiorEsquerdo X</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="442"/>
         <source>UpperLeft Y</source>
-        <translation type="unfinished"></translation>
+        <translation>SuperiorEsquerdo Y</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="460"/>
         <source>Byte Order</source>
-        <translation type="unfinished"></translation>
+        <translation>Byte Order</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="467"/>
         <source>Defines the byte order of the data on disk. Either LSB (Least Significant Byte first) such as the natural byte order on Intel x86 systems or MSB (Most Significant Byte first) such as the natural byte order on Motorola or Sparc systems. Defaults to being the local machine order.</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir a ordem de bytes dos dados no disco. LSB (Least Significant Byte primeiro): tais como a ordem de bytes naturalmente em sistemas x86 da Intel ou MSB (Most Significant Byte primeiro): tais como a ordem de bytes em sistemas Natural Motorola ou Sparc. O padrão será da máquina local.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="476"/>
         <source>LSB</source>
-        <translation type="unfinished"></translation>
+        <translation>LSB</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="481"/>
         <source>MSB</source>
-        <translation type="unfinished"></translation>
+        <translation>MSB</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="503"/>
         <source>Interleaving</source>
-        <translation type="unfinished"></translation>
+        <translation>Intercalação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="511"/>
         <source>BSQ</source>
-        <translation type="unfinished"></translation>
+        <translation>BSQ</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/ui/RasterInfoWidgetForm.ui" line="516"/>
         <source>BIP</source>
-        <translation type="unfinished"></translation>
+        <translation>BIP</translation>
     </message>
     <message>
         <source>Select a folder to save the raster file.</source>
@@ -5520,7 +5520,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="108"/>
         <source>Pan</source>
-        <translation>Mover</translation>
+        <translation>Panorâmica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="134"/>
@@ -6081,62 +6081,62 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="17"/>
         <source>Spatial Reference Systems</source>
-        <translation type="unfinished"></translation>
+        <translation>Sistemas de Referências Espaciais</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="42"/>
         <source>Create/Edit a Spatial Reference System (SRS)</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar/Editar um Sistema de Referência Espacial (SRS)</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="54"/>
         <source>SRID</source>
-        <translation type="unfinished">SRID</translation>
+        <translation>SRID</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="75"/>
         <source>The SRID is automatically generated.</source>
-        <translation type="unfinished"></translation>
+        <translation>O SRID é automaticamente gerado.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="85"/>
         <source>Authorithy</source>
-        <translation type="unfinished"></translation>
+        <translation>Autoridade</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="115"/>
         <source>SRS Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do SRS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="133"/>
         <source>Inform a name for the new SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>Informe um nome para o novo SRS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="143"/>
         <source>SRS PROJ.4 description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição do SRS PROJ.4</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="161"/>
         <source>Inform a PROJ4 description for the new SRS</source>
-        <translation type="unfinished"></translation>
+        <translation>Informe uma descrição do PROJ4 para o novo SRS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="180"/>
         <source>Help</source>
-        <translation type="unfinished">Ajuda</translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="200"/>
         <source>Ok</source>
-        <translation type="unfinished">Ok</translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/ui/SRSDialogForm.ui" line="207"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancela</translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -6225,32 +6225,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsDialogForm.ui" line="14"/>
         <source>Save Selected Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva Objetos Selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsDialogForm.ui" line="41"/>
         <source>Save a new layer with selected objects...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva uma nova camada com os objetos selecionados...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsDialogForm.ui" line="60"/>
         <source>Imagem</source>
-        <translation type="unfinished">Imagem</translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsDialogForm.ui" line="89"/>
         <source>Ok</source>
-        <translation type="unfinished">Ok</translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsDialogForm.ui" line="96"/>
         <source>Help</source>
-        <translation type="unfinished">Ajuda</translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsDialogForm.ui" line="116"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancela</translation>
+        <translation>Cancela</translation>
     </message>
 </context>
 <context>
@@ -6258,47 +6258,47 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="14"/>
         <source>Save Selected Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva Objetos Selecionados</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="34"/>
         <source>Input</source>
-        <translation type="unfinished">Entrada</translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="100"/>
         <source>SRS:</source>
-        <translation type="unfinished">SRS:</translation>
+        <translation>SRS:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="160"/>
         <source>Number of selected objects:</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de objetos selecionados:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="180"/>
         <source>Output</source>
-        <translation type="unfinished">Saída</translation>
+        <translation>Saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="186"/>
         <source>Repository:</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositório:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="206"/>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="219"/>
         <source>BD</source>
-        <translation type="unfinished">BD</translation>
+        <translation>BD</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/ui/SaveSelectedObjectsWidgetForm.ui" line="226"/>
         <source>Layer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome da Camada:</translation>
     </message>
 </context>
 <context>
@@ -6842,7 +6842,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="510"/>
         <source>Auto Pan</source>
-        <translation>Auto Pan</translation>
+        <translation>Auto Panorâmica</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/SliderPropertiesDialogForm.ui" line="558"/>
@@ -7442,7 +7442,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="146"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="503"/>
         <source>SURF</source>
-        <translation type="unfinished"></translation>
+        <translation>SURF</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointLocatorParametersWidgetForm.ui" line="166"/>
@@ -7861,7 +7861,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="102"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="317"/>
         <source>SURF</source>
-        <translation type="unfinished"></translation>
+        <translation>SURF</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/TiePointsLocatorAdvancedForm.ui" line="114"/>
@@ -10480,22 +10480,33 @@ Pode ser um erro no conector da aplicação !</translation>
 <context>
     <name>te::qt::widgets::DrawLayerThread</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="122"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="129"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="135"/>
         <source>The layer</source>
-        <translation>A camada</translation>
+        <translation type="vanished">A camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="122"/>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="129"/>
         <source>could not be drawn! Details:</source>
-        <translation>não pode ser desenhada ! Detalhes:</translation>
+        <translation type="vanished">não pode ser desenhada ! Detalhes:</translation>
+    </message>
+</context>
+<context>
+    <name>te::qt::widgets::DrawThread</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="54"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="58"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="62"/>
+        <source>The layer</source>
+        <translation type="unfinished">A camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/canvas/DrawLayerThread.cpp" line="135"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="54"/>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="58"/>
+        <source>could not be drawn! Details:</source>
+        <translation type="unfinished">não pode ser desenhada ! Detalhes:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/canvas/DrawThread.cpp" line="62"/>
         <source>could not be drawn!</source>
-        <translation type="unfinished"></translation>
+        <translation>não pode ser desenhado !</translation>
     </message>
 </context>
 <context>
@@ -11455,12 +11466,12 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="59"/>
         <source>Connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Conecção</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="64"/>
         <source>Num of Itens</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de Itens</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="70"/>
@@ -12236,12 +12247,12 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ObservationPropertiesWidget.cpp" line="44"/>
         <source>Properties</source>
-        <translation type="unfinished">Propriedades</translation>
+        <translation>Propriedades</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ObservationPropertiesWidget.cpp" line="45"/>
         <source>Observed Properties</source>
-        <translation type="unfinished">Propriedades Observadas</translation>
+        <translation>Propriedades Observadas</translation>
     </message>
 </context>
 <context>
@@ -13169,12 +13180,12 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/RasterInfoWidget.cpp" line="225"/>
         <source>Select the output file name</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o nome do arquivo de saída</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/raster/RasterInfoWidget.cpp" line="231"/>
         <source>Select File</source>
-        <translation type="unfinished">Selecione Arquivo</translation>
+        <translation>Selecione Arquivo</translation>
     </message>
     <message>
         <source>Open Directory</source>
@@ -13567,32 +13578,32 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
         <location filename="../../../src/terralib/qt/widgets/srs/SRSDialog.cpp" line="130"/>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSDialog.cpp" line="143"/>
         <source>SRS Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Diálogo SRS</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSDialog.cpp" line="90"/>
         <source>Inform a name for the new SRS.</source>
-        <translation type="unfinished"></translation>
+        <translation>Informe um nome para o novo SRS.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSDialog.cpp" line="96"/>
         <source>Inform the PROJ.4 description for the new SRS.</source>
-        <translation type="unfinished"></translation>
+        <translation>Informar a descrição PROJ.4 para o novo SRS.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSDialog.cpp" line="113"/>
         <source>There is already a SRS with the given name. Please inform a different name.</source>
-        <translation type="unfinished"></translation>
+        <translation>Já existe um SRS com este nome. Por favor, informe um nome diferente.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSDialog.cpp" line="130"/>
         <source>There is already a SRS with the PROJ.4 description. Please inform a different description.</source>
-        <translation type="unfinished"></translation>
+        <translation>Já existe um SRS com a descrição PROJ.4. Por favor, informe uma descrição diferente.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSDialog.cpp" line="143"/>
         <source>PROJ.4 description is not valid.</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrição PROJ.4 não é válida.</translation>
     </message>
 </context>
 <context>
@@ -13620,41 +13631,41 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="299"/>
         <source>Unknown error while trying to define a new SRS!</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro desconhecido ao tentar definir um novo SRS !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="307"/>
         <source>Select a USER defined SRS to modify.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um Usuário definido para modificar o SRS.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="313"/>
         <source>Only a USER defined SRS can be modified.</source>
-        <translation type="unfinished"></translation>
+        <translation>Somente um Usuário definido pode modificar o SRS.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="345"/>
         <source>Select a USER defined SRS to remove.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um Usuário definido para remover o SRS.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="351"/>
         <source>Only a USER defined SRS can be removed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Somente um Usuário definido pode remover um SRS.</translation>
     </message>
 </context>
 <context>
     <name>te::qt::widgets::SaveSelectedObjectsDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="86"/>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="90"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="96"/>
         <source>Warning</source>
-        <translation type="unfinished">Aviso</translation>
+        <translation>Aviso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsDialog.cpp" line="96"/>
         <source>Layer was saved.</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada foi salva.</translation>
     </message>
 </context>
 <context>
@@ -13662,17 +13673,17 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="80"/>
         <source>Invalid layer selected!</source>
-        <translation type="unfinished"></translation>
+        <translation>Camada inválida selecionada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="251"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="261"/>
         <source>Save as...</source>
-        <translation type="unfinished">Salvar como...</translation>
+        <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="251"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/utils/SaveSelectedObjectsWidget.cpp" line="261"/>
         <source>Shapefile (*.shp *.SHP);;</source>
-        <translation type="unfinished">Shapefile (*.shp *.SHP);;</translation>
+        <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
 </context>
 <context>
@@ -13681,17 +13692,17 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
         <location filename="../../../src/terralib/qt/widgets/se/ScalePropertyItem.cpp" line="41"/>
         <location filename="../../../src/terralib/qt/widgets/se/ScalePropertyItem.cpp" line="61"/>
         <source>Scale Denominator</source>
-        <translation type="unfinished"></translation>
+        <translation>Denominador da Escala</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ScalePropertyItem.cpp" line="46"/>
         <source>Minimum</source>
-        <translation type="unfinished">Mínimo</translation>
+        <translation>Mínimo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/ScalePropertyItem.cpp" line="54"/>
         <source>Maximum</source>
-        <translation type="unfinished">Máximo</translation>
+        <translation>Máximo</translation>
     </message>
 </context>
 <context>
@@ -13910,7 +13921,7 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleDockWidget.cpp" line="100"/>
         <source>Rule</source>
-        <translation type="unfinished">Regra</translation>
+        <translation>Regra</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/StyleDockWidget.cpp" line="104"/>
@@ -14434,55 +14445,55 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
 <context>
     <name>te::qt::widgets::WhereClauseWidget</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="348"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="358"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="368"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="378"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="487"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="506"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="519"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="353"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="363"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="373"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="383"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="492"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="511"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="524"/>
         <source>Query Builder</source>
         <translation>Construtor de Consulta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="348"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="353"/>
         <source>Restrict value not defined.</source>
         <translation>Valor restrito não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="358"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="368"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="363"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="373"/>
         <source>Value not defined.</source>
         <translation>Valor não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="378"/>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="487"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="383"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="492"/>
         <source>Operator not defined.</source>
         <translation>Operador não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="413"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="418"/>
         <source>and</source>
         <translation>and</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="506"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="511"/>
         <source>Selected layer has no geometry property.</source>
         <translation>Camada selecionada não tem nenhuma propriedade geometria.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="519"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="524"/>
         <source>Selected layer has no selected geometries.</source>
         <translation>Camada selecionada não tem geometrias selecionadas.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="552"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="557"/>
         <source>Geometry Value</source>
         <translation>Valor da Geometria</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="570"/>
+        <location filename="../../../src/terralib/qt/widgets/query/WhereClauseWidget.cpp" line="575"/>
         <source>or</source>
         <translation>or</translation>
     </message>

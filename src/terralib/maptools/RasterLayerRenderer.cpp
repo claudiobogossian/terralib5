@@ -55,7 +55,7 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
                                         Canvas* canvas,
                                         const te::gm::Envelope& bbox,
                                         int srid, 
-                                        const double& scale)
+                                        const double& scale, bool* cancel)
 {
 // should I render this layer?
   RasterLayer* rlayer = dynamic_cast<RasterLayer*>(layer);

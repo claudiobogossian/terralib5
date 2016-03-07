@@ -92,7 +92,7 @@ QObject(parent),
   m_redoToolAction(0),
   m_undoView(0),
   m_currentTool(0),
-  m_usingStash(true),
+  m_usingStash(false),
   m_layerIsStashed(true)
 {
   initialize();
@@ -625,16 +625,16 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     emit triggered(&e);
 
     //update layer
-    //te::qt::widgets::MultiThreadMapDisplay* mtmp = dynamic_cast<te::qt::widgets::MultiThreadMapDisplay*>(e.m_display->getDisplay());
-    //if (mtmp)
-    //  mtmp->updateLayer(layer);
-    //else
+    te::qt::widgets::MultiThreadMapDisplay* mtmp = dynamic_cast<te::qt::widgets::MultiThreadMapDisplay*>(e.m_display->getDisplay());
+    if (mtmp)
+      mtmp->updateLayer(layer);
+    else
     e.m_display->getDisplay()->refresh();
 
     m_layerIsStashed = false;
 
-    te::qt::af::evt::LayerChanged e2(layer.get());
-    emit triggered(&e2);
+    //te::qt::af::evt::LayerChanged e2(layer.get());
+    //emit triggered(&e2);
   }
   catch(te::common::Exception& ex)
   {

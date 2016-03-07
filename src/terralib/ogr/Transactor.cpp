@@ -18,6 +18,7 @@
  */
 
 // TerraLib
+#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/ObjectId.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
@@ -912,7 +913,7 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
   {
     te::dt::Property* p = dt->getProperty(i);
 
-    if (p->getName() == "FID")
+    if (te::common::Convert2UCase(p->getName()) == "FID")
       continue;
 
     addProperty(dt->getName(), p);
@@ -1005,7 +1006,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
           continue;
         }
 
-        if(d->getPropertyName(i) == "FID")
+        if(te::common::Convert2UCase(d->getPropertyName(i)) == "FID")
           continue;
 
         switch(d->getPropertyDataType(i))

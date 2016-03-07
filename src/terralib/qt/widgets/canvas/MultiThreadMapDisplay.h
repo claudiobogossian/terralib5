@@ -30,12 +30,15 @@
 #include "MapDisplay.h"
 
 // Qt
-#include <QtCore/QMap>
-#include <QtCore/QString>
+#include <QCursor>
 #include <QImage>
+#include <QMap>
+#include <QString>
 
 // STL
 #include <vector>
+
+class QRunnable;
 
 namespace te
 {
@@ -43,8 +46,8 @@ namespace te
   {
     namespace widgets
     {
-// Forward declarations
-      class DrawLayerThread;
+      class ThreadManager;
+//      class ScopedCursor;
 
       /*!
         \class MultiThreadMapDisplay
@@ -89,7 +92,7 @@ namespace te
 
           void setExtent(te::gm::Envelope& e, bool doRefresh = true);
 
-          void refresh();
+          void refresh(bool redraw = false);
 
           //@}
 
@@ -106,7 +109,9 @@ namespace te
 
           void setSynchronous(bool on);
 
-          void updateLayer(te::map::AbstractLayerPtr layer);
+          void updateLayer(te::map::AbstractLayerPtr layer, bool redraw = true);
+
+          void resizeEvent(QResizeEvent* e);
 
         private:
 
@@ -114,9 +119,15 @@ namespace te
 
         protected slots:
 
-          void showFeedback(const QImage& image);
+          void showFeedback(const QImage&) { }
+
+          void showFeedback();
 
           void onDrawLayerFinished(const int& index, const QImage& image);
+
+          void onRenderingFinished();
+
+          void onDrawCanceled();
 
         signals:
 
@@ -159,13 +170,16 @@ namespace te
         protected:
 
           std::list<te::map::AbstractLayerPtr> m_visibleLayers; //!< The set of visible layers.
-          std::vector<DrawLayerThread*> m_threads;              //!< The set of threads used to draw the layer list.
-          std::map<int, QImage> m_images;                       //!< The set of images built by each thread. It will be used to compose the final result, keeping the layer list order.
+          std::vector<QRunnable*> m_threads;              //!< The set of threads used to draw the layer list.
+          std::map<std::string, QImage*> m_images;                       //!< The set of images built by each thread. It will be used to compose the final result, keeping the layer list order.
           bool m_showFeedback;                                  //!< A flag that indicates if the map display will show drawing feedback.
           QMatrix m_matrix;                                     //!<  Used to convert screen coordinates to world coordinates.
           bool m_synchronous;                                   //!< A flag that indicates if the map display is  synchronous or asynchronous.
+          
+          ThreadManager* m_tmger;
+          QCursor m_oldCursor;
+//          std::auto_ptr<ScopedCursor> m_cursor;
       };
-
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

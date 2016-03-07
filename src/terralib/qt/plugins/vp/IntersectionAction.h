@@ -23,8 +23,8 @@
   \brief This file defines the Intersection class
 */
 
-#ifndef __TE_QT_PLUGINS_VP_INTERNAL_CONTRASTACTION_H
-#define __TE_QT_PLUGINS_VP_INTERNAL_CONTRASTACTION_H
+#ifndef __TE_QT_PLUGINS_VP_INTERNAL_INTERSECTIONACTION_H
+#define __TE_QT_PLUGINS_VP_INTERNAL_INTERSECTIONACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -64,4 +64,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_VP_INTERNAL_CONTRASTACTION_H
+#endif //__TE_QT_PLUGINS_VP_INTERNAL_INTERSECTIONACTION_H

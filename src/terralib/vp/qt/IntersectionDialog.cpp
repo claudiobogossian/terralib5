@@ -52,7 +52,6 @@
 #include "../IntersectionOp.h"
 #include "../IntersectionQuery.h"
 #include "IntersectionDialog.h"
-//#include "LayerTreeModel.h"
 #include "ui_IntersectionDialogForm.h"
 #include "Utils.h"
 
@@ -422,7 +421,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
       if( (firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
           secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() ) && 
-          (firstDataSource->getId() == secondDataSource->getId()) && (firstDataSetLayer && secondDataSetLayer))
+          (firstDataSource->getId() == secondDataSource->getId()) &&
+          (m_firstSelectedLayer->getSRID() == m_secondSelectedLayer->getSRID()) && (firstDataSetLayer && secondDataSetLayer))
       {
         intersectionOp = new te::vp::IntersectionQuery();
       }

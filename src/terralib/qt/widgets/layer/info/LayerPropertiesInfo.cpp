@@ -31,6 +31,7 @@
 #include "../../../../raster/Band.h"
 #include "../../../../raster/BandProperty.h"
 #include "../../../../raster/Utils.h"
+#include "../../../../srs/SpatialReferenceSystemManager.h"
 #include "../../propertybrowser/AbstractPropertyManager.h"
 
 #include "LayerPropertiesInfo.h"
@@ -51,7 +52,7 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   title_prop->setPropertyName("title");
   title_prop->setEnabled(false);
 
-  QtProperty* srid_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->addProperty(tr("SRID"));
+  QtProperty* srid_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("SRID"));
   layerInfo_prop->addSubProperty(srid_prop);
   srid_prop->setPropertyName("srid");
   srid_prop->setEnabled(false);
@@ -97,15 +98,19 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   vis_prop->setEnabled(false);
 
   //setting values
+  QString sridStr = QString::number(layer->getSRID());
+  sridStr += QObject::tr(" -  ");
+  sridStr += QString(te::srs::SpatialReferenceSystemManager::getInstance().getName(layer->getSRID()).c_str());
+
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(id_prop, m_layer->getId().c_str());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(title_prop, m_layer->getTitle().c_str());
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(srid_prop, m_layer->getSRID());
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(srid_prop, sridStr);
 
   // Get the data souce info
   te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(connection_prop, info->getConnInfoAsString().c_str());
 
-  // For while, use DataSetLayer to get the DataSource
+  // Get the DataSource
   te::da::DataSourcePtr dsource = te::da::GetDataSource(layer->getDataSourceId(), false);
   te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(numofitens_prop, dsource->getNumberOfItems(layer->getDataSetName()));
 

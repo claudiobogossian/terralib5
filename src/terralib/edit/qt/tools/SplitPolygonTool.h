@@ -96,6 +96,8 @@ namespace te
 
         //@}
 
+        void cancelEditionTool();
+
       private slots:
 
         void onExtentChanged();

@@ -281,3 +281,8 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
   }
 
 }
+
+void te::edit::CreatePolygonTool::cancelEditionTool()
+{
+  clear();
+}

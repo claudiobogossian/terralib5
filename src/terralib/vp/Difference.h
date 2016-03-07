@@ -18,15 +18,15 @@
  */
 
 /*!
- \file IntersectionOp.h
+ \file Difference.h
  
  \brief Difference operation.
  
  \ingroup vp
  */
 
-#ifndef __TERRALIB_VP_INTERNAL_INTERSECTION_H
-#define __TERRALIB_VP_INTERNAL_INTERSECTION_H
+#ifndef __TERRALIB_VP_INTERNAL_DIFFERENCE_H
+#define __TERRALIB_VP_INTERNAL_DIFFERENCE_H
 
 //Terralib
 
@@ -77,10 +77,10 @@ namespace te
 
       std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
 
-      te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
+      te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams, bool withPk = true);
 
-      te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
-      
+      te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom);
+
       // it defines the type of the result considering the input geometries being aggregated
       //te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
 
@@ -90,4 +90,4 @@ namespace te
     };
   }
 }
-#endif // __TERRALIB_VP_INTERNAL_INTERSECTION_H
+#endif // __TERRALIB_VP_INTERNAL_DIFFERENCE_H

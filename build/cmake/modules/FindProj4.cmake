@@ -53,8 +53,7 @@ elseif(WIN32)
                PATH_SUFFIXES lib)
 
   find_library(PROJ4_LIBRARY_DEBUG
-               NAMES proj_i_d proj_id proj_d proj_i
-               PATH_SUFFIXES lib)
+               NAMES proj_id proj_i_d proj_d)
 
   if(PROJ4_LIBRARY_RELEASE AND PROJ4_LIBRARY_DEBUG)
     set(PROJ4_LIBRARY optimized ${PROJ4_LIBRARY_RELEASE} debug ${PROJ4_LIBRARY_DEBUG})

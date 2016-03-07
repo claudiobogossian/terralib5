@@ -333,7 +333,7 @@ bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
 
 /*Check if the input and output dataSource are the same, if so, 
   persists the result of select query into database with insert command.*/
-  te::da::DataSource* outputDataSource = mainParams->getOutputDataSource();
+  te::da::DataSourcePtr outputDataSource = mainParams->getOutputDataSource();
 
   te::da::DataSourceInfoPtr inDataSourceInfoPtr = te::da::DataSourceInfoManager::getInstance().get(inputParams[0].m_inputDataSource->getId());
   te::da::DataSourceInfoPtr outDataSourceInfoPtr = te::da::DataSourceInfoManager::getInstance().get(outputDataSource->getId());

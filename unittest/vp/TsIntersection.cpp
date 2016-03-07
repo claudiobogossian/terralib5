@@ -163,7 +163,7 @@ void TsIntersection::tcIntersectionQuery1()
   specificParams.insert(std::pair<std::string, te::dt::AbstractData*>("copyInputAttributes", new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(copy)));
 
   m_params->setInputParams(m_inputParams);
-  m_params->setOutputDataSource(m_inputDataSource.get());
+  m_params->setOutputDataSource(m_inputDataSource);
   m_params->setOutputDataSetName(outputDataSetName);
 
   m_params->setSpecificParams(specificParams);
@@ -294,7 +294,7 @@ void TsIntersection::tcIntersectionQuery2()
   specificParams.insert(std::pair<std::string, te::dt::AbstractData*>("copyInputAttributes", new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(copy)));
 
   m_params->setInputParams(m_inputParams);
-  m_params->setOutputDataSource(m_outputDataSource.get());
+  m_params->setOutputDataSource(m_outputDataSource);
   m_params->setOutputDataSetName(outputDataSetName);
 
   m_params->setSpecificParams(specificParams);

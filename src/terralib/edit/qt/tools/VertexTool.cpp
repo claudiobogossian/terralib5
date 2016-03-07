@@ -202,7 +202,7 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
         setStage(VERTEX_SEARCH);
       }
 
-      storeUndoCommand();
+      //storeUndoCommand();
 
       return true;
     }
@@ -213,7 +213,7 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
 
       setStage(VERTEX_SEARCH);
 
-      storeUndoCommand();
+      //storeUndoCommand();
     }
 
     default:
@@ -453,4 +453,9 @@ void te::edit::VertexTool::storeUndoCommand()
     QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
     UndoStackManager::getInstance().addUndoStack(command);
 
+}
+
+void te::edit::VertexTool::cancelEditionTool()
+{
+  reset();
 }

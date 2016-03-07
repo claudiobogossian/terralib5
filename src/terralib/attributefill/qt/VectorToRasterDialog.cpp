@@ -93,14 +93,12 @@ te::attributefill::VectorToRasterDialog::VectorToRasterDialog(QWidget* parent, Q
 
   m_ui->m_colsLineEdit->setValidator( new QIntValidator(this) );
   m_ui->m_rowsLineEdit->setValidator( new QIntValidator(this) );
-  m_ui->m_resXLineEdit->setValidator( new QDoubleValidator(0, 100, 4, this) );
-  m_ui->m_resYLineEdit->setValidator( new QDoubleValidator(0, 100, 4, this) );
+  m_ui->m_resXLineEdit->setValidator(new QDoubleValidator(0, 99999999, 8, this));
+  m_ui->m_resYLineEdit->setValidator(new QDoubleValidator(0, 99999999, 8, this));
   m_ui->m_dummyLineEdit->setValidator( new QIntValidator(this) );
 
   connect(m_ui->m_resXLineEdit, SIGNAL(editingFinished()), this, SLOT(onResXLineEditEditingFinished()));
   connect(m_ui->m_resYLineEdit, SIGNAL(editingFinished()), this, SLOT(onResYLineEditEditingFinished()));
-  connect(m_ui->m_colsLineEdit, SIGNAL(editingFinished()), this, SLOT(onColsLineEditEditingFinished()));
-  connect(m_ui->m_rowsLineEdit, SIGNAL(editingFinished()), this, SLOT(onRowsLineEditEditingFinished()));
 
   connect(m_ui->m_inVectorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onVectorComboBoxChanged(int)));
 
@@ -196,70 +194,34 @@ void te::attributefill::VectorToRasterDialog::onVectorComboBoxChanged(int index)
 
 void te::attributefill::VectorToRasterDialog::onResXLineEditEditingFinished()
 {
-  double resX = m_ui->m_resXLineEdit->text().toDouble();
-
   te::gm::Envelope env = m_selectedLayer->getExtent();
 
   if(!env.isValid())
   {
-    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
+    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid bounding box."));
     return;
   }
 
-  int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
+  double resX = m_ui->m_resXLineEdit->text().toDouble();
 
+  int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
   m_ui->m_colsLineEdit->setText(QString::number(maxCols));
 }
 
 void te::attributefill::VectorToRasterDialog::onResYLineEditEditingFinished()
 {
+  te::gm::Envelope env = m_selectedLayer->getExtent();
+
+  if(!env.isValid())
+  {
+    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid bounding box."));
+    return;
+  }
+
   double resY = m_ui->m_resYLineEdit->text().toDouble();
 
-  te::gm::Envelope env = m_selectedLayer->getExtent();
-
-  if(!env.isValid())
-  {
-    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
-    return;
-  }
-
   int maxRows = (int)ceil((env.m_ury - env.m_lly)/resY);
-
   m_ui->m_rowsLineEdit->setText(QString::number(maxRows));
-}
-
-void te::attributefill::VectorToRasterDialog::onColsLineEditEditingFinished()
-{
-  int cols = m_ui->m_colsLineEdit->text().toInt();
-
-  te::gm::Envelope env = m_selectedLayer->getExtent();
-
-  if(!env.isValid())
-  {
-    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
-    return;
-  }
-
-  double resX = (env.m_urx - env.m_llx)/cols;
-
-  m_ui->m_resXLineEdit->setText(QString::number(resX));
-}
-
-void te::attributefill::VectorToRasterDialog::onRowsLineEditEditingFinished()
-{
-  int rows = m_ui->m_rowsLineEdit->text().toInt();
-
-  te::gm::Envelope env = m_selectedLayer->getExtent();
-
-  if(!env.isValid())
-  {
-    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
-    return;
-  }
-
-  double resY = (env.m_ury - env.m_lly)/rows;
-
-  m_ui->m_resYLineEdit->setText(QString::number(resY));
 }
 
 void te::attributefill::VectorToRasterDialog::onTargetFileToolButtonPressed()

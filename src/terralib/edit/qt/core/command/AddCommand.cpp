@@ -72,7 +72,8 @@ void  te::edit::AddCommand::undo()
 
   m_previousFeature = m_addItems.size() - 2;
 
-  if (m_previousFeature < 0) m_previousFeature = 0;
+  if (m_previousFeature < 0) 
+    m_previousFeature = 0;
 
   if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_addItems[m_previousFeature]->getId()) == true)
   {

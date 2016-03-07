@@ -30,7 +30,7 @@
 
 // Terralib
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceInfo.h"
 #include "Config.h"
 #include "InputParams.h"
 
@@ -61,7 +61,7 @@ namespace te
       \note The AlgorithmParams will take the ownership of DataSource.
       */
       AlgorithmParams(const std::vector<te::vp::InputParams>& inputParams,
-                      te::da::DataSource* outputDataSource,
+                      te::da::DataSourcePtr outputDataSource,
                       const std::string& outputDataSetName,
                       const std::map<std::string, te::dt::AbstractData*>& specificParams);
       
@@ -74,9 +74,9 @@ namespace te
       void setInputParams(const std::vector<te::vp::InputParams>& setInputParams);
 
 
-      te::da::DataSource* getOutputDataSource();
+      te::da::DataSourcePtr getOutputDataSource();
 
-      void setOutputDataSource(te::da::DataSource* outputDataSource);
+      void setOutputDataSource(te::da::DataSourcePtr outputDataSource);
 
 
       const std::string& getOutputDataSetName();
@@ -91,7 +91,7 @@ namespace te
     protected:
 
       std::vector<te::vp::InputParams> m_inputParams;
-      te::da::DataSource* m_outputDataSource;
+      te::da::DataSourcePtr m_outputDataSource;
       std::string m_outputDataSetName;
       std::map<std::string, te::dt::AbstractData*> m_specificParams;
     };

@@ -92,7 +92,7 @@ namespace te
           \param srid   The SRS to be used to draw the layer objects.
           \param scale  The current scale to draw the layer.
          */
-        virtual void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale) = 0;
+        virtual void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel) = 0;
 
         //@}
     

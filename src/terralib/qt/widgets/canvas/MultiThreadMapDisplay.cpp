@@ -26,18 +26,40 @@
 // TerraLib
 #include "../../../common/STLUtils.h"
 #include "../../../maptools/Utils.h"
-#include "DrawLayerThread.h"
+#include "../../../maptools/AbstractLayer.h"
+#include "../../../se/Style.h"
 #include "MultiThreadMapDisplay.h"
+#include "Canvas.h"
+#include "DrawThread.h"
+#include "ThreadManager.h"
 
 // Qt
 #include <QApplication>
-#include <QCursor>
+#include <QImage>
 #include <QPainter>
+
+void RemoveImage(const std::string lId, std::map<std::string, QImage*>& imgs)
+{
+  std::map<std::string, QImage*>::iterator it = imgs.find(lId);
+
+  if(it != imgs.end())
+  {
+    delete it->second;
+    imgs.erase(lId);
+  }
+}
+
+void RemoveImage(te::map::AbstractLayer* layer, std::map<std::string, QImage*>& imgs)
+{
+  std::string lId = layer->getId();
+  RemoveImage(lId, imgs);
+}
 
 te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size, const bool& showFeedback, QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::MapDisplay(size, parent, f),
     m_showFeedback(showFeedback),
-    m_synchronous(false)
+    m_synchronous(false),
+    m_tmger(0)
 {
   setAttribute(Qt::WA_OpaquePaintEvent, true);
 }
@@ -45,14 +67,16 @@ te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size,
 te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(QWidget* parent, const bool& showFeedback, Qt::WindowFlags f)
 : te::qt::widgets::MapDisplay(parent, f),
 m_showFeedback(showFeedback),
-m_synchronous(false)
+m_synchronous(false),
+m_tmger(0)
 {
   setAttribute(Qt::WA_OpaquePaintEvent, true);
 }
 
 te::qt::widgets::MultiThreadMapDisplay::~MultiThreadMapDisplay()
 {
-  te::common::FreeContents(m_threads);
+  te::common::FreeContents(m_images);
+  m_images.clear();
 }
 
 void te::qt::widgets::MultiThreadMapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
@@ -60,70 +84,108 @@ void te::qt::widgets::MultiThreadMapDisplay::setExtent(te::gm::Envelope& e, bool
   if(m_isDrawing)
     return;
 
-  te::map::MapDisplay::setExtent(e);
+  m_extent = e;
 
   updateTransform();
 
   e = m_extent;
 
   if(doRefresh)
-    refresh();
+    refresh(doRefresh);
 
   emit extentChanged();
 }
 
-void te::qt::widgets::MultiThreadMapDisplay::refresh()
+void te::qt::widgets::MultiThreadMapDisplay::refresh(bool redraw)
 {
+  m_cancel = false;
+
   if(m_isDrawing)
     return;
 
-  // Cleaning...
-  m_displayPixmap->fill(m_backgroundColor);
   m_draftPixmap->fill(Qt::transparent);
 
   // Considering only the visible layers
   m_visibleLayers.clear();
+
   te::map::GetVisibleLayers(m_layerList, m_visibleLayers);
 
   if(m_visibleLayers.empty())
   {
+    te::common::FreeContents(m_images);
+    m_images.clear();
+
+    m_displayPixmap->fill(m_backgroundColor);
+
     repaint();
+
+    m_isDrawing = false;
+
     return;
   }
 
-  int n = m_visibleLayers.size() - m_threads.size();
-  for(int i = 0; i < n; ++i)
-  {
-    DrawLayerThread* thread = new DrawLayerThread(this);
-
-    if(m_showFeedback) // Do you want show feedbacks?
-      connect(thread, SIGNAL(feedback(QImage)), this, SLOT(showFeedback(QImage)));
-
-    connect(thread, SIGNAL(drawLayerFinished(int, QImage)), this, SLOT(onDrawLayerFinished(int, QImage)));
-
-    m_threads.push_back(thread);
-  }
-
-  QApplication::setOverrideCursor(Qt::WaitCursor);
-
   m_isDrawing = true;
 
-  double curScale = getScale();
-
-  std::size_t i = 0;
-  std::list<te::map::AbstractLayerPtr>::reverse_iterator it;
-  for(it = m_visibleLayers.rbegin(); it != m_visibleLayers.rend(); ++it) // for each layer
+  if(redraw)
   {
-    m_threads[i]->draw(it->get(), m_extent, m_srid, curScale, size(), i);
-    i++;
+    te::common::FreeContents(m_images);
+    m_images.clear();
   }
 
-  if(m_synchronous)
+  std::map<std::string, QImage*> imgs;
+
+  double scale = getScale();
+
+  for(std::list<te::map::AbstractLayerPtr>::iterator it = m_visibleLayers.begin(); it != m_visibleLayers.end(); ++it)
   {
-    QEventLoop wait;
-    connect(this, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), &wait, SLOT(quit()));
-    wait.exec();
+    std::string lId = (*it)->getId();
+
+    std::map<std::string, QImage*>::iterator imgIt = m_images.find(lId);
+
+    if(imgIt != m_images.end())
+    {
+      imgs[lId] = imgIt->second;
+      m_images.erase(lId);
+    }
+    else
+    {
+      QImage* img = new QImage(size(), QImage::Format_ARGB32_Premultiplied);
+      imgs[lId] = img;
+
+      DrawThread* thread = new DrawThread(imgs[lId], (*it).get(), &m_extent, m_backgroundColor, m_srid, scale, m_hAlign, m_vAlign);
+      m_threads.push_back(thread);
+    }
   }
+
+  if(!m_images.empty())
+  {
+    te::common::FreeContents(m_images);
+    m_images.clear();
+  }
+
+  m_images = imgs;
+
+  if(m_tmger != 0)
+    delete m_tmger;
+    
+  m_tmger = 0;
+
+  if(!m_threads.empty())
+  {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    int interval = (m_showFeedback) ? 1000 : -1;
+
+    m_tmger = new ThreadManager(m_threads, interval);
+
+    connect(m_tmger, SIGNAL(showFeedback()), SLOT(showFeedback()));
+
+    connect(m_tmger, SIGNAL(finished()), SLOT(onRenderingFinished()));
+
+    m_tmger->run();
+  }
+  else
+    onRenderingFinished();
 }
 
 QPointF te::qt::widgets::MultiThreadMapDisplay::transform(const QPointF& p)
@@ -139,70 +201,25 @@ void te::qt::widgets::MultiThreadMapDisplay::setSynchronous(bool on)
   m_synchronous = on;
 }
 
-void te::qt::widgets::MultiThreadMapDisplay::updateLayer(te::map::AbstractLayerPtr layer)
+void te::qt::widgets::MultiThreadMapDisplay::updateLayer(te::map::AbstractLayerPtr layer, bool redraw)
 {
-  QApplication::setOverrideCursor(Qt::WaitCursor);
+  RemoveImage(layer.get(), m_images);
 
-  m_isDrawing = true;
-
-  // Checking the visibility...
-  if (layer->getVisibility() == te::map::NOT_VISIBLE)
-    return;
-
-  m_displayPixmap->fill(m_backgroundColor);
-  m_draftPixmap->fill(Qt::transparent);
-
-  double curScale = getScale();
-
-  std::size_t i = 0;
-  std::list<te::map::AbstractLayerPtr>::reverse_iterator it;
-  for (it = m_visibleLayers.rbegin(); it != m_visibleLayers.rend(); ++it) // for each layer
-  {
-    if (it->get() == layer.get())
-    {
-      m_threads[i]->draw(it->get(), m_extent, m_srid, curScale, size(), i);
-      break;
-    }
-
-    i++;
-  }
-
-  QPainter painter(m_displayPixmap);
-
-  i = 0;
-
-  if (m_threads.size() >= m_visibleLayers.size())
-  {
-    for (it = m_visibleLayers.rbegin(); it != m_visibleLayers.rend(); ++it) // for each layer
-    {
-      painter.setCompositionMode((QPainter::CompositionMode)it->get()->getCompositionMode());
-
-      painter.drawImage(0, 0, m_threads[i]->getImage());
-
-      ++i;
-    }
-  }
-
-  painter.end();
-
-  repaint(); // or update()? Which is the best here?!
-
-  m_isDrawing = false;
-
-  QApplication::restoreOverrideCursor();
-
-  // Building the error messages
-  QMap<QString, QString> errors;
-  for (std::size_t i = 0; i < m_threads.size(); ++i)
-  {
-    DrawLayerThread* t = m_threads[i];
-    if (t->finishedWithSuccess())
-      continue;
-    errors.insert(t->getLayer()->getId().c_str(), t->getErrorMessage());
-  }
-
-  emit drawLayersFinished(errors);
+  if(redraw)
+    refresh();
 }
+
+void te::qt::widgets::MultiThreadMapDisplay::resizeEvent(QResizeEvent* e)
+{
+  if(!m_images.empty())
+  {
+    te::common::FreeContents(m_images);
+    m_images.clear();
+  }
+
+  MapDisplay::resizeEvent(e);
+}
+
 
 void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
 {
@@ -238,65 +255,71 @@ void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
   m_matrix.translate(-m_extent.m_llx, -m_extent.m_ury);
 }
 
-void te::qt::widgets::MultiThreadMapDisplay::showFeedback(const QImage& image)
+void te::qt::widgets::MultiThreadMapDisplay::showFeedback()
 {
+  m_displayPixmap->fill(m_backgroundColor);
+
   QPainter painter(m_displayPixmap);
-  painter.setOpacity(0.1); // To improve user visual experience!
-  painter.drawImage(0, 0, image);
-  //painter.drawPixmap(0, 0, QPixmap::fromImage(image));
+
+  for(std::list<te::map::AbstractLayerPtr>::reverse_iterator it = m_visibleLayers.rbegin(); it != m_visibleLayers.rend(); ++it)
+  {
+    te::map::AbstractLayer* l = (*it).get();
+
+    std::map<std::string, QImage*>::iterator img_it = m_images.find(l->getId());
+
+    if(img_it == m_images.end())
+      continue;
+
+    painter.setCompositionMode((QPainter::CompositionMode)l->getCompositionMode());
+
+    painter.drawImage(0, 0, *img_it->second);
+  }
+
   repaint(); // or update()? Which is the best here?!
 }
 
 void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& index, const QImage& image)
 {
-  m_images.insert(std::pair<int, QImage>(index, image));
-  if(m_images.size() != m_visibleLayers.size())
-  {
-    QPainter painter(m_displayPixmap);
-    painter.drawImage(0, 0, image);
-    //painter.drawPixmap(0, 0, QPixmap::fromImage(image));
-    painter.end();
+}
 
-    repaint();
-
-    return;
-  }
-
-  m_displayPixmap->fill(m_backgroundColor);
-
-  QPainter painter(m_displayPixmap);
-
-  std::list<te::map::AbstractLayerPtr>::reverse_iterator itLayer = m_visibleLayers.rbegin();
-  std::map<int, QImage>::iterator it;
-  for(it = m_images.begin(); it != m_images.end(); ++it)
-  {
-    painter.setCompositionMode((QPainter::CompositionMode)itLayer->get()->getCompositionMode());
-
-    painter.drawImage(0, 0, it->second);
-    //painter.drawPixmap(0, 0, QPixmap::fromImage(it->second));
-
-    ++itLayer;
-  }
-
-  painter.end();
-
-  m_images.clear();
-
-  repaint(); // or update()? Which is the best here?!
+void te::qt::widgets::MultiThreadMapDisplay::onRenderingFinished()
+{
+  showFeedback();
 
   m_isDrawing = false;
 
-  QApplication::restoreOverrideCursor();
-
-  // Building the error messages
   QMap<QString, QString> errors;
-  for(std::size_t i = 0; i < m_threads.size(); ++i)
+
+  for(std::vector<QRunnable*>::iterator it = m_threads.begin(); it != m_threads.end(); ++it)
   {
-    DrawLayerThread* t = m_threads[i];
-    if(t->finishedWithSuccess())
-      continue;
-    errors.insert(t->getLayer()->getId().c_str(), t->getErrorMessage());
+    DrawThread* th = (DrawThread*)*it;
+
+    if(!th->hasFinished())
+    {
+      QString lId = th->layerId();
+      QString errorm = th->errorMessage();
+
+      if(!errorm.isEmpty())
+        errors[lId] = errorm;
+
+      RemoveImage(lId.toStdString(), m_images);
+    }
   }
+
+  if(!m_threads.empty())
+  {
+    te::common::FreeContents(m_threads);
+    m_threads.clear();
+  }
+
+  QApplication::restoreOverrideCursor();
 
   emit drawLayersFinished(errors);
 }
+
+void te::qt::widgets::MultiThreadMapDisplay::onDrawCanceled()
+{
+  m_cancel = true;
+  m_tmger->stopProccess();
+}
+
