@@ -43,7 +43,7 @@ void te::edit::GeometriesUpdateTool::setInUse(const bool& status)
 {
   m_isInUse = status;
 }
-void te::edit::GeometriesUpdateTool::cancelEditionTool()
+void te::edit::GeometriesUpdateTool::resetVisualizationTool()
 {
   delete m_feature;
 }

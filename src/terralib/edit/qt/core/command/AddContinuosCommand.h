@@ -50,7 +50,7 @@ namespace te
     {
       public:
         // Pass all parameters that the command need to fulfill its task in the constructor
-        AddContinuosCommand(std::vector<Feature*> items, Feature* item, std::vector<te::gm::Coord2D>* coords,te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+        AddContinuosCommand(std::vector<Feature*>& items, std::vector<te::gm::Coord2D>& coords, int& idx, int& correntIndex, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
         /*!
         \brief Destructor
@@ -71,16 +71,18 @@ namespace te
 
         te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
-        std::vector<Feature*> m_addItems;
-        Feature* m_addItem;
-        std::vector<te::gm::Coord2D>* m_coords;
+        std::vector<Feature*>& m_addItems;
+        std::vector<te::gm::Coord2D>& m_coords;
 
         void draw(const int commandType);
 
-        std::size_t m_nextFeature;
-        std::size_t m_previousFeature;
+        int m_nextFeature;
+        int m_previousFeature;
         const int m_redoCommandType;
         const int m_undoCommandType;
+
+        int &m_aux;
+        int &m_correntIndex;
 
     };
   }

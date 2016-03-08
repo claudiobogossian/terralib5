@@ -125,6 +125,21 @@ namespace te
 
       te::gm::GeomType m_currentGeomType;
       bool m_styleChanged;
+
+      struct CellFeature
+      {
+        QColor fillSelectCellColor;
+        QColor contourSelectCellColor;
+        QColor fillCellColor;
+        QColor contourCellColor;
+        std::size_t contourSelectCellWidth;
+        std::size_t contourCellWidth;
+      };
+
+    public:
+
+      CellFeature m_structCell;
+
     };
 
   } // end namespace edit
