@@ -74,6 +74,8 @@ namespace te
                      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum);
       
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
+
+      std::vector<std::string> getWarnings();
       
     protected:
       
@@ -87,6 +89,8 @@ namespace te
 
       std::vector<te::dt::Property*> m_groupProps;
       std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > m_statSum;
+
+      std::vector<std::string> m_warnings;
       
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDset;

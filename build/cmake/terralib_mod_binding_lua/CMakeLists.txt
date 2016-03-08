@@ -57,7 +57,7 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_common
                                               terralib_mod_st
 											  terralib_mod_cellspace
 											  terralib_mod_maptools
-											  terralib_mod_qt_apf
+											  terralib_mod_attributefill_core
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
                                               ${Boost_THREAD_LIBRARY}
