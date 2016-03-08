@@ -18,36 +18,39 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs-dataaccess/DataAccessWCS.h
+  \file Config.h
 
-  \brief Data Access for WS OGC WCS
-*/
+  \brief Configuration flags for TerraLib Unittest DataAccess drivers .
+ */
 
-#ifndef __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
-#define __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
+#ifndef __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_CONFIG_H
+#define __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_CONFIG_H
 
 // TerraLib
-#include "../../../../common/Exception.h"
-#include "Config.h"
+#include "../Config.h"
 
-namespace te
-{
-  namespace ws
-  {
-    namespace ogc
-    {
-      namespace wcs
-      {
-        namespace da
-        {
-          TE_DECLARE_EXCEPTION_CLASS(TEOGCWCSDATAACCESSEXPORT, Exception, te::common::Exception)
+/*!
+  \def TE_TEST_GDAL, TE_TEST_OGR, TE_TEST_PGIS and other dataaccess drivers
 
-        } // end namespace da
-      } // end namespace wcs
-    } // end namespace ogc
-  } // end namespace ws
-} // end namespace te
+  \brief Flags for TerraLib Unittest Dataaccess drivers.
+         The set of flags below controls which data source driver Unittest will be executed.
+         If you want to disable the Unittest for a specific data source driver
+         just set the flag to 0 (this will turn of the test).
+ */
 
-#endif  // __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
+#if TE_USE_GDAL
+#define TE_TEST_GDAL 1
+#endif
+
+#if TE_USE_OGR
+#define TE_TEST_OGR 0
+#endif
+
+#if TE_USE_PGIS
+#define TE_TEST_PGIS 1
+#endif
+
+
+#endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_CONFIG_H
 
 

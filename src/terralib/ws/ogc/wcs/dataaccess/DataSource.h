@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/dataacess/DataSource.h
+  \file terralib/ws/ogc/wcs/dataaccess/DataSource.h
 
   \brief Data Source for WS OGC WCS
 
@@ -49,7 +49,7 @@ namespace te
     {
       namespace wcs
       {
-        namespace dataaccess
+        namespace da
         {
           /*!
           \class DataSource
@@ -110,7 +110,7 @@ namespace te
             static te::da::DataSourceCapabilities sm_capabilities;
           };
 
-        } // end namespace dataaccess
+        } // end namespace da
       } // end namespace wcs
     } // end namespace ogc
   } // end namespace ws

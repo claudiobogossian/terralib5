@@ -48,7 +48,7 @@ namespace te
     {
       namespace wcs
       {
-        namespace dataaccess
+        namespace da
         {
 
     /*!
@@ -258,7 +258,7 @@ namespace te
         WCS wcs_;
     };
 
-        } // end namespace dataaccess
+        } // end namespace da
       } // end namespace wcs
     } // end namespace ogc
   } // end namespace ws

@@ -18,17 +18,18 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs-dataaccess/DataAccessWCS.h
+  \file terralib/ws/ogc/wcs/dataaccess/DataSourceFactory.h
 
-  \brief Data Access for WS OGC WCS
+  \brief This is the factory for WCS data sources.
+
+    \author Vinicius Campanha
 */
 
-#ifndef __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
-#define __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
+#ifndef __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
+#define __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
 
 // TerraLib
-#include "../../../../common/Exception.h"
-#include "Config.h"
+#include "DataSource.h"
 
 namespace te
 {
@@ -40,14 +41,14 @@ namespace te
       {
         namespace da
         {
-          TE_DECLARE_EXCEPTION_CLASS(TEOGCWCSDATAACCESSEXPORT, Exception, te::common::Exception)
+          inline te::da::DataSource* Build()
+          {
+            return new DataSource;
+          }
+        }
+      }
+    }
+  }   // end namespace wcs
+}     // end namespace te
 
-        } // end namespace da
-      } // end namespace wcs
-    } // end namespace ogc
-  } // end namespace ws
-} // end namespace te
-
-#endif  // __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
-
-
+#endif  // __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H

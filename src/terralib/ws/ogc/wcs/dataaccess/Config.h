@@ -28,6 +28,15 @@
 #ifndef __TERRALIB_WS_OGC_WCS_DATAACCESS_CONFIG_H
 #define __TERRALIB_WS_OGC_WCS_DATAACCESS_CONFIG_H
 
+#define TE_OGC_WCS_MODULE_NAME "te.ogc.wcs"
+
+/*!
+  \def TE_OGC_WCS_DRIVER_IDENTIFIER
+
+  \brief The OGC WCS driver identifier string.
+*/
+#define TE_OGC_WCS_DRIVER_IDENTIFIER "OGC_WCS"
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */
@@ -63,12 +72,5 @@
 #endif
 
 //@}
-
-/*!
-  \def TE_OGC_WCS_DRIVER_IDENTIFIER
-
-  \brief The WCS driver identifier string.
-*/
-#define TE_OGC_WCS_DRIVER_IDENTIFIER "OGC_WCS"
 
 #endif // __TERRALIB_WS_OGC_WCS_DATAACCESS_CONFIG_H

@@ -34,10 +34,26 @@ source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_library(terralib_mod_ws_ogc_wcs_dataacess ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+add_library(terralib_mod_ws_ogc_wcs_dataaccess SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
+target_link_libraries(terralib_mod_ws_ogc_wcs_dataaccess terralib_mod_ws_ogc_wcs_client
+                                                         terralib_mod_common
+                                                         terralib_mod_dataaccess
+                                                         terralib_mod_datatype
+                                                         terralib_mod_plugin)
 
-target_link_libraries(terralib_mod_ws_ogc_wcs_dataacess terralib_mod_ws_ogc_wcs_client
-                                                          terralib_mod_gdal
-                                                          terralib_mod_dataaccess
-                                                          terralib_mod_datatype)
+set_target_properties(terralib_mod_ws_ogc_wcs_dataaccess
+                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+
+install(TARGETS terralib_mod_ws_ogc_wcs_dataaccess
+        EXPORT terralib-targets
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
+
+install(FILES ${TERRALIB_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ogc/wcs/da COMPONENT devel)
+
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.ogc.wcs.teplg
+        DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
