@@ -1910,8 +1910,6 @@ goto end_lua_deps
   call :append_log_begin lua
   
 :begin_lua
-
-pause
   
   cd %LUAC_DIR% >nul 2>nul
 
