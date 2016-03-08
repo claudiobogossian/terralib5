@@ -103,6 +103,13 @@ namespace te
         te::map::AbstractLayerPtr getLayer();
 
         /*!
+        \brief Get warning messages.
+
+        \return a vector of warnings.
+        */
+        std::vector<std::string> getWarnings();
+
+        /*!
           \brief Set Statistical Summary Type for combobox 'm_selectAllComboBox' and 'm_rejectAllComboBox' based on a enum.
         */
         void setStatisticalSummary();
@@ -151,6 +158,7 @@ namespace te
         StaticalSummaryMap m_StatisticalSummaryMap;                   //!< Maping of Statistical Summary enum
         te::map::AbstractLayerPtr m_layer;                            //!< Generated Layer.
         bool m_toFile;
+        std::vector<std::string> m_warnings;
     };
   }   // end namespace vp
 }     // end namespace te
