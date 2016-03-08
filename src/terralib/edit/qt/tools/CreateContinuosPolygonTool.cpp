@@ -64,6 +64,8 @@ te::edit::CreateContinuosPolygonTool::~CreateContinuosPolygonTool()
   draft->fill(Qt::transparent);
 
   m_addWatches.clear();
+  UndoStackManager::getInstance().getUndoStack()->clear();
+
 }
 
 bool te::edit::CreateContinuosPolygonTool::mousePressEvent(QMouseEvent* e)
@@ -262,7 +264,7 @@ void te::edit::CreateContinuosPolygonTool::storeUndoCommand()
 
   m_addWatches.push_back(m_feature->clone());
 
-  if (m_currentIndex < (m_addWatches.size() - 2))
+  if (m_currentIndex < (int)(m_addWatches.size() - 2))
   {
     for (std::size_t i = (m_currentIndex + 1); i < m_addWatches.size(); i++)
     {
@@ -270,7 +272,7 @@ void te::edit::CreateContinuosPolygonTool::storeUndoCommand()
     }
   }
 
-  m_currentIndex = m_addWatches.size() -1;
+  m_currentIndex = (int)(m_addWatches.size() - 1);
 
   QUndoCommand* command = new AddContinuosCommand(m_addWatches, m_coords, m_currentIndex, m_display, m_layer);
   UndoStackManager::getInstance().addUndoStack(command);
