@@ -51,7 +51,6 @@ te::edit::CreateContinuosPolygonTool::CreateContinuosPolygonTool(te::qt::widgets
     m_continuousMode(false),
     m_isFinished(false),
     m_addWatches(0),
-    m_aux(0),
     m_currentIndex(0)
 {
   setCursor(cursor);
@@ -65,6 +64,8 @@ te::edit::CreateContinuosPolygonTool::~CreateContinuosPolygonTool()
   draft->fill(Qt::transparent);
 
   m_addWatches.clear();
+  UndoStackManager::getInstance().getUndoStack()->clear();
+
 }
 
 bool te::edit::CreateContinuosPolygonTool::mousePressEvent(QMouseEvent* e)
@@ -204,9 +205,8 @@ void te::edit::CreateContinuosPolygonTool::drawLine()
 
 void te::edit::CreateContinuosPolygonTool::clear()
 {
-  m_currentIndex = 0;
-  m_aux = 0;
   m_feature = 0;
+  m_currentIndex = 0;
   m_coords.clear();
   m_addWatches.clear();
 }
@@ -262,21 +262,19 @@ void te::edit::CreateContinuosPolygonTool::storeUndoCommand()
   m_feature->setOperation(te::edit::GEOMETRY_CREATE);
   m_feature->setCoords(m_coords);
 
-  if (m_addWatches.size() && m_aux > 0)
+  m_addWatches.push_back(m_feature->clone());
+
+  if (m_currentIndex < (int)(m_addWatches.size() - 2))
   {
-    if (m_coords.size() <= m_addWatches.at(m_currentIndex + 1)->getCoords().size())
+    for (std::size_t i = (m_currentIndex + 1); i < m_addWatches.size(); i++)
     {
-      for (std::size_t i = (m_currentIndex + 1); i < m_addWatches.size(); i++)
-      {
-        m_aux--;
-        m_addWatches.pop_back();
-      }
+      m_addWatches.pop_back();
     }
   }
 
-  m_addWatches.push_back(m_feature->clone());
+  m_currentIndex = (int)(m_addWatches.size() - 1);
 
-  QUndoCommand* command = new AddContinuosCommand(m_addWatches, m_coords, m_aux, m_currentIndex, m_display, m_layer);
+  QUndoCommand* command = new AddContinuosCommand(m_addWatches, m_coords, m_currentIndex, m_display, m_layer);
   UndoStackManager::getInstance().addUndoStack(command);
 }
 
