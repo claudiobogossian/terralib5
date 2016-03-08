@@ -127,8 +127,6 @@ namespace te
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
         std::vector<Feature*> m_addWatches;
-
-        int m_aux;
         int m_currentIndex;
 
     };
