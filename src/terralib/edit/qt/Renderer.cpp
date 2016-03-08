@@ -256,4 +256,13 @@ void te::edit::Renderer::setupDefaultStyle()
   m_pointSize = 8;
 
   m_styleChanged = false;
+
+  m_structCell.fillSelectCellColor = QColor(0, 0, 255, 150);
+  m_structCell.contourSelectCellColor = QColor(255, 0, 0);
+  m_structCell.contourSelectCellWidth = 3;
+
+  m_structCell.fillCellColor = QColor(255, 255, 255, 0);
+  m_structCell.contourCellColor = QColor(0, 255, 0);
+  m_structCell.contourCellWidth = 2;
+
 }

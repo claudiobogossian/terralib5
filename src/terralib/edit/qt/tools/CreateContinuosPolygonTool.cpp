@@ -123,7 +123,7 @@ bool te::edit::CreateContinuosPolygonTool::mouseMoveEvent(QMouseEvent* e)
   return false;
 
 }
-//fazer por opcap , mouserlease ou double clique
+
 bool te::edit::CreateContinuosPolygonTool::mouseReleaseEvent(QMouseEvent* e)
 {
   if (e->button() != Qt::RightButton)

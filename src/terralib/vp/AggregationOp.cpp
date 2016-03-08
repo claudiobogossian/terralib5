@@ -67,6 +67,11 @@ void te::vp::AggregationOp::setOutput(te::da::DataSourcePtr outDsrc, std::string
   m_outDset = dsname;
 }
 
+std::vector<std::string> te::vp::AggregationOp::getWarnings()
+{
+  return m_warnings;
+}
+
 te::gm::GeomType te::vp::AggregationOp::getGeomResultType(te::gm::GeomType geom)
 {
   if ((geom == te::gm::PolygonType) ||
