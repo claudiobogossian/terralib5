@@ -86,6 +86,8 @@ namespace te
 
       void drawVertexes(te::gm::LineString* line);
 
+      void drawCellStyle(te::gm::Geometry* geom, std::size_t type = 1);
+
       void end();
 
       void setPolygonStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth);
@@ -123,8 +125,17 @@ namespace te
       std::size_t m_pointContourWidth;
       std::size_t m_pointSize;
 
+      QColor m_selectCellFillColor;
+      QColor m_selectCellContourColor;
+      std::size_t m_selectCellContourWidth;
+
+      QColor m_cellFillColor;
+      QColor m_cellContourColor;
+      std::size_t m_cellContourWidth;
+
       te::gm::GeomType m_currentGeomType;
       bool m_styleChanged;
+
     };
 
   } // end namespace edit

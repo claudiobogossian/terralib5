@@ -59,6 +59,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QString>
 #include <QTreeWidget>
 
 // Boost
@@ -191,9 +192,17 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
 
   for(int i = 0; i != m_ui->m_propertieslistWidget->count(); ++i)
   {
-    if(m_ui->m_propertieslistWidget->isItemSelected(m_ui->m_propertieslistWidget->item(i)))
+    QListWidgetItem* item = m_ui->m_propertieslistWidget->item(i);
+
+    if(m_ui->m_propertieslistWidget->isItemSelected(item))
     {
-      selProperties.push_back(m_properties[i]);
+      std::string name = item->text().toStdString();
+
+      for(std::size_t j = 0; j < m_properties.size(); ++j)
+      {
+        if(name == m_properties[j]->getName())
+          selProperties.push_back(m_properties[j]);
+      }
     }
   }
 
@@ -203,6 +212,11 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
 te::map::AbstractLayerPtr te::vp::AggregationDialog::getLayer()
 {
   return m_layer;
+}
+
+std::vector<std::string> te::vp::AggregationDialog::getWarnings()
+{
+  return m_warnings;
 }
 
 void te::vp::AggregationDialog::setStatisticalSummary()
@@ -723,6 +737,8 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       }
       dsOGR->close();
 
+      m_warnings = aggregOp->getWarnings();
+
       delete aggregOp;
       
       // let's include the new datasource in the managers
@@ -786,12 +802,17 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       else
         res = aggregOp->run();
 
+      m_warnings = aggregOp->getWarnings();
+
       delete aggregOp;
 
       if (!res)
       {
+        te::common::ProgressManager::getInstance().removeViewer(id);
+
         this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Aggregation", "Error: could not generate the aggregation.");
+        
         reject();
       }
     }

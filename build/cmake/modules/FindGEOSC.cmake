@@ -54,7 +54,7 @@ elseif(WIN32)
                PATH_SUFFIXES lib)
 
   find_library(GEOSC_LIBRARY_DEBUG
-               NAMES geos_c_i_d geosc_i_d geosc_id geos_cd geosc_d geoscd
+               NAMES geos_c_id geos_c_i_d geosc_i_d geosc_id geos_cd geosc_d geoscd
                PATH_SUFFIXES lib)
 
   if(GEOSC_LIBRARY_RELEASE AND GEOSC_LIBRARY_DEBUG)

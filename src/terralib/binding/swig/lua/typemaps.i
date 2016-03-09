@@ -81,6 +81,26 @@ namespace std
   
   return 1;
 }
+
+%typemap(out) std::map< std::string, std::string >&
+{
+  lua_newtable(L);
+  
+  std::map<std::string, std::string>::const_iterator it;
+    
+  for(it = $result->begin(); it != $result->end(); ++it)
+  {
+    const char* key = it->first.c_str();
+    const char* value = it->second.c_str();
+    
+    lua_pushstring(L, key);
+    lua_pushstring(L, value);
+    lua_settable(L, -3);
+  }
+  
+  return 1;
+}
+
 /*
  * Defining a typemap for std::vector< std::string >
  */

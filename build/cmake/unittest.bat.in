@@ -1,0 +1,93 @@
+@echo OFF
+
+set Qt_DIR=${Qt5_DIR}
+
+IF EXIST %Qt_DIR% set PATH=%Qt_DIR%\..\..\..\bin
+
+set PATH=${DEPS_DIR};%PATH%
+
+set TERRALIB_HOME=${CMAKE_SOURCE_DIR}\..\..
+
+cd @BIN_DIR@
+
+  echo | set /p="common... "<nul
+( terralib_unittest_common.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="dataaccess... "<nul
+( terralib_unittest_dataaccess.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="datatype... "<nul
+( terralib_unittest_datatype.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="fixgeometries... "<nul
+( terralib_unittest_fixgeometries.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="geometry... "<nul
+( terralib_unittest_geometry.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="memory... "<nul
+( terralib_unittest_memory.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="raster... "<nul
+( terralib_unittest_raster.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_arithmetic_operations... "<nul
+( terralib_unittest_rp_arithmetic_operations.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_blender... "<nul
+( terralib_unittest_rp_blender.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_classifier... "<nul
+( terralib_unittest_rp_classifier.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_contrast... "<nul
+( terralib_unittest_rp_contrast.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_filter... "<nul
+( terralib_unittest_rp_filter.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_functions... "<nul
+( terralib_unittest_rp_functions.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_fusion... "<nul
+( terralib_unittest_rp_fusion.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_matrix... "<nul
+( terralib_unittest_rp_matrix.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_mixturemodel... "<nul
+( terralib_unittest_rp_mixturemodel.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_mosaic... "<nul
+( terralib_unittest_rp_mosaic.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_radar_functions... "<nul
+( terralib_unittest_rp_radar_functions.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_register... "<nul
+( terralib_unittest_rp_register.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_segmenter... "<nul
+( terralib_unittest_rp_segmenter.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_skeleton... "<nul
+( terralib_unittest_rp_skeleton.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_texture... "<nul
+( terralib_unittest_rp_texture.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="rp_tiepointslocator... "<nul
+( terralib_unittest_rp_tiepointslocator.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="sam... "<nul
+( terralib_unittest_sam.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="srs... "<nul
+( terralib_unittest_srs.exe >nul 2>nul ) && echo success! || echo fail.
+
+  echo | set /p="vp... "<nul
+( terralib_unittest_vp.exe >nul 2>nul ) && echo success! || echo fail.
+
+echo.
+
+pause

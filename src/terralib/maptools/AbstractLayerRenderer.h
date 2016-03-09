@@ -84,7 +84,7 @@ namespace te
         /*! \brief Destructor. */
         ~AbstractLayerRenderer();
 
-        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
+        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
 
       private:
 
@@ -110,7 +110,7 @@ namespace te
                                  Canvas* canvas,
                                  const te::gm::Envelope& bbox,
                                  int srid,
-                                 const double& scale);
+                                 const double& scale, bool* cancel);
 
         /*!
           \brief It draws the grouping of the abstract layer in the given canvas using the SRS informed.
@@ -130,7 +130,7 @@ namespace te
                                const std::string& geomPropertyName,
                                Canvas* canvas,
                                const te::gm::Envelope& bbox,
-                               int srid);
+                               int srid, bool* cancel);
 
         /*!
           \brief It draws the grouping of the abstract layer in the given canvas using the SRS informed.
@@ -154,7 +154,7 @@ namespace te
                                   Canvas* canvas,
                                   const te::gm::Envelope& bbox,
                                   int srid,
-                                  const double& scale);
+                                  const double& scale, bool* cancel);
 
         /*!
           \brief It draws the data set geometries in the given canvas using the informed SRS.
@@ -168,7 +168,7 @@ namespace te
           \param task        An optional task that can be used cancel the draw process.
         */
         void drawDatSetGeometries(te::da::DataSet* dataset, const std::size_t& gpos,
-                                  Canvas* canvas, int fromSRID, int toSRID, Chart* chart, te::common::TaskProgress* task = 0);
+                                  Canvas* canvas, int fromSRID, int toSRID, Chart* chart, bool* cancel, te::common::TaskProgress* task = 0);
 
         void buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom);
 

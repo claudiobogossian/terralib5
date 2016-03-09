@@ -243,7 +243,7 @@ void te::qt::af::MapDisplay::fit(const std::list<te::map::AbstractLayerPtr>& lay
 
   m_display->setLayerList(layers);
 
-  m_display->refresh();
+  m_display->refresh(true);
 
   if(m_zoomInDisplay)
     m_zoomInDisplay->setList(visibleLayers, m_display->getSRID());
@@ -328,9 +328,10 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     }
     break;
 
-    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
+    case te::qt::af::evt::LAYER_CHANGED:
     {
-      // TODO
+      te::qt::af::evt::LayerChanged* lEvent = static_cast<te::qt::af::evt::LayerChanged*>(e);
+      m_display->updateLayer(lEvent->m_layer, false);
     }
     break;
 

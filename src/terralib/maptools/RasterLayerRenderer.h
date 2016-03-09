@@ -53,7 +53,7 @@ namespace te
         /*! \brief Destructor. */
         ~RasterLayerRenderer();
 
-        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale);
+        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
     };
 
   } // end namespace map

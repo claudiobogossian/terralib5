@@ -136,9 +136,6 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   storeUndoCommand();
 
-  if (m_feature)
-    emit closedPolygon();
-
   return true;
 }
 
@@ -280,4 +277,9 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
     UndoStackManager::getInstance().addUndoStack(command);
   }
 
+}
+
+void te::edit::CreatePolygonTool::resetVisualizationTool()
+{
+  clear();
 }

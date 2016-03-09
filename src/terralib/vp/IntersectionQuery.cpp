@@ -51,7 +51,7 @@
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/ST_Intersection.h"
 #include "../dataaccess/query/ST_Intersects.h"
-#include "../dataaccess/query/ST_SetSRID.h"
+#include "../dataaccess/query/ST_Transform.h"
 #include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 
@@ -121,8 +121,8 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
   // Create Expression ST_setSRID for the First Layer
   if (firstGeomSource->getSRID() != firstGeom->getSRID())
   {
-    te::da::LiteralInt32* firstSRID = new te::da::LiteralInt32(firstGeom->getSRID());
-    e_firstParam = new te::da::ST_SetSRID(new te::da::PropertyName(m_firstConverter->getResult()->getName() + "." + firstGeom->getName()), firstSRID);
+    //te::da::LiteralInt32* firstSRID = new te::da::LiteralInt32(firstGeom->getSRID());
+    e_firstParam = new te::da::ST_Transform(new te::da::PropertyName(m_firstConverter->getResult()->getName() + "." + firstGeom->getName()), firstGeom->getSRID());
   }
   else
   {
@@ -132,8 +132,8 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
   // Create Expression ST_setSRID for the Second Layer
   if (secondGeomSource->getSRID() != secondGeom->getSRID())
   {
-    te::da::LiteralInt32* secondSRID = new te::da::LiteralInt32(secondGeom->getSRID());
-    e_secondParam = new te::da::ST_SetSRID(new te::da::PropertyName(m_secondConverter->getResult()->getName() + "." + secondGeom->getName()), secondSRID);
+    //te::da::LiteralInt32* secondSRID = new te::da::LiteralInt32(secondGeom->getSRID());
+    e_secondParam = new te::da::ST_Transform(new te::da::PropertyName(m_secondConverter->getResult()->getName() + "." + secondGeom->getName()), secondGeom->getSRID());
   }
   else
   {

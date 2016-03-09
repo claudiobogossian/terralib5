@@ -149,7 +149,7 @@ bool te::map::RasterLayer::isValid() const
   return true;
 }
 
-void te::map::RasterLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale)
+void te::map::RasterLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel)
 {
   if(m_rendererType.empty())
     throw Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
@@ -159,7 +159,7 @@ void te::map::RasterLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, in
   if(renderer.get() == 0)
     throw Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
-  renderer->draw(this, canvas, bbox, srid, scale);
+  renderer->draw(this, canvas, bbox, srid, scale, cancel);
 }
 
 const std::string& te::map::RasterLayer::getType() const

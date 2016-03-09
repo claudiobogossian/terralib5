@@ -56,6 +56,7 @@
 #include "Utils.h"
 
 // STL
+#include <algorithm> 
 #include <map>
 #include <math.h>
 #include <string>
@@ -276,10 +277,28 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   size_t nprops = inDset->getNumProperties();
   
   inDset->moveBeforeFirst();
+  
   while(inDset->moveNext())
   {
+
     // the group key is a combination of the distinct grouping property values as a string
-    std::string key = inDset->getAsString(groupPropIdxs[0]);
+    std::string key = "";
+
+    if (inDset->isNull(groupPropIdxs[0]))
+    {
+      std::string message = "The selected attribute to aggregate has null values.";
+      
+      std::vector<std::string>::iterator it;
+      
+      it = std::find(m_warnings.begin(), m_warnings.end(), message);
+      if (it == m_warnings.end())
+        m_warnings.push_back(message);
+    }
+    else
+    {
+      key = inDset->getAsString(groupPropIdxs[0]);
+    }
+
     for(std::size_t i=1; i<groupPropIdxs.size(); ++i)
       key += "_" + inDset->getAsString(groupPropIdxs[i]);
     
@@ -288,10 +307,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
     for(std::size_t j=0; j<nprops; ++j)
     {
       if (!inDset->isNull(j))
-      {
-        std::auto_ptr<te::dt::AbstractData> val = inDset->getValue(j);
-        dataSetItem->setValue(j,val.release());
-      }
+        dataSetItem->setValue(j, inDset->getValue(j).release());
     }
     
     itg = groups.find(key);

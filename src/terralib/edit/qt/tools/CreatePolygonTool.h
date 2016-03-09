@@ -96,6 +96,8 @@ namespace te
 
         //@}
 
+        void resetVisualizationTool();
+
       private:
 
         void draw();
@@ -117,10 +119,6 @@ namespace te
       private slots:
 
         void onExtentChanged();
-
-      Q_SIGNALS:
-
-        void closedPolygon();
 
       protected:
 

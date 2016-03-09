@@ -983,6 +983,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
     QMessageBox::warning(this, tr("Warning"), tr("Automatic layer creation failed!"));
     return;
   }
+
+  setCursor(Qt::ArrowCursor);
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::help()

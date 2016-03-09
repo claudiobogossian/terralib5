@@ -299,16 +299,34 @@ void te::qt::plugins::ogr::Plugin::showWindow()
       std::map<std::string, std::string>::iterator it;
       for(it = shpWithoutSpatialIndex.begin(); it != shpWithoutSpatialIndex.end(); ++it)
       {
-        te::da::DataSourcePtr driver = te::da::GetDataSource(it->first, true);
+        te::da::DataSourcePtr driver;
 
-        std::string command = "CREATE SPATIAL INDEX ON " + it->second;
+        try
+        {
+          driver = te::da::GetDataSource(it->first, true);
 
-        driver->execute(command);
+          std::string command = "CREATE SPATIAL INDEX ON " + it->second;
+
+          driver->execute(command);
+
+          QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Spatial index created with successfully!");
+
+          QApplication::restoreOverrideCursor();
+        }
+        catch (const te::common::Exception& e)
+        {
+          QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Error creating spatial index.");
+
+          QApplication::restoreOverrideCursor();
+
+        }
+        catch (std::exception& e)
+        {
+          QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Error creating spatial index.");
+
+          QApplication::restoreOverrideCursor();
+        }
       }
-      
-      QApplication::restoreOverrideCursor();
-
-      QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Spatial index created with successfully!");
     }
   }
 

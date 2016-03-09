@@ -172,6 +172,8 @@
 
 #cmakedefine TERRALIB_QT5_ENABLED
 
+#cmakedefine TERRALIB_TERRALIB4_ENABLED
+
 #if defined(TERRALIB_QT4_ENABLED) || defined(TERRALIB_QT5_ENABLED)
   #define TERRALIB_QT_ENABLED
 #endif
