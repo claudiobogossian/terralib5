@@ -614,6 +614,10 @@ goto end_bzip_deps
 
   cd %BZIP2_DIR% >nul 2>nul
   
+  del *.lib /Q >nul 2>nul
+
+  del *.pdb /Q >nul 2>nul
+  
   del lib /S /Q >nul 2>nul
   
   mkdir lib >nul 2>nul
@@ -629,10 +633,6 @@ goto end_bzip_deps
   xcopy *.lib lib /Y >nul 2>nul 
 
   ( nmake /f makefile.msc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip  "clean debug" && goto readline
-  
-  del *.lib /Q >nul 2>nul
-
-  del *.pdb /S /Q >nul 2>nul
   
   call :append_log_end bzip
   
