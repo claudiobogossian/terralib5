@@ -629,7 +629,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     if (mtmp)
       mtmp->updateLayer(layer);
     else
-    e.m_display->getDisplay()->refresh();
+      e.m_display->getDisplay()->refresh(true);
 
     m_layerIsStashed = false;
 
