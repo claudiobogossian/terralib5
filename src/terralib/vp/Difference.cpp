@@ -106,49 +106,108 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   if (inputParams.size() < 2)
     throw te::common::Exception(TE_TR("It is necessary more than one item for performing the operation."));
 
-// Build Difference Query.
+// Building Difference Query.
 
-  std::auto_ptr<te::da::DataSetType> dsType_first;
-  std::auto_ptr<te::da::DataSetType> dsType_second;
+// Get DataSetType and Geometry Property of InputLayer and Difference Layer.
+  std::auto_ptr<te::da::DataSetType> dsType_input;
+  std::auto_ptr<te::da::DataSetType> dsType_difference;
+  
+  te::gm::GeometryProperty* geom_input;
+  te::gm::GeometryProperty* geom_difference;
 
-  te::gm::GeometryProperty* geom_first;
-  te::gm::GeometryProperty* geom_second;
 
-  dsType_first = inputParams[0].m_inputDataSource->getDataSetType(inputParams[0].m_inputDataSetName);
-  geom_first = te::da::GetFirstGeomProperty(dsType_first.get());
+  if (inputParams[0].m_inputDataSetType)
+  {
+    dsType_input.reset(inputParams[0].m_inputDataSetType);
+  }
+  else
+  {
+    if (inputParams[0].m_inputDataSetName.empty())
+      throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Input Layer."));
 
-  dsType_second = inputParams[1].m_inputDataSource->getDataSetType(inputParams[1].m_inputDataSetName);
-  geom_second = te::da::GetFirstGeomProperty(dsType_second.get());
+    dsType_input = inputParams[0].m_inputDataSource->getDataSetType(inputParams[0].m_inputDataSetName);
+  }
 
-//Union Expression to set into Difference expression.
+  geom_input = te::da::GetFirstGeomProperty(dsType_input.get());
+  std::string aliasInput = dsType_input->getName();
+
+  
+  if (inputParams[1].m_inputDataSetType)
+  {
+    dsType_difference.reset(inputParams[1].m_inputDataSetType);
+  }
+  else
+  {
+    if (inputParams[1].m_inputDataSetName.empty())
+      throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Difference Layer."));
+
+    dsType_difference = inputParams[1].m_inputDataSource->getDataSetType(inputParams[1].m_inputDataSetName);
+  }
+
+  geom_difference = te::da::GetFirstGeomProperty(dsType_difference.get());
+  std::string aliasDifference = dsType_difference->getName();
+
+
+// Verify if the operation has restrictions.
+  te::da::SubSelect* subSelectInput = 0;
+  te::da::SubSelect* subSelectDifference = 0;
+
+  if (inputParams[0].m_inputRestriction)
+  {
+    te::da::Select* selectInput = inputParams[0].m_inputRestriction;
+    subSelectInput = new te::da::SubSelect(selectInput, "inputLayer");
+    aliasInput = subSelectInput->getAlias();
+  }
+
+  if (inputParams[1].m_inputRestriction)
+  {
+    te::da::Select* selectDifference = inputParams[1].m_inputRestriction;
+    subSelectDifference = new te::da::SubSelect(selectDifference, "differenceLayer");
+    aliasDifference = subSelectDifference->getAlias();
+  }
+
+
+// Union Expression to set into Difference expression.
   te::da::Fields* fieldsUnion = new te::da::Fields;
+
   te::da::Expression* e_union = new te::da::ST_Union(
-    new te::da::PropertyName(dsType_second->getName() + "." + geom_second->getName()));
+    new te::da::PropertyName(aliasDifference + "." + geom_difference->getName()));
   te::da::Field* f_union = new te::da::Field(*e_union, "c_union");
   fieldsUnion->push_back(f_union);
 
-  te::da::FromItem * fromItemUnion = new te::da::DataSetName(dsType_second->getName());
+
   te::da::From* fromUnion = new te::da::From;
-  fromUnion->push_back(fromItemUnion);
+  
+  if (subSelectDifference)
+  {
+    fromUnion->push_back(subSelectDifference);
+  }
+  else
+  {
+    te::da::FromItem * fromItemUnion = new te::da::DataSetName(dsType_difference->getName());
+    fromUnion->push_back(fromItemUnion);
+  }
+
 
   te::da::Expression* e_intersects = new te::da::ST_Intersects(
-    new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()),
-    new te::da::PropertyName(dsType_second->getName() + "." + geom_second->getName()));
+    new te::da::PropertyName(aliasInput + "." + geom_input->getName()),
+    new te::da::PropertyName(aliasDifference + "." + geom_difference->getName()));
 
   te::da::Where* whereUnion = new te::da::Where(e_intersects);
 
   te::da::Select* selectUnion = new te::da::Select(fieldsUnion, fromUnion, whereUnion);
   te::da::SelectExpression* subSelectExpression = new te::da::SelectExpression(selectUnion);
 
+
 // Expressions to execute the Difference.
   te::da::Expression* e_difference = new te::da::ST_Difference(
-    new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()),
-    subSelectExpression);
+    new te::da::PropertyName(aliasInput + "." + geom_input->getName()), subSelectExpression);
 
 
   te::da::Fields* fieldsExpressions = new te::da::Fields;
 
-  // Tabular attributes.
+
+// Tabular attributes.
   const std::map<std::string, te::dt::AbstractData*> attributesMap = mainParams->getSpecificParams();
   std::map<std::string, te::dt::AbstractData*>::const_iterator it = attributesMap.begin();
 
@@ -159,7 +218,7 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 
     std::string columnName = sd->getValue();
 
-    te::da::Field* f_att = new te::da::Field(dsType_first->getName() + "." + columnName);
+    te::da::Field* f_att = new te::da::Field(aliasInput + "." + columnName);
     fieldsExpressions->push_back(f_att);
 
     ++it;
@@ -167,20 +226,29 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 
 // Expression to set geometries as multigeometries.
   te::da::Expression* e_coalesce = new te::da::Coalesce(e_difference,
-    new te::da::PropertyName(dsType_first->getName() + "." + geom_first->getName()));
+    new te::da::PropertyName(aliasInput + "." + geom_input->getName()));
 
   te::da::Expression* e_multi = new te::da::ST_Multi(*e_coalesce);
 
   te::da::Field* f_multi = new te::da::Field(*e_multi, "geom");
   fieldsExpressions->push_back(f_multi);
 
-// FROM clause.
-  te::da::FromItem* firstFromItem = new te::da::DataSetName(dsType_first->getName());
+// FROM clause - This from clause is for input layer.
   te::da::From* fromDifference = new te::da::From;
-  fromDifference->push_back(firstFromItem);
 
-  te::da::Select* selectDifference = new te::da::Select(fieldsExpressions, fromDifference);
-  te::da::SubSelect* subSelectDifference = new te::da::SubSelect(selectDifference, "result");
+  if (subSelectInput)
+  {
+    fromDifference->push_back(subSelectInput);
+  }
+  else
+  {
+    te::da::FromItem* inputFromItem = new te::da::DataSetName(dsType_input->getName());
+    fromDifference->push_back(inputFromItem);
+  }
+
+  te::da::Select* selectIn = new te::da::Select(fieldsExpressions, fromDifference);
+  te::da::SubSelect* subSelectIn = new te::da::SubSelect(selectIn, "result");
+
 
 // Outer Select 
   te::da::Fields* outerFields = new te::da::Fields;
@@ -188,13 +256,14 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   outerFields->push_back(f_outer);
 
   te::da::From* outerFrom = new te::da::From;
-  outerFrom->push_back(subSelectDifference);
+  outerFrom->push_back(subSelectIn);
 
-  te::da::Expression* e_isempty = new te::da::ST_IsEmpty(subSelectDifference->getAlias() + ".geom");
+  te::da::Expression* e_isempty = new te::da::ST_IsEmpty(subSelectIn->getAlias() + ".geom");
   te::da::Expression* e_not = new te::da::Not(e_isempty);
   te::da::Where* outerWhere = new te::da::Where(e_not);
 
   te::da::Select* outerSelect = new te::da::Select(outerFields, outerFrom, outerWhere);
+
 
 /*Check if the input and output dataSource are the same, if so, 
   persists the result of select query into database with insert command.*/
@@ -207,17 +276,14 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   std::auto_ptr<te::da::DataSourceTransactor> t = outputDataSource->getTransactor();
   std::map<std::string, std::string> options;
 
-  std::auto_ptr<te::da::DataSetType> outDataSetType;
+  std::auto_ptr<te::da::DataSetType> outDataSetType(this->getOutputDataSetType(mainParams));
 
   if (outputDataSource->getType() == "OGR")
   {
-    outDataSetType.reset(this->getOutputDataSetType(mainParams, false));
     outputDataSource->createDataSet(outDataSetType.get(), options);
   }
   else
   {
-    outDataSetType.reset(this->getOutputDataSetType(mainParams));
-
     t->begin();
     t->createDataSet(outDataSetType.get(), options);
     t->commit();
@@ -379,14 +445,24 @@ bool te::vp::Difference::isSupportQuery(te::vp::AlgorithmParams* mainParams)
   return true;
 }
 
-te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmParams* mainParams, bool withPk)
+te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmParams* mainParams)
 {
+// Get the input parameters
+  std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
+
+
 // Get the output dataset name.
   std::string outputDataSetName = mainParams->getOutputDataSetName();
   te::da::DataSetType* outputDataSetType = new te::da::DataSetType(outputDataSetName);
 
+
 // Set to output datasettype the primary key property.
-  if (withPk)
+  if (mainParams->getOutputDataSource()->getType() == "OGR")
+  {
+    te::dt::SimpleProperty* fidProperty = new te::dt::SimpleProperty("FID", te::dt::INT32_TYPE);
+    outputDataSetType->add(fidProperty);
+  }
+  else
   {
     te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
     pkProperty->setAutoNumber(true);
@@ -397,18 +473,17 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
     outputDataSetType->setPrimaryKey(pk);
   }
 
-// Get the first layer SRID to set in output dataSetType.
-  std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
-
-  te::da::DataSourcePtr dataSource = inputParams[0].m_inputDataSource;
-  std::string dataSetName = inputParams[0].m_inputDataSetName;
-
-  std::auto_ptr<te::da::DataSetType> dataSetType;
-  if (!dataSetName.empty())
-    dataSetType = dataSource->getDataSetType(dataSetName);
 
 // Get tabular attributes.
-  te::da::DataSetType* dsType = te::da::GetDataSetType(inputParams[0].m_inputDataSetName, inputParams[0].m_inputDataSource->getId());
+  te::da::DataSetType* dsType = 0;
+  if (inputParams[0].m_inputDataSetType)
+  {
+    dsType = inputParams[0].m_inputDataSetType;
+  }
+  else
+  {
+    dsType = te::da::GetDataSetType(inputParams[0].m_inputDataSetName, inputParams[0].m_inputDataSource->getId());
+  }
 
   const std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
   std::map<std::string, te::dt::AbstractData*>::const_iterator it = specificParams.begin();
@@ -431,11 +506,12 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
     ++it;
   }
 
+
 // Creating the geometry property
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
 
-  te::gm::GeometryProperty* intputGeomProp = te::da::GetFirstGeomProperty(dataSetType.get());
-  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(dataSetType.get())->getGeometryType());
+  te::gm::GeometryProperty* intputGeomProp = te::da::GetFirstGeomProperty(dsType);
+  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(dsType)->getGeometryType());
   newGeomProp->setGeometryType(newType);
   newGeomProp->setSRID(intputGeomProp->getSRID());
   outputDataSetType->add(newGeomProp);
