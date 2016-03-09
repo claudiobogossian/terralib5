@@ -921,12 +921,12 @@
 <context>
     <name>te::vp::AggregationDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="588"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="594"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="589"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="595"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
