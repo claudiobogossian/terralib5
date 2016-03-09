@@ -7,7 +7,10 @@
 #define TECOMMONEXPORT
 
 %{
-  #include "terralib/common/Enums.h"
+#include "terralib/common/Enums.h"
+#include "terralib/common/PlatformUtils.h"
+#include "terralib/common/Version.h"
+#include "terralib/common/BoostUtils.h"
 %}
 
 //Python doesn't work with namespaces
@@ -19,7 +22,11 @@
 %nspace te::common::MeasureType;
 %nspace te::common::Hemisphere;
 %nspace te::common::MachineByteOrder;
+%nspace te::common::Version;
 
 #endif
 
 %include "terralib/common/Enums.h"
+%include "terralib/common/PlatformUtils.h"
+%include "terralib/common/Version.h"
+%include "terralib/common/BoostUtils.h"

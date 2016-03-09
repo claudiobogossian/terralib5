@@ -1288,6 +1288,18 @@ endif()
 # build unit test
 #
 
+if(TERRALIB_BUILD_UNITTEST_ENABLED AND CPPUNIT_FOUND)
+  set (DEPS_DIR ${CMAKE_PREFIX_PATH}/lib)
+
+  set (BIN_DIR ${CMAKE_BINARY_DIR}/Debug)
+
+  configure_file(${CMAKE_SOURCE_DIR}/unittest.bat.in ${CMAKE_BINARY_DIR}/unittest.debug.bat)
+
+  set (BIN_DIR ${CMAKE_BINARY_DIR}/Release)
+
+  configure_file(${CMAKE_SOURCE_DIR}/unittest.bat.in ${CMAKE_BINARY_DIR}/unittest.release.bat)
+endif()
+
 if(TERRALIB_UNITTEST_COMMON_ENABLED)
   add_subdirectory(terralib_unittest_common)
 endif()

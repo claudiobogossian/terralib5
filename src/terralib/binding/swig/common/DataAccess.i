@@ -9,12 +9,14 @@
 namespace te {
   namespace common {
     %template(DSMgerSingleton) Singleton < te::da::DataSourceManager >;
+    %template(DSInfoMgerSingleton) Singleton < te::da::DataSourceInfoManager >;
   }
 }
 
 %ignore te::da::GetDataSource;
 
 typedef te::common::Singleton< te::da::DataSourceManager > DSMgerSingleton;
+typedef te::common::Singleton< te::da::DataSourceInfoManager > DSInfoMgerSingleton;
 
 #ifdef SWIGPYTHON
 
@@ -58,6 +60,7 @@ AUTO_PTR_TYPEMAPS(te::da::Sequence)
 AUTO_PTR_TYPEMAPS(te::da::CheckConstraint)
 AUTO_PTR_TYPEMAPS(te::da::ForeignKey)
 AUTO_PTR_TYPEMAPS(te::da::PrimaryKey)
+AUTO_PTR_TYPEMAPS(te::da::DataSetTypeConverter)
 AUTO_PTR_TYPEMAPS(te::da::UniqueKey)
 AUTO_PTR_TYPEMAPS(te::da::Index)
 AUTO_PTR_TYPEMAPS(te::da::Fields)
@@ -75,11 +78,14 @@ AUTO_PTR_TYPEMAPS(te::rst::Raster)
 %nodefaultctor te::da::DataSourceFactory;
 
 %{
+#include "terralib/dataaccess/Enums.h"
 #include "terralib/dataaccess/dataset/DataSet.h"
 #include "terralib/dataaccess/dataset/DataSetTypeCapabilities.h"
 #include "terralib/dataaccess/dataset/DataSetType.h"
 #include "terralib/dataaccess/dataset/ObjectId.h"
 #include "terralib/dataaccess/dataset/ObjectIdSet.h"
+#include "terralib/dataaccess/dataset/PrimaryKey.h"
+#include "terralib/dataaccess/dataset/DataSetTypeConverter.h"
 #include "terralib/dataaccess/datasource/DataSource.h"
 #include "terralib/dataaccess/datasource/BatchExecutor.h"
 #include "terralib/dataaccess/datasource/PreparedQuery.h"
@@ -90,6 +96,10 @@ AUTO_PTR_TYPEMAPS(te::rst::Raster)
 #include "terralib/dataaccess/query/Field.h"
 #include "terralib/dataaccess/query/Fields.h"
 #include "terralib/dataaccess/utils/Utils.h"
+#include "terralib/dataaccess/datasource/DataSourceInfoManager.h"
+#include "terralib/dataaccess/serialization/xml/Serializer.h"
+#include "terralib/memory/DataSet.h"
+#include "terralib/memory/DataSetItem.h"
 
 using te::dt::Property;
 
@@ -98,7 +108,6 @@ static void OpenDataSource(const te::da::DataSourceInfo& info)
   te::da::DataSourceManager::getInstance().open(info.getId(), info.getType(), info.getConnInfo());
 }
 %}
-
 
 //Python doesn't work with namespaces
 #ifndef SWIGPYTHON
@@ -111,13 +120,24 @@ static void OpenDataSource(const te::da::DataSourceInfo& info)
 %nspace te::da::DataSourceInfo;
 %nspace te::da::DataSourceManager;
 %nspace te::da::DataSourceFactory;
+%nspace te::da::DataSourceInfoManager;
+%nspace te::da::PrimaryKey;
+%nspace te::da::DataSetTypeConverter;
 
 #endif // SWIGPYTHON
 
+#ifdef SWIGLUA
+// TODO: ITS IS MADE BECAUSE ENUM 'te::da::ConstraintType' THERE IS A KEY REDEFINED (REVIEW)
+%rename (UNKNOWN_CONSTRAINT) te::da::UNKNOWN;							   
+#endif
+
+%include "terralib/dataaccess/Enums.h"
 %include "terralib/dataaccess/dataset/DataSetType.h"
 %include "terralib/dataaccess/dataset/DataSet.h"
 %include "terralib/dataaccess/dataset/ObjectId.h"
 %include "terralib/dataaccess/dataset/ObjectIdSet.h"
+%include "terralib/dataaccess/dataset/PrimaryKey.h"
+#include "terralib/dataaccess/dataset/DataSetTypeConverter.h"
 %include "terralib/dataaccess/datasource/DataSource.h"
 %include "terralib/dataaccess/datasource/DataSourceInfo.h"
 %include "terralib/dataaccess/datasource/DataSourceManager.h"
@@ -128,6 +148,8 @@ static void OpenDataSource(const te::da::DataSourceInfo& info)
 %include "terralib/dataaccess/query/Field.h"
 %include "terralib/dataaccess/query/Fields.h"
 %include "terralib/dataaccess/utils/Utils.h"
+%include "terralib/dataaccess/datasource/DataSourceInfoManager.h"
+%include "terralib/dataaccess/serialization/xml/Serializer.h"
 
 %newobject te::da::DataSourceFactory::make(const std::string& dsType);
 

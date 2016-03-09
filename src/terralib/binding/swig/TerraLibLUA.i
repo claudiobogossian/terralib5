@@ -6,11 +6,11 @@
 %module terralib_mod_binding_lua
 
 %include stl.i
-
+%include std_string.i
+%include std_vector.i
+%include std_map.i
 %include lua/typemaps.i
-
 %include typemaps.i
-
 %include std_except.i
 
 %catches(std::exception);
@@ -87,9 +87,16 @@ static std::string GetRandomicId()
 %include lua/CellSpace.i
 
 %include common/Maptools.i
+%include lua/Maptools.i
 
-%include common/QtAf.i
-%include lua/QtAf.i
+%include common/Xml.i
+%include lua/Xml.i
+
+%include common/AttributeFill.i
+%include lua/AttributeFill.i
+
+%include common/Memory.i
+%include lua/Memory.i
 
 // Wrap function
 std::string GetRandomicId();
