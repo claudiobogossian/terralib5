@@ -423,6 +423,8 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" OFF)
 endif()
 
+option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" OFF)
+
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
 option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
@@ -769,6 +771,12 @@ endif()
 if(MSVC)
   add_definitions(/MP)
 endif()
+
+if(TERRALIB_MOD_CORE_ENABLED)
+  add_subdirectory(terralib_mod_core)
+  list(APPEND TERRALIB_MODULES core)
+endif()
+
 
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
   add_subdirectory(terralib_mod_annotationtext)
