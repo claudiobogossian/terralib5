@@ -77,7 +77,7 @@ namespace te
 
       std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
 
-      te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams, bool withPk = true);
+      te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
 
       te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom);
 

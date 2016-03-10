@@ -20,7 +20,7 @@ echo done.
 echo.
 ::  ================================
 
-set PATH=%CMAKE_FILEPATH%;%QMAKE_FILEPATH%;%ROOT_DIR%\icu\bin64;%PATH%
+set PATH=%QMAKE_FILEPATH%;%ROOT_DIR%\icu\bin64;%PATH%
 set INCLUDE=%WIN32MAK_FILEPATH%;%INCLUDE%
 
 goto begin_libs
@@ -37,9 +37,9 @@ echo ********************** >> %CONFIG_LOG% 2>nul
 echo ********************** >> %BUILD_LOG% 2>nul
 echo %1 >> %BUILD_LOG% 2>nul
 echo ********************** >> %BUILD_LOG% 2>nul
+goto :EOF
 ENDLOCAL
 
-goto begin_%1
 
 :append_log_end
 SETLOCAL
@@ -52,34 +52,36 @@ echo. >> %BUILD_LOG% 2>nul
 echo ********************** >> %BUILD_LOG% 2>nul
 echo. >> %BUILD_LOG% 2>nul
 echo. >> %BUILD_LOG% 2>nul
-ENDLOCAL
 
-goto end_%1
+goto :EOF
+ENDLOCAL
 
 :skip_build
 SETLOCAL
 echo skip.
-ENDLOCAL
 
-goto %1
+goto :EOF
+ENDLOCAL
 
 :remove_lib
 SETLOCAL
-  del %TERRALIB_DEPENDENCIES_DIR%\lib\*%1* /S /Q >nul 2>nul
-ENDLOCAL
+del %TERRALIB_DEPENDENCIES_DIR%\lib\*%1* /S /Q >nul 2>nul
 
-goto %2_deps
+goto :EOF
+ENDLOCAL
 
 :: 1-Nome da biblioteca
 :: 2-Mensagem de erro simples.
 :: 3-Desvio, nome do atalho para a próxima biblioteca
 
 :buildFailLog
+SETLOCAL
 set FAIL=1
 echo fail on %2.
 echo %1: fail on %2. >>%FAILURES_LOG%  
 
-goto %3
+goto :EOF
+ENDLOCAL
 
 :begin_libs
 set LIBS_DIR=%TERRALIB_DEPENDENCIES_DIR%\lib
@@ -87,10 +89,6 @@ set LIBS_DIR=%TERRALIB_DEPENDENCIES_DIR%\lib
 :: libraries not linked against TerraLib 5 (NOT fully installed)
 :: -------------------------------------------------------------
 set EXPAT=%LIBS_DIR%\expat.dll
-set APR=%LIBS_DIR%\libapr-1.dll
-set APRD=%LIBS_DIR%\libapr-1d.dll
-set APRUTIL=%LIBS_DIR%\libaprutil-1.dll
-set APRUTILD=%LIBS_DIR%\libaprutil-1d.dll
 set EAY=%LIBS_DIR%\libeay32.dll
 set EAYD=%LIBS_DIR%\libeay32d.dll
 set SSL=%LIBS_DIR%\ssleay32.dll
@@ -111,8 +109,15 @@ set CURL=%LIBS_DIR%\libcurl.dll
 set ICU=%LIBS_DIR%\icuuc52.dll
 set XML2=%LIBS_DIR%\libxml2.dll
 set NETCDF=%LIBS_DIR%\netcdf.dll
+set APR=%ROOT_DIR%\install\bin\libapr-1.dll
+set APRD=%ROOT_DIR%\install\bin\libapr-1d.dll
+set APRUTIL=%ROOT_DIR%\install\bin\libaprutil-1.dll
+set APRUTILD=%ROOT_DIR%\install\bin\libaprutil-1d.dll
+set LIBKML=%ROOT_DIR%\libkml-master\build\Release\libkml.lib
 set BZIP=%ROOT_DIR%\bzip2-1.0.6\lib\libbz2.lib
 set JPEG=%ROOT_DIR%\jpeg-9a\build\libjpeg.lib
+set MINIZIP=%ROOT_DIR%\unzip101e\build\Release\minizip.lib
+set URIPARSER=%ROOT_DIR%\uriparser-0.8.4\win32\uriparser.lib
 
 :: libraries linked against TerraLib 5 (fully installed)
 :: -------------------------------------------------------------
@@ -151,9 +156,7 @@ goto end_cppunit_deps
 
   echo | set /p="Installing cppunit... "<nul
   
-  IF EXIST %CPPUNIT_LIBRARY% ( 
-    call :skip_build iconv 
-  )
+  IF EXIST %CPPUNIT_LIBRARY% call :skip_build && goto iconv 
 
   call :append_log_begin cppunit
   
@@ -161,13 +164,13 @@ goto end_cppunit_deps
 
   cd %CPPUNIT_DIR%\src >nul 2>nul
   
-  ( msbuild /m /t:clean /p:Configuration=Release cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "clean release" iconv
+  ( msbuild /m /t:clean /p:Configuration=Release cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit  "clean release" && goto iconv
 
-  ( msbuild /m /t:clean cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "clean debug" iconv
+  ( msbuild /m /t:clean cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit  "clean debug" && goto iconv
 
-  ( msbuild /m /p:Configuration=Release cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "build release" iconv
+  ( msbuild /m /p:Configuration=Release cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "build release" && goto iconv
   
-  ( msbuild /m cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "build debug" iconv
+  ( msbuild /m cppunit/cppunit_dll.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog cppunit "build debug" && goto iconv
    
   IF NOT EXIST %CPPUNIT_INCLUDE_DIR% mkdir %CPPUNIT_INCLUDE_DIR%
   
@@ -208,9 +211,7 @@ goto end_iconv_deps
 
   echo | set /p="Installing iconv... "<nul
   
-  IF EXIST %ICONV_LIBRARY% ( 
-    call :skip_build expat 
-  )
+  IF EXIST %ICONV_LIBRARY% call :skip_build && goto expat 
   
   call :append_log_begin iconv
   
@@ -218,13 +219,13 @@ goto end_iconv_deps
 
   cd %ICONV_DIR% >nul 2>nul
 
-  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "clean debug" expat
+  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean debug" && goto expat
 
-  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "clean release" expat
+  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean release" && goto expat
 
-  ( msbuild /m  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build debug" expat
+  ( msbuild /m  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build debug" && goto expat
 
-  ( msbuild /m /p:Configuration=Release myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build release" expat
+  ( msbuild /m /p:Configuration=Release myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build release" && goto expat
   
   xcopy %ICONV_DIR%\myIconv\include\iconv.h %ICONV_INCLUDE_DIR% /Y >nul 2>nul
 
@@ -259,9 +260,7 @@ goto end_expat_deps
 
   echo | set /p="Installing expat... "<nul
   
-  IF EXIST %EXPAT% ( 
-    call :skip_build apr 
-  )
+  IF EXIST %EXPAT% call :skip_build && goto apr 
 
   call :append_log_begin expat
   
@@ -277,12 +276,12 @@ goto end_expat_deps
 
   cd build >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%EXPAT_DIR%\binaries"^
- -DCMAKE_DEBUG_POSTFIX="d" .. >>%CONFIG_LOG% 2>nul ) || call :buildFailLog expat "configuring" apr
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%EXPAT_DIR%\binaries"^
+ -DCMAKE_DEBUG_POSTFIX="d" .. >>%CONFIG_LOG% 2>nul ) || call :buildFailLog expat "configuring" && goto apr
 
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build release" apr
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build release" && goto apr
   
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build debug" apr
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build debug" && goto apr
   
   xcopy %EXPAT_DIR%\binaries\bin\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -314,9 +313,7 @@ goto end_apr_deps
 
   echo | set /p="Installing apr... "<nul
   
-  IF EXIST %APR% ( 
-    call :skip_build zlib 
-  )
+  IF EXIST %APR% call :skip_build && goto zlib 
 
   call :append_log_begin apr
   
@@ -330,11 +327,11 @@ goto end_apr_deps
 
   cd building >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%" -DCMAKE_DEBUG_POSTFIX="d" -DINSTALL_PDB=OFF .. >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr "configuring" zlib 
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%" -DCMAKE_DEBUG_POSTFIX="d" -DINSTALL_PDB=OFF .. >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr "configuring" && goto zlib 
 
-  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build release" zlib
+  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build release" && goto zlib
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build debug" zlib
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build debug" && goto zlib
      
   call :append_log_end apr
   
@@ -363,9 +360,7 @@ goto end_zlib_deps
 
   echo | set /p="Installing zlib... "<nul
   
-  IF EXIST %ZLIB% ( 
-    call :skip_build openssl 
-  )
+  IF EXIST %ZLIB% call :skip_build && goto openssl 
 
   call :append_log_begin zlib
   
@@ -379,11 +374,11 @@ goto end_zlib_deps
 
   cd build >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%TERRALIB_DEPENDENCIES_DIR%" %ZL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog  zlib "configuring" openssl
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%TERRALIB_DEPENDENCIES_DIR%" %ZL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog  zlib "configuring" && goto openssl
 
-  ( msbuild /m /p:Configuration=Release zlib.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog zlib "build release" openssl
+  ( msbuild /m /p:Configuration=Release zlib.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog zlib "build release" && goto openssl
 
-  ( msbuild /m zlib.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog zlib "build debug" openssl
+  ( msbuild /m zlib.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog zlib "build debug" && goto openssl
     
   xcopy %ZL_DIR%\build\Release\*.dll %LIBS_DIR% /Y >nul 2>nul
   
@@ -411,15 +406,13 @@ set EAYD_LIBRARY=%SSL_DIR%\out32dll.dbg\libeay32d.lib
 :: Check dependencies
 goto end_openssl_deps
 :openssl_deps
-  IF NOT EXIST %ZLIB% call :remove_lib %SSL% apr_util
+  IF NOT EXIST %ZLIB% call :remove_lib %SSL% && goto apr_util_deps
   goto apr_util_deps
 :end_openssl_deps
 
   echo | set /p="Installing openssl... "<nul
   
-  IF EXIST %SSL% ( 
-    call :skip_build apr_util 
-  )
+  IF EXIST %SSL% call :skip_build && goto apr_util 
 
   call :append_log_begin openssl
   
@@ -449,9 +442,8 @@ goto end_openssl_deps
 
   copy ms\ntdll.release.mak.in ms\ntdll.mak /Y >nul 2>nul  
 
-  ( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build release" apr_util
+  ( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build release" && goto apr_util
   
-::  Building debug
   copy ms\libeay32.debug.def.in ms\libeay32.def /Y >nul 2>nul
 
   copy ms\ssleay32.debug.def.in ms\ssleay32.def /Y >nul 2>nul
@@ -460,7 +452,7 @@ goto end_openssl_deps
 
   copy ms\ntdll.debug.mak.in ms\ntdll.mak /Y >nul 2>nul
 
-  ( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build debug" apr_util
+  ( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build debug" && goto apr_util
   
   xcopy out32dll\ssleay32.dll %LIBS_DIR% /Y >nul 2>nul
   
@@ -482,6 +474,7 @@ goto end_openssl_deps
 
 :apr_util
 
+
 :: APRUTIL-1.5.4
 ::  =========================================
 set APRUTIL_DIR=%ROOT_DIR%\apr-util-1.5.4
@@ -492,16 +485,14 @@ set APRUTILD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1d.lib
 :: Check dependencies
 goto end_apr_util_deps
 :apr_util_deps
-  IF NOT EXIST %APR% call :remove_lib aprutil log4cxx
-  IF NOT EXIST %EXPAT% call :remove_lib aprutil log4cxx
+  IF NOT EXIST %APR% call :remove_lib aprutil && goto log4cxx_deps
+  IF NOT EXIST %EXPAT% call :remove_lib aprutil && goto log4cxx_deps
   goto log4cxx_deps
 :end_apr_util_deps
 
   echo | set /p="Installing apr-util... "<nul
   
-  IF EXIST %APRUTIL% ( 
-    call :skip_build log4cxx 
-  )
+  IF EXIST %APRUTIL% call :skip_build && goto log4cxx 
 
   call :append_log_begin apr_util
   
@@ -515,7 +506,7 @@ goto end_apr_util_deps
    
   cd building >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%"^
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%"^
   -DCMAKE_DEBUG_POSTFIX="d"^
   -DINSTALL_PDB=OFF^
   -D_OPENSSL_VERSION="1.1.0"^
@@ -527,11 +518,11 @@ goto end_apr_util_deps
   -DXMLLIB_LIBRARIES:STRING="debug;%EXPATD_LIBRARY%;optimized;%EXPAT_LIBRARY%"^
   -DXMLLIB_INCLUDE_DIR="%EXPAT_INCLUDE_DIR%"^
   -DAPR_INCLUDE_DIR="%APACHE_INSTALL_DIR%/include"^
-  -DAPR_LIBRARIES="%APR_LIBRARY%" %APRUTIL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr-util "configuring" log4cxx 
+  -DAPR_LIBRARIES="%APR_LIBRARY%" %APRUTIL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr-util "configuring" && goto log4cxx 
   
-  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build release" log4cxx
+  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build release" && goto log4cxx
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build debug" log4cxx
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build debug" && goto log4cxx
   
   call :append_log_end apr_util
   
@@ -552,16 +543,14 @@ set LOG4CXX_LIBRARY=%LOG4CXX%
 :: Check dependencies
 goto end_log4cxx_deps
 :log4cxx_deps
-  IF NOT EXIST %APR% call :remove_lib log4cxx bzip
-  IF NOT EXIST %APRUTIL% call :remove_lib log4cxx bzip
+  IF NOT EXIST %APR% call :remove_lib log4cxx && goto bzip_deps
+  IF NOT EXIST %APRUTIL% call :remove_lib log4cxx && goto bzip_deps
   goto bzip_deps
 :end_log4cxx_deps
   
   echo | set /p="Installing log4cxx... "<nul
     
-  IF EXIST %LOG4CXX_LIBRARY% ( 
-    call :skip_build bzip 
-  )
+  IF EXIST %LOG4CXX_LIBRARY% call :skip_build && goto bzip 
 
   call :append_log_begin log4cxx
   
@@ -569,13 +558,13 @@ goto end_log4cxx_deps
 
   cd %LOG4CXX_DIR%\projects >nul 2>nul
   
-  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "clean release" bzip
+  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean release" && goto bzip
 
-  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "clean debug" bzip
+  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean debug" && goto bzip
   
-  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build release" bzip
+  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build release" && goto bzip
 
-  ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build debug" bzip
+  ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build debug" && goto bzip
 
   IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx mkdir %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx >nul 2>nul
   
@@ -617,9 +606,7 @@ goto end_bzip_deps
   
   echo | set /p="Installing bzip2... "<nul
     
-  IF EXIST %BZIP2_LIBRARY% ( 
-    call :skip_build readline 
-  )
+  IF EXIST %BZIP2_LIBRARY% call :skip_build && goto readline 
 
   call :append_log_begin bzip
   
@@ -627,25 +614,23 @@ goto end_bzip_deps
 
   cd %BZIP2_DIR% >nul 2>nul
   
-  del lib /S /Q >nul 2>nul
-  
-  mkdir lib >nul 2>nul
-  
-  ( nmake /f makefile.msc lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "build release" readline
-  
-  xcopy *.lib lib /Y >nul 2>nul 
-  
-  ( nmake /f makefile.msc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "clean release" readline
-  
-  ( nmake /f makefile.msc DEBUG=1 lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "build debug" readline
-
-  xcopy *.lib lib /Y >nul 2>nul 
-
-  ( nmake /f makefile.msc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "clean debug" readline
-  
   del *.lib /Q >nul 2>nul
 
-  del *.pdb /S /Q >nul 2>nul
+  del *.pdb /Q >nul 2>nul
+  
+  IF NOT EXIST lib mkdir lib >nul 2>nul
+  
+  ( nmake /f makefile.msc lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "build release" && goto readline
+  
+  xcopy *.lib lib /Y >nul 2>nul 
+  
+  ( nmake /f makefile.msc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip  "clean release" && goto readline
+  
+  ( nmake /f makefile.msc DEBUG=1 lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "build debug" && goto readline
+
+  xcopy *.lib lib /Y >nul 2>nul 
+
+  ( nmake /f makefile.msc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip  "clean debug" && goto readline
   
   call :append_log_end bzip
   
@@ -673,9 +658,7 @@ goto end_readline_deps
   
   echo | set /p="Installing readline... "<nul
     
-  IF EXIST %READLINE% ( 
-    call :skip_build pcre 
-  )
+  IF EXIST %READLINE% call :skip_build && goto pcre 
 
   call :append_log_begin readline
   
@@ -683,13 +666,13 @@ goto end_readline_deps
 
   cd %READLINE_DIR% >nul 2>nul
 
-  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "clean release" pcre
+  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline  "clean release" && goto pcre
   
-  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "clean debug" pcre
+  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline  "clean debug" && goto pcre
   
-  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "build release" pcre
+  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "build release" && goto pcre
   
-  ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "build debug" pcre
+  ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog readline "build debug" && goto pcre
   
   xcopy %READLINE_DIR%\x64\Release\*.dll %LIBS_DIR% /Y >nul 2>nul
   
@@ -717,17 +700,15 @@ set PCRE_LIBRARIES=debug;%PCRED_LIBRARY%;optimized;%PCRE_LIBRARY%
 :: Check dependencies
 goto end_pcre_deps
 :pcre_deps
-  IF NOT EXIST %BZIP% call :remove_lib pcre freexl
-  IF NOT EXIST %ZLIB% call :remove_lib pcre freexl
-  IF NOT EXIST %READLINE% call :remove_lib pcre freexl
+  IF NOT EXIST %BZIP% call :remove_lib pcre && goto freexl_deps
+  IF NOT EXIST %ZLIB% call :remove_lib pcre && goto freexl_deps
+  IF NOT EXIST %READLINE% call :remove_lib pcre && goto freexl_deps
   goto freexl_deps
 :end_pcre_deps
   
   echo | set /p="Installing pcre... "<nul
     
-  IF EXIST %PCRE% ( 
-    call :skip_build freexl 
-  )
+  IF EXIST %PCRE% call :skip_build && goto freexl 
 
   call :append_log_begin pcre
   
@@ -741,7 +722,7 @@ goto end_pcre_deps
 
   cd build >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" ^
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" ^
  -DBZIP2_INCLUDE_DIR="%BZIP2_INCLUDE_DIR%"^
  -DBZIP2_LIBRARY_RELEASE="%BZIP2_LIBRARY%"^
  -DBZIP2_LIBRARY_DEBUG="%BZIP2D_LIBRARY%"^
@@ -749,11 +730,11 @@ goto end_pcre_deps
  -DZLIB_LIBRARY:STRING="%ZL_LIBRARIES%"^
  -DREADLINE_INCLUDE_DIR="%READLINE_INCLUDE_DIR%"^
  -DREADLINE_LIBRARY:STRING="%READLINE_LIBRARIES%"^
- -DBUILD_SHARED_LIBS=ON %PCRE_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog pcre "configuring" freexl 
+ -DBUILD_SHARED_LIBS=ON %PCRE_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog pcre "configuring" && goto freexl 
    
-  ( msbuild /m /p:Configuration=Release pcre.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog pcre "build release" freexl
+  ( msbuild /m /p:Configuration=Release pcre.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog pcre "build release" && goto freexl
 
-  ( msbuild /m pcre.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog pcre "build debug" freexl
+  ( msbuild /m pcre.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog pcre "build debug" && goto freexl
 
   xcopy %PCRE_DIR%\build\Release\pcre.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -781,15 +762,13 @@ set FREEXL_LIBRARIES=debug;%FREEXLD_LIBRARY%;optimized;%FREEXL_LIBRARY%
 :: Check dependencies
 goto end_freexl_deps
 :freexl_deps
-  IF NOT EXIST %ICONV% call :remove_lib freexl proj
+  IF NOT EXIST %ICONV% call :remove_lib freexl && goto proj_deps
   goto proj_deps
 :end_freexl_deps
   
   echo | set /p="Installing freexl... "<nul
     
-  IF EXIST %FREEXL% ( 
-    call :skip_build proj 
-  )
+  IF EXIST %FREEXL% call :skip_build && goto proj 
 
   call :append_log_begin freexl
   
@@ -803,15 +782,15 @@ goto end_freexl_deps
   
   del *.ilk /S /Q >nul 2>nul
   
-  ( nmake /f makefile.vc >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "build release" proj
+  ( nmake /f makefile.vc >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "build release" && goto proj
 
   xcopy *.lib lib /Y >nul 2>nul
 
   xcopy *.dll lib /Y >nul 2>nul
 
-  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "clean release" proj
+  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl  "clean release" && goto proj
   
-  ( nmake /f makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "build debug" proj
+  ( nmake /f makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "build debug" && goto proj
   
   xcopy *.lib lib /Y >nul 2>nul
 
@@ -819,7 +798,7 @@ goto end_freexl_deps
 
   xcopy lib\*.dll %LIBS_DIR% /Y >nul 2>nul
 
-  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl "clean debug" proj
+  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog freexl  "clean debug" && goto proj
   
   call :append_log_end freexl
   
@@ -847,9 +826,7 @@ goto end_proj_deps
   
   echo | set /p="Installing proj... "<nul
     
-  IF EXIST %PROJ% ( 
-    call :skip_build png 
-  )
+  IF EXIST %PROJ% call :skip_build && goto png 
 
   call :append_log_begin proj
   
@@ -859,17 +836,17 @@ goto end_proj_deps
   
   del *.ilk /S /Q >nul 2>nul
 
-  ( nmake /f makefile.vc install-all INSTDIR=%TERRALIB_DEPENDENCIES_DIR% >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "build release" png
+  ( nmake /f makefile.vc install-all INSTDIR=%TERRALIB_DEPENDENCIES_DIR% >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "build release" && goto png
   
-  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "clean release" png
+  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj  "clean release" && goto png
   
-  ( nmake /f makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "build debug" png
+  ( nmake /f makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "build debug" && goto png
     
   xcopy src\*d.lib %LIBS_DIR% /Y >nul 2>nul
 
   xcopy src\*d.dll %LIBS_DIR% /Y >nul 2>nul
   
-  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj "clean debug" png
+  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog proj  "clean debug" && goto png
 
   call :append_log_end proj
   
@@ -891,15 +868,13 @@ set PNGD_LIBRARY=%PNG_DIR%\deploy\lib\libpng15d.lib
 :: Check dependencies
 goto end_png_deps
 :png_deps
-  IF NOT EXIST %ZLIB% call :remove_lib png geos
+  IF NOT EXIST %ZLIB% call :remove_lib png && goto geos_deps
   goto geos_deps
 :end_png_deps
   
   echo | set /p="Installing libpng... "<nul
     
-  IF EXIST %PNG% ( 
-    call :skip_build geos 
-  )
+  IF EXIST %PNG% call :skip_build && goto geos 
 
   call :append_log_begin png
   
@@ -915,15 +890,15 @@ goto end_png_deps
 
   cd build >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%PNG_DIR%\deploy"^
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%PNG_DIR%\deploy"^
  -DPNG_STATIC=OFF^
  -DPNG_TESTS=OFF^
  -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
- -DZLIB_LIBRARY:STRING="%ZL_LIBRARIES%" %PNG_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog png "configuring" geos
+ -DZLIB_LIBRARY:STRING="%ZL_LIBRARIES%" %PNG_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog png "configuring" && goto geos
  
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog png "build release" geos
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog png "build release" && goto geos
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog png "build debug" geos
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog png "build debug" && goto geos
   
   xcopy %PNG_DIR%\deploy\bin\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -954,9 +929,7 @@ goto end_geos_deps
   
   echo | set /p="Installing geos... "<nul
     
-  IF EXIST %GEOS% ( 
-    call :skip_build jpeg 
-  )
+  IF EXIST %GEOS% call :skip_build && goto jpeg 
 
   call :append_log_begin geos
   
@@ -968,7 +941,7 @@ goto end_geos_deps
   
   IF NOT EXIST geos_svn_revision.h echo #define GEOS_SVN_REVISION "1.2.1" > geos_svn_revision.h 2>nul
  
-  ( nmake /f makefile.vc WIN64=YES >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "build release" jpeg
+  ( nmake /f makefile.vc WIN64=YES >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "build release" && goto jpeg
   
   del lib /S /Q >nul 2>nul 
 
@@ -979,17 +952,17 @@ goto end_geos_deps
   xcopy src\*.dll lib /Y >nul 2>nul 
 
 ::  Clean  
-  ( nmake /f makefile.vc WIN64=YES clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "clean release" jpeg
+  ( nmake /f makefile.vc WIN64=YES clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos  "clean release" && goto jpeg
 
   del capi\*.obj /Q >nul 2>nul
 
-  ( nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "build debug" jpeg
+  ( nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "build debug" && goto jpeg
 
   xcopy src\*.dll .\lib /Y >nul 2>nul
 
   xcopy src\*.lib .\lib /Y >nul 2>nul
   
-  ( nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos "clean debug" jpeg
+  ( nmake /f makefile.vc BUILD_DEBUG=YES WIN64=YES clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geos  "clean debug" && goto jpeg
 
   del capi\*.obj /Q >nul 2>nul
 
@@ -1033,9 +1006,7 @@ goto end_jpeg_deps
   
   echo | set /p="Installing jpeg... "<nul
     
-  IF EXIST %JPEG% ( 
-    call :skip_build hdf4 
-  )
+  IF EXIST %JPEG% call :skip_build && goto hdf4 
 
   call :append_log_begin jpeg
   
@@ -1047,17 +1018,17 @@ del build /S /Q >nul 2>nul
 
 mkdir build >nul 2>nul
 
-( nmake /f makefile.vc libjpeg.lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "build release" hdf4
+( nmake /f makefile.vc libjpeg.lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "build release" && goto hdf4
 
 xcopy *.lib build /Y >nul 2>nul
 
-( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "clean release" hdf4
+( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg  "clean release" && goto hdf4
 
-( nmake /f makefile.vc DEBUG=1 libjpeg.lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "build debug" hdf4
+( nmake /f makefile.vc DEBUG=1 libjpeg.lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "build debug" && goto hdf4
 
 xcopy *.lib build /Y >nul 2>nul
 
-( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg "clean debug" hdf4
+( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog jpeg  "clean debug" && goto hdf4
 
   call :append_log_end jpeg
   
@@ -1081,16 +1052,14 @@ set MFHDFD_LIBRARY=%HDF4C_DIR%\binaries\lib\mfhdfddll.lib
 :: Check dependencies
 goto end_hdf4_deps
 :hdf4_deps
-  IF NOT EXIST %JPEG% call :remove_lib hdf4 tiff
-  IF NOT EXIST %ZLIB% call :remove_lib hdf4 tiff
+  IF NOT EXIST %JPEG% call :remove_lib hdf4 && goto tiff_deps
+  IF NOT EXIST %ZLIB% call :remove_lib hdf4 && goto tiff_deps
   goto tiff_deps
 :end_hdf4_deps
   
   echo | set /p="Installing hdf4... "<nul
     
-  IF EXIST %HDF4% ( 
-    call :skip_build tiff 
-  )
+  IF EXIST %HDF4% call :skip_build && goto tiff 
 
   call :append_log_begin hdf4
   
@@ -1106,7 +1075,7 @@ goto end_hdf4_deps
 
   cd build >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%HDF4C_DIR%\binaries"^
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%HDF4C_DIR%\binaries"^
  -DBUILD_SHARED_LIBS=ON^
  -DHDF4_DISABLE_COMPILER_WARNINGS=ON^
  -DHDF4_ENABLE_COVERAGE=ON^
@@ -1115,11 +1084,11 @@ goto end_hdf4_deps
  -DJPEG_INCLUDE_DIR="%JPG_INCLUDE_DIR%"^
  -DJPEG_LIBRARY="%JPG_LIBRARY%"^
  -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
- -DZLIB_LIBRARY="%ZL_LIBRARY%" %HDF4C_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog hdf4 "configuring" tiff
+ -DZLIB_LIBRARY="%ZL_LIBRARY%" %HDF4C_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog hdf4 "configuring" && goto tiff
 
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLoghdf4 "build release" tiff
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLoghdf4 "build release" && goto tiff
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLoghdf4 "build debug" tiff
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLoghdf4 "build debug" && goto tiff
   
   xcopy %HDF4C_DIR%\binaries\bin\hdf* %LIBS_DIR% /Y >nul 2>nul
 
@@ -1147,16 +1116,14 @@ set TIFFD_LIBRARY=%TIFF_DIR%\libtiff\lib\libtiff_id.lib
 :: Check dependencies
 goto end_tiff_deps
 :tiff_deps
-  IF NOT EXIST %JPEG% call :remove_lib tiff geotiff
-  IF NOT EXIST %ZLIB% call :remove_lib tiff geotiff
+  IF NOT EXIST %JPEG% call :remove_lib tiff && goto geotiff_deps
+  IF NOT EXIST %ZLIB% call :remove_lib tiff && goto geotiff_deps
   goto geotiff_deps
 :end_tiff_deps
   
   echo | set /p="Installing tiff... "<nul
     
-  IF EXIST %TIFF% ( 
-    call :skip_build geotiff 
-  )
+  IF EXIST %TIFF% call :skip_build && goto geotiff 
 
   call :append_log_begin tiff
   
@@ -1172,21 +1139,21 @@ del *.ilk /S /Q >nul 2>nul
 
 mkdir lib >nul 2>nul
 
-( nmake /f Makefile.vc >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "build release" geotiff
+( nmake /f Makefile.vc >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "build release" && goto geotiff
 
 xcopy *i.lib lib /Y >nul 2>nul
 
 xcopy *.dll lib /Y >nul 2>nul
 
-( nmake /f Makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "clean release" geotiff
+( nmake /f Makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff  "clean release" && goto geotiff
 
-( nmake /f Makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "build debug" geotiff
+( nmake /f Makefile.vc DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "build debug" && goto geotiff
 
 xcopy *id.lib lib /Y >nul 2>nul
 
 xcopy *.dll lib /Y >nul 2>nul
 
-( nmake /f Makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff "clean debug" geotiff
+( nmake /f Makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog tiff  "clean debug" && goto geotiff
 
 xcopy lib\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -1214,16 +1181,14 @@ set GTIFFD_LIBRARY=%GTIFF_DIR%\lib\libgeotiff_id.lib
 :: Check dependencies
 goto end_geotiff_deps
 :geotiff_deps
-  IF NOT EXIST %PROJ% call :remove_lib geotiff curl
-  IF NOT EXIST %TIFF% call :remove_lib geotiff curl
+  IF NOT EXIST %PROJ% call :remove_lib geotiff && goto curl_deps
+  IF NOT EXIST %TIFF% call :remove_lib geotiff && goto curl_deps
   goto curl_deps
 :end_geotiff_deps
   
   echo | set /p="Installing geotiff... "<nul
     
-  IF EXIST %GEOTIFF% ( 
-    call :skip_build curl 
-  )
+  IF EXIST %GEOTIFF% call :skip_build && goto curl 
 
   call :append_log_begin geotiff
   
@@ -1235,15 +1200,15 @@ del lib /S /Q >nul 2>nul
 
 mkdir lib >nul 2>nul
 
-( nmake /f makefile.vc libgeotiff.dll >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "build release" curl
+( nmake /f makefile.vc libgeotiff.dll >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "build release" && goto curl
 
 xcopy *i.lib lib /Y >nul 2>nul
 
 xcopy *.dll lib /Y >nul 2>nul
 
-( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "clean release" curl
+( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff  "clean release" && goto curl
 
-( nmake /f makefile.vc DEBUG=1 libgeotiffd.dll >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "build debug" curl
+( nmake /f makefile.vc DEBUG=1 libgeotiffd.dll >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "build debug" && goto curl
 
 xcopy *id.lib lib /Y >nul 2>nul
 
@@ -1251,7 +1216,7 @@ xcopy *.dll lib /Y >nul 2>nul
 
 xcopy lib\*.dll %LIBS_DIR% /Y >nul 2>nul
 
-( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff "clean debug" curl
+( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog geotiff  "clean debug" && goto curl
 
 echo done.
 
@@ -1273,16 +1238,14 @@ set CURLD_LIBRARY=%CURL_DIR%\binaries\lib\libcurld.lib
 :: Check dependencies
 goto end_curl_deps
 :curl_deps
-  IF NOT EXIST %ZLIB% call :remove_lib curl icu
-  IF NOT EXIST %SSL% call :remove_lib curl icu
+  IF NOT EXIST %ZLIB% call :remove_lib curl && goto icu_deps
+  IF NOT EXIST %SSL% call :remove_lib curl && goto icu_deps
   goto icu_deps
 :end_curl_deps
   
   echo | set /p="Installing curl... "<nul
     
-  IF EXIST %CURL% ( 
-    call :skip_build icu 
-  )
+  IF EXIST %CURL% call :skip_build && goto icu 
 
   call :append_log_begin curl
   
@@ -1298,9 +1261,9 @@ mkdir %CURL_DIR%\binaries\include >nul 2>nul
 
   cd %CURL_DIR%\winbuild >nul 2>nul
 
-  ( nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=no MACHINE=x64 >>%BUILD_LOG% 2>nul ) || call :buildFailLog curl "build release" icu
+  ( nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=no MACHINE=x64 >>%BUILD_LOG% 2>nul ) || call :buildFailLog curl "build release" && goto icu
 
-  ( nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=yes MACHINE=x64 >>%BUILD_LOG% 2>nul ) || call :buildFailLog curl "build debug" icu
+  ( nmake /f Makefile.vc mode=dll VC=12 WITH_SSL=dll WITH_ZLIB=dll DEBUG=yes MACHINE=x64 >>%BUILD_LOG% 2>nul ) || call :buildFailLog curl "build debug" && goto icu
   
   xcopy %CURL_DIR%\builds\libcurl-vc12-x64-debug-dll-ssl-dll-zlib-dll-ipv6-sspi\bin\*.dll %CURL_DIR%\binaries\lib /Y >nul 2>nul 
   
@@ -1343,9 +1306,7 @@ goto end_icu_deps
   
   echo | set /p="Installing icu... "<nul
     
-  IF EXIST %ICU% ( 
-    call :skip_build xerces 
-  )
+  IF EXIST %ICU% call :skip_build && goto xerces 
 
   call :append_log_begin icu
   
@@ -1355,13 +1316,13 @@ set ICUROOT=%ICU_DIR%
   
   cd %ICU_DIR%\source\allinone >nul 2>nul
   
-  ( msbuild /m /t:clean /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "clean release" xerces
+  ( msbuild /m /t:clean /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean release" && goto xerces
 
-  ( msbuild /m /t:clean allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "clean debug" xerces
+  ( msbuild /m /t:clean allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean debug" && goto xerces
   
-  ( msbuild /m /t:makedata /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build release" xerces
+  ( msbuild /m /t:makedata /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build release" && goto xerces
 
-  ( msbuild /m /t:common allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build debug" xerces
+  ( msbuild /m /t:common allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build debug" && goto xerces
   
   xcopy %ICU_DIR%\bin64\icuuc52.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -1393,15 +1354,13 @@ set XERCES_ICU_LIBRARY=%XERCESCROOT%\src\xercesc\util\MsgLoaders\ICU\resources\x
 :: Check dependencies
 goto end_xerces_deps
 :xerces_deps
-  IF NOT EXIST %ICU% call :remove_lib xerces xml2
+  IF NOT EXIST %ICU% call :remove_lib xerces && goto xml2_deps
   goto xml2_deps
 :end_xerces_deps
   
   echo | set /p="Installing xerces... "<nul
     
-  IF EXIST %XERCES% ( 
-    call :skip_build xml2 
-  )
+  IF EXIST %XERCES% call :skip_build && goto xml2 
 
   call :append_log_begin xerces
   
@@ -1416,13 +1375,13 @@ goto end_xerces_deps
   
   cd %XERCESCROOT%\projects\Win32\VC12\xerces-all >nul 2>nul  
 
-  ( msbuild /m /t:XercesLib /t:clean /p:Configuration="ICU Release" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "clean release" xml2 
+  ( msbuild /m /t:XercesLib /t:clean /p:Configuration="ICU Release" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces  "clean release" && goto xml2 
 
-  ( msbuild /m /t:XercesLib /t:clean /p:Configuration="ICU Debug" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "clean debug" xml2
+  ( msbuild /m /t:XercesLib /t:clean /p:Configuration="ICU Debug" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces  "clean debug" && goto xml2
   
-  ( msbuild /m /t:XercesLib /p:Configuration="ICU Release" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "build release" xml2
+  ( msbuild /m /t:XercesLib /p:Configuration="ICU Release" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "build release" && goto xml2
 
-  ( msbuild /m /t:XercesLib /p:Configuration="ICU Debug" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "build debug" xml2 
+  ( msbuild /m /t:XercesLib /p:Configuration="ICU Debug" xerces-all.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog xerces "build debug" && goto xml2 
   
 :: Install  
   cd %XERCESCROOT% >nul 2>nul
@@ -1463,17 +1422,15 @@ set XML2D_LIBRARY=%XML2_DIR%\win32\bin.dbg.msvc\libxml2d.lib
 :: Check dependencies
 goto end_xml2_deps
 :xml2_deps
-  IF NOT EXIST %ICONV% call :remove_lib xml2 libboost
-  IF NOT EXIST %ICU% call :remove_lib xml2 libboost
-  IF NOT EXIST %ZLIB% call :remove_lib xml2 libboost
+  IF NOT EXIST %ICONV% call :remove_lib xml2 && goto libboost_deps
+  IF NOT EXIST %ICU% call :remove_lib xml2 && goto libboost_deps
+  IF NOT EXIST %ZLIB% call :remove_lib xml2 && goto libboost_deps
   goto libboost_deps
 :end_xml2_deps
   
   echo | set /p="Installing xml2... "<nul
     
-  IF EXIST %XML2% ( 
-    call :skip_build libboost 
-  )
+  IF EXIST %XML2% call :skip_build && goto libboost 
 
   call :append_log_begin xml2
   
@@ -1489,9 +1446,9 @@ goto end_xml2_deps
 
   del int.dbg.msvc /S /Q >nul 2>nul 
   
-  ( nmake /f Makefile.msvc libxml >>%BUILD_LOG% 2>nul ) || call :buildFailLog xml2 "build release" libboost
+  ( nmake /f Makefile.msvc libxml >>%BUILD_LOG% 2>nul ) || call :buildFailLog xml2 "build release" && goto libboost
   
-  ( nmake /f Makefile.msvc DEBUG=1 libxml >>%BUILD_LOG% 2>nul ) || call :buildFailLog xml2 "build debug" libboost
+  ( nmake /f Makefile.msvc DEBUG=1 libxml >>%BUILD_LOG% 2>nul ) || call :buildFailLog xml2 "build debug" && goto libboost
   
   xcopy %XML2_DIR%\win32\bin.msvc\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -1510,21 +1467,20 @@ goto end_xml2_deps
 
 :: BOOST
 set B_DIR=%ROOT_DIR%\boost_1_58_0
+set BOOST_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
 
 :: Check dependencies
 goto end_libboost_deps
 :libboost_deps
-  IF NOT EXIST %ICONV% call :remove_lib boost pgis
-  IF NOT EXIST %BZIP% call :remove_lib boost pgis
-  IF NOT EXIST %ICU% call :remove_lib boost pgis
+  IF NOT EXIST %ICONV% call :remove_lib boost && goto pgis_deps
+  IF NOT EXIST %BZIP% call :remove_lib boost && goto pgis_deps
+  IF NOT EXIST %ICU% call :remove_lib boost && goto pgis_deps
   goto pgis_deps
 :end_libboost_deps
   
   echo | set /p="Installing boost... "<nul
     
-  IF EXIST %BOOST% ( 
-    call :skip_build pgis 
-  )
+  IF EXIST %BOOST% call :skip_build && goto minizip 
 
   call :append_log_begin libboost
   
@@ -1534,7 +1490,7 @@ goto end_libboost_deps
 
   ( call bootstrap.bat vc12 setup-amd64 --with-chrono,date_time,filesystem,system,thread,timer,locale >>%CONFIG_LOG% 2>nul ) || goto configFail
   
-  ( b2 -a toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building" pgis
+  ( b2 -a toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building" && goto minizip
 
   echo done.
 
@@ -1545,6 +1501,154 @@ goto end_libboost_deps
   cd %ROOT_DIR%
 :: ====
 
+:minizip
+
+:: Minizip
+::  ====
+set MINIZIP_DIR=%ROOT_DIR%\unzip101e
+set MZ_INCLUDE_DIR=%MINIZIP_DIR%
+set MINIZIP_LIBRARY=%MINIZIP_DIR%\build\Release\minizip.lib
+set MINIZIPD_LIBRARY=%MINIZIP_DIR%\build\Debug\minizipd.lib
+set MINIZIP_LIBRARIES=debug;%MINIZIPD_LIBRARY%;optimized;%MINIZIP_LIBRARY%
+
+:: Check dependencies
+goto end_minizip_deps
+:minizip_deps
+  IF NOT EXIST %ZLIB% del %MINIZIP% /Q >nul 2>nul && goto uriparser_deps
+  goto uriparser_deps
+:end_minizip_deps
+
+  echo | set /p="Installing minizip... "<nul
+  
+  IF EXIST %MINIZIP% call :skip_build && goto uriparser
+
+  call :append_log_begin minizip
+  
+:begin_minizip
+
+  cd %MINIZIP_DIR% >nul 2>nul
+
+  del build /S /Q >nul 2>nul
+  
+  mkdir build >nul 2>nul
+
+  cd build >nul 2>nul
+
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_DEBUG_POSTFIX="d"^
+  -DZLIB_INCLUDE_DIR="%ZL_INCLUDE_DIR%"^
+  -DZLIB_LIBRARY:STRING=%ZL_LIBRARIES%^
+  %MINIZIP_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog minizip "configuring" && goto uriparser
+
+  ( msbuild /m /p:Configuration=Release minizip.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog minizip "build release" && goto uriparser
+
+  ( msbuild /m minizip.sln  >>%BUILD_LOG% 2>nul ) || call :buildFailLog minizip "build debug" && goto uriparser
+
+  echo done.
+  
+  call :append_log_end minizip
+  
+:end_minizip  
+
+  cd %ROOT_DIR%
+:: ====
+
+:uriparser
+
+::  URIParser 
+set URIPARSER_DIR=%ROOT_DIR%\uriparser-0.8.4
+set UR_INCLUDE_DIR=%URIPARSER_DIR%\include
+set URIPARSER_LIBRARY=%URIPARSER_DIR%\win32\uriparser.lib
+set URIPARSERD_LIBRARY=%URIPARSER_DIR%\win32\uriparserd.lib
+set URIPARSER_LIBRARIES=debug;%URIPARSERD_LIBRARY%;optimized;%URIPARSER_LIBRARY%
+
+:: Check dependencies
+goto end_uriparser_deps
+:uriparser_deps
+  goto libkml_deps
+:end_uriparser_deps
+  
+  echo | set /p="Installing uriparser... "<nul
+    
+  IF EXIST %URIPARSER% call :skip_build && goto libkml 
+
+  call :append_log_begin uriparser
+  
+:begin_uriparser
+  
+  cd %URIPARSER_DIR%\win32\Visual_Studio_2005 >nul 2>nul
+  
+  ( msbuild /m /p:Configuration=Release uriparser.vcxproj /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog uriparser "clean release" && goto libkml
+
+  ( msbuild /m uriparser.vcxproj /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog uriparser "clean debug" && goto libkml
+  
+  ( msbuild /m /p:Configuration=Release uriparser.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog uriparser "build release" && goto libkml
+
+  ( msbuild /m uriparser.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog uriparser "build debug" && goto libkml
+  
+  echo done.
+
+  call :append_log_end uriparser
+  
+:end_uriparser
+
+  cd %ROOT_DIR%
+:: ====
+
+:libkml
+
+:: LibKML
+::  ====
+set LIBKML_DIR=%ROOT_DIR%\libkml-master
+set LIBKML_INCLUDE_DIR=%LIBKML_DIR%\src
+set LIBKML_LIBRARY=%LIBKML_DIR%\build\Release\libkml.lib
+set LIBKMLD_LIBRARY=%LIBKML_DIR%\build\Debug\libkmld.lib
+
+:: Check dependencies
+goto end_libkml_deps
+:libkml_deps
+  IF NOT EXIST %BOOST% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  IF NOT EXIST %EXPAT% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  IF NOT EXIST %MINIZIP% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  IF NOT EXIST %URIPARSER% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  IF NOT EXIST %ZLIB% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  goto pgis_deps
+:end_libkml_deps
+
+  echo | set /p="Installing libkml... "<nul
+  
+  IF EXIST %LIBKML% call :skip_build && goto pgis
+
+  call :append_log_begin libkml
+  
+:begin_libkml
+
+  cd %LIBKML_DIR% >nul 2>nul
+
+  del build /S /Q >nul 2>nul
+  
+  mkdir build >nul 2>nul
+
+  cd build >nul 2>nul
+
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_DEBUG_POSTFIX="d"^
+  -DCMAKE_PREFIX_PATH=%TERRALIB_DEPENDENCIES_DIR%;%EXPAT_DIR%\binaries;%MINIZIP_DIR%;%URIPARSER_DIR%^
+  -DZLIB_INCLUDE_DIR="%ZL_INCLUDE_DIR%"^
+  -DZLIB_LIBRARY:STRING=%ZL_LIBRARIES%^
+  %LIBKML_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog libkml "configuring" && goto pgis
+
+  ( msbuild /m /p:Configuration=Release libkml.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog libkml "build release" && goto pgis
+
+  ( msbuild /m libkml.sln  >>%BUILD_LOG% 2>nul ) || call :buildFailLog libkml "build debug" && goto pgis
+
+  echo done.
+
+  call :append_log_end libkml
+  
+:end_libkml  
+
+  cd %ROOT_DIR%
+  
+:: ====
 
 :: libxslt
 :: set XSLT_DIR=%CD%\libxslt-1.1.28
@@ -1581,15 +1685,13 @@ set PGD_LIBRARY=%LIBS_DIR%\libpqddll.lib
 :: Check dependencies
 goto end_pgis_deps
 :pgis_deps
-  IF NOT EXIST %SSL% call :remove_lib pgis netcdf
+  IF NOT EXIST %SSL% call :remove_lib pgis && goto netcdf_deps
   goto netcdf_deps
 :end_pgis_deps
   
   echo | set /p="Installing libpq... "<nul
     
-  IF EXIST %PGIS% ( 
-    call :skip_build netcdf 
-  )
+  IF EXIST %PGIS% call :skip_build && goto netcdf 
 
   call :append_log_begin pgis
   
@@ -1601,9 +1703,9 @@ goto end_pgis_deps
 
   del Debug /S /Q >nul 2>nul
   
-  ( nmake /f win32.mak CPU="AMD64" USE_SSL=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog pgis "build release" netcdf
+  ( nmake /f win32.mak CPU="AMD64" USE_SSL=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog pgis "build release" && goto netcdf
 
-  ( nmake /f win32.mak CPU="AMD64" USE_SSL=1 DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog pgis "build debug" netcdf
+  ( nmake /f win32.mak CPU="AMD64" USE_SSL=1 DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog pgis "build debug" && goto netcdf
   
   xcopy libpq-fe.h %TERRALIB_DEPENDENCIES_DIR%\include /Y >nul 2>nul
   
@@ -1639,17 +1741,15 @@ set NETCDFD_LIBRARY=%NETCDF_DIR%\binaries\lib\netcdfd.lib
 :: Check dependencies
 goto end_netcdf_deps
 :netcdf_deps
-  IF NOT EXIST %JPEG% call :remove_lib netcdf sqlite
-  IF NOT EXIST %CURL% call :remove_lib netcdf sqlite
-  IF NOT EXIST %HDF4% call :remove_lib netcdf sqlite
+  IF NOT EXIST %JPEG% call :remove_lib netcdf && goto sqlite_deps
+  IF NOT EXIST %CURL% call :remove_lib netcdf && goto sqlite_deps
+  IF NOT EXIST %HDF4% call :remove_lib netcdf && goto sqlite_deps
   goto sqlite_deps
 :end_netcdf_deps
   
   echo | set /p="Installing netcdf... "<nul
     
-  IF EXIST %NETCDF% ( 
-    call :skip_build sqlite 
-  )
+  IF EXIST %NETCDF% call :skip_build && goto sqlite 
 
   call :append_log_begin netcdf
   
@@ -1665,7 +1765,7 @@ goto end_netcdf_deps
 
   cd build >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%NETCDF_DIR%\binaries"^
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%NETCDF_DIR%\binaries"^
  -DCMAKE_DEBUG_POSTFIX="d"^
  -DJPEGLIB_H_INCLUDE_DIR="%JPG_INCLUDE_DIR%"^
  -DJPEG_LIB:STRING="debug;%JPGD_LIBRARY%;optimized;%JPG_LIBRARY%"^
@@ -1678,11 +1778,11 @@ goto end_netcdf_deps
  -DENABLE_HDF4=ON^
  -DUSE_HDF4=ON^
  -DUSE_HDF5=OFF^
- -DENABLE_NETCDF_4=OFF %NETCDF_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog netcdf "configuring" sqlite
+ -DENABLE_NETCDF_4=OFF %NETCDF_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog netcdf "configuring" && goto sqlite
 
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog netcdf "build release" sqlite
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog netcdf "build release" && goto sqlite
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog netcdf "build debug" sqlite
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog netcdf "build debug" && goto sqlite
 
   xcopy %NETCDF_DIR%\binaries\bin\net* %LIBS_DIR% /Y >nul 2>nul
 
@@ -1711,9 +1811,7 @@ goto end_sqlite_deps
   
   echo | set /p="Installing sqlite... "<nul
     
-  IF EXIST %SQLITE% ( 
-    call :skip_build spatialite 
-  )
+  IF EXIST %SQLITE% call :skip_build && goto spatialite 
 
   call :append_log_begin sqlite
   
@@ -1721,9 +1819,9 @@ goto end_sqlite_deps
   
   cd %SQLITE_DIR% >nul 2>nul
 
-  cl sqlite3.c /DSQLITE_API=__declspec(dllexport) -link -dll -out:sqlite3.dll >>%BUILD_LOG% 2>nul || call :buildFailLog sqlite "build release" spatialite
+  cl sqlite3.c /DSQLITE_API=__declspec(dllexport) -link -dll -out:sqlite3.dll >>%BUILD_LOG% 2>nul || call :buildFailLog sqlite "build release" && goto spatialite
 
-  cl sqlite3.c /DSQLITE_API=__declspec(dllexport) /DSQLITE_DEBUG -link -dll -out:sqlite3d.dll >>%BUILD_LOG% 2>nul || call :buildFailLog sqlite "build debug" spatialite
+  cl sqlite3.c /DSQLITE_API=__declspec(dllexport) /DSQLITE_DEBUG -link -dll -out:sqlite3d.dll >>%BUILD_LOG% 2>nul || call :buildFailLog sqlite "build debug" && goto spatialite
   
   xcopy *.h %TERRALIB_DEPENDENCIES_DIR%\include /Y >nul 2>nul
 
@@ -1751,21 +1849,19 @@ set SPLITED_LIBRARY=%LIBS_DIR%\spatialite_id.lib
 :: Check dependencies
 goto end_spatialite_deps
 :spatialite_deps
-  IF NOT EXIST %PROJ% call :remove_lib spatialite gdal
-  IF NOT EXIST %GEOS% call :remove_lib spatialite gdal
-  IF NOT EXIST %ICONV% call :remove_lib spatialite gdal
-  IF NOT EXIST %SQLITE% call :remove_lib spatialite gdal
-  IF NOT EXIST %FREEXL% call :remove_lib spatialite gdal
-  IF NOT EXIST %ZLIB% call :remove_lib spatialite gdal
-  IF NOT EXIST %XML2% call :remove_lib spatialite gdal
+  IF NOT EXIST %PROJ% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %GEOS% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %ICONV% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %SQLITE% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %FREEXL% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %ZLIB% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %XML2% call :remove_lib spatialite && goto gdal_deps
   goto gdal_deps
 :end_spatialite_deps
   
   echo | set /p="Installing spatialite... "<nul
     
-  IF EXIST %SPATIALITE% ( 
-    call :skip_build gdal 
-  )
+  IF EXIST %SPATIALITE% call :skip_build && goto gdal 
 
   call :append_log_begin spatialite
   
@@ -1773,13 +1869,13 @@ goto end_spatialite_deps
   
   cd %SPLITE_DIR% >nul 2>nul
 
-  ( nmake /f makefile.vc install >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "build release" gdal
+  ( nmake /f makefile.vc install >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "build release" && goto gdal
 
-  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "clean release" gdal
+  ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite  "clean release" && goto gdal
 
-  ( nmake /f makefile.vc DEBUG=1 install >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "build debug" gdal
+  ( nmake /f makefile.vc DEBUG=1 install >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "build debug" && goto gdal
 
-  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "clean debug" gdal
+  ( nmake /f makefile.vc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite  "clean debug" && goto gdal
   
   echo done.
 
@@ -1801,30 +1897,29 @@ set GDALD_LIBRARY=%LIBS_DIR%\gdal_id.lib
 :: Check dependencies
 goto end_gdal_deps
 :gdal_deps
-  IF NOT EXIST %XERCES% call :remove_lib gdal property_browser
-  IF NOT EXIST %PROJ% call :remove_lib gdal property_browser
-  IF NOT EXIST %SQLITE% call :remove_lib gdal property_browser
-  IF NOT EXIST %SPATIALITE% call :remove_lib gdal property_browser
-  IF NOT EXIST %GEOS% call :remove_lib gdal property_browser
-  IF NOT EXIST %ICONV% call :remove_lib gdal property_browser
-  IF NOT EXIST %EXPAT% call :remove_lib gdal property_browser
-  IF NOT EXIST %HDF4% call :remove_lib gdal property_browser
-  IF NOT EXIST %NETCDF% call :remove_lib gdal property_browser
-  IF NOT EXIST %GEOTIFF% call :remove_lib gdal property_browser
-  IF NOT EXIST %TIFF% call :remove_lib gdal property_browser
-  IF NOT EXIST %CURL% call :remove_lib gdal property_browser
-  IF NOT EXIST %PNG% call :remove_lib gdal property_browser
-  IF NOT EXIST %FREEXL% call :remove_lib gdal property_browser
-  IF NOT EXIST %XML2% call :remove_lib gdal property_browser
-  IF NOT EXIST %PCRE% call :remove_lib gdal property_browser
+  IF NOT EXIST %XERCES% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %PROJ% call :remove_lib gdal && goto && goto property_browser_deps
+  IF NOT EXIST %SQLITE% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %SPATIALITE% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %GEOS% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %ICONV% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %EXPAT% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %HDF4% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %NETCDF% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %GEOTIFF% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %TIFF% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %CURL% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %PNG% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %FREEXL% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %XML2% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %PCRE% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %LIBKML% call :remove_lib gdal && goto property_browser_deps
   goto property_browser_deps
 :end_gdal_deps
   
   echo | set /p="Installing gdal... "<nul
     
-  IF EXIST %GDAL% ( 
-    call :skip_build property_browser 
-  )
+  IF EXIST %GDAL% call :skip_build && goto property_browser 
 
   call :append_log_begin gdal
   
@@ -1838,21 +1933,21 @@ goto end_gdal_deps
   
   copy nmake.release.opt.in nmake.opt /Y >nul 2>nul
   
-  ( nmake -f makefile.vc MSVC_VER=1800 >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "build release" property_browser
+  ( nmake -f makefile.vc MSVC_VER=1800 >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "build release" && goto property_browser
 
   ( nmake -f makefile.vc MSVC_VER=1800 devinstall >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "install" property_browser
 
-  ( nmake -f makefile.vc MSVC_VER=1800 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "clean release" property_browser
+  ( nmake -f makefile.vc MSVC_VER=1800 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal  "clean release" && goto property_browser
   
   copy nmake.debug.opt.in nmake.opt /Y >nul 2>nul
   
-  ( nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "build debug" property_browser
+  ( nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "build debug" && goto property_browser
   
   xcopy *.dll %LIBS_DIR% /Y >nul 2>nul
 
   xcopy gdal_id.lib %LIBS_DIR% /Y >nul 2>nul
     
-  ( nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal "clean debug" property_browser
+  ( nmake -f makefile.vc MSVC_VER=1800 DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog gdal  "clean debug" && goto property_browser
 
   echo done.
 
@@ -1879,25 +1974,21 @@ goto end_property_browser_deps
   
   echo | set /p="Installing property_browser... "<nul
     
-  IF EXIST %PROPERTYBROWSER% ( 
-    call :skip_build qwt 
-  )
+  IF EXIST %PROPERTYBROWSER% call :skip_build && goto qwt 
 
   call :append_log_begin property_browser
   
 :begin_property_browser
   
-  cd %QBROWSER_DIR% >nul 2>nul
+  cd %QBROWSER_DIR%\buildlib >nul 2>nul
 
-  set TERRALIB_DIR=%TERRALIB_DEPENDENCIES_DIR%
-  
-  ( qmake >>%CONFIG_LOG% 2>nul ) || call :buildFailLog property_browser "configuring" qwt
+  ( qmake "TERRALIB_DIR=%TERRALIB_DEPENDENCIES_DIR%" >>%CONFIG_LOG% 2>nul ) || call :buildFailLog property_browser "configuring" && goto qwt
 
-  ( nmake clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "cleaning" qwt
+  ( nmake clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "cleaning" && goto qwt
 
-  ( nmake >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "building" qwt
+  ( nmake >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "building" && goto qwt
 
-  ( nmake install >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "installing" qwt
+  ( nmake install >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "installing" && goto qwt
   
   echo done.
 
@@ -1921,9 +2012,7 @@ goto end_qwt_deps
   
   echo | set /p="Installing qwt... "<nul
     
-  IF EXIST %QWT% ( 
-    call :skip_build lua 
-  )
+  IF EXIST %QWT% call :skip_build && goto lualib 
 
   call :append_log_begin qwt
   
@@ -1931,13 +2020,13 @@ goto end_qwt_deps
   
   cd %QWT_PATH% >nul 2>nul
 
-  ( qmake qwt.pro -r -spec win32-msvc2013 "QWT_INSTALL_PREFIX_TARGET=%TERRALIB_DEPENDENCIES_DIR%" >>%CONFIG_LOG% 2>nul ) || call :buildFailLog qwt "configuring" lua 
+  ( qmake qwt.pro -r -spec win32-msvc2013 "QWT_INSTALL_PREFIX_TARGET=%TERRALIB_DEPENDENCIES_DIR%" >>%CONFIG_LOG% 2>nul ) || call :buildFailLog qwt "configuring" && goto lua 
 
-  ( nmake clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog  qwt "cleaning" lua
+  ( nmake clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog  qwt "cleaning" && goto lua
 
-  ( nmake >>%BUILD_LOG% 2>nul ) || call :buildFailLog qwt "building" lua 
+  ( nmake >>%BUILD_LOG% 2>nul ) || call :buildFailLog qwt "building" && goto lua 
 
-  ( nmake install >>%BUILD_LOG% 2>nul ) || call :buildFailLog qwt "installing" lua 
+  ( nmake install >>%BUILD_LOG% 2>nul ) || call :buildFailLog qwt "installing" && goto lua 
 
   echo done.
 
@@ -1948,7 +2037,7 @@ goto end_qwt_deps
   cd %ROOT_DIR%
 :: ====
 
-:lua
+:lualib
 
 :: Lua version 5.2.2
 set LUAC_DIR=%ROOT_DIR%\lua-5.2.2
@@ -1959,15 +2048,13 @@ set LUACD_LIBRARY=%LIBS_DIR%\luad.lib
 :: Check dependencies
 goto end_lua_deps
 :lua_deps
-  IF NOT EXIST %READLINE% call :remove_lib lua terralib4
+  IF NOT EXIST %READLINE% call :remove_lib lua && goto terralib4_deps
   goto terralib4_deps
 :end_lua_deps
   
   echo | set /p="Installing lua... "<nul
     
-  IF EXIST %LUA% ( 
-    call :skip_build terralib4 
-  )
+  IF EXIST %LUA% call :skip_build && goto terralib4 
 
   call :append_log_begin lua
   
@@ -1983,15 +2070,15 @@ goto end_lua_deps
 
   cd build >nul 2>nul
 
-  ( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%TERRALIB_DEPENDENCIES_DIR%"^
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%TERRALIB_DEPENDENCIES_DIR%"^
  -DCMAKE_DEBUG_POSTFIX="d"^
  -DINSTALL_BIN="%LIBS_DIR%"^
  -DREADLINE_INCLUDE_DIR="%READLINE_INCLUDE_DIR%"^
- -DREADLINE_LIBRARY:STRING="debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%" %LUAC_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog lua "configuring" terralib4
+ -DREADLINE_LIBRARY:STRING="debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%" %LUAC_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog lua "configuring" && goto terralib4
   
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build release" terralib4
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build release" && goto terralib4
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build debug" terralib4
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build debug" && goto terralib4
   
   xcopy %LUAC_DIR%\src\lua.h %LUAC_INCLUDE_DIR% /Y >nul 2>nul
   
@@ -2017,32 +2104,31 @@ goto end_lua_deps
 :: TerraLib version 4.2.2
 set TERRALIB4_DIR=%ROOT_DIR%\terralib4
 set TERRALIB4_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
-set TERRALIB4_LIBRARY=%TERRALIB4%
+set TERRALIB4_LIBRARY=%LIBS_DIR%\terralib.lib
 set TERRALIB4D_LIBRARY=%LIBS_DIR%\terralibd.lib
 
 :: Check dependencies
 goto end_terralib4_deps
 :terralib4_deps
-  IF NOT EXIST %TIFF% call :remove_lib terralib begin_build
-  IF NOT EXIST %GEOTIFF% call :remove_lib terralib begin_build
-  IF NOT EXIST %ZLIB% call :remove_lib terralib begin_build
-  IF NOT EXIST %JPEG% call :remove_lib terralib begin_build
-
-:begin_build_deps  
+  IF NOT EXIST %TIFF% call :remove_lib terralib && goto begin_build
+  IF NOT EXIST %GEOTIFF% call :remove_lib terralib && goto begin_build
+  IF NOT EXIST %ZLIB% call :remove_lib terralib && goto begin_build
+  IF NOT EXIST %JPEG% call :remove_lib terralib && goto begin_build
+  goto begin_build
+:remove_terralib4  
+  del %LIBS_DIR%\terralib* /Q >nul 2>nul  
   goto begin_build
 :end_terralib4_deps
   
   echo | set /p="Installing terralib4... "<nul
     
-  IF EXIST %TERRALIB4% ( 
-    call :skip_build clean_third_directory 
-  )
-
+  IF EXIST %TERRALIB4% call :skip_build && goto clean_third_directory
+  
   call :append_log_begin terralib4
   
 :begin_terralib4
 
-cd %TERRALIB4_DIR%
+cd %TERRALIB4_DIR% >nul 2>nul
 
 del building /S /Q >nul 2>nul 
 
@@ -2054,7 +2140,7 @@ xcopy ..\terralib.conf.cmake . /Y >nul 2>nul
 
 set CL=/MP1
 
-( cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%TERRALIB_DEPENDENCIES_DIR%"^
+( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%TERRALIB_DEPENDENCIES_DIR%"^
  -DCMAKE_PREFIX_PATH="%TERRALIB_DEPENDENCIES_DIR%"^
  -DTIFF_INCLUDE_DIR:STRING="%TIFF_INCLUDE_DIR%"^
  -DTIFF_LIBRARY:STRING="debug;%TIFFD_LIBRARY%;optimized;%TIFF_LIBRARY%"^
@@ -2064,24 +2150,22 @@ set CL=/MP1
  -DJPEG_LIBRARY:STRING="debug;%JPGD_LIBRARY%;optimized;%JPG_LIBRARY%"^
  -DZLIB_INCLUDE_DIR:STRING="%ZL_INCLUDE_DIR%"^
  -DZLIB_LIBRARIES:STRING="%ZL_LIBRARIES%"^
- -C terralib.conf.cmake %TERRALIB4_DIR%\build\cmake >>%CONFIG_LOG% 2>nul ) || call :buildFailLog terralib4 "configuring" clean_third_directory
+ -C terralib.conf.cmake %TERRALIB4_DIR%\build\cmake >>%CONFIG_LOG% 2>nul ) || call :buildFailLog terralib4 "configuring" && goto clean_third_directory
 
-  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog terralib4 "build release" clean_third_directory
+  ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog terralib4 "build release" && goto clean_third_directory
 
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog terralib4 "build debug" clean_third_directory
+  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog terralib4 "build debug" && goto clean_third_directory
    
 echo done.
 
   call :append_log_end terralib4
   
 :end_terralib4
-
-  cd %ROOT_DIR%
 :: ====
 
 :clean_third_directory
 
-cd %TERRALIB_DEPENDENCIES_DIR%
+cd %TERRALIB_DEPENDENCIES_DIR% >nul 2>nul
 
 RD /S /Q doc >nul 2>nul
 
@@ -2093,31 +2177,7 @@ del *.exe /S /Q >nul 2>nul
 
 del *.pdb /S /Q >nul 2>nul
 
+IF DEFINED FAIL exit /b 1
+
 cd %ROOT_DIR%
-
-IF DEFINED FAIL  (
-echo.
-
-echo **********************************************
-echo *** Dependencies not builded successfully. ***
-echo **********************************************
-
-echo.
-
-pause
-
-exit 1
-)
-
-echo.
-
-echo ******************************************
-echo *** Dependencies builded successfully! ***
-echo ******************************************
-
-echo.
-
-pause
-
-exit 0
-:: **************************
+::exit /b 0
