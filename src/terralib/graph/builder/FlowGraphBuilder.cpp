@@ -100,7 +100,7 @@ std::auto_ptr<te::da::DataSource> te::graph::FlowGraphBuilder::getDataSource(con
 {
   // Creates and connects data source
   std::map<std::string, std::string> connInfo;
-  connInfo["path"] = fileName;
+  connInfo["URI"] = fileName;
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
   ds->setConnectionInfo(connInfo);
   ds->open();
@@ -163,6 +163,7 @@ bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFi
   {
     if(te::common::Convert2UCase(it->getName()) == te::common::Convert2UCase(linkColumn))
     {
+      ++it;
       continue;
     }
 
@@ -212,6 +213,7 @@ bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFi
       if(te::common::Convert2UCase(it->getName()) == te::common::Convert2UCase(linkColumn))
       {
         shift = 1;
+        ++it;
         continue;
       }
 

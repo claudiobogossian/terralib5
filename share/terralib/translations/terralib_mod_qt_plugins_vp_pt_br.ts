@@ -9,12 +9,18 @@
         <translation>Agregação...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="65"/>
+        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="77"/>
+        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="86"/>
         <source>Aggregation Result</source>
         <translation>Resultado da Agregação</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="65"/>
+        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="77"/>
+        <source>The operation was concluded successfully. But it has warning(s). Would you like to add the layer to the project?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="86"/>
         <source>The operation was concluded successfully. Would you like to add the layer to the project?</source>
         <translation>A operação foi concluída com êxito. Você gostaria de adicionar a camada para o projeto ?</translation>
     </message>

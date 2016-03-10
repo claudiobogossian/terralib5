@@ -89,10 +89,6 @@ set LIBS_DIR=%TERRALIB_DEPENDENCIES_DIR%\lib
 :: libraries not linked against TerraLib 5 (NOT fully installed)
 :: -------------------------------------------------------------
 set EXPAT=%LIBS_DIR%\expat.dll
-set APR=%LIBS_DIR%\libapr-1.dll
-set APRD=%LIBS_DIR%\libapr-1d.dll
-set APRUTIL=%LIBS_DIR%\libaprutil-1.dll
-set APRUTILD=%LIBS_DIR%\libaprutil-1d.dll
 set EAY=%LIBS_DIR%\libeay32.dll
 set EAYD=%LIBS_DIR%\libeay32d.dll
 set SSL=%LIBS_DIR%\ssleay32.dll
@@ -113,8 +109,15 @@ set CURL=%LIBS_DIR%\libcurl.dll
 set ICU=%LIBS_DIR%\icuuc52.dll
 set XML2=%LIBS_DIR%\libxml2.dll
 set NETCDF=%LIBS_DIR%\netcdf.dll
+set APR=%ROOT_DIR%\install\bin\libapr-1.dll
+set APRD=%ROOT_DIR%\install\bin\libapr-1d.dll
+set APRUTIL=%ROOT_DIR%\install\bin\libaprutil-1.dll
+set APRUTILD=%ROOT_DIR%\install\bin\libaprutil-1d.dll
+set LIBKML=%ROOT_DIR%\libkml-master\build\Release\libkml.lib
 set BZIP=%ROOT_DIR%\bzip2-1.0.6\lib\libbz2.lib
 set JPEG=%ROOT_DIR%\jpeg-9a\build\libjpeg.lib
+set MINIZIP=%ROOT_DIR%\unzip101e\build\Release\minizip.lib
+set URIPARSER=%ROOT_DIR%\uriparser-0.8.4\win32\uriparser.lib
 
 :: libraries linked against TerraLib 5 (fully installed)
 :: -------------------------------------------------------------
@@ -403,7 +406,7 @@ set EAYD_LIBRARY=%SSL_DIR%\out32dll.dbg\libeay32d.lib
 :: Check dependencies
 goto end_openssl_deps
 :openssl_deps
-  IF NOT EXIST %ZLIB% call :remove_lib %SSL% apr_util
+  IF NOT EXIST %ZLIB% call :remove_lib %SSL% && goto apr_util_deps
   goto apr_util_deps
 :end_openssl_deps
 
@@ -482,8 +485,8 @@ set APRUTILD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1d.lib
 :: Check dependencies
 goto end_apr_util_deps
 :apr_util_deps
-  IF NOT EXIST %APR% call :remove_lib aprutil log4cxx
-  IF NOT EXIST %EXPAT% call :remove_lib aprutil log4cxx
+  IF NOT EXIST %APR% call :remove_lib aprutil && goto log4cxx_deps
+  IF NOT EXIST %EXPAT% call :remove_lib aprutil && goto log4cxx_deps
   goto log4cxx_deps
 :end_apr_util_deps
 
@@ -540,8 +543,8 @@ set LOG4CXX_LIBRARY=%LOG4CXX%
 :: Check dependencies
 goto end_log4cxx_deps
 :log4cxx_deps
-  IF NOT EXIST %APR% call :remove_lib log4cxx bzip
-  IF NOT EXIST %APRUTIL% call :remove_lib log4cxx bzip
+  IF NOT EXIST %APR% call :remove_lib log4cxx && goto bzip_deps
+  IF NOT EXIST %APRUTIL% call :remove_lib log4cxx && goto bzip_deps
   goto bzip_deps
 :end_log4cxx_deps
   
@@ -611,9 +614,11 @@ goto end_bzip_deps
 
   cd %BZIP2_DIR% >nul 2>nul
   
-  del lib /S /Q >nul 2>nul
+  del *.lib /Q >nul 2>nul
+
+  del *.pdb /Q >nul 2>nul
   
-  mkdir lib >nul 2>nul
+  IF NOT EXIST lib mkdir lib >nul 2>nul
   
   ( nmake /f makefile.msc lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "build release" && goto readline
   
@@ -626,10 +631,6 @@ goto end_bzip_deps
   xcopy *.lib lib /Y >nul 2>nul 
 
   ( nmake /f makefile.msc DEBUG=1 clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip  "clean debug" && goto readline
-  
-  del *.lib /Q >nul 2>nul
-
-  del *.pdb /S /Q >nul 2>nul
   
   call :append_log_end bzip
   
@@ -699,9 +700,9 @@ set PCRE_LIBRARIES=debug;%PCRED_LIBRARY%;optimized;%PCRE_LIBRARY%
 :: Check dependencies
 goto end_pcre_deps
 :pcre_deps
-  IF NOT EXIST %BZIP% call :remove_lib pcre freexl
-  IF NOT EXIST %ZLIB% call :remove_lib pcre freexl
-  IF NOT EXIST %READLINE% call :remove_lib pcre freexl
+  IF NOT EXIST %BZIP% call :remove_lib pcre && goto freexl_deps
+  IF NOT EXIST %ZLIB% call :remove_lib pcre && goto freexl_deps
+  IF NOT EXIST %READLINE% call :remove_lib pcre && goto freexl_deps
   goto freexl_deps
 :end_pcre_deps
   
@@ -761,7 +762,7 @@ set FREEXL_LIBRARIES=debug;%FREEXLD_LIBRARY%;optimized;%FREEXL_LIBRARY%
 :: Check dependencies
 goto end_freexl_deps
 :freexl_deps
-  IF NOT EXIST %ICONV% call :remove_lib freexl proj
+  IF NOT EXIST %ICONV% call :remove_lib freexl && goto proj_deps
   goto proj_deps
 :end_freexl_deps
   
@@ -867,7 +868,7 @@ set PNGD_LIBRARY=%PNG_DIR%\deploy\lib\libpng15d.lib
 :: Check dependencies
 goto end_png_deps
 :png_deps
-  IF NOT EXIST %ZLIB% call :remove_lib png geos
+  IF NOT EXIST %ZLIB% call :remove_lib png && goto geos_deps
   goto geos_deps
 :end_png_deps
   
@@ -1051,8 +1052,8 @@ set MFHDFD_LIBRARY=%HDF4C_DIR%\binaries\lib\mfhdfddll.lib
 :: Check dependencies
 goto end_hdf4_deps
 :hdf4_deps
-  IF NOT EXIST %JPEG% call :remove_lib hdf4 tiff
-  IF NOT EXIST %ZLIB% call :remove_lib hdf4 tiff
+  IF NOT EXIST %JPEG% call :remove_lib hdf4 && goto tiff_deps
+  IF NOT EXIST %ZLIB% call :remove_lib hdf4 && goto tiff_deps
   goto tiff_deps
 :end_hdf4_deps
   
@@ -1115,8 +1116,8 @@ set TIFFD_LIBRARY=%TIFF_DIR%\libtiff\lib\libtiff_id.lib
 :: Check dependencies
 goto end_tiff_deps
 :tiff_deps
-  IF NOT EXIST %JPEG% call :remove_lib tiff geotiff
-  IF NOT EXIST %ZLIB% call :remove_lib tiff geotiff
+  IF NOT EXIST %JPEG% call :remove_lib tiff && goto geotiff_deps
+  IF NOT EXIST %ZLIB% call :remove_lib tiff && goto geotiff_deps
   goto geotiff_deps
 :end_tiff_deps
   
@@ -1180,8 +1181,8 @@ set GTIFFD_LIBRARY=%GTIFF_DIR%\lib\libgeotiff_id.lib
 :: Check dependencies
 goto end_geotiff_deps
 :geotiff_deps
-  IF NOT EXIST %PROJ% call :remove_lib geotiff curl
-  IF NOT EXIST %TIFF% call :remove_lib geotiff curl
+  IF NOT EXIST %PROJ% call :remove_lib geotiff && goto curl_deps
+  IF NOT EXIST %TIFF% call :remove_lib geotiff && goto curl_deps
   goto curl_deps
 :end_geotiff_deps
   
@@ -1237,8 +1238,8 @@ set CURLD_LIBRARY=%CURL_DIR%\binaries\lib\libcurld.lib
 :: Check dependencies
 goto end_curl_deps
 :curl_deps
-  IF NOT EXIST %ZLIB% call :remove_lib curl icu
-  IF NOT EXIST %SSL% call :remove_lib curl icu
+  IF NOT EXIST %ZLIB% call :remove_lib curl && goto icu_deps
+  IF NOT EXIST %SSL% call :remove_lib curl && goto icu_deps
   goto icu_deps
 :end_curl_deps
   
@@ -1353,7 +1354,7 @@ set XERCES_ICU_LIBRARY=%XERCESCROOT%\src\xercesc\util\MsgLoaders\ICU\resources\x
 :: Check dependencies
 goto end_xerces_deps
 :xerces_deps
-  IF NOT EXIST %ICU% call :remove_lib xerces xml2
+  IF NOT EXIST %ICU% call :remove_lib xerces && goto xml2_deps
   goto xml2_deps
 :end_xerces_deps
   
@@ -1421,9 +1422,9 @@ set XML2D_LIBRARY=%XML2_DIR%\win32\bin.dbg.msvc\libxml2d.lib
 :: Check dependencies
 goto end_xml2_deps
 :xml2_deps
-  IF NOT EXIST %ICONV% call :remove_lib xml2 libboost
-  IF NOT EXIST %ICU% call :remove_lib xml2 libboost
-  IF NOT EXIST %ZLIB% call :remove_lib xml2 libboost
+  IF NOT EXIST %ICONV% call :remove_lib xml2 && goto libboost_deps
+  IF NOT EXIST %ICU% call :remove_lib xml2 && goto libboost_deps
+  IF NOT EXIST %ZLIB% call :remove_lib xml2 && goto libboost_deps
   goto libboost_deps
 :end_xml2_deps
   
@@ -1466,19 +1467,20 @@ goto end_xml2_deps
 
 :: BOOST
 set B_DIR=%ROOT_DIR%\boost_1_58_0
+set BOOST_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
 
 :: Check dependencies
 goto end_libboost_deps
 :libboost_deps
-  IF NOT EXIST %ICONV% call :remove_lib boost pgis
-  IF NOT EXIST %BZIP% call :remove_lib boost pgis
-  IF NOT EXIST %ICU% call :remove_lib boost pgis
+  IF NOT EXIST %ICONV% call :remove_lib boost && goto pgis_deps
+  IF NOT EXIST %BZIP% call :remove_lib boost && goto pgis_deps
+  IF NOT EXIST %ICU% call :remove_lib boost && goto pgis_deps
   goto pgis_deps
 :end_libboost_deps
   
   echo | set /p="Installing boost... "<nul
     
-  IF EXIST %BOOST% call :skip_build && goto pgis 
+  IF EXIST %BOOST% call :skip_build && goto minizip 
 
   call :append_log_begin libboost
   
@@ -1488,7 +1490,7 @@ goto end_libboost_deps
 
   ( call bootstrap.bat vc12 setup-amd64 --with-chrono,date_time,filesystem,system,thread,timer,locale >>%CONFIG_LOG% 2>nul ) || goto configFail
   
-  ( b2 -a toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building" && goto pgis
+  ( b2 -a toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building" && goto minizip
 
   echo done.
 
@@ -1499,6 +1501,154 @@ goto end_libboost_deps
   cd %ROOT_DIR%
 :: ====
 
+:minizip
+
+:: Minizip
+::  ====
+set MINIZIP_DIR=%ROOT_DIR%\unzip101e
+set MZ_INCLUDE_DIR=%MINIZIP_DIR%
+set MINIZIP_LIBRARY=%MINIZIP_DIR%\build\Release\minizip.lib
+set MINIZIPD_LIBRARY=%MINIZIP_DIR%\build\Debug\minizipd.lib
+set MINIZIP_LIBRARIES=debug;%MINIZIPD_LIBRARY%;optimized;%MINIZIP_LIBRARY%
+
+:: Check dependencies
+goto end_minizip_deps
+:minizip_deps
+  IF NOT EXIST %ZLIB% del %MINIZIP% /Q >nul 2>nul && goto uriparser_deps
+  goto uriparser_deps
+:end_minizip_deps
+
+  echo | set /p="Installing minizip... "<nul
+  
+  IF EXIST %MINIZIP% call :skip_build && goto uriparser
+
+  call :append_log_begin minizip
+  
+:begin_minizip
+
+  cd %MINIZIP_DIR% >nul 2>nul
+
+  del build /S /Q >nul 2>nul
+  
+  mkdir build >nul 2>nul
+
+  cd build >nul 2>nul
+
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_DEBUG_POSTFIX="d"^
+  -DZLIB_INCLUDE_DIR="%ZL_INCLUDE_DIR%"^
+  -DZLIB_LIBRARY:STRING=%ZL_LIBRARIES%^
+  %MINIZIP_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog minizip "configuring" && goto uriparser
+
+  ( msbuild /m /p:Configuration=Release minizip.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog minizip "build release" && goto uriparser
+
+  ( msbuild /m minizip.sln  >>%BUILD_LOG% 2>nul ) || call :buildFailLog minizip "build debug" && goto uriparser
+
+  echo done.
+  
+  call :append_log_end minizip
+  
+:end_minizip  
+
+  cd %ROOT_DIR%
+:: ====
+
+:uriparser
+
+::  URIParser 
+set URIPARSER_DIR=%ROOT_DIR%\uriparser-0.8.4
+set UR_INCLUDE_DIR=%URIPARSER_DIR%\include
+set URIPARSER_LIBRARY=%URIPARSER_DIR%\win32\uriparser.lib
+set URIPARSERD_LIBRARY=%URIPARSER_DIR%\win32\uriparserd.lib
+set URIPARSER_LIBRARIES=debug;%URIPARSERD_LIBRARY%;optimized;%URIPARSER_LIBRARY%
+
+:: Check dependencies
+goto end_uriparser_deps
+:uriparser_deps
+  goto libkml_deps
+:end_uriparser_deps
+  
+  echo | set /p="Installing uriparser... "<nul
+    
+  IF EXIST %URIPARSER% call :skip_build && goto libkml 
+
+  call :append_log_begin uriparser
+  
+:begin_uriparser
+  
+  cd %URIPARSER_DIR%\win32\Visual_Studio_2005 >nul 2>nul
+  
+  ( msbuild /m /p:Configuration=Release uriparser.vcxproj /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog uriparser "clean release" && goto libkml
+
+  ( msbuild /m uriparser.vcxproj /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog uriparser "clean debug" && goto libkml
+  
+  ( msbuild /m /p:Configuration=Release uriparser.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog uriparser "build release" && goto libkml
+
+  ( msbuild /m uriparser.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog uriparser "build debug" && goto libkml
+  
+  echo done.
+
+  call :append_log_end uriparser
+  
+:end_uriparser
+
+  cd %ROOT_DIR%
+:: ====
+
+:libkml
+
+:: LibKML
+::  ====
+set LIBKML_DIR=%ROOT_DIR%\libkml-master
+set LIBKML_INCLUDE_DIR=%LIBKML_DIR%\src
+set LIBKML_LIBRARY=%LIBKML_DIR%\build\Release\libkml.lib
+set LIBKMLD_LIBRARY=%LIBKML_DIR%\build\Debug\libkmld.lib
+
+:: Check dependencies
+goto end_libkml_deps
+:libkml_deps
+  IF NOT EXIST %BOOST% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  IF NOT EXIST %EXPAT% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  IF NOT EXIST %MINIZIP% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  IF NOT EXIST %URIPARSER% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  IF NOT EXIST %ZLIB% del %LIBKML% /Q >nul 2>nul && goto pgis_deps
+  goto pgis_deps
+:end_libkml_deps
+
+  echo | set /p="Installing libkml... "<nul
+  
+  IF EXIST %LIBKML% call :skip_build && goto pgis
+
+  call :append_log_begin libkml
+  
+:begin_libkml
+
+  cd %LIBKML_DIR% >nul 2>nul
+
+  del build /S /Q >nul 2>nul
+  
+  mkdir build >nul 2>nul
+
+  cd build >nul 2>nul
+
+  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_DEBUG_POSTFIX="d"^
+  -DCMAKE_PREFIX_PATH=%TERRALIB_DEPENDENCIES_DIR%;%EXPAT_DIR%\binaries;%MINIZIP_DIR%;%URIPARSER_DIR%^
+  -DZLIB_INCLUDE_DIR="%ZL_INCLUDE_DIR%"^
+  -DZLIB_LIBRARY:STRING=%ZL_LIBRARIES%^
+  %LIBKML_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog libkml "configuring" && goto pgis
+
+  ( msbuild /m /p:Configuration=Release libkml.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog libkml "build release" && goto pgis
+
+  ( msbuild /m libkml.sln  >>%BUILD_LOG% 2>nul ) || call :buildFailLog libkml "build debug" && goto pgis
+
+  echo done.
+
+  call :append_log_end libkml
+  
+:end_libkml  
+
+  cd %ROOT_DIR%
+  
+:: ====
 
 :: libxslt
 :: set XSLT_DIR=%CD%\libxslt-1.1.28
@@ -1535,7 +1685,7 @@ set PGD_LIBRARY=%LIBS_DIR%\libpqddll.lib
 :: Check dependencies
 goto end_pgis_deps
 :pgis_deps
-  IF NOT EXIST %SSL% call :remove_lib pgis netcdf
+  IF NOT EXIST %SSL% call :remove_lib pgis && goto netcdf_deps
   goto netcdf_deps
 :end_pgis_deps
   
@@ -1591,9 +1741,9 @@ set NETCDFD_LIBRARY=%NETCDF_DIR%\binaries\lib\netcdfd.lib
 :: Check dependencies
 goto end_netcdf_deps
 :netcdf_deps
-  IF NOT EXIST %JPEG% call :remove_lib netcdf sqlite
-  IF NOT EXIST %CURL% call :remove_lib netcdf sqlite
-  IF NOT EXIST %HDF4% call :remove_lib netcdf sqlite
+  IF NOT EXIST %JPEG% call :remove_lib netcdf && goto sqlite_deps
+  IF NOT EXIST %CURL% call :remove_lib netcdf && goto sqlite_deps
+  IF NOT EXIST %HDF4% call :remove_lib netcdf && goto sqlite_deps
   goto sqlite_deps
 :end_netcdf_deps
   
@@ -1699,13 +1849,13 @@ set SPLITED_LIBRARY=%LIBS_DIR%\spatialite_id.lib
 :: Check dependencies
 goto end_spatialite_deps
 :spatialite_deps
-  IF NOT EXIST %PROJ% call :remove_lib spatialite gdal
-  IF NOT EXIST %GEOS% call :remove_lib spatialite gdal
-  IF NOT EXIST %ICONV% call :remove_lib spatialite gdal
-  IF NOT EXIST %SQLITE% call :remove_lib spatialite gdal
-  IF NOT EXIST %FREEXL% call :remove_lib spatialite gdal
-  IF NOT EXIST %ZLIB% call :remove_lib spatialite gdal
-  IF NOT EXIST %XML2% call :remove_lib spatialite gdal
+  IF NOT EXIST %PROJ% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %GEOS% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %ICONV% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %SQLITE% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %FREEXL% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %ZLIB% call :remove_lib spatialite && goto gdal_deps
+  IF NOT EXIST %XML2% call :remove_lib spatialite && goto gdal_deps
   goto gdal_deps
 :end_spatialite_deps
   
@@ -1747,22 +1897,23 @@ set GDALD_LIBRARY=%LIBS_DIR%\gdal_id.lib
 :: Check dependencies
 goto end_gdal_deps
 :gdal_deps
-  IF NOT EXIST %XERCES% call :remove_lib gdal property_browser
-  IF NOT EXIST %PROJ% call :remove_lib gdal property_browser
-  IF NOT EXIST %SQLITE% call :remove_lib gdal property_browser
-  IF NOT EXIST %SPATIALITE% call :remove_lib gdal property_browser
-  IF NOT EXIST %GEOS% call :remove_lib gdal property_browser
-  IF NOT EXIST %ICONV% call :remove_lib gdal property_browser
-  IF NOT EXIST %EXPAT% call :remove_lib gdal property_browser
-  IF NOT EXIST %HDF4% call :remove_lib gdal property_browser
-  IF NOT EXIST %NETCDF% call :remove_lib gdal property_browser
-  IF NOT EXIST %GEOTIFF% call :remove_lib gdal property_browser
-  IF NOT EXIST %TIFF% call :remove_lib gdal property_browser
-  IF NOT EXIST %CURL% call :remove_lib gdal property_browser
-  IF NOT EXIST %PNG% call :remove_lib gdal property_browser
-  IF NOT EXIST %FREEXL% call :remove_lib gdal property_browser
-  IF NOT EXIST %XML2% call :remove_lib gdal property_browser
-  IF NOT EXIST %PCRE% call :remove_lib gdal property_browser
+  IF NOT EXIST %XERCES% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %PROJ% call :remove_lib gdal && goto && goto property_browser_deps
+  IF NOT EXIST %SQLITE% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %SPATIALITE% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %GEOS% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %ICONV% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %EXPAT% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %HDF4% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %NETCDF% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %GEOTIFF% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %TIFF% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %CURL% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %PNG% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %FREEXL% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %XML2% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %PCRE% call :remove_lib gdal && goto property_browser_deps
+  IF NOT EXIST %LIBKML% call :remove_lib gdal && goto property_browser_deps
   goto property_browser_deps
 :end_gdal_deps
   
@@ -1829,11 +1980,9 @@ goto end_property_browser_deps
   
 :begin_property_browser
   
-  cd %QBROWSER_DIR% >nul 2>nul
+  cd %QBROWSER_DIR%\buildlib >nul 2>nul
 
-  set TERRALIB_DIR=%TERRALIB_DEPENDENCIES_DIR%
-  
-  ( qmake >>%CONFIG_LOG% 2>nul ) || call :buildFailLog property_browser "configuring" && goto qwt
+  ( qmake "TERRALIB_DIR=%TERRALIB_DEPENDENCIES_DIR%" >>%CONFIG_LOG% 2>nul ) || call :buildFailLog property_browser "configuring" && goto qwt
 
   ( nmake clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog property_browser "cleaning" && goto qwt
 
@@ -1899,7 +2048,7 @@ set LUACD_LIBRARY=%LIBS_DIR%\luad.lib
 :: Check dependencies
 goto end_lua_deps
 :lua_deps
-  IF NOT EXIST %READLINE% call :remove_lib lua terralib4
+  IF NOT EXIST %READLINE% call :remove_lib lua && goto terralib4_deps
   goto terralib4_deps
 :end_lua_deps
   
@@ -1910,8 +2059,6 @@ goto end_lua_deps
   call :append_log_begin lua
   
 :begin_lua
-
-pause
   
   cd %LUAC_DIR% >nul 2>nul
 
@@ -1954,8 +2101,6 @@ pause
 
 :terralib4
 
-::pause
-
 :: TerraLib version 4.2.2
 set TERRALIB4_DIR=%ROOT_DIR%\terralib4
 set TERRALIB4_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
@@ -1965,10 +2110,10 @@ set TERRALIB4D_LIBRARY=%LIBS_DIR%\terralibd.lib
 :: Check dependencies
 goto end_terralib4_deps
 :terralib4_deps
-  IF NOT EXIST %TIFF% goto remove_terralib4
-  IF NOT EXIST %GEOTIFF% goto remove_terralib4
-  IF NOT EXIST %ZLIB% goto remove_terralib4
-  IF NOT EXIST %JPEG% goto remove_terralib4
+  IF NOT EXIST %TIFF% call :remove_lib terralib && goto begin_build
+  IF NOT EXIST %GEOTIFF% call :remove_lib terralib && goto begin_build
+  IF NOT EXIST %ZLIB% call :remove_lib terralib && goto begin_build
+  IF NOT EXIST %JPEG% call :remove_lib terralib && goto begin_build
   goto begin_build
 :remove_terralib4  
   del %LIBS_DIR%\terralib* /Q >nul 2>nul  
