@@ -45,8 +45,35 @@ namespace te
     */
 	struct TESTATEXPORT NumericStatisticalComplexSummary
     {
-      public:
-
+      public :
+        
+        struct ClassesPercentLess
+        {
+          bool operator()(const std::complex<double> s1, const std::complex<double> s2) const
+          {
+            return ( ( s1.real() < s2.real() ) && ( s1.imag() < s2.imag() ) );
+          }
+        };        
+        
+        typedef typename std::map < std::complex< double >, std::complex< double >, ClassesPercentLess > ClassesPercentT;
+        
+        std::complex< double > m_minVal;
+        std::complex< double > m_maxVal;
+        std::complex< double > m_mean;
+        std::complex< double > m_sum;
+        int m_count;
+        int m_validCount;
+        std::complex< double > m_stdDeviation;
+        std::complex< double > m_kernel;
+        std::complex< double > m_variance;
+        std::complex< double > m_skewness;
+        std::complex< double > m_kurtosis;
+        std::complex< double > m_amplitude;
+        std::complex< double > m_median;
+        std::complex< double > m_varCoeff;
+        std::vector<std::complex< double > > m_mode;
+        ClassesPercentT m_percentEachClass;        
+      
         /*! \brief Constructor. */
         NumericStatisticalComplexSummary();
 
@@ -71,26 +98,6 @@ namespace te
 
         /*! \brief Clear the structure. */
         void clear();
-
-      public:
-
-        std::complex< double > m_minVal;
-        std::complex< double > m_maxVal;
-        std::complex< double > m_mean;
-        std::complex< double > m_sum;
-        int m_count;
-        int m_validCount;
-        std::complex< double > m_stdDeviation;
-        std::complex< double > m_kernel;
-        std::complex< double > m_variance;
-        std::complex< double > m_skewness;
-        std::complex< double > m_kurtosis;
-        std::complex< double > m_amplitude;
-        std::complex< double > m_median;
-        std::complex< double > m_varCoeff;
-        std::vector<std::complex< double > > m_mode;
-        std::map < std::complex< double >, std::complex< double > > m_percentEachClass;
-
     };
 
   } // end namespace stat
