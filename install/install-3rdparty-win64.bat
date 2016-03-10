@@ -618,9 +618,7 @@ goto end_bzip_deps
 
   del *.pdb /Q >nul 2>nul
   
-  del lib /S /Q >nul 2>nul
-  
-  mkdir lib >nul 2>nul
+  IF NOT EXIST lib mkdir lib >nul 2>nul
   
   ( nmake /f makefile.msc lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog bzip "build release" && goto readline
   
