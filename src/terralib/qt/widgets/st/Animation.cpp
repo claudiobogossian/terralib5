@@ -104,7 +104,7 @@ void te::qt::widgets::Animation::setDataKeyValues()
   setEndValue(ai->m_animationRoute[(int)size-1]);
 }
 
-int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
+int te::qt::widgets::Animation::getClosestAnimationDataIndex(const double& trel)
 {
   AnimationItem* ai = (AnimationItem*)targetObject();
 
@@ -129,32 +129,24 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
   size_t count = ai->m_animationTime.count();
   int min = 0;
   int max = (int)count - 1;
+
   while ((max - min) > 100)
   {
-    int d = (max - min) / 10;
-    int i = min;
-    while (i <= max)
-    {
-      te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
-      boost::posix_time::ptime time = tinstant.getTimeInstant();
+    int i = min + (max - min) / 2;
+    te::dt::TimeInstant tinstant = ai->m_animationTime[i];
+    boost::posix_time::ptime time = tinstant.getTimeInstant();
 
-      if (time == curTime)
-        return i;
-      else if (time > curTime)
-      {
-        min = i - d;
-        max = i;
-        break;
-      }
-      i += d;
-    }
-    if (i > max)
-      min = i - d;
+    if (time == curTime)
+      return i;
+    else if (time > curTime)
+      max = i;
+    else if (time < curTime)
+      min = i;
   }
 
   for (int i = min; i <= max; ++i)
   {
-    te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+    te::dt::TimeInstant tinstant = ai->m_animationTime[i];
     boost::posix_time::ptime time = tinstant.getTimeInstant();
 
     if (time == curTime)
@@ -188,43 +180,48 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
     }
   }
   return -1;
+}
 
+int te::qt::widgets::Animation::getNextAnimationDataIndex(const double& trel)
+{
+  int out = getClosestAnimationDataIndex(trel);
+  if (out == -1)
+    return out;
 
-  //size_t count = ai->m_animationTime.count();
-  //for (int i = 0; i < (int)count; ++i)
-  //{
-  //  te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
-  //  boost::posix_time::ptime time = tinstant.getTimeInstant();
+  int ret;
 
-  //  if (time == curTime)
-  //    return i;
-  //  else if (time > curTime)
-  //  {
-  //    if (i == 0 || i == ((int)count - 1))
-  //      return i;
-  //    else
-  //    {
-  //      diff = time - curTime;
-  //      unsigned long long secs = abs(diff.total_seconds());
+  AnimationItem* ai = (AnimationItem*)targetObject();
+  boost::posix_time::ptime iTime = m_temporalAnimationExtent.getInitialTimeInstant().getTimeInstant();
+  boost::posix_time::ptime fTime = m_temporalAnimationExtent.getFinalTimeInstant().getTimeInstant();
+  boost::posix_time::time_duration diff = fTime - iTime;
+  double totalSeconds = diff.total_seconds();
 
-  //      tinstant = ai->m_animationTime[i - 1]; // before curTime
-  //      boost::posix_time::ptime btime = tinstant.getTimeInstant();
-  //      diff = btime - curTime;
-  //      unsigned long long bsecs = abs(diff.total_seconds());
+  te::dt::TimeInstant tinstant = ai->m_animationTime[out];
+  boost::posix_time::ptime time = tinstant.getTimeInstant();
+  diff = time - iTime;
+  double timeSeconds = diff.total_seconds();
 
-  //      tinstant = ai->m_animationTime[i + 1]; // after curTime
-  //      boost::posix_time::ptime atime = tinstant.getTimeInstant();
-  //      diff = atime - curTime;
-  //      unsigned long long asecs = abs(diff.total_seconds());
+  if (direction() == QAbstractAnimation::Forward)
+  {
+    if (timeSeconds / totalSeconds > trel)
+      ret =  out;
+    else
+      ret = out + 1;
+  }
+  else
+  {
+    if (timeSeconds / totalSeconds < trel)
+      ret = out;
+    else
+      ret = out - 1;
+  }
 
-  //      if (secs < bsecs && secs < asecs)
-  //        return i;
-  //      else if (bsecs < asecs)
-  //        return i - 1;
-  //      else
-  //        return i + 1;
-  //    }
-  //  }
-  //}
-  //return -1;
+  int count = ai->m_animationTime.count();
+
+  if (ret >= count)
+    return count - 1;
+  if (ret <= 0)
+    return 0;
+
+  return ret;
 }

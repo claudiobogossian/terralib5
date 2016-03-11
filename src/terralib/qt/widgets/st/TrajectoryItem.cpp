@@ -170,8 +170,8 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
   if(m_animationRoute.empty())
     return;
 
-  int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
-  int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
+  int indold = m_animation->getNextAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+  int ind = m_animation->getNextAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
   if (ind == -1 || indold == -1)
     return;
@@ -231,8 +231,8 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
   if(m_animationRoute.empty())
     return;
 
-  int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
-  int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
+  int indold = m_animation->getNextAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+  int ind = m_animation->getNextAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
   if (ind == -1 || indold == -1)
     return;
@@ -288,7 +288,7 @@ void te::qt::widgets::TrajectoryItem::draw()
   if (m_animationRoute.empty())
     return;
 
-  int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+  int ind = m_animation->getNextAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   if (ind == -1)
     return;
 
@@ -365,7 +365,7 @@ void te::qt::widgets::TrajectoryItem::drawIcon(QPainter* painter)
     double xScale = -1.;
     double yScale = -1.;
     double angle = 0.;
-    int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+    int ind = m_animation->getNextAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
 
     if (ind == -1)
       return;
