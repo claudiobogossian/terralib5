@@ -18,29 +18,21 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/client/Exception.h
+  \file terralib\examples\core\uri\main.cpp
 
-  \brief An exception class for the OGC WCS Client.
+  \brief Examples for the Terralib URI API
+
+  \author Vinicius Campanha
 */
 
-#ifndef __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
-#define __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
+
+// STL
+#include <cstdlib>
 
 // TerraLib
-#include "../../../../common/Exception.h"
-#include "Config.h"
 
-namespace te
+
+int main(int argc, char *argv[])
 {
-  namespace ws
-  {
-    namespace ogc
-    {
-      TE_DECLARE_EXCEPTION_CLASS(TEOGCWCSEXPORT, Exception, te::common::Exception)
-
-    } // end namespace ogc
-  }   // end namespace ws
-}     // end namespace te
-
-#endif  // __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
-
+  return EXIT_SUCCESS;
+}
