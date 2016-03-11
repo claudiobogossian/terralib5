@@ -89,12 +89,21 @@ namespace te
 
         /*!
           \brief
-          It It gets the animation data index. It is relative to temporal animation extent.
+          It It gets the closest animation data index.
           \param trel Normalized time (between 0 and 1).
 
           \return The animation data index.
         */
-        int getAnimationDataIndex(const double& trel);
+        int getClosestAnimationDataIndex(const double& trel);
+
+        /*!
+          \brief
+          It It gets the next animation data index. it is the end point, between two points of the trajectory.
+          \param trel Normalized time (between 0 and 1).
+
+          \return The animation data index.
+        */
+        int getNextAnimationDataIndex(const double& trel);
 
       public:
         te::gm::Envelope m_spatialExtent;             //!< Spatial extent.

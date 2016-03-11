@@ -18,29 +18,9 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/client/Exception.h
+  \file terralib/unittest/core/uri/TsURI.h
 
-  \brief An exception class for the OGC WCS Client.
-*/
+  \brief A test suit for the Core URI API.
 
-#ifndef __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
-#define __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
-
-// TerraLib
-#include "../../../../common/Exception.h"
-#include "Config.h"
-
-namespace te
-{
-  namespace ws
-  {
-    namespace ogc
-    {
-      TE_DECLARE_EXCEPTION_CLASS(TEOGCWCSEXPORT, Exception, te::common::Exception)
-
-    } // end namespace ogc
-  }   // end namespace ws
-}     // end namespace te
-
-#endif  // __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
-
+  \author Vinicius campanha
+ */

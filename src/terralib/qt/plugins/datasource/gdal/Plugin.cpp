@@ -90,7 +90,7 @@ void GetLayers(const te::da::DataSourceInfoPtr& info, std::list<te::map::Abstrac
 te::qt::plugins::gdal::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) :
 QObject(),
  te::plugin::Plugin(pluginInfo),
- m_openFile(0)
+ m_openFile(0), m_openMultipleFiles(0)
 {
   te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
@@ -113,10 +113,13 @@ void te::qt::plugins::gdal::Plugin::startup()
   //Initializing action
   m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), this);
   m_openFile->setObjectName("Project.Add Layer.Raster File");
+  m_openMultipleFiles = new QAction(QIcon::fromTheme("file-raster"), tr("Multiple Raster Files..."), this);
+  m_openMultipleFiles->setObjectName("Project.Add Layer.Multiple Raster Files");
 
   te::qt::af::evt::NewActionsAvailable e;
   e.m_category = "Dataaccess";
   e.m_actions << m_openFile;
+  e.m_actions << m_openMultipleFiles;
 
   emit triggered(&e);
 //  QAction* act = te::qt::af::AppCtrlSingleton::getInstance().findAction("Project.Add Layer.Tabular File");
@@ -133,6 +136,7 @@ void te::qt::plugins::gdal::Plugin::startup()
 //    te::qt::af::AddActionToCustomToolbars(m_openFile);
 
     connect (m_openFile, SIGNAL(triggered()), SLOT(openFileDialog()));
+    connect (m_openMultipleFiles, SIGNAL(triggered()), SLOT(openMultipleFilesDialog()));
 //  }
 }
 
@@ -229,6 +233,72 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 
 //  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
 //    parentLayer = selectedLayers.front();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
+  {
+    te::qt::af::evt::LayerAdded evt(*it, parentLayer);
+    emit triggered(&evt);
+  }
+}
+
+void te::qt::plugins::gdal::Plugin::openMultipleFilesDialog()
+{
+  QStringList fileNames = QFileDialog::getOpenFileNames(
+    te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(),
+    tr("Open Multiple Raster Files"), te::qt::widgets::GetFilePathFromSettings("raster"), 
+    te::qt::widgets::GetDiskRasterFileSelFilter());
+  
+  if(fileNames.isEmpty())
+    return;
+
+  QFileInfo info(fileNames.value(0));
+
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "raster");
+
+  std::list<te::map::AbstractLayerPtr> layers;
+
+  for(QStringList::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
+  {
+    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+
+    ds->setAccessDriver("GDAL");
+
+    std::map<std::string, std::string> dsinfo;
+    dsinfo["URI"] = it->toLatin1().data();
+
+    ds->setConnInfo(dsinfo);
+
+    ds->setDescription("A single raster file");
+
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id = boost::uuids::to_string(u);
+
+    ds->setId(id);
+
+    boost::filesystem::path mpath(it->toStdString());
+
+    std::string fileBaseName = mpath.stem().string();
+
+    ds->setTitle(fileBaseName);
+
+    ds->setType("GDAL");
+
+    if(!te::da::DataSourceInfoManager::getInstance().add(ds))
+      ds = te::da::DataSourceInfoManager::getInstance().getByConnInfo(ds->getConnInfoAsString());
+
+    GetLayers(ds, layers);
+  }
+
+  // If there is a parent folder layer that is selected, get it as the parent of the layer to be added;
+  // otherwise, add the layer as a top level layer
+  te::map::AbstractLayerPtr parentLayer(0);
+
+//   std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::AppCtrlSingleton::getInstance().getProject()->getSelectedLayers();
+// 
+//   if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
+//     parentLayer = selectedLayers.front();
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)

@@ -18,14 +18,104 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs-dataacess/DataAccessWCS.h
+  \file terralib/ws/ogc/wcs/dataaccess/DataSource.h
 
-  \brief Data Access for WS OGC WCS
+  \brief Data Source for WS OGC WCS
+
+  \author Vinicius Campanha
 */
 
-#ifndef __TERRALIB_WS_OGC_DATAACESS_H
-#define __TERRALIB_WS_OGC_DATAACESS_H
+#ifndef __TERRALIB_WS_OGC_WCS_DATAACCESS_DATASOURCE_H
+#define __TERRALIB_WS_OGC_WCS_DATAACCESS_DATASOURCE_H
 
 
-#endif // __TERRALIB_WS_OGC_DATAACESS_H
+// STL
+#include <map>
+#include <string>
+
+// TerraLib
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../client/WCS.h"
+#include "Config.h"
+#include "Exception.h"
+
+
+namespace te
+{
+  namespace ws
+  {
+    namespace ogc
+    {
+      namespace wcs
+      {
+        namespace da
+        {
+          /*!
+          \class DataSource
+
+          \brief Implementation of the data source for the WCS driver.
+          */
+          class TEOGCWCSDATAACCESSEXPORT DataSource : public te::da::DataSource
+          {
+          public:
+
+            DataSource();
+
+            ~DataSource();
+
+            std::string getType() const;
+
+            const std::map<std::string, std::string>& getConnectionInfo() const;
+
+            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
+
+            std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
+
+            void open();
+
+            void close();
+
+            bool isOpened() const;
+
+            bool isValid() const;
+
+            const te::da::DataSourceCapabilities& getCapabilities() const;
+
+            static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
+
+            const te::da::SQLDialect* getDialect() const;
+
+          protected:
+
+            void create(const std::map<std::string, std::string>& dsInfo);
+
+            void drop(const std::map<std::string, std::string>& dsInfo);
+
+            bool exists(const std::map<std::string, std::string>& dsInfo);
+
+            std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+
+            std::vector<te::common::CharEncoding> getEncodings(const std::map<std::string, std::string>& dsInfo);
+
+          private:
+
+            void verifyConnectionInfo() const;
+
+          private:
+
+            WCS wcs_;
+            std::map<std::string, std::string> m_connectionInfo;
+            bool m_isOpened;
+            static te::da::DataSourceCapabilities sm_capabilities;
+          };
+
+        } // end namespace da
+      } // end namespace wcs
+    } // end namespace ogc
+  } // end namespace ws
+} // end namespace te
+
+
+#endif // __TERRALIB_WS_OGC_WCS_DATAACCESS_DATASOURCE_H
 

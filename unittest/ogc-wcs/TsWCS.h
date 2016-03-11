@@ -18,9 +18,11 @@
  */
 
 /*!
-  \file TsWCS.h
+  \file terralib/unittest/ogc-wcs/TsWCS.h
 
   \brief A test suit for the WS OGC WCS.
+
+  \author Vinicius campanha
  */
 
 
@@ -37,13 +39,15 @@ class TsWCS : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE( TsWCS );
 
 // It registers the class methods as Test Cases belonging to the suit
-  CPPUNIT_TEST( tsGetCapabilities );
+//  CPPUNIT_TEST( tsGetCapabilities );
 
-  CPPUNIT_TEST( tsGetCapabilitiesException );
+//  CPPUNIT_TEST( tsGetCapabilitiesException );
 
-  CPPUNIT_TEST( tsDescribeCoverage );
+//  CPPUNIT_TEST( tsDescribeCoverage );
 
-  CPPUNIT_TEST( tsDescribeCoverageException );
+//  CPPUNIT_TEST( tsDescribeCoverageException );
+
+  CPPUNIT_TEST( tsDataSource );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -56,6 +60,8 @@ protected:
   void tsDescribeCoverage();
 
   void tsDescribeCoverageException();
+
+  void tsDataSource();
 
 };
 

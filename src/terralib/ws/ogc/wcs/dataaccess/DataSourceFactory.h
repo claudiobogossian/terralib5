@@ -18,17 +18,18 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/client/Exception.h
+  \file terralib/ws/ogc/wcs/dataaccess/DataSourceFactory.h
 
-  \brief An exception class for the OGC WCS Client.
+  \brief This is the factory for WCS data sources.
+
+    \author Vinicius Campanha
 */
 
-#ifndef __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
-#define __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
+#ifndef __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
+#define __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
 
 // TerraLib
-#include "../../../../common/Exception.h"
-#include "Config.h"
+#include "DataSource.h"
 
 namespace te
 {
@@ -36,11 +37,18 @@ namespace te
   {
     namespace ogc
     {
-      TE_DECLARE_EXCEPTION_CLASS(TEOGCWCSEXPORT, Exception, te::common::Exception)
-
-    } // end namespace ogc
-  }   // end namespace ws
+      namespace wcs
+      {
+        namespace da
+        {
+          inline te::da::DataSource* Build()
+          {
+            return new DataSource;
+          }
+        }
+      }
+    }
+  }   // end namespace wcs
 }     // end namespace te
 
-#endif  // __TERRALIB_WS_OGC_WCS_CLIENT_EXCEPTION_H
-
+#endif  // __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
