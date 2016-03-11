@@ -37,7 +37,8 @@
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "Exception.h"
 #include "../../../../dataaccess/dataset/DataSet.h"
-#include "../../../../dataaccess/datasource/DataSource.h"
+//#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../wcs/dataaccess/DataSource.h"
 //#include "../../../../gdal/DataSet.h"
 //#include "../../../../gdal/DataSource.h"
 //#include "../../../../gdal/Utils.h"
@@ -45,12 +46,23 @@
 
 
 te::ws::ogc::wcs::da::Transactor::Transactor(WCS wcs)
-  : wcs_(wcs)
+  : te::da::DataSourceTransactor(),
+    wcs_(wcs)
 {
 }
 
 te::ws::ogc::wcs::da::Transactor::~Transactor()
 {
+}
+
+te::ws::ogc::CoverageDescription te::ws::ogc::wcs::da::Transactor::coverageDescription(const std::string coverageName) const
+{
+  return wcs_.describeCoverage(coverageName);
+}
+
+void te::ws::ogc::wcs::da::Transactor::setCoverageRequest(const te::ws::ogc::CoverageRequest coverageRequest)
+{
+  coverageRequest_ = coverageRequest;
 }
 
 te::da::DataSource* te::ws::ogc::wcs::da::Transactor::getDataSource() const
@@ -66,15 +78,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-
-  CoverageDescription coverageDescription = wcs_.describeCoverage(name);
-
-  CoverageRequest coverageRequest;
-  coverageRequest.coverageID = name;
-  coverageRequest.format = coverageDescription.serviceParameters.nativeFormat;
-  coverageRequest.subSet = coverageDescription.domainSet.envelope;
-
-  std::string coveragePath = wcs_.getCoverage(coverageRequest);
+  std::string coveragePath = wcs_.getCoverage(coverageRequest_);
 
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = coveragePath;
@@ -86,18 +90,9 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   if (!dsGDAL->isOpened() || !dsGDAL->isValid())
     throw Exception(TE_TR("Fail to build Data Set. GDAL Data Source isn't valid or open!"));
 
+  std::auto_ptr<te::da::DataSet> dset = dsGDAL->getDataSet(name);
+
   return dsGDAL->getDataSet(name);
-/*
-  // Retrieves the data set type
-  std::auto_ptr<te::da::DataSetType> type = getDataSetType(name);
-
-  // Build the GDAL WCS request
-  std::string request = BuildRequest(m_serviceURL, m_coverageName);
-
-  return std::auto_ptr<te::da::DataSet>(new te::gdal::DataSet(type, te::common::RAccess, request));
-
-  return std::auto_ptr<te::da::DataSet>();
-  */
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,
@@ -108,6 +103,9 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
                                                                bool /*connected*/,
                                                                const te::common::AccessPolicy /*accessPolicy*/)
 {
+
+  // VINICIUS: implement to ignore the envelope in coverageRequest_(only get format from it) and using envelope parameter
+
   /*
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));

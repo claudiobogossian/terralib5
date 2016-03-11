@@ -53,6 +53,7 @@ namespace te
         std::string coverageID;
         std::string format;
         std::string mediaType;
+        BoundedBy boundedBy;
         std::vector< SubSet > subSet;
         std::map< std::string, std::string > additionalParameters;
       };
@@ -72,13 +73,11 @@ namespace te
           \param uri      The adress of WCS server.
           \param version  The WCS version.
         */
-        WCS(const std::string uri, const std::string version = "2.0.1");
+        WCS(const std::string uri = "", const std::string version = "2.0.1");
 
         /*!
-          \brief Default constructor.
+          \brief Default destructor.
         */
-        WCS();
-
         ~WCS();
 
         /*!
@@ -96,7 +95,7 @@ namespace te
 
           \return Return the information of the coverage in the WCS
         */
-        CoverageDescription describeCoverage(const std::string coverage);
+        CoverageDescription describeCoverage(const std::string coverage) const;
 
         /*!
           \brief Method to get the coverage from the WCS server

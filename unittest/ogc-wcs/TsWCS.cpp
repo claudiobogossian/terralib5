@@ -28,6 +28,7 @@
 #include <terralib/ws/ogc/wcs/client/WCS.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/ws/ogc/wcs/dataaccess/Transactor.h>
 
 // TerraLib Test
 #include "TsWCS.h"
@@ -103,10 +104,52 @@ void TsWCS::tsDataSource()
     ds->open();
 
     if(!ds->isOpened())
-      CPPUNIT_FAIL("Error in describeCoverage()!");
+      CPPUNIT_FAIL("Error!");
 
     if(!ds->isValid())
-      CPPUNIT_FAIL("Error in describeCoverage()!");
+      CPPUNIT_FAIL("Error!");
+
+    te::ws::ogc::wcs::da::Transactor* transactor = dynamic_cast< te::ws::ogc::wcs::da::Transactor* > (ds->getTransactor().release());
+
+//    std::auto_ptr < te::ws::ogc::wcs::da::Transactor > transactor = ds->getTransactor();
+
+    transactor->getNumberOfDataSets();
+
+    std::vector<std::string> dataSetNames = transactor ->getDataSetNames();
+
+    if(dataSetNames.empty())
+      CPPUNIT_FAIL("Error!");
+
+    std::string dataSetName = dataSetNames.at(0);
+
+    if(!transactor->dataSetExists(dataSetName))
+      CPPUNIT_FAIL("Error!");
+
+    te::ws::ogc::CoverageDescription coverageDescription = transactor->coverageDescription(dataSetName);
+    te::ws::ogc::CoverageRequest coverageRequest;
+    coverageRequest.coverageID = dataSetName;
+    coverageRequest.format = coverageDescription.serviceParameters.nativeFormat;
+
+    te::ws::ogc::Coordinate co= coverageDescription.boundedBy.coordinate.at(0);
+
+    co.coord.at(0) = "0";
+    co.coord.at(1) = "0";
+
+    coverageDescription.boundedBy.coordinate.at(0) = co;
+
+    co.coord.at(0) = "10";
+    co.coord.at(1) = "10";
+    coverageDescription.boundedBy.coordinate.at(1) = co;
+
+    coverageRequest.boundedBy = coverageDescription.boundedBy;
+    coverageRequest.subSet = coverageDescription.domainSet.subSet;
+
+    transactor->setCoverageRequest(coverageRequest);
+
+    std::auto_ptr<te::da::DataSet> dataSet = transactor->getDataSet(dataSetName);
+
+    if(!dataSet.get())
+      CPPUNIT_FAIL("Error!");
   }
   catch(te::common::Exception& e)
   {

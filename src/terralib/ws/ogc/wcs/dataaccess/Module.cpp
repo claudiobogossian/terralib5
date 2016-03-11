@@ -58,8 +58,6 @@ void te::ws::ogc::wcs::da::Module::startup()
 
   te::da::DataSourceFactory::add(TE_OGC_WCS_DRIVER_IDENTIFIER, te::ws::ogc::wcs::da::Build);
 
-  GDALAllRegister();
-
   TE_LOG_TRACE(TE_TR("TerraLib OGC WCS driver startup!"));
 
   m_initialized = true;

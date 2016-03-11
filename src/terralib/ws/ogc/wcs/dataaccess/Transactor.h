@@ -51,212 +51,219 @@ namespace te
         namespace da
         {
 
-    /*!
-      \class Transactor
+          class DataSource;
 
-      \brief Implementation of the transactor for the WCS driver.
-    */
-    class TEOGCWCSDATAACCESSEXPORT Transactor : public te::da::DataSourceTransactor
-    {
-      public:
+          /*!
+            \class Transactor
 
-        Transactor(WCS wcs);
+            \brief Implementation of the transactor for the WCS driver.
+          */
+          class TEOGCWCSDATAACCESSEXPORT Transactor : public te::da::DataSourceTransactor
+          {
+          public:
 
-        ~Transactor();
+            Transactor(WCS wcs);
 
-        te::da::DataSource* getDataSource() const;
+            ~Transactor();
 
-        void begin();
+            CoverageDescription coverageDescription(const std::string coverageName) const;
 
-        void commit();
+            void setCoverageRequest(const CoverageRequest coverageRequest);
 
-        void rollBack();
+            te::da::DataSource* getDataSource() const;
 
-        bool isInTransaction() const;
+            void begin();
 
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
-                                                  bool connected = false,
-                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
+            void commit();
 
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const std::string& propertyName,
-                                                  const te::gm::Envelope* e,
-                                                  te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
-                                                  bool connected = false,
-                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
+            void rollBack();
 
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const std::string& propertyName,
-                                                  const te::gm::Geometry* g,
-                                                  te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
-                                                  bool connected = false,
-                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
+            bool isInTransaction() const;
 
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const te::da::ObjectIdSet* oids,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
-                                                  bool connected = false,
-                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
+            std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
+                                                      te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                      bool connected = false,
+                                                      const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
-        std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY,
-                                             bool connected = false,
-                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
+            std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
+                                                      const std::string& propertyName,
+                                                      const te::gm::Envelope* e,
+                                                      te::gm::SpatialRelation r,
+                                                      te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                      bool connected = false,
+                                                      const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
-        std::auto_ptr<te::da::DataSet> query(const std::string& query,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY,
-                                             bool connected = false,
-                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
+            std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
+                                                      const std::string& propertyName,
+                                                      const te::gm::Geometry* g,
+                                                      te::gm::SpatialRelation r,
+                                                      te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                      bool connected = false,
+                                                      const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
-        void execute(const te::da::Query& command);
+            std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
+                                                      const te::da::ObjectIdSet* oids,
+                                                      te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                      bool connected = false,
+                                                      const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
-        void execute(const std::string& command);
+            std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
+                                                 te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                 bool connected = false,
+                                                 const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
-        std::auto_ptr<te::da::PreparedQuery> getPrepared(const std::string& qName = std::string(""));
+            std::auto_ptr<te::da::DataSet> query(const std::string& query,
+                                                 te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                 bool connected = false,
+                                                 const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
-        std::auto_ptr<te::da::BatchExecutor> getBatchExecutor();
+            void execute(const te::da::Query& command);
 
-        void cancel();
+            void execute(const std::string& command);
 
-        boost::int64_t getLastGeneratedId();
+            std::auto_ptr<te::da::PreparedQuery> getPrepared(const std::string& qName = std::string(""));
 
-        std::string escape(const std::string& value);
+            std::auto_ptr<te::da::BatchExecutor> getBatchExecutor();
 
-        bool isDataSetNameValid(const std::string& datasetName);
+            void cancel();
 
-        bool isPropertyNameValid(const std::string& propertyName);
+            boost::int64_t getLastGeneratedId();
 
-        std::vector<std::string> getDataSetNames();
+            std::string escape(const std::string& value);
 
-        std::size_t getNumberOfDataSets();
+            bool isDataSetNameValid(const std::string& datasetName);
 
-        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
+            bool isPropertyNameValid(const std::string& propertyName);
 
-        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
+            std::vector<std::string> getDataSetNames();
 
-        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
+            std::size_t getNumberOfDataSets();
 
-        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
+            std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
-        std::vector<std::string> getPropertyNames(const std::string& datasetName);
+            boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
-        std::size_t getNumberOfProperties(const std::string& datasetName);
+            std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
 
-        bool propertyExists(const std::string& datasetName, const std::string& name);
+            std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
 
-        void addProperty(const std::string& datasetName , te::dt::Property* p);
+            std::vector<std::string> getPropertyNames(const std::string& datasetName);
 
-        void dropProperty(const std::string& datasetName, const std::string& name);
+            std::size_t getNumberOfProperties(const std::string& datasetName);
 
-        void renameProperty(const std::string& datasetName , const std::string& propertyName, const std::string& newPropertyName);
+            bool propertyExists(const std::string& datasetName, const std::string& name);
 
-        std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
+            void addProperty(const std::string& datasetName , te::dt::Property* p);
 
-        bool primaryKeyExists(const std::string& datasetName, const std::string& name);
+            void dropProperty(const std::string& datasetName, const std::string& name);
 
-        void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk);
+            void renameProperty(const std::string& datasetName , const std::string& propertyName, const std::string& newPropertyName);
 
-        void dropPrimaryKey(const std::string& datasetName);
+            std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
-        std::auto_ptr<te::da::ForeignKey> getForeignKey(const std::string& datasetName, const std::string& name);
+            bool primaryKeyExists(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
+            void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk);
 
-        bool foreignKeyExists(const std::string& datasetName , const std::string& name);
+            void dropPrimaryKey(const std::string& datasetName);
 
-        void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk);
+            std::auto_ptr<te::da::ForeignKey> getForeignKey(const std::string& datasetName, const std::string& name);
 
-        void dropForeignKey(const std::string& datasetName , const std::string& fkName);
+            std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name);
+            bool foreignKeyExists(const std::string& datasetName , const std::string& name);
 
-        std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
+            void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk);
 
-        bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
+            void dropForeignKey(const std::string& datasetName , const std::string& fkName);
 
-        void addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk);
+            std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name);
 
-        void dropUniqueKey(const std::string& datasetName, const std::string& name);
+            std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName, const std::string& name);
+            bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
+            void addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk);
 
-        bool checkConstraintExists(const std::string& datasetName, const std::string& name);
+            void dropUniqueKey(const std::string& datasetName, const std::string& name);
 
-        void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
+            std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName, const std::string& name);
 
-        void dropCheckConstraint(const std::string& datasetName, const std::string& name);
+            std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name);
+            bool checkConstraintExists(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getIndexNames(const std::string& datasetName);
+            void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
 
-        bool indexExists(const std::string& datasetName, const std::string& name);
+            void dropCheckConstraint(const std::string& datasetName, const std::string& name);
 
-        void addIndex(const std::string& datasetName, te::da::Index* idx, const std::map<std::string, std::string>& options);
+            std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name);
 
-        void dropIndex(const std::string& datasetName, const std::string& idxName);
+            std::vector<std::string> getIndexNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::Sequence> getSequence(const std::string& name);
+            bool indexExists(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getSequenceNames();
+            void addIndex(const std::string& datasetName, te::da::Index* idx, const std::map<std::string, std::string>& options);
 
-        bool sequenceExists(const std::string& name);
+            void dropIndex(const std::string& datasetName, const std::string& idxName);
 
-        void addSequence(te::da::Sequence* sequence);
+            std::auto_ptr<te::da::Sequence> getSequence(const std::string& name);
 
-        void dropSequence(const std::string& name);
+            std::vector<std::string> getSequenceNames();
 
-        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                  const std::string& propertyName);
+            bool sequenceExists(const std::string& name);
 
-        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                  std::size_t propertyPos);
+            void addSequence(te::da::Sequence* sequence);
 
-        std::size_t getNumberOfItems(const std::string& datasetName);
+            void dropSequence(const std::string& name);
 
-        bool hasDataSets();
+            std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
+                                                      const std::string& propertyName);
 
-        bool dataSetExists(const std::string& name);
+            std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
+                                                      std::size_t propertyPos);
 
-        void createDataSet(te::da::DataSetType* dt,
-                           const std::map<std::string, std::string>& options);
+            std::size_t getNumberOfItems(const std::string& datasetName);
 
-        void cloneDataSet(const std::string& name,
-                          const std::string& cloneName,
-                          const std::map<std::string, std::string>& options);
+            bool hasDataSets();
 
-        void dropDataSet(const std::string& name);
+            bool dataSetExists(const std::string& name);
 
-        void renameDataSet(const std::string& name,
-                           const std::string& newName);
+            void createDataSet(te::da::DataSetType* dt,
+                               const std::map<std::string, std::string>& options);
 
-        void add(const std::string& datasetName,
-                 te::da::DataSet* d,
-                 const std::map<std::string, std::string>& options,
-                 std::size_t limit = 0);
+            void cloneDataSet(const std::string& name,
+                              const std::string& cloneName,
+                              const std::map<std::string, std::string>& options);
 
-        void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
+            void dropDataSet(const std::string& name);
 
-        void update(const std::string& datasetName,
-                    te::da::DataSet* dataset,
-                    const std::vector<std::size_t>& properties,
-                    const te::da::ObjectIdSet* oids,
-                    const std::map<std::string, std::string>& options,
-                    std::size_t limit = 0);
+            void renameDataSet(const std::string& name,
+                               const std::string& newName);
 
-        void optimize(const std::map<std::string, std::string>& opInfo);
+            void add(const std::string& datasetName,
+                     te::da::DataSet* d,
+                     const std::map<std::string, std::string>& options,
+                     std::size_t limit = 0);
 
-        te::common::CharEncoding getEncoding();
+            void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
 
-      private:
+            void update(const std::string& datasetName,
+                        te::da::DataSet* dataset,
+                        const std::vector<std::size_t>& properties,
+                        const te::da::ObjectIdSet* oids,
+                        const std::map<std::string, std::string>& options,
+                        std::size_t limit = 0);
 
-        WCS wcs_;
-    };
+            void optimize(const std::map<std::string, std::string>& opInfo);
+
+            te::common::CharEncoding getEncoding();
+
+          private:
+
+            WCS wcs_;
+            CoverageRequest coverageRequest_;
+          };
 
         } // end namespace da
       } // end namespace wcs

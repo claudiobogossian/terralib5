@@ -43,7 +43,8 @@ te::ws::ogc::wcs::da::DataSource::DataSource()
 }
 
 te::ws::ogc::wcs::da::DataSource::~DataSource()
-{}
+{
+}
 
 std::string te::ws::ogc::wcs::da::DataSource::getType() const
 {

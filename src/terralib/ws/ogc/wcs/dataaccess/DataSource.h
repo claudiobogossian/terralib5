@@ -104,7 +104,7 @@ namespace te
 
           private:
 
-            te::ws::ogc::WCS wcs_;
+            WCS wcs_;
             std::map<std::string, std::string> m_connectionInfo;
             bool m_isOpened;
             static te::da::DataSourceCapabilities sm_capabilities;

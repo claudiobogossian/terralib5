@@ -33,6 +33,7 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/ogc-wcs/*.h)
 add_executable(terralib_unittest_ws_ogc_wcs ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_unittest_ws_ogc_wcs terralib_mod_ws_ogc_wcs_client
+                                                    terralib_mod_ws_ogc_wcs_dataaccess
                                                     terralib_mod_plugin
                                                     ${CPPUNIT_LIBRARY})
 #${Boost_SYSTEM_LIBRARY}

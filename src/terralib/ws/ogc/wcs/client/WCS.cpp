@@ -31,7 +31,7 @@
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "WCS.h"
-
+#include <iostream>
 
 te::ws::ogc::WCS::WCS(const std::string uri, const std::string version)
   : uri_(uri + "?SERVICE=WCS"), version_(version)
@@ -86,7 +86,7 @@ void te::ws::ogc::WCS::updateCapabilities()
 }
 
 
-te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::string coverage)
+te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::string coverage) const
 {
   te::ws::ogc::CoverageDescription describeCoverage;
 
@@ -140,7 +140,7 @@ std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest)
 
     if(version_ == "2.0.1")
     {
-      url = "WMS:" + uri_ + "&VERSION=" + version_ + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
+      url = uri_ + "&VERSION=" + version_ + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
 
       if(!coverageRequest.format.empty())
         url += "&FORMAT=" + coverageRequest.format;
@@ -148,17 +148,21 @@ std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest)
       if(!coverageRequest.mediaType.empty())
         url += "&MEDIATYPE=" + coverageRequest.mediaType;
 
-      for(unsigned int i = 0; i < coverageRequest.subSet.size(); i++)
+      for(unsigned int i = 0; i < coverageRequest.boundedBy.axisLabels.size(); i ++)
       {
-        const SubSet* subSet = &coverageRequest.subSet.at(i);
+        const BoundedBy* boundedBy = &coverageRequest.boundedBy;
 
-        url += "&SUBSET=" + subSet->axis + "(";
+        url += "&SUBSET=" + boundedBy->axisLabels.at(i) + "(";
 
-        if(!subSet->min.empty())
-          url += subSet->min;
+        for(unsigned int j = 0; j < boundedBy->coordinate.size(); j++)
+        {
+          const Coordinate* coordinate = &boundedBy->coordinate.at(j);
 
-        if(!subSet->max.empty())
-          url += "," + subSet->max;
+          if(j != 0)
+            url += ",";
+
+          url += coordinate->coord.at(i);
+        }
 
         url += ")";
       }
@@ -172,7 +176,7 @@ std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest)
     {
       throw te::common::Exception(TE_TR("WCS version not supported!"));
     }
-
+    std::cout << url.c_str() << std::endl;
     coveragePath = makeFileRequest(url, coverageRequest.coverageID);
 
   }

@@ -38,12 +38,12 @@ void LoadModules()
 {
   try
   {
-    te::plugin::PluginInfo* info, *wcsInfo;
+    te::plugin::PluginInfo* info;
 
     std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
 
-    wcsInfo = te::plugin::GetInstalledPlugin(plugins_path + "/te.ogc.wcs.teplg");
-    te::plugin::PluginManager::getInstance().add(wcsInfo);
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.ogc.wcs.teplg");
+    te::plugin::PluginManager::getInstance().add(info);
 
 #ifdef TERRALIB_MOD_OGR_ENABLED
     info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");

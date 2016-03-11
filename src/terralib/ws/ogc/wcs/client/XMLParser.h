@@ -53,6 +53,11 @@ namespace te
         std::vector< std::string > coverages;
       };
 
+      struct Coordinate
+      {
+        std::vector< std::string > coord;
+      };
+
       struct SubSet
       {
         std::string axis;
@@ -62,17 +67,18 @@ namespace te
 
       struct DomainSet
       {
-        std::vector< SubSet > envelope;
+        std::vector< SubSet > subSet;
       };
 
       struct BoundedBy
       {
         std::string srsName;
-        std::string axisLabels;
-        std::string uomLabels;
         std::string srsDimension;
-        std::vector< std::string > lowerCorner;
-        std::vector< std::string > upperCorner;
+        std::vector< std::string > axisLabels;
+        std::vector< std::string > uomLabels;
+
+        // VINICIUS: remove Coordinate and use Envelope instead(from terralib?)
+        std::vector< Coordinate > coordinate;
       };
 
       struct ServiceParameters
@@ -195,30 +201,66 @@ namespace te
               {
                 if(boost::iequals(reader->getElementLocalName(), "Envelope") && reader->hasAttrs())
                 {
+                  std::stringstream axis, uom;
                   for(unsigned int i = 0; i < reader->getNumberOfAttrs(); i++)
                   {
-                    std::string name = reader->getAttrLocalName(i);
-
-                    if(name.compare("srsName"))
+                    if(boost::iequals(reader->getAttrLocalName(i), "srsName"))
                       boundedBy.srsName = reader->getAttr(i);
-                    else if(name.compare("axisLabels"))
-                      boundedBy.axisLabels = reader->getAttr(i);
-                    else if(name.compare("uomLabels"))
-                      boundedBy.uomLabels = reader->getAttr(i);
-                    else if(name.compare("srsDimension"))
+                    else if(boost::iequals(reader->getAttrLocalName(i), "axisLabels"))
+                      axis.str(reader->getAttr(i));
+                    else if(boost::iequals(reader->getAttrLocalName(i), "uomLabels"))
+                      uom.str(reader->getAttr(i));
+                    else if(boost::iequals(reader->getAttrLocalName(i), "srsDimension"))
                       boundedBy.srsDimension = reader->getAttr(i);
                   }
 
+                  while(axis.good())
+                  {
+                    std::string part;
+                    axis >> part;
+                    boundedBy.axisLabels.push_back(part);
+                  }
+
+                  while(uom.good())
+                  {
+                    std::string part;
+                    uom >> part;
+                    boundedBy.uomLabels.push_back(part);
+                  }
+
+                  std::stringstream lower, upper;
+
                   while(reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "Envelope")))
                   {
+
                     if(reader->getNodeType() == te::xml::VALUE)
                     {
                       if(boost::iequals(reader->getElementLocalName(), "lowerCorner"))
-                        boundedBy.lowerCorner.push_back(reader->getElementValue());
+                        lower.str(reader->getElementValue());
                       else if(boost::iequals(reader->getElementLocalName(), "upperCorner"))
-                        boundedBy.upperCorner.push_back(reader->getElementValue());
+                        upper.str(reader->getElementValue());
                     }
                   }
+
+                  Coordinate coordinateLower, coordinateUpper;
+                  while(lower.good())
+                  {
+                    std::string part;
+                    lower >> part;
+                    coordinateLower.coord.push_back(part);
+                  }
+
+                  boundedBy.coordinate.push_back(coordinateLower);
+
+                  while(upper.good())
+                  {
+                    std::string part;
+                    upper >> part;
+                    coordinateUpper.coord.push_back(part);
+                  }
+
+                  boundedBy.coordinate.push_back(coordinateUpper);
+
                 }
               }
             }
@@ -263,7 +305,7 @@ namespace te
                   subSet.max = element;
                 }
 
-                domainSet.envelope.push_back(subSet);
+                domainSet.subSet.push_back(subSet);
               }
             }
             else if(boost::iequals(reader->getElementLocalName(), "ServiceParameters"))
