@@ -31,7 +31,7 @@ te::vp::InputParams::InputParams()
   m_inputDataSetName(""),
   m_inputDataSet(0),
   m_inputDataSetType(0),
-  m_inputRestriction(0)
+  m_inputQuery(0)
 {
 }
 
@@ -40,13 +40,13 @@ te::vp::InputParams::InputParams(const InputParams& rhs)
   m_inputDataSetName(""),
   m_inputDataSet(0),
   m_inputDataSetType(0),
-  m_inputRestriction(0)
+  m_inputQuery(0)
 {
   m_inputDataSource = rhs.m_inputDataSource;
   m_inputDataSetName = rhs.m_inputDataSetName;
   m_inputDataSet = rhs.m_inputDataSet;
   m_inputDataSetType = rhs.m_inputDataSetType;
-  m_inputRestriction = rhs.m_inputRestriction;
+  m_inputQuery = rhs.m_inputQuery;
 }
 
 te::vp::InputParams::~InputParams()
@@ -64,7 +64,7 @@ te::vp::InputParams& te::vp::InputParams::operator=(const InputParams& rhs)
     m_inputDataSetName = rhs.m_inputDataSetName;
     m_inputDataSet = rhs.m_inputDataSet;
     m_inputDataSetType = rhs.m_inputDataSetType;
-    m_inputRestriction = rhs.m_inputRestriction;
+    m_inputQuery = rhs.m_inputQuery;
   }
 
   return *this;
@@ -76,5 +76,5 @@ void te::vp::InputParams::clear()
   m_inputDataSetName = "";
   m_inputDataSet = 0;
   m_inputDataSetType = 0;
-  m_inputRestriction = 0;
+  m_inputQuery = 0;
 }

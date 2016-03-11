@@ -78,11 +78,13 @@ namespace te
 
       public:
 
-        te::da::DataSourcePtr m_inputDataSource;
-        std::string m_inputDataSetName;
-        te::da::DataSet* m_inputDataSet;
-        te::da::DataSetType* m_inputDataSetType;
-        te::da::Select* m_inputRestriction;
+        te::da::DataSourcePtr m_inputDataSource;  //!< Is Required.
+        te::da::DataSetType* m_inputDataSetType;  //!< Is required.
+        
+        te::da::DataSet* m_inputDataSet;          //!< Is required for operations in memory.
+        te::da::Select* m_inputQuery;             //!< Is required for operations in spatial database.
+
+        std::string m_inputDataSetName;           //!< Deprecated.
     };
 
   } // end namespace vp

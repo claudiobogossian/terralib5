@@ -29,6 +29,7 @@
 #include "../../common/StringUtils.h"
 #include "../../common/Translator.h"
 
+#include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
@@ -39,8 +40,14 @@
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 
+#include "../../dataaccess/query/And.h"
+#include "../../dataaccess/query/DataSetName.h"
+#include "../../dataaccess/query/Expression.h"
+#include "../../dataaccess/query/Field.h"
+#include "../../dataaccess/query/Fields.h"
 #include "../../dataaccess/query/From.h"
 #include "../../dataaccess/query/FromItem.h"
+#include "../../dataaccess/query/Where.h"
 
 #include "../../dataaccess/utils/Utils.h"
 
@@ -139,6 +146,102 @@ void te::vp::DifferenceDialog::setLayers(std::list<te::map::AbstractLayerPtr> la
 te::map::AbstractLayerPtr te::vp::DifferenceDialog::getLayer()
 {
   return m_layerResult;
+}
+
+te::da::Select* te::vp::DifferenceDialog::getSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects)
+{
+// Do a Cast from AbstractLayerPtr to DataSetLayer or QueryLayer.
+  te::map::DataSetLayer* dataSetLayer = 0;
+  te::map::QueryLayer* queryLayer = 0;
+
+  if (layer->getType() == "DATASETLAYER")
+  {
+    dataSetLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+    if (!dataSetLayer)
+    {
+      QMessageBox::information(this, "Error", "Can not execute this operation on this type of layer.");
+      return 0;
+    }
+  }
+  else if (layer->getType() == "QUERYLAYER")
+  {
+    queryLayer = dynamic_cast<te::map::QueryLayer*>(layer.get());
+    if (!queryLayer)
+    {
+      QMessageBox::information(this, "Error", "Can not execute this operation on this type of layer.");
+      return 0;
+    }
+  }
+  else
+  {
+    QMessageBox::information(this, "Error", "Can not execute this operation on this type of layer.");
+    return 0;
+  }
+
+// Select query
+  te::da::Select* select = new te::da::Select();
+
+// From dataSetLayer
+  if (dataSetLayer)
+  {
+    te::da::Fields* fields = new te::da::Fields;
+    te::da::Field* f_all = new te::da::Field("*");
+    fields->push_back(f_all);
+    select->setFields(fields);
+    
+    te::da::From* from = new te::da::From;
+    te::da::FromItem* fromItem = new te::da::DataSetName(dataSetLayer->getDataSetName());
+    from->push_back(fromItem);
+    select->setFrom(from);
+
+    if (onlySelectedObjects)
+    {
+      const te::da::ObjectIdSet* oidSet = layer->getSelected();
+      if (!oidSet)
+      {
+        QMessageBox::information(this, "Difference", "Select the layer objects to perform the operation.");
+        return 0;
+      }
+
+      te::da::Where* w_oid = new te::da::Where(oidSet->getExpression());
+      select->setWhere(w_oid);
+    }
+  }
+// From queryLayer
+  else
+  {
+    select = queryLayer->getQuery();
+
+    if (onlySelectedObjects)
+    {
+      const te::da::ObjectIdSet* oidSet = layer->getSelected();
+      if (!oidSet)
+      {
+        QMessageBox::information(this, "Difference", "Select the layer objects to perform the operation.");
+        return 0;
+      }
+
+      te::da::Where* w = select->getWhere();
+
+      te::da::Expression* e_where =  w->getExp()->clone();
+      te::da::Expression* e_oidWhere = oidSet->getExpression();
+
+      te::da::And* and = new te::da::And(e_where, e_oidWhere);
+
+      te::da::Where* newWhere = new te::da::Where(and);
+
+      select->setWhere(newWhere);
+    }
+  }
+
+  return select;
+}
+
+te::da::DataSet* te::vp::DifferenceDialog::getDataSetFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects)
+{
+  te::da::DataSet* dataSet;
+
+  return dataSet;
 }
 
 std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getSelectedProperties()
@@ -256,26 +359,58 @@ void te::vp::DifferenceDialog::onDifferenceLayerComboBoxChanged(int index)
   m_differenceSelectedLayer = layer;
 }
 
+void te::vp::DifferenceDialog::onTargetDatasourceToolButtonPressed()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
+
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+
+  if (dsPtrList.empty())
+    return;
+
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+
+  m_outputDatasource = *it;
+
+  m_toFile = false;
+}
+
+void te::vp::DifferenceDialog::onTargetFileToolButtonPressed()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+    QString(), tr("Shapefile (*.shp *.SHP);;"), 0, QFileDialog::DontConfirmOverwrite);
+
+  if (fileName.isEmpty())
+    return;
+
+  boost::filesystem::path outfile(fileName.toStdString());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
+
+  m_toFile = true;
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
+}
+
 void te::vp::DifferenceDialog::onOkPushButtonClicked()
 {
-// Validate Input Layer
+// Validate Input Layer.
   if (m_ui->m_inputLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::warning(this, TE_TR("Difference"), TE_TR("Select an input layer."));
     return;
   }
 
-  const te::da::ObjectIdSet* inputOidSet = 0;
-  if (m_ui->m_inputOnlySelectedCheckBox->isChecked())
-  {
-    inputOidSet = m_inputSelectedLayer->getSelected();
-    if(!inputOidSet)
-    {
-      QMessageBox::information(this, "Difference", "Select the layer objects to perform the difference operation.");
-      return;
-    }
-  }
-
+// Validate DataSource.
   te::da::DataSourcePtr inputDataSource = te::da::GetDataSource(m_inputSelectedLayer->getDataSourceId(), true);
   if (!inputDataSource.get())
   {
@@ -284,31 +419,20 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
   }
 
 
-// Validate Difference Layer
+// Validate Difference Layer.
   if (m_ui->m_differenceLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::warning(this, TE_TR("Difference"), TE_TR("Select a layer to do the difference."));
     return;
   }
 
-  const te::da::ObjectIdSet* differenceOidSet = 0;
-  if (m_ui->m_diffOnlySelectedCheckBox->isChecked())
-  {
-    differenceOidSet = m_differenceSelectedLayer->getSelected();
-    if(!differenceOidSet)
-    {
-      QMessageBox::information(this, "Difference", "Select the layer objects to perform the difference operation.");
-      return;
-    }
-  }
-
+// Validate DataSource.
   te::da::DataSourcePtr differenceDataSource = te::da::GetDataSource(m_differenceSelectedLayer->getDataSourceId(), true);
   if (!differenceDataSource.get())
   {
     QMessageBox::information(this, "Difference", "The selected difference data source can not be accessed.");
     return;
   }
-
 
 // Get output attributes.
   std::vector<std::pair<std::string, std::string> > attributesVec = this->getSelectedProperties();
@@ -343,102 +467,85 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       return;
   }
 
-// Do a Cast from AbstractLayerPtr to DataSetLayer or QueryLayer.
-  te::map::DataSetLayer* inputDataSetLayer = 0;
-  te::map::QueryLayer* inputQueryLayer = 0;
+  // Verify if "Input Only Selected objects" is checked.
+  bool inputIsChecked = false;
 
-  te::map::DataSetLayer* differenceDataSetLayer = 0;
-  te::map::QueryLayer* differenceQueryLayer = 0;
+  if (m_ui->m_inputOnlySelectedCheckBox->isChecked())
+    inputIsChecked = true;
 
-  if (m_inputSelectedLayer->getType() == "DATASETLAYER")
-  {
-    inputDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputSelectedLayer.get());
-    if (!inputDataSetLayer)
-    {
-      QMessageBox::information(this, "Difference", "Can not execute this operation on this type of input layer.");
-      return;
-    }
-  }
-  else if (m_inputSelectedLayer->getType() == "QUERYLAYER")
-  {
-    inputQueryLayer = dynamic_cast<te::map::QueryLayer*>(m_inputSelectedLayer.get());
-    if (!inputQueryLayer)
-    {
-      QMessageBox::information(this, "Difference", "Can not execute this operation on this type of input layer.");
-      return;
-    }
-  }
-  else
-  {
-    QMessageBox::information(this, "Difference", "Can not execute this operation on this type of input layer.");
-    return;
-  }
 
-  if (m_differenceSelectedLayer->getType() == "DATASETLAYER")
-  {
-    differenceDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_differenceSelectedLayer.get());
-    if (!differenceDataSetLayer)
-    {
-      QMessageBox::information(this, "Difference", "Can not execute this operation on this type of input layer.");
-      return;
-    }
-  }
-  else if (m_differenceSelectedLayer->getType() == "QUERYLAYER")
-  {
-    differenceQueryLayer = dynamic_cast<te::map::QueryLayer*>(m_differenceSelectedLayer.get());
-    if (!differenceQueryLayer)
-    {
-      QMessageBox::information(this, "Difference", "Can not execute this operation on this type of input layer.");
-      return;
-    }
-  }
-  else
-  {
-    QMessageBox::information(this, "Difference", "Can not execute this operation on this type of difference layer.");
-    return;
-  }
+  // Verify if "Difference Only Selected objects" is checked.
+  bool differenceIsChecked = false;
 
-  //progress
+  if (m_ui->m_diffOnlySelectedCheckBox->isChecked())
+    differenceIsChecked = true;
+
+
+// Progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
   
   try
   {
-// Get the output dataset name.
-    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-
-// Set the input parameters
+// Declare the input parameters
     te::vp::InputParams structInputParams1;
-    structInputParams1.m_inputDataSource = inputDataSource;
-    structInputParams1.m_inputDataSetName = m_inputSelectedLayer->getDataSetName();
+    te::vp::InputParams structInputParams2;
 
-    if (inputQueryLayer)
+// Select a strategy based on the capabilities of the input datasource
+    const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
+    const te::da::DataSourceCapabilities differenceDSCapabilities = differenceDataSource->getCapabilities();
+
+    bool isQuery = false;
+
+    te::da::Select* inputSelect = 0;
+    te::da::Select* differenceSelect = 0;
+
+    te::da::DataSet* inputDataSet = 0;
+    te::da::DataSet* differenceDataSet = 0;
+
+    if ((inputDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() &&
+      differenceDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect()) &&
+      (inputDataSource->getId() == differenceDataSource->getId()) &&
+      (m_inputSelectedLayer->getSRID() == m_differenceSelectedLayer->getSRID()))
     {
-      structInputParams1.m_inputRestriction = inputQueryLayer->getQuery();
+      isQuery = true;
 
-      std::auto_ptr<te::map::LayerSchema> layerSchema(inputQueryLayer->getSchema());
-      structInputParams1.m_inputDataSetType = layerSchema.release();
+      inputSelect = this->getSelectQueryFromLayer(m_inputSelectedLayer, inputIsChecked);
+      differenceSelect = this->getSelectQueryFromLayer(m_differenceSelectedLayer, differenceIsChecked);
+
+      if (inputSelect)
+        structInputParams1.m_inputQuery = inputSelect;
+
+      if (differenceSelect)
+        structInputParams2.m_inputQuery = differenceSelect;
     }
+    else
+    {
+      inputDataSet = this->getDataSetFromLayer(m_inputSelectedLayer, inputIsChecked);
+      differenceDataSet = this->getDataSetFromLayer(m_differenceSelectedLayer, differenceIsChecked);
+
+      structInputParams1.m_inputDataSet = inputDataSet;
+      structInputParams2.m_inputDataSet = differenceDataSet;
+    }
+
+// Set the inputLayer parameters
+    structInputParams1.m_inputDataSource = inputDataSource;
+    structInputParams1.m_inputDataSetType = m_inputSelectedLayer->getSchema().release();
 
     m_inputParams.push_back(structInputParams1);
 
-
-    te::vp::InputParams structInputParams2;
+// Set the differenceLayer parameters
     structInputParams2.m_inputDataSource = differenceDataSource;
-    structInputParams2.m_inputDataSetName = m_differenceSelectedLayer->getDataSetName();
-
-    if (differenceQueryLayer)
-    {
-      structInputParams2.m_inputRestriction = differenceQueryLayer->getQuery();
-
-      std::auto_ptr<te::map::LayerSchema> layerSchema(differenceQueryLayer->getSchema());
-      structInputParams2.m_inputDataSetType = layerSchema.release();
-    }
+    structInputParams2.m_inputDataSetType = m_differenceSelectedLayer->getSchema().release();
 
     m_inputParams.push_back(structInputParams2);
 
+// Get the output dataset name.
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
+// Return of operation result.
     bool res = true;
+    
     if (m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
@@ -477,14 +584,11 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
 
       te::vp::Difference difference;
 
-      // select a strategy based on the capabilities of the input datasource
+// Select a strategy based on the capabilities of the input datasource
       const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
       const te::da::DataSourceCapabilities differenceDSCapabilities = differenceDataSource->getCapabilities();
 
-      if ((inputDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() &&
-          differenceDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect()) &&
-          (inputDataSource->getId() == differenceDataSource->getId()) &&
-          (m_inputSelectedLayer->getSRID() == m_differenceSelectedLayer->getSRID()))
+      if (isQuery)
       {
         res = difference.executeQuery(m_params);
       }
@@ -521,9 +625,12 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
         
         return;
       }
-      if (aux->dataSetExists(outputdataset))
+
+      std::string name = te::common::Convert2LCase(outputdataset);
+
+      if (aux->dataSetExists(name))
       {
-        QMessageBox::information(this, "Difference", "Dataset already exists. Remove it or select a new name and try again. ");
+        QMessageBox::information(this, "Difference", "Dataset already exists. Remove it or select a new name and try again.");
 
         te::common::ProgressManager::getInstance().removeViewer(id);
 
@@ -547,14 +654,11 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
 
       te::vp::Difference difference;
 
-      // select a strategy based on the capabilities of the input datasource
+// Select a strategy based on the capabilities of the input datasource
       const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
       const te::da::DataSourceCapabilities differenceDSCapabilities = differenceDataSource->getCapabilities();
 
-      if( inputDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
-          differenceDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
-          (inputDataSource->getId() == differenceDataSource->getId()) &&
-          (m_inputSelectedLayer->getSRID() == m_differenceSelectedLayer->getSRID()))
+      if(isQuery)
       {
         res = difference.executeQuery(m_params);
       }
@@ -577,7 +681,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       }
     }
 
-    // creating a layer for the result
+// creating a layer for the result
     te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
     
     te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
@@ -610,44 +714,3 @@ void te::vp::DifferenceDialog::onCancelPushButtonClicked()
   reject();
 }
 
-void te::vp::DifferenceDialog::onTargetDatasourceToolButtonPressed()
-{
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_newLayerNameLineEdit->setEnabled(true);
-  te::qt::widgets::DataSourceSelectorDialog dlg(this);
-  dlg.exec();
-
-  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
-
-  if(dsPtrList.empty())
-    return;
-
-  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
-
-  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
-
-  m_outputDatasource = *it;
-
-  m_toFile = false;
-}
-
-void te::vp::DifferenceDialog::onTargetFileToolButtonPressed()
-{
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_repositoryLineEdit->clear();
-
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-                                                        QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
-
-  if (fileName.isEmpty())
-    return;
-
-  boost::filesystem::path outfile(fileName.toStdString());
-  std::string aux = outfile.leaf().string();
-  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
-  aux = outfile.string();
-  m_ui->m_repositoryLineEdit->setText(aux.c_str());
-  
-  m_toFile = true;
-  m_ui->m_newLayerNameLineEdit->setEnabled(false);
-}

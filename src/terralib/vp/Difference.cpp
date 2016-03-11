@@ -40,7 +40,6 @@
 #include "../dataaccess/query/Field.h"
 #include "../dataaccess/query/Fields.h"
 #include "../dataaccess/query/From.h"
-#include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/Insert.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Not.h"
@@ -101,71 +100,52 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams, te::
 
 bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 {
+// Validating parameters
   std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
 
   if (inputParams.size() < 2)
     throw te::common::Exception(TE_TR("It is necessary more than one item for performing the operation."));
 
-// Building Difference Query.
 
-// Get DataSetType and Geometry Property of InputLayer and Difference Layer.
-  std::auto_ptr<te::da::DataSetType> dsType_input;
-  std::auto_ptr<te::da::DataSetType> dsType_difference;
+// Get DataSetType and Geometry Property of InputLayer Layer.
+  if (!inputParams[0].m_inputDataSetType)
+    throw te::common::Exception(TE_TR("It is necessary to set the DataSetType from Input Layer."));
+    
+  std::auto_ptr<te::da::DataSetType> dsType_input(inputParams[0].m_inputDataSetType);
+
+  te::gm::GeometryProperty* geom_input = te::da::GetFirstGeomProperty(dsType_input.get());
   
-  te::gm::GeometryProperty* geom_input;
-  te::gm::GeometryProperty* geom_difference;
-
-
-  if (inputParams[0].m_inputDataSetType)
-  {
-    dsType_input.reset(inputParams[0].m_inputDataSetType);
-  }
-  else
-  {
-    if (inputParams[0].m_inputDataSetName.empty())
-      throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Input Layer."));
-
-    dsType_input = inputParams[0].m_inputDataSource->getDataSetType(inputParams[0].m_inputDataSetName);
-  }
-
-  geom_input = te::da::GetFirstGeomProperty(dsType_input.get());
   std::string aliasInput = dsType_input->getName();
 
+// Get DataSetType and Geometry Property of Difference Layer.
+  if (!inputParams[1].m_inputDataSetType)
+    throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Difference Layer."));
+    
+  std::auto_ptr<te::da::DataSetType> dsType_difference(inputParams[1].m_inputDataSetType);
   
-  if (inputParams[1].m_inputDataSetType)
-  {
-    dsType_difference.reset(inputParams[1].m_inputDataSetType);
-  }
-  else
-  {
-    if (inputParams[1].m_inputDataSetName.empty())
-      throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Difference Layer."));
-
-    dsType_difference = inputParams[1].m_inputDataSource->getDataSetType(inputParams[1].m_inputDataSetName);
-  }
-
-  geom_difference = te::da::GetFirstGeomProperty(dsType_difference.get());
+  te::gm::GeometryProperty* geom_difference = te::da::GetFirstGeomProperty(dsType_difference.get());
+  
   std::string aliasDifference = dsType_difference->getName();
 
 
-// Verify if the operation has restrictions.
-  te::da::SubSelect* subSelectInput = 0;
-  te::da::SubSelect* subSelectDifference = 0;
+// Verify if the operation has Query.
+  if (!inputParams[0].m_inputQuery)
+    throw te::common::Exception(TE_TR("It is necessary to set the Input Query."));
 
-  if (inputParams[0].m_inputRestriction)
-  {
-    te::da::Select* selectInput = inputParams[0].m_inputRestriction;
-    subSelectInput = new te::da::SubSelect(selectInput, "inputLayer");
-    aliasInput = subSelectInput->getAlias();
-  }
+  te::da::Select* selectInput = inputParams[0].m_inputQuery;
+  te::da::SubSelect* subSelectInput = new te::da::SubSelect(selectInput, "inputLayer");
+  aliasInput = subSelectInput->getAlias();
 
-  if (inputParams[1].m_inputRestriction)
-  {
-    te::da::Select* selectDifference = inputParams[1].m_inputRestriction;
-    subSelectDifference = new te::da::SubSelect(selectDifference, "differenceLayer");
-    aliasDifference = subSelectDifference->getAlias();
-  }
+  if (!inputParams[1].m_inputQuery)
+    throw te::common::Exception(TE_TR("It is necessary to set the Difference Query."));
 
+  te::da::Select* selectDifference = inputParams[1].m_inputQuery;
+  te::da::SubSelect* subSelectDifference = new te::da::SubSelect(selectDifference, "differenceLayer");
+  aliasDifference = subSelectDifference->getAlias();
+
+
+
+// Building Difference Query.
 
 // Union Expression to set into Difference expression.
   te::da::Fields* fieldsUnion = new te::da::Fields;
@@ -176,18 +156,12 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   fieldsUnion->push_back(f_union);
 
 
-  te::da::From* fromUnion = new te::da::From;
-  
-  if (subSelectDifference)
-  {
-    fromUnion->push_back(subSelectDifference);
-  }
-  else
-  {
-    te::da::FromItem * fromItemUnion = new te::da::DataSetName(dsType_difference->getName());
-    fromUnion->push_back(fromItemUnion);
-  }
+// FROM clause - This from clause is for difference layer.
+  if (!subSelectDifference)
+    throw te::common::Exception(TE_TR("A problem was found. SubSelect Difference with problem."));
 
+  te::da::From* fromUnion = new te::da::From;
+  fromUnion->push_back(subSelectDifference);
 
   te::da::Expression* e_intersects = new te::da::ST_Intersects(
     new te::da::PropertyName(aliasInput + "." + geom_input->getName()),
@@ -205,7 +179,6 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 
 
   te::da::Fields* fieldsExpressions = new te::da::Fields;
-
 
 // Tabular attributes.
   const std::map<std::string, te::dt::AbstractData*> attributesMap = mainParams->getSpecificParams();
@@ -234,17 +207,11 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   fieldsExpressions->push_back(f_multi);
 
 // FROM clause - This from clause is for input layer.
-  te::da::From* fromDifference = new te::da::From;
+  if (!subSelectInput)
+    throw te::common::Exception(TE_TR("A problem was found. SubSelect Input with problem."));
 
-  if (subSelectInput)
-  {
-    fromDifference->push_back(subSelectInput);
-  }
-  else
-  {
-    te::da::FromItem* inputFromItem = new te::da::DataSetName(dsType_input->getName());
-    fromDifference->push_back(inputFromItem);
-  }
+  te::da::From* fromDifference = new te::da::From;
+  fromDifference->push_back(subSelectInput);
 
   te::da::Select* selectIn = new te::da::Select(fieldsExpressions, fromDifference);
   te::da::SubSelect* subSelectIn = new te::da::SubSelect(selectIn, "result");
