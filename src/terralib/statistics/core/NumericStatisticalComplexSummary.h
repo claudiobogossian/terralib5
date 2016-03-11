@@ -55,7 +55,7 @@ namespace te
           }
         };        
         
-        typedef typename std::map < std::complex< double >, std::complex< double >, ClassesPercentLess > ClassesPercentT;
+        typedef std::map < std::complex< double >, std::complex< double >, ClassesPercentLess > ClassesPercentT;
         
         std::complex< double > m_minVal;
         std::complex< double > m_maxVal;
