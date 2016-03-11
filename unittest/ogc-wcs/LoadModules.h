@@ -21,6 +21,8 @@
   \file LoadModules.h
 
   \brief Load terralib modules.
+
+  \author Vinicius campanha
  */
 
 #ifndef __TERRALIB_UNITTEST_DATAACCESS_LOADMODULES_H

@@ -18,9 +18,11 @@
  */
 
 /*!
-  \file TsWCS.h
+  \file terralib/unittest/ogc-wcs/TsWCS.h
 
   \brief A test suit for the WS OGC WCS.
+
+  \author Vinicius campanha
  */
 
 

@@ -18,9 +18,11 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/unittest/ogc-wcs/Config.h
 
   \brief Configuration flags for TerraLib Unittest DataAccess drivers .
+
+  \author Vinicius campanha
  */
 
 #ifndef __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_CONFIG_H
