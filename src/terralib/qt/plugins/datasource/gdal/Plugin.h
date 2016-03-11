@@ -69,6 +69,8 @@ namespace te
           protected slots:
 
             void openFileDialog();
+            
+            void openMultipleFilesDialog();
 
         signals:
 
@@ -77,6 +79,7 @@ namespace te
           protected:
 
             QAction* m_openFile;
+            QAction* m_openMultipleFiles;
         };
 
       } // end namespace gdal
