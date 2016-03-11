@@ -18,19 +18,18 @@
  */
 
 /*!
-  \file terralib\examples\core\uri\main.cpp
+  \file terralib/examples/core/uri/main.cpp
 
   \brief Examples for the Terralib URI API
 
   \author Vinicius Campanha
 */
 
+// TerraLib
+#include <terralib/core/uri/URI.h>
 
 // STL
 #include <cstdlib>
-
-// TerraLib
-
 
 int main(int argc, char *argv[])
 {

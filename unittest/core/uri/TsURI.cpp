@@ -25,4 +25,6 @@
   \author Vinicius campanha
  */
 
-#include "TsURI.h"
+// TerraLib
+#include <terralib/core/uri/URI.h>
+

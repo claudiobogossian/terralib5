@@ -24,17 +24,19 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
+# Examples of core/uri
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.cpp)
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.h)
 
-source_group("Source Files\\uri"       FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES})
-source_group("Header Files\\uri"       FILES ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES})
+source_group("Source Files\\uri"  FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES})
+source_group("Header Files\\uri"  FILES ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES})
 
 add_executable(terralib_example_core_uri ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES})
 
 target_link_libraries(terralib_example_core_uri terralib_mod_core)
 
-install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
+install(FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/core COMPONENT devel)
 
