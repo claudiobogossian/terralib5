@@ -142,7 +142,9 @@ void RGB_012_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm:
 
   l->setStyle(s);
 
-  l->draw(c, *e, srid, 0);
+  bool cancel = false;
+
+  l->draw(c, *e, srid, 0, &cancel);
 
   paint(c, generatePNG, "RGB_012_Style");
  }
@@ -184,7 +186,9 @@ void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, 
 
   l->setStyle(s);
 
-  l->draw(c, *e, srid, 0);
+  bool cancel = false;
+
+  l->draw(c, *e, srid, 0, &cancel);
 
   paint(c, generatePNG, "RGB_012_Transp_Style");
  }
@@ -226,7 +230,9 @@ void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, 
 
   l->setStyle(s);
 
-  l->draw(c, *e, srid, 0);
+  bool cancel = false;
+
+  l->draw(c, *e, srid, 0, &cancel);
 
   paint(c, generatePNG, "RGB_102_Style");
  }
@@ -272,7 +278,9 @@ void RGB_012_G_Contrast_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer*
 
   l->setStyle(s);
 
-  l->draw(c, *e, srid, 0);
+  bool cancel = false;
+
+  l->draw(c, *e, srid, 0, &cancel);
 
   paint(c, generatePNG, "RGB_012_G_Contrast_Style");
  }
@@ -326,7 +334,9 @@ void RGB_012_RGB_Contrast_Style(te::qt::widgets::Canvas* c, te::map::DataSetLaye
 
   l->setStyle(s);
 
-  l->draw(c, *e, srid, 0);
+  bool cancel = false;
+
+  l->draw(c, *e, srid, 0, &cancel);
 
   paint(c, generatePNG, "RGB_012_RGB_Contrast_Style");
  }
@@ -358,7 +368,9 @@ void MONO_0_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::
 
   l->setStyle(s);
 
-  l->draw(c, *e, srid, 0);
+  bool cancel = false;
+
+  l->draw(c, *e, srid, 0, &cancel);
 
   paint(c, generatePNG, "MONO_0_Style");
  }
@@ -390,7 +402,9 @@ void MONO_2_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::
 
   l->setStyle(s);
 
-  l->draw(c, *e, srid, 0);
+  bool cancel = false;
+
+  l->draw(c, *e, srid, 0, &cancel);
 
   paint(c, generatePNG, "MONO_2_Style");
  }
@@ -422,7 +436,9 @@ void RED_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Env
 
   l->setStyle(s);
 
-  l->draw(c, *e, srid, 0);
+  bool cancel = false;
+
+  l->draw(c, *e, srid, 0, &cancel);
 
   paint(c, generatePNG, "RED_Style");
  }

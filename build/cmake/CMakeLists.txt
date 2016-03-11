@@ -423,6 +423,8 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" OFF)
 endif()
 
+option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" OFF)
+
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
 option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
@@ -769,6 +771,12 @@ endif()
 if(MSVC)
   add_definitions(/MP)
 endif()
+
+if(TERRALIB_MOD_CORE_ENABLED)
+  add_subdirectory(terralib_mod_core)
+  list(APPEND TERRALIB_MODULES core)
+endif()
+
 
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
   add_subdirectory(terralib_mod_annotationtext)
@@ -1287,6 +1295,18 @@ endif()
 #
 # build unit test
 #
+
+if(TERRALIB_BUILD_UNITTEST_ENABLED AND CPPUNIT_FOUND)
+  set (DEPS_DIR ${CMAKE_PREFIX_PATH}/lib)
+
+  set (BIN_DIR ${CMAKE_BINARY_DIR}/Debug)
+
+  configure_file(${CMAKE_SOURCE_DIR}/unittest.bat.in ${CMAKE_BINARY_DIR}/unittest.debug.bat)
+
+  set (BIN_DIR ${CMAKE_BINARY_DIR}/Release)
+
+  configure_file(${CMAKE_SOURCE_DIR}/unittest.bat.in ${CMAKE_BINARY_DIR}/unittest.release.bat)
+endif()
 
 if(TERRALIB_UNITTEST_COMMON_ENABLED)
   add_subdirectory(terralib_unittest_common)

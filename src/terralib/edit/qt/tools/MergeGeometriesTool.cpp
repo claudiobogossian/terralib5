@@ -361,6 +361,3 @@ te::gm::Envelope te::edit::MergeGeometriesTool::buildEnvelope(const QPointF& pos
 
   return env;
 }
-
-void te::edit::MergeGeometriesTool::cancelEditionTool()
-{}

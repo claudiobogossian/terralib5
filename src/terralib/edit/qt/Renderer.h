@@ -125,6 +125,7 @@ namespace te
 
       te::gm::GeomType m_currentGeomType;
       bool m_styleChanged;
+
     };
 
   } // end namespace edit

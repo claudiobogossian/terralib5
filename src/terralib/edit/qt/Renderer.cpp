@@ -242,8 +242,8 @@ void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillCo
 
 void te::edit::Renderer::setupDefaultStyle()
 {
-  m_polygonFillColor = QColor(0, 255, 0, 30);
-  m_polygonContourColor = QColor(255, 0, 0, 128);
+  m_polygonFillColor = QColor(0, 255, 0, 15);
+  m_polygonContourColor = QColor(255, 0, 0);
   m_polygonContourWidth = 2;
 
   m_lineColor = QColor(0, 0, 0, 80);
@@ -256,4 +256,5 @@ void te::edit::Renderer::setupDefaultStyle()
   m_pointSize = 8;
 
   m_styleChanged = false;
+
 }

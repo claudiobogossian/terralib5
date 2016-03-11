@@ -136,9 +136,6 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   storeUndoCommand();
 
-  if (m_feature)
-    emit closedPolygon();
-
   return true;
 }
 
@@ -282,7 +279,7 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
 
 }
 
-void te::edit::CreatePolygonTool::cancelEditionTool()
+void te::edit::CreatePolygonTool::resetVisualizationTool()
 {
   clear();
 }
