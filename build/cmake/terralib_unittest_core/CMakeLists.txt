@@ -26,6 +26,8 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
+add_definitions(-DBOOST_TEST_DYN_LINK)
+
 file(GLOB TERRALIB_UNITTEST_CORE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/*.h)
 
@@ -40,4 +42,5 @@ source_group("Header Files\\uri"  FILES ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES})
 add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERRALIB_UNITTEST_CORE_HDR_FILES}
                                       ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES} ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES})
 
-target_link_libraries(terralib_unittest_core terralib_mod_core)
+target_link_libraries(terralib_unittest_core terralib_mod_core
+                                             ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

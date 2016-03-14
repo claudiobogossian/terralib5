@@ -39,6 +39,9 @@
 #include <memory>
 #include <vector>
 
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+
 
 namespace te
 {

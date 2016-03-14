@@ -226,9 +226,9 @@ te::da::Select* te::vp::DifferenceDialog::getSelectQueryFromLayer(te::map::Abstr
       te::da::Expression* e_where =  w->getExp()->clone();
       te::da::Expression* e_oidWhere = oidSet->getExpression();
 
-      te::da::And* and = new te::da::And(e_where, e_oidWhere);
+      te::da::And* andPtr = new te::da::And(e_where, e_oidWhere);
 
-      te::da::Where* newWhere = new te::da::Where(and);
+      te::da::Where* newWhere = new te::da::Where(andPtr);
 
       select->setWhere(newWhere);
     }
