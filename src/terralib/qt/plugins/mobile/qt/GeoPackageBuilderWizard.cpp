@@ -27,7 +27,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../../common/StringUtils.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../geometry/GeometryProperty.h"
+#include "../../../../maptools/DataSetLayer.h"
 #include "../../../widgets/utils/DoubleListWidget.h"
 #include "../../../widgets/utils/ScopedCursor.h"
 #include "../core/form/Serializer.h"
@@ -194,8 +196,38 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   for (it = gatheringLayers.begin(); it != gatheringLayers.end(); ++it)
   {
+    std::auto_ptr<te::da::DataSetType> dsType = (*it)->getSchema();
     std::string dataSourceId = (*it)->getDataSourceId();
     te::da::DataSourceInfoPtr dsInfo = te::da::DataSourceInfoManager::getInstance().get(dataSourceId);
+    te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
+
+    //check and add status column
+    te::dt::Property* statusProp = dsType->getProperty(LAYER_GATHERING_STATUS_COLUMN);
+
+    if (!statusProp)
+    {
+      statusProp = new te::dt::SimpleProperty(LAYER_GATHERING_STATUS_COLUMN, te::dt::INT32_TYPE, true, new std::string("0"));
+
+      ds->addProperty(dsType->getName(), statusProp);
+    }
+
+    //check and add obj_id column
+    te::dt::Property* objIdProp = dsType->getProperty(LAYER_GATHERING_OBJID_COLUMN);
+
+    if (!objIdProp)
+    {
+      objIdProp = new te::dt::SimpleProperty(LAYER_GATHERING_OBJID_COLUMN, te::dt::STRING_TYPE);
+
+      ds->addProperty(dsType->getName(), objIdProp);
+    }
+
+    //get updated dstype
+    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>((*it).get());
+
+    if (dsLayer)
+      dsLayer->loadSchema();
+
+    dsType = (*it)->getSchema();
 
     bool aux = false;
 
@@ -206,8 +238,6 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     }
 
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
-
-    std::auto_ptr<te::da::DataSetType> dsType = (*it)->getSchema();
 
     m_outputPage->appendLogMesssage("Exporting gathering layer " + dsType->getName());
 
