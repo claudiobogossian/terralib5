@@ -44,6 +44,24 @@
     </message>
 </context>
 <context>
+    <name>te::qt::plugins::vp::DifferenceAction</name>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/DifferenceAction.cpp" line="43"/>
+        <source>Difference...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/DifferenceAction.cpp" line="67"/>
+        <source>Difference Result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/DifferenceAction.cpp" line="67"/>
+        <source>The operation was concluded successfully. Would you like to add the layer to the project?</source>
+        <translation type="unfinished">A operação foi concluída com êxito. Você gostaria de adicionar a camada para o projeto ?</translation>
+    </message>
+</context>
+<context>
     <name>te::qt::plugins::vp::GeometricOpAction</name>
     <message>
         <location filename="../../../src/terralib/qt/plugins/vp/GeometricOpAction.cpp" line="42"/>
@@ -95,6 +113,24 @@
         <location filename="../../../src/terralib/qt/plugins/vp/LineToPolygonAction.cpp" line="66"/>
         <source>The operation was concluded successfully. Would you like to add the layer to the project?</source>
         <translation>A operação foi concluída com êxito. Você gostaria de adicionar a camada para o projeto ?</translation>
+    </message>
+</context>
+<context>
+    <name>te::qt::plugins::vp::MergeAction</name>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/MergeAction.cpp" line="39"/>
+        <source>Merge...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/MergeAction.cpp" line="62"/>
+        <source>Merge Result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/MergeAction.cpp" line="62"/>
+        <source>The operation was concluded successfully. Would you like to add the layer to the project?</source>
+        <translation type="unfinished">A operação foi concluída com êxito. Você gostaria de adicionar a camada para o projeto ?</translation>
     </message>
 </context>
 <context>

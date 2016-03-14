@@ -4725,22 +4725,28 @@ p, li { white-space: pre-wrap; }
         <translation>Classificação por</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="22"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="24"/>
         <source>DataSet</source>
         <translation>Conjunto de Dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="38"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="40"/>
         <source>Connection Info</source>
         <translation>Informações de Conecção</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="55"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="57"/>
         <source>SRID: </source>
         <translation>SRID: </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="67"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="59"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="102"/>
+        <source> -  </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="71"/>
         <source>Invalid Layer</source>
         <translation>Camada Inválida</translation>
     </message>
@@ -5561,6 +5567,59 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="252"/>
         <source>Preview</source>
         <translation>Pré-visualização.</translation>
+    </message>
+</context>
+<context>
+    <name>RasterSlicingWizardPageForm</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="20"/>
+        <source>Slicing Parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="32"/>
+        <source>Band</source>
+        <translation type="unfinished">Banda</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="42"/>
+        <source>Input raster band</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="53"/>
+        <source>Slices Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="63"/>
+        <source>The number of histogram slices to create</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="83"/>
+        <source>If checked, a paletted raster will be created instead of a multi-band raster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="86"/>
+        <source>Create Palette Raster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="96"/>
+        <source>If checked, the input raster will historgram will be equalized before the slicing process</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="99"/>
+        <source>Equalize histogram</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -11443,204 +11502,204 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
 <context>
     <name>te::qt::widgets::LayerPropertiesInfo</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="42"/>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="118"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="43"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="123"/>
         <source>Layer properties</source>
         <translation>Propriedades da camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="45"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="46"/>
         <source>Id</source>
         <translation>Id</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="49"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="50"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="54"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="55"/>
         <source>SRID</source>
         <translation>SRID</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="59"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="60"/>
         <source>Connection</source>
         <translation>Conecção</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="64"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="65"/>
         <source>Num of Itens</source>
         <translation>Número de Itens</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="70"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="71"/>
         <source>Bounding box</source>
         <translation>Retângulo envolvente</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="72"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="73"/>
         <source>Lower left x</source>
         <translation>Inferior esquerdo x</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="73"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="74"/>
         <source>Lower left y</source>
         <translation>Inferior esquerdo y</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="74"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="75"/>
         <source>Upper right x</source>
         <translation>Superior direito x</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="75"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="76"/>
         <source>Upper right y</source>
         <translation>Superior direito y</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="90"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="91"/>
         <source>Visibility</source>
         <translation>Visibilidade</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="93"/>
         <source>Not visible</source>
         <translation>Não visível</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="93"/>
         <source>visible</source>
         <translation>visível</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="93"/>
         <source>Partially visible</source>
         <translation>Parcialmente visível</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="160"/>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="295"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="165"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="300"/>
         <source>Raster properties</source>
         <translation>Propriedades do Matricial (raster)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="163"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="168"/>
         <source>Number of Lines</source>
         <translation>Número de Linhas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="164"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="169"/>
         <source>Number of Columns</source>
         <translation>Número de Colunas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="165"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="170"/>
         <source>Number of Bands</source>
         <translation>Número de Bandas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="166"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="171"/>
         <source>Resolution X</source>
         <translation>Resolução X</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="167"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="172"/>
         <source>Resolution Y</source>
         <translation>Resolução Y</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="168"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="173"/>
         <source>Access Policy</source>
         <translation>Política de Acesso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="169"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="174"/>
         <source>Multi Resolution Levels</source>
         <translation>Níveis de Multi Resolução</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="200"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="205"/>
         <source>No Access</source>
         <translation>Sem acesso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="202"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="207"/>
         <source>Read Only Access</source>
         <translation>Acesso de somente leitura</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="204"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="209"/>
         <source>Write Only Access</source>
         <translation>Acesso de somente escrita</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="206"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="211"/>
         <source>Read and Write Access</source>
         <translation>Acesso de Leitura e Escrita</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="215"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="220"/>
         <source>Band </source>
         <translation>Banda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="218"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="223"/>
         <source>Description</source>
         <translation>Descrição</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="219"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="224"/>
         <source>Data Type</source>
         <translation>Tipo de Dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="220"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="225"/>
         <source>Dummy Value</source>
         <translation>Valor nulo (dummy)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="221"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="226"/>
         <source>Color Interpretation</source>
         <translation>Interpretação colorida</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="222"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="227"/>
         <source>Pallete Interpretation</source>
         <translation>Interpretação paleta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="246"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="251"/>
         <source>Block properties</source>
         <translation>Propriedades do bloco</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="248"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="253"/>
         <source>Number of blocks in X</source>
         <translation>Número de blocos em X</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="249"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="254"/>
         <source>Number of blocks in Y</source>
         <translation>Número de blocos em Y</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="250"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="255"/>
         <source>Block Width (pixels)</source>
         <translation>Largura de Blocos (pixels)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="251"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="256"/>
         <source>Block Height (pixels)</source>
         <translation>Altura de Blocos (pixels)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="273"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="278"/>
         <source>Name of categories</source>
         <translation>Nome de categorias</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="278"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="283"/>
         <source>Category </source>
         <translation>Categoria</translation>
     </message>
@@ -13229,6 +13288,43 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
         <location filename="../../../src/terralib/qt/widgets/rp/RasterNavigatorWizardPage.cpp" line="45"/>
         <source>Allows  navigate and interact over a raster.</source>
         <translation>Permite navegar e interagir sobre uma matriz.</translation>
+    </message>
+</context>
+<context>
+    <name>te::qt::widgets::RasterSlicingWizard</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="45"/>
+        <source>Raster Slicing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="166"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="170"/>
+        <source>Raster slicing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="166"/>
+        <source>Raster slicing ended sucessfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="170"/>
+        <source>Raster slicing execution error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>te::qt::widgets::RasterSlicingWizardPage</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizardPage.cpp" line="37"/>
+        <source>RasterSlicing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizardPage.cpp" line="38"/>
+        <source>Define the raster slicing parameters.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

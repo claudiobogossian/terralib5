@@ -248,6 +248,85 @@
     </message>
 </context>
 <context>
+    <name>DifferenceDialogForm</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="14"/>
+        <source>Difference</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="48"/>
+        <source>Applying the difference between two layers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="67"/>
+        <source>Imagem</source>
+        <translation type="unfinished">Imagem</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="77"/>
+        <source>Input Layer</source>
+        <translation type="unfinished">Camada de Entrada</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="93"/>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="119"/>
+        <source>Only selected objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="103"/>
+        <source>Difference Layer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="129"/>
+        <source>Attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="144"/>
+        <source>Output</source>
+        <translation type="unfinished">Saída</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="157"/>
+        <source>Repository:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="167"/>
+        <source>Layer Name:</source>
+        <translation type="unfinished">Nome da Camada:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="196"/>
+        <source>...</source>
+        <translation type="unfinished">...</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="209"/>
+        <source>BD</source>
+        <translation type="unfinished">BD</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="243"/>
+        <source>Help</source>
+        <translation type="unfinished">Ajuda</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="263"/>
+        <source>&amp;Ok</source>
+        <translation type="unfinished">&amp;Ok</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/DifferenceDialogForm.ui" line="270"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Cancela</translation>
+    </message>
+</context>
+<context>
     <name>GeometricOpOutputWizardPageForm</name>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/GeometricOpOutputWizardPageForm.ui" line="14"/>
@@ -512,6 +591,89 @@
         <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="217"/>
         <source>Cancel</source>
         <translation>Cancela</translation>
+    </message>
+</context>
+<context>
+    <name>MergeDialogForm</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="14"/>
+        <source>Merge Operation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="28"/>
+        <source>Output</source>
+        <translation type="unfinished">Saída</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="34"/>
+        <source>Repository:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="44"/>
+        <source>Layer Name:</source>
+        <translation type="unfinished">Nome da Camada:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="57"/>
+        <source>...</source>
+        <translation type="unfinished">...</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="73"/>
+        <source>BD</source>
+        <translation type="unfinished">BD</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="92"/>
+        <source>Help</source>
+        <translation type="unfinished">Ajuda</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="112"/>
+        <source>&amp;Ok</source>
+        <translation type="unfinished">&amp;Ok</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="119"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Cancela</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="155"/>
+        <source>Merge two vector Layers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="174"/>
+        <source>Imagem</source>
+        <translation type="unfinished">Imagem</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="184"/>
+        <source>First Layer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="206"/>
+        <source>Second Layer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="228"/>
+        <source>Attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="241"/>
+        <source>First</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MergeDialogForm.ui" line="246"/>
+        <source>Second</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -945,6 +1107,19 @@
     </message>
 </context>
 <context>
+    <name>te::vp::DifferenceDialog</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/DifferenceDialog.cpp" line="639"/>
+        <source>Save as...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/DifferenceDialog.cpp" line="640"/>
+        <source>Shapefile (*.shp *.SHP);;</source>
+        <translation type="unfinished">Shapefile (*.shp *.SHP);;</translation>
+    </message>
+</context>
+<context>
     <name>te::vp::GeometricOpOutputWizardPage</name>
     <message>
         <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="59"/>
@@ -986,12 +1161,12 @@
 <context>
     <name>te::vp::IntersectionDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="658"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="657"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="659"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="658"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -1007,6 +1182,72 @@
         <location filename="../../../src/terralib/vp/qt/LineToPolygonDialog.cpp" line="176"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
+    </message>
+</context>
+<context>
+    <name>te::vp::MergeDialog</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="179"/>
+        <source>Save as...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="180"/>
+        <source>Shapefile (*.shp *.SHP);;</source>
+        <translation type="unfinished">Shapefile (*.shp *.SHP);;</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="199"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="206"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="213"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="240"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="257"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="275"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="303"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="308"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="337"/>
+        <source>Merge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="199"/>
+        <source>It is necessary at least two layer to operat!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="206"/>
+        <source>Select a repository for the resulting layer!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="213"/>
+        <source>Define a name for the resulting layer!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="240"/>
+        <source>Output file already exists. Remove it or select a new name and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="257"/>
+        <source>There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="275"/>
+        <source>Error: could not generate the merge.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="303"/>
+        <source>The selected output datasource can not be accessed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="308"/>
+        <source>Dataset already exists. Remove it or select a new name and try again.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
