@@ -224,7 +224,7 @@ if(WIN32)
 
   find_package(ADO)
 
-  find_package(terralib4 COMPONENTS ado QUIET )
+  find_package(terralib4 COMPONENTS ado)
   
 endif()
 
