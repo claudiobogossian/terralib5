@@ -224,7 +224,7 @@ if(WIN32)
 
   find_package(ADO)
 
-  find_package(terralib4 COMPONENTS ado REQUIRED )
+  find_package(terralib4 COMPONENTS ado)
 
 endif()
 
@@ -411,6 +411,10 @@ endif()
 
 if(CURL_FOUND)
   set(TERRALIB_CURL_ENABLED ON)
+endif()
+
+if(terralib4_FOUND)
+  set(TERRALIB_TERRALIB4_ENABLED ON)
 endif()
 
 #
