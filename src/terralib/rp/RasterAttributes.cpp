@@ -304,15 +304,29 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getCovarianceMat
   return covariance;
 }
 
-boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy)
+boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, 
+    double minPixel, double maxPixel, double gLevels)
 {
   assert(band < rin.getNumberOfBands());
+
+  if (maxPixel == 0 && minPixel == 0) {
+      throw te::common::Exception(TE_TR("GLCM can not be computed. Minimum and Maximum values are invalid."));
+  }
   
-  double minPixel;
-  double maxPixel;
-  te::rst::GetDataTypeRanges(rin.getBandDataType(band), minPixel, maxPixel);
+  double minValueNormalization, maxValueNormalization, matrixLimit;
+  bool normalize = false;
   
-  boost::numeric::ublas::matrix<double> glcm (maxPixel + 1, maxPixel + 1);
+  if ((maxPixel - minPixel) > (gLevels - 1)) {
+    minValueNormalization = 0;
+    maxValueNormalization = gLevels - 1;
+    matrixLimit = gLevels;
+    normalize = true;
+  } else {
+    matrixLimit = (maxPixel - minPixel) + 1;
+  }
+  
+
+  boost::numeric::ublas::matrix<double> glcm(matrixLimit, matrixLimit);
   glcm.clear();
   double pixel;
   double neighborPixel;
@@ -347,11 +361,31 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te
       rin.getValue(c, r, pixel, band);
       if (pixel == noDataValue)
         continue;
+
+      double auxPixel = pixel;
+      // normalizing between 0-maxValue
+      if (normalize) {
+          pixel = std::round((((maxValueNormalization - minValueNormalization) / (maxPixel - minPixel)) * (auxPixel - minPixel)) + minValueNormalization);
+          if (pixel < 0)
+              pixel = 0;
+          else if (pixel > maxValueNormalization)
+              pixel = maxValueNormalization;
+      }
       
-// get neighbor pixel      
+// get neighbor pixel
       rin.getValue(c + dx, r + dy, neighborPixel, band);
       if (neighborPixel == noDataValue)
         continue;
+
+      double auxNeighbor = neighborPixel;
+      // normalizing between 0-maxValue
+      if (normalize) {
+          neighborPixel = std::round((((maxValueNormalization - minValueNormalization) / (maxPixel - minPixel)) * (auxNeighbor - minPixel)) + minValueNormalization);
+          if (neighborPixel < 0)
+              neighborPixel = 0;
+          else if (neighborPixel > maxValueNormalization)
+              neighborPixel = maxValueNormalization;
+      }
 
 // update GLCM matrix
       glcm(pixel, neighborPixel) = glcm(pixel, neighborPixel) + 1;
@@ -369,15 +403,20 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te
   return glcm;
 }
         
-boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, const te::gm::Polygon& polygon)
+boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, 
+    const te::gm::Polygon& polygon, double minPixel, double maxPixel, double gLevels)
 {
+  if (maxPixel == 0 && minPixel == 0) {
+    throw te::common::Exception(TE_TR("GLCM can not be computed. Minimum and Maximum values are invalid."));
+  }
+
   // create raster crop with polygon
   std::map<std::string, std::string> rcropinfo;
   rcropinfo["FORCE_MEM_DRIVER"] = "TRUE";
   te::rst::RasterPtr rcrop = te::rst::CropRaster(rin, polygon, rcropinfo, "MEM");
   
   // call previous method using crop
-  return getGLCM(*rcrop.get(), band, dx, dy);
+  return getGLCM(*rcrop.get(), band, dx, dy, minPixel, maxPixel, gLevels);
 }
         
 te::rp::Texture te::rp::RasterAttributes::getGLCMMetrics(boost::numeric::ublas::matrix<double> glcm)
