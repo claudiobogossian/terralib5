@@ -478,7 +478,7 @@ void te::qt::widgets::ImageItem::draw()
 void te::qt::widgets::ImageItem::calculateCurrentFile(const unsigned int& curTime)
 {
   double nt = (double)curTime / (double)m_duration;
-  int ind = m_animation->getAnimationDataIndex(nt);
+  int ind = m_animation->getClosestAnimationDataIndex(nt);
   if (ind >= 0 && ind < m_animationFiles.count())
   {
     QString f = m_animationFiles[ind];

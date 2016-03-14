@@ -78,6 +78,10 @@ namespace te
 
       protected:
 
+        te::da::Select* getSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects);
+
+        te::da::DataSet* getDataSetFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects);
+
         std::vector<std::pair<std::string, std::string> > getSelectedProperties();
 
         void updateInputLayerComboBox();
@@ -92,13 +96,15 @@ namespace te
 
         void onDifferenceLayerComboBoxChanged(int index);
 
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
+
         void onOkPushButtonClicked();
         
         void onCancelPushButtonClicked();
 
-        void onTargetDatasourceToolButtonPressed();
-
-        void onTargetFileToolButtonPressed();
+        
 
       private:
 

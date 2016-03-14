@@ -1,3 +1,31 @@
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/unittest/ogc-wcs/main.cpp
+
+  \brief Main file to test suit for the WS OGC WCS.
+
+  \author Vinicius campanha
+ */
+
+
 // STL
 #include <cstdlib>
 
@@ -16,9 +44,26 @@
 // TerraLib
 #include "../Config.h"
 #include "TsWCS.h"
+#include <terralib/common/TerraLib.h>
+#include <terralib/plugin.h>
+#include <terralib/common/PlatformUtils.h>
+#include "LoadModules.h"
+
 
 int main(int argc, char *argv[])
 {
+  TerraLib::getInstance().initialize();
+
+  LoadModules();
+//  te::plugin::PluginInfo pinfo;
+
+//  pinfo.m_name = "TERRALIB_XERCES";
+//  pinfo.m_category = "XML";
+//  pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
+//  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_mod_xerces"));
+
+//  //te::plugin::PluginManager::getInstance().load(pinfo, true);
+//  te::plugin::PluginManager::getInstance().loadAll();
 
   // it creates the event manager and test controller
     CPPUNIT_NS::TestResult controller;
@@ -74,6 +119,7 @@ int main(int argc, char *argv[])
 
     bool resultStatus = result.wasSuccessful();
 
+    TerraLib::getInstance().finalize();
 
     return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }

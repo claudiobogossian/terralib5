@@ -1595,10 +1595,10 @@ void te::se::serialize::Save(const te::se::Rule* rule, te::xml::AbstractWriter& 
   else if(rule->hasElseFilter())
     writer.writeElement("se:ElseFilter", "");
 
-  //if(rule->getMinScaleDenominator() != 0.0)
+  if(rule->getMinScaleDenominator() != 0.0)
     writer.writeElement("se:MinScaleDenominator", rule->getMinScaleDenominator());
 
-  //if(rule->getMaxScaleDenominator() != std::numeric_limits<double>::infinity())
+  if(rule->getMaxScaleDenominator() != std::numeric_limits<double>::infinity())
     writer.writeElement("se:MaxScaleDenominator", rule->getMaxScaleDenominator());
 
   const std::vector<te::se::Symbolizer*>& symbs = rule->getSymbolizers();

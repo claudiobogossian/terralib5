@@ -34,11 +34,24 @@ source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_library(terralib_mod_ws_ogc_wcs_client ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-target_link_libraries(terralib_mod_ws_ogc_wcs_client terralib_mod_dataaccess
-                                                      ${CURL_LIBRARIES})
+add_library(terralib_mod_ws_ogc_wcs_client SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 qt5_use_modules(terralib_mod_ws_ogc_wcs_client Core)
+
+target_link_libraries(terralib_mod_ws_ogc_wcs_client terralib_mod_dataaccess
+                                                      terralib_mod_xml
+                                                      terralib_mod_common
+                                                      ${CURL_LIBRARIES})
+
+install(TARGETS terralib_mod_ws_ogc_wcs_client
+        EXPORT terralib-targets
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
+
+install(FILES ${TERRALIB_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ogc/wcs/client COMPONENT devel)
+
+
 
 

@@ -34,12 +34,12 @@ project(terralib)
 #
 
 # variables that control the system versioning
-set( TERRALIB_VERSION_MAJOR 5 CACHE STRING "Major version.")
-set( TERRALIB_VERSION_MINOR 1 CACHE STRING "Minor version." )
-set( TERRALIB_VERSION_PATCH 0 CACHE STRING "Patch version." )
-set( TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH}")
-set( TERRALIB_VERSION "0x050100" CACHE STRING "Version." )
-set( TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH} )
+set(TERRALIB_VERSION_MAJOR 5)
+set(TERRALIB_VERSION_MINOR 1)
+set(TERRALIB_VERSION_PATCH 1)
+set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH}")
+set(TERRALIB_VERSION "0x050101")
+set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
 set(TERRALIB_MODULES "")
 
@@ -139,7 +139,7 @@ if(WIN32)
     add_definitions(-DTE_MINGW -D_WIN32_WINNT=0x601 -fpermissive)
   endif()
 elseif(APPLE)
-  add_definitions(-ftemplate-depth-1024)  
+  add_definitions(-ftemplate-depth-1024)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
@@ -224,7 +224,7 @@ if(WIN32)
 
   find_package(ADO)
 
-  find_package( terralib4 COMPONENTS ado QUIET )
+  find_package(terralib4 COMPONENTS ado)
 
 endif()
 
@@ -427,6 +427,8 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" OFF)
 endif()
 
+option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" OFF)
+
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
 option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
@@ -589,6 +591,8 @@ endif()
 # build options for the TerraLib examples
 #
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_CORE_ENABLED "Build Core Runtime examples?" OFF "TERRALIB_MOD_CORE_ENABLED" OFF)
+
 CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ADO_ENABLED "Build the ADO example?" ON "WIN32;TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ATTRIBUTEFILL_ENABLED "Build the Attribute Fill example?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_ATTRIBUTEFILL_CORE_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
@@ -663,6 +667,8 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_WS_OGC_WCS_ENABLED "Build OGC WCS exampl
 #
 # build options for the TerraLib Unit Test
 #
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_CORE_ENABLED "Build the unit test for the Core module?" OFF "TERRALIB_BUILD_UNITTEST_ENABLED;TERRALIB_MOD_CORE_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_COMMON_ENABLED "Build the unit test for the Common module?" ON "TERRALIB_CPPUNIT_ENABLED;TERRALIB_BUILD_UNITTEST_ENABLED" OFF)
 
@@ -772,6 +778,11 @@ endif()
 # Turn on multi process compilation
 if(MSVC)
   add_definitions(/MP)
+endif()
+
+if(TERRALIB_MOD_CORE_ENABLED)
+  add_subdirectory(terralib_mod_core)
+  list(APPEND TERRALIB_MODULES core)
 endif()
 
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
@@ -1115,7 +1126,7 @@ endif()
 if(TERRALIB_TERRAVIEW_ENABLED)
   add_subdirectory(terraview)
 endif()
- 
+
 if(TERRALIB_MOD_MNT_CORE_ENABLED)
   add_subdirectory(terralib_mod_mnt_core)
   list(APPEND TERRALIB_MODULES mnt_core)
@@ -1152,6 +1163,10 @@ endif()
 # build examples
 #
 
+if(TERRALIB_EXAMPLE_CORE_ENABLED)
+  add_subdirectory(terralib_example_core)
+endif()
+
 if(TERRALIB_EXAMPLE_ADO_ENABLED)
   add_subdirectory(terralib_example_ado)
 endif()
@@ -1162,7 +1177,7 @@ endif()
 
 if(TERRALIB_EXAMPLE_BINDING_LUA_ENABLED)
   add_subdirectory(terralib_example_bind_lua)
-endif()  
+endif()
 
 if(TERRALIB_EXAMPLE_CELLSPACE_ENABLED)
   add_subdirectory(terralib_example_cellspace)
@@ -1304,6 +1319,10 @@ if(TERRALIB_BUILD_UNITTEST_ENABLED AND CPPUNIT_FOUND)
   configure_file(${CMAKE_SOURCE_DIR}/unittest.bat.in ${CMAKE_BINARY_DIR}/unittest.release.bat)
 endif()
 
+if(TERRALIB_UNITTEST_CORE_ENABLED)
+  add_subdirectory(terralib_unittest_core)
+endif()
+
 if(TERRALIB_UNITTEST_COMMON_ENABLED)
   add_subdirectory(terralib_unittest_common)
 endif()
@@ -1408,12 +1427,16 @@ if(TERRALIB_UNITTEST_VP_ENABLED)
   add_subdirectory(terralib_unittest_vp)
 endif()
 
+if(TERRALIB_UNITTEST_WS_OGC_WCS_ENABLED)
+  add_subdirectory(terralib_unittest_ws_ogc_wcs)
+endif()
+
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
                ${CMAKE_BINARY_DIR}/terralib-config.cmake @ONLY)
 
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config-pkg.cmake.in
                ${CMAKE_BINARY_DIR}/pkg/terralib-config.cmake @ONLY)
-               
+
 #
 # install and targets export
 #
@@ -1546,4 +1569,4 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-   
+

@@ -18,14 +18,36 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs-dataacess/DataAccessWCS.h
+  \file terralib/ws/ogc/wcs-dataaccess/DataAccessWCS.h
 
   \brief Data Access for WS OGC WCS
 */
 
-#ifndef __TERRALIB_WS_OGC_DATAACESS_H
-#define __TERRALIB_WS_OGC_DATAACESS_H
+#ifndef __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
+#define __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
 
+// TerraLib
+#include "../../../../common/Exception.h"
+#include "Config.h"
 
-#endif // __TERRALIB_WS_OGC_DATAACESS_H
+namespace te
+{
+  namespace ws
+  {
+    namespace ogc
+    {
+      namespace wcs
+      {
+        namespace da
+        {
+          TE_DECLARE_EXCEPTION_CLASS(TEOGCWCSDATAACCESSEXPORT, Exception, te::common::Exception)
+
+        } // end namespace da
+      } // end namespace wcs
+    } // end namespace ogc
+  } // end namespace ws
+} // end namespace te
+
+#endif  // __TERRALIB_WS_OGC_WCS_DATAACcESS_EXCEPTION_H
+
 

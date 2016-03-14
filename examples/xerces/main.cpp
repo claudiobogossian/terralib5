@@ -58,10 +58,10 @@ int main(int /*argc*/, char** /*argv*/)
   try
   {
     TerraLib::getInstance().initialize();
-    ReadXML(TERRALIB_DATA_DIR "/xml/xerces/note.xml", true, false);
-    ReadXML(TERRALIB_DATA_DIR "/xml/xerces/note.xml", false, false);
-    ReadXML(TERRALIB_DATA_DIR "/xml/xerces/note.xml", false, true);
-    //ReadXML(""TE_DATA_EXAMPLE_DIR"/xml/xerces/test.xml", false, true); //not found 
+    ReadXML("/home/vinicius/MyDevel/terralib5-git/examples/xerces/note.xml", true, false);
+    ReadXML("/home/vinicius/MyDevel/terralib5-git/examples/xerces/note.xml", false, false);
+    ReadXML("/home/vinicius/MyDevel/terralib5-git/examples/xerces/note.xml", false, true);
+    //ReadXML(""TE_DATA_EXAMPLE_DIR"/xml/xerces/test.xml", false, true); //not found
     //ReadXML(""TE_DATA_EXAMPLE_DIR"/xml/xerces/test_contracted.xml", false, true); //not found
 
     TerraLib::getInstance().finalize();
