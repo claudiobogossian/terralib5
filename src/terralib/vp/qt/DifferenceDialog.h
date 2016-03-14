@@ -78,9 +78,9 @@ namespace te
 
       protected:
 
-        te::da::Select* te::vp::DifferenceDialog::getSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects);
+        te::da::Select* getSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects);
 
-        te::da::DataSet* te::vp::DifferenceDialog::getDataSetFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects);
+        te::da::DataSet* getDataSetFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects);
 
         std::vector<std::pair<std::string, std::string> > getSelectedProperties();
 
