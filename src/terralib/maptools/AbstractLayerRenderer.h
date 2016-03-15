@@ -86,7 +86,7 @@ namespace te
 
         void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
 
-      private:
+      protected:
 
         /*!
           \brief It draws the abstract layer in the given canvas using the SRS informed.
@@ -174,7 +174,7 @@ namespace te
 
         void reset();
 
-      private:
+      protected:
 
         WorldDeviceTransformer m_transformer;              // World Device Transformer.
         te::sam::rtree::Index<std::size_t, 8> m_rtree;     // r-Tree that can be used to avoid conflicts (charts, texts, etc.).
