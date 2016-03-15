@@ -60,4 +60,4 @@ if (terralib_FIND_COMPONENTS)
   endforeach()
 endif() 
 
-include (@terralib_SOURCE_DIR@/terralib_macros.cmake)
+include ("@terralib_SOURCE_DIR@/terralib_macros.cmake")

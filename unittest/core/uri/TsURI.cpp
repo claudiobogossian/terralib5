@@ -28,3 +28,10 @@
 // TerraLib
 #include <terralib/core/uri/URI.h>
 
+// Boost
+#include <boost/test/unit_test.hpp>
+
+BOOST_AUTO_TEST_CASE(uri_test)
+{
+  return;
+}
