@@ -305,22 +305,49 @@ te::da::Select* te::vp::DifferenceDialog::getSelectQueryFromLayer(te::map::Abstr
   return select;
 }
 
-te::da::DataSet* te::vp::DifferenceDialog::getDataSetFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid)
+te::vp::DifferenceDialog::DataStruct te::vp::DifferenceDialog::getDataStructFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid)
 {
-  //std::string sourceId = layer->getDataSourceId();
+  DataStruct data;
 
-  //te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().find(sourceId);
+  std::string sourceId = layer->getDataSourceId();
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().find(sourceId);
 
-  //std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(layer->getSchema().get(), dataSource->getCapabilities(), dataSource->getEncoding()));
-  //te::da::AssociateDataSetTypeConverterSRID(converter.get(), layer->getSRID());
+  std::auto_ptr<te::da::DataSetType> dataSetType = layer->getSchema();
+  std::auto_ptr<te::da::DataSet> dataSet = dataSource->getDataSet(dataSetType->getName());
+  
+  if (dataSetType.get() && dataSet.get())
+  {
+    if (onlySelectedObjects)
+    {
+      const te::da::ObjectIdSet* oidSet = layer->getSelected();
+      if (!oidSet)
+      {
+        QMessageBox::information(this, "Difference", "Select the layer objects to perform the operation.");
+        return data;
+      }
 
-  //te::da::DataSetType* dataSetType(converter->getResult());
+      dataSet = dataSource->getDataSet(dataSetType->getDatasetName(), oidSet);
 
-  //te::da::DataSetAdapter* dataSetAdapter = te::da::CreateAdapter(layer->getData().release(), converter.get());
+      if (!dataSet.get())
+        return data;
+    }
 
-  te::da::DataSet* dataSet = 0;//dataSetAdapter;
+    if (srid != 0)
+    {
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dataSetType.get(), dataSource->getCapabilities(), dataSource->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), srid);
 
-  return dataSet;
+      dataSetType.reset(converter->getResult());
+
+      te::da::DataSetAdapter* dataSetAdapter = te::da::CreateAdapter(dataSet.release(), converter.get());
+      dataSet.reset(dataSetAdapter);
+    }
+
+    data.m_dataSetType = dataSetType.release();
+    data.m_dataSet = dataSet.release();
+  }
+
+  return data;
 }
 
 std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getSelectedProperties()
@@ -580,6 +607,41 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
     structInputParams2.m_inputDataSetType = m_differenceSelectedLayer->getSchema().release();
 
 
+// Verify SRID
+    te::gm::GeometryProperty* geomInputProp = te::da::GetFirstGeomProperty(structInputParams1.m_inputDataSetType);
+
+    int inputSRID = 0;
+
+    if (!geomInputProp)
+    {
+      QMessageBox::information(this, "Difference", "Problem to get geometry property of input layer.");
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
+      return;
+    }
+
+    if (m_inputSelectedLayer->getSRID() != geomInputProp->getSRID())
+      inputSRID = m_inputSelectedLayer->getSRID();
+
+
+    te::gm::GeometryProperty* geomDiffProp = te::da::GetFirstGeomProperty(structInputParams2.m_inputDataSetType);
+
+    int differenceSRID = 0;
+
+    if (!geomDiffProp)
+    {
+      QMessageBox::information(this, "Difference", "Problem to get geometry property of difference layer.");
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
+      return;
+    }
+
+    if (m_differenceSelectedLayer->getSRID() != geomDiffProp->getSRID())
+      differenceSRID = m_differenceSelectedLayer->getSRID();
+
+
 // Select a strategy based on the capabilities of the input datasource
     const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
     const te::da::DataSourceCapabilities differenceDSCapabilities = differenceDataSource->getCapabilities();
@@ -599,41 +661,6 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
     {
       isQuery = true;
 
-
-// Verify SRID
-      te::gm::GeometryProperty* geomInputProp = te::da::GetFirstGeomProperty(structInputParams1.m_inputDataSetType);
-      
-      int inputSRID = 0;
-
-      if (!geomInputProp)
-      {
-        QMessageBox::information(this, "Difference", "Problem to get geometry property of input layer.");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
-
-        return;
-      }
-
-      if (m_inputSelectedLayer->getSRID() != geomInputProp->getSRID())
-        inputSRID = m_inputSelectedLayer->getSRID();
-
-
-      te::gm::GeometryProperty* geomDiffProp = te::da::GetFirstGeomProperty(structInputParams2.m_inputDataSetType);
-      
-      int differenceSRID = 0;
-      
-      if (!geomDiffProp)
-      {
-        QMessageBox::information(this, "Difference", "Problem to get geometry property of input layer.");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
-
-        return;
-      }
-
-      if (m_differenceSelectedLayer->getSRID() != geomDiffProp->getSRID())
-        differenceSRID = m_differenceSelectedLayer->getSRID();
-
 // Get Select Query using AbstractLayerPtr to process by spatial database. 
       inputSelect = this->getSelectQueryFromLayer(m_inputSelectedLayer, inputIsChecked, inputSRID);
       differenceSelect = this->getSelectQueryFromLayer(m_differenceSelectedLayer, differenceIsChecked, differenceSRID);
@@ -646,15 +673,24 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
     }
     else
     {
+
 // Get DataSet and DataSetType using AbstractLayerPtr to process by memory, using GEOS.
-      inputDataSet = this->getDataSetFromLayer(m_inputSelectedLayer, inputIsChecked);
-      differenceDataSet = this->getDataSetFromLayer(m_differenceSelectedLayer, differenceIsChecked);
+      DataStruct inputData = this->getDataStructFromLayer(m_inputSelectedLayer, inputIsChecked, inputSRID);
 
-      if(inputDataSet)
-        structInputParams1.m_inputDataSet = inputDataSet;
+      if (inputData.m_dataSet)
+        structInputParams1.m_inputDataSet = inputData.m_dataSet;
 
-      if (differenceDataSet)
-        structInputParams2.m_inputDataSet = differenceDataSet;
+      if (inputData.m_dataSetType)
+        structInputParams1.m_inputDataSetType = inputData.m_dataSetType;
+
+
+      DataStruct differenceData = this->getDataStructFromLayer(m_differenceSelectedLayer, differenceIsChecked, differenceSRID);
+
+      if (differenceData.m_dataSet)
+        structInputParams2.m_inputDataSet = differenceData.m_dataSet;
+
+      if (differenceData.m_dataSetType)
+        structInputParams2.m_inputDataSetType = differenceData.m_dataSetType;
     }
 
 
