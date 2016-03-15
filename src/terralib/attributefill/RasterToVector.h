@@ -87,7 +87,8 @@ namespace te
 
       std::vector<te::rp::Texture> getTexture(te::rst::Raster* rst,
                                               te::gm::Geometry* geom,
-                                              int bands);
+                                              int band,
+                                              bool readAll = false);
 
       bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
 

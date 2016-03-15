@@ -624,7 +624,8 @@ std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSet
 
 std::vector<te::rp::Texture> te::attributefill::RasterToVector::getTexture( te::rst::Raster* rst,
                                                                             te::gm::Geometry* geom,
-                                                                            int bands)
+                                                                            int bands,
+                                                                            bool readAll)
 {
   te::rp::RasterAttributes rattributes;
   std::vector<te::rp::Texture> textureVec;
@@ -643,7 +644,17 @@ std::vector<te::rp::Texture> te::attributefill::RasterToVector::getTexture( te::
 
   for(int i = 0; i < bands; ++i)
   {
-    boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rst, i, 1, 1, *polygon);
+    // Retrieving the maximum and minimum GL values of the band.
+    double minPixel, maxPixel;
+    te::rst::GetDataTypeRanges(rst->getBandDataType(i), minPixel, maxPixel);
+
+    if ((maxPixel - minPixel) > 255)
+    {
+      minPixel = rst->getBand(i)->getMinValue(readAll).real();
+      maxPixel = rst->getBand(i)->getMaxValue(readAll).real();
+    }
+
+    boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rst, i, 1, 1, *polygon, minPixel, maxPixel);
     te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm);
     textureVec.push_back(metrics);
   }
