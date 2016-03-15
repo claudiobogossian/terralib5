@@ -24,10 +24,19 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../../dataaccess/utils/Utils.h"
+#include "../../../../datatype/SimpleData.h"
 #include "../../../../memory/DataSet.h"
 #include "../../../../memory/DataSetItem.h"
 
+#include "../Config.h"
 #include "GeopackageSynchronizer.h"
+
+
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 
 te::qt::plugins::terramobile::GeoPackageSynchronizer::GeoPackageSynchronizer() :
   m_inputDataSource(0),
@@ -57,60 +66,210 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
   checkParameters();
 
   //get dataset type
-  std::auto_ptr<te::da::DataSetType> originalInputDsType = m_inputDataSource->getDataSetType(m_inputDataSet);
-
-  //create dataset memory
-  te::mem::DataSet* newData = new te::mem::DataSet(originalInputDsType.get());
-
-  std::vector<te::dt::Property*> props = originalInputDsType->getProperties();
+  std::auto_ptr<te::da::DataSetType> gpkgDsType = m_inputDataSource->getDataSetType(m_inputDataSet);
 
   //get data from gpkg
-  std::auto_ptr<te::da::DataSet> dataSet = m_inputDataSource->getDataSet(m_inputDataSet);
+  std::auto_ptr<te::da::DataSet> gpkgDataSet = m_inputDataSource->getDataSet(m_inputDataSet);
 
-  dataSet->moveBeforeFirst();
-
-  while (dataSet->moveNext())
+  //get gpkg ds attr pk index
+  int gpkgDataSetAttrPKIdx = -1;
+  if (gpkgDsType->getPrimaryKey())
   {
-    //create memory items
-    te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(newData);
-
-    for (std::size_t t = 0; t < props.size(); ++t)
+    te::da::PrimaryKey* pk = gpkgDsType->getPrimaryKey();
+    if (!pk->getProperties().empty())
     {
-      dsItem->setValue(props[t]->getName(), dataSet->getValue(props[t]->getName()).release());
+      gpkgDataSetAttrPKIdx = te::da::GetPropertyIndex(gpkgDataSet.get(), pk->getProperties()[0]->getName());
+    }
+  }
+
+  int gpkgDataSetObjIdIdx = te::da::GetPropertyIndex(gpkgDataSet.get(), LAYER_GATHERING_OBJID_COLUMN);
+
+
+  //create dataset memory to insert into output datasource
+  te::mem::DataSet* insertDataSetDataSource = new te::mem::DataSet(gpkgDsType.get());
+
+  //create dataset memory to insert into output datasource
+  te::mem::DataSet* updateDataSetDataSource = new te::mem::DataSet(gpkgDsType.get());
+
+  //create dataset memory to update into gpkg
+  te::mem::DataSet* updateDataSetGPKG = new te::mem::DataSet(gpkgDsType.get());
+
+  std::vector<te::dt::Property*> props = gpkgDsType->getProperties();
+
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+
+  gpkgDataSet->moveBeforeFirst();
+
+  while (gpkgDataSet->moveNext())
+  {
+    if (gpkgDataSet->isNull(LAYER_GATHERING_OBJID_COLUMN))
+    {
+      //set obj id info
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
+
+      //create memory items
+      te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(insertDataSetDataSource);
+      te::mem::DataSetItem* gpkgItem = new te::mem::DataSetItem(updateDataSetGPKG);
+
+      for (std::size_t t = 0; t < props.size(); ++t)
+      {
+        if (props[t]->getName() == LAYER_GATHERING_OBJID_COLUMN)
+        {
+          dsItem->setValue(LAYER_GATHERING_OBJID_COLUMN, new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(id));
+          gpkgItem->setValue(LAYER_GATHERING_OBJID_COLUMN, new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(id));
+        }
+        else
+        {
+          dsItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+          gpkgItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+        }
+      }
+
+      insertDataSetDataSource->add(dsItem);
+      updateDataSetGPKG->add(gpkgItem);
+    }
+    else
+    {
+      //create memory items
+      te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(updateDataSetDataSource);
+
+      for (std::size_t t = 0; t < props.size(); ++t)
+      {
+        dsItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+      }
+
+      updateDataSetDataSource->add(dsItem);
+    }
+  }
+
+  //INSERT into output datasource
+  {
+    std::unique_ptr<te::da::DataSourceTransactor> transactor = m_outputDataSource->getTransactor();
+
+    std::map<std::string, std::string> op;
+
+    try
+    {
+      transactor->add(m_outputDataset, insertDataSetDataSource, op);
+    }
+    catch (const te::common::Exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (const std::exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (...)
+    {
+      transactor->rollBack();
+
+      return;
     }
 
-    newData->add(dsItem);
+    transactor->commit();
   }
 
-  //save into output datasource
-  std::unique_ptr<te::da::DataSourceTransactor> transactor = m_outputDataSource->getTransactor();
-
-  std::map<std::string, std::string> op;
-
-  try
+  //UPDATE into output datasource
   {
-    transactor->add(m_outputDataset, newData, op);
+    std::unique_ptr<te::da::DataSourceTransactor> transactor = m_outputDataSource->getTransactor();
+
+    try
+    {
+      std::vector<size_t> ids;
+      ids.push_back(0);
+
+      std::vector< std::set<int> > properties;
+      std::size_t dsSize = updateDataSetDataSource->size();
+
+      for (std::size_t t = 0; t < dsSize; ++t)
+      {
+        std::set<int> setPos;
+
+        for (std::size_t p = 0; p < updateDataSetDataSource->getNumProperties(); ++p)
+        {
+          setPos.insert(p);
+        }
+
+        properties.push_back(setPos);
+      }
+
+      updateDataSetDataSource->moveBeforeFirst();
+
+      transactor->update(m_outputDataset, updateDataSetDataSource, properties, ids);
+    }
+    catch (const te::common::Exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (const std::exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (...)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+
+    transactor->commit();
   }
-  catch (const te::common::Exception& e)
+
+  //UPDATE into gpkg
   {
-    transactor->rollBack();
+    std::unique_ptr<te::da::DataSourceTransactor> transactor = m_inputDataSource->getTransactor();
 
-    return;
+    std::map<std::string, std::string> op;
+
+    try
+    {
+      std::vector<size_t> ids;
+      ids.push_back(0);
+
+      std::vector< std::set<int> > properties;
+      std::size_t dsSize = updateDataSetDataSource->size();
+
+      for (std::size_t t = 0; t < dsSize; ++t)
+      {
+        std::set<int> setPos;
+        setPos.insert(gpkgDataSetObjIdIdx);
+
+        properties.push_back(setPos);
+      }
+
+      transactor->update(m_outputDataset, updateDataSetGPKG, properties, ids);
+    }
+    catch (const te::common::Exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (const std::exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (...)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+
+    transactor->commit();
   }
-  catch (const std::exception& e)
-  {
-    transactor->rollBack();
-
-    return;
-  }
-  catch (...)
-  {
-    transactor->rollBack();
-
-    return;
-  }
-
-  transactor->commit();
 }
 
 void te::qt::plugins::terramobile::GeoPackageSynchronizer::checkParameters()
