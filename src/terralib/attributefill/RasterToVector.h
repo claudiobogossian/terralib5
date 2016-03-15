@@ -71,7 +71,8 @@ namespace te
 
       void setParams(std::vector<unsigned int> bands,
                      std::vector<te::stat::StatisticalSummary> statSum,
-                     bool texture);
+                     bool texture,
+                     bool readAll);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
 
@@ -101,6 +102,7 @@ namespace te
       std::vector<te::stat::StatisticalSummary> m_statSum;
       std::vector<unsigned int> m_bands;
       bool m_texture;
+      bool m_readAll;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDset;
