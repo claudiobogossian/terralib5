@@ -86,10 +86,13 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
 
   //create dataset memory to insert into output datasource
-  te::mem::DataSet* insertDataSetDataSource = new te::mem::DataSet(gpkgDsType.get());
+  std::auto_ptr<te::da::DataSetType> dsTypeAux = m_outputDataSource->getDataSetType(m_outputDataset);
+  dsTypeAux->remove(dsTypeAux->getProperty("FID"));
+  te::mem::DataSet* insertDataSetDataSource = new te::mem::DataSet(dsTypeAux.get());
 
   //create dataset memory to insert into output datasource
-  te::mem::DataSet* updateDataSetDataSource = new te::mem::DataSet(gpkgDsType.get());
+  std::auto_ptr<te::da::DataSetType> gpkgUpdateDsType = m_inputDataSource->getDataSetType(m_inputDataSet);
+  te::mem::DataSet* updateDataSetDataSource = new te::mem::DataSet(gpkgUpdateDsType.get());
 
   //create dataset memory to update into gpkg
   te::mem::DataSet* updateDataSetGPKG = new te::mem::DataSet(gpkgDsType.get());
@@ -121,8 +124,15 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
         }
         else
         {
-          dsItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
-          gpkgItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+          if (props[t]->getName() == "fid")
+          {
+            gpkgItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+          }
+          else
+          {
+            dsItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+            gpkgItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+          }
         }
       }
 
@@ -198,8 +208,6 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
         properties.push_back(setPos);
       }
-
-      updateDataSetDataSource->moveBeforeFirst();
 
       transactor->update(m_outputDataset, updateDataSetDataSource, properties, ids);
     }
