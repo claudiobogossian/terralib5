@@ -177,40 +177,59 @@ namespace te
         boost::numeric::ublas::matrix<std::complex <double> > getComplexCovarianceMatrix(const std::vector<std::vector<std::complex < double> > >& vpixels, const std::vector<std::complex < double > >& vmeans);
 
 		/*!
-          \brief Computes the Gray-Level CoOccurrence Matrix (GLCM) from a raster band.
+          \brief Computes the Gray-Level Co-occurrence Matrix (GLCM) from a raster band.
 
-          \param rin    The input raster.
-          \param band   The input band position.
-          \param dx     The displacement in x direction, to be considered as neighborhood, can be either + or -.
-          \param dy     The displacement in y direction, to be considered as neighborhood, can be either + or -.
+          \param rin               The input raster.
+          \param band              The input band position.
+          \param dx                The displacement in x direction, to be considered as neighborhood, can be either + or -.
+          \param dy                The displacement in y direction, to be considered as neighborhood, can be either + or -.
+          \param minPixel          The minimum GL pixel value that occurs in the band.
+          \param maxPixel          The maximum GL pixel value that occurs in the band.
+          \param gLevels           The number of Gray Levels (GL) to normalize the GLCM. The GLs will be normalized to the interval
+                                   [0,(gLevels - 1)]. It is important to emphasize that the matrix will have 'gLevels' lines and 
+                                   'gLevels' columns. Default value is 256, normalizing the GLs to the interval [0, 255].
           
           \return The GLCM from the raster band.
+
+          \exception te::common::Exception It will throw an exception if the parameters minPixel and maxPixel were not passed as parameters.
           
           \warning The pixels from the input band will be considered of type unsigned int.
         */
-        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy);
+        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, 
+            double minPixel = 0, double maxPixel = 0, double gLevels = 256);
         
         /*!
-          \brief Computes the Gray-Level CoOccurrence Matrix (GLCM) from a raster band, inside the polygon.
+          \brief Computes the Gray-Level Co-occurrence Matrix (GLCM) from a raster band, inside the polygon.
 
-          \param rin         The input raster.
-          \param band        The input band position.
-          \param dx          The displacement in x direction, to be considered as neighborhood, can be either + or -.
-          \param dy          The displacement in y direction, to be considered as neighborhood, can be either + or -.
-          \param polygon     The input polygon.
+          \param rin               The input raster.
+          \param band              The input band position.
+          \param dx                The displacement in x direction, to be considered as neighborhood, can be either + or -.
+          \param dy                The displacement in y direction, to be considered as neighborhood, can be either + or -.
+          \param polygon           The input polygon.
+          \param minPixel          The minimum GL pixel value that occurs in the band.
+          \param maxPixel          The maximum GL pixel value that occurs in the band.
+          \param readAll           Define if the minimum and maximum values used to normalize the GLs when coomputing the GLCM will be retrieved 
+                                   from the entire band or from a 1000 pixels sample (see te::rst::Band::getMinValue() and 
+                                   te::rst::Band::getMaxValue() for more details). Default value is false.
+          \param gLevels           The number of Gray Levels (GL) to normalize the GLCM. The GLs will be normalized to the interval
+                                   [0,(gLevels - 1)]. It is important to emphasize that the matrix will have 'gLevels' lines and 
+                                   'gLevels' columns. Default value is 256, normalizing the GLs to the interval [0, 255].
           
           \return The GLCM from the raster band, inside the polygon.
+
+          \exception te::common::Exception It will throw an exception if the parameters minPixel and maxPixel were not passed as parameters.
           
           \warning The pixels from the input band will be considered of type unsigned int.
         */
-        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, const te::gm::Polygon& polygon);
+        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, 
+            const te::gm::Polygon& polygon, double minPixel = 0, double maxPixel = 0, double gLevels = 256);
         
         /*!
           \brief Compute texture metrics from GLCM matrix.
           
           \param glcm The input GLCM matrix.
           
-          \return The Texture structure will all available metrics computed.
+          \return The Texture structure will all available metrics computed
         */
         te::rp::Texture getGLCMMetrics(boost::numeric::ublas::matrix<double> glcm);
         

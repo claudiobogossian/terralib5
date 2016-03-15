@@ -19,9 +19,17 @@ void Texture()
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
     {
+      // Retrieve the minimum and maximum values of the band to normalize GLCM
+      double maxPixel, minPixel;
+      te::rst::GetDataTypeRanges(rin->getBandDataType(1), minPixel, maxPixel);
+      if ((maxPixel - minPixel) > 255) {
+        maxPixel = rin->getBand(1)->getMaxValue(true).real();
+        minPixel = rin->getBand(1)->getMinValue(true).real();
+      }
+
 // use raster attributes to compute GLCM matrix, in northeast direction
       te::rp::RasterAttributes rattributes;
-      boost::numeric::ublas::matrix<double> glcm_b1 = rattributes.getGLCM(*rin, 1, 1, -1);
+      boost::numeric::ublas::matrix<double> glcm_b1 = rattributes.getGLCM(*rin, 1, 1, -1, minPixel, maxPixel);
       te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm_b1);
 
 // display texture metrics    
