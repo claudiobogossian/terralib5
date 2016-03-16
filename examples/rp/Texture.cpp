@@ -56,9 +56,17 @@ void Texture()
     polygon->push_back(lr);
   
     {
+      // Retrieve the minimum and maximum values of the band to normalize GLCM
+      double maxPixel, minPixel;
+      te::rst::GetDataTypeRanges(rin->getBandDataType(1), minPixel, maxPixel);
+      if ((maxPixel - minPixel) > 255) {
+        maxPixel = rin->getBand(1)->getMaxValue(true).real();
+        minPixel = rin->getBand(1)->getMinValue(true).real();
+      }
+
 // use raster attributes to compute GLCM matrix from band 2, in southeast direction
       te::rp::RasterAttributes rattributes;
-      boost::numeric::ublas::matrix<double> glcm_b2 = rattributes.getGLCM(*rin, 2, 1, 1, *polygon);
+      boost::numeric::ublas::matrix<double> glcm_b2 = rattributes.getGLCM(*rin, 2, 1, 1, *polygon, minPixel, maxPixel);
       te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm_b2);
 
 // display texture metrics    
