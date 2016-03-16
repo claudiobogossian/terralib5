@@ -44,6 +44,11 @@ te::qt::plugins::terramobile::GeoPackagePublisherDialog::GeoPackagePublisherDial
   // add controls
   m_ui->setupUi(this);
 
+  //connects
+  connect(m_ui->m_importSearchPushButton, SIGNAL(clicked()), this, SLOT(onImportSearchPushButtonClicked()));
+  connect(m_ui->m_importPushButton, SIGNAL(clicked()), this, SLOT(onImportPushButtonClicked()));
+  connect(m_ui->m_exportFilePushButton, SIGNAL(clicked()), this, SLOT(onExportFilePushButtonClicked()));
+  connect(m_ui->m_exportPushButton, SIGNAL(clicked()), this, SLOT(onExportPushButtonClicked()));
 }
 
 te::qt::plugins::terramobile::GeoPackagePublisherDialog::~GeoPackagePublisherDialog()
@@ -51,7 +56,57 @@ te::qt::plugins::terramobile::GeoPackagePublisherDialog::~GeoPackagePublisherDia
 
 }
 
-void te::qt::plugins::terramobile::GeoPackagePublisherDialog::setLayerList(std::list<te::map::AbstractLayerPtr> list)
+void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportSearchPushButtonClicked()
 {
+  if (m_ui->m_importURLLineEdit->text().isEmpty())
+  {
+    m_ui->m_importTableWidget->setRowCount(0);
 
+    QMessageBox::warning(this, tr("Warning"), tr("Server not defined."));
+    return;
+  }
+
+  //check server
+
+  //fill list
+}
+
+void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportPushButtonClicked()
+{
+  if (m_ui->m_importTableWidget->selectedItems().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Select at least one geopackage file to import."));
+    return;
+  }
+
+  //import
+}
+
+void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportFilePushButtonClicked()
+{
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open GeoPackage File"), "", tr("GeoPackage File (*.gpkg *.GPKG)"));
+
+  if (fileName.isEmpty())
+    m_ui->m_exportFileLineEdit->clear();
+  else
+    m_ui->m_exportFileLineEdit->setText(fileName);
+}
+
+void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButtonClicked()
+{
+  if (m_ui->m_exportFileLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Geopackage File not selected."));
+    return;
+  }
+
+  if (m_ui->m_exportServerLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Server not defined."));
+    return;
+  }
+
+  //check server
+
+  //export gpkg
 }
