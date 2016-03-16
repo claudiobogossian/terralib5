@@ -196,7 +196,7 @@ namespace te
           \warning The pixels from the input band will be considered of type unsigned int.
         */
         boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, 
-            double minPixel = 0, double maxPixel = 0, double gLevels = 256);
+            double minPixel, double maxPixel, double gLevels = 256);
         
         /*!
           \brief Computes the Gray-Level Co-occurrence Matrix (GLCM) from a raster band, inside the polygon.
@@ -208,9 +208,6 @@ namespace te
           \param polygon           The input polygon.
           \param minPixel          The minimum GL pixel value that occurs in the band.
           \param maxPixel          The maximum GL pixel value that occurs in the band.
-          \param readAll           Define if the minimum and maximum values used to normalize the GLs when coomputing the GLCM will be retrieved 
-                                   from the entire band or from a 1000 pixels sample (see te::rst::Band::getMinValue() and 
-                                   te::rst::Band::getMaxValue() for more details). Default value is false.
           \param gLevels           The number of Gray Levels (GL) to normalize the GLCM. The GLs will be normalized to the interval
                                    [0,(gLevels - 1)]. It is important to emphasize that the matrix will have 'gLevels' lines and 
                                    'gLevels' columns. Default value is 256, normalizing the GLs to the interval [0, 255].
@@ -222,7 +219,7 @@ namespace te
           \warning The pixels from the input band will be considered of type unsigned int.
         */
         boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, 
-            const te::gm::Polygon& polygon, double minPixel = 0, double maxPixel = 0, double gLevels = 256);
+            const te::gm::Polygon& polygon, double minPixel, double maxPixel, double gLevels = 256);
         
         /*!
           \brief Compute texture metrics from GLCM matrix.

@@ -84,6 +84,8 @@ te::attributefill::RasterToVectorDialog::RasterToVectorDialog(QWidget* parent, Q
   connect(m_ui->m_inRasterComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRasterComboBoxChanged(int)));
   connect(m_ui->m_inVectorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onVectorComboBoxChanged(int)));
 
+  connect(m_ui->m_textureCheckBox, SIGNAL(toggled(bool)), m_ui->m_readAllCheckBox, SLOT(setEnabled(bool)));
+
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
@@ -217,9 +219,8 @@ bool te::attributefill::RasterToVectorDialog::getValueOption()
     {
       return true;
     }
-    return false;
   }
-
+  return false;
 }
 
 void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
@@ -409,7 +410,11 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
   if (m_isStatistical)
     vecStatistics = getSelectedStatistics();
 
+  m_readAll = false;
   m_texture = m_ui->m_textureCheckBox->isChecked();
+
+  if (m_texture)
+    m_readAll = m_ui->m_readAllCheckBox->isChecked();
   
   bool isValueOptionSelected = getValueOption();
   
@@ -480,7 +485,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
                         converterVector,
                         oidSet);
 
-      rst2vec->setParams(vecBands, vecStatistics, m_texture);
+      rst2vec->setParams(vecBands, vecStatistics, m_texture, m_readAll);
 
       rst2vec->setOutput(dsOGR, outputdataset);
       
@@ -546,7 +551,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
                         converterVector,
                         oidSet);
 
-      rst2vec->setParams(vecBands, vecStatistics, m_texture);
+      rst2vec->setParams(vecBands, vecStatistics, m_texture, m_readAll);
 
       rst2vec->setOutput(aux, outputdataset);
 

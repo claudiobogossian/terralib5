@@ -92,7 +92,7 @@ bool RasterToVectorInSHP()
   
   rst2vec->setInput(inputRst.get(),
                     dsOGR, fileNameVector, converterVector);
-  rst2vec->setParams(vecBands, vecStat, false);
+  rst2vec->setParams(vecBands, vecStat, false, false);
   rst2vec->setOutput(outDataSource, outputdataset);
 
   bool res;
@@ -191,7 +191,7 @@ bool RasterToVectorInPGIS()
 
   rst2vec->setInput(inputRst.get(),
                     dsOGR, fileNameVector, converterVector);
-  rst2vec->setParams(vecBands, vecStat, false);
+  rst2vec->setParams(vecBands, vecStat, false, false);
   rst2vec->setOutput(outDataSource, outputdataset);
 
   bool res;
