@@ -39,6 +39,7 @@
 #include "../raster/Utils.h"
 #include "../raster/SynchronizedRaster.h"
 #include "../common/PlatformUtils.h"
+#include "../common/MathUtils.h"
 #include "../common/progress/TaskProgress.h"
 
 #include <boost/thread.hpp>
@@ -1109,9 +1110,9 @@ namespace te
           raster2ULRowOverRaster1);  
         
         firstOutputRasterCol = (unsigned int)
-          std::max( 0.0,
-            std::min( (double)( m_raster1Ptr->getNumberOfColumns() - 1 ),              
-              std::floor( 
+          std::max( 0u,
+            std::min( ( m_raster1Ptr->getNumberOfColumns() - 1 ),              
+              te::common::Round< double, unsigned int >( 
                 std::min( raster2LLColOverRaster1, 
                   std::min( raster2LRColOverRaster1, 
                     std::min( raster2URColOverRaster1, 
@@ -1124,9 +1125,9 @@ namespace te
           );
           
         lastOutputRasterRow = (unsigned int)
-          std::max( 0.0,
-            std::min( (double)( m_raster1Ptr->getNumberOfRows() - 1 ),                
-              std::ceil( 
+          std::max( 0u,
+            std::min( ( m_raster1Ptr->getNumberOfRows() - 1 ),                
+              te::common::Round< double, unsigned int >( 
                 std::max( raster2LLRowOverRaster1, 
                   std::max( raster2LRRowOverRaster1, 
                     std::max( raster2URRowOverRaster1, 
@@ -1139,9 +1140,9 @@ namespace te
           );
           
         lastOutputRasterCol = (unsigned int)
-          std::max( 0.0,
-            std::min( (double)( m_raster1Ptr->getNumberOfColumns() - 1 ),                
-              std::ceil( 
+          std::max( 0u,
+            std::min( ( m_raster1Ptr->getNumberOfColumns() - 1 ),                
+              te::common::Round< double, unsigned int >( 
                 std::max( raster2LLColOverRaster1, 
                   std::max( raster2LRColOverRaster1, 
                     std::max( raster2URColOverRaster1, 
@@ -1154,9 +1155,9 @@ namespace te
           );
           
         firstOutputRasterRow = (unsigned int)
-          std::max( 0.0,
-            std::min( (double)( m_raster1Ptr->getNumberOfRows() - 1 ),               
-              std::floor( 
+          std::max( 0u,
+            std::min( ( m_raster1Ptr->getNumberOfRows() - 1 ),               
+              te::common::Round< double, unsigned int >( 
                 std::min( raster2LLRowOverRaster1, 
                   std::min( raster2LRRowOverRaster1, 
                     std::min( raster2URRowOverRaster1, 
@@ -1244,7 +1245,7 @@ namespace te
             rBInfo.m_rasterRows2ProcessBound = ( blkY + 1 ) * firstBand.getProperty()->m_blkh;
             rBInfo.m_rasterRows2ProcessBound = std::max( firstOutputRasterRow,
               rBInfo.m_rasterRows2ProcessBound );
-            rBInfo.m_rasterRows2ProcessBound = std::min( lastOutputRasterRow,
+            rBInfo.m_rasterRows2ProcessBound = std::min( lastOutputRasterRow + 1,
               rBInfo.m_rasterRows2ProcessBound );              
             
             rBInfo.m_firstRasterCol2Process = blkX * firstBand.getProperty()->m_blkw;
@@ -1256,7 +1257,7 @@ namespace te
             rBInfo.m_rasterCols2ProcessBound = ( blkX + 1 ) * firstBand.getProperty()->m_blkw;          
             rBInfo.m_rasterCols2ProcessBound = std::max( firstOutputRasterCol,
               rBInfo.m_rasterCols2ProcessBound );
-            rBInfo.m_rasterCols2ProcessBound = std::min( lastOutputRasterCol,
+            rBInfo.m_rasterCols2ProcessBound = std::min( lastOutputRasterCol + 1,
               rBInfo.m_rasterCols2ProcessBound );                
           }
         }
