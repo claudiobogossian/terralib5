@@ -37,10 +37,10 @@
       Date: 2013-04-30.
       Authors: Glyn Matthews and Dean Michael Berris
       Homepage: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3625.html.
- 
+
   The code below is based on the implementation available at:
   https://github.com/cpp-netlib/cpp-netlib
- 
+
   The original copyright notices is:
 // Copyright 2009, 2010, 2011, 2012 Dean Michael Berris, Jeroen Habraken, Glyn
 // Matthews.
@@ -96,7 +96,7 @@ namespace te
         typedef boost::iterator_range<const_iterator> const_range_type;
 
 // constructors and destructor
-        URI();
+        URI(const string_type& uri);
 
         template <typename InputIter, class Alloc = std::allocator<value_type> >
         URI(const InputIter &first, const InputIter &last, const Alloc &alloc = Alloc());
@@ -117,6 +117,15 @@ namespace te
 
 // swap
         void swap(URI& other) noexcept;
+
+// parses
+        bool parse();
+        void parseScheme(const_iterator& begin_it, const_iterator end_it);
+        void parseHost(const_iterator& begin_it, const_iterator end_it);
+        void parsePort(const_iterator& begin_it, const_iterator end_it);
+        void parsePath(const_iterator& begin_it, const_iterator end_it);
+        void parseQuery(const_iterator& begin_it, const_iterator end_it);
+        void parseFragment(const_iterator& begin_it, const_iterator end_it);
 
 // iterators
         const_iterator begin() const;
@@ -169,7 +178,7 @@ namespace te
         string_type authority() const;
         string_type query() const;
         string_type fragment() const;
-        
+
       private:
 
         string_type uri_;
