@@ -344,6 +344,17 @@ namespace te
     TEDATAACCESSEXPORT bool HasLinkedTable(te::da::DataSetType* type);
 
     /*!
+    \brief It hide columns of a DataSet using DataSetAdapter.
+
+    \param ds      The DataSet that will have hidden columns.
+    \param dst     The DataSetType used to hide columns.
+    \param columns names to be hidden.
+
+    \return The DataSet result. The caller will take the ownership of the returned DataSet.
+    */
+    TEDATAACCESSEXPORT std::auto_ptr<te::da::DataSet> HideColumns(te::da::DataSet* ds, te::da::DataSetType* dst, const std::vector<std::string>& columns);
+
+    /*!
       \brief It gets the summarized value.
 
       \param values The input values.
