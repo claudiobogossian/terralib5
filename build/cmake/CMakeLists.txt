@@ -35,10 +35,11 @@ project(terralib)
 
 # variables that control the system versioning
 set(TERRALIB_VERSION_MAJOR 5)
-set(TERRALIB_VERSION_MINOR 1)
-set(TERRALIB_VERSION_PATCH 1)
+set(TERRALIB_VERSION_MINOR 2)
+set(TERRALIB_VERSION_PATCH 0)
+set(TERRALIB_VERSION_STATUS "alpha")
 set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH}")
-set(TERRALIB_VERSION "0x050101")
+set(TERRALIB_VERSION "0x050200")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
 set(TERRALIB_MODULES "")
@@ -212,7 +213,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread)
+find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
