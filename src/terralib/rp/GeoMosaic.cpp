@@ -42,6 +42,7 @@
 #include "../geometry/MultiPolygon.h"
 #include "../srs/Converter.h"
 #include "../common/progress/TaskProgress.h"
+#include "../common/MathUtils.h"
 
 #include <boost/shared_array.hpp>
 #include <boost/filesystem.hpp>
@@ -191,9 +192,7 @@ namespace te
       double mosaicLLY = DBL_MAX; // world coords
       double mosaicURX = -1.0 * DBL_MAX; // world coords
       double mosaicURY = -1.0 * DBL_MAX; // world coords
-      int mosaicSRID = 0;
-      std::vector< double > mosaicBandsRangeMin;
-      std::vector< double > mosaicBandsRangeMax;       
+      int mosaicSRID = 0;     
       te::rst::BandProperty mosaicBaseBandProperties( 0, 0, "" );
       std::vector< te::gm::Polygon > rastersBBoxes; // all rasters bounding boxes (under the first raster world coords.
 
@@ -212,64 +211,7 @@ namespace te
           TERP_TRUE_OR_RETURN_FALSE(
             inputRasterPtr->getAccessPolicy() & te::common::RAccess,
             "Invalid raster" );
-            
-          // Defining the base mosaic info
-
-          if( inputRasterIdx == 0 )
-          {
-            mosaicXResolution = inputRasterPtr->getGrid()->getResolutionX();
-            mosaicYResolution = inputRasterPtr->getGrid()->getResolutionY();
-
-            mosaicLLX = inputRasterPtr->getGrid()->getExtent()->m_llx;
-            mosaicLLY = inputRasterPtr->getGrid()->getExtent()->m_lly;
-            mosaicURX = inputRasterPtr->getGrid()->getExtent()->m_urx;
-            mosaicURY = inputRasterPtr->getGrid()->getExtent()->m_ury;
-
-            mosaicSRID = inputRasterPtr->getGrid()->getSRID();
-
-            mosaicBaseBandProperties = *inputRasterPtr->getBand( 0 )->getProperty();
-
-            // finding the current raster bounding box polygon (first raster world coordinates)
-            auxPolygon.clear();
-            auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-            auxLinearRingPtr->setPoint( 0, mosaicLLX, mosaicURY );
-            auxLinearRingPtr->setPoint( 1, mosaicURX, mosaicURY );
-            auxLinearRingPtr->setPoint( 2, mosaicURX, mosaicLLY );
-            auxLinearRingPtr->setPoint( 3, mosaicLLX, mosaicLLY );
-            auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );
-            auxLinearRingPtr->setSRID( mosaicSRID );
-            auxPolygon.push_back( auxLinearRingPtr );
-            auxPolygon.setSRID( mosaicSRID );
-            rastersBBoxes.push_back( auxPolygon );
-          }
-          else
-          {
-            TERP_TRUE_OR_RETURN_FALSE( te::rp::GetDetailedExtent( 
-              *inputRasterPtr->getGrid(), reprojectedExtent ),
-              "Detailed raster extent calcule error" );
-            
-            if( mosaicSRID != inputRasterPtr->getGrid()->getSRID() )
-            {
-              reprojectedExtent.transform( mosaicSRID );
-            }
-
-            // expanding mosaic area
-
-            mosaicLLX = std::min( mosaicLLX, reprojectedExtent.getMBR()->getLowerLeftX() );
-            mosaicLLY = std::min( mosaicLLY, reprojectedExtent.getMBR()->getLowerLeftY() );
-
-            mosaicURX = std::max( mosaicURX, reprojectedExtent.getMBR()->getUpperRightX() );
-            mosaicURY = std::max( mosaicURY, reprojectedExtent.getMBR()->getUpperRightY() );
-
-            // finding the current raster bounding box polygon (first raster world coordinates)
-
-            auxPolygon.clear();
-            auxLinearRingPtr = new te::gm::LinearRing( reprojectedExtent );
-            auxPolygon.push_back( auxLinearRingPtr );
-            auxPolygon.setSRID( mosaicSRID );
-            rastersBBoxes.push_back( auxPolygon );
-          }
-
+          
           // checking the input bands
 
           for( std::vector< unsigned int >::size_type inputRastersBandsIdx = 0 ;
@@ -282,8 +224,45 @@ namespace te
 
             TERP_TRUE_OR_RETURN_FALSE( currBand < inputRasterPtr->getNumberOfBands(),
               "Invalid band" )
+          }          
+            
+          // Defining the base mosaic info
+
+          if( inputRasterIdx == 0 )
+          {
+            mosaicXResolution = inputRasterPtr->getGrid()->getResolutionX();
+            mosaicYResolution = inputRasterPtr->getGrid()->getResolutionY();
+            mosaicSRID = inputRasterPtr->getGrid()->getSRID();
+            mosaicBaseBandProperties = *inputRasterPtr->getBand( 
+              m_inputParameters.m_inputRastersBands[ inputRasterIdx ][ 0 ] )->getProperty();
           }
 
+          TERP_TRUE_OR_RETURN_FALSE( te::rp::GetDetailedExtent( 
+            *inputRasterPtr->getGrid(), reprojectedExtent ),
+            "Detailed raster extent calcule error" );
+          
+          if( mosaicSRID != inputRasterPtr->getGrid()->getSRID() )
+          {
+            reprojectedExtent.transform( mosaicSRID );
+          }
+
+          // expanding mosaic area
+
+          mosaicLLX = std::min( mosaicLLX, reprojectedExtent.getMBR()->getLowerLeftX() );
+          mosaicLLY = std::min( mosaicLLY, reprojectedExtent.getMBR()->getLowerLeftY() );
+
+          mosaicURX = std::max( mosaicURX, reprojectedExtent.getMBR()->getUpperRightX() );
+          mosaicURY = std::max( mosaicURY, reprojectedExtent.getMBR()->getUpperRightY() );
+
+          // finding the current raster bounding box polygon (first raster world coordinates)
+
+          auxPolygon.clear();
+          auxLinearRingPtr = new te::gm::LinearRing( reprojectedExtent );
+          auxPolygon.push_back( auxLinearRingPtr );
+          auxPolygon.setSRID( mosaicSRID );
+          rastersBBoxes.push_back( auxPolygon );
+
+          // move to the next raster
 
           m_inputParameters.m_feederRasterPtr->moveNext();
         }
@@ -298,6 +277,8 @@ namespace te
       // creating the output raster
       
       te::rst::Raster* outputRasterPtr = 0;
+      std::vector< double > mosaicBandsRangeMin;
+      std::vector< double > mosaicBandsRangeMax;        
 
       {
         mosaicBandsRangeMin.resize( 
@@ -392,18 +373,27 @@ namespace te
         double inXStartGeo = 0;
         double inYStartGeo = 0;
         inputRasterPtr->getGrid()->gridToGeo( 0.0, 0.0, inXStartGeo, inYStartGeo );
-        double outRowStartDouble = 0;
-        double outColStartDouble = 0;
+        
+        double outFirstRowDouble = 0;
+        double outFirstColDouble = 0;
         outputRasterPtr->getGrid()->geoToGrid( inXStartGeo, inYStartGeo,
-          outColStartDouble, outRowStartDouble );
-
-        const unsigned int outRowStart = (unsigned int)std::max( 0.0, outRowStartDouble );
-        const unsigned int outColStart = (unsigned int)std::max( 0.0, outColStartDouble );
-        const unsigned int outRowsBound = std::min( outRowStart +
-          inputRasterPtr->getNumberOfRows(),
+          outFirstColDouble, outFirstRowDouble );
+        
+        const double outRowsBoundDouble = outFirstRowDouble +
+          (double)( inputRasterPtr->getNumberOfRows() );
+        const double outColsBoundDouble = outFirstColDouble +
+          (double)( inputRasterPtr->getNumberOfColumns() );
+          
+        const unsigned int outFirstRow = (unsigned int)std::max( 0u, 
+          te::common::Round< double, unsigned int >( outFirstRowDouble ) );
+        const unsigned int outFirstCol = (unsigned int)std::max( 0u, 
+          te::common::Round< double, unsigned int >( outFirstColDouble ) );
+        
+        const unsigned int outRowsBound = (unsigned int)std::min( 
+          te::common::Round< double, unsigned int >( outRowsBoundDouble ),
           outputRasterPtr->getNumberOfRows() );
-        const unsigned int outColsBound = std::min( outColStart +
-          inputRasterPtr->getNumberOfColumns(),
+        const unsigned int outColsBound = (unsigned int)std::min( 
+          te::common::Round< double, unsigned int >( outColsBoundDouble ),
           outputRasterPtr->getNumberOfColumns() );
 
         const unsigned int nBands = (unsigned int)
@@ -432,13 +422,13 @@ namespace te
 
           double mean = 0;
 
-          for( outRow = outRowStart ; outRow < outRowsBound ; ++outRow )
+          for( outRow = outFirstRow ; outRow < outRowsBound ; ++outRow )
           {
-            inRow = ((double)outRow) - outRowStartDouble;
+            inRow = ((double)outRow) - outFirstRowDouble;
 
-            for( outCol = outColStart ; outCol < outColsBound ; ++outCol )
+            for( outCol = outFirstCol ; outCol < outColsBound ; ++outCol )
             {
-              inCol = ((double)outCol) - outColStartDouble;
+              inCol = ((double)outCol) - outFirstColDouble;
 
               interpInstance.getValue( inCol, inRow, pixelCValue, inputBandIdx );
 
@@ -463,9 +453,9 @@ namespace te
 
             double pixelValue = 0;
 
-            for( outRow = outRowStart ; outRow < outRowsBound ; ++outRow )
+            for( outRow = outFirstRow ; outRow < outRowsBound ; ++outRow )
             {
-              for( outCol = outColStart ; outCol < outColsBound ; ++outCol )
+              for( outCol = outFirstCol ; outCol < outColsBound ; ++outCol )
               {
                 outBand.getValue( outCol, outRow, pixelValue );
 
@@ -608,7 +598,7 @@ namespace te
           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );                    
           transParams.m_tiePoints.push_back( auxTP );
           
-          transPtr.reset( te::gm::GTFactory::make( "Affine" ) );
+          transPtr.reset( te::gm::GTFactory::make( "RST" ) );
           TERP_TRUE_OR_RETURN_FALSE( transPtr.get(), "Could not instantiate a geometric transformation" );
           
           TERP_TRUE_OR_RETURN_FALSE( transPtr->initialize( transParams ),

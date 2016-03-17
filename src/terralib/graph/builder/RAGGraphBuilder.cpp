@@ -94,7 +94,7 @@ std::auto_ptr<te::da::DataSource> te::graph::RAGGraphBuilder::getDataSource(cons
 {
   // Creates and connects data source
   std::map<std::string, std::string> connInfo;
-  connInfo["path"] = fileName;
+  connInfo["URI"] = fileName;
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
   ds->setConnectionInfo(connInfo);
   ds->open();

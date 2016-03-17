@@ -38,11 +38,20 @@
 
 namespace te
 {
+  namespace dt{ class Property; }
+
   namespace vp
   {
     class TEVPEXPORT MergeMemory : public MergeOp
     {
-    
+
+      enum Strategy
+      {
+        PUREMERGE = 0,
+        TRYGETMAX = 1,
+        AUTOINCREMENT = 2
+      };
+
     public:
       
       MergeMemory();
@@ -54,6 +63,14 @@ namespace te
     private:
 
       std::auto_ptr<te::da::DataSetType> buildOutDataSetType();
+
+      Strategy checkStrategy();
+
+      int tryGetMax();
+
+      bool isPrimaryKeyProperty(const te::da::DataSetType* dst, const std::string& p);
+
+      int getPropertyType(const te::dt::Property* p);
 
     }; // end class
   } // end namespace vp
