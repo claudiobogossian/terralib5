@@ -46,16 +46,11 @@ te::qt::plugins::terramobile::GeoPackagePublisherAction::~GeoPackagePublisherAct
 
 void te::qt::plugins::terramobile::GeoPackagePublisherAction::onActionActivated(bool checked)
 {
-  //get input layers
-  std::list<te::map::AbstractLayerPtr> list = getLayers();
-
   //get display extent
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   //show interface
   te::qt::plugins::terramobile::GeoPackagePublisherDialog dlg(ba);
-
-  dlg.setLayerList(list);
 
   if(dlg.exec() == QDialog::Accepted)
   {

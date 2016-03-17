@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>626</height>
+    <width>386</width>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Raster to Vector</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_20">
+  <layout class="QGridLayout" name="gridLayout_17">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_19">
+    <layout class="QGridLayout" name="gridLayout_16">
      <item row="0" column="0">
       <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
@@ -155,67 +155,77 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <layout class="QGridLayout" name="gridLayout_17" columnstretch="0,1">
+      <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_16" rowstretch="0">
-         <item row="0" column="0">
-          <widget class="QGroupBox" name="m_bandsGroupBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="title">
-            <string>Bands</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_11">
-            <item row="0" column="0">
-             <widget class="QListWidget" name="m_bandsListWidget">
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="selectionMode">
-               <enum>QAbstractItemView::MultiSelection</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QGroupBox" name="m_bandsGroupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Bands</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_11">
+          <item row="0" column="0">
+           <widget class="QListWidget" name="m_bandsListWidget">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::MultiSelection</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item row="0" column="1">
         <layout class="QGridLayout" name="gridLayout_15">
-         <item row="0" column="0">
+         <item row="0" column="0" colspan="2">
           <widget class="QGroupBox" name="m_statisticsGroupBox">
            <property name="title">
             <string>Statistics</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="0">
-             <widget class="QListWidget" name="m_statisticsListWidget">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="selectionMode">
-               <enum>QAbstractItemView::MultiSelection</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QListWidget" name="m_statisticsListWidget">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>23</y>
+              <width>256</width>
+              <height>192</height>
+             </rect>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::MultiSelection</enum>
+            </property>
+           </widget>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QCheckBox" name="m_textureCheckBox">
            <property name="text">
             <string>Texture</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCheckBox" name="m_readAllCheckBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Read All</string>
            </property>
           </widget>
          </item>

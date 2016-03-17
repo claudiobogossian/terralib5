@@ -206,7 +206,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
     if (!statusProp)
     {
-      statusProp = new te::dt::SimpleProperty(LAYER_GATHERING_STATUS_COLUMN, te::dt::INT32_TYPE, true, new std::string("0"));
+      statusProp = new te::dt::SimpleProperty(LAYER_GATHERING_STATUS_COLUMN, te::dt::INT64_TYPE, true, new std::string("0"));
 
       ds->addProperty(dsType->getName(), statusProp);
     }

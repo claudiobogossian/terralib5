@@ -67,6 +67,18 @@ namespace te
 
         ~DifferenceDialog();
 
+        struct DataStruct
+        {
+          DataStruct()
+          {
+            m_dataSetType = 0;
+            m_dataSet = 0;
+          }
+
+          te::da::DataSetType* m_dataSetType;
+          te::da::DataSet* m_dataSet;
+        };
+
         /*!
           \brief Set the layer that can be used
 
@@ -78,9 +90,9 @@ namespace te
 
       protected:
 
-        te::da::Select* te::vp::DifferenceDialog::getSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects);
+        te::da::Select* getSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid = 0);
 
-        te::da::DataSet* te::vp::DifferenceDialog::getDataSetFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects);
+        DataStruct getDataStructFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid = 0);
 
         std::vector<std::pair<std::string, std::string> > getSelectedProperties();
 
