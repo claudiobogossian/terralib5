@@ -82,12 +82,14 @@ namespace te
 
       std::vector<std::string> getPropNames(const std::map<std::string, te::dt::AbstractData*>& specificParams);
 
+      std::vector<std::string> getPKPropNames(const te::da::DataSetType* dataSetType);
+
       te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
 
       te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom);
 
       te::gm::Geometry* setGeometryType(te::gm::Geometry* geom);
-
+      
       // it defines the type of the result considering the input geometries being aggregated
       //te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
 

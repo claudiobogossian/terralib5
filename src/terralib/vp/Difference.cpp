@@ -244,21 +244,12 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
     }
   }
 
-  te::da::PrimaryKey* pk = outputDataSetType->getPrimaryKey();
-  std::vector<te::dt::Property*> props = pk->getProperties();
-  std::vector<std::string> propPks;
 
-  for (std::size_t i = 0; i < props.size(); ++i)
+  std::vector<std::string> pkPropNames = getPKPropNames(outputDataSetType.get());
+
+  if (!pkPropNames.empty())
   {
-    te::dt::SimpleProperty* sp = dynamic_cast<te::dt::SimpleProperty*>(props[i]);
-
-    if (sp && sp->isAutoNumber())
-      propPks.push_back(sp->getName());
-  }
-
-  if (!propPks.empty())
-  {
-    std::auto_ptr<te::da::DataSet> dataSet = te::da::HideColumns(outputDataSet.get(), outputDataSetType.get(), propPks);
+    std::auto_ptr<te::da::DataSet> dataSet = te::da::HideColumns(outputDataSet.get(), outputDataSetType.get(), pkPropNames);
     Save(outputDataSource.get(), dataSet.get(), outputDataSetType.get());
   }
   else
@@ -535,6 +526,28 @@ std::vector<std::string> te::vp::Difference::getPropNames(const std::map<std::st
   return propNames;
 }
 
+std::vector<std::string> te::vp::Difference::getPKPropNames(const te::da::DataSetType* dataSetType)
+{
+  std::vector<std::string> pkPropNames;
+
+  te::da::PrimaryKey* pk = dataSetType->getPrimaryKey();
+
+  std::vector<te::dt::Property*> props;
+
+  if (pk)
+    props = pk->getProperties();
+
+  for (std::size_t i = 0; i < props.size(); ++i)
+  {
+    te::dt::SimpleProperty* sp = dynamic_cast<te::dt::SimpleProperty*>(props[i]);
+
+    if (sp && sp->isAutoNumber())
+      pkPropNames.push_back(sp->getName());
+  }
+
+  return pkPropNames;
+}
+
 te::da::DataSet* te::vp::Difference::updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds)
 {
   te::mem::DataSet* dsMem = new te::mem::DataSet(dsType);
@@ -750,3 +763,4 @@ te::gm::Geometry* te::vp::Difference::setGeometryType(te::gm::Geometry* geom)
 
   return geom;
 }
+
