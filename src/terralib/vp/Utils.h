@@ -58,6 +58,8 @@ namespace te
 
     std::string GetSimpleTableName(std::string fullName);
 
+    std::auto_ptr<te::da::DataSet> PrepareAdd(te::da::DataSet* ds, te::da::DataSetType* dt);
+
     void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
     bool IsMultiType(te::gm::GeomType geomType);
