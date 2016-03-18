@@ -34,8 +34,20 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+// libcurl
+#include <curl/curl.h>
+
+// Boost
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
+
+void getProjectList();
 
 te::qt::plugins::terramobile::GeoPackagePublisherDialog::GeoPackagePublisherDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -58,6 +70,8 @@ te::qt::plugins::terramobile::GeoPackagePublisherDialog::~GeoPackagePublisherDia
 
 void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportSearchPushButtonClicked()
 {
+  getProjectList();
+
   if (m_ui->m_importURLLineEdit->text().isEmpty())
   {
     m_ui->m_importTableWidget->setRowCount(0);
@@ -109,4 +123,111 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
   //check server
 
   //export gpkg
+}
+
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+  ((std::string*)userp)->append((char*)contents, size * nmemb);
+  return size * nmemb;
+}
+
+void getProjectList()
+{
+  CURL *curl;
+  CURLcode res;
+
+  struct curl_httppost *formpost = NULL;
+  struct curl_httppost *lastptr = NULL;
+  struct curl_slist *headerlist = NULL;
+  static const char buf[] = "Expect:";
+
+  curl_global_init(CURL_GLOBAL_ALL);
+
+  /* Fill in the file upload field */
+  curl_formadd(&formpost,
+    &lastptr,
+    CURLFORM_COPYNAME, "user",
+    CURLFORM_COPYCONTENTS, "userName",
+    CURLFORM_END);
+
+  curl_formadd(&formpost,
+    &lastptr,
+    CURLFORM_COPYNAME, "password",
+    CURLFORM_COPYCONTENTS, "password",
+    CURLFORM_END);
+
+  curl_formadd(&formpost,
+    &lastptr,
+    CURLFORM_COPYNAME, "projectStatus",
+    CURLFORM_COPYCONTENTS, "1",
+    CURLFORM_END);
+
+  /* Fill in the submit field too, even if this is rarely needed */
+  /*    curl_formadd(&formpost,
+  &lastptr,
+  CURLFORM_COPYNAME, "submit",
+  CURLFORM_COPYCONTENTS, "send",
+  CURLFORM_END);*/
+
+  std::string readBuffer;
+
+  curl = curl_easy_init();
+  /* initialize custom header list (stating that Expect: 100-continue is not
+  wanted */
+  headerlist = curl_slist_append(headerlist, buf);
+  if (curl) {
+    /* what URL that receives this POST */
+    curl_easy_setopt(curl, CURLOPT_URL, "http://terrabrasilis.info/TerraMobileServer/projectservices/listprojects");
+
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
+
+    curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+    /* Perform the request, res will get the return code */
+    res = curl_easy_perform(curl);
+    /* Check for errors */
+    if (res != CURLE_OK)
+      fprintf(stderr, "curl_easy_perform() failed: %s\n",
+      curl_easy_strerror(res));
+
+    /* always cleanup */
+    curl_easy_cleanup(curl);
+
+    /* then cleanup the formpost chain */
+    curl_formfree(formpost);
+    /* free slist */
+    curl_slist_free_all(headerlist);
+  }
+
+  std::stringstream ss(readBuffer);
+
+  try
+  {
+    boost::property_tree::ptree pt;
+    boost::property_tree::json_parser::read_json(ss, pt);
+
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("projects"))
+    {
+      std::string projectName = v.second.get<std::string>("project_name");
+      std::string projectStatus = v.second.get<std::string>("project_status");
+      std::string projectId = v.second.get<std::string>("project_id");
+      std::string projectDesc = v.second.get<std::string>("project_description");
+
+      int a = 0;
+    }
+  }
+  catch (boost::property_tree::json_parser::json_parser_error &je)
+  {
+    return;
+  }
+  catch (std::exception const& e)
+  {
+    return;
+  }
+
+  return;
 }
