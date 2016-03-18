@@ -1276,7 +1276,13 @@ mkdir %CURL_DIR%\binaries\include >nul 2>nul
   xcopy %CURL_DIR%\builds\libcurl-vc12-x64-release-dll-ssl-dll-zlib-dll-ipv6-sspi\include %CURL_DIR%\binaries\include /Y /S >nul 2>nul 
    
   xcopy  %CURL_DIR%\binaries\lib\*.dll %LIBS_DIR% /Y >nul 2>nul
-   
+  
+  xcopy  %CURL_DIR%\binaries\lib\*.lib %LIBS_DIR% /Y >nul 2>nul
+  
+  IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\curl mkdir %TERRALIB_DEPENDENCIES_DIR%\include\curl
+  
+  xcopy  %CURL_DIR%\binaries\include\curl\*.h %TERRALIB_DEPENDENCIES_DIR%\include\curl /Y >nul 2>nul  
+  
   echo done.
 
   call :append_log_end curl
