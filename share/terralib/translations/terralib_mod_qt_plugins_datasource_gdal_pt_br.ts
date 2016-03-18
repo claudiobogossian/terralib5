@@ -145,6 +145,16 @@ Iremos fornecer em breve!</translation>
         <translation>Arquivo Matricial (raster)...</translation>
     </message>
     <message>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="116"/>
+        <source>Multiple Raster Files...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="249"/>
+        <source>Open Multiple Raster Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Raster File</source>
         <translation type="vanished">Arquivo Matricial (raster)</translation>
     </message>
