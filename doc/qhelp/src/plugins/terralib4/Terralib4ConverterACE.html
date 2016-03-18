@@ -3,9 +3,13 @@
 <head>
 
 
+
+  
   
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
+
+  
   
   <title>TerraLib4-ACE</title>
 </head>
@@ -14,22 +18,28 @@
 <body>
 
 
+
 <div style="text-align: center; font-family: Calibri Light;">
 <h3><font style="font-family: Calibri Light;"><span style="font-weight: bold;">Using TerraView 5 with Microsoft
 Access Database Files</span></font><font size="3"><strong><br>
 
 
+
 </strong></font></h3>
 
 
+
 </div>
+
 
 
 <div style="text-align: justify; font-family: Calibri Light;">
 <div style="text-align: left;"><br>
 
 
+
 <br>
+
 
 
 The Microsoft Jet database engine has been used since Windows 95 and
@@ -39,10 +49,13 @@ Access databases contained in *.mdb files. It is only available for the
 32-bit applications and is considered a deprecated product.<br>
 
 
+
 <br>
 
 
+
 <br>
+
 
 
 Since the release of Office 2007, Microsoft Access supports a new file
@@ -52,14 +65,18 @@ called ACE (Access Database Engine). This new engine is available for
 the 32 and 64-bit versions in:<br>
 
 
+
 <br>
+
 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 https://www.microsoft.com/en-us/download/details.aspx?id=13255<br>
 
 
+
 <br>
+
 
 
 &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
@@ -67,14 +84,18 @@ https://www.microsoft.com/en-us/download/details.aspx?id=13255<br>
 (32-bit version)<br>
 
 
+
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 AccessDatabaseEngine_x64.exe (64-bit version)<br>
 
 
+
 <br>
 
 
+
 <br>
+
 
 
 There is a problem with this new engine. The 32-bit and 64-bit versions
@@ -84,7 +105,9 @@ ACE 64-bit, a message is sent saying that it is necessary to uninstall
 the ACE 32 bit version, i.e., uninstall the Office 32-bit.<br>
 
 
+
 <br>
+
 
 
 If you are using the 32-bit version of TerraView 5, it is not necessary
@@ -93,7 +116,9 @@ database engine that is already installed in your system (it comes with
 your Windows).<br>
 
 
+
 <br>
+
 
 
 If you want to use the 64-bit version of TerraView 5 and there is no
@@ -101,7 +126,9 @@ Office installed in your machine(Office 2007 or later),
 execute&nbsp; AccessDatabaseEngine_x64.exe<br>
 
 
+
 <br>
+
 
 
 If you have a 32-bit Office installed in your machine (Office 2007 or
@@ -110,54 +137,76 @@ a workaround to solve the problem of the 32 and 64-bit of ACE co-exist
 in the same machine:<br>
 
 
+
 <br>
+
 1. Download the&nbsp;AccessDatabaseEngine_x64.exe from <br>
+
 <br>
+
 &nbsp; &nbsp; https://www.microsoft.com/en-us/download/details.aspx?id=13255<br>
+
 <br>
+
 &nbsp; &nbsp; at&nbsp; your prefered directory for downloads, usually &nbsp;C:\Users\&lt;user-name&gt;\Downloads<br>
+
 <br>
+
 2. Open a Prompt&nbsp; DOS window and make sure you are at the right directory&nbsp;C:\Users\&lt;user-name&gt;\Downloads&nbsp;<br>
+
 <br>
+
 
 
 3. Install the ACE 64-bit from the command line with the /passive
 argument:<br>
 
 
+
 &nbsp;&nbsp; <br>
+
 
 
 &nbsp;&nbsp; $&gt; .\AccessDatabaseEngine_x64.exe /passive<br>
 
 
+
 <br>
+
 
 
 4. From the command line call the regedit editor and say yes to allow
 changes:<br>
 
 
+
 <br>
+
 
 
 &nbsp;&nbsp; $&gt; regedit<br>
 
 
+
 <br>
 
 
+
 <br>
+
 
 
 5. Check the 64-bit registry key on the path bellow:<br>
+
 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &ldquo;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\14.0\Common\FilePaths&rdquo;<br>
 
 
+
 <br>
+
 
 
 It contains the &ldquo;mso.dll&rdquo; registry value;then you
@@ -166,19 +215,26 @@ value after installing the 64-bit version of the Microsoft Access
 Database Engine. <br>
 
 
+
 <br>
+
 
 
 Now you can start a 32-bit Office application. Note that the
 &ldquo;mso.dll&rdquo; registry value will already be present if
 a 64-bit version of MS Office is installed. In this case the value
 should not be deleted or renamed.<br>
+<br>
+Reference: &nbsp;http://techblog.aimms.com/2014/10/27/installing-32-bit-and-64-bit-microsoft-access-drivers-next-to-each-other/<br>
+
 
 
 </div>
 
 
+
 </div>
+
 
 
 </body>

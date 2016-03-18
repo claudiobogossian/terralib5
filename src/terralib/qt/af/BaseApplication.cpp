@@ -13,6 +13,7 @@
 #include "events/LayerEvents.h"
 #include "events/MapEvents.h"
 #include "events/ToolEvents.h"
+#include "InternalSettingsDialog.h"
 #include "Utils.h"
 
 #include "../widgets/layer/explorer/FolderItem.h"
@@ -374,6 +375,12 @@ void te::qt::af::BaseApplication::onScaleDisplayChanged()
   double scale = m_display->getDisplay()->getScale();
 
   m_scaleCmbBox->setItemText(m_scaleCmbBox->currentIndex(), QString::number(scale, 'f', 0));
+}
+
+void te::qt::af::BaseApplication::onInternalSettingsTriggered()
+{
+  te::qt::af::InternalSettingsDialog isd(this);
+  isd.exec();
 }
 
 void te::qt::af::BaseApplication::onLayerRemoveTriggered()
@@ -1040,6 +1047,11 @@ void te::qt::af::BaseApplication::initStatusBar()
 
   if (m_display->getDisplay())
     connect(m_display->getDisplay(), SIGNAL(extentChanged()), SLOT(onScaleDisplayChanged()));
+
+  //internal settings
+  QToolButton* internalSettingsToolButton = new QToolButton(m_statusbar);
+  internalSettingsToolButton->setDefaultAction(m_internalSettings);
+  m_statusbar->addPermanentWidget(internalSettingsToolButton);
 }
 
 void te::qt::af::BaseApplication::initActions()
@@ -1075,6 +1087,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
   initAction(m_mapUnknownSRID, "srs-unknown", "Map.UnknownSRID", tr("&Set Unknown SRS"), tr("Set the Map SRS to unknown"), true, false, true, m_menubar);
   initAction(m_mapStopDrawing, "map-draw-cancel", "Map.Stop Drawing", tr("&Stop Drawing"), tr("Stop all drawing tasks"), true, false, true, m_menubar);
+  initAction(m_internalSettings, "gear", "Map.Internal Settings", tr("&Internal Settings"), tr("Application Internal Settings"), true, false, true, m_menubar);
 
   onSelectionToggled(true);
   m_mapSelection->setChecked(true);
@@ -1119,6 +1132,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapUnknownSRID, SIGNAL(triggered()), SLOT(onMapSetUnknwonSRIDTriggered()));
   connect(m_mapStopDrawing, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
+  connect(m_internalSettings, SIGNAL(triggered()), SLOT(onInternalSettingsTriggered()));
 
   connect(m_viewFullScreen, SIGNAL(toggled(bool)), SLOT(onFullScreenToggled(bool)));
 
