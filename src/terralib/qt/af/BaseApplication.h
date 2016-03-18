@@ -123,6 +123,8 @@ namespace te
 
         void onScaleDisplayChanged();
 
+        void onInternalSettingsTriggered();
+
         void onLayerRemoveTriggered();
 
         void onLayerRenameTriggered();
@@ -232,6 +234,7 @@ namespace te
         QAction* m_mapSRID;
         QAction* m_mapUnknownSRID;
         QAction* m_mapStopDrawing;
+        QAction* m_internalSettings;
         QLineEdit* m_mapSRIDLineEdit;
         QLineEdit* m_coordinateLineEdit;
         QComboBox* m_scaleCmbBox;

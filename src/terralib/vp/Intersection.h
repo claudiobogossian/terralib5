@@ -66,11 +66,9 @@ namespace te
       void setSpecificParams(bool copyInputColumns);
 
       //bool executeMemory(te::vp::AlgorithmParams* mainParams);
-      bool executeMemory(te::vp::AlgorithmParams* mainParams, te::da::DataSet* teste);
+      bool executeMemory(te::vp::AlgorithmParams* mainParams);
 
       bool executeQuery(te::vp::AlgorithmParams* mainParams);
-
-      bool isSupportQuery(te::vp::AlgorithmParams* mainParams);
 
     protected:
       

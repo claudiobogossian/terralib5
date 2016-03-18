@@ -215,7 +215,7 @@ std::auto_ptr<te::da::DataSource> te::qt::plugins::terramobile::createGeopackage
 
   //Layer Settings
   std::string sql1 = "CREATE TABLE IF NOT EXISTS tm_layer_settings";
-  sql1 += "(layer_name TEXT PRIMARY KEY NOT NULL, enabled BOOLEAN NOT NULL, position INTEGER NOT NULL UNIQUE, uri TEXT, ";
+  sql1 += "(layer_name TEXT PRIMARY KEY NOT NULL, enabled BOOLEAN NOT NULL, position INTEGER NOT NULL UNIQUE, datasource_uri TEXT, ";
   sql1 += "CONSTRAINT fk_layer_name FOREIGN KEY(LAYER_NAME) REFERENCES gpkg_contents(table_name)); ";
 
   //Layer style

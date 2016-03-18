@@ -22,6 +22,7 @@
  */
 
 #include "../common/Translator.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/SimpleProperty.h"
 #include "MergeOp.h"
@@ -34,20 +35,33 @@ te::vp::MergeOp::MergeOp()
     m_firstDs(0),
     m_secondDst(0),
     m_secondDs(0),
-    m_outDset("")
+    m_outDset(""),
+    m_isUpdate(false),
+    m_firstSRID(0)
 {
 }
 
-void te::vp::MergeOp::setInput(te::da::DataSetType* firstDst, te::da::DataSet* firstDs, te::da::DataSetType* secondDst, te::da::DataSet* secondDs)
+void te::vp::MergeOp::setInput(te::da::DataSourcePtr firstSource,
+                               te::da::DataSetType* firstDst,
+                               te::da::DataSet* firstDs,
+                               int firstSRID,
+                               te::da::DataSetType* secondDst,
+                               te::da::DataSet* secondDs)
 {
+  m_firstSource = firstSource;
+
   m_firstDst = firstDst;
   m_firstDs = firstDs;
   m_secondDst = secondDst;
   m_secondDs = secondDs;
+
+  m_firstSRID = firstSRID;
 }
 
-void te::vp::MergeOp::setParams(std::vector<std::pair<std::string, std::string> > properties)
+void te::vp::MergeOp::setParams(std::vector<std::pair<std::string, std::string> > properties, bool isUpdate)
 {
+  m_isUpdate = isUpdate;
+
   std::vector<std::string> invalid = checkAttrNames(properties);
 
   if (!invalid.empty())
@@ -105,27 +119,78 @@ std::auto_ptr<te::da::DataSetType> te::vp::MergeOp::getOutputDst()
 {
   std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(m_outDset));
 
-  std::auto_ptr<te::dt::Property> pkProp = getNewPkProperty();
-  
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDset + "_pk", dt.get());
-  pk->add(pkProp.get());
-  dt->setPrimaryKey(pk);
-
-  dt->add(pkProp.release());
-
   for (std::size_t i = 0; i < m_properties.size(); ++i)
   {
     std::string fp = m_properties[i].first;
     std::string sp = m_properties[i].second;
 
-    if (!fp.empty())
+    if (fp.empty() && sp.empty())
     {
-      dt->add(m_firstDst->getProperty(fp)->clone());
+      continue;
+    }
+
+    te::dt::Property* fProp = m_firstDst->getProperty(fp);
+    te::dt::Property* sProp = m_secondDst->getProperty(sp);
+
+    te::dt::Property* newProp = 0;
+
+    if ((!fp.empty()) && (!sp.empty()))
+    {
+      te::dt::SimpleProperty* fSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(fProp);
+      te::dt::SimpleProperty* sSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(sProp);
+
+      if (fSimpleProp->isRequired() != sSimpleProp->isRequired())
+      {
+        newProp = fProp->clone();
+
+        te::dt::SimpleProperty* newSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(newProp);
+
+        newSimpleProp->setRequired(false);
+      }
+      else
+      {
+        newProp = fProp->clone();
+      }
+    }
+    else if (!fp.empty())
+    {
+      newProp = fProp->clone();
+
+      te::dt::SimpleProperty* newSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(newProp);
+
+      newSimpleProp->setRequired(false);
     }
     else if (!sp.empty())
     {
-      dt->add(m_secondDst->getProperty(sp)->clone());
+      newProp = sProp->clone();
+
+      te::dt::SimpleProperty* newSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(newProp);
+
+      newSimpleProp->setRequired(false);
+      newSimpleProp->setAutoNumber(false);
     }
+    else
+    {
+      throw te::common::Exception(TE_TR("An unexpected error occurred during the output dataset creation!"));
+    }
+
+    dt->add(newProp);
+  }
+
+  if (m_outDsrc->getType() != "OGR")
+  {
+    te::da::PrimaryKey* pk = m_firstDst->getPrimaryKey();
+
+    std::vector<te::dt::Property*> pkProp = pk->getProperties();
+
+    te::da::PrimaryKey* newPk = new te::da::PrimaryKey(dt->getName() + "_pk");
+
+    for (std::size_t i = 0; i < pkProp.size(); ++i)
+    {
+      newPk->add(dt->getProperty(pkProp[i]->getName()));
+    }
+
+    dt->setPrimaryKey(newPk);
   }
 
   dt->add(te::da::GetFirstSpatialProperty(m_firstDst)->clone());
@@ -133,50 +198,69 @@ std::auto_ptr<te::da::DataSetType> te::vp::MergeOp::getOutputDst()
   return dt;
 }
 
-std::auto_ptr<te::dt::Property> te::vp::MergeOp::getNewPkProperty()
-{
-  std::string pkName = "id";
-  std::string auxName = pkName;
-
-  std::size_t count = 0;
-
-  while (!isValidName(auxName))
-  {
-    auxName = pkName + "_" + boost::lexical_cast<std::string>(count);
-  }
-
-  std::auto_ptr<te::dt::Property> result(new te::dt::SimpleProperty(auxName, te::dt::INT32_TYPE));
-
-  return result;
-}
-
-bool te::vp::MergeOp::paramsAreValid()
-{
-  return true;
-}
-
-bool te::vp::MergeOp::isValidName(const std::string& name)
+void te::vp::MergeOp::updateFirstDst(te::da::DataSourceTransactor* transactor)
 {
   for (std::size_t i = 0; i < m_properties.size(); ++i)
   {
     std::string fp = m_properties[i].first;
     std::string sp = m_properties[i].second;
 
-    if (!fp.empty())
+    if (fp.empty() && sp.empty())
     {
-      if (name == fp)
+      throw te::common::Exception(TE_TR("An unexpected error occurred during the output dataset update!"));
+    }
+
+    te::dt::Property* fProp = m_firstDst->getProperty(fp);
+    te::dt::Property* sProp = m_secondDst->getProperty(sp);
+
+    te::dt::Property* newProp = 0;
+
+    if ((!fp.empty()) && (!sp.empty()))
+    {
+      te::dt::SimpleProperty* fSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(fProp);
+      te::dt::SimpleProperty* sSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(sProp);
+
+      if (fSimpleProp->isRequired() != sSimpleProp->isRequired())
       {
-        return false;
+        te::dt::Property* auxProp = fSimpleProp->clone();
+        te::dt::SimpleProperty* auxSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(auxProp);
+        auxSimpleProp->setRequired(false);
+
+        transactor->changePropertyDefinition(m_firstDst->getName(), fProp->getName(), auxSimpleProp);
+      }
+    }
+    else if (!fp.empty())
+    {
+      te::dt::SimpleProperty* fSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(fProp);
+
+      if (fSimpleProp->isRequired())
+      {
+        te::dt::Property* auxProp = fSimpleProp->clone();
+        te::dt::SimpleProperty* auxSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(auxProp);
+        auxSimpleProp->setRequired(false);
+
+        transactor->changePropertyDefinition(m_firstDst->getName(), fProp->getName(), auxSimpleProp);
       }
     }
     else if (!sp.empty())
     {
-      if (name == sp)
-      {
-        return false;
-      }
+      newProp = sProp->clone();
+
+      te::dt::SimpleProperty* newSimpleProp = dynamic_cast<te::dt::SimpleProperty*>(newProp);
+
+      newSimpleProp->setRequired(false);
+      newSimpleProp->setAutoNumber(false);
+
+      transactor->addProperty(m_firstDst->getName(), newProp);
+    }
+    else
+    {
+      throw te::common::Exception(TE_TR("An unexpected error occurred during the output dataset update!"));
     }
   }
+}
 
+bool te::vp::MergeOp::paramsAreValid()
+{
   return true;
 }

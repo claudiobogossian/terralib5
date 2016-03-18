@@ -83,6 +83,9 @@ namespace te
         //OGRDataSource* getOGRDataSource();
         GDALDataset* getOGRDataSource();
 
+        void createOGRDataSource();
+        
+
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);

@@ -34,6 +34,9 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
+
 #include "../dataaccess/query/Coalesce.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
@@ -93,9 +96,168 @@ void te::vp::Difference::setSpecificParams(bool copyInputColumns)
   m_copyInputColumns = copyInputColumns;
 }
 
-bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams, te::da::DataSet* teste)
+bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 {
-  throw te::common::Exception(TE_TR("This method is under development."));
+// Validating parameters
+  std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
+  
+  if (inputParams.size() < 2)
+    throw te::common::Exception(TE_TR("It is necessary more than one item for performing the operation."));
+
+// Get DataSetType and Geometry Property of InputLayer Layer.
+  if (!inputParams[0].m_inputDataSetType)
+    throw te::common::Exception(TE_TR("It is necessary to set the DataSetType from Input Layer."));
+
+  std::auto_ptr<te::da::DataSetType> dsType_input(inputParams[0].m_inputDataSetType);
+
+  te::gm::GeometryProperty* inputGeomProp = te::da::GetFirstGeomProperty(dsType_input.get());
+
+
+// Get DataSetType and Geometry Property of Difference Layer.
+  if (!inputParams[1].m_inputDataSetType)
+    throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Difference Layer."));
+
+  std::auto_ptr<te::da::DataSetType> dsType_difference(inputParams[1].m_inputDataSetType);
+
+  te::gm::GeometryProperty* differenceGeomProp = te::da::GetFirstGeomProperty(dsType_difference.get());
+
+// Verify if the operation has DataSet.
+  if (!inputParams[0].m_inputDataSet)
+    throw te::common::Exception(TE_TR("It is necessary to set the Input DataSet."));
+
+  std::auto_ptr<te::da::DataSet>inputDataSet(inputParams[0].m_inputDataSet);
+
+  if (!inputParams[1].m_inputDataSet)
+    throw te::common::Exception(TE_TR("It is necessary to set the Difference DataSet."));
+
+  std::auto_ptr<te::da::DataSet> differenceDataSet(inputParams[1].m_inputDataSet);
+
+// Get Output DataSource.
+  if (!mainParams->getOutputDataSource())
+    throw te::common::Exception(TE_TR("It is necessary to set the Output DataSource."));
+
+  te::da::DataSourcePtr outputDataSource = mainParams->getOutputDataSource();
+
+// Build output dataset type
+  std::auto_ptr<te::da::DataSetType> outputDataSetType(getOutputDataSetType(mainParams));
+
+// Get the first geometry property from output datasettype.
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(outputDataSetType.get());
+
+
+// Insert difference dataset in rtree.
+  DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
+
+// Geometry type for the output data.
+  te::gm::GeomType outputGeomType = setGeomResultType(inputGeomProp->getGeometryType());
+
+// Create output dataset in memory.
+  std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
+  
+  size_t p = 0;
+  int inputSRID = inputGeomProp->getSRID();
+  int differenceSRID = differenceGeomProp->getSRID();
+
+  std::string intupGeomName = inputGeomProp->getName();
+  std::string differenceGeomName = differenceGeomProp->getName();
+
+  differenceDataSet->moveBeforeFirst();
+  while (differenceDataSet->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> g = differenceDataSet->getGeometry(differenceGeomName);
+
+    rtree->insert(*g->getMBR(), p);
+
+    ++p;
+  }
+
+
+// Get specific params.
+  const std::map<std::string, te::dt::AbstractData*>& specificParams = mainParams->getSpecificParams();
+  std::vector<std::string> propNames = getPropNames(specificParams);
+
+  inputDataSet->moveBeforeFirst();
+  while (inputDataSet->moveNext())
+  {
+// Create DataSetItem based on output DataSet;
+    std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(outputDataSet.get()));
+
+// Populate item with tabular data.
+    for (std::size_t p = 0; p < propNames.size(); ++p)
+      item->setValue(propNames[p], inputDataSet->getValue(propNames[p]).release());
+
+// Current geometry from Input Layer.
+    std::auto_ptr<te::gm::Geometry> geom = inputDataSet->getGeometry(intupGeomName);
+
+// If is different srid, transform current geom to the "difference" projection, to search in rtree the candidates.
+    if (inputSRID != differenceSRID)
+      geom->transform(differenceSRID);
+
+    std::vector<size_t> report;
+    rtree->search(*geom->getMBR(), report);
+
+// If the geom SRID was changed, return to original SRID.
+    if (geom->getSRID() != inputSRID)
+      geom->transform(inputSRID);
+
+// If the search is empty, insert this item into Output dataSet;
+    if (report.empty())
+    {
+// Insert the current geometry into item;
+      if (geom->getGeomTypeId() != outputGeomType)
+        geom.reset(setGeometryType(geom.release()));
+
+      item->setGeometry(geomProp->getName(), geom.release()); 
+
+// Insert this item into Output dataSet;
+      outputDataSet->add(item.release());
+
+      continue;
+    }
+
+// Difference Operation.
+    differenceDataSet->move(report[0]);
+    std::auto_ptr<te::gm::Geometry> unionGeom = differenceDataSet->getGeometry(differenceGeomName);
+
+    for (size_t i = 1; i < report.size(); ++i)
+    {
+      differenceDataSet->move(report[i]);
+      std::auto_ptr<te::gm::Geometry> diffGeom = differenceDataSet->getGeometry(differenceGeomName);
+      unionGeom.reset(unionGeom->Union(diffGeom.get()));
+    }
+
+    if (inputSRID != differenceSRID)
+      unionGeom->transform(inputSRID);
+
+    geom.reset(geom->difference(unionGeom.get()));
+
+    if (!geom->isEmpty())
+    {
+// Insert the current geometry into item;
+      if (geom->getGeomTypeId() != outputGeomType)
+        geom.reset(setGeometryType(geom.release()));
+      
+      item->setGeometry(geomProp->getName(), geom.release());
+
+// Insert this item into Output dataSet;
+      outputDataSet->add(item.release());
+    }
+  }
+
+
+  std::vector<std::string> pkPropNames = getPKPropNames(outputDataSetType.get());
+
+  if (!pkPropNames.empty())
+  {
+    std::auto_ptr<te::da::DataSet> dataSet = te::da::HideColumns(outputDataSet.get(), outputDataSetType.get(), pkPropNames);
+    Save(outputDataSource.get(), dataSet.get(), outputDataSetType.get());
+  }
+  else
+  {
+    Save(outputDataSource.get(), outputDataSet.get(), outputDataSetType.get());
+  }
+
+  return true;
 }
 
 bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
@@ -326,6 +488,66 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   return true;
 }
 
+bool te::vp::Difference::persistsDataSet()
+{
+  return true;
+}
+
+bool te::vp::Difference::validMemoryParams(te::vp::AlgorithmParams* mainParams)
+{
+  //TODO - VALID ALL MEMORY PARAMETERS.
+  return true;
+}
+
+bool te::vp::Difference::validQueryParams(te::vp::AlgorithmParams* mainParams)
+{
+  //TODO - VALID ALL QUERY PARAMETERS.
+  return true;
+}
+
+std::vector<std::string> te::vp::Difference::getPropNames(const std::map<std::string, te::dt::AbstractData*>& specificParams)
+{
+  std::vector<std::string> propNames;
+  std::map<std::string, te::dt::AbstractData*>::const_iterator it = specificParams.begin();
+
+  while (it != specificParams.end())
+  {
+    te::dt::SimpleData<std::string, te::dt::STRING_TYPE>* sd =
+      dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
+
+    std::string columnName = sd->getValue();
+    
+    if (!columnName.empty())
+      propNames.push_back(columnName);
+
+    ++it;
+  }
+
+  return propNames;
+}
+
+std::vector<std::string> te::vp::Difference::getPKPropNames(const te::da::DataSetType* dataSetType)
+{
+  std::vector<std::string> pkPropNames;
+
+  te::da::PrimaryKey* pk = dataSetType->getPrimaryKey();
+
+  std::vector<te::dt::Property*> props;
+
+  if (pk)
+    props = pk->getProperties();
+
+  for (std::size_t i = 0; i < props.size(); ++i)
+  {
+    te::dt::SimpleProperty* sp = dynamic_cast<te::dt::SimpleProperty*>(props[i]);
+
+    if (sp && sp->isAutoNumber())
+      pkPropNames.push_back(sp->getName());
+  }
+
+  return pkPropNames;
+}
+
 te::da::DataSet* te::vp::Difference::updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds)
 {
   te::mem::DataSet* dsMem = new te::mem::DataSet(dsType);
@@ -404,12 +626,6 @@ te::da::DataSet* te::vp::Difference::updateGeomType(te::da::DataSetType* dsType,
     dsMem->add(dsItem);
   }
   return dsMem;
-}
-
-
-bool te::vp::Difference::isSupportQuery(te::vp::AlgorithmParams* mainParams)
-{
-  return true;
 }
 
 te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmParams* mainParams)
@@ -516,3 +732,35 @@ te::gm::GeomType te::vp::Difference::setGeomResultType(te::gm::GeomType firstGeo
   else
     return te::gm::MultiPolygonType;
 }
+
+te::gm::Geometry* te::vp::Difference::setGeometryType(te::gm::Geometry* geom)
+{
+
+  switch (geom->getGeomTypeId())
+  {
+    case te::gm::PointType:
+    {
+                            te::gm::MultiPoint* geomColl = new te::gm::MultiPoint(0, te::gm::MultiPointType, geom->getSRID());
+                            geomColl->add(geom);
+
+                            return geomColl;
+    }
+    case te::gm::LineStringType:
+    {
+                                 te::gm::MultiLineString* geomColl = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, geom->getSRID());
+                                 geomColl->add(geom);
+
+                                 return geomColl;
+    }
+    case te::gm::PolygonType:
+    {
+                              te::gm::MultiPolygon* geomColl = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, geom->getSRID());
+                              geomColl->add(geom);
+
+                              return geomColl;
+    }
+  }
+
+  return geom;
+}
+

@@ -61,9 +61,17 @@ namespace te
 
             ~GeoPackagePublisherDialog();
 
-          public:
+          public slots:
 
-            void setLayerList(std::list<te::map::AbstractLayerPtr> list);
+            void onImportSearchPushButtonClicked();
+
+            void onImportOutputPushButtonClicked();
+
+            void onImportPushButtonClicked();
+
+            void onExportFilePushButtonClicked();
+
+            void onExportPushButtonClicked();
 
           private:
 

@@ -39,9 +39,17 @@ void TsTexture::GLCM()
   rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
+  // Retrieve the minimum and maximum values of the band to normalize GLCM
+  double maxPixel, minPixel;
+  te::rst::GetDataTypeRanges(rin->getBandDataType(1), minPixel, maxPixel);
+  if ((maxPixel - minPixel) > 255) {
+      maxPixel = rin->getBand(1)->getMaxValue(true).real();
+      minPixel = rin->getBand(1)->getMinValue(true).real();
+  }
+
 // use raster attributes to compute GLCM matrix, in northeast direction
   te::rp::RasterAttributes rattributes;
-  boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rin, 1, 1, -1);
+  boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rin, 1, 1, -1, minPixel, maxPixel);
   te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm);
 
 // compare texture metrics    

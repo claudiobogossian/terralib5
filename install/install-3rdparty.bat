@@ -2279,6 +2279,8 @@ call :append_log_end terralib4
 
 :clean_third_directory
 
+pause
+
 cd %TERRALIB_DEPENDENCIES_DIR% >nul 2>nul
 
 RD /S /Q doc >nul 2>nul

@@ -41,6 +41,7 @@ namespace te
   {
     class DataSet;
     class DataSetType;
+    class DataSourceTransactor;
   }
 
   namespace dt
@@ -61,29 +62,38 @@ namespace te
       virtual bool run() = 0;
       
       virtual bool paramsAreValid();
+
+      void setInput(te::da::DataSourcePtr firstSource,
+                    te::da::DataSetType* firstDst,
+                    te::da::DataSet* firstDs,
+                    int firstSRID,
+                    te::da::DataSetType* secondDst,
+                    te::da::DataSet* secondDs);
       
-      void setInput(te::da::DataSetType* firstDst, te::da::DataSet* firstDs, te::da::DataSetType* secondDst, te::da::DataSet* secondDs);
-      
-      void setParams(std::vector<std::pair<std::string, std::string> > properties);
+      void setParams(std::vector<std::pair<std::string, std::string> > properties, bool isUpdate = false);
       
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
     private:
 
-      bool isValidName(const std::string& name);
+      //bool isValidName(const std::string& name);
 
       std::vector<std::string> checkAttrNames(const std::vector<std::pair<std::string, std::string> >& properties);
 
-      std::auto_ptr<te::dt::Property> getNewPkProperty();
+      //std::auto_ptr<te::dt::Property> getNewPkProperty();
 
     protected:
 
       std::auto_ptr<te::da::DataSetType> getOutputDst();
 
+      void updateFirstDst(te::da::DataSourceTransactor* transactor);
+
     protected:
       
+      te::da::DataSourcePtr m_firstSource;
       te::da::DataSetType* m_firstDst;
       te::da::DataSet*     m_firstDs;
+      te::da::DataSourcePtr m_secondSource;
       te::da::DataSetType* m_secondDst;
       te::da::DataSet*     m_secondDs;
 
@@ -91,6 +101,10 @@ namespace te
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDset;
+
+      bool m_isUpdate;
+
+      int m_firstSRID;
     };
   }
 }
