@@ -71,6 +71,8 @@ file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugi
 
 source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
 
+find_package(CURL REQUIRED)
+
 if(Qt5_FOUND)
   # uic'ing
   QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
