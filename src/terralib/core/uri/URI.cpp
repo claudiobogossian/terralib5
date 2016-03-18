@@ -317,6 +317,8 @@ void te::core::URI::parseFragment(const_iterator& begin_it, const_iterator end_i
 
 bool te::core::URI::parse()
 {
+  isValid_ = false;
+
   // Get uri_ begin
   const_iterator it = begin();
 
@@ -324,9 +326,7 @@ bool te::core::URI::parse()
   parseScheme(it, end());
 
   if(!uriParts_.scheme)
-  {
     return false;
-  }
 
   parseUserInfo(it, end());
   parseHost(it, end());
@@ -335,8 +335,12 @@ bool te::core::URI::parse()
   parseQuery(it, end());
   parseFragment(it, end());
 
+  if(!uriParts_.hier_part.host && !uriParts_.hier_part.path)
+    return false;
+
   uriParts_.update();
 
+  isValid_ = true;
   return true;
 }
 
