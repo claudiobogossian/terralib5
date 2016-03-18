@@ -38,6 +38,7 @@
 
 #include "../geometry/Enums.h"
 #include "../memory/DataSet.h"
+#include "../sam.h"
 
 #include "Algorithm.h"
 #include "AlgorithmParams.h"
@@ -65,27 +66,39 @@ namespace te
 
       void setSpecificParams(bool copyInputColumns);
 
-      bool executeMemory(te::vp::AlgorithmParams* mainParams, te::da::DataSet* teste);
-      
+      bool executeMemory(te::vp::AlgorithmParams* mainParams);
+
       bool executeQuery(te::vp::AlgorithmParams* mainParams);
 
-      bool isSupportQuery(te::vp::AlgorithmParams* mainParams);
+      bool persistsDataSet();
+
+      bool validMemoryParams(te::vp::AlgorithmParams* mainParams);
+
+      bool validQueryParams(te::vp::AlgorithmParams* mainParams);
 
     protected:
       
       te::da::DataSet* updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds);
 
-      std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
+      std::vector<std::string> getPropNames(const std::map<std::string, te::dt::AbstractData*>& specificParams);
+
+      std::vector<std::string> getPKPropNames(const te::da::DataSetType* dataSetType);
 
       te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
 
       te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom);
 
+      te::gm::Geometry* setGeometryType(te::gm::Geometry* geom);
+      
       // it defines the type of the result considering the input geometries being aggregated
       //te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
 
       bool m_copyInputColumns;
       std::size_t m_SRID;
+
+    private:
+        
+      typedef te::sam::rtree::Index<size_t, 8>* DataSetRTree;
 
     };
   }

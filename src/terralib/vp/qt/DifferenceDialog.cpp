@@ -326,7 +326,7 @@ te::vp::DifferenceDialog::DataStruct te::vp::DifferenceDialog::getDataStructFrom
         return data;
       }
 
-      dataSet = dataSource->getDataSet(dataSetType->getDatasetName(), oidSet);
+      dataSet = dataSource->getDataSet(dataSetType->getName(), oidSet);
 
       if (!dataSet.get())
         return data;
@@ -337,9 +337,13 @@ te::vp::DifferenceDialog::DataStruct te::vp::DifferenceDialog::getDataStructFrom
       std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dataSetType.get(), dataSource->getCapabilities(), dataSource->getEncoding()));
       te::da::AssociateDataSetTypeConverterSRID(converter.get(), srid);
 
-      dataSetType.reset(converter->getResult());
+      dataSetType.reset(new te::da::DataSetType(*converter->getResult()));
 
       te::da::DataSetAdapter* dataSetAdapter = te::da::CreateAdapter(dataSet.release(), converter.get());
+
+      if (!dataSetAdapter)
+        return data;
+
       dataSet.reset(dataSetAdapter);
     }
 
@@ -746,9 +750,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       }
       else
       {
-        QMessageBox::information(this, "Difference", "This operation was not implemented to do in memory yet. Use Data Exchanger to export data in to a database.");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
+        res = difference.executeMemory(m_params);
       }
 
       if(!res)
@@ -810,11 +812,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       }
       else
       {
-        QMessageBox::information(this, "Difference", "This operation was not implemented to do in memory yet. Use Data Exchanger to export data in to a database.");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
-
-        //res = difference.executeMemory(m_params);
+        res = difference.executeMemory(m_params);
       }
 
       delete m_params;

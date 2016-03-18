@@ -206,7 +206,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
     if (!statusProp)
     {
-      statusProp = new te::dt::SimpleProperty(LAYER_GATHERING_STATUS_COLUMN, te::dt::INT64_TYPE, true, new std::string("0"));
+      statusProp = new te::dt::SimpleProperty(LAYER_GATHERING_STATUS_COLUMN, te::dt::INT32_TYPE, true, new std::string("0"));
 
       ds->addProperty(dsType->getName(), statusProp);
     }
@@ -241,7 +241,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
     m_outputPage->appendLogMesssage("Exporting gathering layer " + dsType->getName());
 
-    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position', 'uri') values('" + dsType->getName() + "', " +
+    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position', 'datasource_uri') values('" + dsType->getName() + "', " +
       boost::lexical_cast<std::string>(aux)+", " + boost::lexical_cast<std::string>(pos)+", '" + dsInfo->getConnInfoAsString() + "'); ";
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++pos;
@@ -271,7 +271,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
     m_outputPage->appendLogMesssage("Exporting input layer " + name);
 
-    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position', 'uri') values('" + name + "', " + boost::lexical_cast<std::string>(visible)+", " +
+    std::string insert = "INSERT INTO tm_layer_settings ('layer_name', 'enabled', 'position', 'datasource_uri') values('" + name + "', " + boost::lexical_cast<std::string>(visible)+", " +
       boost::lexical_cast<std::string>(pos)+", '" + dsInfo->getConnInfoAsString() + "'); ";
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
     te::qt::plugins::terramobile::queryGPKG("select * from sqlite_master", dsGPKG.get());
@@ -321,11 +321,14 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   boost::uuids::uuid u = gen();
   std::string id_ds = boost::uuids::to_string(u);
 
-  std::string insGPKGID = "INSERT INTO tm_settings ('key', 'value') values ('gpkg_id', '" + id_ds + "');";
-  te::qt::plugins::terramobile::queryGPKG(insGPKGID, dsGPKG.get());
+  std::string insPrjId = "INSERT INTO tm_settings ('key', 'value') values ('project_id', '" + id_ds + "');";
+  te::qt::plugins::terramobile::queryGPKG(insPrjId, dsGPKG.get());
 
-  std::string insDbVr = "INSERT INTO tm_settings ('key', 'value') values ('db_version', '0.1');";
-  te::qt::plugins::terramobile::queryGPKG(insDbVr, dsGPKG.get());
+  std::string insProjStatus = "INSERT INTO tm_settings ('key', 'value') values ('project_status', '" + boost::lexical_cast<std::string>(0) + "');";
+  te::qt::plugins::terramobile::queryGPKG(insProjStatus, dsGPKG.get());
+
+  std::string insGpkgVrs = "INSERT INTO tm_settings ('key', 'value') values ('gpkg_version', '1.0');";
+  te::qt::plugins::terramobile::queryGPKG(insGpkgVrs, dsGPKG.get());
 
   //Removing trigggers and tables that could generate problems on the mobile application
   std::vector<std::string> triggers = te::qt::plugins::terramobile::getItemNames("trigger", dsGPKG.get());

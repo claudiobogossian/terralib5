@@ -197,6 +197,8 @@ void te::vp::MergeDialog::onTargetFileToolButtonPressed()
 
 void te::vp::MergeDialog::onOkPushButtonClicked()
 {
+  bool isUpdate = !m_ui->m_outputGroupBox->isChecked();
+
   if (m_ui->m_firstLayerComboBox->currentText().isEmpty() || m_ui->m_secondLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::information(this, tr("Merge"), tr("It is necessary at least two layer to operat!"));
@@ -204,14 +206,14 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
   }
 
   // Checking consistency of output paramenters
-  if (m_ui->m_repositoryLineEdit->text().isEmpty())
+  if (!isUpdate && m_ui->m_repositoryLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, tr("Merge"), tr("Select a repository for the resulting layer!"));
 
     return;
   }
 
-  if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  if (!isUpdate && m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, tr("Merge"), tr("Define a name for the resulting layer!"));
     return;
@@ -225,8 +227,6 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
     QMessageBox::information(this, tr("Merge"), tr("All layers must have SRID!"));
     return;
   }
-
-  bool isUpdate = !m_ui->m_outputGroupBox->isChecked();
 
   std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
@@ -321,17 +321,20 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
     }
     else
     {
-
-      te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
-      if (!aux)
+      te::da::DataSourcePtr aux;
+      if (!isUpdate)
       {
-        QMessageBox::information(this, tr("Merge"), tr("The selected output datasource can not be accessed."));
-        return;
-      }
-      if (aux->dataSetExists(outputdataset))
-      {
-        QMessageBox::information(this, tr("Merge"), tr("Dataset already exists. Remove it or select a new name and try again."));
-        return;
+        aux = te::da::GetDataSource(m_outputDatasource->getId());
+        if (!aux)
+        {
+          QMessageBox::information(this, tr("Merge"), tr("The selected output datasource can not be accessed."));
+          return;
+        }
+        if (aux->dataSetExists(outputdataset))
+        {
+          QMessageBox::information(this, tr("Merge"), tr("Dataset already exists. Remove it or select a new name and try again."));
+          return;
+        }
       }
 
       std::auto_ptr<te::vp::MergeOp> merge(new te::vp::MergeMemory());

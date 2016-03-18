@@ -50,7 +50,13 @@ te::vp::MergeMemory::~MergeMemory()
 te::vp::MergeMemory::Strategy te::vp::MergeMemory::checkStrategy()
 {
   te::da::PrimaryKey* firstPk = m_firstDst->getPrimaryKey();
-  if (firstPk && m_outDsrc->getType() != "OGR")
+
+  if (!m_isUpdate && m_outDsrc && m_outDsrc->getType() == "OGR")
+  {
+    return PUREMERGE;
+  }
+
+  if (firstPk)
   {
     std::vector<te::dt::Property*> firstProps = firstPk->getProperties();
 
@@ -90,9 +96,8 @@ te::vp::MergeMemory::Strategy te::vp::MergeMemory::checkStrategy()
     }
   }
   else
-  {
     return PUREMERGE;
-  }
+
 }
 
 
@@ -113,17 +118,18 @@ bool te::vp::MergeMemory::run() throw(te::common::Exception)
 
       std::auto_ptr<te::da::DataSetType> aux = transactor->getDataSetType(m_firstDst->getName());
 
-      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(aux.get(), m_firstSource->getCapabilities(), m_firstSource->getEncoding()));
+      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(aux.release(), m_firstSource->getCapabilities(), m_firstSource->getEncoding()));
       te::da::AssociateDataSetTypeConverterSRID(firstConverter.get(), m_firstSRID);
 
-      dst.reset(firstConverter->getResult());
+      te::da::DataSetType* dtClone = dynamic_cast<te::da::DataSetType*>(firstConverter->getResult()->clone());
+
+      dst.reset(dtClone);
     }
     else
     {
       dst = getOutputDst();
 
-      if (m_outDsrc->getType() != "OGR")
-        transactor = m_outDsrc->getTransactor();
+      transactor = m_outDsrc->getTransactor();
     }
 
     Strategy s = checkStrategy();
@@ -156,8 +162,7 @@ bool te::vp::MergeMemory::run() throw(te::common::Exception)
     std::size_t sgPos = m_secondDst->getPropertyPosition(sgGrop);
     std::size_t outgPos = dst->getPropertyPosition(outgGrop);
 
-    if (m_outDsrc->getType() != "OGR")
-      transactor->begin();
+    transactor->begin();
 
     int count = 0;
 
@@ -210,29 +215,14 @@ bool te::vp::MergeMemory::run() throw(te::common::Exception)
 
             std::auto_ptr<te::da::DataSet> adaptDs = te::da::HideColumns(ds, dst.get(), pkNameVec);
 
-            if (m_outDsrc->getType() != "OGR")
-            {
-              transactor->createDataSet(dst.get(), op);
-              transactor->add(dst->getName(), adaptDs.get(), op);
-            }
-            else
-            {
-              m_outDsrc->createDataSet(dst.get(), op);
-              m_outDsrc->add(dst->getName(), ds, op);
-            }
+            transactor->createDataSet(dst.get(), op);
+            transactor->add(dst->getName(), adaptDs.get(), op);
+
           }
           else
           {
-            if (m_outDsrc->getType() != "OGR")
-            {
-              transactor->createDataSet(dst.get(), op);
-              transactor->add(dst->getName(), ds, op);
-            }
-            else
-            {
-              m_outDsrc->createDataSet(dst.get(), op);
-              m_outDsrc->add(dst->getName(), ds, op);
-            }
+            transactor->createDataSet(dst.get(), op);
+            transactor->add(dst->getName(), ds, op);
           }
 
           delete ds;
@@ -249,25 +239,11 @@ bool te::vp::MergeMemory::run() throw(te::common::Exception)
 
             std::auto_ptr<te::da::DataSet> adaptDs = te::da::HideColumns(ds, dst.get(), pkNameVec);
 
-            if (m_outDsrc->getType() != "OGR")
-            {
-              transactor->add(dst->getName(), adaptDs.get(), op);
-            }
-            else
-            {
-              m_outDsrc->add(dst->getName(), ds, op);
-            }
+            transactor->add(dst->getName(), adaptDs.get(), op);
           }
           else
           {
-            if (m_outDsrc->getType() != "OGR")
-            {
-              transactor->add(dst->getName(), ds, op);
-            }
-            else
-            {
-              m_outDsrc->add(dst->getName(), ds, op);
-            }
+            transactor->add(dst->getName(), ds, op);
           }
 
           delete ds;
@@ -349,25 +325,11 @@ bool te::vp::MergeMemory::run() throw(te::common::Exception)
 
           std::auto_ptr<te::da::DataSet> adaptDs = te::da::HideColumns(ds, dst.get(), pkNameVec);
 
-          if (m_outDsrc->getType() != "OGR")
-          {
-            transactor->add(dst->getName(), adaptDs.get(), op);
-          }
-          else
-          {
-            m_outDsrc->add(dst->getName(), adaptDs.get(), op);
-          }
+          transactor->add(dst->getName(), adaptDs.get(), op);
         }
         else
         {
-          if (m_outDsrc->getType() != "OGR")
-          {
-            transactor->add(dst->getName(), ds, op);
-          }
-          else
-          {
-            m_outDsrc->add(dst->getName(), ds, op);
-          }
+          transactor->add(dst->getName(), ds, op);
         }
 
         delete ds;
@@ -387,38 +349,22 @@ bool te::vp::MergeMemory::run() throw(te::common::Exception)
 
         std::auto_ptr<te::da::DataSet> adaptDs = te::da::HideColumns(ds, dst.get(), pkNameVec);
 
-        if (m_outDsrc->getType() != "OGR")
-        {
-          transactor->add(dst->getName(), adaptDs.get(), op);
-        }
-        else
-        {
-          m_outDsrc->add(dst->getName(), adaptDs.get(), op);
-        }
+        transactor->add(dst->getName(), adaptDs.get(), op);
       }
       else
       {
-        if (m_outDsrc->getType() != "OGR")
-        {
-          transactor->add(dst->getName(), ds, op);
-        }
-        else
-        {
-          m_outDsrc->add(dst->getName(), ds, op);
-        }
+        transactor->add(dst->getName(), ds, op);
       }
 
       delete ds;
     }
     
-    if (m_outDsrc->getType() != "OGR")
-      transactor->commit();
+    transactor->commit();
 
   }
   catch (const std::exception& e)
   {
-    if (transactor.get() && m_outDsrc->getType() != "OGR")
-      transactor->rollBack();
+    transactor->rollBack();
     std::string err = e.what();
     throw e;
   }

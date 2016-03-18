@@ -49,11 +49,9 @@ namespace te
       
       virtual ~Algorithm() {}
       
-      virtual bool executeMemory(AlgorithmParams* mainParams, te::da::DataSet* teste) = 0;
+      virtual bool executeMemory(AlgorithmParams* mainParams) = 0;
 
       virtual bool executeQuery(AlgorithmParams* mainParams) = 0;
-
-      virtual bool isSupportQuery(AlgorithmParams* mainParams) = 0;
     
     private:
 
