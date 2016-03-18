@@ -65,6 +65,8 @@ namespace te
 
             void onImportSearchPushButtonClicked();
 
+            void onImportOutputPushButtonClicked();
+
             void onImportPushButtonClicked();
 
             void onExportFilePushButtonClicked();

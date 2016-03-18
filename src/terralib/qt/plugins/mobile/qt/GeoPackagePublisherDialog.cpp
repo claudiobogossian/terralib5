@@ -27,6 +27,7 @@
 #include "../../../../common/progress/ProgressManager.h"
 #include "../../../../common/progress/TaskProgress.h"
 #include "../../../../common/STLUtils.h"
+#include "../core/GeopackagePublisher.h"
 #include "GeoPackagePublisherDialog.h"
 #include "ui_GeoPackagePublisherDialogForm.h"
 
@@ -34,20 +35,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-// libcurl
-#include <curl/curl.h>
-
-// Boost
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
-
-void getProjectList();
 
 te::qt::plugins::terramobile::GeoPackagePublisherDialog::GeoPackagePublisherDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -58,6 +47,7 @@ te::qt::plugins::terramobile::GeoPackagePublisherDialog::GeoPackagePublisherDial
 
   //connects
   connect(m_ui->m_importSearchPushButton, SIGNAL(clicked()), this, SLOT(onImportSearchPushButtonClicked()));
+  connect(m_ui->m_importOutputPushButton, SIGNAL(clicked()), this, SLOT(onImportOutputPushButtonClicked()));
   connect(m_ui->m_importPushButton, SIGNAL(clicked()), this, SLOT(onImportPushButtonClicked()));
   connect(m_ui->m_exportFilePushButton, SIGNAL(clicked()), this, SLOT(onExportFilePushButtonClicked()));
   connect(m_ui->m_exportPushButton, SIGNAL(clicked()), this, SLOT(onExportPushButtonClicked()));
@@ -70,8 +60,6 @@ te::qt::plugins::terramobile::GeoPackagePublisherDialog::~GeoPackagePublisherDia
 
 void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportSearchPushButtonClicked()
 {
-  getProjectList();
-
   if (m_ui->m_importURLLineEdit->text().isEmpty())
   {
     m_ui->m_importTableWidget->setRowCount(0);
@@ -80,20 +68,92 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportSearchPush
     return;
   }
 
-  //check server
+  m_ui->m_importTableWidget->setRowCount(0);
 
   //fill list
+  GeopackagePublisher gpkgPub;
+
+  GeopackageFiles gpkgFiles = gpkgPub.getGeopackageFiles(m_ui->m_importURLLineEdit->text().toStdString());
+
+  for (std::size_t t = 0; t < gpkgFiles.size(); ++t)
+  {
+    int row = m_ui->m_importTableWidget->rowCount();
+    m_ui->m_importTableWidget->insertRow(row);
+
+    GeopackageFile gpkgFile = gpkgFiles[t];
+
+    QTableWidgetItem* nameItem = new QTableWidgetItem(gpkgFile.m_name.c_str());
+    nameItem->setFlags(Qt::ItemIsSelectable);
+    m_ui->m_importTableWidget->setItem(row, 0, nameItem);
+
+    QTableWidgetItem* objIdItem = new QTableWidgetItem(gpkgFile.m_objId.c_str());
+    objIdItem->setFlags(Qt::ItemIsSelectable);
+    m_ui->m_importTableWidget->setItem(row, 1, objIdItem);
+
+    QTableWidgetItem* descItem = new QTableWidgetItem(gpkgFile.m_desc.c_str());
+    descItem->setFlags(Qt::ItemIsSelectable);
+    m_ui->m_importTableWidget->setItem(row, 2, descItem);
+  }
+
+  m_ui->m_importTableWidget->resizeColumnsToContents();
+
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_importTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
+  m_ui->m_importTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
+}
+
+void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportOutputPushButtonClicked()
+{
+  QString dirName = QFileDialog::getExistingDirectory(this, tr("Output GeoPackage File location"));
+
+  if (dirName.isEmpty())
+    m_ui->m_importOutputLineEdit->clear();
+  else
+  {
+    QString path = dirName.replace(QRegExp("\\\\"), "/");
+
+    m_ui->m_importOutputLineEdit->setText(path);
+  }
 }
 
 void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportPushButtonClicked()
 {
-  if (m_ui->m_importTableWidget->selectedItems().isEmpty())
+  if (m_ui->m_importOutputLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Output directory not defined."));
+    return;
+  }
+
+  std::string dir = m_ui->m_importOutputLineEdit->text().toStdString();
+
+  QItemSelectionModel* select = m_ui->m_importTableWidget->selectionModel();
+
+  if (select->selectedRows().isEmpty())
   {
     QMessageBox::warning(this, tr("Warning"), tr("Select at least one geopackage file to import."));
     return;
   }
 
+  std::string url = m_ui->m_importURLLineEdit->text().toStdString();
+
   //import
+  GeopackagePublisher gpkgPub;
+
+  for (int i = 0; i < m_ui->m_importTableWidget->rowCount(); ++i)
+  {
+    if (m_ui->m_importTableWidget->item(i, 0)->isSelected())
+    {
+      GeopackageFile gpkgFile;
+
+      gpkgFile.m_name = m_ui->m_importTableWidget->item(i, 0)->text().toStdString();
+      gpkgFile.m_objId = m_ui->m_importTableWidget->item(i, 1)->text().toStdString();
+      gpkgFile.m_desc = m_ui->m_importTableWidget->item(i, 2)->text().toStdString();
+
+      gpkgPub.downloadGeopackageFile(url, gpkgFile, dir);
+    }
+  }
 }
 
 void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportFilePushButtonClicked()
@@ -114,120 +174,20 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
     return;
   }
 
+  std::string pathFile = m_ui->m_exportFileLineEdit->text().toStdString();
+
   if (m_ui->m_exportServerLineEdit->text().isEmpty())
   {
     QMessageBox::warning(this, tr("Warning"), tr("Server not defined."));
     return;
   }
 
-  //check server
+  std::string url = m_ui->m_exportServerLineEdit->text().toStdString();
 
   //export gpkg
+  GeopackagePublisher gpkgPub;
+
+  gpkgPub.uploadGeopackageFile(url, pathFile);
 }
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-  ((std::string*)userp)->append((char*)contents, size * nmemb);
-  return size * nmemb;
-}
 
-void getProjectList()
-{
-  CURL *curl;
-  CURLcode res;
-
-  struct curl_httppost *formpost = NULL;
-  struct curl_httppost *lastptr = NULL;
-  struct curl_slist *headerlist = NULL;
-  static const char buf[] = "Expect:";
-
-  curl_global_init(CURL_GLOBAL_ALL);
-
-  /* Fill in the file upload field */
-  curl_formadd(&formpost,
-    &lastptr,
-    CURLFORM_COPYNAME, "user",
-    CURLFORM_COPYCONTENTS, "userName",
-    CURLFORM_END);
-
-  curl_formadd(&formpost,
-    &lastptr,
-    CURLFORM_COPYNAME, "password",
-    CURLFORM_COPYCONTENTS, "password",
-    CURLFORM_END);
-
-  curl_formadd(&formpost,
-    &lastptr,
-    CURLFORM_COPYNAME, "projectStatus",
-    CURLFORM_COPYCONTENTS, "1",
-    CURLFORM_END);
-
-  /* Fill in the submit field too, even if this is rarely needed */
-  /*    curl_formadd(&formpost,
-  &lastptr,
-  CURLFORM_COPYNAME, "submit",
-  CURLFORM_COPYCONTENTS, "send",
-  CURLFORM_END);*/
-
-  std::string readBuffer;
-
-  curl = curl_easy_init();
-  /* initialize custom header list (stating that Expect: 100-continue is not
-  wanted */
-  headerlist = curl_slist_append(headerlist, buf);
-  if (curl) {
-    /* what URL that receives this POST */
-    curl_easy_setopt(curl, CURLOPT_URL, "http://terrabrasilis.info/TerraMobileServer/projectservices/listprojects");
-
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
-
-    curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
-
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-    /* Perform the request, res will get the return code */
-    res = curl_easy_perform(curl);
-    /* Check for errors */
-    if (res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-      curl_easy_strerror(res));
-
-    /* always cleanup */
-    curl_easy_cleanup(curl);
-
-    /* then cleanup the formpost chain */
-    curl_formfree(formpost);
-    /* free slist */
-    curl_slist_free_all(headerlist);
-  }
-
-  std::stringstream ss(readBuffer);
-
-  try
-  {
-    boost::property_tree::ptree pt;
-    boost::property_tree::json_parser::read_json(ss, pt);
-
-    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("projects"))
-    {
-      std::string projectName = v.second.get<std::string>("project_name");
-      std::string projectStatus = v.second.get<std::string>("project_status");
-      std::string projectId = v.second.get<std::string>("project_id");
-      std::string projectDesc = v.second.get<std::string>("project_description");
-
-      int a = 0;
-    }
-  }
-  catch (boost::property_tree::json_parser::json_parser_error &je)
-  {
-    return;
-  }
-  catch (std::exception const& e)
-  {
-    return;
-  }
-
-  return;
-}
