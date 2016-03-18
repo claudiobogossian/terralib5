@@ -24,8 +24,11 @@
 #          Andre Gomes de Oliveira <andre.oliveira@funcate.org.br>
 #
 
+find_package(CURL REQUIRED)
+
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIR})
+include_directories(${CURL_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-DMOBILEDLL)
@@ -94,7 +97,7 @@ if(Qt5_FOUND)
 
   add_library(terralib_mod_qt_plugins_mobile SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_qt_plugins_mobile terralib_mod_plugin terralib_mod_qt_apf terralib_mod_gdal terralib_mod_rp ${GDAL_LIBRARY})
+  target_link_libraries(terralib_mod_qt_plugins_mobile terralib_mod_plugin terralib_mod_qt_apf terralib_mod_gdal terralib_mod_rp ${GDAL_LIBRARY} ${CURL_LIBRARY})
 
   qt5_use_modules(terralib_mod_qt_plugins_mobile Widgets)
 endif()

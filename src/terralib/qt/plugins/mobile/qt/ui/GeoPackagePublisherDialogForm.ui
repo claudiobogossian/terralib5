@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>646</width>
-    <height>411</height>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,9 +57,9 @@
         <attribute name="title">
          <string>Import</string>
         </attribute>
-        <layout class="QGridLayout" name="gridLayout_4">
+        <layout class="QGridLayout" name="gridLayout_13">
          <item row="0" column="0">
-          <layout class="QGridLayout" name="gridLayout_3">
+          <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout">
              <item row="0" column="0">
@@ -70,7 +70,11 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="m_importURLLineEdit"/>
+              <widget class="QLineEdit" name="m_importURLLineEdit">
+               <property name="text">
+                <string>http://terrabrasilis.info/TerraMobileServer/projectservices</string>
+               </property>
+              </widget>
              </item>
              <item row="0" column="2">
               <widget class="QPushButton" name="m_importSearchPushButton">
@@ -108,17 +112,31 @@
              </column>
              <column>
               <property name="text">
-               <string>Status</string>
+               <string>Object Id</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>File</string>
+               <string>Description</string>
               </property>
              </column>
             </widget>
            </item>
            <item row="2" column="0">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="m_importOutputPushButton">
+               <property name="text">
+                <string>Output...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_importOutputLineEdit"/>
+             </item>
+            </layout>
+           </item>
+           <item row="3" column="0">
             <layout class="QGridLayout" name="gridLayout_2">
              <item row="0" column="0">
               <spacer name="horizontalSpacer_2">
@@ -180,7 +198,11 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="m_exportServerLineEdit"/>
+              <widget class="QLineEdit" name="m_exportServerLineEdit">
+               <property name="text">
+                <string>http://terrabrasilis.info/TerraMobileServer/projectservices</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -274,6 +296,8 @@
   <tabstop>m_importURLLineEdit</tabstop>
   <tabstop>m_importSearchPushButton</tabstop>
   <tabstop>m_importTableWidget</tabstop>
+  <tabstop>m_importOutputPushButton</tabstop>
+  <tabstop>m_importOutputLineEdit</tabstop>
   <tabstop>m_importPushButton</tabstop>
   <tabstop>m_exportFilePushButton</tabstop>
   <tabstop>m_exportFileLineEdit</tabstop>
