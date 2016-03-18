@@ -66,7 +66,7 @@ namespace te
       invalid_syntax,
       invalid_uri,
       invalid_scheme,
-      invalid_user_info,
+      invalid_authoriry,
       invalid_host,
       invalid_port,
       invalid_path,
@@ -126,6 +126,7 @@ namespace te
         void parsePath(const_iterator& begin_it, const_iterator end_it);
         void parseQuery(const_iterator& begin_it, const_iterator end_it);
         void parseFragment(const_iterator& begin_it, const_iterator end_it);
+        void parseUserInfo(const_iterator& begin_it, const_iterator end_it);
 
 // iterators
         const_iterator begin() const;
@@ -134,7 +135,7 @@ namespace te
 
         const_range_type scheme_range() const { return uriParts_.scheme; }
 
-        const_range_type user_info_range() const
+        const_range_type userInfo_range() const
         {
           return uriParts_.hier_part.user_info ? uriParts_.hier_part.user_info.get()
                                                : const_range_type();
@@ -170,12 +171,12 @@ namespace te
 
 // accessors
 
+        string_type uri() const;
         string_type scheme() const;
-        string_type user_info() const;
+        string_type userInfo() const;
         string_type host() const;
         string_type port() const;
         string_type path() const;
-        string_type authority() const;
         string_type query() const;
         string_type fragment() const;
 

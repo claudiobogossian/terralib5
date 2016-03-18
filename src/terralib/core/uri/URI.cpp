@@ -49,13 +49,14 @@ te::core::URI::URI(const Source& source, const Alloc& alloc)
 }
 
 te::core::URI::URI(const URI& other)
+  : uri_(other.uri_)
 {
-
+  parse();
 }
 
 te::core::URI::URI(URI&& other) noexcept
 {
-
+  // VINICIUS:
 }
 
 te::core::URI::~URI()
@@ -65,7 +66,8 @@ te::core::URI::~URI()
 
 te::core::URI& te::core::URI::operator=(const te::core::URI& other)
 {
-  // VINICIUS:
+  URI(other).swap(*this);
+  return *this;
 }
 
 te::core::URI& te::core::URI::operator=(te::core::URI&& other) noexcept
@@ -75,7 +77,9 @@ te::core::URI& te::core::URI::operator=(te::core::URI&& other) noexcept
 
 void te::core::URI::swap(URI& other) noexcept
 {
-
+  boost::swap(uri_, other.uri_);
+  other.parse();
+  boost::swap(isValid_, other.isValid_);
 }
 
 te::core::URI::const_iterator te::core::URI::begin() const
@@ -110,7 +114,7 @@ void te::core::URI::parseScheme(const_iterator& begin_it, const_iterator end_it)
   }
 }
 
-void te::core::URI::parseHost(const_iterator& begin_it, const_iterator end_it)
+void te::core::URI::parseUserInfo(const_iterator& begin_it, const_iterator end_it)
 {
   const_iterator it = begin_it;
 
@@ -126,24 +130,74 @@ void te::core::URI::parseHost(const_iterator& begin_it, const_iterator end_it)
   if(it == end_it || *it != '/')
     return;
 
-  // Find Host
+  const_iterator user_info_begin = ++it;
+
+  if(user_info_begin == end_it)
+    return;
+
+  // Find user first
+  bool user = false;
+  for( ; it <= end_it; it++)
   {
-    const_iterator host_begin = ++it;
+    if(*it == '@')
+      break;
 
-    if(host_begin == end_it)
-      return;
+    if(*it == ':')
+    {
+      user = true;
+      break;
+    }
+  }
 
+  if(user)
+  {
     for( ; it <= end_it; it++)
     {
-      if(*it == '?')
-        break;
-
-      if(*it == ':' || *it == '/' || it == end_it)
+      if(*it == '@')
       {
-        uriParts_.hier_part.host = boost::iterator_range<const_iterator>(host_begin, it);
+        uriParts_.hier_part.user_info = boost::iterator_range<const_iterator>(user_info_begin, it);
         begin_it = it;
         break;
       }
+    }
+  }
+}
+
+void te::core::URI::parseHost(const_iterator& begin_it, const_iterator end_it)
+{
+  const_iterator it = begin_it;
+
+  if(it == end_it)
+    return;
+
+  if(!uriParts_.hier_part.user_info)
+  {
+    //  Check the two "/"
+    it++;
+    if(it == end_it || *it != '/')
+      return;
+
+    it++;
+    if(it == end_it || *it != '/')
+      return;
+  }
+
+  // Find Host
+  const_iterator host_begin = ++it;
+
+  if(host_begin == end_it)
+    return;
+
+  for( ; it <= end_it; it++)
+  {
+    if(*it == '?')
+      break;
+
+    if(*it == ':' || *it == '/' || it == end_it)
+    {
+      uriParts_.hier_part.host = boost::iterator_range<const_iterator>(host_begin, it);
+      begin_it = it;
+      break;
     }
   }
 }
@@ -274,18 +328,33 @@ bool te::core::URI::parse()
     return false;
   }
 
+  parseUserInfo(it, end());
   parseHost(it, end());
   parsePort(it, end());
   parsePath(it, end());
   parseQuery(it, end());
   parseFragment(it, end());
 
+  uriParts_.update();
+
   return true;
+}
+
+te::core::URI::string_type te::core::URI::uri() const
+{
+  return uri_;
 }
 
 te::core::URI::string_type te::core::URI::scheme() const
 {
   const_range_type range = scheme_range();
+  return range ? string_type(boost::begin(range), boost::end(range))
+               : string_type();
+}
+
+te::core::URI::string_type te::core::URI::userInfo() const
+{
+  const_range_type range = userInfo_range();
   return range ? string_type(boost::begin(range), boost::end(range))
                : string_type();
 }
