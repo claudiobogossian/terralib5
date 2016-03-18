@@ -93,7 +93,7 @@ void te::vp::Intersection::setSpecificParams(bool copyInputColumns)
   m_copyInputColumns = copyInputColumns;
 }
 
-bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams, te::da::DataSet* teste)
+bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
 {
   //te::da::DataSource* dataSource = mainParams->getOutputDataSource();
   //te::da::DataSetType* dataSetType = getOutputDataSetType(mainParams);
@@ -488,12 +488,6 @@ te::da::DataSet* te::vp::Intersection::updateGeomType(te::da::DataSetType* dsTyp
     dsMem->add(dsItem);
   }
   return dsMem;
-}
-
-
-bool te::vp::Intersection::isSupportQuery(te::vp::AlgorithmParams* mainParams)
-{
-  return true;
 }
 
 te::da::DataSetType* te::vp::Intersection::getOutputDataSetType(te::vp::AlgorithmParams* mainParams)

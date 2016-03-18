@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../../common/StringUtils.h"
+#include "../../dataaccess/dataset/DataSetAdapter.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
@@ -63,6 +65,7 @@ te::vp::MergeDialog::MergeDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
+  connect(m_ui->m_outputGroupBox, SIGNAL(toggled(bool)), this, SLOT(onOutputGroupBoxToggled(bool)));
 
 // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-merge-hint").pixmap(112,48));
@@ -194,6 +197,8 @@ void te::vp::MergeDialog::onTargetFileToolButtonPressed()
 
 void te::vp::MergeDialog::onOkPushButtonClicked()
 {
+  bool isUpdate = !m_ui->m_outputGroupBox->isChecked();
+
   if (m_ui->m_firstLayerComboBox->currentText().isEmpty() || m_ui->m_secondLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::information(this, tr("Merge"), tr("It is necessary at least two layer to operat!"));
@@ -201,32 +206,50 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
   }
 
   // Checking consistency of output paramenters
-  if (m_ui->m_repositoryLineEdit->text().isEmpty())
+  if (!isUpdate && m_ui->m_repositoryLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, tr("Merge"), tr("Select a repository for the resulting layer!"));
 
     return;
   }
 
-  if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  if (!isUpdate && m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, tr("Merge"), tr("Define a name for the resulting layer!"));
     return;
   }
 
+  int firstSrid = m_firstSelectedLayer->getSRID();
+  int secondSrid = m_secondSelectedLayer->getSRID();
+
+  if (firstSrid <= 0 || secondSrid <= 0)
+  {
+    QMessageBox::information(this, tr("Merge"), tr("All layers must have SRID!"));
+    return;
+  }
+
   std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
-  QVariant v = m_ui->m_firstLayerComboBox->currentData(Qt::UserRole);
-  te::map::AbstractLayerPtr firstLayer = v.value<te::map::AbstractLayerPtr>();
+  std::string firstSourceId = m_firstSelectedLayer->getDataSourceId();
+  std::string secondSourceId = m_secondSelectedLayer->getDataSourceId();
 
-  v = m_ui->m_secondLayerComboBox->currentData(Qt::UserRole);
-  te::map::AbstractLayerPtr secondLayer = v.value<te::map::AbstractLayerPtr>();
+  te::da::DataSourcePtr firstSource = te::da::DataSourceManager::getInstance().find(firstSourceId);
+  te::da::DataSourcePtr secondSource = te::da::DataSourceManager::getInstance().find(secondSourceId);
 
-  std::auto_ptr<te::da::DataSetType> firstDst = firstLayer->getSchema();
-  std::auto_ptr<te::da::DataSetType> secondDst = secondLayer->getSchema();
+  std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(m_firstSelectedLayer->getSchema().get(), firstSource->getCapabilities(), firstSource->getEncoding()));
+  te::da::AssociateDataSetTypeConverterSRID(firstConverter.get(), m_firstSelectedLayer->getSRID());
 
-  std::auto_ptr<te::da::DataSet> firstDs = firstLayer->getData();
-  std::auto_ptr<te::da::DataSet> secondDs = secondLayer->getData();
+  std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(m_secondSelectedLayer->getSchema().get(), secondSource->getCapabilities(), secondSource->getEncoding()));
+  te::da::AssociateDataSetTypeConverterSRID(secondConverter.get(), m_secondSelectedLayer->getSRID(), m_firstSelectedLayer->getSRID());
+
+  te::da::DataSetType* firstDst(firstConverter->getResult());
+  te::da::DataSetType* secondDst(secondConverter->getResult());
+
+  te::da::DataSetAdapter* firstAdapter = te::da::CreateAdapter(m_firstSelectedLayer->getData().release(), firstConverter.get());
+  te::da::DataSetAdapter* secondAdapter = te::da::CreateAdapter(m_secondSelectedLayer->getData().release(), secondConverter.get());
+
+  std::auto_ptr<te::da::DataSet> firstDs(firstAdapter);
+  std::auto_ptr<te::da::DataSet> secondDs(secondAdapter);
 
   try
   {
@@ -258,14 +281,16 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::vp::MergeOp> merge(new te::vp::MergeMemory());
 
-      std::auto_ptr<te::vp::MergeOp> merge(new te::vp::MergeMemory());      
+      merge->setInput(firstSource, firstDst, firstDs.get(), m_firstSelectedLayer->getSRID(), secondDst, secondDs.get());
 
-      merge->setInput(firstDst.get(), firstDs.get(), secondDst.get(), secondDs.get());
+      merge->setParams(getTablePropertiesNames(), isUpdate);
 
-      merge->setParams(getTablePropertiesNames());
-
-      merge->setOutput(dsOGR, outputdataset);
+      if (!isUpdate)
+      {
+        merge->setOutput(dsOGR, outputdataset);
+      }
 
       bool res = merge->run();
 
@@ -296,30 +321,34 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
     }
     else
     {
-
-      te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
-      if (!aux)
+      te::da::DataSourcePtr aux;
+      if (!isUpdate)
       {
-        QMessageBox::information(this, tr("Merge"), tr("The selected output datasource can not be accessed."));
-        return;
-      }
-      if (aux->dataSetExists(outputdataset))
-      {
-        QMessageBox::information(this, tr("Merge"), tr("Dataset already exists. Remove it or select a new name and try again."));
-        return;
+        aux = te::da::GetDataSource(m_outputDatasource->getId());
+        if (!aux)
+        {
+          QMessageBox::information(this, tr("Merge"), tr("The selected output datasource can not be accessed."));
+          return;
+        }
+        if (aux->dataSetExists(outputdataset))
+        {
+          QMessageBox::information(this, tr("Merge"), tr("Dataset already exists. Remove it or select a new name and try again."));
+          return;
+        }
       }
 
       std::auto_ptr<te::vp::MergeOp> merge(new te::vp::MergeMemory());
 
-      merge->setInput(firstDst.get(), firstDs.get(), secondDst.get(), secondDs.get());
+      merge->setInput(firstSource, firstDst, firstDs.get(), m_firstSelectedLayer->getSRID(), secondDst, secondDs.get());
 
-      merge->setParams(getTablePropertiesNames());
+      merge->setParams(getTablePropertiesNames(), isUpdate);
 
-      std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+      if (!isUpdate)
+      {
+        merge->setOutput(aux, outputdataset);
+      }
 
-      merge->setOutput(aux, outputdataset);
-
-      merge->run();
+      bool res = merge->run();
     }
 
     // creating a layer for the result
@@ -358,6 +387,12 @@ void te::vp::MergeDialog::onFirstLayerComboBoxChanged(int index)
   updateSecondLayerComboBox();
 
   updateAttrTableWidget();
+
+  // The update only works with datasetlayer
+  if (m_firstSelectedLayer->getType() != "DATASETLAYER")
+  {
+    m_ui->m_outputGroupBox->setChecked(true);
+  }
 }
 
 void te::vp::MergeDialog::onSecondLayerComboBoxChanged(int index)
@@ -498,4 +533,17 @@ std::vector<std::pair<std::string, std::string> > te::vp::MergeDialog::getTableP
   }
 
   return result;
+}
+
+void te::vp::MergeDialog::onOutputGroupBoxToggled(bool on)
+{
+  if (!on)
+  {
+    if (m_firstSelectedLayer->getType() != "DATASETLAYER")
+    {
+      QMessageBox::warning(this, tr("Merge"), tr("To use first layer as output (update), it must be a DataSet Layer!"));
+      m_ui->m_outputGroupBox->setChecked(true);
+      return;
+    }
+  }
 }

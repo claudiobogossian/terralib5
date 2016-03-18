@@ -868,6 +868,11 @@ bool te::ogr::Transactor::dataSetExists(const std::string& name)
 void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& /*options*/)
 {
   if (!m_ogrDs->getOGRDataSource())
+  {
+    m_ogrDs->createOGRDataSource();
+  }
+
+  if (!m_ogrDs->getOGRDataSource())
     return;
   
   if(!m_ogrDs->getOGRDataSource()->TestCapability(ODsCCreateLayer))

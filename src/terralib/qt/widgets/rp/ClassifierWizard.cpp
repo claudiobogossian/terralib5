@@ -27,6 +27,7 @@
 #include "../../../common/progress/ProgressManager.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
 #include "../../../rp/Module.h"
@@ -142,6 +143,10 @@ bool te::qt::widgets::ClassifierWizard::execute()
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+  //set layer SRID to raster
+  int srid = l->getSRID();
+  inputRst->getGrid()->setSRID(srid);
 
   //run contrast
   te::rp::Classifier algorithmInstance;

@@ -37,6 +37,7 @@
 #include "../dataset/ObjectIdSet.h"
 #include "../dataset/PrimaryKey.h"
 #include "../dataset/UniqueKey.h"
+#include "../datasource/DataSourceCapabilities.h"
 #include "../datasource/DataSourceInfoManager.h"
 #include "../datasource/DataSourceManager.h"
 #include "../query/DataSetName.h"
@@ -1231,6 +1232,29 @@ bool te::da::HasLinkedTable(te::da::DataSetType* type)
   }
 
   return false;
+}
+
+std::auto_ptr<te::da::DataSet> te::da::HideColumns(te::da::DataSet* ds, te::da::DataSetType* dst, const std::vector<std::string>& columns)
+{
+  assert(ds);
+  assert(dst);
+
+  te::da::DataSourceCapabilities cap;
+  cap.setSupportAll();
+  te::da::DataTypeCapabilities dtCap;
+  dtCap.setSupportAll();
+  cap.setDataTypeCapabilities(dtCap);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dst, cap));
+
+  for (std::size_t i = 0; i < columns.size(); ++i)
+  {
+    converter->remove(columns[i]);
+  }
+
+  std::auto_ptr<te::da::DataSet> result(te::da::CreateAdapter(ds, converter.get(), false));
+
+  return result;
 }
 
 double te::da::GetSummarizedValue(std::vector<double>& values, const std::string& sumary)

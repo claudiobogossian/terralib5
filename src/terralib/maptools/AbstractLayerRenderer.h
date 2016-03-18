@@ -84,9 +84,9 @@ namespace te
         /*! \brief Destructor. */
         ~AbstractLayerRenderer();
 
-        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
+        virtual void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
 
-      private:
+      protected:
 
         /*!
           \brief It draws the abstract layer in the given canvas using the SRS informed.
@@ -104,7 +104,7 @@ namespace te
 
           \note This method consider that the given layer contains vetorial data.
         */
-        void drawLayerGeometries(AbstractLayer* layer,
+        virtual void drawLayerGeometries(AbstractLayer* layer,
                                  const std::string& geomPropertyName,
                                  te::se::FeatureTypeStyle* style,
                                  Canvas* canvas,
@@ -126,7 +126,7 @@ namespace te
 
           \note This method consider that the given layer contains vetorial data.
         */
-        void drawLayerGrouping(AbstractLayer* layer,
+        virtual void drawLayerGrouping(AbstractLayer* layer,
                                const std::string& geomPropertyName,
                                Canvas* canvas,
                                const te::gm::Envelope& bbox,
@@ -149,7 +149,7 @@ namespace te
 
           \note This method retrieves the layer data using only spatial extent restriction and performs the grouping in memory.
         */
-        void drawLayerGroupingMem(AbstractLayer* layer,
+        virtual void drawLayerGroupingMem(AbstractLayer* layer,
                                   const std::string& geomPropertyName,
                                   Canvas* canvas,
                                   const te::gm::Envelope& bbox,
@@ -167,14 +167,14 @@ namespace te
           \param chart       Chart informations that can be used.
           \param task        An optional task that can be used cancel the draw process.
         */
-        void drawDatSetGeometries(te::da::DataSet* dataset, const std::size_t& gpos,
+        virtual void drawDatSetGeometries(te::da::DataSet* dataset, const std::size_t& gpos,
                                   Canvas* canvas, int fromSRID, int toSRID, Chart* chart, bool* cancel, te::common::TaskProgress* task = 0);
 
-        void buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom);
+        virtual void buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom);
 
-        void reset();
+        virtual void reset();
 
-      private:
+      protected:
 
         WorldDeviceTransformer m_transformer;              // World Device Transformer.
         te::sam::rtree::Index<std::size_t, 8> m_rtree;     // r-Tree that can be used to avoid conflicts (charts, texts, etc.).

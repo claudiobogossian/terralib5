@@ -99,6 +99,8 @@ namespace te
 
         void onTargetFileToolButtonPressed();
 
+        void onOutputGroupBoxToggled(bool on);
+
         void onOkPushButtonClicked();
 
         void onCancelPushButtonClicked();
