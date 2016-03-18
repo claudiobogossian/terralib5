@@ -293,6 +293,35 @@ std::string te::vp::GetSimpleTableName(std::string fullName)
   return fullName.substr(found + 1);
 }
 
+std::auto_ptr<te::da::DataSet> te::vp::PrepareAdd(te::da::DataSet* ds, te::da::DataSetType* dt)
+{
+  std::vector<std::string> pkPropNames;
+  te::da::PrimaryKey* pk = dt->getPrimaryKey();
+
+  std::vector<te::dt::Property*> props;
+
+  if (pk)
+    props = pk->getProperties();
+
+  for (std::size_t i = 0; i < props.size(); ++i)
+  {
+    te::dt::SimpleProperty* sp = dynamic_cast<te::dt::SimpleProperty*>(props[i]);
+
+    if (sp && sp->isAutoNumber())
+      pkPropNames.push_back(sp->getName());
+
+  }
+  
+  std::auto_ptr<te::da::DataSet> dataSet;
+
+  if (!pkPropNames.empty())
+    dataSet = te::da::HideColumns(ds, dt, pkPropNames);
+  else
+    dataSet.reset(ds);
+
+  return dataSet;
+}
+
 void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType)
 {
   // do any adaptation necessary to persist the output dataset

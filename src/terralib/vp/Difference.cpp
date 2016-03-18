@@ -244,18 +244,12 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
     }
   }
 
+  std::auto_ptr<te::da::DataSet> dataSetPrepared = PrepareAdd(outputDataSet.release(), outputDataSetType.get());
 
-  std::vector<std::string> pkPropNames = getPKPropNames(outputDataSetType.get());
-
-  if (!pkPropNames.empty())
-  {
-    std::auto_ptr<te::da::DataSet> dataSet = te::da::HideColumns(outputDataSet.get(), outputDataSetType.get(), pkPropNames);
-    Save(outputDataSource.get(), dataSet.get(), outputDataSetType.get());
-  }
-  else
-  {
-    Save(outputDataSource.get(), outputDataSet.get(), outputDataSetType.get());
-  }
+  if (!dataSetPrepared.get())
+    throw te::common::Exception(TE_TR("Output DataSet was not prepared to save."));
+  
+  Save(outputDataSource.get(), dataSetPrepared.get(), outputDataSetType.get());
 
   return true;
 }
@@ -524,28 +518,6 @@ std::vector<std::string> te::vp::Difference::getPropNames(const std::map<std::st
   }
 
   return propNames;
-}
-
-std::vector<std::string> te::vp::Difference::getPKPropNames(const te::da::DataSetType* dataSetType)
-{
-  std::vector<std::string> pkPropNames;
-
-  te::da::PrimaryKey* pk = dataSetType->getPrimaryKey();
-
-  std::vector<te::dt::Property*> props;
-
-  if (pk)
-    props = pk->getProperties();
-
-  for (std::size_t i = 0; i < props.size(); ++i)
-  {
-    te::dt::SimpleProperty* sp = dynamic_cast<te::dt::SimpleProperty*>(props[i]);
-
-    if (sp && sp->isAutoNumber())
-      pkPropNames.push_back(sp->getName());
-  }
-
-  return pkPropNames;
 }
 
 te::da::DataSet* te::vp::Difference::updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds)
