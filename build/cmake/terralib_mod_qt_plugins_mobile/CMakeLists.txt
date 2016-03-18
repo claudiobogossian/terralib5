@@ -24,8 +24,11 @@
 #          Andre Gomes de Oliveira <andre.oliveira@funcate.org.br>
 #
 
+find_package(CURL REQUIRED)
+
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIR})
+include_directories(${CURL_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-DMOBILEDLL)
@@ -71,8 +74,6 @@ file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugi
 
 source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
 
-find_package(CURL REQUIRED)
-
 if(Qt5_FOUND)
   # uic'ing
   QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
@@ -96,7 +97,7 @@ if(Qt5_FOUND)
 
   add_library(terralib_mod_qt_plugins_mobile SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_qt_plugins_mobile terralib_mod_plugin terralib_mod_qt_apf terralib_mod_gdal terralib_mod_rp ${GDAL_LIBRARY})
+  target_link_libraries(terralib_mod_qt_plugins_mobile terralib_mod_plugin terralib_mod_qt_apf terralib_mod_gdal terralib_mod_rp ${GDAL_LIBRARY} ${CURL_LIBRARY})
 
   qt5_use_modules(terralib_mod_qt_plugins_mobile Widgets)
 endif()
