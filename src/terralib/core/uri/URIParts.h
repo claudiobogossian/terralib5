@@ -26,11 +26,11 @@
   \author Gilberto Ribeiro de Queiroz
   \author Vinicius Campanha
  */
- 
+
 /*
   This implementation is based on teh source code of cppnetlib.
  */
- 
+
 // Copyright 2009, 2010, 2011, 2012 Dean Michael Berris, Jeroen Habraken, Glyn
 // Matthews.
 // Distributed under the Boost Software License, Version 1.0.
@@ -98,7 +98,7 @@ namespace te
                                                 std::end(port.get()));
         }
       }
-  
+
     };
 
     template <class FwdIter>
