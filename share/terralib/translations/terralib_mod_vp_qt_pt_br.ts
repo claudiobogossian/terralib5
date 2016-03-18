@@ -1109,12 +1109,12 @@
 <context>
     <name>te::vp::DifferenceDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/DifferenceDialog.cpp" line="639"/>
+        <location filename="../../../src/terralib/vp/qt/DifferenceDialog.cpp" line="388"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/DifferenceDialog.cpp" line="640"/>
+        <location filename="../../../src/terralib/vp/qt/DifferenceDialog.cpp" line="389"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished">Shapefile (*.shp *.SHP);;</translation>
     </message>
