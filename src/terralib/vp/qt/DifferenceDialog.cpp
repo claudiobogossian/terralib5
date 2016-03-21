@@ -105,13 +105,21 @@ te::vp::DifferenceDialog::DifferenceDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   //add double list widget to this form
-  m_doubleListWidget.reset(new te::qt::widgets::DoubleListWidget(m_ui->m_attributesGroupBox));
+  m_doubleListWidget.reset(new te::qt::widgets::DoubleListWidget(m_ui->m_specificParamsTabWidget->widget(0)));
   m_doubleListWidget->setLeftLabel("");
   m_doubleListWidget->setRightLabel("");
 
-  QGridLayout* layout = new QGridLayout(m_ui->m_attributesGroupBox);
+  QGridLayout* layout = new QGridLayout(m_ui->m_specificParamsTabWidget->widget(0));
   layout->addWidget(m_doubleListWidget.get());
   layout->setContentsMargins(0, 0, 0, 0);
+
+  QSize iconSize(96, 48);
+
+  m_ui->m_singleRadioButton->setIconSize(iconSize);
+  m_ui->m_singleRadioButton->setIcon(QIcon::fromTheme("vp-single-objects"));
+
+  m_ui->m_multiRadioButton->setIconSize(iconSize);
+  m_ui->m_multiRadioButton->setIcon(QIcon::fromTheme("vp-multi-objects"));
 
   connect(m_ui->m_inputLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputLayerComboBoxChanged(int)));
   connect(m_ui->m_differenceLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDifferenceLayerComboBoxChanged(int)));

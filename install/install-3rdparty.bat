@@ -1,9 +1,3 @@
-IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR% mkdir %TERRALIB_DEPENDENCIES_DIR% 
-IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include mkdir %TERRALIB_DEPENDENCIES_DIR%\include 
-IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\lib mkdir %TERRALIB_DEPENDENCIES_DIR%\lib 
-
-del /Q ..\*.log >nul 2>nul
-
 set "ROOT_DIR=%CD%"
 
 set "BUILD_LOG=%ROOT_DIR%\..\build.log"
@@ -96,7 +90,9 @@ echo %1: fail on %2. >>%FAILURES_LOG%
 goto :EOF
 ENDLOCAL
 
+
 :begin_libs
+
 set LIBS_DIR=%TERRALIB_DEPENDENCIES_DIR%\lib
 
 :: libraries not linked against TerraLib 5 (NOT fully installed)
@@ -118,7 +114,6 @@ set PNG=%LIBS_DIR%\libpng15.dll
 set HDF4=%LIBS_DIR%\hdfdll.dll
 set TIFF=%LIBS_DIR%\libtiff.dll
 set GEOTIFF=%LIBS_DIR%\libgeotiff.dll
-set CURL=%LIBS_DIR%\libcurl.dll
 set ICU=%LIBS_DIR%\icuuc52.dll
 set XML2=%LIBS_DIR%\libxml2.dll
 set NETCDF=%LIBS_DIR%\netcdf.dll
@@ -132,8 +127,8 @@ set BZIP=%ROOT_DIR%\bzip2-1.0.6\lib%_X86%\libbz2.lib
 set JPEG=%ROOT_DIR%\jpeg-9a\build%_X86%\libjpeg.lib
 set MINIZIP=%ROOT_DIR%\unzip101e\build%_X86%\Release\minizip.lib
 
-set _aux=_x86
-IF DEFINED TERRALIB_X64 set "_aux="
+set "_aux=_x86"
+IF DEFINED TERRALIB_X64 set "_aux=_x64"
 set URIPARSER=%ROOT_DIR%\uriparser-0.8.4\win32\build%_aux%\uriparser.lib
 
 :: libraries linked against TerraLib 5 (fully installed)
@@ -152,8 +147,16 @@ set PROPERTYBROWSER=%LIBS_DIR%\qt_property_browser.lib
 set QWT=%LIBS_DIR%\qwt.lib
 set LUA=%LIBS_DIR%\lua.lib
 set TERRALIB4=%LIBS_DIR%\terralib.lib
+set CURL=%LIBS_DIR%\libcurl.lib
 
-IF NOT EXIST %LIBS_DIR% goto begin_build
+del %ROOT_DIR%\..\*.log /S /Q >nul 2>nul
+
+IF NOT EXIST %LIBS_DIR% (
+  mkdir %TERRALIB_DEPENDENCIES_DIR%\include >nul 2>nul 
+  mkdir %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul 
+
+  goto begin_build
+)
 
 goto cppunit_deps
 
@@ -1323,7 +1326,7 @@ xcopy %CURL_DIR%\builds\libcurl-vc12-%_bits%-release-dll-ssl-dll-zlib-dll-ipv6-s
 
 xcopy %CURL_DIR%\builds\libcurl-vc12-%_bits%-release-dll-ssl-dll-zlib-dll-ipv6-sspi\include %CURL_DIR%\binaries%_X86%\include /Y /S >nul 2>nul 
 
-xcopy  %CURL_DIR%\binaries%_X86%\lib\*.dll %LIBS_DIR% /Y >nul 2>nul
+xcopy  %CURL_DIR%\binaries%_X86%\* %TERRALIB_DEPENDENCIES_DIR% /S /Y >nul 2>nul
 
 echo done.
 
@@ -1345,8 +1348,8 @@ set ICU_DIR=%ROOT_DIR%\icu
 set ICU_INCLUDE_DIR=%ICU_DIR%\include
 set ICU_LIBRARY=%ICU_DIR%\lib%_libF%\icuuc.lib
 set ICUD_LIBRARY=%ICU_DIR%\lib%_libF%\icuucd.lib
-set ICUDATA_LIBRARY=%ICU_DIR%\lib%_libF%\icudt.lib
-set ICUDATAD_LIBRARY=%ICU_DIR%\lib%_libF%\icudtd.lib
+::set ICUDATA_LIBRARY=%ICU_DIR%\lib%_libF%\icudt.lib
+::set ICUDATAD_LIBRARY=%ICU_DIR%\lib%_libF%\icudtd.lib
 ::set ICUIN_LIBRARY=%ICU_DIR%\lib%_libF%\icuin52.lib
 ::set ICUIND_LIBRARY=%ICU_DIR%\lib%_libF%\icuin52d.lib
 
@@ -1368,21 +1371,19 @@ set ICUROOT=%ICU_DIR%
 
 cd %ICU_DIR%\source\allinone >nul 2>nul
 
-( msbuild /m /t:clean /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean release" && goto xerces
+( msbuild /m /t:clean /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean release" && goto xerces
 
-( msbuild /m /t:clean allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean debug" && goto xerces
+( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean debug" && goto xerces
 
-( msbuild /m /t:makedata /p:Configuration=Release allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build release" && goto xerces
+( msbuild /m /t:pkgdata /t:genrb /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build release" && goto xerces
 
-( msbuild /m /t:common allinone.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build debug" && goto xerces
+( msbuild /m /t:io >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build debug" && goto xerces
 
-xcopy %ICU_DIR%\bin%_libF%\icuuc52.dll %LIBS_DIR% /Y >nul 2>nul
+xcopy %ICU_DIR%\bin%_libF%\icuuc*.dll %LIBS_DIR% /Y >nul 2>nul
 
-xcopy %ICU_DIR%\bin%_libF%\icuuc52d.dll %LIBS_DIR% /Y >nul 2>nul
+xcopy %ICU_DIR%\bin%_libF%\icuin*.dll %LIBS_DIR% /Y >nul 2>nul
 
-xcopy %ICU_DIR%\bin%_libF%\icudt52.dll %LIBS_DIR% /Y >nul 2>nul
-
-xcopy %ICU_DIR%\bin%_libF%\icudt52d.dll %LIBS_DIR% /Y >nul 2>nul
+xcopy %ICU_DIR%\bin%_libF%\icudt*.dll %LIBS_DIR% /Y >nul 2>nul
 
 echo done.
 
@@ -1541,6 +1542,7 @@ goto end_libboost_deps
 IF NOT EXIST %ICONV% call :remove_lib boost && goto pgis_deps
 IF NOT EXIST %BZIP% call :remove_lib boost && goto pgis_deps
 IF NOT EXIST %ICU% call :remove_lib boost && goto pgis_deps
+IF NOT EXIST %ZLIB% call :remove_lib boost && goto pgis_deps
 goto pgis_deps
 :end_libboost_deps
 
@@ -1552,14 +1554,25 @@ call :append_log_begin libboost
 
 :begin_libboost
 
- set "_am=32"
-IF DEFINED TERRALIB_X64 set "_am=64"
-
 cd %B_DIR% >nul 2>nul
 
-( call bootstrap.bat vc12 setup --with-chrono,date_time,filesystem,system,thread,timer,locale >>%CONFIG_LOG% 2>nul ) || goto configFail
+set "_b2_setup=setup x86"
 
-( b2 -a toolset=msvc-12.0 address-model=%_am% architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building" && goto minizip
+IF DEFINED TERRALIB_X64 (
+  set "_b2_setup=setup amd64"
+  set "_am=address-model=64"
+)
+
+set "BOOST_REGEX_NO_LIB=1"
+
+( call bootstrap.bat vc12 %_b2_setup% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog minizip "configuring" && goto uriparser
+
+set "_build_type=release"
+set "_bzip_bin=BZIP2_BINARY=libbz2"
+set "_zlib_bin=ZLIB_BINARY=zlib"
+set "_zlib_path=ZLIB_LIBPATH=%ZL_DIR%\build%_X86%\Release"
+
+( b2 --reconfigure toolset=msvc-12.0 %_am% architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --layout=tagged -s ICU_PATH=%ICU_DIR% -s ICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -s%_bzip_bin% -s BZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -s BZIP2_LIBPATH=%BZIP2_DIR%\lib%_X86% -s %_zlib_bin% -s ZLIB_INCLUDE=%ZL_DIR% -s ZLIB_LIBPATH=%_zlib_path% install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
 
 echo done.
 
@@ -1597,7 +1610,7 @@ call :append_log_begin minizip
 
 cd %MINIZIP_DIR% >nul 2>nul
 
-del build%_X86% /S /Q >nul 2>nul
+RD /S /Q build%_X86% >nul 2>nul
 
 mkdir build%_X86% >nul 2>nul
 
@@ -1623,7 +1636,7 @@ cd %ROOT_DIR%
 
 :uriparser
 
-set "_bits="
+set "_bits=_x64"
 IF NOT DEFINED TERRALIB_X64 set "_bits=_x86"
 
 ::  URIParser 
@@ -1851,6 +1864,7 @@ cd build%_X86% >nul 2>nul
 -DBUILD_TESTING=OFF ^
 -DBUILD_UTILITIES=OFF ^
 -DENABLE_TESTS=OFF ^
+-DBUILD_SHARED_LIBS=ON ^
 -DENABLE_HDF4=ON ^
 -DUSE_HDF4=ON ^
 -DUSE_HDF5=OFF ^
@@ -1945,6 +1959,8 @@ call :append_log_begin spatialite
 
 cd %SPLITE_DIR% >nul 2>nul
 
+del *.obj /S /Q >nul 2>nul
+
 ( nmake /f makefile.vc install >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite "build release" && goto gdal
 
 ( nmake /f makefile.vc clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog spatialite  "clean release" && goto gdal
@@ -2006,6 +2022,8 @@ cd %GDAL_DIR% >nul 2>nul
 del *.lib /S /Q >nul 2>nul  
 
 del *.exp /S /Q >nul 2>nul  
+
+del *.obj /S /Q >nul 2>nul  
 
 IF DEFINED TERRALIB_X64 (
 copy nmake.release.opt.in nmake.opt /Y >nul 2>nul

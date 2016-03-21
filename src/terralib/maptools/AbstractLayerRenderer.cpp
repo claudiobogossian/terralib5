@@ -257,7 +257,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     const te::fe::Filter* filter = rule->getFilter();
 
     // Let's retrieve the correct dataset
-    std::auto_ptr<te::da::DataSet> dataset(0);
+    std::auto_ptr<te::da::DataSet> dataset;
 
     if(!filter)
     {
