@@ -101,7 +101,7 @@ te::vp::DifferenceDialog::DifferenceDialog(QWidget* parent, Qt::WindowFlags f)
 // add controls
   m_ui->setupUi(this);
 
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-difference-hint").pixmap(48,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-difference-hint").pixmap(112, 48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   //add double list widget to this form
@@ -123,10 +123,10 @@ te::vp::DifferenceDialog::DifferenceDialog(QWidget* parent, Qt::WindowFlags f)
 
   connect(m_ui->m_inputLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputLayerComboBoxChanged(int)));
   connect(m_ui->m_differenceLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDifferenceLayerComboBoxChanged(int)));
-  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
   m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_difference.html");
@@ -773,6 +773,15 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       }
 
       m_outputDatasource = te::da::DataSourceInfoManager::getInstance().get(dsOGR->getId());
+
+      if (!m_outputDatasource)
+      {
+        QMessageBox::information(this, "Difference", "The output data source can not be accessed.");
+
+        te::common::ProgressManager::getInstance().removeViewer(id);
+
+        return;
+      }
 
       delete m_params;
     }

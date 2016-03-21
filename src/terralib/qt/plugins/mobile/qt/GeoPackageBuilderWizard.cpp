@@ -44,6 +44,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <QMessageBox>
 
 //Boost
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -289,7 +291,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
   {
     std::string jsonStr = te::qt::plugins::terramobile::Write(itb->second);
 
-    std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form', 'tm_media_table', 'tm_state' )  values('" + itb->first + "', '" + jsonStr + "', '" + "" + "', '" + boost::lexical_cast<std::string>(0) + "');";
+    std::string insert = "INSERT INTO tm_layer_form ('gpkg_layer_identify', 'tm_form', 'tm_media_table')  values('" + itb->first + "', '" + jsonStr + "', '" + "" + "');";
     te::qt::plugins::terramobile::queryGPKG(insert, dsGPKG.get());
     ++itb;
   }
@@ -329,6 +331,15 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   std::string insGpkgVrs = "INSERT INTO tm_settings ('key', 'value') values ('gpkg_version', '1.0');";
   te::qt::plugins::terramobile::queryGPKG(insGpkgVrs, dsGPKG.get());
+
+  boost::gregorian::date current_date(boost::gregorian::day_clock::local_day());
+  std::locale fmt(std::locale::classic(), new boost::gregorian::date_facet("%d/%m/%Y"));
+  std::ostringstream os;
+  os.imbue(fmt);
+  os << current_date;
+
+  std::string insDate = "INSERT INTO tm_settings ('key', 'value') values ('creation_date','" + os.str() + "'); ";
+  te::qt::plugins::terramobile::queryGPKG(insDate, dsGPKG.get());
 
   //Removing trigggers and tables that could generate problems on the mobile application
   std::vector<std::string> triggers = te::qt::plugins::terramobile::getItemNames("trigger", dsGPKG.get());

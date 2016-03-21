@@ -532,19 +532,28 @@ namespace te
         double inXStartGeo = 0;
         double inYStartGeo = 0;
         inputRasterPtr->getGrid()->gridToGeo( 0.0, 0.0, inXStartGeo, inYStartGeo );
-        double outRowStartDouble = 0;
-        double outColStartDouble = 0;
+        
+        double outFirstRowDouble = 0;
+        double outFirstColDouble = 0;
         outputRasterPtr->getGrid()->geoToGrid( inXStartGeo, inYStartGeo,
-          outColStartDouble, outRowStartDouble );
-
-        const unsigned int outRowStart = (unsigned int)std::max( 0.0, outRowStartDouble );
-        const unsigned int outColStart = (unsigned int)std::max( 0.0, outColStartDouble );
-        const unsigned int outRowsBound = std::min( outRowStart +
-          inputRasterPtr->getNumberOfRows(),
+          outFirstColDouble, outFirstRowDouble );
+        
+        const double outRowsBoundDouble = outFirstRowDouble +
+          (double)( inputRasterPtr->getNumberOfRows() );
+        const double outColsBoundDouble = outFirstColDouble +
+          (double)( inputRasterPtr->getNumberOfColumns() );     
+          
+        const unsigned int outFirstRow = (unsigned int)std::max( 0u, 
+          te::common::Round< double, unsigned int >( outFirstRowDouble ) );
+        const unsigned int outFirstCol = (unsigned int)std::max( 0u, 
+          te::common::Round< double, unsigned int >( outFirstColDouble ) );     
+        
+        const unsigned int outRowsBound = (unsigned int)std::min( 
+          te::common::Round< double, unsigned int >( outRowsBoundDouble ),
           outputRasterPtr->getNumberOfRows() );
-        const unsigned int outColsBound = std::min( outColStart +
-          inputRasterPtr->getNumberOfColumns(),
-          outputRasterPtr->getNumberOfColumns() );
+        const unsigned int outColsBound = (unsigned int)std::min( 
+          te::common::Round< double, unsigned int >( outColsBoundDouble ),
+          outputRasterPtr->getNumberOfColumns() );        
 
         const unsigned int nBands = (unsigned int)
           m_inputParameters.m_inputRastersBands[ 0 ].size();
@@ -572,13 +581,13 @@ namespace te
 
           double mean = 0;
 
-          for( outRow = outRowStart ; outRow < outRowsBound ; ++outRow )
+          for( outRow = outFirstRow ; outRow < outRowsBound ; ++outRow )
           {
-            inRow = ((double)outRow) - outRowStartDouble;
+            inRow = ((double)outRow) - outFirstRowDouble;
 
-            for( outCol = outColStart ; outCol < outColsBound ; ++outCol )
+            for( outCol = outFirstCol ; outCol < outColsBound ; ++outCol )
             {
-              inCol = ((double)outCol) - outColStartDouble;
+              inCol = ((double)outCol) - outFirstColDouble;
 
               interpInstance.getValue( inCol, inRow, pixelCValue, inputBandIdx );
 
@@ -603,9 +612,9 @@ namespace te
 
             double pixelValue = 0;
 
-            for( outRow = outRowStart ; outRow < outRowsBound ; ++outRow )
+            for( outRow = outFirstRow ; outRow < outRowsBound ; ++outRow )
             {
-              for( outCol = outColStart ; outCol < outColsBound ; ++outCol )
+              for( outCol = outFirstCol ; outCol < outColsBound ; ++outCol )
               {
                 outBand.getValue( outCol, outRow, pixelValue );
 
