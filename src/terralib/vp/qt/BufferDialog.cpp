@@ -108,7 +108,7 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
 
 //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
-  connect(m_ui->m_fixedRadioButton, SIGNAL(toggled(bool)), this, SLOT(onFixedDistanceToggled()));
+//  connect(m_ui->m_fixedRadioButton, SIGNAL(toggled(bool)), this, SLOT(onFixedDistanceToggled()));
   connect(m_ui->m_fromAttRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttDistanceToggled()));
   connect(m_ui->m_ruleInOutRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRuleInOutToggled()));
   connect(m_ui->m_ruleOnlyOutRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRuleOutToggled()));
@@ -379,21 +379,21 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   // Check consistency of buffer parameters
   double fixedDistance;
   std::string propDistance = "";
-  if(m_ui->m_fixedRadioButton->isChecked())
-  {
+  //if(m_ui->m_fixedRadioButton->isChecked())
+  //{
     fixedDistance = m_ui->m_fixedDistanceLineEdit->text().toDouble();
     if (fixedDistance <= 0)
     {
       QMessageBox::information(this, "Buffer", "Fixed distance value should be greater than 0.");
       return;
     }
-  }
+/*  }
   else
   {
     fixedDistance = 0;
     int i = m_ui->m_fromAttDistanceComboBox->currentIndex();
     propDistance = m_ui->m_fromAttDistanceComboBox->itemText(i).toStdString();
-  }
+  }*/
   
   // Checking consistency of output paramenters
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
