@@ -98,7 +98,7 @@ namespace te
       // constructors and destructor
       URI();
 
-      explicit URI(const string_type& uri);
+      URI(string_type uri);
 
       //        template <typename InputIter, class Alloc = std::allocator<value_type> >
       //        explicit URI(const InputIter &first, const InputIter &last, const Alloc &alloc = Alloc());
@@ -121,7 +121,7 @@ namespace te
       void swap(URI& other) noexcept;
 
       // parses
-      bool parse();
+      void parse();
       void parseScheme(const_iterator& begin_it, const_iterator end_it);
       void parseHost(const_iterator& begin_it, const_iterator end_it);
       void parsePort(const_iterator& begin_it, const_iterator end_it);
@@ -159,6 +159,8 @@ namespace te
       string_type path() const;
       string_type query() const;
       string_type fragment() const;
+
+      bool isValid();
 
     private:
 
