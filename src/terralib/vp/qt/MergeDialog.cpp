@@ -351,14 +351,25 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
       bool res = merge->run();
     }
 
-    // creating a layer for the result
-    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+    if (!isUpdate)
+    {
+      // creating a layer for the result
+      te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
 
-    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+      te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
 
-    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
-    m_outputLayer = converter(dt);
+      te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+      m_outputLayer = converter(dt);
+    }
+    else
+    {
+      te::gm::Envelope env1 = m_firstSelectedLayer->getExtent();
+      te::gm::Envelope env2 = m_secondSelectedLayer->getExtent();
 
+      env1.Union(env2);
+
+      m_firstSelectedLayer->setExtent(env1);
+    }
 
   }
   catch (const te::common::Exception& e)
