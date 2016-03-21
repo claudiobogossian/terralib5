@@ -96,19 +96,21 @@ namespace te
         typedef boost::iterator_range<const_iterator> const_range_type;
 
 // constructors and destructor
-        URI(const string_type& uri);
+        URI();
+      
+        explicit URI(const string_type& uri);
 
-        template <typename InputIter, class Alloc = std::allocator<value_type> >
-        URI(const InputIter &first, const InputIter &last, const Alloc &alloc = Alloc());
-
-        template <class Source, class Alloc = std::allocator<value_type>>
-        explicit URI(const Source& source, const Alloc& alloc = Alloc());
+//        template <typename InputIter, class Alloc = std::allocator<value_type> >
+//        explicit URI(const InputIter &first, const InputIter &last, const Alloc &alloc = Alloc());
+//
+//        template <class Source, class Alloc = std::allocator<value_type>>
+//        explicit URI(const Source& source, const Alloc& alloc = Alloc());
 
         URI(const URI& other);
 
         URI(URI&& other) noexcept;
 
-        ~URI();
+        ~URI() = default;
 
 // assignment
         URI& operator=(const URI& other);
@@ -186,6 +188,19 @@ namespace te
         URIParts<const_iterator> uriParts_;
         bool isValid_;
     };
+    
+//    template <typename InputIter, class Alloc> inline
+//    URI::URI(const InputIter &first, const InputIter &last, const Alloc &alloc)
+//      : uri_(first, last), isValid_(false)
+//    {
+//      parse();
+//    }
+    
+//    template <class Source, class Alloc> inline
+//    URI::URI(const Source& source, const Alloc& alloc)
+//    
+//    {
+//    }
 
   }  // end namespace core
 }    // end namespace te
