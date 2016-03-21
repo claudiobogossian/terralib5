@@ -30,22 +30,15 @@
 // TerraLib
 #include "URI.h"
 
-te::core::URI::URI(const string_type &uri)
+te::core::URI::URI()
+  : isValid_(false)
+{
+}
+
+te::core::URI::URI(const string_type& uri)
   : uri_(uri), isValid_(false)
 {
   parse();
-}
-
-template <typename InputIter, class Alloc >
-te::core::URI::URI(const InputIter &first, const InputIter &last, const Alloc &alloc)
-{
-
-}
-
-template <class Source, class Alloc >
-te::core::URI::URI(const Source& source, const Alloc& alloc)
-{
-
 }
 
 te::core::URI::URI(const URI& other)
@@ -57,11 +50,6 @@ te::core::URI::URI(const URI& other)
 te::core::URI::URI(URI&& other) noexcept
 {
   // VINICIUS:
-}
-
-te::core::URI::~URI()
-{
-
 }
 
 te::core::URI& te::core::URI::operator=(const te::core::URI& other)
