@@ -29,9 +29,21 @@
 #include <terralib/core/uri/URI.h>
 
 // STL
+#include <assert.h>
 #include <cstdlib>
 
 int main(int argc, char *argv[])
 {
+  te::core::URI uri("http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
+
+  assert(uri.scheme() == "http");
+  assert(uri.host() == "www.dpi.inpe.br");
+  assert(uri.path() == "/terralib5/wiki/doku.php");
+  assert(uri.query() == "id=wiki:documentation:devguide");
+  assert(uri.fragment() == "modules");
+
+  if(!uri.isValid())
+    return EXIT_FAILURE;
+
   return EXIT_SUCCESS;
 }
