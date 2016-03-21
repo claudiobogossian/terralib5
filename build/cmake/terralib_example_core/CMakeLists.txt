@@ -31,26 +31,27 @@ include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.cpp)
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.h)
 
-# Examples of core/encoding
-file(GLOB TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/encoding/*.cpp)
-file(GLOB TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/encoding/*.h)
-
 source_group("Source Files\\uri"  FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES})
 source_group("Header Files\\uri"  FILES ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES})
-source_group("Source Files\\encoding"  FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES})
-source_group("Header Files\\encoding"  FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES})
-
 
 add_executable(terralib_example_core_uri ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES})
-add_executable(terralib_example_core_encoding ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES})
 
 target_link_libraries(terralib_example_core_uri terralib_mod_core)
-target_link_libraries(terralib_example_core_encoding terralib_mod_core
-                      ${Boost_LIBRARIES})
 
 install(FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/core COMPONENT devel) 
 
-install(FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/core COMPONENT devel)
 
+# Examples of core/encoding
+file(GLOB TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/encoding/*.cpp)
+file(GLOB TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/encoding/*.h)
+
+source_group("Source Files\\encoding"  FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES})
+source_group("Header Files\\encoding"  FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES})
+
+add_executable(terralib_example_core_encoding ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES})
+
+target_link_libraries(terralib_example_core_encoding terralib_mod_core)
+
+install(FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/encoding COMPONENT devel)

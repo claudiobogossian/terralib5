@@ -33,8 +33,8 @@ file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/cor
 file(GLOB TERRALIB_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/uri/*.cpp)
 file(GLOB TERRALIB_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/uri/*.h)
 
-file(GLOB TERRALIB_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/encoding/*.cpp)
-file(GLOB TERRALIB_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/encoding/*.h)
+file(GLOB TERRALIB_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/encoding/*.cpp)
+file(GLOB TERRALIB_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/encoding/*.h)
 
 source_group("Source Files"            FILES ${TERRALIB_CORE_SRC_FILES})
 source_group("Header Files"            FILES ${TERRALIB_CORE_HDR_FILES})
@@ -46,6 +46,8 @@ source_group("Header Files\\encoding"  FILES ${TERRALIB_CORE_ENCODING_HDR_FILES}
 add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}
                                      ${TERRALIB_CORE_URI_SRC_FILES} ${TERRALIB_CORE_URI_HDR_FILES}
                                      ${TERRALIB_CORE_ENCODING_SRC_FILES} ${TERRALIB_CORE_ENCODING_HDR_FILES})
+
+target_link_libraries(terralib_mod_core ${Boost_LOCALE_LIBRARY})
 
 set_target_properties(terralib_mod_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
