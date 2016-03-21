@@ -158,7 +158,7 @@ void te::core::URI::parseHost(const_iterator& begin_it, const_iterator end_it)
   if(it == end_it)
     return;
 
-  if(!uriParts_.hier_part.user_info)
+  if(!uriParts_.hier_part.user_info || userInfo() == "")
   {
     //  Check the two "/"
     it++;
@@ -306,6 +306,8 @@ void te::core::URI::parseFragment(const_iterator& begin_it, const_iterator end_i
 bool te::core::URI::parse()
 {
   isValid_ = false;
+  URIParts<const_iterator> parts;
+  uriParts_ = parts;
 
   // Get uri_ begin
   const_iterator it = begin();
@@ -313,7 +315,7 @@ bool te::core::URI::parse()
   // Try to find scheme until the end of uri_
   parseScheme(it, end());
 
-  if(!uriParts_.scheme)
+  if(!uriParts_.scheme || scheme() == "")
     return false;
 
   parseUserInfo(it, end());
@@ -324,6 +326,9 @@ bool te::core::URI::parse()
   parseFragment(it, end());
 
   if(!uriParts_.hier_part.host && !uriParts_.hier_part.path)
+    return false;
+
+  if(host() == "" && path() == "")
     return false;
 
   uriParts_.update();
