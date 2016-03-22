@@ -249,6 +249,9 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
   if (!dataSetPrepared.get())
     throw te::common::Exception(TE_TR("Output DataSet was not prepared to save."));
   
+  if (dataSetPrepared->size() == 0)
+    throw te::common::Exception("The resultant layer is empty!");
+
   Save(outputDataSource.get(), dataSetPrepared.get(), outputDataSetType.get());
 
   return true;
@@ -460,7 +463,7 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
     dsQuery->moveBeforeFirst();
 
     if (dsQuery->size() == 0)
-      throw te::common::Exception("The Layers do not intersect to set difference!");
+      throw te::common::Exception("The resultant layer is empty!");
 
     std::string outputDsName = mainParams->getOutputDataSetName();
 

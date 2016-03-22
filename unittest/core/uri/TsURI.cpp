@@ -49,6 +49,109 @@ void printURI(te::core::URI& uri)
 
 BOOST_AUTO_TEST_SUITE( test_case )
 
+BOOST_AUTO_TEST_CASE( test_copy_constructor )
+{
+  std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
+  te::core::URI uri(address);
+
+  te::core::URI copy(uri);
+
+  //  BOOST_CHECK(uri.is_absolute());
+  //  BOOST_CHECK(!uri.is_opaque());
+
+  BOOST_CHECK(uri.scheme() == "http");
+  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
+  BOOST_CHECK(uri.port() == "80");
+  BOOST_CHECK(uri.path() == "/terralib5/wiki/doku.php");
+  BOOST_CHECK(uri.query() == "id=wiki:documentation:devguide");
+  BOOST_CHECK(uri.fragment() == "modules");
+
+  BOOST_CHECK(uri.scheme() == copy.scheme());
+  BOOST_CHECK(uri.userInfo() == copy.userInfo());
+  BOOST_CHECK(uri.host() == copy.host());
+  BOOST_CHECK(uri.port() == copy.port());
+  BOOST_CHECK(uri.path() == copy.path());
+  BOOST_CHECK(uri.query() == copy.query());
+  BOOST_CHECK(uri.fragment() == copy.fragment());
+
+  return;
+}
+
+BOOST_AUTO_TEST_CASE( test_assignment_constructor )
+{
+  std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
+  te::core::URI uri(address);
+
+  te::core::URI copy = uri;
+
+  //  BOOST_CHECK(uri.is_absolute());
+  //  BOOST_CHECK(!uri.is_opaque());
+
+  BOOST_CHECK(uri.scheme() == "http");
+  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
+  BOOST_CHECK(uri.port() == "80");
+  BOOST_CHECK(uri.path() == "/terralib5/wiki/doku.php");
+  BOOST_CHECK(uri.query() == "id=wiki:documentation:devguide");
+  BOOST_CHECK(uri.fragment() == "modules");
+
+  BOOST_CHECK(uri.scheme() == copy.scheme());
+  BOOST_CHECK(uri.userInfo() == copy.userInfo());
+  BOOST_CHECK(uri.host() == copy.host());
+  BOOST_CHECK(uri.port() == copy.port());
+  BOOST_CHECK(uri.path() == copy.path());
+  BOOST_CHECK(uri.query() == copy.query());
+  BOOST_CHECK(uri.fragment() == copy.fragment());
+
+  return;
+}
+
+BOOST_AUTO_TEST_CASE( test_assignment )
+{
+  std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
+  te::core::URI uri(address);
+
+  std::string address2("scheme2://user:password@sedac.ciesin.columbia.edu:70/geoserver/wcs?service=WCS&request=GetCapabilities#fragment");
+  te::core::URI uri2(address2);
+
+  uri2 = uri;
+
+  //  BOOST_CHECK(uri.is_absolute());
+  //  BOOST_CHECK(!uri.is_opaque());
+
+  BOOST_CHECK(uri.scheme() == "http");
+  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
+  BOOST_CHECK(uri.port() == "80");
+  BOOST_CHECK(uri.path() == "/terralib5/wiki/doku.php");
+  BOOST_CHECK(uri.query() == "id=wiki:documentation:devguide");
+  BOOST_CHECK(uri.fragment() == "modules");
+
+  BOOST_CHECK(uri.scheme() == uri2.scheme());
+  BOOST_CHECK(uri.userInfo() == uri2.userInfo());
+  BOOST_CHECK(uri.host() == uri2.host());
+  BOOST_CHECK(uri.port() == uri2.port());
+  BOOST_CHECK(uri.path() == uri2.path());
+  BOOST_CHECK(uri.query() == uri2.query());
+  BOOST_CHECK(uri.fragment() == uri2.fragment());
+
+  std::string address3("xmpp:example-node@example.com?message;subject=Hello%20World");
+  te::core::URI uri3(address3);
+
+  uri = uri3;
+
+  BOOST_CHECK(uri.scheme() == uri3.scheme());
+  BOOST_CHECK(uri.userInfo() == uri3.userInfo());
+  BOOST_CHECK(uri.host() == uri3.host());
+  BOOST_CHECK(uri.port() == uri3.port());
+  BOOST_CHECK(uri.path() == uri3.path());
+  BOOST_CHECK(uri.query() == uri3.query());
+  BOOST_CHECK(uri.fragment() == uri3.fragment());
+
+  return;
+}
+
 BOOST_AUTO_TEST_CASE( test_full_address )
 {
   std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");

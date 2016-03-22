@@ -35,7 +35,6 @@ file(GLOB TERRALIB_UNITTEST_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittes
 file(GLOB TERRALIB_UNITTEST_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/uri/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/uri/*.h)
 
-
 file(GLOB TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/encoding/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/encoding/*.h)
 
@@ -51,5 +50,5 @@ add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERR
                                       ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES} ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES}
                                       ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES} ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES})
 
-target_link_libraries(terralib_unittest_core terralib_mod_core
+target_link_libraries(terralib_unittest_core terralib_mod_core 
                                              ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

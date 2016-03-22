@@ -28,40 +28,48 @@
  */
 
 // TerraLib
+#include "../../common/Translator.h"
+#include "../Exception.h"
 #include "URI.h"
 
-te::core::URI::URI(const string_type &uri)
+te::core::URI::URI()
+  : isValid_(false)
+{
+}
+
+te::core::URI::URI(string_type uri)
   : uri_(uri), isValid_(false)
 {
-  parse();
-}
-
-template <typename InputIter, class Alloc >
-te::core::URI::URI(const InputIter &first, const InputIter &last, const Alloc &alloc)
-{
-
-}
-
-template <class Source, class Alloc >
-te::core::URI::URI(const Source& source, const Alloc& alloc)
-{
-
+  try
+  {
+    parse();
+  }
+  catch(te::Exception& e)
+  {
+    std::string messageError = TE_TR("Error in URI! \n\n Details: \n");
+    messageError.append(e.what());
+    throw URIException() << ErrorDescription(messageError);
+  }
 }
 
 te::core::URI::URI(const URI& other)
   : uri_(other.uri_)
 {
-  parse();
+  try
+  {
+    parse();
+  }
+  catch(te::Exception& e)
+  {
+    std::string messageError = TE_TR("Error in URI! \n\n Details: \n");
+    messageError.append(e.what());
+    throw URIException() << ErrorDescription(messageError);
+  }
 }
 
 te::core::URI::URI(URI&& other) noexcept
 {
   // VINICIUS:
-}
-
-te::core::URI::~URI()
-{
-
 }
 
 te::core::URI& te::core::URI::operator=(const te::core::URI& other)
@@ -78,7 +86,18 @@ te::core::URI& te::core::URI::operator=(te::core::URI&& other) noexcept
 void te::core::URI::swap(URI& other) noexcept
 {
   boost::swap(uri_, other.uri_);
-  other.parse();
+
+  try
+  {
+    other.parse();
+  }
+  catch(te::Exception& e)
+  {
+    std::string messageError = TE_TR("Error in URI! \n\n Details: \n");
+    messageError.append(e.what());
+    throw URIException() << ErrorDescription(messageError);
+  }
+
   boost::swap(isValid_, other.isValid_);
 }
 
@@ -97,7 +116,7 @@ void te::core::URI::parseScheme(const_iterator& begin_it, const_iterator end_it)
   const_iterator it = begin_it;
 
   if(it == end_it)
-    return;
+    throw URIException() << ErrorDescription("Can't find scheme!");
 
   // Find scheme
   for(; it <= end_it; it++)
@@ -112,6 +131,9 @@ void te::core::URI::parseScheme(const_iterator& begin_it, const_iterator end_it)
       break;
     }
   }
+
+  if(!uriParts_.scheme || scheme() == "")
+    throw URIException() << ErrorDescription("Can't find scheme!");
 }
 
 void te::core::URI::parseUserInfo(const_iterator& begin_it, const_iterator end_it)
@@ -170,7 +192,7 @@ void te::core::URI::parseHost(const_iterator& begin_it, const_iterator end_it)
   if(it == end_it)
     return;
 
-  if(!uriParts_.hier_part.user_info)
+  if(!uriParts_.hier_part.user_info || userInfo() == "")
   {
     //  Check the two "/"
     it++;
@@ -315,33 +337,44 @@ void te::core::URI::parseFragment(const_iterator& begin_it, const_iterator end_i
   }
 }
 
-bool te::core::URI::parse()
+void te::core::URI::parse()
 {
   isValid_ = false;
+  URIParts<const_iterator> parts;
+  uriParts_ = parts;
 
   // Get uri_ begin
   const_iterator it = begin();
 
-  // Try to find scheme until the end of uri_
-  parseScheme(it, end());
-
-  if(!uriParts_.scheme)
-    return false;
-
-  parseUserInfo(it, end());
-  parseHost(it, end());
-  parsePort(it, end());
-  parsePath(it, end());
-  parseQuery(it, end());
-  parseFragment(it, end());
+  try
+  {
+    // Try to find scheme until the end of uri_
+    parseScheme(it, end());
+    parseUserInfo(it, end());
+    parseHost(it, end());
+    parsePort(it, end());
+    parsePath(it, end());
+    parseQuery(it, end());
+    parseFragment(it, end());
+  }
+  catch(te::Exception& e)
+  {
+    throw;
+  }
+  catch(...)
+  {
+    throw URIException() << ErrorDescription("Unknow error on te::core::URI!");
+  }
 
   if(!uriParts_.hier_part.host && !uriParts_.hier_part.path)
-    return false;
+    throw URIException() << ErrorDescription("Invalid URI!");
+
+  if(host() == "" && path() == "")
+    throw URIException() << ErrorDescription("Invalid URI!");
 
   uriParts_.update();
 
   isValid_ = true;
-  return true;
 }
 
 te::core::URI::string_type te::core::URI::uri() const
@@ -396,4 +429,9 @@ te::core::URI::string_type te::core::URI::fragment() const
   const_range_type range = fragment_range();
   return range ? string_type(boost::begin(range), boost::end(range))
                : string_type();
+}
+
+bool te::core::URI::isValid()
+{
+  return isValid_;
 }

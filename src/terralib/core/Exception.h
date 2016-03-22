@@ -40,6 +40,9 @@ namespace te
     //! Base exception class for TerraLib Core Runtime Library.
     struct Exception: virtual te::Exception { };
 
+    //! Base exception for DataRetrieverWCS
+    struct URIException : virtual Exception { };
+
   }  // end namespace core
 }    // end namespace te
 
