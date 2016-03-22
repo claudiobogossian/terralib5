@@ -50,6 +50,7 @@
 #include "../dataaccess/query/SelectExpression.h"
 #include "../dataaccess/query/SubSelect.h"
 #include "../dataaccess/query/ST_Difference.h"
+#include "../dataaccess/query/ST_Dump.h"
 #include "../dataaccess/query/ST_Intersects.h"
 #include "../dataaccess/query/ST_IsEmpty.h"
 #include "../dataaccess/query/ST_Multi.h"
@@ -84,16 +85,6 @@
 
 te::vp::Difference::Difference()
 {
-}
-
-bool te::vp::Difference::getSpecificParams()
-{
-  return m_copyInputColumns;
-}
-
-void te::vp::Difference::setSpecificParams(bool copyInputColumns)
-{
-  m_copyInputColumns = copyInputColumns;
 }
 
 bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
@@ -149,7 +140,7 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
   DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
 
 // Geometry type for the output data.
-  te::gm::GeomType outputGeomType = setGeomResultType(inputGeomProp->getGeometryType());
+  te::gm::GeomType outputGeomType = setGeomResultType(inputGeomProp->getGeometryType(), mainParams->isCollection());
 
 // Create output dataset in memory.
   std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
@@ -204,13 +195,24 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
     if (report.empty())
     {
 // Insert the current geometry into item;
-      if (geom->getGeomTypeId() != outputGeomType)
-        geom.reset(setGeometryType(geom.release()));
+      std::vector<te::gm::Geometry*> geomVec;
+      
+      if (mainParams->isCollection())
+        geomVec.push_back(geom.release());
+      else
+        te::gm::Multi2Single(geom.release(), geomVec);
 
-      item->setGeometry(geomProp->getName(), geom.release()); 
+      for (std::size_t g = 0; g < geomVec.size(); ++g)
+      {
+        if (!te::vp::IsMultiType(geomVec[g]->getGeomTypeId()) && mainParams->isCollection())
+          geomVec[g] = setGeomAsMulti(geomVec[g]);
+
+        std::auto_ptr<te::mem::DataSetItem> currentItem = item->clone();
+        currentItem->setGeometry(geomProp->getName(), geomVec[g]);
 
 // Insert this item into Output dataSet;
-      outputDataSet->add(item.release());
+        outputDataSet->add(currentItem.release());
+      }
 
       continue;
     }
@@ -234,13 +236,24 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
     if (!geom->isEmpty())
     {
 // Insert the current geometry into item;
-      if (geom->getGeomTypeId() != outputGeomType)
-        geom.reset(setGeometryType(geom.release()));
-      
-      item->setGeometry(geomProp->getName(), geom.release());
+      std::vector<te::gm::Geometry*> geomVec;
+
+      if (mainParams->isCollection())
+        geomVec.push_back(geom.release());
+      else
+        te::gm::Multi2Single(geom.release(), geomVec);
+
+      for (std::size_t g = 0; g < geomVec.size(); ++g)
+      {
+        if (!te::vp::IsMultiType(geomVec[g]->getGeomTypeId()) && mainParams->isCollection())
+          geomVec[g] = setGeomAsMulti(geomVec[g]);
+
+        std::auto_ptr<te::mem::DataSetItem> currentItem = item->clone();
+        currentItem->setGeometry(geomProp->getName(), geomVec[g]);
 
 // Insert this item into Output dataSet;
-      outputDataSet->add(item.release());
+        outputDataSet->add(currentItem.release());
+      }
     }
   }
 
@@ -360,10 +373,20 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   te::da::Expression* e_coalesce = new te::da::Coalesce(e_difference,
     new te::da::PropertyName(aliasInput + "." + geom_input->getName()));
 
-  te::da::Expression* e_multi = new te::da::ST_Multi(*e_coalesce);
+  if (mainParams->isCollection())
+  {
+    te::da::Expression* e_multi = new te::da::ST_Multi(*e_coalesce);
 
-  te::da::Field* f_multi = new te::da::Field(*e_multi, "geom");
-  fieldsExpressions->push_back(f_multi);
+    te::da::Field* f_multi = new te::da::Field(*e_multi, "geom");
+    fieldsExpressions->push_back(f_multi);
+  }
+  else
+  {
+    te::da::Expression* e_dump = new te::da::ST_Dump(*e_coalesce);
+
+    te::da::Field* f_dump = new te::da::Field(*e_dump, "geom");
+    fieldsExpressions->push_back(f_dump);
+  }
 
 // FROM clause - This from clause is for input layer.
   if (!subSelectInput)
@@ -467,38 +490,19 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 
     std::string outputDsName = mainParams->getOutputDataSetName();
 
-    std::auto_ptr<te::da::DataSet> outDset(updateGeomType(outDataSetType.get(), dsQuery.release()));
-
-    outDset->moveBeforeFirst();
+    dsQuery->moveBeforeFirst();
 
     if (outputDataSource->getType() == "OGR")
     {
-      outputDataSource->add(outputDsName, outDset.get(), options);
+      outputDataSource->add(outputDsName, dsQuery.get(), options);
     }
     else
     {
-      t->add(outputDsName, outDset.get(), options);
+      t->add(outputDsName, dsQuery.get(), options);
       t->commit();
     }
   }
 
-  return true;
-}
-
-bool te::vp::Difference::persistsDataSet()
-{
-  return true;
-}
-
-bool te::vp::Difference::validMemoryParams(te::vp::AlgorithmParams* mainParams)
-{
-  //TODO - VALID ALL MEMORY PARAMETERS.
-  return true;
-}
-
-bool te::vp::Difference::validQueryParams(te::vp::AlgorithmParams* mainParams)
-{
-  //TODO - VALID ALL QUERY PARAMETERS.
   return true;
 }
 
@@ -513,94 +517,14 @@ std::vector<std::string> te::vp::Difference::getPropNames(const std::map<std::st
       dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
 
     std::string columnName = sd->getValue();
-    
+
     if (!columnName.empty())
       propNames.push_back(columnName);
-
+    
     ++it;
   }
 
   return propNames;
-}
-
-te::da::DataSet* te::vp::Difference::updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds)
-{
-  te::mem::DataSet* dsMem = new te::mem::DataSet(dsType);
-
-  std::size_t type = 0;
-  std::vector<te::dt::Property*> props = dsType->getProperties();
-
-  int pk = 0;
-  while (ds->moveNext())
-  {
-    std::string propName;
-    te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem);
-
-    dsItem->setInt32(0, pk);
-
-    for (std::size_t i = 1; i < props.size(); ++i)
-    {
-      type = props[i]->getType();
-      propName = props[i]->getName();
-
-      if (type != te::dt::GEOMETRY_TYPE)
-      {
-        if (!ds->isNull(propName))
-        {
-          std::auto_ptr<te::dt::AbstractData> value = ds->getValue(propName);
-          dsItem->setValue(i, value.release());
-        }
-      }
-      else
-      {
-        std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(propName);
-        std::auto_ptr<te::gm::GeometryProperty> geomProp((te::gm::GeometryProperty*)props[i]->clone());
-
-        if (geomProp->getGeometryType() == te::gm::MultiPolygonType)
-        {
-          if (geom->getGeomTypeId() == te::gm::MultiPolygonType)
-          {
-            dsItem->setGeometry(i, geom.release());
-          }
-          else if (geom->getGeomTypeId() == te::gm::PolygonType)
-          {
-            std::auto_ptr<te::gm::GeometryCollection> newGeom(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
-            newGeom->add(geom.release());
-            dsItem->setGeometry(i, newGeom.release());
-          }
-        }
-        else if (geomProp->getGeometryType() == te::gm::MultiLineStringType)
-        {
-          if (geom->getGeomTypeId() == te::gm::MultiLineStringType)
-          {
-            dsItem->setGeometry(i, geom.release());
-          }
-          else if (geom->getGeomTypeId() == te::gm::LineStringType)
-          {
-            std::auto_ptr<te::gm::GeometryCollection> newGeom(new te::gm::GeometryCollection(0, te::gm::MultiLineStringType, geom->getSRID()));
-            newGeom->add(geom.release());
-            dsItem->setGeometry(i, newGeom.release());
-          }
-        }
-        else if (geomProp->getGeometryType() == te::gm::MultiPointType)
-        {
-          if (geom->getGeomTypeId() == te::gm::MultiPointType)
-          {
-            dsItem->setGeometry(i, geom.release());
-          }
-          else if (geom->getGeomTypeId() == te::gm::PointType)
-          {
-            std::auto_ptr<te::gm::GeometryCollection> newGeom(new te::gm::GeometryCollection(0, te::gm::MultiPointType, geom->getSRID()));
-            newGeom->add(geom.release());
-            dsItem->setGeometry(i, newGeom.release());
-          }
-        }
-      }
-    }
-    ++pk;
-    dsMem->add(dsItem);
-  }
-  return dsMem;
 }
 
 te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmParams* mainParams)
@@ -660,7 +584,7 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
 
     te::dt::SimpleProperty* currentProperty = new te::dt::SimpleProperty(columnName, prop->getType());
     outputDataSetType->add(currentProperty);
-
+    
     ++it;
   }
 
@@ -669,46 +593,36 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
 
   te::gm::GeometryProperty* intputGeomProp = te::da::GetFirstGeomProperty(dsType);
-  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(dsType)->getGeometryType());
-  newGeomProp->setGeometryType(newType);
+
+  te::gm::GeomType type = setGeomResultType(te::da::GetFirstGeomProperty(dsType)->getGeometryType(), mainParams->isCollection());
+  newGeomProp->setGeometryType(type);
+
   newGeomProp->setSRID(intputGeomProp->getSRID());
+
   outputDataSetType->add(newGeomProp);
 
   return outputDataSetType;
 }
 
-te::gm::GeomType te::vp::Difference::setGeomResultType(te::gm::GeomType firstGeom)
+te::gm::GeomType te::vp::Difference::setGeomResultType(const te::gm::GeomType& geomType, const bool& isCollection)
 {
-  if ((firstGeom == te::gm::PointType) ||
-    (firstGeom == te::gm::PointZType) ||
-    (firstGeom == te::gm::PointMType) ||
-    (firstGeom == te::gm::PointZMType) ||
-    (firstGeom == te::gm::PointKdType) ||
-
-    (firstGeom == te::gm::MultiPointType) ||
-    (firstGeom == te::gm::MultiPointZType) ||
-    (firstGeom == te::gm::MultiPointMType) ||
-    (firstGeom == te::gm::MultiPointZMType))
-
-    return te::gm::MultiPointType;
-
-  else if ((firstGeom == te::gm::LineStringType) ||
-    (firstGeom == te::gm::LineStringZType) ||
-    (firstGeom == te::gm::LineStringMType) ||
-    (firstGeom == te::gm::LineStringZMType) ||
-
-    (firstGeom == te::gm::MultiLineStringType) ||
-    (firstGeom == te::gm::MultiLineStringZType) ||
-    (firstGeom == te::gm::MultiLineStringMType) ||
-    (firstGeom == te::gm::MultiLineStringZMType))
-
-    return te::gm::MultiLineStringType;
-
+  if (isCollection)
+  {
+    if (te::vp::IsMultiType(geomType))
+      return geomType; 
+    else
+      return te::vp::GetMultiType(geomType);
+  }
   else
-    return te::gm::MultiPolygonType;
+  {
+    if (te::vp::IsMultiType(geomType))
+      return te::vp::GetSimpleType(geomType);
+    else
+      return geomType;
+  }
 }
 
-te::gm::Geometry* te::vp::Difference::setGeometryType(te::gm::Geometry* geom)
+te::gm::Geometry* te::vp::Difference::setGeomAsMulti(te::gm::Geometry* geom)
 {
 
   switch (geom->getGeomTypeId())

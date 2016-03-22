@@ -63,7 +63,8 @@ namespace te
       AlgorithmParams(const std::vector<te::vp::InputParams>& inputParams,
                       te::da::DataSourcePtr outputDataSource,
                       const std::string& outputDataSetName,
-                      const std::map<std::string, te::dt::AbstractData*>& specificParams);
+                      const std::map<std::string, te::dt::AbstractData*>& specificParams,
+                      const bool& isCollection);
       
       /*! \brief Destructor. */
       ~AlgorithmParams();
@@ -88,12 +89,18 @@ namespace te
 
       void setSpecificParams(const std::map<std::string, te::dt::AbstractData*>& specificParams);
 
+
+      const bool& isCollection();
+
+      void setCollection(const bool& isCollection);
+
     protected:
 
       std::vector<te::vp::InputParams> m_inputParams;
       te::da::DataSourcePtr m_outputDataSource;
       std::string m_outputDataSetName;
       std::map<std::string, te::dt::AbstractData*> m_specificParams;
+      bool m_isCollection;
     };
   }
 }
