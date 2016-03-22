@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file te/core/URI.cpp
+  \file terralib/core/URI.cpp
 
   \brief URI.
 
@@ -28,9 +28,10 @@
  */
 
 // TerraLib
+#include "URI.h"
 #include "../../common/Translator.h"
 #include "../Exception.h"
-#include "URI.h"
+
 
 te::core::URI::URI()
   : isValid_(false)
@@ -67,10 +68,9 @@ te::core::URI::URI(const URI& other)
   }
 }
 
-te::core::URI::URI(URI&& other) noexcept
-{
-  // VINICIUS:
-}
+//te::core::URI::URI(URI&& other) noexcept
+//{
+//}
 
 te::core::URI& te::core::URI::operator=(const te::core::URI& other)
 {
@@ -78,10 +78,10 @@ te::core::URI& te::core::URI::operator=(const te::core::URI& other)
   return *this;
 }
 
-te::core::URI& te::core::URI::operator=(te::core::URI&& other) noexcept
-{
-  // VINICIUS:
-}
+//te::core::URI& te::core::URI::operator=(te::core::URI&& other) noexcept
+//{
+//
+//}
 
 void te::core::URI::swap(URI& other) noexcept
 {

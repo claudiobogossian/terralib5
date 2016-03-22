@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE( test_partial_adress2 )
 
 BOOST_AUTO_TEST_CASE( test_pgsql )
 {
-  std::string address("pgsql://gribeiro:secreto@atlas.dpi.inpe.br:5433/bdqueimadas?client_encoding=UTF8max_connections=20");
+  std::string address("pgsql://gribeiro:secreto@atlas.dpi.inpe.br:5433/bdqueimadas?client_encoding=UTF8&max_connections=20");
 
   te::core::URI uri(address);
 
