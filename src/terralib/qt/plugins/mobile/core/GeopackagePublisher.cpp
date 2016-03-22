@@ -232,7 +232,7 @@ void te::qt::plugins::terramobile::GeopackagePublisher::downloadGeopackageFile(s
   }
 }
 
-void te::qt::plugins::terramobile::GeopackagePublisher::uploadGeopackageFile(std::string url, std::string filePath)
+void te::qt::plugins::terramobile::GeopackagePublisher::uploadGeopackageFile(std::string url, std::string filePath, std::string fileName)
 {
   url += "/uploadproject";
 
@@ -257,6 +257,12 @@ void te::qt::plugins::terramobile::GeopackagePublisher::uploadGeopackageFile(std
     &lastptr,
     CURLFORM_COPYNAME, "password",
     CURLFORM_COPYCONTENTS, "password",
+    CURLFORM_END);
+
+  curl_formadd(&formpost,
+    &lastptr,
+    CURLFORM_COPYNAME, "fileName",
+    CURLFORM_COPYCONTENTS, fileName.c_str(),
     CURLFORM_END);
 
   curl_formadd(&formpost,

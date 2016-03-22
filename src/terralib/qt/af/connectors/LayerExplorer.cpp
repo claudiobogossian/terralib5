@@ -210,8 +210,10 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       
       QAction* action = e->m_action;
 
-      //Revisar: Fred
-//      m_explorer->add(action, "", e->m_itemType.c_str(), m_explorer->getMenuSelectionType(e->m_menuSelectionType));
+      if (e->m_itemType == "RASTER_LAYER_ITEM")
+      {
+        m_explorer->addRasterLayerAction(action);
+      }
     }
     break;
 
@@ -219,8 +221,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     {
       te::qt::af::evt::LayerPopUpRemoveAction* e = static_cast<te::qt::af::evt::LayerPopUpRemoveAction*>(evt);
 
-      //Revisar: Fred
-//      m_explorer->getTreeView()->remove(e->m_action);
+      m_explorer->removeAction(e->m_action);
     }
     break;
 

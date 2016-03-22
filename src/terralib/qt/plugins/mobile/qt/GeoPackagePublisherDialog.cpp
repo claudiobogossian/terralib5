@@ -184,10 +184,13 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
 
   std::string url = m_ui->m_exportServerLineEdit->text().toStdString();
 
+
+  QFileInfo file(m_ui->m_exportFileLineEdit->text());
+
   //export gpkg
   GeopackagePublisher gpkgPub;
 
-  gpkgPub.uploadGeopackageFile(url, pathFile);
+  gpkgPub.uploadGeopackageFile(url, pathFile, file.baseName().toStdString());
 }
 
 

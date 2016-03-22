@@ -26,12 +26,37 @@
 */
 
 // TerraLib
+#include <terralib/Exception.h>
 #include <terralib/core/uri/URI.h>
 
 // STL
+#include <cassert>
 #include <cstdlib>
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
+  try
+  {
+    te::core::URI uri("http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
+
+    assert(uri.scheme() == "http");
+    assert(uri.host() == "www.dpi.inpe.br");
+    assert(uri.path() == "/terralib5/wiki/doku.php");
+    assert(uri.query() == "id=wiki:documentation:devguide");
+    assert(uri.fragment() == "modules");
+
+    if(!uri.isValid())
+    {
+      std::cout << "Uri isn't valid!" << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+  catch(te::Exception& e)
+  {
+    std::cout << e.what() << std::endl;
+    return EXIT_FAILURE;
+  }
+
   return EXIT_SUCCESS;
 }

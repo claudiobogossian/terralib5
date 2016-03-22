@@ -74,7 +74,7 @@ namespace te
 
             void downloadGeopackageFile(std::string url, GeopackageFile gpkgFile, std::string pathDir);
 
-            void uploadGeopackageFile(std::string url, std::string filePath);
+            void uploadGeopackageFile(std::string url, std::string filePath, std::string fileName);
 
           protected:
 
