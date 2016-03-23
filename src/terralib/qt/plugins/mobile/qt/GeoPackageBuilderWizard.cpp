@@ -202,6 +202,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     std::string dataSourceId = (*it)->getDataSourceId();
     te::da::DataSourceInfoPtr dsInfo = te::da::DataSourceInfoManager::getInstance().get(dataSourceId);
     te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
+    std::string dataSetName = dsType->getName();
 
     //check and add status column
     te::dt::Property* statusProp = dsType->getProperty(LAYER_GATHERING_STATUS_COLUMN);
@@ -239,6 +240,10 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
       aux = (*it)->getVisibility();
     }
 
+    //fill obj_id and tm_status
+    te::qt::plugins::terramobile::fillExtraColumns(ds.get(), dataSetName);
+
+    //export
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
 
     m_outputPage->appendLogMesssage("Exporting gathering layer " + dsType->getName());

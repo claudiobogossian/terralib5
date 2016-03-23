@@ -121,7 +121,8 @@ std::auto_ptr<te::da::DataSet> te::gpkg::Transactor::getDataSet(const std::strin
 
   GDALDataset *poDS = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
 
-  OGRLayer* l = poDS->GetLayerByName(name.c_str());
+  std::string sql = "SELECT FID, * FROM \"" + name + "\"";
+  OGRLayer* l = poDS->ExecuteSQL(sql.c_str(), 0, 0);
   
   if(l == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source."));
@@ -142,7 +143,11 @@ std::auto_ptr<te::da::DataSet> te::gpkg::Transactor::getDataSet(const std::strin
   
   GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
 
-  OGRLayer* layer = ds->GetLayerByName(name.c_str());
+  if (!ds)
+    return std::auto_ptr<te::da::DataSet>();
+
+  std::string sql = "SELECT FID, * FROM \"" + name + "\"";
+  OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source."));
@@ -165,7 +170,11 @@ std::auto_ptr<te::da::DataSet> te::gpkg::Transactor::getDataSet(const std::strin
   
   GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
 
-  OGRLayer* layer = ds->GetLayerByName(name.c_str());
+  if (!ds)
+    return std::auto_ptr<te::da::DataSet>();
+
+  std::string sql = "SELECT FID, * FROM \"" + name + "\"";
+  OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source."));
@@ -311,21 +320,25 @@ std::auto_ptr<te::da::DataSetType> te::gpkg::Transactor::getDataSetType(const st
   
   GDALDataset *poDS = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
 
-  OGRLayer* l = poDS->GetLayerByName(name.c_str());
+  std::string sql("SELECT FID, * FROM \"");
+  sql += name + "\"";
+
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l==0)
     return std::auto_ptr<te::da::DataSetType>();
+
+  const char* colIdName = l->GetFIDColumn();
+
+  if (colIdName == 0 || colIdName[0] == '\0')
+    colIdName = "FID";
+
+  int pos = l->GetLayerDefn()->GetFieldIndex(colIdName);
 
   std::auto_ptr<te::da::DataSetType> type(Convert2TerraLib(l->GetLayerDefn()));
 
   type->setName(name);
 
-  const char* colIdName = l->GetFIDColumn();
-
-  if(colIdName == 0 || colIdName[0] == '\0')
-    colIdName = "FID";
-
-  int pos = l->GetLayerDefn()->GetFieldIndex(colIdName);
   if(pos >= 0)
   {
     te::da::PrimaryKey* pk = new te::da::PrimaryKey(colIdName, type.get());
@@ -367,9 +380,10 @@ boost::ptr_vector<te::dt::Property> te::gpkg::Transactor::getProperties(const st
   if (!m_ogrDs->getOGRDataSource())
     return ps;
 
-  GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
-  OGRLayer* l = ds->GetLayerByName(datasetName.c_str());
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l!=0)
   {
@@ -393,10 +407,10 @@ std::auto_ptr<te::dt::Property> te::gpkg::Transactor::getProperty(const std::str
     return std::auto_ptr<te::dt::Property>();
 
   int idx = -1;
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
-  GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
-
-  OGRLayer* l = ds->GetLayerByName(datasetName.c_str());
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l != 0)
     idx = l->GetLayerDefn()->GetFieldIndex(name.c_str());
@@ -414,10 +428,10 @@ std::auto_ptr<te::dt::Property> te::gpkg::Transactor::getProperty(const std::str
     return std::auto_ptr<te::dt::Property>();
 
   std::auto_ptr<te::dt::Property> res;
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
-  GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
-
-  OGRLayer* l = ds->GetLayerByName(datasetName.c_str());
+  OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l != 0)
   {
@@ -441,10 +455,10 @@ std::vector<std::string> te::gpkg::Transactor::getPropertyNames(const std::strin
     return std::vector<std::string>();
   
   std::vector<std::string> res;
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
-  GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
-
-  OGRLayer* l = ds->GetLayerByName(datasetName.c_str());
+  OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l != 0)
   {
@@ -466,9 +480,10 @@ std::size_t te::gpkg::Transactor::getNumberOfProperties(const std::string& datas
   if (!ogrds)
     return 0;
 
-  GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
-  OGRLayer* l = ds->GetLayerByName(datasetName.c_str());
+  OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
   int res = 0;
 
@@ -488,11 +503,11 @@ bool te::gpkg::Transactor::propertyExists(const std::string& datasetName, const 
   if (!ogrds)
     return false;
 
-  GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
-
-  OGRLayer* l = ds->GetLayerByName(datasetName.c_str());
-
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
   bool res = false;
+
+  OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l != 0)
   {
@@ -631,10 +646,10 @@ std::auto_ptr<te::da::PrimaryKey> te::gpkg::Transactor::getPrimaryKey(const std:
     return std::auto_ptr<te::da::PrimaryKey>();
   
   std::auto_ptr<te::da::PrimaryKey> res;
+  std::string sql("SELECT FID, * FROM \"");
+  sql += datasetName + "\"";
 
-  GDALDataset *ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), GDAL_OF_READONLY | GDAL_OF_VECTOR, NULL, NULL, NULL);
-
-  OGRLayer* layer = ds->GetLayerByName(datasetName.c_str());
+  OGRLayer* layer = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer != 0)
   {
