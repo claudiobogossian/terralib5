@@ -30,6 +30,7 @@
 
 // TerraLib
 #include <terralib/core/uri/URI.h>
+#include <terralib/Exception.h>
 
 // Boost
 #include <boost/test/unit_test.hpp>
@@ -149,6 +150,24 @@ BOOST_AUTO_TEST_CASE( test_assignment )
   BOOST_CHECK(uri.query() == uri3.query());
   BOOST_CHECK(uri.fragment() == uri3.fragment());
 
+  return;
+}
+
+BOOST_AUTO_TEST_CASE( test_encode )
+{
+  std::string address("scheme://host/ ãõáé");
+  te::core::URI uri(address);
+
+  std::string encoded("scheme://host/%20%C3%A3%C3%B5%C3%A1%C3%A9");
+
+  BOOST_CHECK_EQUAL(uri.uri(), encoded);
+
+  return;
+}
+
+BOOST_AUTO_TEST_CASE( test_exceptions_NO_schema )
+{
+  BOOST_CHECK_THROW(te::core::URI uri("noschema"), te::Exception);
   return;
 }
 

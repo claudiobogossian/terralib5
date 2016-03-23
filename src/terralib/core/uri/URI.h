@@ -60,39 +60,15 @@ namespace te
 {
   namespace core
   {
-
-    enum class URIError
-    {
-      invalid_syntax,
-      invalid_uri,
-      invalid_scheme,
-      invalid_authoriry,
-      invalid_host,
-      invalid_port,
-      invalid_path,
-      invalid_query,
-      invalid_fragment,
-    };
-
-    enum class URIComparisonLevel
-    {
-      string_comparison,
-      case_normalization,
-      percent_encoding_normalization,
-      path_segment_normalization,
-      scheme_based_normalization,
-      protocol_based_normalization,
-    };
-
     class URI
     {
     public:
 
       // typedefs
       typedef std::string string_type;
-      typedef string_type::iterator iterator;
+//      typedef string_type::iterator iterator;
       typedef string_type::const_iterator const_iterator;
-      typedef std::iterator_traits<iterator>::value_type value_type;
+//      typedef std::iterator_traits<iterator>::value_type value_type;
       typedef boost::iterator_range<const_iterator> const_range_type;
 
       // constructors and destructor
@@ -108,14 +84,14 @@ namespace te
 
       URI(const URI& other);
 
-      URI(URI&& other) noexcept;
+      //      URI(URI&& other) noexcept;
 
       ~URI() = default;
 
       // assignment
       URI& operator=(const URI& other);
 
-      URI& operator=(URI&& other) noexcept;
+      //      URI& operator=(URI&& other) noexcept;
 
       // swap
       void swap(URI& other) noexcept;
@@ -160,7 +136,10 @@ namespace te
       string_type query() const;
       string_type fragment() const;
 
-      bool isValid();
+      bool isValid() const;
+
+      void encode();
+      string_type hex_to_letter(int i);
 
     private:
 

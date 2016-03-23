@@ -40,37 +40,15 @@ te::core::URI::URI()
 te::core::URI::URI(string_type uri)
   : uri_(uri), isValid_(false)
 {
-  try
-  {
-    parse();
-  }
-  catch(te::Exception& e)
-  {
-    std::string messageError = TE_TR("Error in URI! \n\n Details: \n");
-    messageError.append(e.what());
-    throw URIException() << ErrorDescription(messageError);
-  }
+  parse();
 }
 
 te::core::URI::URI(const URI& other)
   : uri_(other.uri_)
 {
-  try
-  {
-    parse();
-  }
-  catch(te::Exception& e)
-  {
-    std::string messageError = TE_TR("Error in URI! \n\n Details: \n");
-    messageError.append(e.what());
-    throw URIException() << ErrorDescription(messageError);
-  }
+  parse();
 }
 
-te::core::URI::URI(URI&& other) noexcept
-{
-  // VINICIUS:
-}
 
 te::core::URI& te::core::URI::operator=(const te::core::URI& other)
 {
@@ -78,26 +56,10 @@ te::core::URI& te::core::URI::operator=(const te::core::URI& other)
   return *this;
 }
 
-te::core::URI& te::core::URI::operator=(te::core::URI&& other) noexcept
-{
-  // VINICIUS:
-}
-
 void te::core::URI::swap(URI& other) noexcept
 {
   boost::swap(uri_, other.uri_);
-
-  try
-  {
-    other.parse();
-  }
-  catch(te::Exception& e)
-  {
-    std::string messageError = TE_TR("Error in URI! \n\n Details: \n");
-    messageError.append(e.what());
-    throw URIException() << ErrorDescription(messageError);
-  }
-
+  other.parse();
   boost::swap(isValid_, other.isValid_);
 }
 
@@ -343,28 +305,20 @@ void te::core::URI::parse()
   URIParts<const_iterator> parts;
   uriParts_ = parts;
 
+  encode();
+
   // Get uri_ begin
   const_iterator it = begin();
 
-  try
-  {
-    // Try to find scheme until the end of uri_
-    parseScheme(it, end());
-    parseUserInfo(it, end());
-    parseHost(it, end());
-    parsePort(it, end());
-    parsePath(it, end());
-    parseQuery(it, end());
-    parseFragment(it, end());
-  }
-  catch(te::Exception& e)
-  {
-    throw;
-  }
-  catch(...)
-  {
-    throw URIException() << ErrorDescription("Unknow error on te::core::URI!");
-  }
+  // Try to find scheme until the end of uri_
+  parseScheme(it, end());
+  parseUserInfo(it, end());
+  parseHost(it, end());
+  parsePort(it, end());
+  parsePath(it, end());
+  parseQuery(it, end());
+  parseFragment(it, end());
+
 
   if(!uriParts_.hier_part.host && !uriParts_.hier_part.path)
     throw URIException() << ErrorDescription("Invalid URI!");
@@ -431,7 +385,67 @@ te::core::URI::string_type te::core::URI::fragment() const
                : string_type();
 }
 
-bool te::core::URI::isValid()
+bool te::core::URI::isValid() const
 {
   return isValid_;
+}
+
+void te::core::URI::encode()
+{
+  string_type temp;
+
+  const_iterator it = boost::begin(uri_);
+
+  while(it != boost::end(uri_))
+  {
+    int ASCIIvalue = *it;
+
+    if(ASCIIvalue < 33 || ASCIIvalue > 126)
+    {
+      temp += '%';
+      temp += hex_to_letter((*it >> 4) & 0x0f);
+      temp += hex_to_letter(*it & 0x0f);
+    }
+    else
+      temp += *it;
+
+    it++;
+  }
+
+  uri_ = temp;
+}
+
+
+te::core::URI::string_type te::core::URI::hex_to_letter(int i)
+{
+  int ASCIIvalue = i;
+  te::core::URI::string_type value;
+
+  switch (ASCIIvalue) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    {
+      value = ASCIIvalue + '0';
+      return value;
+    }
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    default:
+    {
+      value = ASCIIvalue - 10 + 'A';
+      return value;
+    }
+  }
+  return te::core::URI::string_type();
 }
