@@ -67,6 +67,8 @@ namespace te
 
             std::string getGeoPackageFilePath();
 
+            std::string getGeoPackageDescription();
+
             bool useVisibleArea();
 
             void appendLogMesssage(std::string msg);

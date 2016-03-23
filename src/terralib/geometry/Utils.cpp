@@ -232,10 +232,15 @@ te::gm::Coord2D* te::gm::locateAlong(const LineString* line, double initial, dou
 void te::gm::Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms)
 {
   te::gm::GeometryCollection* gc = dynamic_cast<te::gm::GeometryCollection*>(g);
+  //gc->setSRID(g->getSRID());
   if (gc)
   {
     for (std::size_t i = 0; i < gc->getNumGeometries(); ++i)
-      Multi2Single(gc->getGeometryN(i), geoms);
+    {
+      te::gm::Geometry* currentGeom = gc->getGeometryN(i);
+      currentGeom->setSRID(gc->getSRID());
+      Multi2Single(currentGeom, geoms);
+    }
   }
   else
     geoms.push_back(g);

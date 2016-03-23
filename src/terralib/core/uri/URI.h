@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file te/core/URI.h
+  \file terralib/core/URI.h
 
   \brief A class for representing URIs (Uniform Resource Identifier).
 
@@ -115,7 +115,7 @@ namespace te
       // assignment
       URI& operator=(const URI& other);
 
-      URI& operator=(URI&& other) noexcept;
+      //URI& operator=(URI&& other) noexcept;
 
       // swap
       void swap(URI& other) noexcept;
