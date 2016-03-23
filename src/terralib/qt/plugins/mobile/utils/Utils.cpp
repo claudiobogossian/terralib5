@@ -32,9 +32,12 @@
 #include "../../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../datatype/SimpleData.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../gdal/Utils.h"
 #include "../../../../maptools/DataSetLayer.h"
+#include "../../../../memory/DataSet.h"
+#include "../../../../memory/DataSetItem.h"
 #include "../../../../raster/Interpolator.h"
 #include "../../../../raster/RasterFactory.h"
 #include "../../../../rp/Functions.h"
@@ -42,6 +45,10 @@
 #include "../core/form/Serializer.h"
 #include "../geopackage/Utils.h"
 #include "utils.h"
+
+//Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, te::da::DataSetType* dataType, std::auto_ptr<te::da::DataSet> dataset, std::string outFileName)
 {
@@ -215,7 +222,7 @@ std::auto_ptr<te::da::DataSource> te::qt::plugins::terramobile::createGeopackage
 
   //Layer Settings
   std::string sql1 = "CREATE TABLE IF NOT EXISTS tm_layer_settings";
-  sql1 += "(layer_name TEXT PRIMARY KEY NOT NULL, enabled BOOLEAN NOT NULL, position INTEGER NOT NULL UNIQUE, datasource_uri TEXT, ";
+  sql1 += "(layer_name TEXT PRIMARY KEY NOT NULL, enabled BOOLEAN NOT NULL, position INTEGER NOT NULL UNIQUE, datasource_uri TEXT, modified INTEGER NOT NULL DEFAULT(0), ";
   sql1 += "CONSTRAINT fk_layer_name FOREIGN KEY(LAYER_NAME) REFERENCES gpkg_contents(table_name)); ";
 
   //Layer style
@@ -223,7 +230,7 @@ std::auto_ptr<te::da::DataSource> te::qt::plugins::terramobile::createGeopackage
 
   //Layer Form
   std::string sql3 = "CREATE TABLE IF NOT EXISTS tm_layer_form ";
-  sql3 += "(tm_conf_id INTEGER PRIMARY KEY AUTOINCREMENT, gpkg_layer_identify TEXT NOT NULL, tm_form TEXT, tm_media_table TEXT, tm_state INTEGER  NOT NULL, ";
+  sql3 += "(tm_conf_id INTEGER PRIMARY KEY AUTOINCREMENT, gpkg_layer_identify TEXT NOT NULL, tm_form TEXT, tm_media_table TEXT, ";
   sql3 += "CONSTRAINT fk_layer_identify_id FOREIGN KEY (gpkg_layer_identify) REFERENCES gpkg_contents(table_name));";
   
   //General Settings
@@ -250,6 +257,9 @@ void te::qt::plugins::terramobile::exportToGPKG(te::map::AbstractLayerPtr layer,
   }
   else
   {
+
+    std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+
     if (extent.isValid())
     {
       std::string geomName = te::da::GetFirstGeomProperty(dsType.get())->getName();
@@ -412,6 +422,73 @@ std::vector<std::string> te::qt::plugins::terramobile::getItemNames(std::string 
   return names;
 }
 
+void te::qt::plugins::terramobile::fillExtraColumns(te::da::DataSource* ds, std::string dataSetName)
+{
+  std::auto_ptr<te::da::DataSetType> dsType = ds->getDataSetType(dataSetName);
 
+  te::mem::DataSet* dataSetMem = new te::mem::DataSet(dsType.get());
 
+  std::auto_ptr<te::da::DataSet> dataSet = ds->getDataSet(dataSetName);
 
+  dataSet->moveBeforeFirst();
+
+  while (dataSet->moveNext())
+  {
+    te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dataSetMem);
+
+    for (std::size_t t = 0; t < dataSet->getNumProperties(); ++t)
+    {
+      if (dataSet->getPropertyName(t) == LAYER_GATHERING_OBJID_COLUMN)
+      {
+        if (dataSet->isNull(t))
+        {
+          //Generating a unique id for the geopackage file
+          boost::uuids::basic_random_generator<boost::mt19937> gen;
+          boost::uuids::uuid u = gen();
+          std::string id_ds = boost::uuids::to_string(u);
+
+          dsItem->setValue(LAYER_GATHERING_OBJID_COLUMN, new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(id_ds));
+        }
+        else
+        {
+          dsItem->setValue(LAYER_GATHERING_OBJID_COLUMN, dataSet->getValue(t).release());
+        }
+      }
+      else if (dataSet->getPropertyName(t) == LAYER_GATHERING_STATUS_COLUMN)
+      {
+        dsItem->setValue(LAYER_GATHERING_STATUS_COLUMN, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(0));
+      }
+      else
+      {
+        dsItem->setValue(dataSet->getPropertyName(t), dataSet->getValue(t).release());
+      }
+    }
+    dataSetMem->add(dsItem);
+  }
+
+  std::vector<size_t> ids;
+  ids.push_back(0);
+
+  std::vector< std::set<int> > properties;
+  std::size_t dsSize = dataSetMem->size();
+
+  for (std::size_t t = 0; t < dsSize; ++t)
+  {
+    std::set<int> setPos;
+
+    for (std::size_t p = 0; p < dataSetMem->getNumProperties(); ++p)
+    {
+      if (dataSetMem->getPropertyName(p) == LAYER_GATHERING_STATUS_COLUMN)
+      {
+        setPos.insert(p);
+      }
+      else if (dataSetMem->getPropertyName(p) == LAYER_GATHERING_OBJID_COLUMN)
+      {
+        setPos.insert(p);
+      }
+    }
+    properties.push_back(setPos);
+  }
+
+  ds->update(dataSetName, dataSetMem, properties, ids);
+}

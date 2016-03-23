@@ -101,7 +101,7 @@ te::vp::DifferenceDialog::DifferenceDialog(QWidget* parent, Qt::WindowFlags f)
 // add controls
   m_ui->setupUi(this);
 
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-difference-hint").pixmap(48,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-difference-hint").pixmap(112, 48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   //add double list widget to this form
@@ -123,10 +123,10 @@ te::vp::DifferenceDialog::DifferenceDialog(QWidget* parent, Qt::WindowFlags f)
 
   connect(m_ui->m_inputLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputLayerComboBoxChanged(int)));
   connect(m_ui->m_differenceLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDifferenceLayerComboBoxChanged(int)));
-  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
   m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_difference.html");
@@ -382,6 +382,14 @@ std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getS
   return result;
 }
 
+bool te::vp::DifferenceDialog::isCollection()
+{
+  if (m_ui->m_singleRadioButton->isChecked())
+    return false;
+
+  return true;
+}
+
 void te::vp::DifferenceDialog::updateInputLayerComboBox()
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
@@ -563,6 +571,8 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(attributesVec[attPos].second)));
   }
 
+// Verify if the result is Single or Multi Geometry type
+  bool isCollection = this->isCollection();
 
 // Validade output repository.
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
@@ -745,6 +755,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setOutputDataSource(dsOGR);
       m_params->setOutputDataSetName(outputdataset);
       m_params->setSpecificParams(specificParams);
+      m_params->setCollection(isCollection);
 
       te::vp::Difference difference;
 
@@ -773,6 +784,15 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       }
 
       m_outputDatasource = te::da::DataSourceInfoManager::getInstance().get(dsOGR->getId());
+
+      if (!m_outputDatasource)
+      {
+        QMessageBox::information(this, "Difference", "The output data source can not be accessed.");
+
+        te::common::ProgressManager::getInstance().removeViewer(id);
+
+        return;
+      }
 
       delete m_params;
     }
@@ -807,6 +827,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setOutputDataSource(aux);
       m_params->setOutputDataSetName(outputdataset);
       m_params->setSpecificParams(specificParams);
+      m_params->setCollection(isCollection);
 
       te::vp::Difference difference;
 

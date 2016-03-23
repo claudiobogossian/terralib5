@@ -427,6 +427,39 @@ te::gm::GeomType te::vp::GetSimpleType(te::gm::GeomType geomType)
   }
 }
 
+te::gm::GeomType te::vp::GetMultiType(te::gm::GeomType geomType)
+{
+  switch (geomType)
+  {
+  case te::gm::LineStringType:
+    return te::gm::MultiLineStringType;
+  case te::gm::LineStringMType:
+    return te::gm::MultiLineStringMType;
+  case te::gm::LineStringZType:
+    return te::gm::MultiLineStringZType;
+  case te::gm::LineStringZMType:
+    return te::gm::MultiLineStringZMType;
+  case te::gm::PointType:
+    return te::gm::MultiPointType;
+  case te::gm::PointMType:
+    return te::gm::MultiPointMType;
+  case te::gm::PointZType:
+    return te::gm::MultiPointZType;
+  case te::gm::PointZMType:
+    return te::gm::MultiPointZMType;
+  case te::gm::PolygonType:
+    return te::gm::MultiPolygonType;
+  case te::gm::PolygonMType:
+    return te::gm::MultiPolygonMType;
+  case te::gm::PolygonZType:
+    return te::gm::MultiPolygonZType;
+  case te::gm::PolygonZMType:
+    return te::gm::MultiPolygonZMType;
+  default:
+    return te::gm::UnknownGeometryType;
+  }
+}
+
 te::da::DataSourcePtr te::vp::CreateOGRDataSource(std::string repository)
 {
   //create new data source

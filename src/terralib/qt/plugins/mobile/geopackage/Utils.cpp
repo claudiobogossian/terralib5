@@ -748,11 +748,10 @@ void te::gpkg::copyToGeopackage(te::rst::Raster* raster, std::string outFileName
       overviewsIndexes[(overViewIdx - 1)] = index;
     }
 
-    poDstDS->BuildOverviews("NEAREST", (int)levels, overviewsIndexes.get(), 0, NULL, NULL, NULL);
+    CPLErr returnValue = poDstDS->BuildOverviews("NEAREST", (int)levels, overviewsIndexes.get(), 0, NULL, NULL, NULL);
+    poDstDS->FlushCache();
   }
 
   CSLDestroy(papszOptions);
   GDALClose((GDALDatasetH)poDstDS);
 }
-
-
