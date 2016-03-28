@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE( test_partial_adress2 )
 
 BOOST_AUTO_TEST_CASE( test_pgsql )
 {
-  std::string address("pgsql://gribeiro:secreto@atlas.dpi.inpe.br:5433/bdqueimadas?client_encoding=UTF8&max_connections=20");
+  std::string address("pgsql://user:password@atlas.dpi.inpe.br:5433/bdqueimadas?client_encoding=UTF8&max_connections=20");
 
   te::core::URI uri(address);
 
@@ -336,12 +336,12 @@ BOOST_AUTO_TEST_CASE( test_pgsql )
   printURI(uri);
 
   BOOST_CHECK(uri.scheme() == "pgsql");
-  BOOST_CHECK(uri.user() == "gribeiro");
-  BOOST_CHECK(uri.password() == "secreto");
+  BOOST_CHECK(uri.user() == "user");
+  BOOST_CHECK(uri.password() == "password");
   BOOST_CHECK(uri.host() == "atlas.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "5433");
   BOOST_CHECK(uri.path() == "/bdqueimadas");
-  BOOST_CHECK(uri.query() == "client_encoding=UTF8max_connections=20");
+  BOOST_CHECK(uri.query() == "client_encoding=UTF8&max_connections=20");
   BOOST_CHECK(uri.fragment() == "");
 }
 
