@@ -78,6 +78,15 @@ namespace te
           */
           Canvas(QPaintDevice* device);
 
+          /*!
+          \brief It initializes a new Canvas associated with the given painter.
+
+          \param device The painter that will be associated to this canvas.
+
+          \note The canvas will NOT take the ownership of the given painter.
+          */
+          Canvas(QPainter* painter);
+
           /*! \brief Destructor. */
           ~Canvas();
 
@@ -477,7 +486,9 @@ namespace te
 
           QMatrix m_matrix;         //!< Matrix that transforms the world coordinate to device coordinate.
 
-          QPainter m_painter;       //!< The painter used to draw geometric objects.
+          QPainter* m_painter;       //!< The painter used to draw geometric objects.
+          QTransform m_painterTransform; //!< This transform holds the original transform of the painter. It is stored to be combined to the canvas matrix every time setWindow is called
+          bool m_isPainterOwner;     //!< Tells if canvas is the owner of the painter.
 
           bool m_isDeviceOwner;     //!< Tells if canvas is the owner of the paint device.
 
