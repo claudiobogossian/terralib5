@@ -108,12 +108,12 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onSynchronizePu
 
   te::da::DataSourcePtr outDs = te::da::GetDataSource(l->getDataSourceId());
 
-  te::qt::plugins::terramobile::GeoPackageSynchronizer gpSync;
-
-  gpSync.setInputParameters(dsGPKG.get(), inputDs, outDs.get(), outputDataSet);
-
   try
   {
+    te::qt::plugins::terramobile::GeoPackageSynchronizer gpSync;
+
+    gpSync.setInputParameters(dsGPKG.get(), inputDs, outDs.get(), outputDataSet);
+
     gpSync.synchronize();
   }
   catch(...)

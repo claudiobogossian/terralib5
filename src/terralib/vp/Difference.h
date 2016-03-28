@@ -62,36 +62,23 @@ namespace te
 
       virtual ~Difference() {}
 
-      bool getSpecificParams();
-
-      void setSpecificParams(bool copyInputColumns);
-
       bool executeMemory(te::vp::AlgorithmParams* mainParams);
 
       bool executeQuery(te::vp::AlgorithmParams* mainParams);
 
-      bool persistsDataSet();
-
-      bool validMemoryParams(te::vp::AlgorithmParams* mainParams);
-
-      bool validQueryParams(te::vp::AlgorithmParams* mainParams);
-
     protected:
-      
-      te::da::DataSet* updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds);
 
       std::vector<std::string> getPropNames(const std::map<std::string, te::dt::AbstractData*>& specificParams);
 
       te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
 
-      te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom);
+      te::gm::GeomType setGeomResultType(const te::gm::GeomType& geomType, const bool& isCollection);
 
-      te::gm::Geometry* setGeometryType(te::gm::Geometry* geom);
+      te::gm::Geometry* setGeomAsMulti(te::gm::Geometry* geom);
       
       // it defines the type of the result considering the input geometries being aggregated
       //te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
 
-      bool m_copyInputColumns;
       std::size_t m_SRID;
 
     private:

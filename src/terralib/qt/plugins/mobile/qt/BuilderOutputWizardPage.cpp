@@ -66,6 +66,16 @@ std::string te::qt::plugins::terramobile::BuilderOutputWizardPage::getGeoPackage
   return "";
 }
 
+//m_gpkgDescLineEdit
+
+std::string te::qt::plugins::terramobile::BuilderOutputWizardPage::getGeoPackageDescription()
+{
+  if (!m_ui->m_gpkgDescLineEdit->text().isEmpty())
+    return m_ui->m_gpkgDescLineEdit->text().toStdString();
+
+  return "";
+}
+
 bool te::qt::plugins::terramobile::BuilderOutputWizardPage::useVisibleArea()
 {
   return m_ui->m_visibleAreaCheckBox->isChecked();

@@ -382,6 +382,14 @@ std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getS
   return result;
 }
 
+bool te::vp::DifferenceDialog::isCollection()
+{
+  if (m_ui->m_singleRadioButton->isChecked())
+    return false;
+
+  return true;
+}
+
 void te::vp::DifferenceDialog::updateInputLayerComboBox()
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
@@ -563,6 +571,8 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(attributesVec[attPos].second)));
   }
 
+// Verify if the result is Single or Multi Geometry type
+  bool isCollection = this->isCollection();
 
 // Validade output repository.
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
@@ -745,6 +755,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setOutputDataSource(dsOGR);
       m_params->setOutputDataSetName(outputdataset);
       m_params->setSpecificParams(specificParams);
+      m_params->setCollection(isCollection);
 
       te::vp::Difference difference;
 
@@ -816,6 +827,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setOutputDataSource(aux);
       m_params->setOutputDataSetName(outputdataset);
       m_params->setSpecificParams(specificParams);
+      m_params->setCollection(isCollection);
 
       te::vp::Difference difference;
 

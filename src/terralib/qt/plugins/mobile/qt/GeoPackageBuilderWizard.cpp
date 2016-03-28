@@ -202,6 +202,7 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
     std::string dataSourceId = (*it)->getDataSourceId();
     te::da::DataSourceInfoPtr dsInfo = te::da::DataSourceInfoManager::getInstance().get(dataSourceId);
     te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
+    std::string dataSetName = dsType->getName();
 
     //check and add status column
     te::dt::Property* statusProp = dsType->getProperty(LAYER_GATHERING_STATUS_COLUMN);
@@ -239,6 +240,10 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
       aux = (*it)->getVisibility();
     }
 
+    //fill obj_id and tm_status
+    te::qt::plugins::terramobile::fillExtraColumns(ds.get(), dataSetName);
+
+    //export
     te::qt::plugins::terramobile::exportToGPKG(*it, dsGPKG.get(), gpkgName, m_extent);
 
     m_outputPage->appendLogMesssage("Exporting gathering layer " + dsType->getName());
@@ -340,6 +345,13 @@ bool te::qt::plugins::terramobile::GeoPackageBuilderWizard::execute()
 
   std::string insDate = "INSERT INTO tm_settings ('key', 'value') values ('creation_date','" + os.str() + "'); ";
   te::qt::plugins::terramobile::queryGPKG(insDate, dsGPKG.get());
+  
+  std::string gpkgDesc = m_outputPage->getGeoPackageDescription();
+  if (!gpkgDesc.empty())
+  {
+    std::string insDesc = "INSERT INTO tm_settings ('key', 'value') values ('description','" + gpkgDesc + "'); ";
+    te::qt::plugins::terramobile::queryGPKG(insDesc, dsGPKG.get());
+  }
 
   //Removing trigggers and tables that could generate problems on the mobile application
   std::vector<std::string> triggers = te::qt::plugins::terramobile::getItemNames("trigger", dsGPKG.get());
