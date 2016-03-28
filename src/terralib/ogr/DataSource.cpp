@@ -330,9 +330,9 @@ std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<
   return names;
 }
 
-std::vector<te::common::CharEncoding> te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
+std::vector<te::core::EncodingType> te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  return std::vector<te::common::CharEncoding>();
+  return std::vector<te::core::EncodingType>();
 }
 
 te::ogr::DataSource* te::ogr::Build()

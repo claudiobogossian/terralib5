@@ -384,19 +384,19 @@ QString te::qt::widgets::GetFilePathFromSettings(const QString& typeFile)
   return sett.value(key).toString();
 }
 
-QString te::qt::widgets::Convert2Qt(const std::string& text, const te::common::CharEncoding& encoding)
+QString te::qt::widgets::Convert2Qt(const std::string& text, const te::core::EncodingType& encoding)
 {
   try
   {
     switch(encoding)
     {
-      case te::common::UNKNOWN_CHAR_ENCODING:
+      case te::core::EncodingType::UNKNOWN:
         return text.c_str();
 
-      case te::common::UTF8:
+      case te::core::EncodingType::UTF8:
         return QString::fromUtf8(text.c_str());
 
-      case te::common::LATIN1:
+      case te::core::EncodingType::LATIN1:
         return QString::fromLatin1(text.c_str());
 
       // continues...
@@ -404,7 +404,7 @@ QString te::qt::widgets::Convert2Qt(const std::string& text, const te::common::C
       default:
       {
 #ifdef TERRALIB_CHARENCODING_ENABLED
-        std::string latin1 = te::common::CharEncodingConv::convert(text, encoding, te::common::LATIN1);
+        std::string latin1 = te::core::EncodingTypeConv::convert(text, encoding, te::common::LATIN1);
         return QString::fromLatin1(latin1.c_str());
 #else
         return text.c_str();

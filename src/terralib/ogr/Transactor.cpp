@@ -1241,7 +1241,7 @@ void te::ogr::Transactor::optimize(const std::map<std::string, std::string>& /*o
 {
 }
 
-te::common::CharEncoding te::ogr::Transactor::getEncoding()
+te::core::EncodingType te::ogr::Transactor::getEncoding()
 {
-  return te::common::LATIN1;
+  return te::core::EncodingType::LATIN1;
 }

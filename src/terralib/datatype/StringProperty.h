@@ -27,7 +27,7 @@
 #define __TERRALIB_DATATYPE_INTERNAL_STRINGPROPERTY_H
 
 // TerraLib
-#include "../common/CharEncodingConv.h"
+#include "../core/encoding/CharEncoding.h"
 #include "Enums.h"
 #include "SimpleProperty.h"
 
@@ -127,14 +127,14 @@ namespace te
 
           \return The string property character encoding.
         */
-        te::common::CharEncoding getCharEncoding() const { return m_ce; }
+        te::core::EncodingType getCharEncoding() const { return m_et; }
 
         /*!
           \brief It sets the string property character encoding.
 
           \param ce The character encoding type.
         */
-        void setCharEncoding(const te::common::CharEncoding& ce) { m_ce = ce; }
+        void setCharEncoding(const te::core::EncodingType& et) { m_et = et; }
 
         /*!
           \brief It returns a clone of the object.
@@ -149,7 +149,7 @@ namespace te
 
         std::size_t m_size;            //!< Maximum number of characters for a varying string or the number of characters for a fixed length string. No meaning for STRING.
         StringType m_strSubType;       //!< The sub-type of this string property.
-        te::common::CharEncoding m_ce; //!< The string property character encoding.
+        te::core::EncodingType m_et; //!< The string property character encoding.
     };
 
   } // end namespace dt

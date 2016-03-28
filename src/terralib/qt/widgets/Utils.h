@@ -27,7 +27,6 @@
 #define __TERRALIB_QTWIDGETS_INTERNAL_UTILS_H
 
 // TerraLib
-#include "../../common/CharEncodingConv.h"
 #include "../../color/RGBAColor.h"
 #include "../../geometry/Enums.h"
 #include "../../maptools/Enums.h"
@@ -315,7 +314,7 @@ namespace te
 
         \return The converted string.
       */
-      TEQTWIDGETSEXPORT QString Convert2Qt(const std::string& text, const te::common::CharEncoding& encoding);
+      TEQTWIDGETSEXPORT QString Convert2Qt(const std::string& text, const te::core::EncodingType& encoding);
       
       /*!
         \brief Returns a disk raster file selection filter base on current supported formats.

@@ -27,8 +27,8 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_DATASET_H
 
 // TerraLib
-#include "../../common/CharEncodingConv.h"
 #include "../../common/Enums.h"
+#include "../../core/encoding/CharEncoding.h"
 #include "../../datatype/Array.h"
 #include "../../datatype/ByteArray.h"
 #include "../../datatype/DateTime.h"
@@ -174,7 +174,7 @@ namespace te
 
           \exception Exception It throws an exception if the property at position pos is not a textual property.
         */
-        virtual te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const = 0;
+        virtual te::core::EncodingType getPropertyCharEncoding(std::size_t i) const = 0;
 
         /*!
           \brief It returns the underlying dataset name of the property at position pos.
