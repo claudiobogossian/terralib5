@@ -41,7 +41,7 @@
 #include "../../../../rp/RasterHandler.h"
 #include "../core/form/Serializer.h"
 #include "../geopackage/Utils.h"
-#include "utils.h"
+#include "Utils.h"
 
 void exportVectortoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsGPKG, te::da::DataSetType* dataType, std::auto_ptr<te::da::DataSet> dataset, std::string outFileName)
 {
