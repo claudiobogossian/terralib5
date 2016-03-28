@@ -190,7 +190,7 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
   //export gpkg
   GeopackagePublisher gpkgPub;
 
-  gpkgPub.uploadGeopackageFile(url, pathFile, file.baseName().toStdString());
+  gpkgPub.uploadGeopackageFile(url, pathFile, file.fileName().toStdString());
 }
 
 
