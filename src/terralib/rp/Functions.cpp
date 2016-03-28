@@ -617,6 +617,59 @@ namespace te
       bandNames.push_back("WV2_MUL_8_NIR2");
       bandNames.push_back("WV2_PAN");
 
+      bandNames.push_back("AWIFS_RED");
+      bandNames.push_back("AWIFS_GREEN");
+      bandNames.push_back("AWIFS_NIR");
+      bandNames.push_back("AWIFS_MIR");
+
+      bandNames.push_back("RAPID_EYE_BLUE");
+      bandNames.push_back("RAPID_EYE_GREEN");
+      bandNames.push_back("RAPID_EYE_RED");
+      bandNames.push_back("RAPID_EYE_REDEDGE");
+      bandNames.push_back("RAPID_EYE_NIR");
+
+      bandNames.push_back("LISS3_GREEN");
+      bandNames.push_back("LISS3_RED");
+      bandNames.push_back("LISS3_NEAR_INFRARED");
+      bandNames.push_back("LISS3_SHORTWAVE_INFRARED");
+
+      bandNames.push_back("DMC_NIR");
+      bandNames.push_back("DMC_RED");
+      bandNames.push_back("DMC_GREEN");
+
+      bandNames.push_back("Landsat8-OLI1_COASTAL_AEROSOL");
+      bandNames.push_back("Landsat8-OLI2_BLUE");
+      bandNames.push_back("Landsat8-OLI3_GREEN");
+      bandNames.push_back("Landsat8-OLI4_RED");
+      bandNames.push_back("Landsat8-OLI5_NIR");
+      bandNames.push_back("Landsat8-OLI6_SWIR1");
+      bandNames.push_back("Landsat8-OLI7_SWIR2");
+      bandNames.push_back("Landsat8-OLI8_PAN");
+      bandNames.push_back("Landsat8-OLI9_CIRRUS");
+
+      bandNames.push_back("Landsat8-TIRS1");
+      bandNames.push_back("Landsat8-TIRS2");
+
+      bandNames.push_back("CBERS4_PAN_PAN");
+      bandNames.push_back("CBERS4_PAN_GREEN");
+      bandNames.push_back("CBERS4_PAN_RED");
+      bandNames.push_back("CBERS4_PAN_NIR");
+
+      bandNames.push_back("CBERS4_MUX_BLUE");
+      bandNames.push_back("CBERS4_MUX_GREEN");
+      bandNames.push_back("CBERS4_MUX_RED");
+      bandNames.push_back("CBERS4_MUX_NIR");
+
+      bandNames.push_back("CBERS4_IRS_PAN");
+      bandNames.push_back("CBERS4_IRS_SWIR_B10");
+      bandNames.push_back("CBERS4_IRS_SWIR_B11");
+      bandNames.push_back("CBERS4_IRS_TH");
+
+      bandNames.push_back("CBERS4_WFI_BLUE");
+      bandNames.push_back("CBERS4_WFI_GREEN");
+      bandNames.push_back("CBERS4_WFI_RED");
+      bandNames.push_back("CBERS4_WFI_NIR");
+
       return bandNames;
     }
 
@@ -656,6 +709,59 @@ namespace te
       BandInfo["WV2_MUL_7_NIR1"] = std::pair<double, double> (0.77, 0.895);
       BandInfo["WV2_MUL_8_NIR2"] = std::pair<double, double> (0.86, 0.104);
       BandInfo["WV2_PAN"] = std::pair<double, double> (0.45, 0.8);
+
+      BandInfo["AWIFS_RED"] = std::pair<double, double>(0.62, 0.68);
+      BandInfo["AWIFS_GREEN"] = std::pair<double, double>(0.52, 0.59);
+      BandInfo["AWIFS_NIR"] = std::pair<double, double>(0.77, 0.86);
+      BandInfo["AWIFS_MIR"] = std::pair<double, double>(1.55, 1.70);
+
+      BandInfo["RAPID_EYE_BLUE"] = std::pair<double, double>(440.00, 510.00);
+      BandInfo["RAPID_EYE_GREEN"] = std::pair<double, double>(520.00, 590.00);
+      BandInfo["RAPID_EYE_RED"] = std::pair<double, double>(630.00, 685.00);
+      BandInfo["RAPID_EYE_REDEDGE"] = std::pair<double, double>(690.00, 730.00);
+      BandInfo["RAPID_EYE_NIR"] = std::pair<double, double>(760.00, 850.00);
+
+      BandInfo["LISS3_GREEN"] = std::pair<double, double>(0.52, 0.59);
+      BandInfo["LISS3_RED"] = std::pair<double, double>(0.62, 0.68);
+      BandInfo["LISS3_NEAR_INFRARED"] = std::pair<double, double>(0.77, 0.86);
+      BandInfo["LISS3_SHORTWAVE_INFRARED"] = std::pair<double, double>(1.55, 1.70);
+
+      BandInfo["DMC_NIR"] = std::pair<double, double>(0.77, 0.90);
+      BandInfo["DMC_RED"] = std::pair<double, double>(0.63, 0.69);
+      BandInfo["DMC_GREEN"] = std::pair<double, double>(0.52, 0.60);
+
+      BandInfo["Landsat8-OLI1_COASTAL_AEROSOL"] = std::pair<double, double>(0.43, 0.45);
+      BandInfo["Landsat8-OLI2_BLUE"] = std::pair<double, double>(0.45, 0.51);
+      BandInfo["Landsat8-OLI3_GREEN"] = std::pair<double, double>(0.53, 0.59);
+      BandInfo["Landsat8-OLI4_RED"] = std::pair<double, double>(0.64, 0.67);
+      BandInfo["Landsat8-OLI5_NIR"] = std::pair<double, double>(0.85, 0.88);
+      BandInfo["Landsat8-OLI6_SWIR1"] = std::pair<double, double>(1.57, 1.65);
+      BandInfo["Landsat8-OLI7_SWIR2"] = std::pair<double, double>(2.11, 2.29);
+      BandInfo["Landsat8-OLI8_PAN"] = std::pair<double, double>(0.50, 0.68);
+      BandInfo["Landsat8-OLI9_CIRRUS"] = std::pair<double, double>(1.36, 1.38);
+
+      BandInfo["Landsat8-TIRS1"] = std::pair<double, double>(10.60, 11.19);
+      BandInfo["Landsat8-TIRS2"] = std::pair<double, double>(11.50, 12.51);
+
+      BandInfo["CBERS4_PAN_PAN"] = std::pair<double, double>(0.51, 0.85);
+      BandInfo["CBERS4_PAN_GREEN"] = std::pair<double, double>(0.52, 0.59);
+      BandInfo["CBERS4_PAN_RED"] = std::pair<double, double>(0.63, 0.69);
+      BandInfo["CBERS4_PAN_NIR"] = std::pair<double, double>(0.77, 0.89);
+
+      BandInfo["CBERS4_MUX_BLUE"] = std::pair<double, double>(0.45, 0.52);
+      BandInfo["CBERS4_MUX_GREEN"] = std::pair<double, double>(0.52, 0.59);
+      BandInfo["CBERS4_MUX_RED"] = std::pair<double, double>(0.63, 0.69);
+      BandInfo["CBERS4_MUX_NIR"] = std::pair<double, double>(0.77, 0.89);
+
+      BandInfo["CBERS4_IRS_PAN"] = std::pair<double, double>(0.50, 0.90);
+      BandInfo["CBERS4_IRS_SWIR_B10"] = std::pair<double, double>(1.55, 1.75);
+      BandInfo["CBERS4_IRS_SWIR_B11"] = std::pair<double, double>(2.08, 2.35);
+      BandInfo["CBERS4_IRS_TH"] = std::pair<double, double>(10.40, 12.50);
+
+      BandInfo["CBERS4_WFI_BLUE"] = std::pair<double, double>(0.45, 0.52);
+      BandInfo["CBERS4_WFI_GREEN"] = std::pair<double, double>(0.52, 0.59);
+      BandInfo["CBERS4_WFI_RED"] = std::pair<double, double>(0.63, 0.69);
+      BandInfo["CBERS4_WFI_NIR"] = std::pair<double, double>(0.77, 0.89);
 
     // needs more Band Info from other sensors/bands
 
@@ -711,6 +817,59 @@ namespace te
       DNBandInfo["WV2_MUL_7_NIR1"] = std::pair<double, double> (0.0, 2048.0);
       DNBandInfo["WV2_MUL_7_NIR2"] = std::pair<double, double> (0.0, 2048.0);
       DNBandInfo["WV2_PAN"] = std::pair<double, double> (0.0, 2048.0);
+
+      DNBandInfo["AWIFS_RED"] = std::pair<double, double>(0.0, 1024.0);
+      DNBandInfo["AWIFS_GREEN"] = std::pair<double, double>(0.0, 1024.0);
+      DNBandInfo["AWIFS_NIR"] = std::pair<double, double>(0.0, 1024.0);
+      DNBandInfo["AWIFS_MIR"] = std::pair<double, double>(0.0, 1024.0);
+
+      DNBandInfo["RAPID_EYE_BLUE"] = std::pair<double, double>(0.0, 4096.0);
+      DNBandInfo["RAPID_EYE_GREEN"] = std::pair<double, double>(0.0, 4096.0);
+      DNBandInfo["RAPID_EYE_RED"] = std::pair<double, double>(0.0, 4096.0);
+      DNBandInfo["RAPID_EYE_REDEDGE"] = std::pair<double, double>(0.0, 4096.0);
+      DNBandInfo["RAPID_EYE_NIR"] = std::pair<double, double>(0.0, 4096.0);
+
+      DNBandInfo["LISS3_GREEN"] = std::pair<double, double>(0.0, 128.0);
+      DNBandInfo["LISS3_RED"] = std::pair<double, double>(0.0, 128.0);
+      DNBandInfo["LISS3_NEAR_INFRARED"] = std::pair<double, double>(0.0, 128.0);
+      DNBandInfo["LISS3_SHORTWAVE_INFRARED"] = std::pair<double, double>(0.0, 128.0);
+
+      DNBandInfo["DMC_NIR"] = std::pair<double, double>(0.0, 1024.0);
+      DNBandInfo["DMC_RED"] = std::pair<double, double>(0.0, 1024.0);
+      DNBandInfo["DMC_GREEN"] = std::pair<double, double>(0.0, 1024.0);
+
+      DNBandInfo["Landsat8-OLI1_COASTAL_AEROSOL"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-OLI2_BLUE"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-OLI3_GREEN"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-OLI4_RED"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-OLI5_NIR"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-OLI6_SWIR1"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-OLI7_SWIR2"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-OLI8_PAN"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-OLI9_CIRRUS"] = std::pair<double, double>(0.0, 65536.0);
+
+      DNBandInfo["Landsat8-TIRS1"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["Landsat8-TIRS2"] = std::pair<double, double>(0.0, 65536.0);
+
+      DNBandInfo["CBERS4_PAN_PAN"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_PAN_GREEN"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_PAN_RED"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_PAN_NIR"] = std::pair<double, double>(0.0, 255.0);
+
+      DNBandInfo["CBERS4_MUX_BLUE"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_MUX_GREEN"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_MUX_RED"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_MUX_NIR"] = std::pair<double, double>(0.0, 255.0);
+
+      DNBandInfo["CBERS4_IRS_PAN"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_IRS_SWIR_B10"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_IRS_SWIR_B11"] = std::pair<double, double>(0.0, 255.0);
+      DNBandInfo["CBERS4_IRS_TH"] = std::pair<double, double>(0.0, 255.0);
+
+      DNBandInfo["CBERS4_WFI_BLUE"] = std::pair<double, double>(0.0, 1024.0);
+      DNBandInfo["CBERS4_WFI_GREEN"] = std::pair<double, double>(0.0, 1024.0);
+      DNBandInfo["CBERS4_WFI_RED"] = std::pair<double, double>(0.0, 1024.0);
+      DNBandInfo["CBERS4_WFI_NIR"] = std::pair<double, double>(0.0, 1024.0);
 
     // needs more Band Info from other sensors/bands
 
