@@ -20,38 +20,45 @@
 /*!
   \file terralib/core/encoding/CharEncoding.cpp
 
-  \brief A module for character enconding/decoding handling.
+  \brief A class for handling character enconding/decoding.
 
   \author Matheus Cavassan Zaglia
 */
 
+// TerraLib
 #include "CharEncoding.h"
 
-//Boost
-#include <boost/locale.hpp>
+// Boost
 #include <boost/assign/list_of.hpp>
+#include <boost/locale.hpp>
 
-const std::map<te::core::Encoding, std::string> te::core::CharEncoding::EncodingString = boost::assign::map_list_of(te::core::Encoding::UTF8, "UTF8")
-                                                                                                  (te::core::Encoding::CP1250, "CP1250")
-                                                                                                  (te::core::Encoding::CP1251, "CP1251")
-                                                                                                  (te::core::Encoding::CP1252,"CP1252")
-                                                                                                  (te::core::Encoding::CP1253,"CP1253")
-                                                                                                  (te::core::Encoding::CP1254,"CP1254")
-                                                                                                  (te::core::Encoding::CP1257,"CP1257")
-                                                                                                  (te::core::Encoding::LATIN1 ,"LATIN1")
-                                                                                                  (te::core::Encoding::UNKNOWN_CHAR_ENCODING, "UNKNOWN");
+const std::map<te::core::EncodingType, std::string>
+te::core::CharEncoding::EncodingString = boost::assign::map_list_of(te::core::EncodingType::UTF8, "UTF8")
+                                                                   (te::core::EncodingType::CP1250, "CP1250")
+                                                                   (te::core::EncodingType::CP1251, "CP1251")
+                                                                   (te::core::EncodingType::CP1252,"CP1252")
+                                                                   (te::core::EncodingType::CP1253,"CP1253")
+                                                                   (te::core::EncodingType::CP1254,"CP1254")
+                                                                   (te::core::EncodingType::CP1257,"CP1257")
+                                                                   (te::core::EncodingType::LATIN1 ,"LATIN1")
+                                                                   (te::core::EncodingType::UNKNOWN, "UNKNOWN");
 
-std::string te::core::CharEncoding::encode(const std::string &src, const te::core::Encoding &from)
+std::string
+te::core::CharEncoding::toUTF8(const std::string &src, EncodingType from)
 {
   return boost::locale::conv::to_utf<char>(src, EncodingString.at(from));
 }
 
-std::string te::core::CharEncoding::decode(const std::string &src, const te::core::Encoding &to)
+std::string
+te::core::CharEncoding::fromUTF8(const std::string &src, EncodingType to)
 {
   return boost::locale::conv::from_utf<char>(src, EncodingString.at(to));
 }
 
-std::string te::core::CharEncoding::convert(const std::string &src, const te::core::Encoding &from, const te::core::Encoding &to)
+std::string
+te::core::CharEncoding::convert(const std::string &src,
+                                EncodingType from,
+                                EncodingType to)
 {
   return boost::locale::conv::between(src, EncodingString.at(to), EncodingString.at(from));
 }

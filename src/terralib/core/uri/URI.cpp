@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file te/core/URI.cpp
+  \file terralib/core/URI.cpp
 
   \brief URI.
 
@@ -28,9 +28,10 @@
  */
 
 // TerraLib
+#include "URI.h"
 #include "../../common/Translator.h"
 #include "../Exception.h"
-#include "URI.h"
+
 
 te::core::URI::URI()
   : isValid_(false)

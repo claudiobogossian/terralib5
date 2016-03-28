@@ -87,7 +87,8 @@ te::gpkg::DataSet::~DataSet()
   m_ogrDs->ReleaseResultSet(m_layer);
 
   //OGRDataSource::DestroyDataSource(m_ogrDs);
-  GDALClose(m_ogrDs);
+  //GDALClose(m_ogrDs);
+  GDALClose((GDALDatasetH)m_ogrDs);
 }
 
 std::size_t te::gpkg::DataSet::getNumProperties() const

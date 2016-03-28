@@ -26,6 +26,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/SimpleData.h"
+#include "../../../../geometry/MultiPoint.h"
+#include "../../../../geometry/Point.h"
 #include "../../../../memory/DataSet.h"
 #include "../../../../memory/DataSetItem.h"
 
@@ -84,6 +86,8 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
   int gpkgDataSetObjIdIdx = te::da::GetPropertyIndex(gpkgDataSet.get(), LAYER_GATHERING_OBJID_COLUMN);
 
+  int gpkgDataSetGeomIdx = te::da::GetFirstSpatialPropertyPos(gpkgDataSet.get());
+
 
   //create dataset memory to insert into output datasource
   std::auto_ptr<te::da::DataSetType> dsTypeAux = m_outputDataSource->getDataSetType(m_outputDataset);
@@ -91,13 +95,11 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
   te::mem::DataSet* insertDataSetDataSource = new te::mem::DataSet(dsTypeAux.get());
 
   //create dataset memory to insert into output datasource
-  std::auto_ptr<te::da::DataSetType> gpkgUpdateDsType = m_inputDataSource->getDataSetType(m_inputDataSet);
-  te::mem::DataSet* updateDataSetDataSource = new te::mem::DataSet(gpkgUpdateDsType.get());
+  std::auto_ptr<te::da::DataSetType> dsTypeAux2 = m_outputDataSource->getDataSetType(m_outputDataset);
+  te::mem::DataSet* updateDataSetDataSource = new te::mem::DataSet(dsTypeAux2.get());
 
-  //create dataset memory to update into gpkg
-  te::mem::DataSet* updateDataSetGPKG = new te::mem::DataSet(gpkgDsType.get());
 
-  std::vector<te::dt::Property*> props = gpkgDsType->getProperties();
+  std::vector<te::dt::Property*> props = dsTypeAux2->getProperties();
 
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
 
@@ -113,47 +115,120 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
       //create memory items
       te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(insertDataSetDataSource);
-      te::mem::DataSetItem* gpkgItem = new te::mem::DataSetItem(updateDataSetGPKG);
 
       for (std::size_t t = 0; t < props.size(); ++t)
       {
-        if (props[t]->getName() == LAYER_GATHERING_OBJID_COLUMN)
+        if (props[t]->getName() == "FID" || props[t]->getName() == "fid")
+        {
+          continue;
+        }
+        else if (props[t]->getName() == LAYER_GATHERING_OBJID_COLUMN)
         {
           dsItem->setValue(LAYER_GATHERING_OBJID_COLUMN, new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(id));
-          gpkgItem->setValue(LAYER_GATHERING_OBJID_COLUMN, new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(id));
         }
         else
         {
-          if (props[t]->getName() == "fid")
+     
+          if (props[t]->getType() == te::dt::GEOMETRY_TYPE)
           {
-            gpkgItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+            std::auto_ptr<te::gm::Geometry> geom = gpkgDataSet->getGeometry(gpkgDataSetGeomIdx);
+
+            te::gm::Point* point = 0;
+
+            if (geom->getGeomTypeId() == te::gm::MultiPointType)
+            {
+              point = (te::gm::Point*)((te::gm::MultiPoint*)geom.get())->getGeometryN(0);
+            }
+            else if (geom->getGeomTypeId() == te::gm::PointType)
+            {
+              point = (te::gm::Point*)geom.get();
+            }
+
+            if (point)
+            {
+              dsItem->setGeometry(props[t]->getName(), new te::gm::Point(*point));
+            }
           }
           else
           {
-            dsItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
-            gpkgItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+            if (te::da::GetPropertyPos(gpkgDataSet.get(), props[t]->getName()) != std::string::npos)
+            {
+              dsItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+            }
           }
         }
       }
 
       insertDataSetDataSource->add(dsItem);
-      updateDataSetGPKG->add(gpkgItem);
     }
     else
     {
-      //create memory items
-      te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(updateDataSetDataSource);
-
-      for (std::size_t t = 0; t < props.size(); ++t)
+      if (gpkgDataSet->getInt32(LAYER_GATHERING_STATUS_COLUMN) != 0)
       {
-        dsItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
-      }
+        //create memory items
+        te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(updateDataSetDataSource);
 
-      updateDataSetDataSource->add(dsItem);
+        for (std::size_t t = 0; t < props.size(); ++t)
+        {
+          if (props[t]->getName() == "FID" || props[t]->getName() == "fid")
+          {
+            std::string objId = gpkgDataSet->getString(LAYER_GATHERING_OBJID_COLUMN);
+
+            std::string sql = "SELECT FID from ";
+            sql += dsTypeAux2->getName();
+            sql += " WHERE ";
+            sql += LAYER_GATHERING_OBJID_COLUMN;
+            sql += " = '";
+            sql += gpkgDataSet->getAsString(LAYER_GATHERING_OBJID_COLUMN);
+            sql += "'";
+
+            std::auto_ptr<te::da::DataSet> dataSetQuery = m_outputDataSource->query(sql);
+
+            if (!dataSetQuery->isEmpty())
+            {
+              dataSetQuery->moveFirst();
+
+              int idValue = dataSetQuery->getInt32(0);
+
+              dsItem->setValue(props[t]->getName(), new te::dt::SimpleData<int32_t, te::dt::INT32_TYPE>(idValue));
+            }
+          }
+          else if (props[t]->getType() == te::dt::GEOMETRY_TYPE)
+          {
+            std::auto_ptr<te::gm::Geometry> geom = gpkgDataSet->getGeometry(props[t]->getName());
+
+            te::gm::Point* point = 0;
+
+            if (geom->getGeomTypeId() == te::gm::MultiPointType)
+            {
+              point = (te::gm::Point*)((te::gm::MultiPoint*)geom.get())->getGeometryN(0);
+            }
+            else if (geom->getGeomTypeId() == te::gm::PointType)
+            {
+              point = (te::gm::Point*)geom.get();
+            }
+
+            if (point)
+            {
+              dsItem->setGeometry(props[t]->getName(), new te::gm::Point(*point));
+            }
+          }
+          else
+          {
+            if (te::da::GetPropertyPos(gpkgDataSet.get(), props[t]->getName()) != std::string::npos)
+            {
+              dsItem->setValue(props[t]->getName(), gpkgDataSet->getValue(props[t]->getName()).release());
+            }
+          }
+        }
+
+        updateDataSetDataSource->add(dsItem);
+      }
     }
   }
 
   //INSERT into output datasource
+  if (!insertDataSetDataSource->isEmpty())
   {
     std::unique_ptr<te::da::DataSourceTransactor> transactor = m_outputDataSource->getTransactor();
 
@@ -186,6 +261,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
   }
 
   //UPDATE into output datasource
+  if (!updateDataSetDataSource->isEmpty())
   {
     std::unique_ptr<te::da::DataSourceTransactor> transactor = m_outputDataSource->getTransactor();
 
@@ -229,53 +305,6 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
       return;
     }
-
-    transactor->commit();
-  }
-
-  //UPDATE into gpkg
-  {
-    std::unique_ptr<te::da::DataSourceTransactor> transactor = m_inputDataSource->getTransactor();
-
-    std::map<std::string, std::string> op;
-
-    try
-    {
-      std::vector<size_t> ids;
-      ids.push_back(0);
-
-      std::vector< std::set<int> > properties;
-      std::size_t dsSize = updateDataSetDataSource->size();
-
-      for (std::size_t t = 0; t < dsSize; ++t)
-      {
-        std::set<int> setPos;
-        setPos.insert(gpkgDataSetObjIdIdx);
-
-        properties.push_back(setPos);
-      }
-
-      transactor->update(m_outputDataset, updateDataSetGPKG, properties, ids);
-    }
-    catch (const te::common::Exception& e)
-    {
-      transactor->rollBack();
-
-      return;
-    }
-    catch (const std::exception& e)
-    {
-      transactor->rollBack();
-
-      return;
-    }
-    catch (...)
-    {
-      transactor->rollBack();
-
-      return;
-    }
-
     transactor->commit();
   }
 }

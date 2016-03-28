@@ -96,6 +96,8 @@ namespace te
 
         std::vector<std::pair<std::string, std::string> > getSelectedProperties();
 
+        bool isCollection();
+
         void updateInputLayerComboBox();
 
         void updateDifferenceLayerComboBox();

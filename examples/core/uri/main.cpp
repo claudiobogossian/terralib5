@@ -30,9 +30,9 @@
 #include <terralib/core/uri/URI.h>
 
 // STL
-#include <assert.h>
-#include <iostream>
+#include <cassert>
 #include <cstdlib>
+#include <iostream>
 
 int main(int argc, char *argv[])
 {

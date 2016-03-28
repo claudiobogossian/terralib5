@@ -51,10 +51,8 @@ te::vp::MergeMemory::Strategy te::vp::MergeMemory::checkStrategy()
 {
   te::da::PrimaryKey* firstPk = m_firstDst->getPrimaryKey();
 
-  if (!m_isUpdate && m_outDsrc && m_outDsrc->getType() == "OGR")
-  {
+  if ((m_outDsrc && m_outDsrc->getType() == "OGR") || m_firstSource->getType() == "OGR")
     return PUREMERGE;
-  }
 
   if (firstPk)
   {

@@ -34,6 +34,7 @@ namespace te
 {
   //Forward declaration
   namespace da { class DataSource; }
+
   namespace qt
   {
     namespace plugins
@@ -50,6 +51,8 @@ namespace te
         void queryGPKG(std::string query, te::da::DataSource* dsGPKG);
 
         std::vector<std::string> getItemNames(std::string type, te::da::DataSource* dsGPKG);
+
+        void fillExtraColumns(te::da::DataSource* ds, std::string dataSetName);
 
       }   // end namespace terramobile
     }     // end namespace plugins
