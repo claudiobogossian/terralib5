@@ -208,10 +208,16 @@ namespace te
         raster2Bands.size(), "Invalid pixel scales" );        
       TERP_TRUE_OR_RETURN_FALSE( ( r1ValidDataDelimiterPtr ?
         ( r1ValidDataDelimiterPtr->getNumGeometries() > 0 ) : true ),
-        "Invalid polygon 1" )
+        "Invalid geometry 1" )
+      TERP_TRUE_OR_RETURN_FALSE( ( r1ValidDataDelimiterPtr ?
+        r1ValidDataDelimiterPtr->isValid() : true ),
+        "Invalid geometry 1" )      
       TERP_TRUE_OR_RETURN_FALSE( ( r2ValidDataDelimiterPtr ?
         ( r2ValidDataDelimiterPtr->getNumGeometries() > 0 ) : true ),
-        "Invalid polygon 2" )
+        "Invalid geometry 2" )
+      TERP_TRUE_OR_RETURN_FALSE( ( r2ValidDataDelimiterPtr ?
+        r2ValidDataDelimiterPtr->isValid() : true ),
+        "Invalid geometry 2" )      
       TERP_TRUE_OR_RETURN_FALSE( geomTransformation.isValid(),
         "Invalid transformation" );
         
@@ -308,6 +314,9 @@ namespace te
         indexedDelimiter1Ptr->add( outPolPtr );
       }
       
+      TERP_TRUE_OR_RETURN_FALSE( indexedDelimiter1Ptr->isValid(),
+        "Invalid indexed geometry 1" );       
+      
       // indexed under raster 1 lines/cols
       std::auto_ptr< te::gm::MultiPolygon > indexedDelimiter2Ptr(
         new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 0, 0 ) ); 
@@ -395,10 +404,21 @@ namespace te
         indexedDelimiter2Ptr->add( outPolPtr );
       }
       
+      TERP_TRUE_OR_RETURN_FALSE( indexedDelimiter2Ptr->isValid(),
+        "Invalid indexed geometry 1" );
+      
       // Calculating the intersection (raster 1 lines/cols)
       
-      m_intersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
-        indexedDelimiter1Ptr.get() ) );
+      try
+      {
+        m_intersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
+          indexedDelimiter1Ptr.get() ) );
+      }
+      catch( const std::exception& e )
+      {
+        TERP_LOG_AND_RETURN_FALSE( "Indexed geometry intersection:" + 
+          std::string( e.what() ) );
+      }
       
       // Initializing the intersection tile indexer
       

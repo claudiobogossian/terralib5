@@ -46,6 +46,7 @@
 
 #include <boost/shared_array.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <climits>
 #include <cfloat>
@@ -689,9 +690,24 @@ namespace te
         // updating the  gloabal mosaic boxes
 
         std::auto_ptr< te::gm::Geometry > boxesUnionResultPtr; // under the mosaic SRID
-        boxesUnionResultPtr.reset( mosaicBBoxesUnionPtr->Union(
-          &( rastersBBoxes[ inputRasterIdx ] ) ) );
+        TERP_TRUE_OR_RETURN_FALSE( mosaicBBoxesUnionPtr->isValid(), 
+          "Invalid mosaic bounding boxes union geometry" );
+        TERP_TRUE_OR_RETURN_FALSE( rastersBBoxes[ inputRasterIdx ].isValid(), 
+          "Invalid raster bounding boxes union geometry (raster index:"
+          + boost::lexical_cast< std::string >( inputRasterIdx ) + ")" );  
+        
+        try
+        {
+          boxesUnionResultPtr.reset( mosaicBBoxesUnionPtr->Union(
+            &( rastersBBoxes[ inputRasterIdx ] ) ) );
+        }
+        catch( const std::exception& e )
+        {
+          TERP_LOG_AND_RETURN_FALSE( "Mosaic bounding boxes union error" ); 
+        }
+        
         TERP_TRUE_OR_THROW( boxesUnionResultPtr.get(), "Invalid pointer" );
+        
         boxesUnionResultPtr->setSRID( outputRasterPtr->getSRID() );
 
         if( 

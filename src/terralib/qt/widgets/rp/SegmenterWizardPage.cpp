@@ -178,7 +178,7 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
   else if(strategyName == "RegionGrowingBaatz")
   {
     te::rp::SegmenterRegionGrowingBaatzStrategy::Parameters strategyParameters;
-    strategyParameters.m_minSegmentSize = m_ui->m_minimumSegmentSizeRGLineEdit->text().toUInt();
+    strategyParameters.m_minSegmentSize = m_ui->m_minimumSegmentSizeRGLineEdit_2->text().toUInt();
     strategyParameters.m_segmentsSimilarityThreshold = m_ui->m_thresholdBaatzDoubleSpinBox->value();
     strategyParameters.m_enableLocalMutualBestFitting = m_ui->m_localMutualBestFittingCheckBox->isChecked();
     strategyParameters.m_enableSameIterationMerges = m_ui->m_sameIterationMergeCheckBox->isChecked();    

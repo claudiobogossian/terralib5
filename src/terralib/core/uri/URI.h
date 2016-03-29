@@ -21,7 +21,7 @@
 /*!
   \file terralib/core/URI.h
 
-  \brief A class for representing URIs (Uniform Resource Identifier).
+  \brief A class for representing an Uniform Resource Identifier (URI).
 
   \author Gilberto Ribeiro de Queiroz
   \author Vinicius Campanha
@@ -47,176 +47,164 @@
 // Distributed under the Boost Software License, Version 1.0.
  */
 
-// TerraLib
-#include "URIParts.h"
-
 // STL
 #include <string>
 
 // Boost
 #include <boost/range/iterator_range.hpp>
+#include <boost/regex.hpp>
 
 namespace te
 {
   namespace core
   {
-
-    enum class URIError
-    {
-      invalid_syntax,
-      invalid_uri,
-      invalid_scheme,
-      invalid_authoriry,
-      invalid_host,
-      invalid_port,
-      invalid_path,
-      invalid_query,
-      invalid_fragment,
-    };
-
-    enum class URIComparisonLevel
-    {
-      string_comparison,
-      case_normalization,
-      percent_encoding_normalization,
-      path_segment_normalization,
-      scheme_based_normalization,
-      protocol_based_normalization,
-    };
-
+    /*!
+      \class URI
+      
+      \brief A class for representing an Uniform Resource Identifier (URI).
+     */
     class URI
     {
-    public:
+      public:
 
-      // typedefs
-      typedef std::string string_type;
-      typedef string_type::iterator iterator;
-      typedef string_type::const_iterator const_iterator;
-      typedef std::iterator_traits<iterator>::value_type value_type;
-      typedef boost::iterator_range<const_iterator> const_range_type;
+// exported types
+        typedef std::string string_type;
+        typedef string_type::const_iterator const_iterator;
 
-      // constructors and destructor
-      URI();
+        /*! \brief Default constructor. */
+        URI();
 
-      URI(string_type uri);
+        /*!
+          \brief A constructor from a string.
+         
+           This constructor check the URI enconding,
+           then parse it and validate.
+       
+           \param uri A string with the URI to be parsed.
 
-      //        template <typename InputIter, class Alloc = std::allocator<value_type> >
-      //        explicit URI(const InputIter &first, const InputIter &last, const Alloc &alloc = Alloc());
-      //
-      //        template <class Source, class Alloc = std::allocator<value_type>>
-      //        explicit URI(const Source& source, const Alloc& alloc = Alloc());
+           \exception URIException when the given URI isn't valid.
+         */
+        explicit URI(const string_type& uri);
 
-      URI(const URI& other);
+        /*! \brief Copy constructor. */
+        URI(const URI& other);
 
-      URI(URI&& other) noexcept;
+        //URI(URI&& other) noexcept;
 
-      ~URI() = default;
+        /*! Default destructor. */
+        ~URI() = default;
 
-      // assignment
-      URI& operator=(const URI& other);
+        /*! \brief Assingment operator. */
+        URI& operator=(const URI& other);
+      
+        //URI& operator=(URI&& other) noexcept;
 
-      //URI& operator=(URI&& other) noexcept;
+        /*!
+          \brief Retrieving the full URI
+          
+          \return Returns the complete URI.
+         */
+        const string_type& uri() const;
 
-      // swap
-      void swap(URI& other) noexcept;
+        /*!
+          \brief Retrieving the scheme
+          
+          \return Returns the URI scheme.
+         */
+        string_type scheme() const;
 
-      // parses
-      void parse();
-      void parseScheme(const_iterator& begin_it, const_iterator end_it);
-      void parseHost(const_iterator& begin_it, const_iterator end_it);
-      void parsePort(const_iterator& begin_it, const_iterator end_it);
-      void parsePath(const_iterator& begin_it, const_iterator end_it);
-      void parseQuery(const_iterator& begin_it, const_iterator end_it);
-      void parseFragment(const_iterator& begin_it, const_iterator end_it);
-      void parseUserInfo(const_iterator& begin_it, const_iterator end_it);
+        /*!
+          \brief Retrieving the user information
 
-      // iterators
-      const_iterator begin() const;
+          \return Returns the URI user information.
+         */
+        string_type user() const;
 
-      const_iterator end() const;
+        /*!
+          \brief Retrieving the password information
 
-      const_range_type scheme_range() const;
+          \return Returns the URI password information.
+         */
+        string_type password() const;
 
-      const_range_type userInfo_range() const;
+        /*!
+          \brief Retrieving the host
 
-      const_range_type host_range() const;
+          \return Returns the URI host.
+         */
+        string_type host() const;
 
-      const_range_type port_range() const;
+        /*!
+          \brief Retrieving the port
 
-      const_range_type path_range() const;
+          \return Returns the URI port.
+         */
+        string_type port() const;
 
-      const_range_type query_range() const;
+        /*!
+          \brief Retrieving the path
 
-      const_range_type fragment_range() const;
+          \return Returns the URI path.
+         */
+        string_type path() const;
 
-      // accessors
+        /*!
+         \brief Retrieving the query
 
-      string_type uri() const;
-      string_type scheme() const;
-      string_type userInfo() const;
-      string_type host() const;
-      string_type port() const;
-      string_type path() const;
-      string_type query() const;
-      string_type fragment() const;
+         \return Returns the URI query.
+         */
+        string_type query() const;
 
-      bool isValid();
+        /*!
+          \brief Retrieving the fragment
 
-    private:
+          \return Returns the URI fragment.
+         */
+        string_type fragment() const;
 
-      string_type uri_;
-      URIParts<const_iterator> uriParts_;
-      bool isValid_;
+        /*!
+          \brief Return if the given URI is valid or not.
+
+         \return Returns true if the given URI is valid.
+         */
+        bool isValid() const;
+      
+      private:
+      
+        /*! \brief Swap operation. */
+        void swap(URI& other);
+      
+        /*!
+          \brief Parse the URI stored in uri_ member.
+          
+          It uses regex to validate and parse the given URI.
+          
+          After this, if the given URI is valid, the match_ member
+          will have the references to all parts of the URI.
+          
+          The regex split the URI by using groups in
+          regex, "(...)", so knowing the group number,
+          you can require the corresponding match, from match_.
+          It's important to verify the groups sequence after updating the search regex.
+
+          \exception URIException when the given URI isn't valid.
+         */
+        void parse();
+      
+        /*!
+          \brief Check if the uri_ contains any invalid character and parse
+                 it to his hexadecimal value
+         */
+        void encode();
+      
+        string_type hexToLetter(int i);
+
+      private:
+
+        string_type uri_;
+        boost::match_results< const_iterator > match_;
+        bool isValid_;
     };
-
-    //    template <typename InputIter, class Alloc> inline
-    //    URI::URI(const InputIter &first, const InputIter &last, const Alloc &alloc)
-    //      : uri_(first, last), isValid_(false)
-    //    {
-    //      parse();
-    //    }
-
-    //    template <class Source, class Alloc> inline
-    //    URI::URI(const Source& source, const Alloc& alloc)
-    //
-    //    {
-    //    }
-
-    inline URI::const_range_type URI::scheme_range() const { return uriParts_.scheme; }
-
-    inline URI::const_range_type URI::userInfo_range() const
-    {
-      return uriParts_.hier_part.user_info ? uriParts_.hier_part.user_info.get()
-                                           : const_range_type();
-    }
-
-    inline URI::const_range_type URI::host_range() const
-    {
-      return uriParts_.hier_part.host ? uriParts_.hier_part.host.get()
-                                      : const_range_type();
-    }
-
-    inline URI::const_range_type URI::port_range() const
-    {
-      return uriParts_.hier_part.port ? uriParts_.hier_part.port.get()
-                                      : const_range_type();
-    }
-
-    inline URI::const_range_type URI::path_range() const
-    {
-      return uriParts_.hier_part.path ? uriParts_.hier_part.path.get()
-                                      : const_range_type();
-    }
-
-    inline URI::const_range_type URI::query_range() const
-    {
-      return uriParts_.query ? uriParts_.query.get() : const_range_type();
-    }
-
-    inline URI::const_range_type URI::fragment_range() const
-    {
-      return uriParts_.fragment ? uriParts_.fragment.get() : const_range_type();
-    }
 
   }  // end namespace core
 }    // end namespace te

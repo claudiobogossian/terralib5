@@ -30,37 +30,24 @@
 
 // TerraLib
 #include <terralib/core/uri/URI.h>
+#include <terralib/Exception.h>
 
 // Boost
 #include <boost/test/unit_test.hpp>
 
-void printURI(te::core::URI& uri)
-{
-  std::cout << std::endl;
-  std::cout << "URI: " << uri.uri() << std::endl;
-  std::cout << "Scheme: " << uri.scheme() << std::endl;
-  std::cout << "User Info: " << uri.userInfo() << std::endl;
-  std::cout << "Host: " << uri.host() << std::endl;
-  std::cout << "Port: " << uri.port() << std::endl;
-  std::cout << "Path: " << uri.path() << std::endl;
-  std::cout << "Query: " << uri.query() << std::endl;
-  std::cout << "Fragment: " << uri.fragment() << std::endl;
-}
-
-BOOST_AUTO_TEST_SUITE( test_case )
+BOOST_AUTO_TEST_SUITE( uri_test_case )
 
 BOOST_AUTO_TEST_CASE( test_copy_constructor )
 {
   std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
+
   te::core::URI uri(address);
 
   te::core::URI copy(uri);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-
   BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "80");
   BOOST_CHECK(uri.path() == "/terralib5/wiki/doku.php");
@@ -68,7 +55,8 @@ BOOST_AUTO_TEST_CASE( test_copy_constructor )
   BOOST_CHECK(uri.fragment() == "modules");
 
   BOOST_CHECK(uri.scheme() == copy.scheme());
-  BOOST_CHECK(uri.userInfo() == copy.userInfo());
+  BOOST_CHECK(uri.user() == copy.user());
+  BOOST_CHECK(uri.password() == copy.password());
   BOOST_CHECK(uri.host() == copy.host());
   BOOST_CHECK(uri.port() == copy.port());
   BOOST_CHECK(uri.path() == copy.path());
@@ -78,36 +66,7 @@ BOOST_AUTO_TEST_CASE( test_copy_constructor )
   return;
 }
 
-BOOST_AUTO_TEST_CASE( test_assignment_constructor )
-{
-  std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
-  te::core::URI uri(address);
-
-  te::core::URI copy = uri;
-
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-
-  BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
-  BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
-  BOOST_CHECK(uri.port() == "80");
-  BOOST_CHECK(uri.path() == "/terralib5/wiki/doku.php");
-  BOOST_CHECK(uri.query() == "id=wiki:documentation:devguide");
-  BOOST_CHECK(uri.fragment() == "modules");
-
-  BOOST_CHECK(uri.scheme() == copy.scheme());
-  BOOST_CHECK(uri.userInfo() == copy.userInfo());
-  BOOST_CHECK(uri.host() == copy.host());
-  BOOST_CHECK(uri.port() == copy.port());
-  BOOST_CHECK(uri.path() == copy.path());
-  BOOST_CHECK(uri.query() == copy.query());
-  BOOST_CHECK(uri.fragment() == copy.fragment());
-
-  return;
-}
-
-BOOST_AUTO_TEST_CASE( test_assignment )
+BOOST_AUTO_TEST_CASE( test_copy_assignment )
 {
   std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
   te::core::URI uri(address);
@@ -117,11 +76,9 @@ BOOST_AUTO_TEST_CASE( test_assignment )
 
   uri2 = uri;
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-
   BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "80");
   BOOST_CHECK(uri.path() == "/terralib5/wiki/doku.php");
@@ -129,7 +86,8 @@ BOOST_AUTO_TEST_CASE( test_assignment )
   BOOST_CHECK(uri.fragment() == "modules");
 
   BOOST_CHECK(uri.scheme() == uri2.scheme());
-  BOOST_CHECK(uri.userInfo() == uri2.userInfo());
+  BOOST_CHECK(uri.user() == uri2.user());
+  BOOST_CHECK(uri.password() == uri2.password());
   BOOST_CHECK(uri.host() == uri2.host());
   BOOST_CHECK(uri.port() == uri2.port());
   BOOST_CHECK(uri.path() == uri2.path());
@@ -142,7 +100,8 @@ BOOST_AUTO_TEST_CASE( test_assignment )
   uri = uri3;
 
   BOOST_CHECK(uri.scheme() == uri3.scheme());
-  BOOST_CHECK(uri.userInfo() == uri3.userInfo());
+  BOOST_CHECK(uri.user() == uri3.user());
+  BOOST_CHECK(uri.password() == uri3.password());
   BOOST_CHECK(uri.host() == uri3.host());
   BOOST_CHECK(uri.port() == uri3.port());
   BOOST_CHECK(uri.path() == uri3.path());
@@ -152,18 +111,26 @@ BOOST_AUTO_TEST_CASE( test_assignment )
   return;
 }
 
-BOOST_AUTO_TEST_CASE( test_full_address )
+BOOST_AUTO_TEST_CASE( test_encode )
+{
+  std::string address("scheme://host/ ãõáé");
+  te::core::URI uri(address);
+
+  std::string encoded("scheme://host/%20%C3%A3%C3%B5%C3%A1%C3%A9");
+
+  BOOST_CHECK_EQUAL(uri.uri(), encoded);
+
+  return;
+}
+
+BOOST_AUTO_TEST_CASE( test_full_http_uri )
 {
   std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "80");
   BOOST_CHECK(uri.path() == "/terralib5/wiki/doku.php");
@@ -173,17 +140,14 @@ BOOST_AUTO_TEST_CASE( test_full_address )
   return;
 }
 
-BOOST_AUTO_TEST_CASE( test_full_address2 )
+BOOST_AUTO_TEST_CASE( test_full_http_uri_2 )
 {
   std::string address("http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=GetCapabilities&version=2.0.1");
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "sedac.ciesin.columbia.edu");
   BOOST_CHECK(uri.port() == "");
   BOOST_CHECK(uri.path() == "/geoserver/wcs");
@@ -193,17 +157,14 @@ BOOST_AUTO_TEST_CASE( test_full_address2 )
   return;
 }
 
-BOOST_AUTO_TEST_CASE( test_ftp_address )
+BOOST_AUTO_TEST_CASE( test_ftp_uri )
 {
   std::string address("ftp://ftp.ftp.inpe.br:21/path/");
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "ftp");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "ftp.ftp.inpe.br");
   BOOST_CHECK(uri.port() == "21");
   BOOST_CHECK(uri.path() == "/path/");
@@ -213,17 +174,14 @@ BOOST_AUTO_TEST_CASE( test_ftp_address )
   return;
 }
 
-BOOST_AUTO_TEST_CASE( test_authority_address )
+BOOST_AUTO_TEST_CASE( test_ftp_authority_address_uri )
 {
   std::string address("ftp://user:password@ftp.ftp.inpe.br:21/path/");
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "ftp");
-  BOOST_CHECK(uri.userInfo() == "user:password");
+  BOOST_CHECK(uri.user() == "user");
+  BOOST_CHECK(uri.password() == "password");
   BOOST_CHECK(uri.host() == "ftp.ftp.inpe.br");
   BOOST_CHECK(uri.port() == "21");
   BOOST_CHECK(uri.path() == "/path/");
@@ -240,10 +198,11 @@ BOOST_AUTO_TEST_CASE( test_opaque_full_address )
 
   //  BOOST_CHECK(uri.is_absolute());
   //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
+//  printURI(uri);
 
   BOOST_CHECK(uri.scheme() == "xmpp");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "");
   BOOST_CHECK(uri.port() == "");
   BOOST_CHECK(uri.path() == "example-node@example.com");
@@ -253,18 +212,15 @@ BOOST_AUTO_TEST_CASE( test_opaque_full_address )
   return;
 }
 
-BOOST_AUTO_TEST_CASE( test_partial_adress )
+BOOST_AUTO_TEST_CASE( test_http_partial_adress )
 {
   std::string address("http://www.dpi.inpe.br:80");
 
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "80");
   BOOST_CHECK(uri.path() == "");
@@ -272,18 +228,15 @@ BOOST_AUTO_TEST_CASE( test_partial_adress )
   BOOST_CHECK(uri.fragment() == "");
 }
 
-BOOST_AUTO_TEST_CASE( test_partial_adress2 )
+BOOST_AUTO_TEST_CASE( test_http_partial_adress_2 )
 {
   std::string address("http://www.dpi.inpe.br");
 
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "www.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "");
   BOOST_CHECK(uri.path() == "");
@@ -291,37 +244,31 @@ BOOST_AUTO_TEST_CASE( test_partial_adress2 )
   BOOST_CHECK(uri.fragment() == "");
 }
 
-BOOST_AUTO_TEST_CASE( test_pgsql )
+BOOST_AUTO_TEST_CASE( test_pgsql_uri )
 {
-  std::string address("pgsql://gribeiro:secreto@atlas.dpi.inpe.br:5433/bdqueimadas?client_encoding=UTF8&max_connections=20");
+  std::string address("pgsql://user:password@atlas.dpi.inpe.br:5433/bdqueimadas?client_encoding=UTF8&max_connections=20");
 
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "pgsql");
-  BOOST_CHECK(uri.userInfo() == "gribeiro:secreto");
+  BOOST_CHECK(uri.user() == "user");
+  BOOST_CHECK(uri.password() == "password");
   BOOST_CHECK(uri.host() == "atlas.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "5433");
   BOOST_CHECK(uri.path() == "/bdqueimadas");
-  BOOST_CHECK(uri.query() == "client_encoding=UTF8max_connections=20");
+  BOOST_CHECK(uri.query() == "client_encoding=UTF8&max_connections=20");
   BOOST_CHECK(uri.fragment() == "");
 }
 
-BOOST_AUTO_TEST_CASE( test_2 )
+BOOST_AUTO_TEST_CASE( test_http_uri_3 )
 {
   std::string address("http://chronos.dpi.inpe.br/wfs");
 
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "chronos.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "");
   BOOST_CHECK(uri.path() == "/wfs");
@@ -329,18 +276,15 @@ BOOST_AUTO_TEST_CASE( test_2 )
   BOOST_CHECK(uri.fragment() == "");
 }
 
-BOOST_AUTO_TEST_CASE( test_3 )
+BOOST_AUTO_TEST_CASE( test_http_uri_4 )
 {
   std::string address("http://chronos.dpi.inpe.br/wms");
 
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "chronos.dpi.inpe.br");
   BOOST_CHECK(uri.port() == "");
   BOOST_CHECK(uri.path() == "/wms");
@@ -348,37 +292,15 @@ BOOST_AUTO_TEST_CASE( test_3 )
   BOOST_CHECK(uri.fragment() == "");
 }
 
-BOOST_AUTO_TEST_CASE( test_4 )
-{
-  std::string address("http://chronos.dpi.inpe.br/wfs");
-
-  te::core::URI uri(address);
-
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
-  BOOST_CHECK(uri.scheme() == "http");
-  BOOST_CHECK(uri.userInfo() == "");
-  BOOST_CHECK(uri.host() == "chronos.dpi.inpe.br");
-  BOOST_CHECK(uri.port() == "");
-  BOOST_CHECK(uri.path() == "/wfs");
-  BOOST_CHECK(uri.query() == "");
-  BOOST_CHECK(uri.fragment() == "");
-}
-
-BOOST_AUTO_TEST_CASE( test_5 )
+BOOST_AUTO_TEST_CASE( test_file_uri_1 )
 {
   std::string address("file:///home/gribeiro/data");
 
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "file");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "");
   BOOST_CHECK(uri.port() == "");
   BOOST_CHECK(uri.path() == "/home/gribeiro/data");
@@ -386,18 +308,15 @@ BOOST_AUTO_TEST_CASE( test_5 )
   BOOST_CHECK(uri.fragment() == "");
 }
 
-BOOST_AUTO_TEST_CASE( test_6 )
+BOOST_AUTO_TEST_CASE( test_file_uri_2 )
 {
   std::string address("file:///home/gribeiro/data/arq.shp");
 
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-  printURI(uri);
-
   BOOST_CHECK(uri.scheme() == "file");
-  BOOST_CHECK(uri.userInfo() == "");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
   BOOST_CHECK(uri.host() == "");
   BOOST_CHECK(uri.port() == "");
   BOOST_CHECK(uri.path() == "/home/gribeiro/data/arq.shp");

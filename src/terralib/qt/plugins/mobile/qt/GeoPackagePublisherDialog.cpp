@@ -229,7 +229,7 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
 
   try
   {
-    gpkgPub.uploadGeopackageFile(url, pathFile, file.baseName().toStdString());
+    gpkgPub.uploadGeopackageFile(url, pathFile, file.fileName().toStdString());
   }
   catch (std::exception const& e)
   {

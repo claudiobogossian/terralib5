@@ -36,7 +36,6 @@ namespace te
 {
   namespace core
   {
-
     //! Base exception class for TerraLib Core Runtime Library.
     struct Exception: virtual te::Exception { };
 

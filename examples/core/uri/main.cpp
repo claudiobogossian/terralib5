@@ -36,26 +36,73 @@
 
 int main(int argc, char *argv[])
 {
-  try
   {
     te::core::URI uri("http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
-
-    assert(uri.scheme() == "http");
-    assert(uri.host() == "www.dpi.inpe.br");
-    assert(uri.path() == "/terralib5/wiki/doku.php");
-    assert(uri.query() == "id=wiki:documentation:devguide");
-    assert(uri.fragment() == "modules");
 
     if(!uri.isValid())
     {
       std::cout << "Uri isn't valid!" << std::endl;
       return EXIT_FAILURE;
     }
+
+    assert(uri.scheme() == "http");
+    assert(uri.user() == "");
+    assert(uri.password() == "");
+    assert(uri.host() == "www.dpi.inpe.br");
+    assert(uri.port() == "");
+    assert(uri.path() == "/terralib5/wiki/doku.php");
+    assert(uri.query() == "id=wiki:documentation:devguide");
+    assert(uri.fragment() == "modules");
   }
-  catch(te::Exception& e)
+
   {
-    std::cout << e.what() << std::endl;
-    return EXIT_FAILURE;
+    std::string address("xmpp:example-node@example.com?message;subject=Hello%20World");
+
+    te::core::URI uri(address);
+
+    if(!uri.isValid())
+    {
+      std::cout << "Uri isn't valid!" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    assert(uri.scheme() == "xmpp");
+    assert(uri.user() == "");
+    assert(uri.password() == "");
+    assert(uri.host() == "");
+    assert(uri.port() == "");
+    assert(uri.path() == "example-node@example.com");
+    assert(uri.query() == "message;subject=Hello%20World");
+    assert(uri.fragment() == "");
+  }
+
+  {
+    te::core::URI uri("ftp://user:password@ftp.ftp.inpe.br:21/path/");
+
+    if(!uri.isValid())
+    {
+      std::cout << "Uri isn't valid!" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    assert(uri.scheme() == "ftp");
+    assert(uri.user() == "user");
+    assert(uri.password() == "password");
+    assert(uri.host() == "ftp.ftp.inpe.br");
+    assert(uri.port() == "21");
+    assert(uri.path() == "/path/");
+    assert(uri.query() == "");
+    assert(uri.fragment() == "");
+  }
+
+  {
+    te::core::URI uri("InvalidURI");
+
+    if(uri.isValid())
+    {
+      std::cout << "Uri isn't valid!" << std::endl;
+      return EXIT_FAILURE;
+    }
   }
 
   return EXIT_SUCCESS;
