@@ -36,7 +36,6 @@
 
 int main(int argc, char *argv[])
 {
-  try
   {
     te::core::URI uri("http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
 
@@ -55,15 +54,10 @@ int main(int argc, char *argv[])
     assert(uri.query() == "id=wiki:documentation:devguide");
     assert(uri.fragment() == "modules");
   }
-  catch(te::Exception& e)
-  {
-    std::cout << boost::get_error_info<te::ErrorDescription >(e)->c_str() << std::endl;
-    return EXIT_FAILURE;
-  }
 
-  try
   {
     std::string address("xmpp:example-node@example.com?message;subject=Hello%20World");
+
     te::core::URI uri(address);
 
     if(!uri.isValid())
@@ -81,13 +75,7 @@ int main(int argc, char *argv[])
     assert(uri.query() == "message;subject=Hello%20World");
     assert(uri.fragment() == "");
   }
-  catch(te::Exception& e)
-  {
-    std::cout << boost::get_error_info< te::ErrorDescription >(e)->c_str() << std::endl;
-    return EXIT_FAILURE;
-  }
 
-  try
   {
     te::core::URI uri("ftp://user:password@ftp.ftp.inpe.br:21/path/");
 
@@ -106,13 +94,7 @@ int main(int argc, char *argv[])
     assert(uri.query() == "");
     assert(uri.fragment() == "");
   }
-  catch(te::Exception& e)
-  {
-    std::cout << boost::get_error_info< te::ErrorDescription >(e)->c_str() << std::endl;
-    return EXIT_FAILURE;
-  }
 
-  try
   {
     te::core::URI uri("InvalidURI");
 
@@ -121,10 +103,6 @@ int main(int argc, char *argv[])
       std::cout << "Uri isn't valid!" << std::endl;
       return EXIT_FAILURE;
     }
-  }
-  catch(te::Exception& e)
-  {
-    //std::cout << boost::get_error_info< te::ErrorDescription >(e)->c_str() << std::endl;
   }
 
   return EXIT_SUCCESS;

@@ -21,7 +21,7 @@
 /*!
   \file terralib/core/URI.h
 
-  \brief A class for representing URIs (Uniform Resource Identifier).
+  \brief A class for representing an Uniform Resource Identifier (URI).
 
   \author Gilberto Ribeiro de Queiroz
   \author Vinicius Campanha
@@ -58,147 +58,151 @@ namespace te
 {
   namespace core
   {
+    /*!
+      \class URI
+
+      \brief A class for representing an Uniform Resource Identifier (URI).
+     */
     class URI
     {
-    public:
+      public:
 
-      // typedefs
-      typedef std::string string_type;
-      typedef string_type::const_iterator const_iterator;
+// exported types
+        typedef std::string string_type;
+        typedef string_type::const_iterator const_iterator;
 
-      /*!
-       * \brief Default constructor.
-      */
-      URI();
+        /*! \brief Default constructor. */
+        URI();
 
-      /*!
-       * \brief The constructor that receives a URI, check the enconde, validate it and parses it.
-       * \param uri An URI to be parsed.
-       * \exception URIException when the given URI isn't valid.
-       */
-      URI(string_type uri);
+        /*!
+          \brief A constructor from a string.
 
-      /*!
-       * \brief Copy constructor.
-      */
-      URI(const URI& other);
+           This constructor check the URI enconding,
+           then parse it and validate.
 
-      //      URI(URI&& other) noexcept;
+           \param uri A string with the URI to be parsed.
 
-      /*!
-       * \brief Default destructor.
-      */
-      ~URI() = default;
+           \exception URIException when the given URI isn't valid.
+         */
+        explicit URI(const string_type& uri);
 
-      /*!
-       * \brief Assingment operator.
-      */
-      URI& operator=(const URI& other);
+        /*! \brief Copy constructor. */
+        URI(const URI& other);
 
-      //      URI& operator=(URI&& other) noexcept;
+        //URI(URI&& other) noexcept;
 
-      /*!
-       * \brief Swap operation.
-      */
-      void swap(URI& other) noexcept;
+        /*! Default destructor. */
+        ~URI() = default;
 
-      /*!
-       * \brief Parse the URI stored in uri_ member.
-       *
-       *      It uses regex to validate and parse the given URI.
-       *      After this, if the given URI is valid, the match_ member will have the references
-       *  to all parts of the URI.
-       *      The regex split the URI by using groups in regex, "(...)", so knowing the group number,
-       *  you can require the corresponding match, from match_.
-       *      It's important to verify the groups sequence after updating the search regex.
-       *
-       * \exception URIException when the given URI isn't valid.
-       */
-      void parse();
+        /*! \brief Assingment operator. */
+        URI& operator=(const URI& other);
 
-      // accessors
+        //URI& operator=(URI&& other) noexcept;
 
-      /*!
-       * \brief Retrieving the full URI
+        /*!
+          \brief Retrieving the full URI
 
-       * \return Returns the complete URI.
-       */
-      string_type uri() const;
+          \return Returns the complete URI.
+         */
+        const string_type& uri() const;
 
-      /*!
-       * \brief Retrieving the scheme
+        /*!
+          \brief Retrieving the scheme
 
-       * \return Returns the URI scheme.
-       */
-      string_type scheme() const;
+          \return Returns the URI scheme.
+         */
+        string_type scheme() const;
 
-      /*!
-       * \brief Retrieving the user information
+        /*!
+          \brief Retrieving the user information
 
-       * \return Returns the URI user information.
-       */
-      string_type user() const;
+          \return Returns the URI user information.
+         */
+        string_type user() const;
 
-      /*!
-       * \brief Retrieving the password information
+        /*!
+          \brief Retrieving the password information
 
-       * \return Returns the URI password information.
-       */
-      string_type password() const;
+          \return Returns the URI password information.
+         */
+        string_type password() const;
 
-      /*!
-       * \brief Retrieving the host
+        /*!
+          \brief Retrieving the host
 
-       * \return Returns the URI host.
-       */
-      string_type host() const;
+          \return Returns the URI host.
+         */
+        string_type host() const;
 
-      /*!
-       * \brief Retrieving the port
+        /*!
+          \brief Retrieving the port
 
-       * \return Returns the URI port.
-       */
-      string_type port() const;
+          \return Returns the URI port.
+         */
+        string_type port() const;
 
-      /*!
-       * \brief Retrieving the path
+        /*!
+          \brief Retrieving the path
 
-       * \return Returns the URI path.
-       */
-      string_type path() const;
+          \return Returns the URI path.
+         */
+        string_type path() const;
 
-      /*!
-       * \brief Retrieving the query
+        /*!
+         \brief Retrieving the query
 
-       * \return Returns the URI query.
-       */
-      string_type query() const;
+         \return Returns the URI query.
+         */
+        string_type query() const;
 
-      /*!
-       * \brief Retrieving the fragment
+        /*!
+          \brief Retrieving the fragment
 
-       * \return Returns the URI fragment.
-       */
-      string_type fragment() const;
+          \return Returns the URI fragment.
+         */
+        string_type fragment() const;
 
-      /*!
-       * \brief Return if the given URI is valid or not.
+        /*!
+          \brief Return if the given URI is valid or not.
 
-       * \return Returns true if the given URI is valid.
-       */
-      bool isValid() const;
+         \return Returns true if the given URI is valid.
+         */
+        bool isValid() const;
 
-      /*!
-       * \brief Check if the uri_ contains any invalid character and parse it to his hexadecimal value
-       */
-      void encode();
-      string_type hex_to_letter(int i);
+      private:
 
-    private:
+        /*! \brief Swap operation. */
+        void swap(URI& other);
 
-      string_type uri_;
-      boost::match_results< const_iterator > match_;
-      bool isValid_;
+        /*!
+          \brief Parse the URI stored in uri_ member.
+
+          It uses regex to validate and parse the given URI.
+
+          After this, if the given URI is valid, the match_ member
+          will have the references to all parts of the URI.
+
+          The regex split the URI by using named groups in
+          regex, "(?<name>...)", so knowing the group name,
+          you can require the corresponding group, from match_.
+
+          \exception URIException when the given URI isn't valid.
+         */
+        void parse();
+
+        /*!
+          \brief Check if the uri_ contains any invalid character and parse
+                 it to his hexadecimal value
+         */
+        void encode();
+
+        string_type hexToLetter(int i);
+
+      private:
+
+        string_type uri_;
+        boost::match_results< const_iterator > match_;
+        bool isValid_;
     };
 
   }  // end namespace core

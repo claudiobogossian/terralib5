@@ -69,6 +69,37 @@ te::qt::widgets::DoubleListWidget* te::qt::plugins::terramobile::BuilderGatherin
   return m_widget.get();
 }
 
+void te::qt::plugins::terramobile::BuilderGatheringLayersWizardPage::setLayerList(std::vector<std::string> names)
+{
+  m_layerNames = names;
+
+  m_widget->setInputValues(m_layerNames);
+}
+
+void te::qt::plugins::terramobile::BuilderGatheringLayersWizardPage::setSelectedLayers(std::vector<std::string> names)
+{
+  std::vector<std::string> newNames;
+
+  for (std::size_t t = 0; t < m_layerNames.size(); ++t)
+  {
+    bool found = false;
+    for (std::size_t p = 0; p < names.size(); ++p)
+    {
+      if (m_layerNames[t] == names[p])
+      {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found)
+      newNames.push_back(m_layerNames[t]);
+  }
+
+  m_widget->setInputValues(newNames);
+  m_widget->clearOutputValues();
+}
+
 void te::qt::plugins::terramobile::BuilderGatheringLayersWizardPage::onItemChanged()
 {
   emit completeChanged();

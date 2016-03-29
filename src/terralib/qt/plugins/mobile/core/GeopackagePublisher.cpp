@@ -36,9 +36,27 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+te::qt::plugins::terramobile::GeopackagePublisher* te::qt::plugins::terramobile::GeopackagePublisher::m_staticPointer = 0;
+
+te::qt::plugins::terramobile::GeopackagePublisherOperation te::qt::plugins::terramobile::GeopackagePublisher::m_gpkgOpType = te::qt::plugins::terramobile::GPKG_OP_NONE;
+
+int progressFunc(void *bar,  double donwTotal, double downNow, double upTotal, double upNow)
+{
+  if (te::qt::plugins::terramobile::GeopackagePublisher::m_gpkgOpType == te::qt::plugins::terramobile::GPKG_OP_DOWNLOAD)
+  {
+    te::qt::plugins::terramobile::GeopackagePublisher::m_staticPointer->emitSignal(downNow, donwTotal);
+  }
+  else if (te::qt::plugins::terramobile::GeopackagePublisher::m_gpkgOpType == te::qt::plugins::terramobile::GPKG_OP_UPLOAD)
+  {
+    te::qt::plugins::terramobile::GeopackagePublisher::m_staticPointer->emitSignal(upNow, upTotal);
+  }
+
+  return 0;
+}
+
 te::qt::plugins::terramobile::GeopackagePublisher::GeopackagePublisher() : m_errorMessage("")
 {
-
+  m_staticPointer = this;
 }
 
 te::qt::plugins::terramobile::GeopackagePublisher::~GeopackagePublisher()
@@ -140,6 +158,8 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream)
 
 void te::qt::plugins::terramobile::GeopackagePublisher::downloadGeopackageFile(std::string url, GeopackageFile gpkgFile, std::string pathDir)
 {
+  m_gpkgOpType = te::qt::plugins::terramobile::GPKG_OP_DOWNLOAD;
+
   url += "/downloadproject";
 
   CURL *curl;
@@ -209,6 +229,10 @@ void te::qt::plugins::terramobile::GeopackagePublisher::downloadGeopackageFile(s
 
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+
+    curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progressFunc);
+
     /* Perform the request, res will get the return code */
     res = curl_easy_perform(curl);
 
@@ -216,6 +240,7 @@ void te::qt::plugins::terramobile::GeopackagePublisher::downloadGeopackageFile(s
     if (res != CURLE_OK)
     {
       m_errorMessage = curl_easy_strerror(res);
+      m_gpkgOpType = te::qt::plugins::terramobile::GPKG_OP_NONE;
       throw;
     }
 
@@ -230,10 +255,14 @@ void te::qt::plugins::terramobile::GeopackagePublisher::downloadGeopackageFile(s
 
     fclose(fp);
   }
+
+  m_gpkgOpType = te::qt::plugins::terramobile::GPKG_OP_NONE;
 }
 
 void te::qt::plugins::terramobile::GeopackagePublisher::uploadGeopackageFile(std::string url, std::string filePath, std::string fileName)
 {
+  m_gpkgOpType = te::qt::plugins::terramobile::GPKG_OP_UPLOAD;
+
   url += "/uploadproject";
 
   CURL *curl;
@@ -286,6 +315,10 @@ void te::qt::plugins::terramobile::GeopackagePublisher::uploadGeopackageFile(std
 
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+
+    curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progressFunc);
+
     /* Perform the request, res will get the return code */
     res = curl_easy_perform(curl);
 
@@ -293,6 +326,7 @@ void te::qt::plugins::terramobile::GeopackagePublisher::uploadGeopackageFile(std
     if (res != CURLE_OK)
     {
       m_errorMessage = curl_easy_strerror(res);
+      m_gpkgOpType = te::qt::plugins::terramobile::GPKG_OP_NONE;
       throw;
     }
 
@@ -305,6 +339,8 @@ void te::qt::plugins::terramobile::GeopackagePublisher::uploadGeopackageFile(std
     /* free slist */
     curl_slist_free_all(headerlist);
   }
+
+  m_gpkgOpType = te::qt::plugins::terramobile::GPKG_OP_NONE;
 }
 
 te::qt::plugins::terramobile::GeopackageFiles te::qt::plugins::terramobile::GeopackagePublisher::readJSONInfo(std::string stream)
@@ -336,8 +372,24 @@ te::qt::plugins::terramobile::GeopackageFiles te::qt::plugins::terramobile::Geop
   }
   catch (std::exception const& e)
   {
-    m_errorMessage = e.what();;
+    m_errorMessage = e.what();
   }
 
   return gpkgFiles;
+}
+
+void te::qt::plugins::terramobile::GeopackagePublisher::emitSignal(double curStep, double totalStep)
+{
+  std::string msg = "";
+
+  if (m_gpkgOpType == te::qt::plugins::terramobile::GPKG_OP_DOWNLOAD)
+  {
+    msg = "Downloading Geopackage File...";
+  }
+  else if (m_gpkgOpType == te::qt::plugins::terramobile::GPKG_OP_UPLOAD)
+  {
+    msg = "Uploading Geopackage File...";
+  }
+
+  emit setCurrentStep(curStep, totalStep, msg);
 }

@@ -44,7 +44,7 @@
 #include "../../../../rp/RasterHandler.h"
 #include "../core/form/Serializer.h"
 #include "../geopackage/Utils.h"
-#include "utils.h"
+#include "Utils.h"
 
 //Boost
 #include <boost/uuid/random_generator.hpp>
