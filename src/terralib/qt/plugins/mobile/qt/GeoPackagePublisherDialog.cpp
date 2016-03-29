@@ -27,6 +27,8 @@
 #include "../../../../common/progress/ProgressManager.h"
 #include "../../../../common/progress/TaskProgress.h"
 #include "../../../../common/STLUtils.h"
+#include "../../../../qt/widgets/progress/ProgressViewerDialog.h"
+#include "../../../../qt/widgets/utils/ScopedCursor.h"
 #include "../core/GeopackagePublisher.h"
 #include "GeoPackagePublisherDialog.h"
 #include "ui_GeoPackagePublisherDialogForm.h"
@@ -51,11 +53,13 @@ te::qt::plugins::terramobile::GeoPackagePublisherDialog::GeoPackagePublisherDial
   connect(m_ui->m_importPushButton, SIGNAL(clicked()), this, SLOT(onImportPushButtonClicked()));
   connect(m_ui->m_exportFilePushButton, SIGNAL(clicked()), this, SLOT(onExportFilePushButtonClicked()));
   connect(m_ui->m_exportPushButton, SIGNAL(clicked()), this, SLOT(onExportPushButtonClicked()));
+
+  m_task = 0;
 }
 
 te::qt::plugins::terramobile::GeoPackagePublisherDialog::~GeoPackagePublisherDialog()
 {
-
+  delete m_task;
 }
 
 void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportSearchPushButtonClicked()
@@ -69,6 +73,8 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportSearchPush
   }
 
   m_ui->m_importTableWidget->setRowCount(0);
+
+  te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
 
   //fill list
   GeopackagePublisher gpkgPub;
@@ -138,8 +144,15 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportPushButton
 
   std::string url = m_ui->m_importURLLineEdit->text().toStdString();
 
+  te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
+
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   //import
   GeopackagePublisher gpkgPub;
+
+  connect(&gpkgPub, SIGNAL(setCurrentStep(double, double, std::string)), this, SLOT(onSetCurrentStep(double, double, std::string)));
 
   for (int i = 0; i < m_ui->m_importTableWidget->rowCount(); ++i)
   {
@@ -151,9 +164,26 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportPushButton
       gpkgFile.m_objId = m_ui->m_importTableWidget->item(i, 1)->text().toStdString();
       gpkgFile.m_desc = m_ui->m_importTableWidget->item(i, 2)->text().toStdString();
 
-      gpkgPub.downloadGeopackageFile(url, gpkgFile, dir);
+      try
+      {
+        gpkgPub.downloadGeopackageFile(url, gpkgFile, dir);
+      }
+      catch (std::exception const& e)
+      {
+        QMessageBox::warning(this, tr("Warning"), e.what());
+        return;
+      }
+      catch (...)
+      {
+        QMessageBox::warning(this, tr("Warning"), gpkgPub.getErrorMessage().c_str());
+        return;
+      }
     }
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  QMessageBox::information(this, tr("Information"), tr("Downloaded Successfully"));
 }
 
 void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportFilePushButtonClicked()
@@ -187,10 +217,56 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
 
   QFileInfo file(m_ui->m_exportFileLineEdit->text());
 
+  te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
+
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   //export gpkg
   GeopackagePublisher gpkgPub;
 
-  gpkgPub.uploadGeopackageFile(url, pathFile, file.baseName().toStdString());
+  connect(&gpkgPub, SIGNAL(setCurrentStep(double, double, std::string)), this, SLOT(onSetCurrentStep(double, double, std::string)));
+
+  try
+  {
+    gpkgPub.uploadGeopackageFile(url, pathFile, file.baseName().toStdString());
+  }
+  catch (std::exception const& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+    return;
+  }
+  catch (...)
+  {
+    QMessageBox::warning(this, tr("Warning"), gpkgPub.getErrorMessage().c_str());
+    return;
+  }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  QMessageBox::information(this, tr("Information"), tr("Uploaded Successfully"));
+}
+
+void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onSetCurrentStep(double curStep, double totalStep, std::string msg)
+{
+  if (curStep == 0.)
+    return;
+
+  if (!m_task)
+  {
+    m_task = new te::common::TaskProgress(msg);
+    m_task->setTotalSteps(100);
+  }
+
+  int nStep = (100. * curStep) / totalStep;
+
+  m_task->setCurrentStep(nStep);
+
+  if (curStep == totalStep)
+  {
+    delete m_task;
+    m_task = 0;
+  }
 }
 
 

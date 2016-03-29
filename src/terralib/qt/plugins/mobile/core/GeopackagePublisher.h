@@ -28,6 +28,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 #include "../Config.h"
 
+//Qt
+#include <QObject>
 
 // STL
 #include <string>
@@ -52,19 +54,28 @@ namespace te
 
         typedef std::vector<GeopackageFile> GeopackageFiles;
 
+        enum GeopackagePublisherOperation
+        {
+          GPKG_OP_DOWNLOAD,
+          GPKG_OP_UPLOAD,
+          GPKG_OP_NONE
+        };
+
         /*!
         \class GeoPackagePublisher
 
         \brief This file is used to Publisher operation.
         */
-        class GeopackagePublisher
+        class GeopackagePublisher : public QObject
         {
+          Q_OBJECT
 
           public:
 
             GeopackagePublisher();
 
             ~GeopackagePublisher();
+
 
           public:
 
@@ -80,10 +91,23 @@ namespace te
 
             GeopackageFiles readJSONInfo(std::string stream);
 
+          public:
+
+            void emitSignal(double curStep, double totalStep);
+
+          signals:
+
+            void setCurrentStep(double curStep, double totalStep, std::string msg);
+
           protected:
 
             std::string m_errorMessage;
 
+          public:
+
+            static GeopackagePublisher* m_staticPointer;
+
+            static GeopackagePublisherOperation m_gpkgOpType;
         };
       }   // end namespace thirdParty
     }     // end namespace plugins
