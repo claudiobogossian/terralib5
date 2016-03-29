@@ -70,6 +70,7 @@
 
 #include "../../srs/Config.h"
 
+#include "../ComplexData.h"
 #include "../Exception.h"
 #include "../Difference.h"
 #include "../Utils.h"
@@ -362,21 +363,17 @@ te::vp::DifferenceDialog::DataStruct te::vp::DifferenceDialog::getDataStructFrom
   return data;
 }
 
-std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getSelectedProperties()
+std::vector<std::string> te::vp::DifferenceDialog::getSelectedProperties()
 {
   std::vector<std::string> outVec = m_doubleListWidget->getOutputValues();
-  std::vector<std::pair<std::string, std::string> > result;
+  std::vector<std::string> result;
 
   for (std::size_t i = 0; i < outVec.size(); ++i)
   {
     std::vector<std::string> tok;
     te::common::Tokenize(outVec[i], tok, ": ");
 
-    std::pair<std::string, std::string> p;
-    p.first = tok[0];
-    p.second = tok[1];
-
-    result.push_back(p);
+    result.push_back(tok[1]);
   }
 
   return result;
@@ -561,18 +558,17 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
   }
 
 // Get output attributes.
-  std::vector<std::pair<std::string, std::string> > attributesVec = this->getSelectedProperties();
+  std::vector<std::string> attributesVec = this->getSelectedProperties();
   std::map<std::string, te::dt::AbstractData*> specificParams;
 
-  for (std::size_t attPos = 0; attPos < attributesVec.size(); ++attPos)
+  if (!attributesVec.empty())
   {
-    specificParams.insert(std::pair<std::string, te::dt::AbstractData*>(
-      boost::lexical_cast<std::string>(attPos),
-      new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(attributesVec[attPos].second)));
+    specificParams["ATTRIBUTES"] = new te::vp::ComplexData<std::vector<std::string> >(attributesVec);
   }
 
 // Verify if the result is Single or Multi Geometry type
-  bool isCollection = this->isCollection();
+  specificParams["IS_COLLECTION"] = new te::dt::SimpleData<bool, te::dt::BOOLEAN_TYPE>(this->isCollection());
+
 
 // Validade output repository.
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
@@ -755,7 +751,6 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setOutputDataSource(dsOGR);
       m_params->setOutputDataSetName(outputdataset);
       m_params->setSpecificParams(specificParams);
-      m_params->setCollection(isCollection);
 
       te::vp::Difference difference;
 
@@ -827,7 +822,6 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setOutputDataSource(aux);
       m_params->setOutputDataSetName(outputdataset);
       m_params->setSpecificParams(specificParams);
-      m_params->setCollection(isCollection);
 
       te::vp::Difference difference;
 
