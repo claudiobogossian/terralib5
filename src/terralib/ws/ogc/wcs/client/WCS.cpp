@@ -148,24 +148,34 @@ std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest)
       if(!coverageRequest.mediaType.empty())
         url += "&MEDIATYPE=" + coverageRequest.mediaType;
 
-      for(unsigned int i = 0; i < coverageRequest.boundedBy.axisLabels.size(); i ++)
-      {
-        const BoundedBy* boundedBy = &coverageRequest.boundedBy;
+        const EnvelopeWithTimePeriod* envelope = &coverageRequest.envelope;
 
-        url += "&SUBSET=" + boundedBy->axisLabels.at(i) + "(";
+        std::string x1 = envelope->lowerCorner_X;
+        std::string y1 = envelope->lowerCorner_Y;
+        std::string x2 = envelope->upperCorner_X;
+        std::string y2 = envelope->upperCorner_Y;
 
-        for(unsigned int j = 0; j < boundedBy->coordinate.size(); j++)
+        std::string subset1(""), subset2("");
+
+        if(!x1.empty() && !x2.empty())
+          subset1 = "&SUBSET=" + envelope->lowerLabel + "(" + x1 + (!x1.empty() && !x2.empty()? ",": "") + x2 + ")";
+
+        if(!y1.empty() && !y2.empty())
+          subset2 = "&SUBSET=" + envelope->upperLabel + "(" + y1 + (!y1.empty() && !y2.empty()? ",": "") + y2 + ")";
+
+        url += subset1 + subset2;
+
+        if(!envelope->timeLabel.empty())
         {
-          const Coordinate* coordinate = &boundedBy->coordinate.at(j);
+          url += "&SUBSET=" + envelope->timeLabel + "(";
 
-          if(j != 0)
-            url += ",";
+          if(coverageRequest.time.empty())
+            url += envelope->endPosition;
+          else
+            url += coverageRequest.time;
 
-          url += coordinate->coord.at(i);
+          url += ")";
         }
-
-        url += ")";
-      }
 
       for(std::map<std::string, std::string>::const_iterator parameter = coverageRequest.additionalParameters.begin(); parameter != coverageRequest.additionalParameters.end(); parameter++)
       {
@@ -176,9 +186,8 @@ std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest)
     {
       throw te::common::Exception(TE_TR("WCS version not supported!"));
     }
-    std::cout << url.c_str() << std::endl;
-    coveragePath = makeFileRequest(url, coverageRequest.coverageID);
 
+    coveragePath = makeFileRequest(url, coverageRequest.coverageID);
   }
   catch(const te::common::Exception& e)
   {
