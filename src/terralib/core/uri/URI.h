@@ -60,7 +60,7 @@ namespace te
   {
     /*!
       \class URI
-      
+
       \brief A class for representing an Uniform Resource Identifier (URI).
      */
     class URI
@@ -76,10 +76,10 @@ namespace te
 
         /*!
           \brief A constructor from a string.
-         
+
            This constructor check the URI enconding,
            then parse it and validate.
-       
+
            \param uri A string with the URI to be parsed.
 
            \exception URIException when the given URI isn't valid.
@@ -96,19 +96,19 @@ namespace te
 
         /*! \brief Assingment operator. */
         URI& operator=(const URI& other);
-      
+
         //URI& operator=(URI&& other) noexcept;
 
         /*!
           \brief Retrieving the full URI
-          
+
           \return Returns the complete URI.
          */
         const string_type& uri() const;
 
         /*!
           \brief Retrieving the scheme
-          
+
           \return Returns the URI scheme.
          */
         string_type scheme() const;
@@ -168,35 +168,34 @@ namespace te
          \return Returns true if the given URI is valid.
          */
         bool isValid() const;
-      
+
       private:
-      
+
         /*! \brief Swap operation. */
         void swap(URI& other);
-      
+
         /*!
           \brief Parse the URI stored in uri_ member.
-          
+
           It uses regex to validate and parse the given URI.
-          
+
           After this, if the given URI is valid, the match_ member
           will have the references to all parts of the URI.
-          
-          The regex split the URI by using groups in
-          regex, "(...)", so knowing the group number,
-          you can require the corresponding match, from match_.
-          It's important to verify the groups sequence after updating the search regex.
+
+          The regex split the URI by using named groups in
+          regex, "(?<name>...)", so knowing the group name,
+          you can require the corresponding group, from match_.
 
           \exception URIException when the given URI isn't valid.
          */
         void parse();
-      
+
         /*!
           \brief Check if the uri_ contains any invalid character and parse
                  it to his hexadecimal value
          */
         void encode();
-      
+
         string_type hexToLetter(int i);
 
       private:
