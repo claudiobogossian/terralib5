@@ -263,7 +263,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
           int idValue = dataSetQuery->getInt32(0);
 
-          std::string sqlRemove = "DELETE from";
+          std::string sqlRemove = "DELETE from ";
           sqlRemove += dsTypeAux2->getName();
           sqlRemove += " WHERE FID";
           sqlRemove += " = ";
