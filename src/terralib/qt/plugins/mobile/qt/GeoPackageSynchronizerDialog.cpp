@@ -48,9 +48,8 @@ te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::GeoPackageSynchroniz
   //connects
   connect(m_ui->m_geopackageToolButton, SIGNAL(pressed()), this, SLOT(onGeopackageToolButtonClicked()));
   connect(m_ui->m_synchPushButton, SIGNAL(clicked()), this, SLOT(onSynchronizePushButtonClicked()));
-
+  connect(m_ui->m_gatheringComboBox, SIGNAL(activated(int)), this, SLOT(onGatheringComboBoxActivated(int)));
 }
-
 
 te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::~GeoPackageSynchronizerDialog()
 {
@@ -84,6 +83,15 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGeopackageToo
   for (std::size_t t = 0; t < dsNames.size(); ++t)
   {
     std::string connInfo = "";
+    std::string sql = "SELECT datasource_uri FROM tm_layer_settings WHERE layer_name = '" + dsNames[t] + "';";
+    std::auto_ptr<te::da::DataSet> dataSetQuery = dsGPKG->query(sql);
+
+    if (!dataSetQuery->isEmpty())
+    {
+      dataSetQuery->moveFirst();
+      connInfo = dataSetQuery->getAsString(0);
+    }
+
     m_ui->m_gatheringComboBox->addItem(dsNames[t].c_str(), QVariant(connInfo.c_str()));
   }
 }
@@ -100,8 +108,9 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGatheringComb
     std::string dsId = l->getDataSourceId();
 
     te::da::DataSourceInfoPtr dsInfoPtr = te::da::DataSourceInfoManager::getInstance().get(dsId);
+    std::string dsConnInfo = dsInfoPtr->getConnInfoAsString();
 
-    if (dsInfoPtr->getConnInfoAsString() == connInfo)
+    if (dsConnInfo == connInfo)
     {
       m_ui->m_layerComboBox->setCurrentIndex(i);
       break;
