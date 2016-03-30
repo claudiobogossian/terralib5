@@ -25,6 +25,8 @@
 
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../core/GeopackageSynchronizer.h"
 #include "GeoPackageSynchronizerDialog.h"
@@ -81,7 +83,29 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGeopackageToo
 
   for (std::size_t t = 0; t < dsNames.size(); ++t)
   {
-    m_ui->m_gatheringComboBox->addItem(dsNames[t].c_str());
+    std::string connInfo = "";
+    m_ui->m_gatheringComboBox->addItem(dsNames[t].c_str(), QVariant(connInfo.c_str()));
+  }
+}
+
+void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGatheringComboBoxActivated(int index)
+{
+  std::string connInfo = m_ui->m_gatheringComboBox->itemData(index).toString().toStdString();
+
+  for (int i = 0; i < m_ui->m_layerComboBox->count(); ++i)
+  {
+    QVariant varLayer = m_ui->m_layerComboBox->itemData(i, Qt::UserRole);
+    te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+    std::string dsId = l->getDataSourceId();
+
+    te::da::DataSourceInfoPtr dsInfoPtr = te::da::DataSourceInfoManager::getInstance().get(dsId);
+
+    if (dsInfoPtr->getConnInfoAsString() == connInfo)
+    {
+      m_ui->m_layerComboBox->setCurrentIndex(i);
+      break;
+    }
   }
 }
 

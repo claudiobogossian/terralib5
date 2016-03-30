@@ -340,6 +340,7 @@ std::auto_ptr<te::rst::Raster> te::qt::plugins::terramobile::NormalizeRaster(te:
     te::rst::BandProperty* bandProp = new te::rst::BandProperty(colorbands[bandIdx], te::dt::UCHAR_TYPE);
     te::rst::Band& inBand = *inraster->getBand(colorbands[bandIdx]);
     bandProp->m_colorInterp = inBand.getProperty()->m_colorInterp;
+    bandProp->m_noDataValue = inBand.getProperty()->m_noDataValue;
     bandsProperties.push_back(bandProp);
   }
 
@@ -364,7 +365,7 @@ std::auto_ptr<te::rst::Raster> te::qt::plugins::terramobile::NormalizeRaster(te:
 
           if (value == noDataValue)
           {
-            value = 0;
+            rasterNormalized->setValue((unsigned int)col, (unsigned int)row, value, bandIdx);
           }
           else
           {
