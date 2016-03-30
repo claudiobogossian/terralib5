@@ -65,6 +65,8 @@ namespace te
 
             void onGeopackageToolButtonClicked();
 
+            void onGatheringComboBoxActivated(int index);
+
             void onSynchronizePushButtonClicked();
 
           public:

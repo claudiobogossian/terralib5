@@ -25,6 +25,8 @@
 
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../core/GeopackageSynchronizer.h"
 #include "GeoPackageSynchronizerDialog.h"
@@ -46,9 +48,8 @@ te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::GeoPackageSynchroniz
   //connects
   connect(m_ui->m_geopackageToolButton, SIGNAL(pressed()), this, SLOT(onGeopackageToolButtonClicked()));
   connect(m_ui->m_synchPushButton, SIGNAL(clicked()), this, SLOT(onSynchronizePushButtonClicked()));
-
+  connect(m_ui->m_gatheringComboBox, SIGNAL(activated(int)), this, SLOT(onGatheringComboBoxActivated(int)));
 }
-
 
 te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::~GeoPackageSynchronizerDialog()
 {
@@ -81,7 +82,39 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGeopackageToo
 
   for (std::size_t t = 0; t < dsNames.size(); ++t)
   {
-    m_ui->m_gatheringComboBox->addItem(dsNames[t].c_str());
+    std::string connInfo = "";
+    std::string sql = "SELECT datasource_uri FROM tm_layer_settings WHERE layer_name = '" + dsNames[t] + "';";
+    std::auto_ptr<te::da::DataSet> dataSetQuery = dsGPKG->query(sql);
+
+    if (!dataSetQuery->isEmpty())
+    {
+      dataSetQuery->moveFirst();
+      connInfo = dataSetQuery->getAsString(0);
+    }
+
+    m_ui->m_gatheringComboBox->addItem(dsNames[t].c_str(), QVariant(connInfo.c_str()));
+  }
+}
+
+void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGatheringComboBoxActivated(int index)
+{
+  std::string connInfo = m_ui->m_gatheringComboBox->itemData(index).toString().toStdString();
+
+  for (int i = 0; i < m_ui->m_layerComboBox->count(); ++i)
+  {
+    QVariant varLayer = m_ui->m_layerComboBox->itemData(i, Qt::UserRole);
+    te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+    std::string dsId = l->getDataSourceId();
+
+    te::da::DataSourceInfoPtr dsInfoPtr = te::da::DataSourceInfoManager::getInstance().get(dsId);
+    std::string dsConnInfo = dsInfoPtr->getConnInfoAsString();
+
+    if (dsConnInfo == connInfo)
+    {
+      m_ui->m_layerComboBox->setCurrentIndex(i);
+      break;
+    }
   }
 }
 
