@@ -554,12 +554,7 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
 
 
 // Set to output datasettype the primary key property.
-  if (mainParams->getOutputDataSource()->getType() == "OGR")
-  {
-    te::dt::SimpleProperty* fidProperty = new te::dt::SimpleProperty("FID", te::dt::INT32_TYPE);
-    outputDataSetType->add(fidProperty);
-  }
-  else
+  if (mainParams->getOutputDataSource()->getType() != "OGR")
   {
     te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
     pkProperty->setAutoNumber(true);
