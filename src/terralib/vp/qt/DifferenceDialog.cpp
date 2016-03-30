@@ -30,29 +30,13 @@
 #include "../../common/Translator.h"
 
 #include "../../dataaccess/dataset/DataSet.h"
-#include "../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../dataaccess/dataset/DataSetType.h"
-#include "../../dataaccess/dataset/DataSetTypeConverter.h"
-#include "../../dataaccess/dataset/ObjectIdSet.h"
 
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
-
-#include "../../dataaccess/query/And.h"
-#include "../../dataaccess/query/DataSetName.h"
-#include "../../dataaccess/query/Expression.h"
-#include "../../dataaccess/query/Field.h"
-#include "../../dataaccess/query/Fields.h"
-#include "../../dataaccess/query/From.h"
-#include "../../dataaccess/query/FromItem.h"
-#include "../../dataaccess/query/LiteralInt32.h"
-#include "../../dataaccess/query/PropertyName.h"
-#include "../../dataaccess/query/ST_SetSRID.h"
-#include "../../dataaccess/query/ST_Transform.h"
-#include "../../dataaccess/query/Where.h"
 
 #include "../../dataaccess/utils/Utils.h"
 
@@ -61,15 +45,12 @@
 
 #include "../../geometry/GeometryProperty.h"
 
-#include "../../maptools/QueryLayer.h"
-
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
 
-#include "../../srs/Config.h"
-
+#include "../ComplexData.h"
 #include "../Exception.h"
 #include "../Difference.h"
 #include "../Utils.h"
@@ -82,13 +63,9 @@
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QMessageBox>
-#include <QTreeWidget>
 
 // BOOST
 #include <boost/filesystem.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
 
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
@@ -163,220 +140,17 @@ te::map::AbstractLayerPtr te::vp::DifferenceDialog::getLayer()
   return m_layerResult;
 }
 
-te::da::Select* te::vp::DifferenceDialog::getSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid)
-{
-// Do a Cast from AbstractLayerPtr to DataSetLayer or QueryLayer.
-  te::map::DataSetLayer* dataSetLayer = 0;
-  te::map::QueryLayer* queryLayer = 0;
-
-  if (layer->getType() == "DATASETLAYER")
-  {
-    dataSetLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
-    if (!dataSetLayer)
-    {
-      QMessageBox::information(this, "Error", "Can not execute this operation on this type of layer.");
-      return 0;
-    }
-  }
-  else if (layer->getType() == "QUERYLAYER")
-  {
-    queryLayer = dynamic_cast<te::map::QueryLayer*>(layer.get());
-    if (!queryLayer)
-    {
-      QMessageBox::information(this, "Error", "Can not execute this operation on this type of layer.");
-      return 0;
-    }
-  }
-  else
-  {
-    QMessageBox::information(this, "Error", "Can not execute this operation on this type of layer.");
-    return 0;
-  }
-
-// Select query
-  te::da::Select* select = new te::da::Select();
-
-// From dataSetLayer
-  if (dataSetLayer)
-  {
-    te::da::Fields* fields = new te::da::Fields;
-
-    if (srid == 0)
-    {
-      te::da::Field* f_all = new te::da::Field("*");
-      fields->push_back(f_all);
-    }
-    else
-    {
-      std::auto_ptr<te::da::DataSetType> dsType = dataSetLayer->getSchema();
-      std::vector<te::dt::Property*> properties = dsType.get()->getProperties();
-
-      for (std::size_t i = 0; i < properties.size(); ++i)
-      {
-        if (properties[i]->getType() != te::dt::GEOMETRY_TYPE)
-        {
-          te::da::Field* currentField = new te::da::Field(properties[i]->getName());
-          fields->push_back(currentField);
-        }
-        else
-        {
-          te::da::LiteralInt32* litSRID = new te::da::LiteralInt32(srid);
-          
-          te::da::Expression* eSetSRID = new te::da::ST_SetSRID(new te::da::PropertyName(properties[i]->getName()), litSRID);
-
-          te::da::Expression* eTransform = new te::da::ST_Transform(eSetSRID, srid);
-
-          te::da::Field* geomField = new te::da::Field(*eTransform, properties[i]->getName());
-          fields->push_back(geomField);
-        }
-      }
-    }
-
-    select->setFields(fields);
-
-    te::da::From* from = new te::da::From;
-    te::da::FromItem* fromItem = new te::da::DataSetName(dataSetLayer->getDataSetName());
-    from->push_back(fromItem);
-    select->setFrom(from);
-
-    if (onlySelectedObjects)
-    {
-      const te::da::ObjectIdSet* oidSet = layer->getSelected();
-      if (!oidSet)
-      {
-        QMessageBox::information(this, "Difference", "Select the layer objects to perform the operation.");
-        return 0;
-      }
-
-      te::da::Where* w_oid = new te::da::Where(oidSet->getExpression());
-      select->setWhere(w_oid);
-    }
-  }
-// From queryLayer
-  else
-  {
-    select = queryLayer->getQuery();
-
-    if (srid != 0)
-    {
-      std::auto_ptr<te::da::DataSetType> dsType = queryLayer->getSchema();
-      std::vector<te::dt::Property*> properties = dsType.get()->getProperties();
-
-      te::da::Fields* fields = new te::da::Fields;
-
-      for (std::size_t i = 0; i < properties.size(); ++i)
-      {
-        if (properties[i]->getType() != te::dt::GEOMETRY_TYPE)
-        {
-          te::da::Field* currentField = new te::da::Field(properties[i]->getName());
-          fields->push_back(currentField);
-        }
-        else
-        {
-          te::da::LiteralInt32* litSRID = new te::da::LiteralInt32(srid);
-
-          te::da::Expression* eSetSRID = new te::da::ST_SetSRID(new te::da::PropertyName(properties[i]->getName()), litSRID);
-
-          te::da::Expression* eTransform = new te::da::ST_Transform(eSetSRID, srid);
-
-          te::da::Field* geomField = new te::da::Field(*eTransform, properties[i]->getName());
-          fields->push_back(geomField);
-        }
-      }
-
-      select->setFields(fields);
-
-    }
-
-    if (onlySelectedObjects)
-    {
-      const te::da::ObjectIdSet* oidSet = layer->getSelected();
-      if (!oidSet)
-      {
-        QMessageBox::information(this, "Difference", "Select the layer objects to perform the operation.");
-        return 0;
-      }
-
-      te::da::Where* w = select->getWhere();
-
-      te::da::Expression* e_where =  w->getExp()->clone();
-      te::da::Expression* e_oidWhere = oidSet->getExpression();
-
-      te::da::And* andPtr = new te::da::And(e_where, e_oidWhere);
-
-      te::da::Where* newWhere = new te::da::Where(andPtr);
-
-      select->setWhere(newWhere);
-    }
-  }
-
-  return select;
-}
-
-te::vp::DifferenceDialog::DataStruct te::vp::DifferenceDialog::getDataStructFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid)
-{
-  DataStruct data;
-
-  std::string sourceId = layer->getDataSourceId();
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().find(sourceId);
-
-  std::auto_ptr<te::da::DataSetType> dataSetType = layer->getSchema();
-  std::auto_ptr<te::da::DataSet> dataSet = dataSource->getDataSet(dataSetType->getName());
-  
-  if (dataSetType.get() && dataSet.get())
-  {
-    if (onlySelectedObjects)
-    {
-      const te::da::ObjectIdSet* oidSet = layer->getSelected();
-      if (!oidSet)
-      {
-        QMessageBox::information(this, "Difference", "Select the layer objects to perform the operation.");
-        return data;
-      }
-
-      dataSet = dataSource->getDataSet(dataSetType->getName(), oidSet);
-
-      if (!dataSet.get())
-        return data;
-    }
-
-    if (srid != 0)
-    {
-      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dataSetType.get(), dataSource->getCapabilities(), dataSource->getEncoding()));
-      te::da::AssociateDataSetTypeConverterSRID(converter.get(), srid);
-
-      dataSetType.reset(new te::da::DataSetType(*converter->getResult()));
-
-      te::da::DataSetAdapter* dataSetAdapter = te::da::CreateAdapter(dataSet.release(), converter.get());
-
-      if (!dataSetAdapter)
-        return data;
-
-      dataSet.reset(dataSetAdapter);
-    }
-
-    data.m_dataSetType = dataSetType.release();
-    data.m_dataSet = dataSet.release();
-  }
-
-  return data;
-}
-
-std::vector<std::pair<std::string, std::string> > te::vp::DifferenceDialog::getSelectedProperties()
+std::vector<std::string> te::vp::DifferenceDialog::getSelectedProperties()
 {
   std::vector<std::string> outVec = m_doubleListWidget->getOutputValues();
-  std::vector<std::pair<std::string, std::string> > result;
+  std::vector<std::string> result;
 
   for (std::size_t i = 0; i < outVec.size(); ++i)
   {
     std::vector<std::string> tok;
     te::common::Tokenize(outVec[i], tok, ": ");
 
-    std::pair<std::string, std::string> p;
-    p.first = tok[0];
-    p.second = tok[1];
-
-    result.push_back(p);
+    result.push_back(tok[1]);
   }
 
   return result;
@@ -561,18 +335,17 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
   }
 
 // Get output attributes.
-  std::vector<std::pair<std::string, std::string> > attributesVec = this->getSelectedProperties();
+  std::vector<std::string> attributesVec = this->getSelectedProperties();
   std::map<std::string, te::dt::AbstractData*> specificParams;
 
-  for (std::size_t attPos = 0; attPos < attributesVec.size(); ++attPos)
+  if (!attributesVec.empty())
   {
-    specificParams.insert(std::pair<std::string, te::dt::AbstractData*>(
-      boost::lexical_cast<std::string>(attPos),
-      new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(attributesVec[attPos].second)));
+    specificParams["ATTRIBUTES"] = new te::vp::ComplexData<std::vector<std::string> >(attributesVec);
   }
 
 // Verify if the result is Single or Multi Geometry type
-  bool isCollection = this->isCollection();
+  specificParams["IS_COLLECTION"] = new te::dt::SimpleData<bool, te::dt::BOOLEAN_TYPE>(this->isCollection());
+
 
 // Validade output repository.
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
@@ -684,8 +457,8 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       isQuery = true;
 
 // Get Select Query using AbstractLayerPtr to process by spatial database. 
-      inputSelect = this->getSelectQueryFromLayer(m_inputSelectedLayer, inputIsChecked, inputSRID);
-      differenceSelect = this->getSelectQueryFromLayer(m_differenceSelectedLayer, differenceIsChecked, differenceSRID);
+      inputSelect = te::vp::GetSelectQueryFromLayer(m_inputSelectedLayer, inputIsChecked, inputSRID);
+      differenceSelect = te::vp::GetSelectQueryFromLayer(m_differenceSelectedLayer, differenceIsChecked, differenceSRID);
 
       if (inputSelect)
         structInputParams1.m_inputQuery = inputSelect;
@@ -697,7 +470,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
     {
 
 // Get DataSet and DataSetType using AbstractLayerPtr to process by memory, using GEOS.
-      DataStruct inputData = this->getDataStructFromLayer(m_inputSelectedLayer, inputIsChecked, inputSRID);
+      te::vp::DataStruct inputData = te::vp::GetDataStructFromLayer(m_inputSelectedLayer, inputIsChecked, inputSRID);
 
       if (inputData.m_dataSet)
         structInputParams1.m_inputDataSet = inputData.m_dataSet;
@@ -706,7 +479,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
         structInputParams1.m_inputDataSetType = inputData.m_dataSetType;
 
 
-      DataStruct differenceData = this->getDataStructFromLayer(m_differenceSelectedLayer, differenceIsChecked, differenceSRID);
+      te::vp::DataStruct differenceData = te::vp::GetDataStructFromLayer(m_differenceSelectedLayer, differenceIsChecked, differenceSRID);
 
       if (differenceData.m_dataSet)
         structInputParams2.m_inputDataSet = differenceData.m_dataSet;
@@ -755,7 +528,6 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setOutputDataSource(dsOGR);
       m_params->setOutputDataSetName(outputdataset);
       m_params->setSpecificParams(specificParams);
-      m_params->setCollection(isCollection);
 
       te::vp::Difference difference;
 
@@ -827,7 +599,6 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       m_params->setOutputDataSource(aux);
       m_params->setOutputDataSetName(outputdataset);
       m_params->setSpecificParams(specificParams);
-      m_params->setCollection(isCollection);
 
       te::vp::Difference difference;
 

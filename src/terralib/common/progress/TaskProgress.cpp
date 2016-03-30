@@ -127,7 +127,8 @@ void te::common::TaskProgress::setCurrentStep(int value)
     }
 
     // inform the progress manager singleton that the current value has changed
-    te::common::ProgressManager::getInstance().updateValue(m_id);
+    if (m_hasToUpdate)
+      te::common::ProgressManager::getInstance().updateValue(m_id);
   }
 }
 

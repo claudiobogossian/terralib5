@@ -27,6 +27,7 @@
 #define __TE_QT_PLUGINS_TERRAMOBILE_INTERNAL_GEOPACKAGEPUBLISHERDIALOG_H
 
 // TerraLib
+#include "../../../../common/progress/TaskProgress.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
@@ -73,9 +74,13 @@ namespace te
 
             void onExportPushButtonClicked();
 
+            void onSetCurrentStep(double curStep, double totalStep, std::string msg);
+
           private:
 
             std::auto_ptr<Ui::GeoPackagePublisherDialogForm> m_ui;
+
+            te::common::TaskProgress* m_task;
 
         }; 
       }   // end namespace thirdParty

@@ -90,11 +90,7 @@ namespace te
 
       protected:
 
-        te::da::Select* getSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid = 0);
-
-        DataStruct getDataStructFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid = 0);
-
-        std::vector<std::pair<std::string, std::string> > getSelectedProperties();
+        std::vector<std::string> getSelectedProperties();
 
         bool isCollection();
 

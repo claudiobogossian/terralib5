@@ -23,9 +23,12 @@ TerraLib Team at <terralib-team@terralib.org>.
 \brief This file is used to Synchronizer operation.
 */
 
+#include "../../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../../dataaccess/dataset/ObjectId.h"
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/SimpleData.h"
+#include "../../../../geometry/GeometryProperty.h"
 #include "../../../../geometry/MultiPoint.h"
 #include "../../../../geometry/Point.h"
 #include "../../../../memory/DataSet.h"
@@ -94,10 +97,18 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
   dsTypeAux->remove(dsTypeAux->getProperty("FID"));
   te::mem::DataSet* insertDataSetDataSource = new te::mem::DataSet(dsTypeAux.get());
 
-  //create dataset memory to insert into output datasource
+  //create dataset memory to update into output datasource
   std::auto_ptr<te::da::DataSetType> dsTypeAux2 = m_outputDataSource->getDataSetType(m_outputDataset);
   te::mem::DataSet* updateDataSetDataSource = new te::mem::DataSet(dsTypeAux2.get());
 
+  te::gm::GeometryProperty* outputGeomProp = te::da::GetFirstGeomProperty(dsTypeAux.get());
+
+  //remove entries
+  te::da::ObjectIdSet* objIdSet;
+  te::da::GetEmptyOIDSet(dsTypeAux2.get(), objIdSet);
+
+  std::vector<std::string> pnames;
+  te::da::GetOIDPropertyNames(dsTypeAux2.get(), pnames);
 
   std::vector<te::dt::Property*> props = dsTypeAux2->getProperties();
 
@@ -126,6 +137,10 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
         {
           dsItem->setValue(LAYER_GATHERING_OBJID_COLUMN, new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(id));
         }
+        else if (props[t]->getName() == LAYER_GATHERING_STATUS_COLUMN)
+        {
+          dsItem->setValue(LAYER_GATHERING_STATUS_COLUMN, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(0));
+        }
         else
         {
      
@@ -146,6 +161,10 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
             if (point)
             {
+              point->setSRID(4326); //the geometry from geopackage always has to be 4326
+
+              point->transform(outputGeomProp->getSRID());
+
               dsItem->setGeometry(props[t]->getName(), new te::gm::Point(*point));
             }
           }
@@ -163,7 +182,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
     }
     else
     {
-      if (gpkgDataSet->getInt32(LAYER_GATHERING_STATUS_COLUMN) != 0)
+      if (gpkgDataSet->getInt32(LAYER_GATHERING_STATUS_COLUMN) == 1)
       {
         //create memory items
         te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(updateDataSetDataSource);
@@ -193,6 +212,10 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
               dsItem->setValue(props[t]->getName(), new te::dt::SimpleData<int32_t, te::dt::INT32_TYPE>(idValue));
             }
           }
+          else if (props[t]->getName() == LAYER_GATHERING_STATUS_COLUMN)
+          {
+            dsItem->setValue(LAYER_GATHERING_STATUS_COLUMN, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(0));
+          }
           else if (props[t]->getType() == te::dt::GEOMETRY_TYPE)
           {
             std::auto_ptr<te::gm::Geometry> geom = gpkgDataSet->getGeometry(props[t]->getName());
@@ -210,6 +233,10 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
             if (point)
             {
+              point->setSRID(4326); //the geometry from geopackage always has to be 4326
+
+              point->transform(outputGeomProp->getSRID());
+
               dsItem->setGeometry(props[t]->getName(), new te::gm::Point(*point));
             }
           }
@@ -223,6 +250,27 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
         }
 
         updateDataSetDataSource->add(dsItem);
+      }
+      else if (gpkgDataSet->getInt32(LAYER_GATHERING_STATUS_COLUMN) == 2)
+      {
+        std::string objId = gpkgDataSet->getString(LAYER_GATHERING_OBJID_COLUMN);
+
+        std::string sql = "SELECT * from ";
+        sql += dsTypeAux2->getName();
+        sql += " WHERE ";
+        sql += LAYER_GATHERING_OBJID_COLUMN;
+        sql += " = '";
+        sql += gpkgDataSet->getAsString(LAYER_GATHERING_OBJID_COLUMN);
+        sql += "'";
+
+        std::auto_ptr<te::da::DataSet> dataSetQuery = m_outputDataSource->query(sql);
+
+        if (!dataSetQuery->isEmpty())
+        {
+          dataSetQuery->moveFirst();
+
+          objIdSet->add(te::da::GenerateOID(dataSetQuery.get(), pnames));
+        }
       }
     }
   }
@@ -305,6 +353,37 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
       return;
     }
+    transactor->commit();
+  }
+
+  //remove entries
+  if (objIdSet->size() != 0)
+  {
+    std::unique_ptr<te::da::DataSourceTransactor> transactor = m_outputDataSource->getTransactor();
+
+    try
+    {
+      transactor->remove(m_outputDataset, objIdSet);
+    }
+    catch (const te::common::Exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (const std::exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (...)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+
     transactor->commit();
   }
 }

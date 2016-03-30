@@ -31,13 +31,11 @@ te::vp::AlgorithmParams::AlgorithmParams():
 te::vp::AlgorithmParams::AlgorithmParams( const std::vector<te::vp::InputParams>& inputParams,
                                           te::da::DataSourcePtr outputDataSource,
                                           const std::string& outputDataSetName,
-                                          const std::map<std::string, te::dt::AbstractData*>& specificParams,
-                                          const bool& isCollection)
+                                          const std::map<std::string, te::dt::AbstractData*>& specificParams)
   : m_inputParams(inputParams),
   m_outputDataSource(outputDataSource),
   m_outputDataSetName(outputDataSetName),
-  m_specificParams(specificParams),
-  m_isCollection(isCollection)
+  m_specificParams(specificParams)
 {
 }
 
@@ -87,15 +85,4 @@ const std::map<std::string, te::dt::AbstractData*>& te::vp::AlgorithmParams::get
 void te::vp::AlgorithmParams::setSpecificParams(const std::map<std::string, te::dt::AbstractData*>& specificParams)
 {
   m_specificParams = specificParams;
-}
-
-
-const bool& te::vp::AlgorithmParams::isCollection()
-{
-  return m_isCollection;
-}
-
-void te::vp::AlgorithmParams::setCollection(const bool& isCollection)
-{
-  m_isCollection = isCollection;
 }

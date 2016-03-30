@@ -69,6 +69,10 @@ namespace te
 
             te::qt::widgets::DoubleListWidget* getWidget() const;
 
+            void setLayerList(std::vector<std::string> names);
+
+            void setSelectedLayers(std::vector<std::string> names);
+
           public slots:
 
             void onItemChanged();
@@ -76,6 +80,8 @@ namespace te
           private:
 
             std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;
+
+            std::vector<std::string> m_layerNames;
         }; 
       }   // end namespace thirdParty
     }     // end namespace plugins
