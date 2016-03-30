@@ -147,8 +147,6 @@ void TsWCS::tsDataSource()
     if(!dataSet.get())
       CPPUNIT_FAIL("Error!");
 
-    PrintDataSet(dataSetName,dataSet.get());
-
     std::auto_ptr<te::da::DataSetType> dataSetType = transactor->getDataSetType(dataSetName);
 
     if(!dataSetType.get())
