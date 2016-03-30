@@ -31,17 +31,13 @@
 
 // TerraLib
 #include "Transactor.h"
+#include "Exception.h"
+#include "../../wcs/dataaccess/DataSource.h"
 #include "../../../../common/Translator.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../raster/Grid.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
-#include "Exception.h"
 #include "../../../../dataaccess/dataset/DataSet.h"
-//#include "../../../../dataaccess/datasource/DataSource.h"
-//#include "../../../../gdal/DataSet.h"
-//#include "../../../../gdal/DataSource.h"
-//#include "../../../../gdal/Utils.h"
-#include "../../wcs/dataaccess/DataSource.h"
 #include "../../../../ws/ogc/wcs/client/WCS.h"
 #include "../../../../datatype.h"
 
