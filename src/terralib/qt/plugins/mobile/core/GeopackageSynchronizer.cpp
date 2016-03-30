@@ -23,6 +23,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 \brief This file is used to Synchronizer operation.
 */
 
+#include "../../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../../dataaccess/dataset/ObjectId.h"
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/SimpleData.h"
@@ -101,6 +103,12 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
   te::gm::GeometryProperty* outputGeomProp = te::da::GetFirstGeomProperty(dsTypeAux.get());
 
+  //remove entries
+  te::da::ObjectIdSet* objIdSet;
+  te::da::GetEmptyOIDSet(dsTypeAux2.get(), objIdSet);
+
+  std::vector<std::string> pnames;
+  te::da::GetOIDPropertyNames(dsTypeAux2.get(), pnames);
 
   std::vector<te::dt::Property*> props = dsTypeAux2->getProperties();
 
@@ -247,7 +255,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
       {
         std::string objId = gpkgDataSet->getString(LAYER_GATHERING_OBJID_COLUMN);
 
-        std::string sql = "SELECT FID from ";
+        std::string sql = "SELECT * from ";
         sql += dsTypeAux2->getName();
         sql += " WHERE ";
         sql += LAYER_GATHERING_OBJID_COLUMN;
@@ -261,22 +269,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
         {
           dataSetQuery->moveFirst();
 
-          int idValue = dataSetQuery->getInt32(0);
-
-          std::string sqlRemove = "DELETE from";
-          sqlRemove += dsTypeAux2->getName();
-          sqlRemove += " WHERE FID";
-          sqlRemove += " = ";
-          sqlRemove += dataSetQuery->getAsString(0);
-
-          try
-          {
-            m_outputDataSource->execute(sqlRemove);
-          }
-          catch (...)
-          {
-            continue;
-          }
+          objIdSet->add(te::da::GenerateOID(dataSetQuery.get(), pnames));
         }
       }
     }
@@ -360,6 +353,37 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
       return;
     }
+    transactor->commit();
+  }
+
+  //remove entries
+  if (objIdSet->size() != 0)
+  {
+    std::unique_ptr<te::da::DataSourceTransactor> transactor = m_outputDataSource->getTransactor();
+
+    try
+    {
+      transactor->remove(m_outputDataset, objIdSet);
+    }
+    catch (const te::common::Exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (const std::exception& e)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+    catch (...)
+    {
+      transactor->rollBack();
+
+      return;
+    }
+
     transactor->commit();
   }
 }
