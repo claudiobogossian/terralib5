@@ -35,6 +35,7 @@
 // TerraLib Test
 #include "TsWCS.h"
 
+
 CPPUNIT_TEST_SUITE_REGISTRATION( TsWCS );
 
 void TsWCS::tsGetCapabilities()
@@ -113,8 +114,6 @@ void TsWCS::tsDataSource()
 
     te::ws::ogc::wcs::da::Transactor* transactor = dynamic_cast< te::ws::ogc::wcs::da::Transactor* > (ds->getTransactor().release());
 
-//    std::auto_ptr < te::ws::ogc::wcs::da::Transactor > transactor = ds->getTransactor();
-
     transactor->getNumberOfDataSets();
 
     std::vector<std::string> dataSetNames = transactor ->getDataSetNames();
@@ -146,6 +145,13 @@ void TsWCS::tsDataSource()
     std::auto_ptr<te::da::DataSet> dataSet = transactor->getDataSet(dataSetName);
 
     if(!dataSet.get())
+      CPPUNIT_FAIL("Error!");
+
+    PrintDataSet(dataSetName,dataSet.get());
+
+    std::auto_ptr<te::da::DataSetType> dataSetType = transactor->getDataSetType(dataSetName);
+
+    if(!dataSetType.get())
       CPPUNIT_FAIL("Error!");
   }
   catch(te::common::Exception& e)

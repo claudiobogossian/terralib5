@@ -29,16 +29,17 @@
 #define __TERRALIB_WS_OGC_WCS_XMLPARSER_WCS_H
 
 // STL
+#include <vector>
 #include <cctype>
 #include <memory>
 #include <sstream>
-#include <vector>
 
 //BOOST
 #include <boost/algorithm/string.hpp>
 
 // TerraLib
 #include "../../../../xml.h"
+#include "XMLParser.h"
 
 
 namespace te
@@ -71,11 +72,12 @@ namespace te
         std::string srsDimension;
         std::vector< std::string > uomLabels;
 
-        std::string lowerLabel;
+        std::string firstLabel;
+        std::string secondLabel;
+
         std::string lowerCorner_X;
         std::string lowerCorner_Y;
 
-        std::string upperLabel;
         std::string upperCorner_X;
         std::string upperCorner_Y;
 
@@ -100,7 +102,6 @@ namespace te
         struct ServiceParameters serviceParameters;
         std::vector< std::string > extension;
       };
-
 
       static Capabilities parseCapabilities(const std::string xmlPath)
       {
@@ -221,12 +222,12 @@ namespace te
                   {
                     std::string part;
                     axis >> part;
-                    envelope.lowerLabel = part;
+                    envelope.firstLabel = part;
 
                     if(axis.good())
                     {
                       axis >> part;
-                      envelope.upperLabel = part;
+                      envelope.secondLabel = part;
                     }
 
                     if(axis.good())
@@ -359,6 +360,8 @@ namespace te
 
         return coverageDescription;
       }
+
+
     } // end namespace ogc
   } // end namespace ws
 } // end namespace te

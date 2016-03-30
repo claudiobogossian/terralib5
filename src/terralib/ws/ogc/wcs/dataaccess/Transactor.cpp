@@ -38,12 +38,12 @@
 #include "Exception.h"
 #include "../../../../dataaccess/dataset/DataSet.h"
 //#include "../../../../dataaccess/datasource/DataSource.h"
-#include "../../wcs/dataaccess/DataSource.h"
 //#include "../../../../gdal/DataSet.h"
 //#include "../../../../gdal/DataSource.h"
 //#include "../../../../gdal/Utils.h"
+#include "../../wcs/dataaccess/DataSource.h"
 #include "../../../../ws/ogc/wcs/client/WCS.h"
-
+#include "../../../../datatype.h"
 
 te::ws::ogc::wcs::da::Transactor::Transactor(WCS wcs)
   : te::da::DataSourceTransactor(),
@@ -83,16 +83,14 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = coveragePath;
 
-  std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL");
-  dsGDAL->setConnectionInfo(connInfo);
-  dsGDAL->open();
+  std::auto_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL");
+  dataSource->setConnectionInfo(connInfo);
+  dataSource->open();
 
-  if (!dsGDAL->isOpened() || !dsGDAL->isValid())
-    throw Exception(TE_TR("Fail to build Data Set. GDAL Data Source isn't valid or open!"));
+  if (!dataSource->isOpened() || !dataSource->isValid())
+    throw Exception(TE_TR("Fail to build Data Set. Data Source isn't valid or open!"));
 
-  std::auto_ptr<te::da::DataSet> dset = dsGDAL->getDataSet(name);
-
-  return dsGDAL->getDataSet(name);
+  return dataSource->getDataSet(name);
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,
@@ -103,22 +101,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
                                                                bool /*connected*/,
                                                                const te::common::AccessPolicy /*accessPolicy*/)
 {
-
-  // VINICIUS: implement to ignore the envelope in coverageRequest_(only get format from it) and using envelope parameter
-
-  /*
-  if(!dataSetExists(name))
-    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
-
-  // Retrieves the data set type
-  std::auto_ptr<te::da::DataSetType> type = getDataSetType(name);
-
-  // Build the GDAL WCS request with extent restriction
-  std::string request = BuildRequest(m_serviceURL, m_coverageName, e);
-
-  return std::auto_ptr<te::da::DataSet>(new te::gdal::DataSet(type, te::common::RAccess, request));
-*/
-  return std::auto_ptr<te::da::DataSet>();
+  throw Exception(TE_TR("This operations is not supported by the WCS driver!"));
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,
@@ -171,36 +154,20 @@ std::auto_ptr<te::da::DataSetType> te::ws::ogc::wcs::da::Transactor::getDataSetT
 {
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
-/*
-  // VINICIUS: create a gdal dataset with the coverage
-  GDALDataset* gds;
 
-//  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(request.c_str(), GA_ReadOnly));
+  std::string coveragePath = wcs_.getCoverage(coverageRequest_);
 
-  if(gds == 0)
-    throw Exception(TE_TR("The data set type could not be retrieved from data source."));
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = coveragePath;
 
-  te::da::DataSetType* type = new te::da::DataSetType(name, 0);
-  type->setTitle(name);
+  std::auto_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL");
+  dataSource->setConnectionInfo(connInfo);
+  dataSource->open();
 
-  te::rst::Grid* grid = te::gdal::GetGrid(gds);
+  if (!dataSource->isOpened() || !dataSource->isValid())
+    throw Exception(TE_TR("Fail to build Data Set. Data Source isn't valid or open!"));
 
-  std::vector<te::rst::BandProperty*> bandProperties;
-  te::gdal::GetBandProperties(gds, bandProperties);
-
-  te::rst::RasterProperty* rp = new te::rst::RasterProperty("raster");
-  rp->set(grid);
-
-  for(std::size_t i = 0; i < bandProperties.size(); ++i)
-    rp->add(bandProperties[i]);
-
-  type->add(rp);
-
-  GDALClose(gds);
-
-  return std::auto_ptr<te::da::DataSetType>(type);
-  */
-  return std::auto_ptr<te::da::DataSetType>();
+  return dataSource->getDataSetType(name);
 }
 
 boost::ptr_vector<te::dt::Property> te::ws::ogc::wcs::da::Transactor::getProperties(const std::string& datasetName)

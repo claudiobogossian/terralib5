@@ -158,10 +158,10 @@ std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest)
         std::string subset1(""), subset2("");
 
         if(!x1.empty() && !x2.empty())
-          subset1 = "&SUBSET=" + envelope->lowerLabel + "(" + x1 + (!x1.empty() && !x2.empty()? ",": "") + x2 + ")";
+          subset1 = "&SUBSET=" + envelope->firstLabel + "(" + x1 + (!x1.empty() && !x2.empty()? ",": "") + x2 + ")";
 
         if(!y1.empty() && !y2.empty())
-          subset2 = "&SUBSET=" + envelope->upperLabel + "(" + y1 + (!y1.empty() && !y2.empty()? ",": "") + y2 + ")";
+          subset2 = "&SUBSET=" + envelope->secondLabel + "(" + y1 + (!y1.empty() && !y2.empty()? ",": "") + y2 + ")";
 
         url += subset1 + subset2;
 
