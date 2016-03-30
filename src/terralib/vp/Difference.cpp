@@ -34,9 +34,6 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 
-#include "../memory/DataSet.h"
-#include "../memory/DataSetItem.h"
-
 #include "../dataaccess/query/Coalesce.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
@@ -75,6 +72,7 @@
 #include "../memory/DataSetItem.h"
 
 #include "AlgorithmParams.h"
+#include "ComplexData.h"
 #include "Difference.h"
 #include "Utils.h"
 
@@ -139,8 +137,13 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 // Insert difference dataset in rtree.
   DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
 
+// Get specific params.
+  const std::map<std::string, te::dt::AbstractData*>& specificParams = mainParams->getSpecificParams();
+
+  bool isCollection = this->isCollection(specificParams);
+
 // Geometry type for the output data.
-  te::gm::GeomType outputGeomType = setGeomResultType(inputGeomProp->getGeometryType(), mainParams->isCollection());
+  te::gm::GeomType outputGeomType = setGeomResultType(inputGeomProp->getGeometryType(), isCollection);
 
 // Create output dataset in memory.
   std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
@@ -163,9 +166,7 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
   }
 
 
-// Get specific params.
-  const std::map<std::string, te::dt::AbstractData*>& specificParams = mainParams->getSpecificParams();
-  std::vector<std::string> propNames = getPropNames(specificParams);
+  std::vector<std::string> propNames = this->getPropNames(specificParams);
 
   inputDataSet->moveBeforeFirst();
   while (inputDataSet->moveNext())
@@ -197,14 +198,14 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 // Insert the current geometry into item;
       std::vector<te::gm::Geometry*> geomVec;
       
-      if (mainParams->isCollection())
+      if (isCollection)
         geomVec.push_back(geom.release());
       else
         te::gm::Multi2Single(geom.release(), geomVec);
 
       for (std::size_t g = 0; g < geomVec.size(); ++g)
       {
-        if (!te::vp::IsMultiType(geomVec[g]->getGeomTypeId()) && mainParams->isCollection())
+        if (!te::vp::IsMultiType(geomVec[g]->getGeomTypeId()) && isCollection)
           geomVec[g] = setGeomAsMulti(geomVec[g]);
 
         std::auto_ptr<te::mem::DataSetItem> currentItem = item->clone();
@@ -238,14 +239,14 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 // Insert the current geometry into item;
       std::vector<te::gm::Geometry*> geomVec;
 
-      if (mainParams->isCollection())
+      if (isCollection)
         geomVec.push_back(geom.release());
       else
         te::gm::Multi2Single(geom.release(), geomVec);
 
       for (std::size_t g = 0; g < geomVec.size(); ++g)
       {
-        if (!te::vp::IsMultiType(geomVec[g]->getGeomTypeId()) && mainParams->isCollection())
+        if (!te::vp::IsMultiType(geomVec[g]->getGeomTypeId()) && isCollection)
           geomVec[g] = setGeomAsMulti(geomVec[g]);
 
         std::auto_ptr<te::mem::DataSetItem> currentItem = item->clone();
@@ -353,27 +354,22 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   te::da::Fields* fieldsExpressions = new te::da::Fields;
 
 // Tabular attributes.
-  const std::map<std::string, te::dt::AbstractData*> attributesMap = mainParams->getSpecificParams();
-  std::map<std::string, te::dt::AbstractData*>::const_iterator it = attributesMap.begin();
+  const std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
+  std::vector<std::string> propNames = this->getPropNames(specificParams);
 
-  while (it != attributesMap.end())
+  for (std::size_t i = 0; i < propNames.size(); ++i)
   {
-    te::dt::SimpleData<std::string, te::dt::STRING_TYPE>* sd =
-      dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
-
-    std::string columnName = sd->getValue();
-
-    te::da::Field* f_att = new te::da::Field(aliasInput + "." + columnName);
+    te::da::Field* f_att = new te::da::Field(aliasInput + "." + propNames[i]);
     fieldsExpressions->push_back(f_att);
-
-    ++it;
   }
 
 // Expression to set geometries as multigeometries.
   te::da::Expression* e_coalesce = new te::da::Coalesce(e_difference,
     new te::da::PropertyName(aliasInput + "." + geom_input->getName()));
 
-  if (mainParams->isCollection())
+  bool isCollection = this->isCollection(specificParams);
+
+  if (isCollection)
   {
     te::da::Expression* e_multi = new te::da::ST_Multi(*e_coalesce);
 
@@ -458,20 +454,10 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   {
     te::da::Fields* insertFields = new te::da::Fields;
 
-    const std::map<std::string, te::dt::AbstractData*> attributesMap = mainParams->getSpecificParams();
-    std::map<std::string, te::dt::AbstractData*>::const_iterator it = attributesMap.begin();
-
-    while (it != attributesMap.end())
+    for (std::size_t p = 0; p < propNames.size(); ++p)
     {
-      te::dt::SimpleData<std::string, te::dt::STRING_TYPE>* sd =
-        dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
-
-      std::string columnName = sd->getValue();
-
-      te::da::Field* f_att = new te::da::Field(columnName);
+      te::da::Field* f_att = new te::da::Field(propNames[p]);
       insertFields->push_back(f_att);
-
-      ++it;
     }
 
     te::da::Field* f_insert = new te::da::Field("geom");
@@ -513,18 +499,47 @@ std::vector<std::string> te::vp::Difference::getPropNames(const std::map<std::st
 
   while (it != specificParams.end())
   {
-    te::dt::SimpleData<std::string, te::dt::STRING_TYPE>* sd =
-      dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
+    if (it->first != "ATTRIBUTES")
+    {
+      ++it;
+      continue;
+    }
 
-    std::string columnName = sd->getValue();
+    te::vp::ComplexData<std::vector<std::string> >* cd =
+      dynamic_cast<te::vp::ComplexData<std::vector<std::string> >* >(it->second);
 
-    if (!columnName.empty())
-      propNames.push_back(columnName);
-    
+    if (cd)
+      propNames = cd->getValue();
+
     ++it;
   }
 
   return propNames;
+}
+
+bool te::vp::Difference::isCollection(const std::map<std::string, te::dt::AbstractData*>& specificParams)
+{
+  bool isCollection = false;
+
+  std::map<std::string, te::dt::AbstractData*>::const_iterator it = specificParams.begin();
+  while (it != specificParams.end())
+  {
+    if (it->first != "IS_COLLECTION")
+    {
+      ++it;
+      continue;
+    }
+
+    te::dt::SimpleData<bool, te::dt::BOOLEAN_TYPE>* sd =
+      dynamic_cast<te::dt::SimpleData<bool, te::dt::BOOLEAN_TYPE >* >(it->second);
+
+    if (sd)
+      isCollection = sd->getValue();
+
+    ++it;
+  }
+
+  return isCollection;
 }
 
 te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmParams* mainParams)
@@ -539,12 +554,7 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
 
 
 // Set to output datasettype the primary key property.
-  if (mainParams->getOutputDataSource()->getType() == "OGR")
-  {
-    te::dt::SimpleProperty* fidProperty = new te::dt::SimpleProperty("FID", te::dt::INT32_TYPE);
-    outputDataSetType->add(fidProperty);
-  }
-  else
+  if (mainParams->getOutputDataSource()->getType() != "OGR")
   {
     te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
     pkProperty->setAutoNumber(true);
@@ -568,24 +578,17 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
   }
 
   const std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
-  std::map<std::string, te::dt::AbstractData*>::const_iterator it = specificParams.begin();
-
-  while (it != specificParams.end())
+  std::vector<std::string> propNames = getPropNames(specificParams);
+  
+  for (std::size_t i = 0; i < propNames.size(); ++i)
   {
-    te::dt::SimpleData<std::string, te::dt::STRING_TYPE>* sd =
-      dynamic_cast<te::dt::SimpleData<std::string, te::dt::STRING_TYPE>*>(it->second);
-
-    std::string columnName = sd->getValue();
-
-    te::dt::Property* prop = dsType->getProperty(columnName);
+    te::dt::Property* prop = dsType->getProperty(propNames[i]);
 
     if (!prop)
       continue;
 
-    te::dt::SimpleProperty* currentProperty = new te::dt::SimpleProperty(columnName, prop->getType());
+    te::dt::SimpleProperty* currentProperty = new te::dt::SimpleProperty(propNames[i], prop->getType());
     outputDataSetType->add(currentProperty);
-    
-    ++it;
   }
 
 
@@ -594,7 +597,9 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
 
   te::gm::GeometryProperty* intputGeomProp = te::da::GetFirstGeomProperty(dsType);
 
-  te::gm::GeomType type = setGeomResultType(te::da::GetFirstGeomProperty(dsType)->getGeometryType(), mainParams->isCollection());
+  bool isCollection = this->isCollection(specificParams);
+
+  te::gm::GeomType type = setGeomResultType(te::da::GetFirstGeomProperty(dsType)->getGeometryType(), isCollection);
   newGeomProp->setGeometryType(type);
 
   newGeomProp->setSRID(intputGeomProp->getSRID());

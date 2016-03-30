@@ -26,6 +26,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/SimpleData.h"
+#include "../../../../geometry/GeometryProperty.h"
 #include "../../../../geometry/MultiPoint.h"
 #include "../../../../geometry/Point.h"
 #include "../../../../memory/DataSet.h"
@@ -94,9 +95,11 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
   dsTypeAux->remove(dsTypeAux->getProperty("FID"));
   te::mem::DataSet* insertDataSetDataSource = new te::mem::DataSet(dsTypeAux.get());
 
-  //create dataset memory to insert into output datasource
+  //create dataset memory to update into output datasource
   std::auto_ptr<te::da::DataSetType> dsTypeAux2 = m_outputDataSource->getDataSetType(m_outputDataset);
   te::mem::DataSet* updateDataSetDataSource = new te::mem::DataSet(dsTypeAux2.get());
+
+  te::gm::GeometryProperty* outputGeomProp = te::da::GetFirstGeomProperty(dsTypeAux.get());
 
 
   std::vector<te::dt::Property*> props = dsTypeAux2->getProperties();
@@ -126,6 +129,10 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
         {
           dsItem->setValue(LAYER_GATHERING_OBJID_COLUMN, new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(id));
         }
+        else if (props[t]->getName() == LAYER_GATHERING_STATUS_COLUMN)
+        {
+          dsItem->setValue(LAYER_GATHERING_STATUS_COLUMN, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(0));
+        }
         else
         {
      
@@ -146,6 +153,10 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
             if (point)
             {
+              point->setSRID(4326); //the geometry from geopackage always has to be 4326
+
+              point->transform(outputGeomProp->getSRID());
+
               dsItem->setGeometry(props[t]->getName(), new te::gm::Point(*point));
             }
           }
@@ -163,7 +174,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
     }
     else
     {
-      if (gpkgDataSet->getInt32(LAYER_GATHERING_STATUS_COLUMN) != 0)
+      if (gpkgDataSet->getInt32(LAYER_GATHERING_STATUS_COLUMN) == 1)
       {
         //create memory items
         te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(updateDataSetDataSource);
@@ -193,6 +204,10 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
               dsItem->setValue(props[t]->getName(), new te::dt::SimpleData<int32_t, te::dt::INT32_TYPE>(idValue));
             }
           }
+          else if (props[t]->getName() == LAYER_GATHERING_STATUS_COLUMN)
+          {
+            dsItem->setValue(LAYER_GATHERING_STATUS_COLUMN, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(0));
+          }
           else if (props[t]->getType() == te::dt::GEOMETRY_TYPE)
           {
             std::auto_ptr<te::gm::Geometry> geom = gpkgDataSet->getGeometry(props[t]->getName());
@@ -210,6 +225,10 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
 
             if (point)
             {
+              point->setSRID(4326); //the geometry from geopackage always has to be 4326
+
+              point->transform(outputGeomProp->getSRID());
+
               dsItem->setGeometry(props[t]->getName(), new te::gm::Point(*point));
             }
           }
@@ -223,6 +242,42 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizer::synchronize()
         }
 
         updateDataSetDataSource->add(dsItem);
+      }
+      else if (gpkgDataSet->getInt32(LAYER_GATHERING_STATUS_COLUMN) == 2)
+      {
+        std::string objId = gpkgDataSet->getString(LAYER_GATHERING_OBJID_COLUMN);
+
+        std::string sql = "SELECT FID from ";
+        sql += dsTypeAux2->getName();
+        sql += " WHERE ";
+        sql += LAYER_GATHERING_OBJID_COLUMN;
+        sql += " = '";
+        sql += gpkgDataSet->getAsString(LAYER_GATHERING_OBJID_COLUMN);
+        sql += "'";
+
+        std::auto_ptr<te::da::DataSet> dataSetQuery = m_outputDataSource->query(sql);
+
+        if (!dataSetQuery->isEmpty())
+        {
+          dataSetQuery->moveFirst();
+
+          int idValue = dataSetQuery->getInt32(0);
+
+          std::string sqlRemove = "DELETE from ";
+          sqlRemove += dsTypeAux2->getName();
+          sqlRemove += " WHERE FID";
+          sqlRemove += " = ";
+          sqlRemove += dataSetQuery->getAsString(0);
+
+          try
+          {
+            m_outputDataSource->execute(sqlRemove);
+          }
+          catch (...)
+          {
+            continue;
+          }
+        }
       }
     }
   }
