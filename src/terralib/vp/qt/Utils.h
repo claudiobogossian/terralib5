@@ -41,6 +41,27 @@ namespace te
   namespace vp
   {
     /*!
+    \brief Get a list of AbstractLayer filtered by the name;
+
+    \param text   Text that the filter is based.
+    \param layers List of layer to filter.
+
+    \return A list of layer filtered by the name.
+    */
+    struct DataStruct
+    {
+      DataStruct()
+      {
+        m_dataSetType = 0;
+        m_dataSet = 0;
+      }
+
+      te::da::DataSetType* m_dataSetType;
+      te::da::DataSet* m_dataSet;
+    };
+
+
+    /*!
       \brief Get a list of AbstractLayer filtered by the name;
 
       \param text   Text that the filter is based.
@@ -49,6 +70,10 @@ namespace te
       \return A list of layer filtered by the name.
     */
     std::list<te::map::AbstractLayerPtr> GetFilteredLayers(std::string text, std::list<te::map::AbstractLayerPtr> layers);
+
+    te::da::Select* GetSelectQueryFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid = 0);
+
+    DataStruct GetDataStructFromLayer(te::map::AbstractLayerPtr layer, bool onlySelectedObjects, int srid = 0);
 
   } // end namespace vp
 }   // end namespace te
