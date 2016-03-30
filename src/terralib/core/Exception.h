@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file te/core/Exception.h
+  \file terralib/core/Exception.h
 
   \brief Exception classes for the TerraLib Core Runtime Library.
 
