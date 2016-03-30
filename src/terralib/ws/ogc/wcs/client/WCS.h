@@ -53,7 +53,8 @@ namespace te
         std::string coverageID;
         std::string format;
         std::string mediaType;
-        BoundedBy boundedBy;
+        EnvelopeWithTimePeriod envelope;
+        std::string time;
         std::vector< SubSet > subSet;
         std::map< std::string, std::string > additionalParameters;
       };

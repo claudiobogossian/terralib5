@@ -35,6 +35,7 @@
 // TerraLib Test
 #include "TsWCS.h"
 
+
 CPPUNIT_TEST_SUITE_REGISTRATION( TsWCS );
 
 void TsWCS::tsGetCapabilities()
@@ -65,7 +66,7 @@ void TsWCS::tsDescribeCoverage()
 
     // http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=DescribeCoverage&coverageid=other__wcmc-world-database-of-protected-areas&version=2.0.1
     te::ws::ogc::WCS clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
-    std::string coverage = "other__wcmc-world-database-of-protected-areas";
+    std::string coverage = "anthromes__anthromes-anthropogenic-biomes-world-v2-1800";
     te::ws::ogc::CoverageDescription coverageDescription;
 
     CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at describeCoverage().", coverageDescription = clientWCS.describeCoverage(coverage));
@@ -113,8 +114,6 @@ void TsWCS::tsDataSource()
 
     te::ws::ogc::wcs::da::Transactor* transactor = dynamic_cast< te::ws::ogc::wcs::da::Transactor* > (ds->getTransactor().release());
 
-//    std::auto_ptr < te::ws::ogc::wcs::da::Transactor > transactor = ds->getTransactor();
-
     transactor->getNumberOfDataSets();
 
     std::vector<std::string> dataSetNames = transactor ->getDataSetNames();
@@ -122,7 +121,8 @@ void TsWCS::tsDataSource()
     if(dataSetNames.empty())
       CPPUNIT_FAIL("Error!");
 
-    std::string dataSetName = dataSetNames.at(0);
+    std::string coverageName = "anthromes__anthromes-anthropogenic-biomes-world-v2-1800";
+    std::string dataSetName = coverageName;
 
     if(!transactor->dataSetExists(dataSetName))
       CPPUNIT_FAIL("Error!");
@@ -131,26 +131,25 @@ void TsWCS::tsDataSource()
     te::ws::ogc::CoverageRequest coverageRequest;
     coverageRequest.coverageID = dataSetName;
     coverageRequest.format = coverageDescription.serviceParameters.nativeFormat;
-
-    te::ws::ogc::Coordinate co= coverageDescription.boundedBy.coordinate.at(0);
-
-    co.coord.at(0) = "0";
-    co.coord.at(1) = "0";
-
-    coverageDescription.boundedBy.coordinate.at(0) = co;
-
-    co.coord.at(0) = "10";
-    co.coord.at(1) = "10";
-    coverageDescription.boundedBy.coordinate.at(1) = co;
-
-    coverageRequest.boundedBy = coverageDescription.boundedBy;
     coverageRequest.subSet = coverageDescription.domainSet.subSet;
+    coverageRequest.envelope = coverageDescription.envelope;
+
+    coverageRequest.envelope.lowerCorner_X = "0";
+    coverageRequest.envelope.lowerCorner_Y = "0";
+
+    coverageRequest.envelope.upperCorner_X = "100";
+    coverageRequest.envelope.upperCorner_Y = "100";
 
     transactor->setCoverageRequest(coverageRequest);
 
     std::auto_ptr<te::da::DataSet> dataSet = transactor->getDataSet(dataSetName);
 
     if(!dataSet.get())
+      CPPUNIT_FAIL("Error!");
+
+    std::auto_ptr<te::da::DataSetType> dataSetType = transactor->getDataSetType(dataSetName);
+
+    if(!dataSetType.get())
       CPPUNIT_FAIL("Error!");
   }
   catch(te::common::Exception& e)

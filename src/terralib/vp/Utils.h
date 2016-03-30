@@ -23,8 +23,8 @@
   \brief Utility functions for Vector Processing.  
 */
 
-#ifndef __TERRALIB_VP_QT_INTERNAL_UTILS_H
-#define __TERRALIB_VP_QT_INTERNAL_UTILS_H
+#ifndef __TERRALIB_VP_INTERNAL_UTILS_H
+#define __TERRALIB_VP_INTERNAL_UTILS_H
 
 // Terralib
 #include "../geometry/Geometry.h"
@@ -73,4 +73,4 @@ namespace te
   } // end namespace vp
 }   // end namespace te
 
-#endif  // __TERRALIB_VP_QT_INTERNAL_UTILS_H
+#endif  // __TERRALIB_VP_INTERNAL_UTILS_H
