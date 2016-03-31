@@ -70,19 +70,18 @@ namespace te
 
       std::vector<std::string> getPropNames(const std::map<std::string, te::dt::AbstractData*>& specificParams);
 
+      bool isCollection(const std::map<std::string, te::dt::AbstractData*>& specificParams);
+
       te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
 
       te::gm::GeomType setGeomResultType(const te::gm::GeomType& geomType, const bool& isCollection);
 
       te::gm::Geometry* setGeomAsMulti(te::gm::Geometry* geom);
-      
-      // it defines the type of the result considering the input geometries being aggregated
-      //te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
+
+    private:
 
       std::size_t m_SRID;
 
-    private:
-        
       typedef te::sam::rtree::Index<size_t, 8>* DataSetRTree;
 
     };

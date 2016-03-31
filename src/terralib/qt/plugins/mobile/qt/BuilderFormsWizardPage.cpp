@@ -161,7 +161,8 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::setLayerList(std::lis
         item->setKey(newName);
         item->setLabel(newName);
 
-        form->getItems().push_back(item);
+        if ((newName != LAYER_GATHERING_STATUS_COLUMN) && (newName != LAYER_GATHERING_OBJID_COLUMN))
+          form->getItems().push_back(item);
       }
     }
 
