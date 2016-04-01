@@ -149,9 +149,17 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onSynchronizePu
 
     gpSync.synchronize();
   }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+
+    return;
+  }
   catch(...)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Internal Error."));
+
+    return;
   }
 
   QMessageBox::information(this, tr("Information"), tr("Synchronizer Done."));

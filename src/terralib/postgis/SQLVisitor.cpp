@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../datatype/DateTime.h"
 #include "../dataaccess/query/LiteralByteArray.h"
 #include "../dataaccess/query/LiteralDateTime.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
@@ -49,7 +50,13 @@ void te::pgis::SQLVisitor::visit(const te::da::LiteralByteArray& visited)
 void te::pgis::SQLVisitor::visit(const te::da::LiteralDateTime& visited)
 {
   assert(visited.getValue() != 0);
-  assert(false);  //TODO
+  te::dt::DateTime* dateTime = dynamic_cast<te::dt::DateTime*>(visited.getValue());
+  std::string dateStr = dateTime->toString();
+  auto pos = dateStr.find("OFF");
+  if(pos != std::string::npos)
+    dateStr = dateStr.replace(pos, 3, "");
+
+  m_sql+= "\'"+dateStr+"\'";
 }
 
 void te::pgis::SQLVisitor::visit(const te::da::LiteralEnvelope& visited)
