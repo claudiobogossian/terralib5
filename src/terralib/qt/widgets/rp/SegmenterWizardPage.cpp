@@ -296,7 +296,7 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
+    QMessageBox::warning(this, tr("Warning"), tr("Segmenter error."));
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
