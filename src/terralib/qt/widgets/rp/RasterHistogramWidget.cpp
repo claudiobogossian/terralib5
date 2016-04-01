@@ -92,6 +92,7 @@ te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Q
   m_histogramChartOutput->setTitle(tr("Output"));
 
   m_chartDisplay->insertLegend(new QwtLegend(), QwtPlot::RightLegend);
+  m_chartDisplay->enableTools(false);
 
   //connects
   connect(m_ui->m_applyToolButton, SIGNAL(clicked()), this, SLOT(onApplyToolButtonClicked()));
@@ -176,7 +177,6 @@ void te::qt::widgets::RasterHistogramWidget::drawHistogram(int band)
   }
 
   m_chartDisplay->updateLayout();
-
   m_chartDisplay->replot();
 }
 

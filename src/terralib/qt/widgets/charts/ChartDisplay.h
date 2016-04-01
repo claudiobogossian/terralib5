@@ -127,6 +127,17 @@ namespace te
           */
           void adjustDisplay();
 
+          /*!
+          \brief Enables or disables tools used to execute certain mouse actions.
+          Such as selection, pan and zoomn;
+          */
+          void enableTools(bool enabled);
+
+          /*!
+          \brief Enables or disables the pickers used tbroadcast point selection signals.
+          */
+          void enablePickers(bool enabled);
+
         protected slots:
 
           /*!

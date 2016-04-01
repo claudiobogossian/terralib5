@@ -83,7 +83,7 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   // Selection based on a rectangle - also works as a point based selection if the rectangle's width and height are both equal 0
   m_leftPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
   m_leftPicker->setStateMachine(new QwtPickerDragRectMachine );
-
+  
   m_leftPointPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOff, this->canvas());
   m_leftPointPicker->setStateMachine(new QwtPickerClickPointMachine);
   m_leftPointPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton);
@@ -201,6 +201,21 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
     canvas()->setPalette(m_chartStyle->getColor());
   }
   updateLayout();
+}
+
+void te::qt::widgets::ChartDisplay::enableTools(bool enabled)
+{
+  m_leftPicker->setEnabled(enabled);
+  m_ctrlPicker->setEnabled(enabled);
+  m_shiftPicker->setEnabled(enabled);
+  m_panner->setEnabled(enabled);
+  m_magnifier->setEnabled(enabled);
+}
+
+void te::qt::widgets::ChartDisplay::enablePickers(bool enabled)
+{
+  m_leftPointPicker->setEnabled(enabled);
+  m_rigthPointPicker->setEnabled(enabled);
 }
 
 void te::qt::widgets::ChartDisplay::onRectPicked(const QRectF &rect)
