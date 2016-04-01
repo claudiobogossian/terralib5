@@ -106,6 +106,18 @@ bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
   }
   else if(currentPage() ==  m_rasterInfoPage.get())
   {
+    if( m_rasterInfoPage->getWidget()->getFullName().empty() )
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Invalid file name"));
+      return false; 
+    }
+    
+    if( m_rasterInfoPage->getWidget()->fileExists() )
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("The output raster file already exists"));
+      return false; 
+    }    
+    
     return execute();
   }
 
