@@ -205,14 +205,29 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
 
 void te::qt::widgets::ChartDisplay::enableTools(bool enabled)
 {
-  m_leftPicker->setEnabled(enabled);
-  m_ctrlPicker->setEnabled(enabled);
-  m_shiftPicker->setEnabled(enabled);
-  m_panner->setEnabled(enabled);
-  m_magnifier->setEnabled(enabled);
+  enablePickers(enabled);
+  enableMagnifier(enabled);
+  enablePan(enabled);
 }
 
 void te::qt::widgets::ChartDisplay::enablePickers(bool enabled)
+{
+  m_leftPicker->setEnabled(enabled);
+  m_ctrlPicker->setEnabled(enabled);
+  m_shiftPicker->setEnabled(enabled);
+}
+
+void te::qt::widgets::ChartDisplay::enableMagnifier(bool enabled)
+{
+  m_magnifier->setEnabled(enabled);
+}
+
+void te::qt::widgets::ChartDisplay::enablePan(bool enabled)
+{
+  m_panner->setEnabled(enabled);
+}
+
+void te::qt::widgets::ChartDisplay::enablePointPickers(bool enabled)
 {
   m_leftPointPicker->setEnabled(enabled);
   m_rigthPointPicker->setEnabled(enabled);
