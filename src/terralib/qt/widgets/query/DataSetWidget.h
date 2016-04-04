@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_DATASETWIDGET_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/query/From.h"
+#endif
 #include "../Config.h"
 
 // STL
@@ -39,7 +41,9 @@
 #include <QWidget>
 
 // BOOST
+#ifndef Q_MOC_RUN
 #include <boost/ptr_container/ptr_vector.hpp>
+#endif
 
 
 namespace Ui { class DataSetWidgetForm; }

@@ -21,7 +21,9 @@
 #ifndef TE_QT_WIDGETS_DATASETTABLEHORIZONTALHEADER_H
 #define TE_QT_WIDGETS_DATASETTABLEHORIZONTALHEADER_H
 
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSource.h"
+#endif
 
 #include <QHeaderView>
 

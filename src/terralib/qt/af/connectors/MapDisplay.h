@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_AF_CONNECTORS_INTERNAL_MAPDISPLAY_H
 
 // Terralib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 // Qt

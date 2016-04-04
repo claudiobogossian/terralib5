@@ -16,6 +16,7 @@
 #include "../Config.h"
 #include "../Exception.h"
 #include "../../../common/Exception.h"
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
@@ -40,6 +41,7 @@
 #include "../../../st/maptools/ObservationDataSetLayer.h"
 #include "../../../st/maptools/TimeSeriesDataSetLayer.h"
 #include "../../../st/maptools/TrajectoryDataSetLayer.h"
+#endif
 
 // Qt
 #include <QBoxLayout>

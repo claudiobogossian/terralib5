@@ -77,14 +77,9 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpWizard.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpWizardPage.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/IntersectionDialog.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LayerItem.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LayerTreeModel.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LegendGroupItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LineToPolygonDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/MultipartToSinglepartDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PolygonToLineDialog.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PropertyGroupItem.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PropertyItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/SummarizationDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/TransformationDialog.h)
 

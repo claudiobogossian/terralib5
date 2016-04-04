@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_PROPERTY_INTERNAL_INDEXWIDGET_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/dataset/DataSetType.h"
+#endif
 #include "../Config.h"
 
 // Qt
