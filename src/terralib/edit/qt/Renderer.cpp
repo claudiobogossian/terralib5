@@ -206,39 +206,6 @@ void te::edit::Renderer::drawVertexes(te::gm::LineString* line)
   }
 }
 
-void te::edit::Renderer::drawCellStyle(te::gm::Geometry* geom, std::size_t type)
-{
-  assert(m_canvas);
-  assert(geom);
-
-  m_styleChanged = true;
-
-  if ((geom->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (geom->getSRID() != m_srid))
-    geom->transform(m_srid);
-
-  m_currentGeomType = geom->getGeomTypeId();
-
-  switch (type)
-  {
-    case 1:
-      te::qt::widgets::Config2DrawPolygons(m_canvas, m_cellFillColor, m_cellContourColor, m_cellContourWidth);
-    break;
-
-    case 2:
-      te::qt::widgets::Config2DrawPolygons(m_canvas, m_selectCellFillColor, m_selectCellContourColor, m_selectCellContourWidth);
-    break;
-
-    case 3:
-      te::qt::widgets::Config2DrawPolygons(m_canvas, m_cellFillColor, m_selectCellContourColor, m_cellContourWidth);
-    break;
-
-    default:
-      break;
-  }
-
-  m_canvas->draw(geom);
-}
-
 void te::edit::Renderer::end()
 {
   delete m_canvas;
@@ -275,8 +242,8 @@ void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillCo
 
 void te::edit::Renderer::setupDefaultStyle()
 {
-  m_polygonFillColor = QColor(0, 255, 0, 30);
-  m_polygonContourColor = QColor(255, 0, 0, 128);
+  m_polygonFillColor = QColor(0, 255, 0, 15);
+  m_polygonContourColor = QColor(255, 0, 0);
   m_polygonContourWidth = 2;
 
   m_lineColor = QColor(0, 0, 0, 80);
@@ -287,14 +254,6 @@ void te::edit::Renderer::setupDefaultStyle()
   m_pointContourColor = Qt::black;
   m_pointContourWidth = 1;
   m_pointSize = 8;
-
-  m_selectCellFillColor =  QColor(0, 0, 255, 150);
-  m_selectCellContourColor = QColor(255, 0, 0);
-  m_selectCellContourWidth = 3;
-
-  m_cellFillColor = QColor(255, 255, 255, 0);
-  m_cellContourColor = QColor(0, 255, 0);
-  m_cellContourWidth = 2;
 
   m_styleChanged = false;
 

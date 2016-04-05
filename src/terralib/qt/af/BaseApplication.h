@@ -29,8 +29,9 @@
 #include "Config.h"
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../maptools/AbstractLayer.h"
-
+#endif
 #include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>
@@ -122,6 +123,8 @@ namespace te
         void onScaleComboBoxActivated();
 
         void onScaleDisplayChanged();
+
+        void onInternalSettingsTriggered();
 
         void onLayerRemoveTriggered();
 
@@ -232,6 +235,7 @@ namespace te
         QAction* m_mapSRID;
         QAction* m_mapUnknownSRID;
         QAction* m_mapStopDrawing;
+        QAction* m_internalSettings;
         QLineEdit* m_mapSRIDLineEdit;
         QLineEdit* m_coordinateLineEdit;
         QComboBox* m_scaleCmbBox;

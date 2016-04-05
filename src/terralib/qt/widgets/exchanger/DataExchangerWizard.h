@@ -27,7 +27,9 @@
 #define __TERRALIB_PLUGINS_EXCHANGER_INTERNAL_DATAEXCHANGERWIZARD_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
+#endif
 #include "../Config.h"
 
 // STL

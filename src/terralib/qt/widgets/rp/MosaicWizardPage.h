@@ -28,10 +28,12 @@
 
 // TerraLib
 #include "../../../geometry/GTParameters.h"
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../rp/GeoMosaic.h"
 #include "../../../rp/SequenceMosaic.h"
 #include "../../../rp/TiePointsMosaic.h"
+#endif
 #include "../Config.h"
 
 // STL

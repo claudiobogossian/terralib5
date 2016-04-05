@@ -28,8 +28,10 @@
 
 // TerraLib
 #include "../Config.h"
+#ifndef Q_MOC_RUN
 #include "../../../raster/Raster.h"
 #include "../../../maptools/DataSetLayer.h"
+#endif
 #include "../../../geometry/GTParameters.h"
 #include "../../../color/RGBAColor.h"
 

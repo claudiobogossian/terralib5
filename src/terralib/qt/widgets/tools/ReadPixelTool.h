@@ -27,7 +27,9 @@
 #define __TERRALIB_EXAMPLES_QT_TOOLS_INTERNAL_TOOLS_READPIXEL_TOOL_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "AbstractTool.h"
 
 //STL

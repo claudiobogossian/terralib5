@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARDPAGE_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../../../rp/Contrast.h"
 #include "../Config.h"
 

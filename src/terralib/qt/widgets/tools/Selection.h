@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_SELECTION_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 #include "RubberBand.h"
 
