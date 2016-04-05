@@ -25,16 +25,18 @@
 #          Matheus Cavassan Zaglia
 #
 
-include_directories(${Boost_INCLUDE_DIR})
+set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
-file(GLOB TERRALIB_CORE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/*.cpp)
-file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/*.h)
+include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_CORE_DIR} ${TERRALIB_CORE_DIR}/uri ${TERRALIB_CORE_DIR}/encoding)
 
-file(GLOB TERRALIB_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/uri/*.cpp)
-file(GLOB TERRALIB_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/uri/*.h)
+file(GLOB TERRALIB_CORE_SRC_FILES ${TERRALIB_CORE_DIR}/*.cpp)
+file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_CORE_DIR}/*.h)
 
-file(GLOB TERRALIB_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/encoding/*.cpp)
-file(GLOB TERRALIB_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core/encoding/*.h)
+file(GLOB TERRALIB_CORE_URI_SRC_FILES ${TERRALIB_CORE_DIR}/uri/*.cpp)
+file(GLOB TERRALIB_CORE_URI_HDR_FILES ${TERRALIB_CORE_DIR}/uri/*.h)
+
+file(GLOB TERRALIB_CORE_ENCODING_SRC_FILES ${TERRALIB_CORE_DIR}/encoding/*.cpp)
+file(GLOB TERRALIB_CORE_ENCODING_HDR_FILES ${TERRALIB_CORE_DIR}/encoding/*.h)
 
 source_group("Source Files"            FILES ${TERRALIB_CORE_SRC_FILES})
 source_group("Header Files"            FILES ${TERRALIB_CORE_HDR_FILES})
