@@ -28,9 +28,9 @@
 
 // Terralib
 #include "../Config.h"
-
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
-
+#endif
 // Qt
 #include <QtCore/QObject>
 

@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_GROUPBYWIZARDPAGE_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/query/GroupBy.h"
+#endif
 #include "../Config.h"
 
 // STL

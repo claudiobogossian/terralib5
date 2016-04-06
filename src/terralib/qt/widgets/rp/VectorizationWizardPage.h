@@ -22,8 +22,10 @@
 #define TE_QT_WIDGETS_VECTORIZATIONWIZARDPAGE_H
 
 //Terralib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 //Qt

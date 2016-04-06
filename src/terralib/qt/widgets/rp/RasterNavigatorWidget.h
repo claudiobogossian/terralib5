@@ -28,8 +28,10 @@
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
+#ifndef Q_MOC_RUN
 #include "../../../geometry/Polygon.h"
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../../../maptools/Enums.h"
 #include "../Config.h"
 

@@ -27,9 +27,11 @@
 #define __TERRALIB_SA_INTERNAL_BAYESLOCALDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/GeneralizedProximityMatrix.h"
+#endif
 #include "../Config.h"
 
 // Qt

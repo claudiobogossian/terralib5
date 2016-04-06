@@ -3,14 +3,17 @@
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 // Qt
 #include <QPointF>
 
+#ifndef Q_MOC_RUN
 #include "CreateLineTool.h"
-
+#endif
 
 namespace te
 {
