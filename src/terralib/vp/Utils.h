@@ -41,6 +41,14 @@ namespace te
 {
   namespace vp
   {
+    class AlgorithmParams;
+
+    enum Strategy
+    {
+      MEMORY,
+      QUERY
+    };
+
     /*!
       \brief It returns the union of a geometry vector.
 
@@ -69,6 +77,8 @@ namespace te
     te::gm::GeomType GetMultiType(te::gm::GeomType geomType);
 
     TEVPEXPORT te::da::DataSourcePtr CreateOGRDataSource(std::string repository);
+
+    void ValidateAlgorithmParams(AlgorithmParams* mainParams, Strategy st);
 
   } // end namespace vp
 }   // end namespace te

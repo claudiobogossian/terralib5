@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/DataSetTypeCapabilities.h"
 #include "../dataaccess/datasource/DataSource.h"
@@ -41,6 +42,7 @@
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
 #include "../memory/DataSet.h"
+#include "AlgorithmParams.h"
 #include "Utils.h"
 
 //STL
@@ -483,4 +485,29 @@ te::da::DataSourcePtr te::vp::CreateOGRDataSource(std::string repository)
   te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
 
   return te::da::DataSourceManager::getInstance().get(id_ds, "OGR", dsInfoPtr->getConnInfo());
+}
+
+void te::vp::ValidateAlgorithmParams(te::vp::AlgorithmParams* mainParams, Strategy st)
+{
+  std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
+
+  for (std::size_t i = 0; i < inputParams.size(); ++i)
+  {
+    if (!inputParams[i].m_inputDataSetType)
+      throw te::common::Exception(TE_TR("It is necessary to set the DataSetType from Input Layer."));
+
+    if (st == MEMORY)
+    {
+      if (!inputParams[i].m_inputDataSet)
+        throw te::common::Exception(TE_TR("It is necessary to set the Input DataSet."));
+    }
+    else
+    {
+      if (!inputParams[i].m_inputQuery)
+        throw te::common::Exception(TE_TR("It is necessary to set the Input Query."));
+    }
+  }
+
+  if (!mainParams->getOutputDataSource())
+    throw te::common::Exception(TE_TR("It is necessary to set the Output DataSource."));
 }
