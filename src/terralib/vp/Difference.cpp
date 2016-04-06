@@ -97,29 +97,29 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
   if (!inputParams[0].m_inputDataSetType)
     throw te::common::Exception(TE_TR("It is necessary to set the DataSetType from Input Layer."));
 
-  std::auto_ptr<te::da::DataSetType> dsType_input(inputParams[0].m_inputDataSetType);
+  te::da::DataSetType* dsType_input = inputParams[0].m_inputDataSetType;
 
-  te::gm::GeometryProperty* inputGeomProp = te::da::GetFirstGeomProperty(dsType_input.get());
+  te::gm::GeometryProperty* inputGeomProp = te::da::GetFirstGeomProperty(dsType_input);
 
 
 // Get DataSetType and Geometry Property of Difference Layer.
   if (!inputParams[1].m_inputDataSetType)
     throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Difference Layer."));
 
-  std::auto_ptr<te::da::DataSetType> dsType_difference(inputParams[1].m_inputDataSetType);
+  te::da::DataSetType* dsType_difference = inputParams[1].m_inputDataSetType;
 
-  te::gm::GeometryProperty* differenceGeomProp = te::da::GetFirstGeomProperty(dsType_difference.get());
+  te::gm::GeometryProperty* differenceGeomProp = te::da::GetFirstGeomProperty(dsType_difference);
 
 // Verify if the operation has DataSet.
   if (!inputParams[0].m_inputDataSet)
     throw te::common::Exception(TE_TR("It is necessary to set the Input DataSet."));
 
-  std::auto_ptr<te::da::DataSet>inputDataSet(inputParams[0].m_inputDataSet);
+  te::da::DataSet* inputDataSet = inputParams[0].m_inputDataSet;
 
   if (!inputParams[1].m_inputDataSet)
     throw te::common::Exception(TE_TR("It is necessary to set the Difference DataSet."));
 
-  std::auto_ptr<te::da::DataSet> differenceDataSet(inputParams[1].m_inputDataSet);
+  te::da::DataSet* differenceDataSet = inputParams[1].m_inputDataSet;
 
 // Get Output DataSource.
   if (!mainParams->getOutputDataSource())
