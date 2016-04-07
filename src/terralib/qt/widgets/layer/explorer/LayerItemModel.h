@@ -28,7 +28,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../Config.h"
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../../maptools/AbstractLayer.h"
+#endif
 
 // Qt
 #include <QAbstractItemModel>

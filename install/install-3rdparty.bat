@@ -956,7 +956,7 @@ cd %ROOT_DIR%
 :geos
 
 ::  GEOS 
-set G_DIR=%CD%\libgeos-3.5.0
+set G_DIR=%ROOT_DIR%\libgeos-3.5.0
 set GEOS_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
 set GEOS_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\geos_i.lib
 set GEOSD_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\geos_id.lib
@@ -1023,9 +1023,9 @@ xcopy include\geos.h %GEOS_INCLUDE_DIR% /Y >nul 2>nul
 
 xcopy lib%_X86%\*.dll %TERRALIB_DEPENDENCIES_DIR%\lib /Y >nul 2>nul  
 
-xcopy lib%_x86%\*i.lib %TERRALIB_DEPENDENCIES_DIR%\lib /Y >nul 2>nul  
+xcopy lib%_X86%\*i.lib %TERRALIB_DEPENDENCIES_DIR%\lib /Y >nul 2>nul  
 
-xcopy lib%_x86%\*id.lib %TERRALIB_DEPENDENCIES_DIR%\lib /Y >nul 2>nul  
+xcopy lib%_X86%\*id.lib %TERRALIB_DEPENDENCIES_DIR%\lib /Y >nul 2>nul  
 
 call :append_log_end geos
 

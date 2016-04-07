@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_FIELDSDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/query/Fields.h"
+#endif
 #include "../../../dataaccess/Enums.h"
 #include "../Config.h"
 

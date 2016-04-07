@@ -274,7 +274,7 @@ void TesteGEOS()
   std::string geostype;
 
   //Lendo shape das Isolinhas
-  std::string filename("D:/TA46-testes/altimetria_1_l3d.shp");
+  std::string filename(TERRALIB_DATA_DIR "/mnt/Isolinhas.shp");
 
   LoadIsolines(filename, mpt, isolines_simp, geostype, "avg_z");
   mpt.setSRID(SRID);
@@ -287,8 +287,8 @@ void TesteGEOS()
    tri->setTolerance(minedge);
    tri->setSites(*gin);
 
-   std::string dirout("D:/TESTES/");
-   std::string fileout("altimetria1_GEOS_TIN");
+   std::string dirout(TERRALIB_DATA_DIR "/mnt/");
+   std::string fileout("Isolinhas_GEOS_TIN");
 
 
     results = tri->getTriangles(*geomFact);
@@ -517,11 +517,11 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
- //   TesteGEOS();
+    TesteGEOS();
 
-  //  GenerateTIN();
+    GenerateTIN();
 
-  //  GenerateIso();
+    GenerateIso();
 
     CalculateGrid();
 

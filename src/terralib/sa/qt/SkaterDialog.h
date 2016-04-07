@@ -27,10 +27,12 @@
 #define __TERRALIB_SA_INTERNAL_SKATERDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../core/GeneralizedProximityMatrix.h"
+#endif
 #include "../Config.h"
 
 // Qt

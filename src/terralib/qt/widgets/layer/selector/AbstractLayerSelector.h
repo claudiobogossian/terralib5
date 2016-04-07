@@ -27,8 +27,10 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_INTERNAL_ABSTRACTLAYERSELECTOR_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../../maptools/AbstractLayer.h"
+#endif
 #include "../../Config.h"
 
 // STL

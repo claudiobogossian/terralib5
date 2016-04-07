@@ -27,11 +27,13 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../Utils.h"
+#endif
 #include "../Config.h"
 
 #include "GeometriesUpdateTool.h"
