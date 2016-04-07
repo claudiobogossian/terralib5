@@ -336,31 +336,17 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
 
   try
   {
-    if(source->getType() == "OGR")
-    {
-      // create the dataset
-      source->createDataSet(outDsType, options);
+    t->begin();
+
+    // create the dataset
+    t->createDataSet(outDsType, options);
   
-      // copy from memory to output datasource
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      source->add(outDsType->getName(), result, options);
-    }
-    else
-    {
-      t->begin();
+    // copy from memory to output datasource
+    result->moveBeforeFirst();
+    std::string name = outDsType->getName();
+    t->add(outDsType->getName(), result, options);
 
-      // create the dataset
-      t->createDataSet(outDsType, options);
-  
-      // copy from memory to output datasource
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      t->add(outDsType->getName(), result, options);
-
-      t->commit();
-    }
-
+    t->commit();
   }
   catch(te::common::Exception& e)
   {
