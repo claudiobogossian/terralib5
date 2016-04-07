@@ -72,7 +72,7 @@ namespace te
         DataSet(PGresult* result,
                 const std::vector<int>& ptypes,
                 bool timeIsInteger = true,
-                const te::core::EncodingType& ce = te::core::EncodingType::UNKNOWN);
+                te::core::EncodingType et = te::core::EncodingType::UNKNOWN);
 
         /*! \brief The destructor will clear the internal PGresult. */
         ~DataSet();
@@ -173,7 +173,7 @@ namespace te
         std::vector<int> m_ptypes;          //!< The list of property types.
         te::gm::Envelope* m_mbr;            //!< The dataset extent.
         bool m_timeIsInteger;               //!< It indicates if the postgis stores, internally, the time and timestamp as an integer. 
-        te::core::EncodingType m_ce;      //!< The connection character encoding.
+        te::core::EncodingType m_et;      //!< The connection character encoding.
     };
 
   } // end namespace pgis

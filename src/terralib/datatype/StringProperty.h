@@ -134,7 +134,7 @@ namespace te
 
           \param ce The character encoding type.
         */
-        void setCharEncoding(const te::core::EncodingType& et) { m_et = et; }
+        void setCharEncoding(te::core::EncodingType et) { m_et = et; }
 
         /*!
           \brief It returns a clone of the object.

@@ -85,7 +85,7 @@ namespace te
 
     struct TEDATAACCESSEXPORT CharEncodingConverter
     {
-      CharEncodingConverter(const te::core::EncodingType& toCode)
+      CharEncodingConverter(te::core::EncodingType toCode)
         : m_toCode(toCode)
       {
       }

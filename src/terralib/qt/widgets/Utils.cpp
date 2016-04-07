@@ -384,7 +384,7 @@ QString te::qt::widgets::GetFilePathFromSettings(const QString& typeFile)
   return sett.value(key).toString();
 }
 
-QString te::qt::widgets::Convert2Qt(const std::string& text, const te::core::EncodingType& encoding)
+QString te::qt::widgets::Convert2Qt(const std::string& text, te::core::EncodingType encoding)
 {
   try
   {

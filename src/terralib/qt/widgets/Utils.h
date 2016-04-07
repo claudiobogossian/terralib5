@@ -314,7 +314,7 @@ namespace te
 
         \return The converted string.
       */
-      TEQTWIDGETSEXPORT QString Convert2Qt(const std::string& text, const te::core::EncodingType& encoding);
+      TEQTWIDGETSEXPORT QString Convert2Qt(const std::string& text, te::core::EncodingType encoding);
       
       /*!
         \brief Returns a disk raster file selection filter base on current supported formats.
