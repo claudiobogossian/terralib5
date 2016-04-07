@@ -27,9 +27,12 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESWIZARD_H
 
 //TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess.h"
 #include "../../../st/maptools/TimeSeriesDataSetLayer.h"
+#endif
+
 #include "../Config.h"
 
 // Qt

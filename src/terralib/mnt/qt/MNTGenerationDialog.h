@@ -27,9 +27,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define __TERRALIB_MNT_INTERNAL_MNTGENERATIONDIALOG_H
 
 // Terralib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../mnt/core/TINCalculateGrid.h"
+#endif
 #include "../core/Config.h"
 
 // STL

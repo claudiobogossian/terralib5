@@ -28,12 +28,14 @@
 
 // TerraLib
 #include "../../../geometry/Coord2D.h"
+#ifndef Q_MOC_RUN
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryCollection.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "GeometriesUpdateTool.h"
 #include "../Config.h"
 

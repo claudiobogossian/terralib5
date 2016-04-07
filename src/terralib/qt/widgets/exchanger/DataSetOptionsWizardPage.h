@@ -27,8 +27,10 @@
 #define __TERRALIB_PLUGINS_EXCHANGER_INTERNAL_DATASETOPTIONSWIZARDPAGE_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
+#endif
 #include "../Config.h"
 
 // STL

@@ -33,8 +33,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../BuildConfig.h"
 
 // Qt includes
+#if (QT_VERSION >= 0x050000)
 #include <QStandardPaths>
-
+#else
+#include <QDesktopServices>
+#endif
 // Boost includes
 #include <boost/filesystem.hpp>
 
@@ -70,7 +73,7 @@ void te::qt::af::InternalSettingsDialog::setPaths()
   //global
   QString userDataDir;
 
-#if QT_VERSION >= 0x050000
+#if (QT_VERSION >= 0x050000)
   userDataDir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
 #else
   userDataDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
