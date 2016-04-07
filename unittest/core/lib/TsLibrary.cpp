@@ -35,16 +35,32 @@
 // Boost
 #include <boost/test/unit_test.hpp>
 
+std::string GetExampleFolder()
+{
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
+  return "../example/Release/";
+#else
+  return "../example/Debug/";
+#endif
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+  return "example/bin/";
+#else
+#error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
+#endif
+}
+
 BOOST_AUTO_TEST_SUITE( lib_test_case ) 
 
 BOOST_AUTO_TEST_CASE(test_constructor)
 {
   te::core::Library* l1 = 0;
+  std::string lName = te::core::Library::getNativeName("functions");
   
   /* Unloaded library. */
   /* -------------------- */
   // Shared library exist.
-  BOOST_CHECK(l1 = new te::core::Library("functionsd.dll", true));
+  BOOST_CHECK(l1 = new te::core::Library(GetExampleFolder() + lName, true));
   delete l1;
   
   // Shared library do not exist.
@@ -59,7 +75,7 @@ BOOST_AUTO_TEST_CASE(test_constructor)
   /* Loaded library. */
   /* -------------------- */
   // Shared library exist.
-  BOOST_CHECK(l1 = new te::core::Library("functionsd.dll"));
+  BOOST_CHECK(l1 = new te::core::Library(GetExampleFolder() + lName));
   delete l1;
 
   // Shared library does not exist.
@@ -73,19 +89,27 @@ BOOST_AUTO_TEST_CASE(test_constructor)
 
 BOOST_AUTO_TEST_CASE(test_destructor)
 {
-  te::core::Library* l = new te::core::Library("functionsd.dll", true);
+  std::string lName = te::core::Library::getNativeName("functions");
+
+  /* Testing destructor on a library not loaded. */
+  te::core::Library* l = new te::core::Library(GetExampleFolder() + lName, true);
 
   BOOST_CHECK_NO_THROW(delete l);
 
-  l = new te::core::Library("functionsd.dll");
+  /* Testing destructor on a loaded library. */
+  l = new te::core::Library(GetExampleFolder() + lName);
 
-  BOOST_CHECK_NO_THROW(delete l);
+  BOOST_CHECK_NO_THROW(delete l); 
+
+  return;
 }
 
 BOOST_AUTO_TEST_CASE(test_load)
 {
+  std::string lName = te::core::Library::getNativeName("functions");
+
   /* Correct */
-  te::core::Library l1("functionsd.dll", true);
+  te::core::Library l1(GetExampleFolder() + lName, true);
   BOOST_CHECK_NO_THROW(l1.load());
 
   // Loading twice
@@ -104,15 +128,17 @@ BOOST_AUTO_TEST_CASE(test_load)
 
 BOOST_AUTO_TEST_CASE(test_unload)
 {
+  std::string lName = te::core::Library::getNativeName("functions");
+
   /* Correct */
-  te::core::Library l1("functionsd.dll");
+  te::core::Library l1(GetExampleFolder() + lName);
   BOOST_CHECK_NO_THROW(l1.unload());
 
   /* Existing library but not loaded yet */
-  te::core::Library l2("functionsd.dll", true);
+  te::core::Library l2(GetExampleFolder() + lName, true);
   BOOST_CHECK_NO_THROW(l1.unload());
 
-  // Shared library do not exist.
+  // Shared library does not exist.
   te::core::Library l3("fred.dll", true);
   BOOST_CHECK_THROW(l3.unload(), te::core::LibraryUnloadException);
 
@@ -125,8 +151,10 @@ BOOST_AUTO_TEST_CASE(test_unload)
 
 BOOST_AUTO_TEST_CASE(test_isloaded)
 {
+  std::string lName = te::core::Library::getNativeName("functions");
+
   /* Correct */
-  te::core::Library l1("functionsd.dll");
+  te::core::Library l1(GetExampleFolder() + lName);
   BOOST_CHECK(l1.isLoaded());
   l1.unload();
   BOOST_CHECK(!l1.isLoaded());
@@ -134,7 +162,7 @@ BOOST_AUTO_TEST_CASE(test_isloaded)
   BOOST_CHECK(l1.isLoaded());
 
   /* Existing library but not loaded yet */
-  te::core::Library l2("functionsd.dll", true);
+  te::core::Library l2(GetExampleFolder() + lName, true);
   BOOST_CHECK(!l2.isLoaded());
 
   // Shared library do not exist.
@@ -150,8 +178,10 @@ BOOST_AUTO_TEST_CASE(test_isloaded)
 
 BOOST_AUTO_TEST_CASE(test_getFileName)
 {
-  /* Correct */
-  std::string fileName("functionsd.dll");
+  std::string lName = te::core::Library::getNativeName("functions");
+
+  /* Checking fileName */
+  std::string fileName(GetExampleFolder() + lName);
   te::core::Library l1(fileName);
   BOOST_CHECK(l1.getFileName().compare(fileName) == 0);
 
@@ -160,11 +190,16 @@ BOOST_AUTO_TEST_CASE(test_getFileName)
 
 BOOST_AUTO_TEST_CASE(test_getAddress)
 {
+  std::string lName = te::core::Library::getNativeName("functions");
+
   /* Correct */
-  std::string fileName("functionsd.dll");
+  std::string fileName(GetExampleFolder() + lName);
   te::core::Library l1(fileName);
 
+  /* Testing get a function that exists. */
   BOOST_CHECK(l1.getAddress("fatorial"));
+  
+  /* Testing get a function that does not exists. */
   BOOST_CHECK_THROW(l1.getAddress("fatorializando"), te::core::LibrarySymbolNotFoundException);
 
   return;
@@ -173,48 +208,85 @@ BOOST_AUTO_TEST_CASE(test_getAddress)
 BOOST_AUTO_TEST_CASE(test_getNativeName)
 {
   /* Correct */
-  std::string nname = te::core::Library::getNativeName("functions");
-  BOOST_CHECK((nname.compare("functions.dll") == 0) || 
-              (nname.compare("functionsd.dll") == 0));
+  std::string name("functions");
+  std::string nname = te::core::Library::getNativeName(name);
+  std::string prefix,
+    suffix;
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
+  suffix = ".dll";
+#else
+  suffix = "d.dll";
+#endif
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX 
+  prefix = "lib"
+#ifdef NDEBUG
+  suffix = ".so";
+#else
+  suffix = "d.so";
+#endif
+#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+  prefix = "lib"
+#ifdef NDEBUG
+  suffix = ".dylib";
+#else
+  suffix = "d.dylib";
+#endif
+#else
+#error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
+#endif
+
+  std::string trueName = prefix + name + suffix;
+
+  BOOST_CHECK(nname.compare(trueName) == 0);
 
   return;
 }
 
 BOOST_AUTO_TEST_CASE(test_addSearchDir)
 {
-  /* Correct */
-  BOOST_CHECK_NO_THROW(te::core::Library::addSearchDir("C:/Qt/5.5/msvc2013_64/bin"));
+  std::string lName = te::core::Library::getNativeName("functions");
 
+  /* Correct */
+  BOOST_CHECK_NO_THROW(te::core::Library::addSearchDir(GetExampleFolder()));
+
+  /* Empty path. */
   BOOST_CHECK_THROW(te::core::Library::addSearchDir(""), te::core::LibraryInvalidSearchPathException);
 
+  /* Path that does not exist. */
   BOOST_CHECK_THROW(te::core::Library::addSearchDir("X:/funcate"), te::core::LibraryInvalidSearchPathException);
 
+  /* Path with more characters than maximum size. */
   BOOST_CHECK_THROW(te::core::Library::addSearchDir("X:/funcate/kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"), te::core::LibraryInvalidSearchPathException);
 
-  /* Function */
-  BOOST_CHECK_THROW(te::core::Library("Qt5Core.dll"), te::core::LibraryLoadException);
+  /* Trying to load a library that can not be found by the operational system. */
+  BOOST_CHECK_THROW(te::core::Library(lName.c_str()), te::core::LibraryLoadException);
 
-  te::core::Library::addSearchDir("C:/Qt/5.5/msvc2013_64/bin");
-  BOOST_CHECK_NO_THROW(te::core::Library("Qt5Core.dll"));
+  /* Trying to load a library that can be found by the operational system. */
+  te::core::Library::addSearchDir(GetExampleFolder());
+  BOOST_CHECK_NO_THROW(te::core::Library(lName.c_str()));
 
   return;
 }
 
 BOOST_AUTO_TEST_CASE(test_resetSearchDir)
 {
+  std::string lName = te::core::Library::getNativeName("functions");
+
+  /* Testing reset on an unchanged path. */
   BOOST_CHECK_NO_THROW(te::core::Library::resetSearchPath());
 
-  te::core::Library::addSearchDir("C:/Qt/5.5/msvc2013_64/bin");
-
-  te::core::Library l("Qt5Core.dll", true);
-
+  /* Testing load a shared library adding a search path. */
+  te::core::Library::addSearchDir(GetExampleFolder());
+  te::core::Library l(lName, true);
   BOOST_CHECK_NO_THROW(l.load());
 
   l.unload();
 
+  /* Testing load library after reset search path. */
   te::core::Library::resetSearchPath();
-
-  BOOST_CHECK_THROW(te::core::Library("Qt5Core.dll"), te::core::LibraryLoadException);
+  BOOST_CHECK_THROW(te::core::Library(lName.c_str()), te::core::LibraryLoadException);
 
   return;
 }

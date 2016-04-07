@@ -27,7 +27,7 @@
 
 set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
-include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_CORE_DIR} ${TERRALIB_CORE_DIR}/uri ${TERRALIB_CORE_DIR}/encoding)
+include_directories(${Boost_INCLUDE_DIR})
 
 if (WIN32)
   add_definitions(-DTEMODULEDLL)

@@ -28,8 +28,10 @@
 
 // TerraLib
 #include "Library.h"
-#include "../Defines.h"
 #include "Exception.h"
+
+#include "../../Defines.h"
+
 
 #ifndef TE_PLATFORM
 #error "Could not determine platform! Please, contact TerraLib team (terralib-team@terralib.org) for helping support this platform!"
@@ -245,17 +247,23 @@ te::core::Library::getAddress(const char* symbol) const
 std::string
 te::core::Library::getNativeName(const std::string& name)
 {
+  std::string dbgMark;
+
+#ifdef _DEBUG
+  dbgMark = "d";
+#endif
+
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
 
-  std::string nativeName = name + ".dll";
+  std::string nativeName = name + dbgMark + ".dll";
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
 
-  std::string nativeName = "lib" + name + ".so";
+  std::string nativeName = "lib" + name + dbgMark + ".so";
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
-  std::string nativeName = "lib" + name + ".dylib";
+  std::string nativeName = "lib" + name + dbgMark + ".dylib";
 
 #else
 

@@ -27,11 +27,27 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 // TerraLib
+#include <terralib/Defines.h>
 #include <terralib/core/lib/Library.h>
 #include <terralib/core/lib/Exception.h>
 
 // STL
 #include <iostream>
+
+std::string GetExampleFolder()
+{
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
+  return "../example/Release/";
+#else
+  return "../example/Debug/";
+#endif
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+  return "example/bin/";
+#else
+#error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
+#endif
+}
 
 int main(int argc, char *argv[])
 {
@@ -39,11 +55,14 @@ int main(int argc, char *argv[])
   {
     try
     {
-      /* The library is located at the same directory as the executable. */
-      te::core::Library l1("functionsd.dll", true);
+      /* Get the file name. */
+      std::string lName = te::core::Library::getNativeName("functions");
 
-      /* Loading. */
-      l1.load();
+      /* Adds a path to find shared libraries. */
+      te::core::Library::addSearchDir(GetExampleFolder());
+
+      /* The library is located at the same directory as the executable. */
+      te::core::Library l1(lName);
 
       /* Testing if it was loaded. */
       if(l1.isLoaded())
