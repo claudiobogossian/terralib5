@@ -27,9 +27,11 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_OBSERVATIONWIZARD_H
 
 //TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess.h"
 #include "../../../st/maptools/ObservationDataSetLayer.h"
+#endif
 #include "../Config.h"
 
 // Qt

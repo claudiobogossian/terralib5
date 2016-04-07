@@ -27,9 +27,11 @@
 #define __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 #include "../Enums.h"
 

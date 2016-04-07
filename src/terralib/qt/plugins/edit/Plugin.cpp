@@ -251,10 +251,16 @@ void te::qt::plugins::edit::Plugin::drawStashed()
   if(display == 0)
     return;
 
+  te::map::AbstractLayer* l = GetSelectedLayer(getLayerExplorer());
+
+  std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+  //Checking if the layer contains a raster property
+  if (dsType->hasRaster())
+    return;
+
   QPixmap* draft = display->getDraftPixmap();
   draft->fill(Qt::transparent);
-
-  te::map::AbstractLayer* l = GetSelectedLayer(getLayerExplorer());
 
   if(l != 0 && l->getVisibility() == te::map::VISIBLE)
   {
@@ -270,6 +276,7 @@ void te::qt::plugins::edit::Plugin::drawStashed()
   }
 
   display->repaint();
+
 }
 
 void te::qt::plugins::edit::Plugin::updateDelegate(const bool& add)

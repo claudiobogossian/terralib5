@@ -27,9 +27,11 @@
 #define __TERRALIB_QT_PLUGINS_CELLSPACE_INTERNAL_CREATECELLULARSPACEDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../common/UnitOfMeasure.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../maptools/AbstractLayer.h"
+#endif
 
 // STL
 #include <memory>

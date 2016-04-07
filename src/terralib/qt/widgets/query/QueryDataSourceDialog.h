@@ -27,12 +27,14 @@
 #define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_QUERYDATASOURCEDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/query/Where.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../table/DataSetTableModel.h"
 #include "../canvas/MapDisplay.h"
 #include "../mapdisplay/DataSetDisplay.h"
+#endif
 #include "../Config.h"
 
 // STL

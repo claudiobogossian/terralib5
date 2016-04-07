@@ -38,17 +38,22 @@ file(GLOB TERRALIB_UNITTEST_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/uni
 file(GLOB TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/encoding/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/encoding/*.h)
 
+file(GLOB TERRALIB_UNITTEST_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/lib/*.cpp)
+
 source_group("Source Files"            FILES ${TERRALIB_UNITTEST_CORE_SRC_FILES})
 source_group("Header Files"            FILES ${TERRALIB_UNITTEST_CORE_HDR_FILES})
 source_group("Source Files\\uri"       FILES ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES})
 source_group("Header Files\\uri"       FILES ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES})
 source_group("Source Files\\encoding"  FILES ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES})
 source_group("Header Files\\encoding"  FILES ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES})
+source_group("Source Files\\lib"  FILES ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES})
+source_group("Header Files\\lib"  FILES ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
 
 
 add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERRALIB_UNITTEST_CORE_HDR_FILES}
                                       ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES} ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES}
-                                      ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES} ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES})
+                                      ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES} ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES}
+                                      ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES} ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
 
 target_link_libraries(terralib_unittest_core terralib_mod_core 
                                              ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
