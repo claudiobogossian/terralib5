@@ -27,7 +27,9 @@
 #define __TERRALIB_PLUGINS_EXCHANGER_INTERNAL_POSTGIS2SHPDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 // STL

@@ -27,19 +27,23 @@
 #define __TERRALIB_SA_INTERNAL_GEOSTATISTICALMETHODSDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/charts/ChartDisplay.h"
 #include "../../qt/widgets/charts/Scatter.h"
 #include "../../qt/widgets/charts/ScatterChart.h"
 #include "../core/GeostatisticalMethod.h"
+#endif
 #include "../Config.h"
 
 // Qt
 #include <QDialog>
 
 // Boost
+#ifndef Q_MOC_RUN
 #include <boost/numeric/ublas/matrix.hpp>
+#endif
 
 namespace Ui { class GeostatisticalMethodsDialogForm; }
 

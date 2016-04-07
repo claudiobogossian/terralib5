@@ -27,8 +27,10 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_MAPDISPLAY_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/MapDisplay.h"
 #include "../../../srs.h"
+#endif
 #include "../Config.h"
 
 // Qt

@@ -27,8 +27,10 @@
 #define __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 // STL

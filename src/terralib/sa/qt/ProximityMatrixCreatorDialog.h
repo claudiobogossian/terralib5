@@ -27,7 +27,9 @@
 #define __TERRALIB_SA_INTERNAL_PROXIMITYMATRIXCREATORDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 #include "../Enums.h"
 

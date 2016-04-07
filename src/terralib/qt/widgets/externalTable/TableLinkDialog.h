@@ -27,9 +27,11 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TABLELINKDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/query/Fields.h"
 #include "../../../maptools/DataSetLayer.h"
+#endif
 #include "../Config.h"
 
 //QT

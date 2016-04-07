@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_FIELDSWIZARDPAGE_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/query/Fields.h"
+#endif
 #include "../Config.h"
 
 // STL
