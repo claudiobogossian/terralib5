@@ -17,16 +17,30 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*!
-  \file terralib/core/lib/Config.h
-
-  \brief TerraLib Module Manager configuration flags.
-*/
-
 #ifndef __TERRALIB_CORE_LIB_CONFIG_H__
 #define __TERRALIB_CORE_LIB_CONFIG_H__
 
-// TerraLib
-#include "../Config.h"
+/*!
+\def FUNCTIONSEXPORT
+*/
+#ifdef WIN32
+
+#ifdef _MSC_VER 
+#pragma warning( disable : 4251 )
+#pragma warning( disable : 4275 )
+#pragma warning( disable : 4290 )
+#endif
+
+#ifdef FUNCTIONSSTATIC
+#define FUNCTIONSEXPORT                          // Don't need to export/import... it is a static library
+#elif FUNCTIONSDLL
+#define FUNCTIONSEXPORT  __declspec(dllexport)   // export DLL information
+#else
+#define FUNCTIONSEXPORT  __declspec(dllimport)   // import DLL information
+#endif 
+#else
+#define FUNCTIONSEXPORT
+#endif
+
 
 #endif  // __TERRALIB_CORE_LIB_CONFIG_H__

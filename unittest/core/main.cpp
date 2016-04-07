@@ -27,6 +27,7 @@
 
 // STL
 #include <cstdlib>
+#include <iostream>
 
 // Boost
 #define BOOST_TEST_NO_MAIN
@@ -40,6 +41,8 @@ bool init_unit_test()
 int main(int argc, char *argv[])
 {
   boost::unit_test::unit_test_main(init_unit_test, argc, argv);
+
+  std::cin.get();
 
   return EXIT_SUCCESS;
 }

@@ -29,6 +29,10 @@ set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
 include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_CORE_DIR} ${TERRALIB_CORE_DIR}/uri ${TERRALIB_CORE_DIR}/encoding)
 
+if (WIN32)
+  add_definitions(-DTEMODULEDLL)
+endif()
+
 file(GLOB TERRALIB_CORE_SRC_FILES ${TERRALIB_CORE_DIR}/*.cpp)
 file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_CORE_DIR}/*.h)
 
@@ -38,16 +42,22 @@ file(GLOB TERRALIB_CORE_URI_HDR_FILES ${TERRALIB_CORE_DIR}/uri/*.h)
 file(GLOB TERRALIB_CORE_ENCODING_SRC_FILES ${TERRALIB_CORE_DIR}/encoding/*.cpp)
 file(GLOB TERRALIB_CORE_ENCODING_HDR_FILES ${TERRALIB_CORE_DIR}/encoding/*.h)
 
+file(GLOB TERRALIB_CORE_LIB_SRC_FILES ${TERRALIB_CORE_DIR}/lib/*.cpp)
+file(GLOB TERRALIB_CORE_LIB_HDR_FILES ${TERRALIB_CORE_DIR}/lib/*.h)
+
 source_group("Source Files"            FILES ${TERRALIB_CORE_SRC_FILES})
 source_group("Header Files"            FILES ${TERRALIB_CORE_HDR_FILES})
 source_group("Source Files\\uri"       FILES ${TERRALIB_CORE_URI_SRC_FILES})
 source_group("Header Files\\uri"       FILES ${TERRALIB_CORE_URI_HDR_FILES})
 source_group("Source Files\\encoding"  FILES ${TERRALIB_CORE_ENCODING_SRC_FILES})
 source_group("Header Files\\encoding"  FILES ${TERRALIB_CORE_ENCODING_HDR_FILES})
+source_group("Source Files\\lib"       FILES ${TERRALIB_CORE_LIB_SRC_FILES})
+source_group("Header Files\\lib"       FILES ${TERRALIB_CORE_LIB_HDR_FILES})
 
 add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}
                                      ${TERRALIB_CORE_URI_SRC_FILES} ${TERRALIB_CORE_URI_HDR_FILES}
-                                     ${TERRALIB_CORE_ENCODING_SRC_FILES} ${TERRALIB_CORE_ENCODING_HDR_FILES})
+                                     ${TERRALIB_CORE_ENCODING_SRC_FILES} ${TERRALIB_CORE_ENCODING_HDR_FILES}
+                                     ${TERRALIB_CORE_LIB_SRC_FILES} ${TERRALIB_CORE_LIB_HDR_FILES})
 
 target_link_libraries(terralib_mod_core ${Boost_LOCALE_LIBRARY} ${Boost_REGEX_LIBRARY})
 

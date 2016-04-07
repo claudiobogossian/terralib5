@@ -30,6 +30,8 @@
 #ifndef __TERRALIB_CORE_ENCODING_CHARENCODING_H
 #define __TERRALIB_CORE_ENCODING_CHARENCODING_H
 
+#include "../Config.h"
+
 // STL
 #include <map>
 #include <string>
@@ -62,7 +64,7 @@ namespace te
      
       \brief A class for handling character enconding/decoding.
      */
-    class CharEncoding
+    class TEMODULEEXPORT CharEncoding
     {
       public:
 

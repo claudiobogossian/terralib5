@@ -47,6 +47,8 @@
 // Distributed under the Boost Software License, Version 1.0.
  */
 
+#include "../Config.h"
+
 // STL
 #include <string>
 
@@ -63,7 +65,7 @@ namespace te
 
       \brief A class for representing an Uniform Resource Identifier (URI).
      */
-    class URI
+    class TEMODULEEXPORT URI
     {
       public:
 

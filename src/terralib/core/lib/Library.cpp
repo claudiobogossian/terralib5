@@ -146,7 +146,7 @@ te::core::Library::load()
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
 
-  m_pimpl->module = (void*)LoadLibraryA(m_pimpl->slib_file_name.c_str());
+    m_pimpl->module = (void*)LoadLibraryA(m_pimpl->slib_file_name.c_str());
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
@@ -220,7 +220,7 @@ te::core::Library::getAddress(const char* symbol) const
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
 
-  void* f = GetProcAddress((HMODULE)m_module, symbol.c_str());
+  void* f = GetProcAddress((HINSTANCE)m_pimpl->module, symbol);
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
@@ -279,13 +279,13 @@ te::core::Library::addSearchDir(const std::string& dir_name)
   }
 
 // add dir to the path of LoadLibrary
-  BOOL retval = SetDllDirectory(d.c_str());
+  BOOL retval = SetDllDirectory(dir_name.c_str());
 
   if(retval == FALSE)
   {
-    boost::format err_msg("The informed dir \"%1%\" couldn't be added to the application dll lookup path due to the following error: %2%."");
+    boost::format err_msg("The informed dir \"%1%\" couldn't be added to the application dll lookup path due to the following error: \"%2%\".");
 
-    throw library_invalid_search_path_error() << error_description((err_msg % dir_name % te_get_os_error()).str());
+    throw te::core::LibraryInvalidSearchPathException() << te::ErrorDescription((err_msg % dir_name % te_get_os_error()).str());
   }
 
   te::core::Library::Impl::added_search_path_ = true;
@@ -393,7 +393,7 @@ te::core::Library::getSearchPath()
     throw LibrarySearchPathException() << te::ErrorDescription((err_msg % te_get_os_error()).str());
   }
 
-  if(length <= buffSize)
+  if(length <= buff_size)
   {
     return std::string(buff, length);
   }
