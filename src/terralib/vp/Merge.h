@@ -74,6 +74,8 @@ namespace te
 
       bool executeMemory(te::vp::AlgorithmParams* mainParams);
 
+      bool executeQuery(te::vp::AlgorithmParams* mainParams);
+
     protected:
 
       MergeStrategy checkStrategy();
