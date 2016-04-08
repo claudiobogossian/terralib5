@@ -249,7 +249,7 @@ te::core::Library::getNativeName(const std::string& name)
 {
   std::string dbgMark;
 
-#ifdef _DEBUG
+#ifndef NDEBUG
   dbgMark = "d";
 #endif
 
@@ -270,6 +270,8 @@ te::core::Library::getNativeName(const std::string& name)
   #error "Platform not supported! Please, contact TerraLib team (gribeiro@dpi.inpe.br) for helping support this platform!"
 
 #endif
+
+  const char* ld = nativeName.c_str();
 
   return nativeName;
 }

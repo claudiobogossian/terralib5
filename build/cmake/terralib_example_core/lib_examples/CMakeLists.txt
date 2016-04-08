@@ -43,3 +43,8 @@ file(GLOB HDR_FILES src/*.h)
 file(GLOB SRC_FILES src/*.cpp)
 
 add_library(functions SHARED ${HDR_FILES} ${SRC_FILES})
+
+set_target_properties(functions
+                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+

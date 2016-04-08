@@ -25,30 +25,43 @@
   \author Frederico Augusto Bedê.
  */
 
-// STL
-#include <iostream>
-
 // TerraLib
+#include <terralib/Defines.h>
 #include <terralib/core/lib/Library.h>
 #include <terralib/core/lib/Exception.h>
 
 // Boost
 #include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
+
+// STL
+#include <iostream>
 
 std::string GetExampleFolder()
 {
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  std::string path = boost::filesystem::complete(boost::filesystem::path("../example")).string();
+
 #ifdef NDEBUG
-  return "../example/Release/";
+  return path + "/Release/";
 #else
-  return "../example/Debug/";
+  return path + "/Debug/";
 #endif
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  return "example/bin/";
+  return boost::filesystem::complete(boost::filesystem::path("example")).string() + "/";
 #else
 #error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
 #endif
 }
+
+#if TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+std::string GetExePath()
+{
+  char result[ 255 ];
+  ssize_t count = readlink( "/proc/self/exe", result, 255 );
+  return std::string( result, (count > 0) ? count : 0 );
+}
+#endif
 
 BOOST_AUTO_TEST_SUITE( lib_test_case ) 
 
@@ -220,7 +233,7 @@ BOOST_AUTO_TEST_CASE(test_getNativeName)
   suffix = "d.dll";
 #endif
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX 
-  prefix = "lib"
+  prefix = "lib";
 #ifdef NDEBUG
   suffix = ".so";
 #else
@@ -261,14 +274,22 @@ BOOST_AUTO_TEST_CASE(test_addSearchDir)
   BOOST_CHECK_THROW(te::core::Library::addSearchDir("X:/funcate/kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"), te::core::LibraryInvalidSearchPathException);
 
   /* Trying to load a library that can not be found by the operational system. */
-  BOOST_CHECK_THROW(te::core::Library(lName.c_str()), te::core::LibraryLoadException);
+  BOOST_CHECK_THROW(te::core::Library(lName.c_str()), te::core::LibraryLoadException);  
+
+  te::core::Library::addSearchDir(GetExampleFolder());
 
   /* Trying to load a library that can be found by the operational system. */
-  te::core::Library::addSearchDir(GetExampleFolder());
+#if TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+  const char* ld = boost::filesystem::absolute(GetExePath()).c_str();
+  execl(ld, '\0');
+#endif
+
   BOOST_CHECK_NO_THROW(te::core::Library(lName.c_str()));
 
   return;
 }
+
+#if TE_PLATFORM != TE_PLATFORMCODE_LINUX && TE_PLATFORM != TE_PLATFORMCODE_APPLE
 
 BOOST_AUTO_TEST_CASE(test_resetSearchDir)
 {
@@ -290,5 +311,7 @@ BOOST_AUTO_TEST_CASE(test_resetSearchDir)
 
   return;
 }
+
+#endif
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -62,6 +62,6 @@ add_subdirectory(lib_examples)
 
 add_executable(terralib_example_core_lib ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
 
-target_link_libraries(terralib_example_core_lib terralib_mod_core)
+target_link_libraries(terralib_example_core_lib terralib_mod_core ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
         
 add_dependencies(terralib_example_core_lib functions)        
