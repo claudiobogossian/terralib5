@@ -33,7 +33,7 @@ namespace std {
 
 %{
 // TerraLib includes
-#include "terralib/common/CharEncodingConv.h"
+#include "terralib/core/CharEncoding.h"
 #include "terralib/common/TerraLib.h"
 #include "terralib/plugin/PluginManager.h"
 
@@ -88,7 +88,7 @@ void Initialize() throw (te::common::Exception);
 
 void Finalize();
 
-%include "terralib/common/CharEncodingConv.h"
+%include "terralib/core/CharEncoding.h"
 %include "terralib/common/Enums.h"
 %include "java/QtInitializer.h"
 
