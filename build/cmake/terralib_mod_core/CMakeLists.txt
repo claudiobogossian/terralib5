@@ -27,7 +27,7 @@
 
 set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
-include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_CORE_DIR} ${TERRALIB_CORE_DIR}/uri ${TERRALIB_CORE_DIR}/encoding)
+include_directories(${Boost_INCLUDE_DIR})
 
 file(GLOB TERRALIB_CORE_SRC_FILES ${TERRALIB_CORE_DIR}/*.cpp)
 file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_CORE_DIR}/*.h)

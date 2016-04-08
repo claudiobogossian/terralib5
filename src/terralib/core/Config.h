@@ -21,13 +21,24 @@
 /*!
   \file terralib/core/lib/Config.h
 
-  \brief Configuration flags for Shared Library support.
+  \brief Configuration flags for TerraLib Core Library.
 */
 
-#ifndef __TERRALIB_CORE_LIB_CONFIG_H__
-#define __TERRALIB_CORE_LIB_CONFIG_H__
+#ifndef __TERRALIB_CORE_CONFIG_H__
+#define __TERRALIB_CORE_CONFIG_H__
 
 // TerraLib
-#include "../Config.h"
+#include "../Defines.h"
 
-#endif  // __TERRALIB_CORE_LIB_CONFIG_H__
+#ifdef WIN32
+  #ifdef TECOREDLL
+    #define TECOREEXPORT TE_DLL_EXPORT
+  #else
+    #define TECOREEXPORT TE_DLL_IMPORT
+  #endif 
+#else
+  #define TECOREEXPORT
+#endif
+
+#endif  // __TERRALIB_CORE_CONFIG_H__
+

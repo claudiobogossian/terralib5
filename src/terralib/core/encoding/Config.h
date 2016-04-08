@@ -19,15 +19,14 @@
  */
 
 /*!
-  \file terralib/core/lib/Config.h
+  \file terralib/core/encoding/Config.h
 
-  \brief Configuration flags for Shared Library support.
-*/
+  \brief Configuration flags for Encoding/Decoding support.
+ */
 
-#ifndef __TERRALIB_CORE_LIB_CONFIG_H__
-#define __TERRALIB_CORE_LIB_CONFIG_H__
+#ifndef __TERRALIB_CORE_ENCODING_CONFIG_H__
+#define __TERRALIB_CORE_ENCODING_CONFIG_H__
 
-// TerraLib
 #include "../Config.h"
 
-#endif  // __TERRALIB_CORE_LIB_CONFIG_H__
+#endif  // __TERRALIB_CORE_ENCODING_CONFIG_H__

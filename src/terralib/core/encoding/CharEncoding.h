@@ -24,11 +24,14 @@
   \brief A class for handling character enconding/decoding.
 
   \author Matheus Cavassan Zaglia
+  \author Gilberto Ribeiro de Queiroz
 */
 
+#ifndef __TERRALIB_CORE_ENCODING_CHARENCODING_H__
+#define __TERRALIB_CORE_ENCODING_CHARENCODING_H__
 
-#ifndef __TERRALIB_CORE_ENCODING_CHARENCODING_H
-#define __TERRALIB_CORE_ENCODING_CHARENCODING_H
+// TerraLib
+#include "Config.h"
 
 // STL
 #include <map>
@@ -62,7 +65,7 @@ namespace te
      
       \brief A class for handling character enconding/decoding.
      */
-    class CharEncoding
+    class TECOREEXPORT CharEncoding
     {
       public:
 
@@ -115,7 +118,8 @@ namespace te
           \return Encoding as enum.
          */
         static te::core::EncodingType getEncodingType(const std::string &name);
-    private:
+      
+      private:
 
 // Not instantiable
         CharEncoding();
@@ -128,4 +132,4 @@ namespace te
   }  // end namespace core
 }    // end namespace te
 
-#endif //__TERRALIB_CORE_ENCODING_CHARENCODING_H
+#endif //__TERRALIB_CORE_ENCODING_CHARENCODING_H__

@@ -233,11 +233,7 @@ find_package(GDAL)
 
 find_package(GEOS)
 
-find_package(GEOSC)
-
 find_package(GNUGettext)
-
-find_package(GNUIConv)
 
 find_package(Log4cxx)
 
@@ -321,22 +317,6 @@ else()
 
   if(DEFINED TERRALIB_TRANSLATOR_ENABLED)
     set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?" FORCE)
-  endif()
-
-endif()
-
-if(GNUICONV_FOUND)
-
-  set(TERRALIB_GNU_ICONV_ENABLED ON)
-
-  if(NOT DEFINED TERRALIB_CHARENCODING_ENABLED)
-    set(TERRALIB_CHARENCODING_ENABLED 1 CACHE BOOL "Enable character encoding support?")
-  endif()
-
-else()
-
-  if(DEFINED TERRALIB_CHARENCODING_ENABLED)
-    set(TERRALIB_CHARENCODING_ENABLED 0 CACHE BOOL "Enable character encoding support?" FORCE)
   endif()
 
 endif()

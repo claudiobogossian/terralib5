@@ -23,6 +23,7 @@
   \brief A class for handling character enconding/decoding.
 
   \author Matheus Cavassan Zaglia
+  \author Gilberto Ribeiro de Queiroz
 */
 
 // TerraLib
