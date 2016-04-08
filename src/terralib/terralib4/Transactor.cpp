@@ -966,5 +966,5 @@ int terralib4::Transactor::getLayerSRID(const std::string & layerName)
 
 te::core::EncodingType terralib4::Transactor::getEncoding()
 {
-  return te::common::UTF8;
+  return te::core::EncodingType::UTF8;
 }
