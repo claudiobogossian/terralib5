@@ -86,7 +86,7 @@ std::string te::da::FilteredDataSet::getPropertyName(std::size_t i) const
   return m_ds->getPropertyName(i);
 }
 
-te::common::CharEncoding te::da::FilteredDataSet::getPropertyCharEncoding(std::size_t i) const
+te::core::EncodingType te::da::FilteredDataSet::getPropertyCharEncoding(std::size_t i) const
 {
   return m_ds->getPropertyCharEncoding(i);
 }

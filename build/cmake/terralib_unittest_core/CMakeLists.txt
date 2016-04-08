@@ -56,3 +56,5 @@ add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERR
                                       ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES} ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
 
 target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+
+add_dependencies(terralib_unittest_core functions)        

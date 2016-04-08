@@ -1845,7 +1845,7 @@ void te::ado::Transactor::insertIntoGeometryColumns(const std::string& datasetNa
   m_ds->registerGeometryColumn(datasetName, geomProp->getName());
 }
 
-te::common::CharEncoding te::ado::Transactor::getEncoding()
+te::core::EncodingType te::ado::Transactor::getEncoding()
 {
-  return te::common::LATIN1; // TODO
+  return te::core::EncodingType::LATIN1; // TODO
 }

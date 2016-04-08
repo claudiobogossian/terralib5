@@ -322,7 +322,7 @@ void TsDataSource::tcGetEncodings()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds);
-  std::vector<te::common::CharEncoding> encodings = m_ds->getEncodings(m_dsType,m_connInfo);
+  std::vector<te::core::EncodingType> encodings = m_ds->getEncodings(m_dsType,m_connInfo);
  
   CPPUNIT_ASSERT(encodings.size() >= 0);
 //#endif

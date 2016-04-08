@@ -6,7 +6,7 @@
 extern "C"
 {
   /* Calculates the fatorial of a number */
-  FUNCTIONSEXPORT int fatorial(int v);
+  TECOREEXPORT int fatorial(int v);
 }
 
 #endif //__TERRALIB_FUN_EXAMPLE_LIBRARY_H__

@@ -247,31 +247,22 @@ te::core::Library::getAddress(const char* symbol) const
 std::string
 te::core::Library::getNativeName(const std::string& name)
 {
-  std::string dbgMark;
-
-#ifndef NDEBUG
-  dbgMark = "d";
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
+  std::string nativeName = name + ".dll";
+#else
+  std::string nativeName = name + "d.dll";
 #endif
 
-#if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+  std::string nativeName = "lib" + name + ".so";
 
-  std::string nativeName = name + dbgMark + ".dll";
-
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-
-  std::string nativeName = "lib" + name + dbgMark + ".so";
-
-#elif (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-
-  std::string nativeName = "lib" + name + dbgMark + ".dylib";
+#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+  std::string nativeName = "lib" + name + ".dylib";
 
 #else
-
-  #error "Platform not supported! Please, contact TerraLib team (gribeiro@dpi.inpe.br) for helping support this platform!"
-
+#error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
 #endif
-
-  const char* ld = nativeName.c_str();
 
   return nativeName;
 }

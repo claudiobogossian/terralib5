@@ -216,7 +216,7 @@ std::string terralib4::TableDataSet::getPropertyName(std::size_t) const
   throw;
 }
 
-te::common::CharEncoding terralib4::TableDataSet::getPropertyCharEncoding(std::size_t) const
+te::core::EncodingType terralib4::TableDataSet::getPropertyCharEncoding(std::size_t) const
 {
   return te::common::UNKNOWN_CHAR_ENCODING; // TODO
 }

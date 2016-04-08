@@ -284,7 +284,7 @@ bool te::wcs::Transactor::dataSetExists(const std::string& name)
   return name == m_coverageName;
 }
 
-te::common::CharEncoding te::wcs::Transactor::getEncoding()
+te::core::EncodingType te::wcs::Transactor::getEncoding()
 {
   return te::common::UNKNOWN_CHAR_ENCODING;
 }

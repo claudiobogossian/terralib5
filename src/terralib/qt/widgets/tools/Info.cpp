@@ -263,7 +263,7 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
           if(dataset->getPropertyDataType(i) == te::dt::STRING_TYPE)
           {
             std::string value = dataset->getString(i);
-            te::common::CharEncoding encoding = dataset->getPropertyCharEncoding(i);
+            te::core::EncodingType encoding = dataset->getPropertyCharEncoding(i);
             qvalue = Convert2Qt(value, encoding);
           }
           else

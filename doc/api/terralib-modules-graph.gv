@@ -3,21 +3,24 @@ digraph TerraLib {
     annotationtext -> { maptools };
     color -> { maptools; symbology };
     common -> { srs; plugin; xml; datatype; color };
-    dataaccess -> { postgis; gdal; ogr; memory; terralib4; qt_widgets; cellspace; classification; maptools; te_graph };
+    dataaccess -> { postgis; gdal; ogr; memory; terralib4; qt_widgets; cellspace; classification; maptools; te_graph; mnt_core };
     datatype -> { geometry; raster; dataaccess };
     doxygen;
     filter -> { maptools; symbology }
-    geometry -> { raster; dataaccess; vp; rp; annotationtext; cellspace; filter; gml };
+    geometry -> { raster; dataaccess; vp; rp; annotationtext; cellspace; filter; gml; mnt_core };
     gml -> { filter }
     maptools -> { qt_widgets };
     memory -> { cellspace; classification };
-    qt_af -> { terraview };
+    mnt_core -> { mnt_qt };
+    mnt_qt -> { mnt_qt_plugin };
+    qt_af -> { terraview; mnt_qt };
     qt_help;
     qt_translations;
     qt_widgets -> { qt_af };
-    raster -> { rp };
+    raster -> { rp; mnt_core };
     symbology -> { maptools }
     xml -> { xerces };
+
 
     annotationtext [label="Annotation\nText", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
     cellspace [label="Cellular\nSpace", color=black, fillcolor="#fbb4ae", style=filled, fontcolor=black];
@@ -34,6 +37,9 @@ digraph TerraLib {
     gml [label="OGC GML", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
     maptools [label="Map Tools", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
     memory [label="Memory\nDriver", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
+    mnt_core [label="Digital\nTerrain Model", color=black, fillcolor="#fbb4ae", style=filled, fontcolor=black];
+    mnt_qt [label="DTM\nWidgets", color=black, fillcolor="#ccebc5", style=filled, fontcolor=black];
+    mnt_qt_plugin [label="DTM\nQt Plugin", color=black, fillcolor="#ccebc5", style=filled, fontcolor=black];
     ogr [label="OGR\nDriver", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
     plugin [label="Plugin", color=black, fillcolor="#e0eeee", style=filled, fontcolor=black];
     postgis [label="PostGIS\nDriver", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
@@ -50,4 +56,5 @@ digraph TerraLib {
     vp [label="Vector\nProcessing", color=black, fillcolor="#fbb4ae", style=filled, fontcolor=black];
     xerces [label="Xerces-C", color=black, fillcolor="#ffe4c4", style=filled, fontcolor=black];
     xml [label="XML", color=black, fillcolor="#f5f5dc", style=filled, fontcolor=black];
+    
 }

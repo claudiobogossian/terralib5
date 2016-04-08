@@ -44,8 +44,6 @@ int main(int /*argc*/, char** /*argv*/)
 
     UnitSRS();
 
-    CharEncodingConv();
-
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)

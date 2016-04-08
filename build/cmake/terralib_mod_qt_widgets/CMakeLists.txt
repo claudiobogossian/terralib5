@@ -350,6 +350,7 @@ source_group("UI Files\\vector"      FILES ${TERRALIB_VECTOR_UI_FILES})
 #
 
 set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common")
+list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_core")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_st")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_stmemory")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_statistics_core")

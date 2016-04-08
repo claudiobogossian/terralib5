@@ -19,26 +19,14 @@
  */
 
 /*!
-  \file terralib/core/lib/Config.h
+  \file terralib/core/uri/Config.h
 
-  \brief Configuration flags for TerraLib Core Library.
-*/
+  \brief Configuration flags for URI support.
+ */
 
-#ifndef __TERRALIB_CORE_CONFIG_H__
-#define __TERRALIB_CORE_CONFIG_H__
+#ifndef __TERRALIB_CORE_URI_CONFIG_H__
+#define __TERRALIB_CORE_URI_CONFIG_H__
 
-// TerraLib
-#include "../Defines.h"
+#include "../Config.h"
 
-#ifdef WIN32
-  #ifdef TECOREDLL
-    #define TECOREEXPORT TE_DLL_EXPORT
-  #else
-    #define TECOREEXPORT TE_DLL_IMPORT
-  #endif 
-#else
-  #define TECOREEXPORT
-#endif
-
-#endif  // __TERRALIB_CORE_CONFIG_H__
-
+#endif  // __TERRALIB_CORE_URI_CONFIG_H__

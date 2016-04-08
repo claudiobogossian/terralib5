@@ -1070,7 +1070,7 @@ namespace te
 
           \return The DataSource current encoding.
           */
-        virtual te::common::CharEncoding getEncoding() = 0;
+        virtual te::core::EncodingType getEncoding() = 0;
         //@}
     
     /** @name Dataset Schema Persistence Methods

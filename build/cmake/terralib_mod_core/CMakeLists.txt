@@ -30,7 +30,7 @@ set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 include_directories(${Boost_INCLUDE_DIR})
 
 if (WIN32)
-  add_definitions(-DTEMODULEDLL)
+  add_definitions(-DTECOREDLL)
 endif()
 
 file(GLOB TERRALIB_CORE_SRC_FILES ${TERRALIB_CORE_DIR}/*.cpp)

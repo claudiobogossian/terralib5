@@ -1014,7 +1014,7 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
   highlightOIds(m_layer->getSelected());
 }
 
-void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor)
+void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, te::core::EncodingType enc, const bool& clearEditor)
 {
   reset();
 
@@ -1199,7 +1199,7 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
     if(dsrc.get() == 0)
       throw Exception(tr("Fail to get data source.").toStdString());
 
-    setDataSet(0, te::common::LATIN1);
+    setDataSet(0, te::core::EncodingType::LATIN1);
 
     dsrc->changePropertyDefinition(dsetName, columnName, dlg.getProperty().release());
 

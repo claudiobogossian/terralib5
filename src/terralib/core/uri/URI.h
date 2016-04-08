@@ -23,37 +23,20 @@
 
   \brief A class for representing an Uniform Resource Identifier (URI).
 
-  \author Gilberto Ribeiro de Queiroz
   \author Vinicius Campanha
+  \author Gilberto Ribeiro de Queiroz
  */
 
 #ifndef __TERRALIB_CORE_URI_URI_H__
 #define __TERRALIB_CORE_URI_URI_H__
 
-/*
-  The URI class is based on the specification from Glyn Matthews and Dean Michael Berris:
-      Title: A URI Library for C++.
-      Document Number: N3625.
-      Date: 2013-04-30.
-      Authors: Glyn Matthews and Dean Michael Berris
-      Homepage: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3625.html.
-
-  The code below is based on the implementation available at:
-  https://github.com/cpp-netlib/cpp-netlib
-
-  The original copyright notices is:
-// Copyright 2009, 2010, 2011, 2012 Dean Michael Berris, Jeroen Habraken, Glyn
-// Matthews.
-// Distributed under the Boost Software License, Version 1.0.
- */
-
-#include "../Config.h"
+// TerraLib
+#include "Config.h"
 
 // STL
 #include <string>
 
 // Boost
-#include <boost/range/iterator_range.hpp>
 #include <boost/regex.hpp>
 
 namespace te
@@ -65,13 +48,9 @@ namespace te
 
       \brief A class for representing an Uniform Resource Identifier (URI).
      */
-    class TEMODULEEXPORT URI
+    class TECOREEXPORT URI
     {
       public:
-
-// exported types
-        typedef std::string string_type;
-        typedef string_type::const_iterator const_iterator;
 
         /*! \brief Default constructor. */
         URI();
@@ -86,12 +65,10 @@ namespace te
 
            \exception URIException when the given URI isn't valid.
          */
-        explicit URI(const string_type& uri);
+        explicit URI(const std::string& uri);
 
         /*! \brief Copy constructor. */
         URI(const URI& other);
-
-        //URI(URI&& other) noexcept;
 
         /*! Default destructor. */
         ~URI() = default;
@@ -99,70 +76,68 @@ namespace te
         /*! \brief Assingment operator. */
         URI& operator=(const URI& other);
 
-        //URI& operator=(URI&& other) noexcept;
-
         /*!
           \brief Retrieving the full URI
 
           \return Returns the complete URI.
          */
-        const string_type& uri() const;
+        const std::string& uri() const;
 
         /*!
           \brief Retrieving the scheme
 
           \return Returns the URI scheme.
          */
-        string_type scheme() const;
+        std::string scheme() const;
 
         /*!
           \brief Retrieving the user information
 
           \return Returns the URI user information.
          */
-        string_type user() const;
+        std::string user() const;
 
         /*!
           \brief Retrieving the password information
 
           \return Returns the URI password information.
          */
-        string_type password() const;
+        std::string password() const;
 
         /*!
           \brief Retrieving the host
 
           \return Returns the URI host.
          */
-        string_type host() const;
+        std::string host() const;
 
         /*!
           \brief Retrieving the port
 
           \return Returns the URI port.
          */
-        string_type port() const;
+        std::string port() const;
 
         /*!
           \brief Retrieving the path
 
           \return Returns the URI path.
          */
-        string_type path() const;
+        std::string path() const;
 
         /*!
          \brief Retrieving the query
 
          \return Returns the URI query.
          */
-        string_type query() const;
+        std::string query() const;
 
         /*!
           \brief Retrieving the fragment
 
           \return Returns the URI fragment.
          */
-        string_type fragment() const;
+        std::string fragment() const;
 
         /*!
           \brief Return if the given URI is valid or not.
@@ -198,12 +173,12 @@ namespace te
          */
         void encode();
 
-        string_type hexToLetter(int i);
+        std::string hexToLetter(int i);
 
       private:
 
-        string_type uri_;
-        boost::match_results< const_iterator > match_;
+        std::string uri_;
+        boost::match_results< std::string::const_iterator > match_;
         bool isValid_;
     };
 

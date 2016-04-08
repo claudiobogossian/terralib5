@@ -70,7 +70,7 @@ namespace te
 
       \warning Shared libraries should not be loaded by multiple threads.
      */
-    class TEMODULEEXPORT Library : public boost::noncopyable
+    class TECOREEXPORT Library : public boost::noncopyable
     {
       public:
 

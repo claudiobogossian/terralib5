@@ -26,7 +26,7 @@
 include_directories(src)
 
 if (WIN32)
-  add_definitions(-DFUNCTIONSDLL)
+  add_definitions(-DTECOREDLL)
 endif()
 
 if(WIN32)

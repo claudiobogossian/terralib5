@@ -368,7 +368,7 @@ te::dt::Property* te::gpkg::Convert2TerraLib(OGRFieldDefn* fieldDef)
          ISO8859-1 - also called "Latin 1"
          From: http://gis.stackexchange.com/questions/3529/which-character-encoding-is-used-by-the-dbf-file-in-shapefiles */
       // for while...
-      sp->setCharEncoding(te::common::LATIN1);
+      sp->setCharEncoding(te::core::EncodingType::LATIN1);
 
       p = sp;
     }

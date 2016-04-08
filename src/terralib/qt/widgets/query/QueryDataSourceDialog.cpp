@@ -384,7 +384,7 @@ void te::qt::widgets::QueryDataSourceDialog::onClearPushButtonClicked()
 
   m_dataSetDisplay->clear();
 
-  m_tableModel->setDataSet(0, te::common::LATIN1);
+  m_tableModel->setDataSet(0, te::core::EncodingType::LATIN1);
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onSQLEditorTextChanged()

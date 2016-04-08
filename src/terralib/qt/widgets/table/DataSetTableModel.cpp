@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../../../common/Exception.h"
-#include "../../../common/CharEncodingConv.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -307,7 +306,7 @@ te::qt::widgets::DataSetTableModel::~DataSetTableModel()
   delete m_promoter;
 }
 
-void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor)
+void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset, te::core::EncodingType enc, const bool& clearEditor)
 {
   beginResetModel();
 
@@ -460,8 +459,8 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       if(m_dataset->getPropertyDataType(index.column()) == te::dt::STRING_TYPE)
       {
         std::string value = m_dataset->getString(index.column());
-        te::common::CharEncoding encoding = m_dataset->getPropertyCharEncoding(index.column());
-        if (encoding == te::common::UNKNOWN_CHAR_ENCODING)
+        te::core::EncodingType encoding = m_dataset->getPropertyCharEncoding(index.column());
+        if (encoding == te::core::EncodingType::UNKNOWN)
           return value.c_str();
         else
           return Convert2Qt(value, encoding);
@@ -590,8 +589,7 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
 
       if(curV != newV)
       {
-        te::common::CharEncodingConv c(te::common::UTF8, m_encoding);
-        std::string out = c.conv(newV.toStdString());
+        std::string out = te::core::CharEncoding::fromUTF8(newV.toStdString(), m_encoding);
         m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), out);
       }
 
