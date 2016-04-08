@@ -324,9 +324,9 @@ std::vector<std::string> te::gpkg::DataSource::getDataSourceNames(const std::map
   return names;
 }
 
-std::vector<te::common::CharEncoding> te::gpkg::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
+std::vector<te::core::EncodingType> te::gpkg::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  return std::vector<te::common::CharEncoding>();
+  return std::vector<te::core::EncodingType>();
 }
 
 te::gpkg::DataSource* te::gpkg::Build()

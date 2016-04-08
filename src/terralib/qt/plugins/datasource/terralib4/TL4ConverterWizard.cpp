@@ -710,7 +710,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
           pk->setName(te::common::Convert2LCase(targetName) + "_pk");
         }
 
-        te::common::CharEncoding encTo = tl5ds->getEncoding();
+        te::core::EncodingType encTo = tl5ds->getEncoding();
 
         for(std::size_t i = 0; i < type->size(); ++i)
         {

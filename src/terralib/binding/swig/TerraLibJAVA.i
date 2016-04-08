@@ -93,7 +93,7 @@ void Finalize();
 %include "java/QtInitializer.h"
 
 namespace std {
- %template(CharEncodingVector) vector<te::common::CharEncoding>;
+ %template(CharEncodingVector) vector<te::core::EncodingType>;
 }
 
 %include java/ObjectId.i

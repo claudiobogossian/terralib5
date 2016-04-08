@@ -96,7 +96,7 @@ std::string terralib4::RasterDataSet::getPropertyName(std::size_t /*i*/) const
   return "raster";
 }
 
-te::common::CharEncoding terralib4::RasterDataSet::getPropertyCharEncoding(std::size_t) const
+te::core::EncodingType terralib4::RasterDataSet::getPropertyCharEncoding(std::size_t) const
 {
   return te::common::UNKNOWN_CHAR_ENCODING;
 }

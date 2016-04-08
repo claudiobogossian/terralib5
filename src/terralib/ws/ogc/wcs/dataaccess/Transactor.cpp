@@ -292,7 +292,7 @@ bool te::ws::ogc::wcs::da::Transactor::dataSetExists(const std::string& name)
   return false;
 }
 
-te::common::CharEncoding te::ws::ogc::wcs::da::Transactor::getEncoding()
+te::core::EncodingType te::ws::ogc::wcs::da::Transactor::getEncoding()
 {
   return te::common::UNKNOWN_CHAR_ENCODING;
 }

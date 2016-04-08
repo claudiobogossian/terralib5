@@ -144,7 +144,7 @@ std::string terralib4::VectorDataSet::getPropertyName(std::size_t) const
   throw;
 }
 
-te::common::CharEncoding terralib4::VectorDataSet::getPropertyCharEncoding(std::size_t) const
+te::core::EncodingType terralib4::VectorDataSet::getPropertyCharEncoding(std::size_t) const
 {
   return te::common::UTF8;
 }

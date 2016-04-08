@@ -1231,7 +1231,7 @@ void te::gpkg::Transactor::optimize(const std::map<std::string, std::string>& /*
 {
 }
 
-te::common::CharEncoding te::gpkg::Transactor::getEncoding()
+te::core::EncodingType te::gpkg::Transactor::getEncoding()
 {
   return te::common::LATIN1;
 }
