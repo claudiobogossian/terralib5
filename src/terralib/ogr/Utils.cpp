@@ -350,7 +350,7 @@ te::dt::Property* te::ogr::Convert2TerraLib(OGRFieldDefn* fieldDef)
       else
         sp = new te::dt::StringProperty(name, te::dt::VAR_STRING, fieldDef->GetWidth());
 
-      //sp->setCharEncoding(te::common::UTF8); // GDAL/OGR handles strings internally in UTF-8 - *** Need review! ***
+      //sp->setCharEncoding(te::core::EncodingType::UTF8); // GDAL/OGR handles strings internally in UTF-8 - *** Need review! ***
 
       /* The original DBF standard defines to use ISO8859-1, and only ISO8859-1.
          So, when you get a Shapefile that is really standards conform, it should be ISO8859-1.

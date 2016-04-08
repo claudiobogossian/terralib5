@@ -169,7 +169,7 @@ std::vector<std::string> terralib4::DataSource::getDataSourceNames(const std::ma
 std::vector<te::core::EncodingType> terralib4::DataSource::getEncodings(const std::map<std::string, std::string>&)
 {
   std::vector<te::core::EncodingType> result;
-  result.push_back(te::common::LATIN1);
+  result.push_back(te::core::EncodingType::LATIN1);
 
   return result;
 }
