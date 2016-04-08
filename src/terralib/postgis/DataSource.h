@@ -152,7 +152,7 @@ namespace te
 
           \note PostGIS driver extended method.
         */
-        te::common::CharEncoding getCharEncoding() const;
+        te::core::EncodingType getCharEncoding() const;
 
       protected:
 
@@ -164,7 +164,7 @@ namespace te
 
         std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
 
-        std::vector<te::common::CharEncoding> getEncodings(const std::map<std::string, std::string>& dsInfo);
+        std::vector<te::core::EncodingType> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
       private:
 
@@ -174,7 +174,7 @@ namespace te
         unsigned int m_rasterTypeOid;                     //!< PostGIS Raster type OID.
         std::string m_currentSchema;                      //!< The default schema used when no one is provided.
         bool m_timeIsInteger;                             //!< It indicates if the postgis stores, internally, time and timestamp as an integer.
-        te::common::CharEncoding m_encoding;              //!< The datasource char encoding.
+        te::core::EncodingType m_encoding;              //!< The datasource char encoding.
 
         static te::da::DataSourceCapabilities sm_capabilities;  //!< PostGIS capabilities.
         static te::da::SQLDialect* sm_dialect;                  //!< PostGIS SQL dialect.

@@ -98,8 +98,24 @@ namespace te
         static std::string convert(const std::string& src,
                                    EncodingType from,
                                    EncodingType to);
+        /*!
+          \brief Retrive a string from a given character encoding type enum.
 
-      private:
+          \param et Encoding Type to be retrieved as string.
+
+          \return Encoding Type as string.
+         */
+        static std::string getEncodingName(EncodingType et);
+
+        /*!
+          \brief Retrive an EncodingType from a given character encoding name.
+
+          \param et Encoding name to be retrieved as enum.
+
+          \return Encoding as enum.
+         */
+        static te::core::EncodingType getEncodingType(const std::string &name);
+    private:
 
 // Not instantiable
         CharEncoding();

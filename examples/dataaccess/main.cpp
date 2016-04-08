@@ -26,6 +26,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/core/encoding/CharEncoding.h>
 #include <terralib/plugin.h>
 #include <terralib/dataaccess/dataset/CheckConstraint.h>
 #include <terralib/dataaccess/dataset/PrimaryKey.h>
@@ -118,9 +119,9 @@ void PrintDataSourceEncodings(const std::string& dsType, const std::map<std::str
 {
   std::cout << "\n===== Encodings for the data source \"" << "terralib4" << "\":\n";
 
-  std::vector<te::common::CharEncoding> encs = te::da::DataSource::getEncodings(dsType, info);
+  std::vector<te::core::EncodingType> encs = te::da::DataSource::getEncodings(dsType, info);
   for(std::size_t i = 0; i < encs.size(); ++i)
-    std::cout << encs[i] << std::endl;
+    std::cout << static_cast<int>(encs[i]) << std::endl;
 }
 
 void PrintDataSetNames(te::da::DataSource* ds)

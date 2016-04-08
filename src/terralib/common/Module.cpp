@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "CharEncodingConv.h"
+//#include "CharEncodingConv.h"
 #include "Enums.h"
 #include "LibraryManager.h"
 #include "Logger.h"
@@ -78,7 +78,7 @@ void te::common::Module::initialize()
   UnitsOfMeasureManager::getInstance().init();
 #endif
 
-  CharEncodingConv::initialize();
+//  CharEncodingConv::initialize();
 
   TE_LOG_TRACE(TE_TR("TerraLib Common Runtime initialized!"));
 }

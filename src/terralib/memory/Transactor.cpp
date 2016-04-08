@@ -422,7 +422,7 @@ void te::mem::Transactor::optimize(const std::map<std::string, std::string>& /*o
 {
 }
 
-te::common::CharEncoding te::mem::Transactor::getEncoding()
+te::core::EncodingType te::mem::Transactor::getEncoding()
 {
-  return te::common::UTF8;
+  return te::core::EncodingType::UTF8;
 }

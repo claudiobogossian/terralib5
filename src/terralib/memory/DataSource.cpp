@@ -529,7 +529,7 @@ std::vector<std::string> te::mem::DataSource::getDataSourceNames(const std::map<
   return std::vector<std::string>();
 }
 
-std::vector<te::common::CharEncoding> te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<te::core::EncodingType> te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  return std::vector<te::common::CharEncoding>();
+  return std::vector<te::core::EncodingType>();
 }

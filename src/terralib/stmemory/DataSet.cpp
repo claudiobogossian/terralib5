@@ -127,7 +127,7 @@ te::stmem::DataSet::DataSet( const te::da::DataSetType* type, int begTimePropIdx
   m_RTree.reset(new te::sam::rtree::Index<te::mem::DataSetItem*>());
 }
 
-te::stmem::DataSet::DataSet(const std::vector<std::string>& pnames, const std::vector<int>& ptypes, const std::map<int, te::common::CharEncoding>& encodings,
+te::stmem::DataSet::DataSet(const std::vector<std::string>& pnames, const std::vector<int>& ptypes, const std::map<int, te::core::EncodingType>& encodings,
                             int begTimePropIdx, int endTimePropIdx, int gmPropIdx)
   : m_items(),
     m_RTree(),  
@@ -562,9 +562,9 @@ std::string te::stmem::DataSet::getPropertyName(std::size_t pos) const
   return m_pnames[pos];
 }
 
-te::common::CharEncoding te::stmem::DataSet::getPropertyCharEncoding(std::size_t i) const
+te::core::EncodingType te::stmem::DataSet::getPropertyCharEncoding(std::size_t i) const
 {
-  std::map<int, te::common::CharEncoding>::const_iterator it = m_encodings.find(i);
+  std::map<int, te::core::EncodingType>::const_iterator it = m_encodings.find(i);
   assert(it != m_encodings.end());
 
   return it->second;

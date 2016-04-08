@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_ATTRIBUTECONVERTERS_H
 
 // TerraLib
-#include "../../common/CharEncodingConv.h"
+#include "../../core/encoding/CharEncoding.h"
 #include "../../srs/Config.h"
 #include "../Config.h"
 
@@ -85,7 +85,7 @@ namespace te
 
     struct TEDATAACCESSEXPORT CharEncodingConverter
     {
-      CharEncodingConverter(const te::common::CharEncoding& toCode)
+      CharEncodingConverter(te::core::EncodingType toCode)
         : m_toCode(toCode)
       {
       }
@@ -94,7 +94,7 @@ namespace te
 
       te::dt::AbstractData* operator()(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      te::common::CharEncoding m_toCode;
+      te::core::EncodingType m_toCode;
     };
 
     struct TEDATAACCESSEXPORT SRIDAssociation

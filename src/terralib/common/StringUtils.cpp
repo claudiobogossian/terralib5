@@ -37,29 +37,29 @@ void te::common::GetAccentuatedUpperVector(std::vector<std::string> & vecUpperIn
     upperIn.clear();
     upperOut.clear();
 
-    upperIn.push_back("¡");
-    upperIn.push_back("…");
-    upperIn.push_back("Õ");
-    upperIn.push_back("”");
-    upperIn.push_back("⁄");
-    upperIn.push_back("¿");
-    upperIn.push_back("»");
-    upperIn.push_back("Ã");
-    upperIn.push_back("“");
-    upperIn.push_back("Ÿ");
-    upperIn.push_back("ƒ");
-    upperIn.push_back("À");
-    upperIn.push_back("œ");
-    upperIn.push_back("÷");
-    upperIn.push_back("‹");
-    upperIn.push_back("¬");
-    upperIn.push_back(" ");
-    upperIn.push_back("Œ");
-    upperIn.push_back("‘");
-    upperIn.push_back("€");
-    upperIn.push_back("√");
-    upperIn.push_back("’");
-    upperIn.push_back("«");
+    upperIn.push_back("√Å");
+    upperIn.push_back("√â");
+    upperIn.push_back("√ç");
+    upperIn.push_back("√ì");
+    upperIn.push_back("√ö");
+    upperIn.push_back("√Ä");
+    upperIn.push_back("√à");
+    upperIn.push_back("√å");
+    upperIn.push_back("√í");
+    upperIn.push_back("√ô");
+    upperIn.push_back("√Ñ");
+    upperIn.push_back("√ã");
+    upperIn.push_back("√è");
+    upperIn.push_back("√ñ");
+    upperIn.push_back("√ú");
+    upperIn.push_back("√Ç");
+    upperIn.push_back("√ä");
+    upperIn.push_back("√é");
+    upperIn.push_back("√î");
+    upperIn.push_back("√õ");
+    upperIn.push_back("√É");
+    upperIn.push_back("√ï");
+    upperIn.push_back("√á");
 
 
     upperOut.push_back("A");
@@ -102,30 +102,30 @@ void te::common::GetAccentuatedLowerVector(std::vector<std::string> & vecLowerIn
     lowerIn.clear();
     lowerOut.clear();
 
-    lowerIn.push_back("·");
-    lowerIn.push_back("È");
-    lowerIn.push_back("Ì");
-    lowerIn.push_back("Û");
-    lowerIn.push_back("˙");
-    lowerIn.push_back("‡");
-    lowerIn.push_back("Ë");
-    lowerIn.push_back("Ï");
-    lowerIn.push_back("Ú");
-    lowerIn.push_back("˘");
-    lowerIn.push_back("‰");
-    lowerIn.push_back("Î");
-    lowerIn.push_back("Ô");
-    lowerIn.push_back("ˆ");
-    lowerIn.push_back("¸");
-    lowerIn.push_back("‚");
-    lowerIn.push_back("Í");
-    lowerIn.push_back("Ó");
-    lowerIn.push_back("Ù");
-    lowerIn.push_back("˚");
-    lowerIn.push_back("„");
-    lowerIn.push_back("ı");
+    lowerIn.push_back("√°");
+    lowerIn.push_back("√©");
+    lowerIn.push_back("√≠");
+    lowerIn.push_back("√≥");
+    lowerIn.push_back("√∫");
+    lowerIn.push_back("√†");
+    lowerIn.push_back("√®");
+    lowerIn.push_back("√¨");
+    lowerIn.push_back("√≤");
+    lowerIn.push_back("√π");
+    lowerIn.push_back("√§");
+    lowerIn.push_back("√´");
+    lowerIn.push_back("√Ø");
+    lowerIn.push_back("√∂");
+    lowerIn.push_back("√º");
+    lowerIn.push_back("√¢");
+    lowerIn.push_back("√™");
+    lowerIn.push_back("√Æ");
+    lowerIn.push_back("√¥");
+    lowerIn.push_back("√ª");
+    lowerIn.push_back("√£");
+    lowerIn.push_back("√µ");
 
-    std::string str = "Á";
+    std::string str = "√ß";
     lowerIn.push_back(str);
 
     lowerOut.push_back("a");
@@ -159,11 +159,11 @@ void te::common::GetAccentuatedLowerVector(std::vector<std::string> & vecLowerIn
 
 void te::common::GetEspecialCharsFixVector(std::vector<std::string> & especialIn, std::vector<std::string> & especialOut)
 {
-  especialIn.push_back("™");
-  especialIn.push_back("∫");
-  especialIn.push_back("π");
-  especialIn.push_back("≤");
-  especialIn.push_back("≥");
+  especialIn.push_back("¬™");
+  especialIn.push_back("¬∫");
+  especialIn.push_back("¬π");
+  especialIn.push_back("¬≤");
+  especialIn.push_back("¬≥");
 
   especialOut.push_back("a");
   especialOut.push_back("o");
