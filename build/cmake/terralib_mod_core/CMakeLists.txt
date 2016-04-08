@@ -25,6 +25,10 @@
 #          Matheus Cavassan Zaglia
 #
 
+if(WIN32)
+  add_definitions(-DTECOREDLL)
+endif()
+
 set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
 include_directories(${Boost_INCLUDE_DIR})

@@ -42,7 +42,8 @@ target_link_libraries(terralib_mod_memory terralib_mod_dataaccess
                                           terralib_mod_raster
                                           terralib_mod_geometry
                                           terralib_mod_datatype
-                                          terralib_mod_common)
+                                          terralib_mod_common
+                                          terralib_mod_core)
 
 set_target_properties(terralib_mod_memory
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
