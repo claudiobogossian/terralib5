@@ -22,7 +22,7 @@
 
   \brief A test suit for the TerraLib Core Lib Module.
 
-  \author Frederico Augusto Bedê.
+  \author Frederico Augusto BedÃª.
  */
 
 // TerraLib

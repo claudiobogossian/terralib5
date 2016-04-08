@@ -23,7 +23,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 \brief Examples for the TerraLib Library Module
 
-\author Frederico Augusto Bedê
+\author Frederico Augusto BedÃª
 */
 
 // TerraLib
