@@ -428,7 +428,7 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" OFF)
 endif()
 
-option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" OFF)
+option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" ON)
 
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
