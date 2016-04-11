@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_SE_INTERNAL_GROUPINGWIDGET_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 // STL

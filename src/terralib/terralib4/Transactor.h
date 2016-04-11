@@ -252,7 +252,7 @@ namespace terralib4
 
       void optimize(const std::map<std::string, std::string>& opInfo);
 
-      te::common::CharEncoding getEncoding();
+      te::core::EncodingType getEncoding();
 
       std::vector<std::string> getTL4Layers();
 

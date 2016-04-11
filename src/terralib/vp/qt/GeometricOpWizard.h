@@ -27,9 +27,11 @@
 #define __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARD_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/layer/search/LayerSearchWizardPage.h"
+#endif
 #include "../Config.h"
 #include "../Enums.h"
 

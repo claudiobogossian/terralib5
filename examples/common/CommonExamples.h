@@ -35,7 +35,4 @@ void UOMManage();
 /*! \brief This example test how to retrieve a SRS unit of measure. */
 void UnitSRS();
 
-/*! \brief This example shows charset conversion. */
-void CharEncodingConv();
-
 #endif  // __TERRALIB_EXAMPLES_COMMON_INTERNAL_COMMONEXAMPLES_H

@@ -28,10 +28,13 @@
 
 //TerraLib
 #include "../Config.h"
+#ifndef Q_MOC_RUN
 #include "../../../geometry.h"
 #include "../../../datatype.h"
 #include "../InterfaceController.h"
 #include "SliderPropertiesDialog.h"
+#endif
+
 // Qt
 #include <QWidget>
 #include <QAbstractAnimation>

@@ -27,12 +27,14 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_FUSIONWIZARDPAGE_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../rp/IHSFusion.h"
 #include "../../../rp/PCAFusion.h"
 #include "../../../rp/WisperFusion.h"
 #include "../../../qt/widgets/charts/ChartDisplay.h"
 #include "../../../qt/widgets/charts/Scatter.h"
+#endif
 #include "../../../qt/widgets/charts/ScatterChart.h"
 #include "../Config.h"
 

@@ -27,10 +27,12 @@
 #define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_QUERYDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/query/Where.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 #include "../InterfaceController.h"
+#endif
 
 // STL
 #include <memory>

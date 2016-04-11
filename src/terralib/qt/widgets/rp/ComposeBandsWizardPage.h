@@ -27,8 +27,10 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_COMPOSEBANDSWIZARDPAGE_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../raster/Interpolator.h"
+#endif
 #include "../Config.h"
 
 // STL

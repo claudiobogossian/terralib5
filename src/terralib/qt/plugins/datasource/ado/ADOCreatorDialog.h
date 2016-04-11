@@ -27,8 +27,10 @@
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_ADO_INTERNAL_ADOCREATORDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#endif
 
 // STL
 #include <memory>

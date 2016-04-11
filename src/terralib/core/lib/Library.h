@@ -30,7 +30,7 @@
 #define __TERRALIB_CORE_LIB_LIBRARY_H__
 
 // TerraLib
-#include "Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -70,7 +70,7 @@ namespace te
 
       \warning Shared libraries should not be loaded by multiple threads.
      */
-    class TEMODULEEXPORT Library : public boost::noncopyable
+    class TECOREEXPORT Library : public boost::noncopyable
     {
       public:
 
@@ -95,7 +95,7 @@ namespace te
         /*!
           If the shared library was already loaded this method doesn't perform operations.
 
-          \exception library_load_error If the shared library can not be loaded to memory.
+          \exception LibraryLoadException If the shared library can not be loaded to memory.
 
           \note Not thread-safe.
          */

@@ -264,7 +264,7 @@ std::auto_ptr<te::gm::Envelope> te::wcs::Transactor::getExtent(const std::string
 
   te::rst::RasterProperty* rasterProperty = static_cast<te::rst::RasterProperty*>(prop.get());
   te::gm::Envelope* e = rasterProperty->getGrid()->getExtent();
-  
+
   return std::auto_ptr<te::gm::Envelope>(new te::gm::Envelope(e->getLowerLeftX(), e->getLowerLeftY(),
                                                               e->getUpperRightX(), e->getUpperRightY()));
 }
@@ -284,9 +284,9 @@ bool te::wcs::Transactor::dataSetExists(const std::string& name)
   return name == m_coverageName;
 }
 
-te::common::CharEncoding te::wcs::Transactor::getEncoding()
+te::core::EncodingType te::wcs::Transactor::getEncoding()
 {
-  return te::common::UNKNOWN_CHAR_ENCODING;
+  return te::core::EncodingType::UNKNOWN;
 }
 
 /** NOT SUPPORTED METHODS */

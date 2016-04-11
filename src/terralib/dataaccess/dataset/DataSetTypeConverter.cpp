@@ -49,7 +49,7 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type)
   m_outDataSetType->setTitle(type->getName());
 }
 
-te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, const te::common::CharEncoding& ce)
+te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, te::core::EncodingType et)
   : m_inDataSetType(dynamic_cast<DataSetType*>(type->clone()))
 {
   assert(type);
@@ -75,7 +75,7 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const Data
     {
       if(p->getType() == te::dt::STRING_TYPE)
       {
-        CharEncodingConverter cec(ce);
+        CharEncodingConverter cec(et);
         add(i, p->clone(), cec);
       }
       else

@@ -83,6 +83,7 @@ bool te::vp::Merge::executeMemory(te::vp::AlgorithmParams* mainParams)
   m_mergeDst = mainParams->getInputParams()[1].m_inputDataSetType;
   m_mergeDs = mainParams->getInputParams()[1].m_inputDataSet;
   m_outDsetName = mainParams->getOutputDataSetName();
+  m_outDsrc = mainParams->getOutputDataSource();
 
   m_isUpdate = isUpdate(mainParams->getSpecificParams());
 
@@ -671,4 +672,9 @@ int te::vp::Merge::getPropertyType(const te::dt::Property* p)
   else
     throw; //Throw!!!
 
+}
+
+bool te::vp::Merge::executeQuery(te::vp::AlgorithmParams* mainParams)
+{
+  return true;
 }

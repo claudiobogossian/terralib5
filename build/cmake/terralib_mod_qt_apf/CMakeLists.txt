@@ -81,6 +81,7 @@ source_group("UI Files\\settings"  FILES ${TERRALIB_SETTINGS_UI_FILES})
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/AbstractSettingWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/DisplayWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/GeneralConfigWidget.h
+									   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/InternalSettingsDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/MenuBarModel.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/SettingsDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/TableWidget.h

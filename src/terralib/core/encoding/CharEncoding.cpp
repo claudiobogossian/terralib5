@@ -23,6 +23,7 @@
   \brief A class for handling character enconding/decoding.
 
   \author Matheus Cavassan Zaglia
+  \author Gilberto Ribeiro de Queiroz
 */
 
 // TerraLib
@@ -61,4 +62,22 @@ te::core::CharEncoding::convert(const std::string &src,
                                 EncodingType to)
 {
   return boost::locale::conv::between(src, EncodingString.at(to), EncodingString.at(from));
+}
+
+std::string
+te::core::CharEncoding::getEncodingName(EncodingType et)
+{
+  return EncodingString.at(et);
+}
+
+te::core::EncodingType
+te::core::CharEncoding::getEncodingType(const std::string &name)
+{
+  std::map<EncodingType, std::string>::const_iterator it;
+  for(it = EncodingString.begin(); it != EncodingString.end(); ++it)
+  {
+    if(it->second == name)
+      return it->first;
+  }
+  return EncodingType::UNKNOWN;
 }

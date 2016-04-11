@@ -184,9 +184,9 @@ std::vector<std::string> te::ws::ogc::wcs::da::DataSource::getDataSourceNames(co
   return std::vector<std::string>();
 }
 
-std::vector<te::common::CharEncoding> te::ws::ogc::wcs::da::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<te::core::EncodingType> te::ws::ogc::wcs::da::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  return std::vector<te::common::CharEncoding>();
+  return std::vector<te::core::EncodingType>();
 }
 
 void te::ws::ogc::wcs::da::DataSource::verifyConnectionInfo() const

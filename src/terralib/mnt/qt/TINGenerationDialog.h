@@ -26,9 +26,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define __TERRALIB_MNT_INTERNAL_TINGENERATIONDIALOG_H
 
 // Terralib
+#ifndef Q_MOC_RUN
 #include "../../common/UnitOfMeasure.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "../core/Config.h"
 
 // STL

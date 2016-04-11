@@ -45,6 +45,7 @@ target_link_libraries(terralib_mod_gdal terralib_mod_ogr
                                         terralib_mod_datatype
                                         terralib_mod_plugin
                                         terralib_mod_common
+                                        terralib_mod_core
                                         ${GDAL_LIBRARY}
                                         ${Boost_THREAD_LIBRARY}
                                         ${Boost_DATE_TIME_LIBRARY}

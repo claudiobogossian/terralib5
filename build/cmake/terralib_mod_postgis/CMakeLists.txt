@@ -52,6 +52,7 @@ target_link_libraries(terralib_mod_postgis terralib_mod_dataaccess
                                            terralib_mod_plugin
                                            terralib_mod_xml
                                            terralib_mod_common
+                                           terralib_mod_core
                                            ${PostgreSQL_LIBRARIES}
                                            ${Boost_THREAD_LIBRARY}
                                            ${Boost_DATE_TIME_LIBRARY}

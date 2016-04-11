@@ -33,7 +33,9 @@
 #include <QWizard>
 
 // Boost
+#ifndef Q_MOC_RUN
 #include <boost/bimap.hpp>
+#endif
 
 // Forward declaration
 namespace Ui { class QueryBuilderWizardForm; }

@@ -28,8 +28,10 @@
 
 // TerraLib
 #include "../Config.h"
+#ifndef Q_MOC_RUN
 #include "../../../geometry.h"
 #include "../../../datatype.h"
+#endif
 
 // Qt
 #include <QGraphicsPixmapItem>
