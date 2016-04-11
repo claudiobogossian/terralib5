@@ -358,7 +358,7 @@ bool te::vp::Merge::executeMemory(te::vp::AlgorithmParams* mainParams)
   catch (std::exception& e)
   {
     transactor->rollBack();
-    throw std::exception(e.what());
+    throw e;
   }
 
   return true;
