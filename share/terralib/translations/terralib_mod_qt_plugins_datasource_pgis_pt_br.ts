@@ -286,13 +286,13 @@
 <context>
     <name>te::qt::plugins::pgis::PostGISCreatorDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/PostGISCreatorDialog.cpp" line="176"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/PostGISCreatorDialog.cpp" line="184"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/PostGISCreatorDialog.cpp" line="178"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/PostGISCreatorDialog.cpp" line="186"/>
         <source>TerraLib Qt Components</source>
         <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/PostGISCreatorDialog.cpp" line="185"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/PostGISCreatorDialog.cpp" line="187"/>
         <source>Unknown error while opening PostgreSQL database!</source>
         <translation>Erro desconhecido ao abrir banco de dados PostgreSQL !</translation>
     </message>

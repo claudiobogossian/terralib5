@@ -4,9 +4,13 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../../src/terraview/AboutDialog.cpp" line="45"/>
         <source>&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt;</source>
-        <translation>&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terraview/AboutDialog.cpp" line="45"/>
+        <source>&lt;p&gt;Copyright &amp;copy; 2010 INPE&lt;BR&gt;</source>
+        <translation type="unfinished">&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt; {2010 ?}</translation>
     </message>
     <message>
         <location filename="../../../src/terraview/AboutDialog.cpp" line="48"/>
