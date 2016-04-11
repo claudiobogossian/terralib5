@@ -148,6 +148,7 @@ set QWT=%LIBS_DIR%\qwt.lib
 set LUA=%LIBS_DIR%\lua.lib
 set TERRALIB4=%LIBS_DIR%\terralib.lib
 set CURL=%LIBS_DIR%\libcurl.lib
+set GETTEXT=%LIBS_DIR%\intl.lib
 
 del %ROOT_DIR%\..\*.log /S /Q >nul 2>nul
 
@@ -228,12 +229,12 @@ set ICONV_LIBRARIES=debug;%ICONVD_LIBRARY%;optimized;%ICONV_LIBRARY%
 :: Check dependencies
 goto end_iconv_deps
 :iconv_deps
-goto expat_deps
+goto gettext_deps
 :end_iconv_deps
 
 echo | set /p="Installing iconv... "<nul
 
-IF EXIST %ICONV_LIBRARY% call :skip_build && goto expat 
+IF EXIST %ICONV_LIBRARY% call :skip_build && goto gettext 
 
 call :append_log_begin iconv
 
@@ -241,13 +242,13 @@ call :append_log_begin iconv
 
 cd %ICONV_DIR% >nul 2>nul
 
-( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean debug" && goto expat
+( msbuild /m /t:clean  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean debug" && goto gettext
 
-( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean release" && goto expat
+( msbuild /m /p:Configuration=Release /t:clean myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean release" && goto gettext
 
-( msbuild /m  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build debug" && goto expat
+( msbuild /m  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build debug" && goto gettext
 
-( msbuild /m /p:Configuration=Release myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build release" && goto expat
+( msbuild /m /p:Configuration=Release myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build release" && goto gettext
 
 xcopy %ICONV_DIR%\myIconv\include\iconv.h %ICONV_INCLUDE_DIR% /Y >nul 2>nul
 
@@ -264,6 +265,62 @@ xcopy %ICONV_DIR%\%_libF%\Debug\*.dll %LIBS_DIR% /Y  >nul 2>nul
 call :append_log_end iconv
 
 :end_iconv
+
+echo done.
+
+cd %ROOT_DIR%
+::  ========
+
+:gettext
+
+::  ====
+::  GetText
+set GETTEXT_DIR=%ROOT_DIR%\gettext-0.19.4
+set GETTEXT_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
+set GETTEXT_LIBRARY=%GETTEXT%
+set GETTEXTD_LIBRARY=%LIBS_DIR%\intld.lib
+
+:: Check dependencies
+goto end_gettext_deps
+:gettext_deps
+IF NOT EXIST %ICONV% call :remove_lib %GETTEXT% && goto expat_deps
+goto expat_deps
+:end_gettext_deps
+
+echo | set /p="Installing gettext... "<nul
+
+IF EXIST %GETTEXT_LIBRARY% call :skip_build && goto expat 
+
+call :append_log_begin gettext
+
+:begin_gettext
+
+cd %GETTEXT_DIR% >nul 2>nul
+
+( msbuild /m /p:Configuration=Release /t:clean libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "clean release" && goto expat
+
+( msbuild /m /p:Configuration=Release libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "build release" && goto expat
+
+( msbuild /m /t:clean libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "clean release" && goto expat
+
+( msbuild /m libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "build release" && goto expat
+
+copy %GETTEXT_DIR%\libgnuintl.h %GETTEXT_INCLUDE_DIR%\libintl.h /Y >nul 2>nul
+copy %GETTEXT_DIR%\config.h %GETTEXT_INCLUDE_DIR%\libintlConfig.h /Y >nul 2>nul
+
+IF DEFINED TERRALIB_X64 ( 
+  set "_libF=-X64" 
+) ELSE set "_libF=-Win32"
+
+xcopy %GETTEXT_DIR%\Release%_libF%\*.lib %LIBS_DIR% /Y  >nul 2>nul
+xcopy %GETTEXT_DIR%\Release%_libF%\*.dll %LIBS_DIR% /Y  >nul 2>nul
+
+xcopy %GETTEXT_DIR%\Debug%_libF%\*.lib %LIBS_DIR% /Y  >nul 2>nul
+xcopy %GETTEXT_DIR%\Debug%_libF%\*.dll %LIBS_DIR% /Y  >nul 2>nul
+
+call :append_log_end gettext
+
+:end_gettext
 
 echo done.
 
