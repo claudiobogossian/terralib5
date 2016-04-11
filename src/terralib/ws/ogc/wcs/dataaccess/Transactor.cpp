@@ -294,7 +294,7 @@ bool te::ws::ogc::wcs::da::Transactor::dataSetExists(const std::string& name)
 
 te::core::EncodingType te::ws::ogc::wcs::da::Transactor::getEncoding()
 {
-  return te::common::UNKNOWN_CHAR_ENCODING;
+  return te::core::EncodingType::UNKNOWN;
 }
 
 /** NOT SUPPORTED METHODS */

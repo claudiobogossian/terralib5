@@ -242,6 +242,9 @@ void te::qt::plugins::edit::Plugin::onGeometriesChanged()
 
 void te::qt::plugins::edit::Plugin::drawStashed()
 {
+  if (!m_toolbar->m_isEnabled)
+    return;
+  
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
 
@@ -253,18 +256,12 @@ void te::qt::plugins::edit::Plugin::drawStashed()
 
   te::map::AbstractLayer* l = GetSelectedLayer(getLayerExplorer());
 
-  std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
-
-  //Checking if the layer contains a raster property
-  if (dsType->hasRaster())
-    return;
-
-  QPixmap* draft = display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
   if(l != 0 && l->getVisibility() == te::map::VISIBLE)
   {
     te::gm::Envelope env = display->getExtent();
+
+    QPixmap* draft = display->getDraftPixmap();
+    draft->fill(Qt::transparent);
 
     te::edit::Renderer& renderer = te::edit::Renderer::getInstance();
     renderer.begin(draft, env, display->getSRID());

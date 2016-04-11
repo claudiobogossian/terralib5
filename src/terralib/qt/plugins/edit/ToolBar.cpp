@@ -93,7 +93,8 @@ QObject(parent),
   m_undoView(0),
   m_currentTool(0),
   m_usingStash(false),
-  m_layerIsStashed(true)
+  m_layerIsStashed(true),
+  m_isEnabled(false)
 {
   initialize();
 }
@@ -342,6 +343,8 @@ void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
   enableActionsByGeomType(m_tools, checked);
 
   enableCurrentTool(checked);
+
+  m_isEnabled = checked;
 }
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
