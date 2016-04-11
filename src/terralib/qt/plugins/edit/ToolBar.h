@@ -161,6 +161,8 @@ namespace te
         public:
           te::map::AbstractLayerPtr getSelectedLayer();
 
+          bool m_isEnabled;
+
         protected:
           te::map::AbstractLayerPtr getLayer(const std::string& id);
           void initialize();
