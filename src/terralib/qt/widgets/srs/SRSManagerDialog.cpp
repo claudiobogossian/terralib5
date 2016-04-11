@@ -243,7 +243,7 @@ void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
         aux << m_recentSRS[i];
     
     QString value = aux.join(",");
-    QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    QSettings sett(qApp->organizationName(), qApp->applicationName());
     sett.setValue("SRSRecentlyUsed", value);
     accept();
   }
@@ -376,7 +376,7 @@ void te::qt::widgets::SRSManagerDialog::onRemoveSRSPushButtonClicked()
       aux << m_recentSRS[i];
     
     QString value = aux.join(",");
-    QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    QSettings sett(qApp->organizationName(), qApp->applicationName());
     sett.setValue("SRSRecentlyUsed", value);
   }
   m_selSrsId.first=TE_UNKNOWN_SRS;

@@ -368,7 +368,7 @@ void te::addressgeocoding::MainWindowDialog::onEditAddressToolButtonPressed()
 
 void te::addressgeocoding::MainWindowDialog::onRemoveAddressToolButtonPressed()
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings sett(qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("Address Geocoding");
   
@@ -604,7 +604,7 @@ void te::addressgeocoding::MainWindowDialog::onCancelPushButtonClicked()
 
 void te::addressgeocoding::MainWindowDialog::GetAddressFilePathToSettings(std::map<std::string, std::vector<std::string> >& mapFields)
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings sett(qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("Address Geocoding");
   QStringList lst = sett.childGroups();
