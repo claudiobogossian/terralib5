@@ -78,6 +78,8 @@ bool te::vp::Merge::executeMemory(te::vp::AlgorithmParams* mainParams)
 {
   te::vp::ValidateAlgorithmParams(mainParams, te::vp::MEMORY);
 
+  m_inputSource = mainParams->getInputParams()[0].m_inputDataSource;
+  m_mergeSource = mainParams->getInputParams()[1].m_inputDataSource;
   m_inputDst = mainParams->getInputParams()[0].m_inputDataSetType;
   m_inputDs = mainParams->getInputParams()[0].m_inputDataSet;
   m_mergeDst = mainParams->getInputParams()[1].m_inputDataSetType;
@@ -353,10 +355,9 @@ bool te::vp::Merge::executeMemory(te::vp::AlgorithmParams* mainParams)
     transactor->commit();
 
   }
-  catch (const std::exception& e)
+  catch (std::exception& e)
   {
     transactor->rollBack();
-    std::string err = e.what();
     throw e;
   }
 
