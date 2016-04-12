@@ -65,11 +65,6 @@ if(GNUGETTEXT_FOUND)
   list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${GNUGETTEXT_LIBRARY})
 endif()
 
-if(GNUICONV_FOUND)
-  include_directories(${GNUICONV_INCLUDE_DIR})
-  list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${GNUICONV_LIBRARY})
-endif()
-
 target_link_libraries(terralib_mod_common ${TERRALIB_LIBRARIES_DEPENDENCIES})
 
 set_target_properties(terralib_mod_common
