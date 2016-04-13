@@ -28,7 +28,9 @@
 
 // TerarLib
 #include <terralib/geometry/Enums.h>
+#ifndef Q_MOC_RUN
 #include <terralib/maptools/AbstractLayer.h>
+#endif
 
 // Qt
 #include <QMainWindow>

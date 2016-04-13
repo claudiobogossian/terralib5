@@ -28,12 +28,14 @@
 
 // TerraLib
 #include "../../../classification/ROISet.h"
+#ifndef Q_MOC_RUN
 #include "../../../geometry/Polygon.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
 #include "../../../rp/ClassifierMAPStrategy.h"
 #include "../../../rp/ClassifierSAMStrategy.h"
+#endif
 #include "../Config.h"
 
 // STL

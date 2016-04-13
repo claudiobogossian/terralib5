@@ -29,8 +29,9 @@
 #include "Config.h"
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../maptools/AbstractLayer.h"
-
+#endif
 #include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>

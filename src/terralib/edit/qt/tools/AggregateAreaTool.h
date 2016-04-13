@@ -2,7 +2,9 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_AGGREGATEAREATOOL_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 // Qt
@@ -11,7 +13,9 @@
 //STL
 #include <set>
 
+#ifndef Q_MOC_RUN
 #include "CreateLineTool.h"
+#endif
 
 namespace te
 {

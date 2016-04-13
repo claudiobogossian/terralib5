@@ -28,7 +28,9 @@
 
 // TerraLib
 #include "../../../geometry/Coord2D.h"
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "GeometriesUpdateTool.h"
 #include "../Config.h"
 

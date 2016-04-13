@@ -27,10 +27,12 @@
 #define __TERRALIB_QT_WIDGETS_MAPDISPLAY_INTERNAL_DATASETDISPLAY_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
+#endif
 #include "../Config.h"
 
 // STL

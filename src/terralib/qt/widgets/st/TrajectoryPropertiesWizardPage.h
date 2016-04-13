@@ -28,8 +28,10 @@
 
 // TerraLib
 #include "../Config.h"
+#ifndef Q_MOC_RUN
 #include "terralib/dataaccess/datasource/DataSourceInfo.h"
 #include "terralib/dataaccess/dataset/DataSetType.h"
+#endif
 
 // Qt
 #include <QWizardPage>

@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_ORDERBYWIDGET_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/query/OrderBy.h"
+#endif
 #include "../Config.h"
 
 // STL

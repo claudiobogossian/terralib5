@@ -28,8 +28,10 @@
 
 // TerraLib
 #include "../../color/RGBAColor.h"
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "../core/Config.h"
 #include "../core/Enums.h"
 

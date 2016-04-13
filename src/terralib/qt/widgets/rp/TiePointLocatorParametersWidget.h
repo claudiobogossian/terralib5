@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORPARAMETERSWIDGET_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../rp/TiePointsLocator.h"
+#endif
 #include "../Config.h"
 
 // STL
