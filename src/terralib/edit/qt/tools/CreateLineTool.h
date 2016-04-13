@@ -96,7 +96,9 @@ namespace te
 
         //@}
 
-      private:
+        te::gm::Geometry* buildLine();
+    
+    private:
 
         void draw();
 
@@ -114,7 +116,6 @@ namespace te
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
 
         void clear();
-        te::gm::Geometry* buildLine();
     };
 
   }   // end namespace edit

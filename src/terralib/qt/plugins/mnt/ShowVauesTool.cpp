@@ -1,5 +1,5 @@
 /*!
-\file terralib/mnt/core/ShowValuesTool.cpp
+\file terralib/qt/plugins/mnt/ShowValuesTool.cpp
 
 \brief This file contains a class to Show MNT Values Tool.
 
@@ -23,7 +23,6 @@
 // Qt
 #include <QMessageBox>
 #include <QMouseEvent>
-#include <QtWidgets/QToolTip>
 
 #include <iostream>
 
