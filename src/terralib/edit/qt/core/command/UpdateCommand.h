@@ -35,9 +35,10 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../Feature.h"
 
 // Qt
-#include <QUndoCommand>
-#include <QString>
+#include <QObject>
 #include <QPointF>
+#include <QString>
+#include <QUndoCommand>
 
 namespace te
 {
@@ -47,39 +48,45 @@ namespace te
     \brief Undo/Redo for Update one components.
 
     */
-    class TEEDITQTEXPORT UpdateCommand : public QUndoCommand
+    class TEEDITQTEXPORT UpdateCommand : public QObject, public QUndoCommand
     {
-    public:
-      // Pass all parameters that the command need to fulfill its task in the constructor
-      UpdateCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+      Q_OBJECT
 
-      /*!
-      \brief Destructor
-      */
-      virtual ~UpdateCommand();
+      public:
+        // Pass all parameters that the command need to fulfill its task in the constructor
+        UpdateCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
-      /*!
-      \brief Reimplemented from QUndoCommand
-      */
-      virtual void undo();
+        /*!
+        \brief Destructor
+        */
+        virtual ~UpdateCommand();
 
-      /*!
-      \brief Reimplemented from QUndoCommand
-      */
-      virtual void redo();
+        /*!
+        \brief Reimplemented from QUndoCommand
+        */
+        virtual void undo();
 
-    private:
+        /*!
+        \brief Reimplemented from QUndoCommand
+        */
+        virtual void redo();
 
-      te::qt::widgets::MapDisplay* m_display;
-      te::map::AbstractLayerPtr m_layer;
-      std::vector<Feature*> m_updateItems;
-      QString createCommandString(QString oid);
-      void draw(const int commandType);
+      signals:
 
-      std::size_t m_nextFeature;
-      std::size_t m_previousFeature;
-      const int m_redoCommandType;
-      const int m_undoCommandType;
+        void geometryAquired(te::gm::Geometry* geom);
+
+      private:
+
+        te::qt::widgets::MapDisplay* m_display;
+        te::map::AbstractLayerPtr m_layer;
+        std::vector<Feature*> m_updateItems;
+        QString createCommandString(QString oid);
+        void draw(const int commandType);
+
+        std::size_t m_nextFeature;
+        std::size_t m_previousFeature;
+        const int m_redoCommandType;
+        const int m_undoCommandType;
 
     };
   }

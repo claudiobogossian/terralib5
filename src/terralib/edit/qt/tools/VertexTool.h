@@ -152,6 +152,8 @@ namespace te
 
         void onExtentChanged();
 
+        void onGeometryAquired(te::gm::Geometry*);
+
       private:
 
           std::vector<te::gm::LineString*> m_lines;
