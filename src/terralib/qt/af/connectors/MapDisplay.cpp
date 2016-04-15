@@ -67,7 +67,6 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt:
   : QObject(),
     m_app(app),
     m_display(display),
-    m_tool(0),
     m_menu(0),
     m_currentExtentIndex(-1),
     m_extentStackMaxSize(5),
@@ -113,7 +112,6 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt:
 
 te::qt::af::MapDisplay::~MapDisplay()
 {
-  delete m_tool;
   delete m_display;
 }
 
@@ -184,20 +182,6 @@ void te::qt::af::MapDisplay::clear()
   std::list<te::map::AbstractLayerPtr> empty;
   m_display->setLayerList(empty);
   m_display->refresh();
-}
-
-void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious)
-{
-  if(m_tool != 0)
-    m_display->removeEventFilter(m_tool);
-
-  if(delPrevious)
-    delete m_tool;
-
-  m_tool = tool;
-
-  if(m_tool != 0)
-    m_display->installEventFilter(m_tool);
 }
 
 void te::qt::af::MapDisplay::nextExtent()

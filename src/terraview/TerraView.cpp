@@ -1330,7 +1330,7 @@ void TerraView::onMeasureDistanceToggled(bool checked)
   QCursor measureDistanceCursor(QIcon::fromTheme("distance-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
 
   te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance, measureDistanceCursor);
-  m_display->setCurrentTool(distance);
+  m_display->getDisplay()->setCurrentTool(distance);
 }
 
 void TerraView::onMeasureAreaToggled(bool checked)
@@ -1341,7 +1341,7 @@ void TerraView::onMeasureAreaToggled(bool checked)
   QCursor measureAreaCursor(QIcon::fromTheme("area-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
 
   te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area, measureAreaCursor);
-  m_display->setCurrentTool(area);
+  m_display->getDisplay()->setCurrentTool(area);
 }
 
 void TerraView::onMeasureAngleToggled(bool checked)
@@ -1352,7 +1352,7 @@ void TerraView::onMeasureAngleToggled(bool checked)
   QCursor measureAngleCursor(QIcon::fromTheme("angle-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
 
   te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle, measureAngleCursor);
-  m_display->setCurrentTool(angle);
+  m_display->getDisplay()->setCurrentTool(angle);
 }
 
 
