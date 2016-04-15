@@ -143,6 +143,16 @@ namespace te
         */
         te::stat::NumericStatisticalSummary getStatistics(std::vector<double>& pixels);
 
+        /*!
+          \brief Computes several statistics from a set of pixels inside a polygon.
+
+          \param raster      The input raster.
+          \param band        The number of the band to compute the statistics.
+          \param polygon     The input polygon.
+          \param summary     The statistical summary that will be filled by the method (\sa te::stat::NumericStatisticalSummary).
+        */
+        void getStatisticsFromPolygon(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon, te::stat::NumericStatisticalSummary &summary);
+
 		/*!
           \brief Returns several statistics from a set of pixels (real and imag).
 
