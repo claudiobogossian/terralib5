@@ -134,7 +134,7 @@ te::qt::af::DataSetTableDockWidget* te::qt::af::BaseApplication::getLayerDock(co
 
 QDockWidget* te::qt::af::BaseApplication::getLayerExplorerDock()
 {
-  return m_ui->dockWidget;
+  return m_ui->m_layerExplorerDockWidget;
 }
 
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -1136,7 +1136,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
 
   connect(m_viewFullScreen, SIGNAL(toggled(bool)), SLOT(onFullScreenToggled(bool)));
 
-  connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), m_layerExplorer->getExplorer(), SLOT(setVisible(bool)));
+  connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), m_ui->m_layerExplorerDockWidget, SLOT(setVisible(bool)));
 //  connect(m_layerExplorer->getExplorer(), SIGNAL(visibilityChanged(bool)), this, SLOT(onLayerExplorerVisibilityChanged(bool)));
 
   connect(m_display, SIGNAL(hasPreviousExtent(bool)), m_mapPreviousExtent, SLOT(setEnabled(bool)));

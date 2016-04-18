@@ -21,6 +21,9 @@
  \file Intersection.cpp
  */
 
+#include "../common/Translator.h"
+#include "../common/Logger.h"
+
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -107,9 +110,9 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
   te::da::DataSet*          secondDataSet = secondInputParams.m_inputDataSet;
   te::gm::GeometryProperty* secondGeometryProperty = te::da::GetFirstGeomProperty(secondDataSetType);
 
-  te::da::DataSetType*      outputDataSetType = getOutputDataSetType(mainParams);
-  te::mem::DataSet*         outputDataSet = new te::mem::DataSet(outputDataSetType);
-  te::gm::GeometryProperty* outputGeometryProperty = te::da::GetFirstGeomProperty(outputDataSetType);
+  std::auto_ptr<te::da::DataSetType> outputDataSetType(getOutputDataSetType(mainParams));
+  std::auto_ptr<te::mem::DataSet>    outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
+  te::gm::GeometryProperty*          outputGeometryProperty = te::da::GetFirstGeomProperty(outputDataSetType.get());
 
   te::sam::rtree::Index<size_t, 8>* rtree = te::vp::GetRtree(secondDataSet);
 
@@ -119,7 +122,7 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
   firstDataSet->moveBeforeFirst();
   while (firstDataSet->moveNext())
   {
-    te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDataSet);
+    std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(outputDataSet.get()));
 
     std::auto_ptr<te::gm::Geometry> currentGeometry = firstDataSet->getGeometry(firstGeometryProperty->getName());
 
@@ -145,38 +148,16 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
         continue;
       }
 
-      for (std::size_t j = 0; j < firstSelectedProperties.size(); ++j)
+      std::vector<std::string> attrNamesAux;
+
+      for (std::map<std::string, std::string>::iterator it = m_firstAttrNameMap.begin(); it != m_firstAttrNameMap.end(); ++it)
       {
-        std::string outputPropertyName = firstSelectedProperties[j]->getName();
-
-        if (!firstDataSetType->getName().empty())
-        {
-          outputPropertyName = te::vp::GetSimpleTableName(firstDataSetType->getName()) + "_" + outputPropertyName;
-        }
-
-        std::size_t propertyPosition = outputDataSetType->getPropertyPosition(outputPropertyName);
-
-        if ((propertyPosition < 0) || (propertyPosition >= outputDataSetType->size()))
-          continue;
-
-        item->setValue(outputPropertyName, firstDataSet->getValue(firstSelectedProperties[j]->getName()).release());
+        item->setValue(it->first, firstDataSet->getValue(it->second).release());
       }
 
-      for (std::size_t j = 0; j < secondSelectedProperties.size(); ++j)
+      for (std::map<std::string, std::string>::iterator it = m_secondAttrNameMap.begin(); it != m_secondAttrNameMap.end(); ++it)
       {
-        std::string outputPropertyName = secondSelectedProperties[j]->getName();
-
-        if (!secondDataSetType->getName().empty())
-        {
-          outputPropertyName = te::vp::GetSimpleTableName(secondDataSetType->getName()) + "_" + outputPropertyName;
-        }
-
-        std::size_t propertyPosition = outputDataSetType->getPropertyPosition(outputPropertyName);
-
-        if ((propertyPosition < 0) || (propertyPosition >= outputDataSetType->size()))
-          continue;
-
-        item->setValue(outputPropertyName, secondDataSet->getValue(secondSelectedProperties[j]->getName()).release());
+        item->setValue(it->first, secondDataSet->getValue(it->second).release());
       }
 
       if (!resultingGeometry->isEmpty())
@@ -202,17 +183,24 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
 
       outputDataSet->moveNext();
 
-      std::size_t outputDsGeomePropPosition = te::da::GetFirstSpatialPropertyPos(outputDataSet);
+      std::size_t outputDsGeomePropPosition = te::da::GetFirstSpatialPropertyPos(outputDataSet.get());
 
       if (!item->isNull(outputDsGeomePropPosition))
-        outputDataSet->add(item);
-
+        outputDataSet->add(item.release());
     }
   }
 
   outputDataSet->moveBeforeFirst();
 
-  te::vp::Save(outputDataSource.get(), outputDataSet, outputDataSetType);
+  std::auto_ptr<te::da::DataSet> dataSetPrepared = PrepareAdd(outputDataSet.release(), outputDataSetType.get());
+
+  if (!dataSetPrepared.get())
+    throw te::common::Exception(TE_TR("Output DataSet was not prepared to save."));
+
+  if (dataSetPrepared->size() == 0)
+    throw te::common::Exception("The resultant layer is empty!");
+
+  te::vp::Save(outputDataSource.get(), dataSetPrepared.get(), outputDataSetType.get());
 
   return true;
 }
@@ -587,6 +575,8 @@ te::da::DataSetType* te::vp::Intersection::getOutputDataSetType(te::vp::Algorith
 
   te::da::DataSetType* outputDataSetType = new te::da::DataSetType(outputDataSetName);
 
+  std::vector<std::string> attrNamesAux;
+
   if (mainParams->getOutputDataSource()->getType() != "OGR")
   {
     te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
@@ -602,32 +592,40 @@ te::da::DataSetType* te::vp::Intersection::getOutputDataSetType(te::vp::Algorith
   {
     te::dt::Property* clonedProperty = firstSelectedProperties[i]->clone();
 
-    std::string outputPropertyName = firstSelectedProperties[i]->getName();
+    std::string pName = clonedProperty->getName();
 
-    if (!firstDataSetType->getName().empty())
-    {
-      outputPropertyName = te::vp::GetSimpleTableName(firstDataSetType->getName()) + "_" + outputPropertyName;
-    }
+    if (mainParams->getOutputDataSource()->getType() == "OGR")
+      pName = GetDistinctName(pName, attrNamesAux, 10);
+    else
+      pName = GetDistinctName(pName, attrNamesAux);
 
-    clonedProperty->setName(outputPropertyName);
+    m_firstAttrNameMap[pName] = clonedProperty->getName();
+
+    clonedProperty->setName(pName);
 
     outputDataSetType->add(clonedProperty);
+
+    attrNamesAux.push_back(clonedProperty->getName());
   }
 
   for (std::size_t i = 0; i < secondSelectedProperties.size(); ++i)
   {
     te::dt::Property* clonedProperty = secondSelectedProperties[i]->clone();
 
-    std::string outputPropertyName = secondSelectedProperties[i]->getName();
+    std::string pName = clonedProperty->getName();
 
-    if (!secondDataSetType->getName().empty())
-    {
-      outputPropertyName = te::vp::GetSimpleTableName(secondDataSetType->getName()) + "_" + outputPropertyName;
-    }
+    if (mainParams->getOutputDataSource()->getType() == "OGR")
+      pName = GetDistinctName(pName, attrNamesAux, 10);
+    else
+      pName = GetDistinctName(pName, attrNamesAux);
 
-    clonedProperty->setName(outputPropertyName);
+    m_secondAttrNameMap[pName] = clonedProperty->getName();
+
+    clonedProperty->setName(pName);
 
     outputDataSetType->add(clonedProperty);
+
+    attrNamesAux.push_back(clonedProperty->getName());
   }
 
   te::gm::GeometryProperty* newGeometryProperty = new te::gm::GeometryProperty("geom");
@@ -710,4 +708,3 @@ te::gm::GeomType te::vp::Intersection::getGeomResultType(const te::gm::GeomType&
       return geomType;
   }
 }
-

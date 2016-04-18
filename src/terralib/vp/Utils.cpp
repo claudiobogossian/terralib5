@@ -52,6 +52,7 @@
 // Boost
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -549,4 +550,48 @@ te::gm::Geometry* te::vp::SetGeomAsMulti(te::gm::Geometry* geom)
   }
 
   return geom;
+}
+
+std::string te::vp::GetDistinctName(const std::string& name, std::vector<std::string> names, std::size_t maxSize)
+{
+  std::string result = name;
+
+  bool hasToResize = false;
+
+  if (maxSize > 0)
+    hasToResize = true;
+
+  std::size_t count = 1;
+
+  while (std::find(names.begin(), names.end(), result) != names.end())
+  {
+    std::size_t aux = 2;
+    if (count > 99)
+      aux = 3;
+    if (count > 999)
+      aux = 4;
+
+    if (hasToResize)
+    {
+      if (result.size() + aux > maxSize)
+      {
+        result = result.substr(0, maxSize - aux) + "_" + boost::lexical_cast<std::string>(count);
+      }
+      else
+      {
+        result = result + "_" + boost::lexical_cast<std::string>(count);
+      }
+    }
+    else
+    {
+      result = result + "_" + boost::lexical_cast<std::string>(count);
+    }
+
+    ++count;
+  }
+
+  if (maxSize > 0 && name.size() > maxSize)
+    result = result.substr(0, maxSize);
+
+  return result;
 }

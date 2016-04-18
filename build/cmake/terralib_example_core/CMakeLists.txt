@@ -58,7 +58,7 @@ install(FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_COR
 
 file(GLOB TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/*.cpp)
 
-add_subdirectory(lib_examples)
+add_subdirectory(terralib_corelib_lib_example)
 
 add_executable(terralib_example_core_lib ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
 

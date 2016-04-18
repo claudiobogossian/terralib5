@@ -290,59 +290,6 @@ te::core::Library::addSearchDir(const std::string& dir_name)
   te::core::Library::Impl::added_search_path_ = true;
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-  const char* ldLibraryPath = getenv("LD_LIBRARY_PATH");
-#else
-  const char* ldLibraryPath = getenv("DYLD_LIBRARY_PATH");
-#endif
-
-  if(ldLibraryPath == nullptr)
-  {
-// XX_LIBRARY_PATH doesn't exist
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-    int result = setenv("LD_LIBRARY_PATH", dir_name.c_str(), 1);
-#else
-    int result = setenv("DYLD_LIBRARY_PATH", dir_name.c_str(), 1);
-#endif
-
-    if(result)
-    {
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-      boost::format err_msg("Could not create LD_LIBRARY_PATH for the application. It is not pointing to the informed dir \"%1%\".");
-#else
-      boost::format err_msg("Could not create DYLD_LIBRARY_PATH for the application. It is not pointing to the informed dir \"%1%\".");
-#endif
-
-      throw LibraryInvalidSearchPathException() << te::ErrorDescription((err_msg % dir_name).str());
-    }
-  }
-  else
-  {
-// XX_LIBRARY_PATH may be empty or may have any other value, we need to concatenate
-
-    std::string newLdLibraryPath(ldLibraryPath);
-    newLdLibraryPath += ";";
-    newLdLibraryPath += dir_name;
-
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-    int result = setenv("LD_LIBRARY_PATH", newLdLibraryPath.c_str(), 1);
-#else
-    int result = setenv("DYLD_LIBRARY_PATH", newLdLibraryPath.c_str(), 1);
-#endif
-
-    if(result)
-    {
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-      boost::format err_msg("Couldn't add the informed dir \"%1%\" to the application's environment variable LD_LIBRARY_PATH.");
-#else
-      boost::format err_msg("Couldn't add the informed dir \"%1%\" to the application's environment variable DYLD_LIBRARY_PATH.");
-#endif
-
-      throw LibraryInvalidSearchPathException() << te::ErrorDescription((err_msg % dir_name).str());
-    }
-  }
-
 #else
 
   #error "Platform not supported! Please, contact TerraLib team (terralib-team@terralib.org) for helping support this platform!"

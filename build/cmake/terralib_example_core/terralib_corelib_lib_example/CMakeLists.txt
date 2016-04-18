@@ -39,8 +39,13 @@ else()
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
 endif()
 
-file(GLOB HDR_FILES src/*.h)
-file(GLOB SRC_FILES src/*.cpp)
+set (TE_ROOT ${CMAKE_SOURCE_DIR}/../..)
+
+message ("root: ${TE_ROOT}")
+
+
+file(GLOB HDR_FILES ${TE_ROOT}/examples/corelib_lib_example/*.h)
+file(GLOB SRC_FILES ${TE_ROOT}/examples/corelib_lib_example/*.cpp)
 
 add_library(functions SHARED ${HDR_FILES} ${SRC_FILES})
 
