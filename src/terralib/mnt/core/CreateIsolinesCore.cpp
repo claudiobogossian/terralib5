@@ -241,6 +241,9 @@ void te::mnt::CreateIsolines::rstMemoryBlock(std::auto_ptr<te::rst::Raster> rast
 
   for (std::size_t vb = 0; vb < vecBlocks.size(); ++vb)
   {
+    if (!task.isActive())
+      break;
+
     task.pulse();
     te::gm::Coord2D coordLowerLeft = raster->getGrid()->gridToGeo(0, vecBlocks[vb].m_finalRow);
     te::gm::Coord2D coordUpperRight = raster->getGrid()->gridToGeo(raster->getNumberOfColumns() - 1, vecBlocks[vb].m_initalRow);

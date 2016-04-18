@@ -118,7 +118,7 @@
       <item>
        <widget class="QStackedWidget" name="m_interparamStackedWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="m_averagePage">
          <layout class="QFormLayout" name="formLayout">
