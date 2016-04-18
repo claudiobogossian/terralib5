@@ -21,6 +21,9 @@
  \file Intersection.cpp
  */
 
+#include "../common/Translator.h"
+#include "../common/Logger.h"
+
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -107,9 +110,9 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
   te::da::DataSet*          secondDataSet = secondInputParams.m_inputDataSet;
   te::gm::GeometryProperty* secondGeometryProperty = te::da::GetFirstGeomProperty(secondDataSetType);
 
-  te::da::DataSetType*      outputDataSetType = getOutputDataSetType(mainParams);
-  te::mem::DataSet*         outputDataSet = new te::mem::DataSet(outputDataSetType);
-  te::gm::GeometryProperty* outputGeometryProperty = te::da::GetFirstGeomProperty(outputDataSetType);
+  std::auto_ptr<te::da::DataSetType> outputDataSetType(getOutputDataSetType(mainParams));
+  std::auto_ptr<te::mem::DataSet>    outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
+  te::gm::GeometryProperty*          outputGeometryProperty = te::da::GetFirstGeomProperty(outputDataSetType.get());
 
   te::sam::rtree::Index<size_t, 8>* rtree = te::vp::GetRtree(secondDataSet);
 
@@ -119,7 +122,7 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
   firstDataSet->moveBeforeFirst();
   while (firstDataSet->moveNext())
   {
-    te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDataSet);
+    std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(outputDataSet.get()));
 
     std::auto_ptr<te::gm::Geometry> currentGeometry = firstDataSet->getGeometry(firstGeometryProperty->getName());
 
@@ -180,17 +183,24 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
 
       outputDataSet->moveNext();
 
-      std::size_t outputDsGeomePropPosition = te::da::GetFirstSpatialPropertyPos(outputDataSet);
+      std::size_t outputDsGeomePropPosition = te::da::GetFirstSpatialPropertyPos(outputDataSet.get());
 
       if (!item->isNull(outputDsGeomePropPosition))
-        outputDataSet->add(item);
-
+        outputDataSet->add(item.release());
     }
   }
 
   outputDataSet->moveBeforeFirst();
 
-  te::vp::Save(outputDataSource.get(), outputDataSet, outputDataSetType);
+  std::auto_ptr<te::da::DataSet> dataSetPrepared = PrepareAdd(outputDataSet.release(), outputDataSetType.get());
+
+  if (!dataSetPrepared.get())
+    throw te::common::Exception(TE_TR("Output DataSet was not prepared to save."));
+
+  if (dataSetPrepared->size() == 0)
+    throw te::common::Exception("The resultant layer is empty!");
+
+  te::vp::Save(outputDataSource.get(), dataSetPrepared.get(), outputDataSetType.get());
 
   return true;
 }
