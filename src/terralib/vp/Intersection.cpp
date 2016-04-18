@@ -225,7 +225,7 @@ std::vector<te::dt::Property*> te::vp::Intersection::getFirstSelectedProperties(
 
   for (std::size_t i = 0; i < selectedProperties.size(); ++i)
   {
-    if (selectedProperties[i].first == dataSetType->getName())
+    if (selectedProperties[i].first == "FIRST")
     {
       result.push_back(dataSetType->getProperty(selectedProperties[i].second));
     }
@@ -242,7 +242,7 @@ std::vector<te::dt::Property*> te::vp::Intersection::getSecondSelectedProperties
 
   for (std::size_t i = 0; i < selectedProperties.size(); ++i)
   {
-    if (selectedProperties[i].first != dataSetType->getName())
+    if (selectedProperties[i].first == "SECOND")
     {
       result.push_back(dataSetType->getProperty(selectedProperties[i].second));
     }
