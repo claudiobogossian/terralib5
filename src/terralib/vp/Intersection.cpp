@@ -145,38 +145,16 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
         continue;
       }
 
-      for (std::size_t j = 0; j < firstSelectedProperties.size(); ++j)
+      std::vector<std::string> attrNamesAux;
+
+      for (std::map<std::string, std::string>::iterator it = m_firstAttrNameMap.begin(); it != m_firstAttrNameMap.end(); ++it)
       {
-        std::string outputPropertyName = firstSelectedProperties[j]->getName();
-
-        if (!firstDataSetType->getName().empty())
-        {
-          outputPropertyName = te::vp::GetSimpleTableName(firstDataSetType->getName()) + "_" + outputPropertyName;
-        }
-
-        std::size_t propertyPosition = outputDataSetType->getPropertyPosition(outputPropertyName);
-
-        if ((propertyPosition < 0) || (propertyPosition >= outputDataSetType->size()))
-          continue;
-
-        item->setValue(outputPropertyName, firstDataSet->getValue(firstSelectedProperties[j]->getName()).release());
+        item->setValue(it->first, firstDataSet->getValue(it->second).release());
       }
 
-      for (std::size_t j = 0; j < secondSelectedProperties.size(); ++j)
+      for (std::map<std::string, std::string>::iterator it = m_secondAttrNameMap.begin(); it != m_secondAttrNameMap.end(); ++it)
       {
-        std::string outputPropertyName = secondSelectedProperties[j]->getName();
-
-        if (!secondDataSetType->getName().empty())
-        {
-          outputPropertyName = te::vp::GetSimpleTableName(secondDataSetType->getName()) + "_" + outputPropertyName;
-        }
-
-        std::size_t propertyPosition = outputDataSetType->getPropertyPosition(outputPropertyName);
-
-        if ((propertyPosition < 0) || (propertyPosition >= outputDataSetType->size()))
-          continue;
-
-        item->setValue(outputPropertyName, secondDataSet->getValue(secondSelectedProperties[j]->getName()).release());
+        item->setValue(it->first, secondDataSet->getValue(it->second).release());
       }
 
       if (!resultingGeometry->isEmpty())
@@ -587,6 +565,8 @@ te::da::DataSetType* te::vp::Intersection::getOutputDataSetType(te::vp::Algorith
 
   te::da::DataSetType* outputDataSetType = new te::da::DataSetType(outputDataSetName);
 
+  std::vector<std::string> attrNamesAux;
+
   if (mainParams->getOutputDataSource()->getType() != "OGR")
   {
     te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
@@ -602,32 +582,40 @@ te::da::DataSetType* te::vp::Intersection::getOutputDataSetType(te::vp::Algorith
   {
     te::dt::Property* clonedProperty = firstSelectedProperties[i]->clone();
 
-    std::string outputPropertyName = firstSelectedProperties[i]->getName();
+    std::string pName = clonedProperty->getName();
 
-    if (!firstDataSetType->getName().empty())
-    {
-      outputPropertyName = te::vp::GetSimpleTableName(firstDataSetType->getName()) + "_" + outputPropertyName;
-    }
+    if (mainParams->getOutputDataSource()->getType() == "OGR")
+      pName = GetDistinctName(pName, attrNamesAux, 10);
+    else
+      pName = GetDistinctName(pName, attrNamesAux);
 
-    clonedProperty->setName(outputPropertyName);
+    m_firstAttrNameMap[pName] = clonedProperty->getName();
+
+    clonedProperty->setName(pName);
 
     outputDataSetType->add(clonedProperty);
+
+    attrNamesAux.push_back(clonedProperty->getName());
   }
 
   for (std::size_t i = 0; i < secondSelectedProperties.size(); ++i)
   {
     te::dt::Property* clonedProperty = secondSelectedProperties[i]->clone();
 
-    std::string outputPropertyName = secondSelectedProperties[i]->getName();
+    std::string pName = clonedProperty->getName();
 
-    if (!secondDataSetType->getName().empty())
-    {
-      outputPropertyName = te::vp::GetSimpleTableName(secondDataSetType->getName()) + "_" + outputPropertyName;
-    }
+    if (mainParams->getOutputDataSource()->getType() == "OGR")
+      pName = GetDistinctName(pName, attrNamesAux, 10);
+    else
+      pName = GetDistinctName(pName, attrNamesAux);
 
-    clonedProperty->setName(outputPropertyName);
+    m_secondAttrNameMap[pName] = clonedProperty->getName();
+
+    clonedProperty->setName(pName);
 
     outputDataSetType->add(clonedProperty);
+
+    attrNamesAux.push_back(clonedProperty->getName());
   }
 
   te::gm::GeometryProperty* newGeometryProperty = new te::gm::GeometryProperty("geom");
@@ -710,4 +698,3 @@ te::gm::GeomType te::vp::Intersection::getGeomResultType(const te::gm::GeomType&
       return geomType;
   }
 }
-
