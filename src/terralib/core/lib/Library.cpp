@@ -288,12 +288,6 @@ te::core::Library::addSearchDir(const std::string& dir_name)
   }
 
   te::core::Library::Impl::added_search_path_ = true;
-
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-#else
-
-  #error "Platform not supported! Please, contact TerraLib team (terralib-team@terralib.org) for helping support this platform!"
-
 #endif
 }
 
@@ -313,11 +307,6 @@ te::core::Library::resetSearchPath()
   }
 
   te::core::Library::Impl::added_search_path_ = false;
-
-#else
-
-  throw LibraryResetSearchPathException() << te::ErrorDescription("method: void te::common::Library::resetSearchPath() throw(Exception) not implemented for this platform! Contact gribeiro@dpi.inpe.br");
-
 #endif
 }
 

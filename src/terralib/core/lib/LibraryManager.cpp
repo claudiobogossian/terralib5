@@ -28,11 +28,15 @@
 
 // TerraLib
 #include "LibraryManager.h"
+#include "Exception.h"
 #include "Library.h"
 
 // STL
 #include <cassert>
 #include <map>
+
+// Boost
+#include <boost/format.hpp>
 
 struct te::core::LibraryManager::Impl
 {
@@ -51,7 +55,7 @@ te::core::LibraryManager::insert(const std::string& id, const std::shared_ptr<Li
 
     std::string lib_name = lib ? lib->getFileName() : std::string();
   
-    throw te::InvalidArgumentException() << te::ErrorDescription((errs_msg % lib_name % it->first).str());
+    throw te::InvalidArgumentException() << te::ErrorDescription((err_msg % lib_name % it->first).str());
   }
 
   m_pimpl->libraries.insert(std::make_pair(id, l));
@@ -66,7 +70,7 @@ te::core::LibraryManager::get(const std::string& id)
   {
     boost::format err_msg("There is no library registered with identifier: %1%.");
 
-    throw te::OutOfRangeException() << te::ErrorDescription((errs_msg % id).str());
+    throw te::OutOfRangeException() << te::ErrorDescription((err_msg % id).str());
   }
 
   return it->second.lock();

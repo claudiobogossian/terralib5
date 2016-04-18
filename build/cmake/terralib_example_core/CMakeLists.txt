@@ -56,12 +56,26 @@ target_link_libraries(terralib_example_core_encoding terralib_mod_core)
 install(FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/encoding COMPONENT devel)
 
+# Examples of core lib
 file(GLOB TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/*.cpp)
-
-add_subdirectory(terralib_corelib_lib_example)
 
 add_executable(terralib_example_core_lib ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
 
-target_link_libraries(terralib_example_core_lib terralib_mod_core ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
-        
-add_dependencies(terralib_example_core_lib functions)        
+target_link_libraries(terralib_example_core_lib terralib_mod_core
+                                                ${Boost_FILESYSTEM_LIBRARY}
+                                                ${Boost_SYSTEM_LIBRARY})
+
+if (WIN32)
+  add_definitions(-DTECOREDLL)
+endif()
+
+file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.h)
+file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.cpp)
+
+add_library(terralib_example_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
+
+set_target_properties(terralib_example_core_lib_function
+                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+
+add_dependencies(terralib_example_core_lib terralib_example_core_lib_function)
