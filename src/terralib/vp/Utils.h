@@ -85,6 +85,8 @@ namespace te
 
     te::gm::Geometry* SetGeomAsMulti(te::gm::Geometry* geom);
 
+    std::string GetDistinctName(const std::string& name, std::vector<std::string> names, std::size_t maxSize = 0);
+
   } // end namespace vp
 }   // end namespace te
 
