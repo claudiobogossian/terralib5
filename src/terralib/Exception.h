@@ -41,11 +41,11 @@ namespace te
   //! Base exception class for plugin module.
   struct Exception: virtual std::exception, virtual boost::exception { };
 
-  //! An exception indicating that a given item was not found in a collection.
-  struct ItemNotFoundException: virtual Exception { };
+  //! An exception indicating that a given item was not found in a collection (or range).
+  struct OutOfRangeException: virtual Exception { };
 
-  //! An exception indicating that a given item already exists in a collection.
-  struct ItemAlreadyExistsException: virtual Exception { };
+  //! An exception indicating that a given argument is not valid, for instance if a given item already exists in a collection.
+  struct InvalidArgumentException: virtual Exception { };
 
   //! The base type for error report messages.
   typedef boost::error_info<struct tag_error_description, std::string> ErrorDescription;

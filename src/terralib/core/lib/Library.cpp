@@ -28,10 +28,8 @@
 
 // TerraLib
 #include "Library.h"
-#include "Exception.h"
-
 #include "../../Defines.h"
-
+#include "Exception.h"
 
 #ifndef TE_PLATFORM
 #error "Could not determine platform! Please, contact TerraLib team (terralib-team@terralib.org) for helping support this platform!"
