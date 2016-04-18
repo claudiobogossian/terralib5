@@ -61,30 +61,26 @@ namespace te
 
       virtual ~Intersection() {}
 
-      bool getSpecificParams();
-
-      void setSpecificParams(bool copyInputColumns);
-
       //bool executeMemory(te::vp::AlgorithmParams* mainParams);
       bool executeMemory(te::vp::AlgorithmParams* mainParams);
 
       bool executeQuery(te::vp::AlgorithmParams* mainParams);
 
     protected:
-      
-      te::da::DataSet* updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds);
 
-      std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
+      te::da::DataSet* updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds);
 
       te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
 
-      te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
-      
-      // it defines the type of the result considering the input geometries being aggregated
-      //te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
+      te::gm::GeomType getGeomResultType(const te::gm::GeomType& firstGeom, const te::gm::GeomType& secondGeom, const bool& isCollection);
 
-      bool m_copyInputColumns;
-      std::size_t m_SRID;
+      std::vector<te::dt::Property*> getFirstSelectedProperties(const te::da::DataSetType* dataSetType, const std::map<std::string, te::dt::AbstractData*>& specificParams);
+
+      std::vector<te::dt::Property*> getSecondSelectedProperties(const te::da::DataSetType* dataSetType, const std::map<std::string, te::dt::AbstractData*>& specificParams);
+
+      std::vector<std::pair<std::string, std::string> > getSelectedProperties(const std::map<std::string, te::dt::AbstractData*>& specificParams);
+
+      bool isCollection(const std::map<std::string, te::dt::AbstractData*>& specificParams);
 
     };
   }

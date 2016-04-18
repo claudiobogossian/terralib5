@@ -53,8 +53,9 @@ namespace te
   {
     namespace widgets
     {
-// Forward declarations
-    class Canvas;
+      // Forward declarations
+      class AbstractTool;
+      class Canvas;
 
       /*!
         \class MapDisplay
@@ -214,6 +215,17 @@ namespace te
 
           virtual void updateLayer(te::map::AbstractLayerPtr layer, bool redraw = true) { }
 
+          /*!
+          \brief Updates the current tool being used on te::qt::widgets::MapDisplay.
+
+          \param tool The new te::qt::widgets::AbstractTool.
+
+          \param delPrevious True for delete the old tool.
+
+          \note The class will take the ownership of the given pointer.
+          */
+          virtual void setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious = true);
+
         protected:
 
           /*!
@@ -325,6 +337,8 @@ namespace te
           mutable double m_scale;      //!< Current calculated scale
           int m_overridedDpiX;          //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
           int m_overridedDpiY;          //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
+
+          te::qt::widgets::AbstractTool* m_tool;                     //!< Pointer to the current tool being used.
       };
 
     } // end namespace widgets

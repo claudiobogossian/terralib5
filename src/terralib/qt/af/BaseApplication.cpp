@@ -208,7 +208,7 @@ void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
   QCursor zoomAreaCursor(QIcon::fromTheme("zoom-in").pixmap(m_mapCursorSize));
 
   te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), zoomAreaCursor);
-  m_display->setCurrentTool(zoomArea);
+  m_display->getDisplay()->setCurrentTool(zoomArea);
 
   te::qt::af::evt::ZoomInButtonToggled ezoom;
   m_app->trigger(&ezoom);
@@ -222,7 +222,7 @@ void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
   QCursor zoomOutCursor(QIcon::fromTheme("zoom-out").pixmap(m_mapCursorSize));
 
   te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
-  m_display->setCurrentTool(zoomOut);
+  m_display->getDisplay()->setCurrentTool(zoomOut);
 
   te::qt::af::evt::ZoomOutButtonToggled ezoom;
   m_app->trigger(&ezoom);
@@ -244,7 +244,7 @@ void te::qt::af::BaseApplication::onPanToggled(bool checked)
     return;
 
   te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_display->getDisplay(), Qt::OpenHandCursor, Qt::ClosedHandCursor);
-  m_display->setCurrentTool(pan);
+  m_display->getDisplay()->setCurrentTool(pan);
 
   te::qt::af::evt::PanButtonToggled epan;
   m_app->trigger(&epan);
@@ -274,7 +274,7 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   QCursor infoCursor(pxmap, 0, 0);
 
   te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, GetSelectedLayersOnly(getLayerExplorer()));
-  m_display->setCurrentTool(info);
+  m_display->getDisplay()->setCurrentTool(info);
 
   connect(m_layerExplorer->getExplorer(), SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), info, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
 }
@@ -306,7 +306,7 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
     return;
 
   te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, te::qt::widgets::GetSelectedLayersOnly(getLayerExplorer()));
-  m_display->setCurrentTool(selection);
+  m_display->getDisplay()->setCurrentTool(selection);
 
   connect(m_layerExplorer->getExplorer(), SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
   connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));

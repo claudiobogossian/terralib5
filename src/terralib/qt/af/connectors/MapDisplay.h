@@ -54,7 +54,6 @@ namespace te
   {
     namespace widgets
     {
-      class AbstractTool;
       class EyeBirdMapDisplayWidget;
       class MapDisplay;
       class ZoomInMapDisplayWidget;
@@ -112,17 +111,6 @@ namespace te
           /*! \brief It clears the map display. */
           void clear();
 
-          /*!
-            \brief Updates the current tool being used on te::qt::widgets::MapDisplay.
-
-            \param tool The new te::qt::widgets::AbstractTool.
-
-            \param delPrevious True for delete the old tool.
-
-            \note The class will take the ownership of the given pointer.
-          */
-          void setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious = true);
-
           void nextExtent();
 
           void previousExtent();
@@ -178,7 +166,6 @@ namespace te
 
           te::qt::af::ApplicationController* m_app;                  //!< Pointer to applicatin controller;
           te::qt::widgets::MapDisplay* m_display;                    //!< Pointer to a component te::qt::widgets::MapDisplay.
-          te::qt::widgets::AbstractTool* m_tool;                     //!< Pointer to the current tool being used.
           QMenu* m_menu;                                             //!< The map display popup menu.
           QPixmap m_lastDisplayContent;                              //!< The last map display content. i.e. a "clean" pixmap.
           std::vector<te::gm::Envelope> m_extentStack;               //!< The stack of MapDisplay extents.

@@ -497,3 +497,56 @@ void te::vp::ValidateAlgorithmParams(te::vp::AlgorithmParams* mainParams, Strate
   if (!mainParams->getOutputDataSource())
     throw te::common::Exception(TE_TR("It is necessary to set the Output DataSource."));
 }
+
+te::sam::rtree::Index<size_t, 8>* te::vp::GetRtree(te::da::DataSet* data)
+{
+  te::sam::rtree::Index<size_t, 8>* rtree = new te::sam::rtree::Index<size_t, 8>;
+
+  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(data);
+
+  data->moveBeforeFirst();
+
+  int count = 0;
+
+  while (data->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
+
+    rtree->insert(*geom->getMBR(), count);
+
+    ++count;
+  }
+
+  return rtree;
+}
+
+te::gm::Geometry* te::vp::SetGeomAsMulti(te::gm::Geometry* geom)
+{
+
+  switch (geom->getGeomTypeId())
+  {
+    case te::gm::PointType:
+    {
+      te::gm::MultiPoint* geomColl = new te::gm::MultiPoint(0, te::gm::MultiPointType, geom->getSRID());
+      geomColl->add(geom);
+
+      return geomColl;
+    }
+    case te::gm::LineStringType:
+    {
+      te::gm::MultiLineString* geomColl = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, geom->getSRID());
+      geomColl->add(geom);
+
+      return geomColl;
+    }
+    case te::gm::PolygonType:
+    {
+      te::gm::MultiPolygon* geomColl = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, geom->getSRID());
+      geomColl->add(geom);
+
+      return geomColl;
+    }
+  }
+
+  return geom;
+}

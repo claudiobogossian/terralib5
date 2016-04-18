@@ -108,7 +108,7 @@ te::qt::plugins::edit::ToolBar::~ToolBar()
       te::qt::af::evt::GetMapDisplay e;
       emit triggered(&e);
 
-      e.m_display->setCurrentTool(0);
+      e.m_display->getDisplay()->setCurrentTool(0);
     }
     else
       delete m_currentTool;
@@ -904,16 +904,16 @@ void te::qt::plugins::edit::ToolBar::enableCurrentTool(const bool& enable)
     return;
 
   if(enable)
-    e.m_display->setCurrentTool(m_currentTool);
+    e.m_display->getDisplay()->setCurrentTool(m_currentTool);
   else
-    e.m_display->setCurrentTool(0, false);
+    e.m_display->getDisplay()->setCurrentTool(0, false);
 
   m_currentTool->setInUse(enable);
 }
 
 void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTool* tool, te::qt::af::MapDisplay* display)
 {
-  display->setCurrentTool(tool);
+  display->getDisplay()->setCurrentTool(tool);
 
   m_currentTool = tool;
 
