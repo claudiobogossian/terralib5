@@ -88,6 +88,8 @@ namespace te
       std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
+      te::da::DataSourcePtr     m_inDataSource;   //!< input DataSourcePtr
+      std::string m_inSetName;  //!< input DataSetLayer name
 
       mntType m_inputType;  //!< Input type (SAMPLE, TIN, GRID)
       Interpolator m_inter;
