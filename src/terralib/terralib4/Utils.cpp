@@ -463,3 +463,54 @@ void terralib4::CheckDecimalSeparator(std::string& value)
     std::replace(value.begin(), value.end(), ',', '.');
   }
 }
+
+te::gm::GeomType terralib4::GetMinimalRepresentation(const std::vector<TeGeometry*>& geoms)
+{
+  std::map<TeGeomRep, int> auxMap;
+
+  for (std::size_t i = 0; i < geoms.size(); ++i)
+  {
+    TeGeomRep geomRep = geoms[i]->elemType();
+
+    std::map<TeGeomRep, int>::iterator it = auxMap.find(geomRep);
+
+    if (it != auxMap.end())
+      it->second += 1;
+    else
+      auxMap[geomRep] = 1;
+  }
+
+  if (auxMap.size() > 1)
+    return te::gm::GeometryCollectionType;
+
+  TeGeomRep geomRep = auxMap.begin()->first;
+  if (auxMap.begin()->second == 1)
+  {
+    return Convert2T5GeomType(geomRep);
+  }
+  else
+  {
+    return GetCollection(geomRep);
+  }
+
+}
+
+te::gm::GeomType terralib4::GetCollection(TeGeomRep rep)
+{
+  switch (rep)
+  {
+    case TeCELLS:
+    case TePOLYGONS:
+      return te::gm::MultiPolygonType;
+      
+    case TeLINES:
+      return te::gm::MultiLineStringType;
+    
+    case TeNODES:
+    case TePOINTS:
+      return te::gm::MultiPointType;
+
+    default:
+      return te::gm::UnknownGeometryType;
+  }
+}

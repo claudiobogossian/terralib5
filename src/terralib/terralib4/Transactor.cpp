@@ -437,15 +437,27 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
     if(!vec.empty())
     {
-      TeGeomRep geomRep = vec[0]->geomRep_;
-
       int srid = layer->projection()->epsgCode();
 
       if(srid == 4979)
         srid = 4326;
 
-      te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty("spatial_data", 
-        srid, terralib4::Convert2T5GeomType(geomRep));
+
+      te::gm::GeometryProperty* geomProp = 0;
+
+      if (vec.size() > 1)
+      {
+        geomProp = new te::gm::GeometryProperty("spatial_data", srid, te::gm::GeometryCollectionType);
+      }
+      else
+      {
+        TeGeomRep geomRep = vec[0]->geomRep_;
+
+        te::gm::GeomType geomType = GetCollection(geomRep);
+
+        geomProp = new te::gm::GeometryProperty("spatial_data", srid, geomType);
+      }
+
       mainDst->add(geomProp);
     }
   }
