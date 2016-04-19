@@ -23,6 +23,8 @@
 #  Author: Frederico Augusto Bedê
 #
 
+include_directories(src)
+
 if (WIN32)
   add_definitions(-DTECOREDLL)
 endif()
@@ -42,9 +44,9 @@ set (TE_ROOT ${CMAKE_SOURCE_DIR}/../..)
 file(GLOB HDR_FILES ${TE_ROOT}/examples/corelib_lib_example/*.h)
 file(GLOB SRC_FILES ${TE_ROOT}/examples/corelib_lib_example/*.cpp)
 
-add_library(functions SHARED ${HDR_FILES} ${SRC_FILES})
+add_library(unit_functions SHARED ${HDR_FILES} ${SRC_FILES})
 
-set_target_properties(functions
+set_target_properties(unit_functions
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 

@@ -58,18 +58,17 @@ std::string GetExampleFolder()
 
 int main(int argc, char *argv[])
 {
-  /* Adds a path to find shared libraries. */
-  te::core::Library::addSearchDir(GetExampleFolder());
-
-#if TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  execl(argv[0], '\0');
-#endif
-
   /* Loading library using full path. */
   try
   {
     /* Get the file name. */
     std::string lName = te::core::Library::getNativeName("functions");
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    te::core::Library::addSearchDir(GetExampleFolder());
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    lName = GetExampleFolder() + "/" + lName;
+#endif
 
     /* The library is located at the same directory as the executable. */
     te::core::Library l1(lName);

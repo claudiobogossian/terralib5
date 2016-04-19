@@ -22,6 +22,7 @@
 #
 #  Author: Vinicius Campanha
 #          Matheus Cavassan Zaglia
+#          Frederico Bedê
 #
 
 include_directories(${Boost_INCLUDE_DIR})
@@ -57,4 +58,6 @@ add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERR
 
 target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 
-add_dependencies(terralib_unittest_core functions)        
+add_subdirectory(terralib_corelib_lib_functions)
+
+add_dependencies(terralib_unittest_core terralib_corelib_lib_functions)

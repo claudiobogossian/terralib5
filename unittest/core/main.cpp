@@ -45,9 +45,5 @@ int main(int argc, char *argv[])
 {
   boost::unit_test::unit_test_main(init_unit_test, argc, argv);
 
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  std::cin.get();
-#endif
-
   return EXIT_SUCCESS;
 }
