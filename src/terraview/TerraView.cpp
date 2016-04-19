@@ -755,6 +755,7 @@ void TerraView::initMenus()
   m_layerMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_layerMenu->menuAction());
   m_mapMenu = new QMenu(m_menubar);
+  m_mapMenu->setObjectName("Map");
   m_menubar->addAction(m_mapMenu->menuAction());
   m_toolsMenu = new QMenu(m_menubar);
   m_toolsExchangerMenu = new QMenu(m_toolsMenu);
