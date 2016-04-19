@@ -451,7 +451,7 @@ void te::edit::VertexTool::storeUndoCommand()
       return;
 
     QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
-    connect(dynamic_cast<UpdateCommand*>(command), SIGNAL(geometryAquired(te::gm::Geometry*)), SLOT(onGeometryAquired(te::gm::Geometry*)));
+    connect(dynamic_cast<UpdateCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*)), SLOT(onGeometryAcquired(te::gm::Geometry*)));
 
     UndoStackManager::getInstance().addUndoStack(command);
 
@@ -462,7 +462,7 @@ void te::edit::VertexTool::resetVisualizationTool()
   reset();
 }
 
-void te::edit::VertexTool::onGeometryAquired(te::gm::Geometry* geom)
+void te::edit::VertexTool::onGeometryAcquired(te::gm::Geometry* geom)
 {
   m_lines.clear();
 

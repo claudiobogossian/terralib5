@@ -73,7 +73,7 @@ namespace te
 
       signals:
 
-        void geometryAquired(te::gm::Geometry* geom);
+        void geometryAcquired(te::gm::Geometry* geom);
 
       private:
 

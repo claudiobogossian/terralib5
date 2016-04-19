@@ -71,7 +71,7 @@ void  te::edit::UpdateCommand::undo()
 
     draw(m_undoCommandType);
 
-    emit geometryAquired(f->clone()->getGeometry());
+    emit geometryAcquired(f->clone()->getGeometry());
 
   }
 
@@ -105,7 +105,7 @@ void te::edit::UpdateCommand::redo()
 
     draw(m_redoCommandType);
 
-    emit geometryAquired(f->clone()->getGeometry());
+    emit geometryAcquired(f->clone()->getGeometry());
 
   }
 

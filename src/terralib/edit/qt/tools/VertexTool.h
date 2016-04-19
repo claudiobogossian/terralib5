@@ -152,7 +152,7 @@ namespace te
 
         void onExtentChanged();
 
-        void onGeometryAquired(te::gm::Geometry*);
+        void onGeometryAcquired(te::gm::Geometry*);
 
       private:
 
