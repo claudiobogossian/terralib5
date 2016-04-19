@@ -39,7 +39,7 @@ add_executable(terralib_example_core_uri ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES} 
 target_link_libraries(terralib_example_core_uri terralib_mod_core)
 
 install(FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/core COMPONENT devel) 
+        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/core COMPONENT devel)
 
 
 # Examples of core/encoding
@@ -56,7 +56,6 @@ target_link_libraries(terralib_example_core_encoding terralib_mod_core)
 install(FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/encoding COMPONENT devel)
 
-# Examples of core lib
 file(GLOB TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/*.cpp)
 
 add_executable(terralib_example_core_lib ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
@@ -65,12 +64,19 @@ target_link_libraries(terralib_example_core_lib terralib_mod_core
                                                 ${Boost_FILESYSTEM_LIBRARY}
                                                 ${Boost_SYSTEM_LIBRARY})
 
-if (WIN32)
+if(WIN32)
   add_definitions(-DTECOREDLL)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+else()
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
 endif()
 
-file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.h)
-file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.cpp)
+file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
+file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.cpp)
 
 add_library(terralib_example_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
 

@@ -38,12 +38,39 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <iostream>
 #include <string>
 
+std::string GetExampleFolder()
+{
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  std::string path = boost::filesystem::complete(boost::filesystem::path("../example")).string();
+
+#ifdef NDEBUG
+  return path + "/Release";
+#else
+  return path + "/Debug";
+#endif
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+  return boost::filesystem::absolute("example").string();
+#else
+#error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
+#endif
+}
+
+
 int main(int argc, char *argv[])
 {
+  /* Loading library using full path. */
   try
   {
     /* Get the file name. */
     std::string lName = te::core::Library::getNativeName("terralib_example_core_lib_function");
+ 
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    te::core::Library::addSearchDir(GetExampleFolder());
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    std::cout <<GetExampleFolder();
+    lName = GetExampleFolder() + "/" + lName;
+#endif
+
 
     /* The library is located at the same directory as the executable. */
     te::core::Library l1(lName);
