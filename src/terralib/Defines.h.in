@@ -130,7 +130,12 @@
 
 #define TE_DOUBLE_NOT_A_NUMBER 1.7e-308
 
-#define TE_DLL_EXPORT __declspec(dllexport)
-#define TE_DLL_IMPORT __declspec(dllimport)
+#ifdef WIN32
+  #define TE_DLL_EXPORT __declspec(dllexport)
+  #define TE_DLL_IMPORT __declspec(dllimport)
+#else
+  #define TE_DLL_EXPORT
+  #define TE_DLL_IMPORT
+#endif
 
 #endif  // __TERRALIB_INTERNAL_TERRALIB_DEFINES_H__

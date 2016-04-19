@@ -40,7 +40,7 @@
     <number>2</number>
    </attribute>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="m_layerExplorerDockWidget">
    <property name="windowTitle">
     <string>Layer Explorer</string>
    </property>

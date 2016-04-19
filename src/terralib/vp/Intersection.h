@@ -82,6 +82,12 @@ namespace te
 
       bool isCollection(const std::map<std::string, te::dt::AbstractData*>& specificParams);
 
+    private:
+
+      std::map<std::string, std::string> m_firstAttrNameMap;
+
+      std::map<std::string, std::string> m_secondAttrNameMap;
+
     };
   }
 }
