@@ -148,16 +148,16 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
         continue;
       }
 
-      std::vector<std::string> attrNamesAux;
-
       for (std::map<std::string, std::string>::iterator it = m_firstAttrNameMap.begin(); it != m_firstAttrNameMap.end(); ++it)
       {
-        item->setValue(it->first, firstDataSet->getValue(it->second).release());
+        if(!firstDataSet->isNull(it->second))
+          item->setValue(it->first, firstDataSet->getValue(it->second).release());
       }
 
       for (std::map<std::string, std::string>::iterator it = m_secondAttrNameMap.begin(); it != m_secondAttrNameMap.end(); ++it)
       {
-        item->setValue(it->first, secondDataSet->getValue(it->second).release());
+        if (!secondDataSet->isNull(it->second))
+          item->setValue(it->first, secondDataSet->getValue(it->second).release());
       }
 
       if (!resultingGeometry->isEmpty())

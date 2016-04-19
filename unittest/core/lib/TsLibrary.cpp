@@ -48,7 +48,7 @@ std::string GetExampleFolder()
   return path + "/Debug/";
 #endif
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  return boost::filesystem::complete(boost::filesystem::path("example")).string() + "/";
+  return boost::filesystem::absolute("example").string() + "/";
 #else
 #error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
 #endif
@@ -56,7 +56,7 @@ std::string GetExampleFolder()
 
 std::string GetNativeName(const bool& dir=true)
 {
-  std::string lName = te::core::Library::getNativeName("unit_functions");
+  std::string lName = te::core::Library::getNativeName("terralib_unittest_core_lib_function");
 
   if(dir == true)
     return GetExampleFolder() + lName;
@@ -79,6 +79,8 @@ BOOST_AUTO_TEST_CASE(test_constructor)
 {
   te::core::Library* l1 = 0;
   std::string lName = GetNativeName();
+
+  std::cout <<lName;
   
   /* Unloaded library. */
   /* -------------------- */
@@ -230,7 +232,7 @@ BOOST_AUTO_TEST_CASE(test_getAddress)
 BOOST_AUTO_TEST_CASE(test_getNativeName)
 {
   /* Correct */
-  std::string name("unit_functions");
+  std::string name("terralib_unittest_core_lib_function");
   std::string nname = te::core::Library::getNativeName(name);
   std::string prefix,
     suffix;
@@ -261,7 +263,7 @@ BOOST_AUTO_TEST_CASE(test_getNativeName)
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 BOOST_AUTO_TEST_CASE(test_addSearchDir)
 {
-  std::string lName = te::core::Library::getNativeName("unit_functions");
+  std::string lName = te::core::Library::getNativeName("terralib_unittest_core_lib_function");
 
   /* Correct */
   BOOST_CHECK_NO_THROW(te::core::Library::addSearchDir(GetExampleFolder()));
@@ -289,7 +291,7 @@ BOOST_AUTO_TEST_CASE(test_addSearchDir)
 
 BOOST_AUTO_TEST_CASE(test_resetSearchDir)
 {
-  std::string lName = te::core::Library::getNativeName("unit_functions");
+  std::string lName = te::core::Library::getNativeName("terralib_unittest_core_lib_function");
 
   /* Testing reset on an unchanged path. */
   BOOST_CHECK_NO_THROW(te::core::Library::resetSearchPath());

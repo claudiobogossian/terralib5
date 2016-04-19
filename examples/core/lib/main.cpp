@@ -49,7 +49,7 @@ std::string GetExampleFolder()
   return path + "/Debug";
 #endif
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  return boost::filesystem::complete(boost::filesystem::path("example")).string();
+  return boost::filesystem::absolute("example").string();
 #else
 #error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
 #endif
@@ -62,47 +62,69 @@ int main(int argc, char *argv[])
   try
   {
     /* Get the file name. */
-    std::string lName = te::core::Library::getNativeName("functions");
-
+    std::string lName = te::core::Library::getNativeName("terralib_example_core_lib_function");
+ 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
     te::core::Library::addSearchDir(GetExampleFolder());
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    std::cout <<GetExampleFolder();
     lName = GetExampleFolder() + "/" + lName;
 #endif
+
 
     /* The library is located at the same directory as the executable. */
     te::core::Library l1(lName);
 
     /* Testing if it was loaded. */
     if(l1.isLoaded())
-      std::cout <<std::endl <<"Shared library " <<l1.getFileName() <<" loaded!" <<std::endl;
+      std::cout << std::endl << "Shared library " << l1.getFileName() << " loaded!" << std::endl;
 
     /* Getting a pointer to a function in the library. */
     void* t = l1.getAddress("fatorial");
 
     /* Testing the pointer. */
     if(t != nullptr)
-      std::cout <<"Function fatorial found!" <<std::endl;
+      std::cout << "Function fatorial found!" << std::endl;
+    
+    typedef int (*fatorial_fptr)(int);
+    
+    fatorial_fptr fat = reinterpret_cast<fatorial_fptr>(t);
+    
+    std::cout << "Fatorial 5: " << fat(5) << std::endl;
 
     /* Unloading library. */
     l1.unload();
 
-    std::cout <<"Library unloaded!" <<std::endl <<std::endl;
+    std::cout << "Library unloaded!" << std::endl << std::endl;
   }
-  catch(te::core::LibraryLoadException& e)
+  catch(const te::core::LibraryLoadException& e)
   {
-    std::cout << std::endl << "Fail to load library: " << e.what();
+    if(const std::string* d = boost::get_error_info<te::ErrorDescription>(e))
+      std::cout << std::endl << "Fail to load library: " << *d;
   }
-  catch(te::core::LibraryUnloadException& e)
+  catch(const te::core::LibraryUnloadException& e)
   {
-    std::cout << std::endl << "Fail to unload library: " << e.what();
+    if(const std::string* d = boost::get_error_info<te::ErrorDescription>(e))
+      std::cout << std::endl << "Fail to unload library: " << *d;
   }
-  catch(te::core::LibrarySymbolNotFoundException& e)
+  catch(const te::core::LibrarySymbolNotFoundException& e)
   {
-    std::cout << std::endl << "Fail to load symbol: " << e.what();
+    if(const std::string* d = boost::get_error_info<te::ErrorDescription>(e))
+      std::cout << std::endl << "Fail to load symbol: " << *d;
+  }
+  catch(const te::Exception& e)
+  {
+    if(const std::string* d = boost::get_error_info<te::ErrorDescription>(e))
+      std::cout << std::endl << "Unknown error: " << *d;
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "Unknown error: " << e.what();
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "Unknown error!";
   }
 
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
   std::cin.get();
-#endif
 }
