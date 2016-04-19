@@ -28,7 +28,9 @@
 
 // TerraLib
 #include "../Config.h"
+#ifndef Q_MOC_RUN
 #include "../../../rp/TiePointsLocator.h"
+#endif
 
 // Qt
 #include <QDialog>

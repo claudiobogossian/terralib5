@@ -28,7 +28,9 @@
 
 // TerraLib
 #include "../../../color/RGBAColor.h"
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 // STL

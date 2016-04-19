@@ -30,8 +30,10 @@
 #include "../../../color/RGBAColor.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/GTParameters.h"
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../rp/TiePointsLocator.h"
+#endif
 #include "../Config.h"
 
 // STL

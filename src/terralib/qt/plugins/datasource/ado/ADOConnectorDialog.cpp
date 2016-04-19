@@ -56,6 +56,7 @@ te::qt::plugins::ado::ADOConnectorDialog::ADOConnectorDialog(QWidget* parent, Qt
   m_ui->m_providerComboBox->addItem("Microsoft.Jet.OLEDB.4.0");
 #else
   m_ui->m_providerComboBox->addItem("Microsoft.ACE.OLEDB.12.0");
+  m_ui->m_providerComboBox->addItem("Microsoft.ACE.OLEDB.15.0");
 #endif
 
 // connect signal and slots

@@ -169,9 +169,26 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           m_ui->m_interpolatorComboBox->addItem("Bicubic Spline");
           m_ui->m_interpolatorComboBox->addItem("Mitasova Spline");
 
+          m_inDataSource = te::da::GetDataSource(m_inputLayer->getDataSourceId(), true);
+          if (!m_inDataSource.get())
+            return;
+
+          m_inSetName = m_inputLayer->getDataSetName();
+
+          std::auto_ptr<te::da::DataSet> inDset = m_inDataSource->getDataSet(m_inSetName);
+          std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+          inDset->moveFirst();
+          std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+          if (gin->is3D())
+          {
+            m_ui->m_ZcomboBox->hide();
+            m_ui->m_Zlabel->hide();
+            dsType.release();
+            return;
+          }
+
           m_ui->m_ZcomboBox->show();
           m_ui->m_Zlabel->show();
-
           std::vector<te::dt::Property*> props = dsType->getProperties();
           for (std::size_t i = 0; i < props.size(); ++i)
           {
@@ -198,14 +215,28 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           m_inputType = TIN;
           std::auto_ptr<te::da::DataSet> dataquery;
           te::da::DataSourcePtr ds = te::da::GetDataSource(m_inputLayer->getDataSourceId());
-          std::string qry("Select type1, type2, type3 from ");
-          qry += m_inputLayer->getTitle();
-          qry += " where (type1 > 3 and type1 < 7) or (type2 > 3 and type2 < 7) or (type3 > 3 and type3 < 7)";
-          dataquery = ds->query(qry);
           m_ui->m_interpolatorComboBox->addItem("Linear");
           m_ui->m_interpolatorComboBox->addItem("Quintic without breaklines");
-          if (!dataquery->isEmpty())
-            m_ui->m_interpolatorComboBox->addItem("Quintic with breaklines");
+
+          bool hastype = false;
+          std::vector<te::dt::Property*> props = dsType->getProperties();
+          for (std::size_t i = 0; i < props.size(); ++i)
+          {
+            if (boost::iequals(props[i]->getName(), "type1"))
+            {
+              hastype = true;
+              break;
+            }
+          }
+          if (hastype)
+          {
+            std::string qry("Select type1, type2, type3 from ");
+            qry += m_inputLayer->getTitle();
+            qry += " where (type1 > 3 and type1 < 7) or (type2 > 3 and type2 < 7) or (type3 > 3 and type3 < 7)";
+            dataquery = ds->query(qry);
+            if (!dataquery->isEmpty())
+              m_ui->m_interpolatorComboBox->addItem("Quintic with breaklines");
+          }
         }
       }
       if (dsType->hasRaster()) //GRID
@@ -631,6 +662,9 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         {
           for (unsigned int c = 0; c < outputWidth; c++)
           {
+            if (!task.isActive())
+              throw te::common::Exception(TE_TR("Canceled by user"));
+
             task.pulse();
             // Calculate the x and y coordinates of (l,c) corner of the output grid
             xo = (X1 + c * resxo + resxo / 2.);

@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_CLASSIFICATION_INTERNAL_ROIMANAGERWIDGET_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../../../maptools/Enums.h"
 #include "../Config.h"
 

@@ -41,31 +41,27 @@ te::qt::plugins::mnt::ProfileAction::ProfileAction(QMenu* menu)
 {
   createAction(tr("Profile ...").toStdString(), "mnt-processing-profile");
   m_action->setObjectName("Processing.PROFILE Processing.PROFILE");
+
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
+
+  m_profiledlg = new te::mnt::ProfileDialog(parent);
+
 }
 
 te::qt::plugins::mnt::ProfileAction::~ProfileAction()
 {
+  if (m_profiledlg)
+    delete m_profiledlg;
 }
 
-void te::qt::plugins::mnt::ProfileAction::onActionActivated(bool)
+void te::qt::plugins::mnt::ProfileAction::onActionActivated(bool actived)
 {
-  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
-  te::mnt::ProfileDialog dlg(parent);
-
   // get the list of layers from current project
-  dlg.setLayers(getLayers());
+  m_profiledlg->setLayers(getLayers());
+ // if (actived)
+    m_profiledlg->show();
 
-  if (dlg.exec() != QDialog::Accepted)
-    return;
-
-  te::map::AbstractLayerPtr layer = dlg.getLayer();
-
-  if (!layer)
-    return;
-
-  int reply = QMessageBox::question(0, tr("Profile Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
-
-  if (reply == QMessageBox::Yes)
-    addNewLayer(layer);
+  //if (dlg.exec() != QDialog::Accepted)
+  //  return;
 }
 

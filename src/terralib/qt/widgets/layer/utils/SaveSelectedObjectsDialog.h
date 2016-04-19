@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_SAVESELECTEDOBJECTSDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../../maptools/AbstractLayer.h"
+#endif
 #include "../../Config.h"
 
 // STL

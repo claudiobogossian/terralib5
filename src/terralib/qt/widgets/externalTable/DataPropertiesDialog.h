@@ -28,7 +28,9 @@
 
 
 //TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/DataSetAdapterLayer.h"
+#endif
 #include "../Config.h"
 
 // Qt

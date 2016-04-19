@@ -345,7 +345,7 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
 
   double percentageDist = 0.5;
 
-  int KMAX2 = 2 * 2 * m_minimoPontos;
+  size_t KMAX2 = 2 * 2 * m_minimoPontos;
   double fi = m_tension;
   double rsm = m_smooth;
 
@@ -375,6 +375,8 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
 
     for (int jx = 0; jx < nPartsX; jx++)
     {
+      if (!task.isActive())
+        return false;
       task.pulse();
 
       //computes the beginning and end area
