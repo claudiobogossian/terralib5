@@ -237,6 +237,12 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::
   if(!qstr.isEmpty())
     connInfo["PG_NEWDB_NAME"] = qstr.toStdString();
 
+// get Template
+  qstr = m_ui->m_templateComboBox->currentText().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["PG_NEWDB_TEMPLATE"] = qstr.toStdString();
+
 // get Owner
   qstr = m_ui->m_ownerComboBox->currentText().trimmed();
   
@@ -294,6 +300,14 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinishe
     if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
     {
       std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
+
+      // Get Templates/Databases
+      std::vector<std::string> templates = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
+      if(!templates.empty())
+        for(std::size_t i = 0; i < templates.size(); i++)
+          m_ui->m_templateComboBox->addItem(templates[i].c_str());
+
+      m_ui->m_templateComboBox->setCurrentIndex(m_ui->m_templateComboBox->findText("postgis"));
 
       // Get Encodings
       m_ui->m_encodingComboBox->clear();

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>445</width>
-    <height>388</height>
+    <width>456</width>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -235,11 +235,21 @@
             <item row="1" column="0">
              <layout class="QVBoxLayout" name="verticalLayout_8">
               <item>
-               <widget class="QCheckBox" name="m_postgisCheckBox">
+               <widget class="QLabel" name="m_charsetLabel">
                 <property name="text">
-                 <string>Extension PostGIS</string>
+                 <string>Database Template</string>
                 </property>
-                <property name="checked">
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="m_templateComboBox">
+                <property name="maximumSize">
+                 <size>
+                  <width>230</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="editable">
                  <bool>true</bool>
                 </property>
                </widget>
@@ -453,6 +463,7 @@
   <tabstop>m_userNameLineEdit</tabstop>
   <tabstop>m_passwordLineEdit</tabstop>
   <tabstop>m_newDatabaseNameLineEdit</tabstop>
+  <tabstop>m_templateComboBox</tabstop>
   <tabstop>m_advancedOptionsCheckBox</tabstop>
   <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
