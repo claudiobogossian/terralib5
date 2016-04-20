@@ -27,10 +27,12 @@
 #define __TERRALIB_ATTRIBUTEFILL_INTERNAL_RASTERTOVECTORDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../statistics/core/Utils.h"
+#endif
 #include "../Config.h"
 
 // STL
