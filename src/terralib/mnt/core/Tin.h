@@ -19,10 +19,16 @@ Adapted from SPRING
 #include "../../geometry/Envelope.h"
 #include "../../geometry/PointZ.h"
 
+#include "../../sam.h"
+
 #include <vector>
 
 const int32_t MAXTRIANGLES = 50;
 const int32_t CLNODES = 10;
+
+typedef te::sam::kdtree::Node<te::gm::Coord2D, int32_t, int32_t> KD_NODE;
+typedef te::sam::kdtree::Index<KD_NODE> KD_TREE;
+
 
 namespace te
 {
@@ -292,7 +298,11 @@ namespace te
 
       bool SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetName);
 
-    protected:
+      bool BuildTriangle(int32_t id, te::gm::LinearRing* lr, double *val, int32_t *right, int32_t *left, te::mnt::Ntype *type, \
+        double zmin, double zmax, bool &first, KD_TREE &nodetree, te::sam::rtree::Index<std::size_t>& linetree);
+
+   protected:
+
       te::da::DataSetType* GetDataSetType(std::string &outDsetName);
 
       /*!

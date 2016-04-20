@@ -169,6 +169,24 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           m_ui->m_interpolatorComboBox->addItem("Bicubic Spline");
           m_ui->m_interpolatorComboBox->addItem("Mitasova Spline");
 
+          m_inDataSource = te::da::GetDataSource(m_inputLayer->getDataSourceId(), true);
+          if (!m_inDataSource.get())
+            return;
+
+          m_inSetName = m_inputLayer->getDataSetName();
+
+          std::auto_ptr<te::da::DataSet> inDset = m_inDataSource->getDataSet(m_inSetName);
+          std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+          inDset->moveFirst();
+          std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+          if (gin->is3D())
+          {
+            m_ui->m_ZcomboBox->hide();
+            m_ui->m_Zlabel->hide();
+            dsType.release();
+            return;
+          }
+
           m_ui->m_ZcomboBox->show();
           m_ui->m_Zlabel->show();
           std::vector<te::dt::Property*> props = dsType->getProperties();
