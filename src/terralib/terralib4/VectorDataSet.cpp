@@ -343,6 +343,11 @@ std::auto_ptr<te::gm::Geometry> terralib4::VectorDataSet::getGeometry(std::size_
   {
     result.reset(new te::gm::MultiPoint(0, te::gm::MultiPointType, srid));
   }
+  else if (gType == te::gm::GeometryCollectionType)
+  {
+    result.reset(new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, srid));
+  }
+
 
   for (std::size_t i = 0; i < geoms.size(); ++i)
   {
