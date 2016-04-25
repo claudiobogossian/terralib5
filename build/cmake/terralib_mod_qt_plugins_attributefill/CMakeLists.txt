@@ -62,6 +62,7 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/AbstractAction.h
                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/RasterToVectorAction.h
+                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/Plugin.h
                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/VectorToRasterAction.h
                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill/VectorToVectorAction.h)
 

@@ -61,6 +61,8 @@ bool te::mnt::Smooth::run()
 
   for (size_t i = 0; i < isolines_simp.getNumGeometries(); i++)
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
     te::gm::LineString iso = *dynamic_cast<te::gm::LineString*>(isolines_simp.getGeometryN(i));
     if (AdjustCatmullRom(iso))

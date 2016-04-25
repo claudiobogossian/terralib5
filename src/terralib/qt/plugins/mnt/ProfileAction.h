@@ -32,6 +32,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 namespace te
 {
+  namespace mnt
+  {
+    class ProfileDialog;
+  }
+
   namespace qt
   {
     namespace plugins
@@ -57,6 +62,9 @@ namespace te
           protected slots:
 
           virtual void onActionActivated(bool checked);
+
+        private:
+          te::mnt::ProfileDialog *m_profiledlg;
         };
 
       } // end namespace mnt

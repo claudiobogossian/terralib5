@@ -112,6 +112,9 @@ bool te::mnt::Slope::run()
     //To each triangle
     for (unsigned int i = 0; i < (unsigned int)m_ltriang; i++)
     {
+      if (!task.isActive())
+        return false;
+
       task.pulse();
       // Find Triangle Box
       if (!NodesId((int32_t)i, nodesid))
@@ -165,6 +168,8 @@ bool te::mnt::Slope::run()
     {
       for (unsigned c = 1; c < in_raster->getNumberOfColumns() - 1; c++)
       {
+        if (!task.isActive())
+          return false;
         task.pulse();
         if (CalcGradientRst(in_raster, l, c, dzdx, dzdy))
         {
