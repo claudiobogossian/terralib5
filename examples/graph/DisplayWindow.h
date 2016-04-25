@@ -27,8 +27,10 @@
 #define __TERRALIB_EXAMPLES_QT_TOOLS_INTERNAL_GRAPHDISPLAYWINDOW_H
 
 // TerarLib
+#ifndef Q_MOC_RUN
 #include <terralib/geometry/Enums.h>
 #include <terralib/maptools/AbstractLayer.h>
+#endif
 
 // Qt
 #include <QMainWindow>

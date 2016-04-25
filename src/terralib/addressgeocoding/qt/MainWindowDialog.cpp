@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../../common/CharEncodingConv.h"
 #include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"

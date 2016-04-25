@@ -48,6 +48,8 @@ size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsr
   double value;
   while (inDset->moveNext())
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
@@ -123,6 +125,8 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
   while (inDset->moveNext())
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
@@ -1528,6 +1532,8 @@ bool te::mnt::SaveIso(std::string& outDsetName, te::da::DataSourcePtr &outDsrc, 
 
   for (unsigned int Idx = 0; Idx < isolist.size(); ++Idx)
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);

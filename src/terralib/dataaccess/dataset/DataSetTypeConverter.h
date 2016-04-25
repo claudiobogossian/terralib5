@@ -27,7 +27,6 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_DATASETTYPECONVERTER_H
 
 // TerraLib
-#include "../../common/CharEncodingConv.h"
 #include "../Config.h"
 #include "AttributeConverters.h"
 
@@ -99,7 +98,7 @@ namespace te
           
           \sa DataSetType, DataSourceCapabilities DataTypeCapabilities
         */
-        DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, const te::common::CharEncoding& ce = te::common::UNKNOWN_CHAR_ENCODING);
+        DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, te::core::EncodingType et = te::core::EncodingType::UNKNOWN);
 
         /*! \brief Destructor. */
         ~DataSetTypeConverter();

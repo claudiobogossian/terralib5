@@ -202,6 +202,8 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
         setStage(VERTEX_SEARCH);
       }
 
+      storeUndoCommand();
+
       return true;
     }
 
@@ -211,6 +213,7 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
 
       setStage(VERTEX_SEARCH);
 
+      storeUndoCommand();
     }
 
     default:
@@ -448,6 +451,8 @@ void te::edit::VertexTool::storeUndoCommand()
       return;
 
     QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
+    connect(dynamic_cast<UpdateCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*)), SLOT(onGeometryAcquired(te::gm::Geometry*)));
+
     UndoStackManager::getInstance().addUndoStack(command);
 
 }
@@ -455,4 +460,16 @@ void te::edit::VertexTool::storeUndoCommand()
 void te::edit::VertexTool::resetVisualizationTool()
 {
   reset();
+}
+
+void te::edit::VertexTool::onGeometryAcquired(te::gm::Geometry* geom)
+{
+  m_lines.clear();
+
+  m_feature->setGeometry(geom);
+
+  if (m_feature != 0)
+    GetLines(m_feature->getGeometry(), m_lines);
+
+  updateRTree();
 }

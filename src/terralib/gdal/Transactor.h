@@ -269,7 +269,7 @@ namespace te
 
       void optimize(const std::map<std::string, std::string>& ){}
 
-      te::common::CharEncoding getEncoding();
+      te::core::EncodingType getEncoding();
       
     private:
       

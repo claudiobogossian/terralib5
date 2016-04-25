@@ -27,8 +27,10 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESPROPERTIESWIZARDPAGE_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "terralib/dataaccess/datasource/DataSourceInfo.h"
+#endif
 #include "../Config.h"
 
 // Qt

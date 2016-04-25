@@ -477,7 +477,7 @@ void te::da::DataSource::add(const std::string& datasetName,
   return t->add(datasetName, d, options, limit);
 }
 
-te::common::CharEncoding te::da::DataSource::getEncoding()
+te::core::EncodingType te::da::DataSource::getEncoding()
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
   return t->getEncoding();
@@ -549,7 +549,7 @@ std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::strin
   return ds->getDataSourceNames(dsInfo);
 }
 
-std::vector<te::common::CharEncoding> te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+std::vector<te::core::EncodingType> te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
 {
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 

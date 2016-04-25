@@ -27,8 +27,11 @@
 #define __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARDPAGE_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "../../qt/widgets/utils/DoubleListWidget.h"
+
 #include "../Config.h"
 
 // STL

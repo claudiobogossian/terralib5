@@ -93,7 +93,8 @@ QObject(parent),
   m_undoView(0),
   m_currentTool(0),
   m_usingStash(false),
-  m_layerIsStashed(true)
+  m_layerIsStashed(true),
+  m_isEnabled(false)
 {
   initialize();
 }
@@ -107,7 +108,7 @@ te::qt::plugins::edit::ToolBar::~ToolBar()
       te::qt::af::evt::GetMapDisplay e;
       emit triggered(&e);
 
-      e.m_display->setCurrentTool(0);
+      e.m_display->getDisplay()->setCurrentTool(0);
     }
     else
       delete m_currentTool;
@@ -275,10 +276,10 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_createPolygonToolAction, tr("Create Polygon"), "edit-create-polygon", true, false, "create_polygon", SLOT(onCreatePolygonToolActivated(bool)));
   createAction(m_createLineToolAction, tr("Create Line"), "layout-drawline", true, false,"create_line", SLOT(onCreateLineToolActivated(bool)));
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false, "move_geometry", SLOT(onMoveGeometryToolActivated(bool)));
-  createAction(m_aggregateAreaToolAction, tr("Aggregate Area"), "vector-processing-aggregation", true, false, "aggregate_area", SLOT(onAggregateAreaToolActivated(bool)));
-  createAction(m_subtractAreaToolAction, tr("Subtract Area"), "vector-processing-subtraction", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
+  createAction(m_aggregateAreaToolAction, tr("Aggregate Area"), "edit-aggregateGeometry", true, false, "aggregate_area", SLOT(onAggregateAreaToolActivated(bool)));
+  createAction(m_subtractAreaToolAction, tr("Subtract Area"), "edit-subtractGeometry", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
-  createAction(m_featureAttributesAction, tr("Feature Attributes"), "attributefill-icon", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
+  createAction(m_featureAttributesAction, tr("Feature Attributes"), "edit-Info", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
@@ -342,6 +343,8 @@ void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
   enableActionsByGeomType(m_tools, checked);
 
   enableCurrentTool(checked);
+
+  m_isEnabled = checked;
 }
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
@@ -901,16 +904,16 @@ void te::qt::plugins::edit::ToolBar::enableCurrentTool(const bool& enable)
     return;
 
   if(enable)
-    e.m_display->setCurrentTool(m_currentTool);
+    e.m_display->getDisplay()->setCurrentTool(m_currentTool);
   else
-    e.m_display->setCurrentTool(0, false);
+    e.m_display->getDisplay()->setCurrentTool(0, false);
 
   m_currentTool->setInUse(enable);
 }
 
 void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTool* tool, te::qt::af::MapDisplay* display)
 {
-  display->setCurrentTool(tool);
+  display->getDisplay()->setCurrentTool(tool);
 
   m_currentTool = tool;
 

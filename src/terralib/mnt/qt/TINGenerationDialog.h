@@ -26,9 +26,12 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define __TERRALIB_MNT_INTERNAL_TINGENERATIONDIALOG_H
 
 // Terralib
+#ifndef Q_MOC_RUN
 #include "../../common/UnitOfMeasure.h"
+#include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "../core/Config.h"
 
 // STL
@@ -88,11 +91,20 @@ namespace te
       te::map::AbstractLayerPtr m_samplesLayer;                                        //!< Points layer
       te::map::AbstractLayerPtr m_breaklinesLayer;                                        //!< BreakLines layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
+      te::da::DataSourcePtr     m_isolinesDataSource;   //!< Isolines DataSourcePtr
+      te::da::DataSourcePtr     m_samplesDataSource;   //!< Samples DataSourcePtr
+      te::da::DataSourcePtr     m_breakDataSource;   //!< BreakLines DataSourcePtr
+      std::string m_isoSetName;  //!< Isolines DataSetLayer name
+      std::string m_sampleSetName;  //!< Samples DataSetLayer name
+      std::string m_breakSetName;  //!< BreakLines DataSetLayer name
       double m_scale;         //!<Triangulation scale.
       double m_tol;           //!<Triangulation lines simplification tolerance.
       double m_breaktol;      //!<Triangulation breaklines simplification tolerance.
       double m_distance;      //!<Triangulation lines simplification maximum distance.
       double m_edgeSize;      //!<Triangulation edges minimum size.
+
+      int m_isosrid;
+      int m_samplesrid;
     };
   }
 }

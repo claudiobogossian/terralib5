@@ -28,8 +28,8 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H
 
 // TerraLib
+#include "../../../core/encoding/CharEncoding.h"
 #include "../Config.h"
-#include "../../../common/CharEncodingConv.h"
 
 // Qt
 #include <QTableView>
@@ -141,7 +141,7 @@ namespace te
 
             \param clearEditor True for reset editions, false to maintain it.
           */
-          void setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor = true);
+          void setDataSet(te::da::DataSet* dset, te::core::EncodingType enc, const bool& clearEditor = true);
 
           /*!
             \brief Sets the schema of the data set. It is used to define the primary keys and create the ObjectIdSet.
@@ -340,7 +340,7 @@ namespace te
           std::vector<std::string> m_orderby;          //!< Order by columns.
           bool m_orderAsc;                       //!< Flag that sinalizes if the it is sorted in ascending sorting.
           bool m_resetOrder;                //!< Flag that sinalizes if there's is no sort.
-          te::common::CharEncoding m_encoding;
+          te::core::EncodingType m_encoding;
       };
     }
   }

@@ -28,10 +28,12 @@
 
 // TerraLib
 #include "../Config.h"
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/query/Expression.h"
 #include "../../../dataaccess/query/Where.h"
 #include "../../../maptools/AbstractLayer.h"
+#endif
 
 // STL
 #include <memory>

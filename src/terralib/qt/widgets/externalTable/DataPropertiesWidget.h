@@ -28,7 +28,9 @@
 
 //TerraLib
 #include "../Config.h"
+#ifndef Q_MOC_RUN
 #include "../../../dataaccess/datasource/DataSource.h"
+#endif
 
 // Qt
 #include <QSignalMapper>

@@ -28,7 +28,9 @@
 
 // TerraLib
 #include "../../../geometry/Coord2D.h"
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "GeometriesUpdateTool.h"
 #include "../Config.h"
 
@@ -96,7 +98,9 @@ namespace te
 
         //@}
 
-      private:
+        te::gm::Geometry* buildLine();
+    
+    private:
 
         void draw();
 
@@ -114,7 +118,6 @@ namespace te
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
 
         void clear();
-        te::gm::Geometry* buildLine();
     };
 
   }   // end namespace edit

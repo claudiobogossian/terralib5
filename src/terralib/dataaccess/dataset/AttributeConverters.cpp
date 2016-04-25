@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../core/encoding/CharEncoding.h"
 #include "../../datatype/DataConverterManager.h"
 #include "../../datatype/SimpleData.h"
 #include "../../geometry/Point.h"
@@ -181,18 +182,18 @@ te::dt::AbstractData* te::da::CharEncodingConverter::operator()(DataSet* dataset
     return 0;
 
   std::string value = dataset->getString(pos);
-  te::common::CharEncoding fromCode = dataset->getPropertyCharEncoding(pos);
+  te::core::EncodingType fromCode = dataset->getPropertyCharEncoding(pos);
 
   if(fromCode == m_toCode)
     return new te::dt::String(value);
 
-  if(fromCode == te::common::UNKNOWN_CHAR_ENCODING || m_toCode == te::common::UNKNOWN_CHAR_ENCODING)
+  if(fromCode == te::core::EncodingType::UNKNOWN || m_toCode == te::core::EncodingType::UNKNOWN)
     return new te::dt::String(value);
 
 #ifdef TERRALIB_CHARENCODING_ENABLED
   try
   {
-    std::string result = te::common::CharEncodingConv::convert(value, fromCode, m_toCode);
+    std::string result = te::core::CharEncoding::convert(value, fromCode, m_toCode);
     return new te::dt::String(result);
   }
   catch(...)

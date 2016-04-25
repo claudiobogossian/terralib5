@@ -28,10 +28,12 @@
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #include "GeometriesUpdateTool.h"
 #include "../../../sam/rtree/Index.h"
 #include "../../Utils.h"
+#endif
 #include "../Config.h"
 
 // STL
@@ -149,6 +151,8 @@ namespace te
       private slots:
 
         void onExtentChanged();
+
+        void onGeometryAcquired(te::gm::Geometry*);
 
       private:
 

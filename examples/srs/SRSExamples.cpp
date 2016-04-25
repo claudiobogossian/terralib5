@@ -184,8 +184,8 @@ void ConvertCoordinates()
 
   converter->convert(xs,ys,3,1);
 
-  delete xs;
-  delete ys;
+  delete [] xs;
+  delete [] ys;
 
   std::cout << std::endl;
   std::cout << "Converting a coordinate after include a CS to the Manager: " << std::endl;

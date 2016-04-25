@@ -18,7 +18,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file terralib/mnt/core/ShowValueTool.h
+\file terralib/qt/plugins/mnt/ShowValueTool.h
 
 \brief This file defines the Show MNT Values Tool
 */

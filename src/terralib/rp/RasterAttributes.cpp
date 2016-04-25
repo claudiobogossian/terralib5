@@ -193,8 +193,114 @@ te::stat::NumericStatisticalSummary te::rp::RasterAttributes::getStatistics(std:
 
   te::stat::NumericStatisticalSummary summary;
   te::stat::GetNumericStatisticalSummary(pixels, summary);
+  te::stat::Mode(pixels, summary);
 
   return summary;
+}
+
+void te::rp::RasterAttributes::getStatisticsFromPolygon(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon, te::stat::NumericStatisticalSummary &summary) {
+    assert(band < raster.getNumberOfBands());
+
+    te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&raster, &polygon);
+    te::rst::PolygonIterator<double> itEnd = te::rst::PolygonIterator<double>::end(&raster, &polygon);
+
+    std::vector<double> values;
+    std::map<double, int> modeMap;
+
+    double delta = 0.0;
+    double delta_n = 0.0;
+    double delta_n2 = 0.0;
+    double term1 = 0.0;
+    double mean = 0.0;
+    double M2 = 0.0;
+    double M3 = 0.0;
+    double M4 = 0.0;
+
+    while (it != itEnd) {
+        double value = (*it)[band];
+
+        if (value != raster.getBand(band)->getProperty()->m_noDataValue) {
+            ++summary.m_validCount;
+
+            values.push_back(value);
+            summary.m_sum += value;
+
+            ++modeMap[value];
+
+            // Computing summs of differences for the mean (used to variance, std deviation, skewness and kurtosis)
+            delta = value - mean;
+            delta_n = delta / summary.m_validCount;
+            delta_n2 = delta_n * delta_n;
+            term1 = delta * delta_n * (summary.m_validCount - 1);
+            mean += delta_n;
+            M4 += term1 * delta_n2 * (summary.m_validCount * summary.m_validCount - 3 * summary.m_validCount + 3) + 6 * delta_n2 * M2 - 4 * delta_n * M3;
+            M3 += term1 * delta_n * (summary.m_validCount - 2) - 3 * delta_n * M2;
+            M2 += term1;
+        }
+        ++summary.m_count;
+
+        ++it;
+    }
+
+    summary.m_mean = summary.m_sum / summary.m_validCount;
+
+    if (summary.m_validCount > 3) {
+        summary.m_variance = M2 / (summary.m_validCount - 1.0);
+        summary.m_stdDeviation = sqrt(summary.m_variance);
+
+        summary.m_skewness = M3 / pow(M2, 1.5);
+        summary.m_skewness *= (summary.m_validCount * sqrt(summary.m_validCount - 1)) / (summary.m_validCount - 2);
+
+        summary.m_kurtosis = M4 / (M2 * M2);
+        summary.m_kurtosis *= ((summary.m_validCount * (summary.m_validCount + 1) * (summary.m_validCount - 1)) / ((summary.m_validCount - 2) * (summary.m_validCount - 3)));
+    } else if (summary.m_validCount > 2){
+        summary.m_variance = M2 / (summary.m_validCount - 1.0);
+        summary.m_stdDeviation = sqrt(summary.m_variance);
+
+        summary.m_skewness = M3 / pow(M2, 1.5);
+        summary.m_skewness *= (summary.m_validCount * sqrt(summary.m_validCount - 1)) / (summary.m_validCount - 2);
+
+        summary.m_kurtosis = 0;
+    } else if (summary.m_validCount > 1) {
+        summary.m_variance = M2 / (summary.m_validCount - 1.0);
+        summary.m_stdDeviation = sqrt(summary.m_variance);
+
+        summary.m_skewness = 0.0;
+        summary.m_kurtosis = 0.0;
+    } else {
+        summary.m_variance = 0.0;
+        summary.m_stdDeviation = 0.0;
+        summary.m_skewness = 0.0;
+        summary.m_kurtosis = 0.0;
+    }
+
+    summary.m_varCoeff = (100 * summary.m_stdDeviation) / summary.m_mean;
+
+    std::sort(values.begin(), values.end());
+
+    summary.m_minVal = *values.begin();
+    summary.m_maxVal = values[summary.m_validCount - 1];
+    summary.m_amplitude = summary.m_maxVal - summary.m_minVal;
+
+    if ((summary.m_validCount % 2) == 0)
+        summary.m_median = (values[(summary.m_validCount / 2)] + values[(summary.m_validCount / 2 - 1)]) / 2.0;
+    else
+        summary.m_median = values[(summary.m_validCount - 1) / 2];
+
+    std::map<double, int>::iterator itMode = modeMap.begin();
+    int repeat = 0;
+
+    while (itMode != modeMap.end()) {
+        if (repeat < itMode->second) {
+            repeat = itMode->second;
+            summary.m_mode.clear();
+            summary.m_mode.push_back(itMode->first);
+        }
+        else if (repeat == itMode->second) {
+            summary.m_mode.push_back(itMode->first);
+        }
+        itMode++;
+    }
 }
 
 te::stat::NumericStatisticalComplexSummary te::rp::RasterAttributes::getComplexStatistics(std::vector<std::complex < double > >& pixels)

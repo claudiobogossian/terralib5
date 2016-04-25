@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_CANVAS_INTERNAL_EYEBIRDMAPDISPLAYWIDGET_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "../Config.h"
 
 // STL

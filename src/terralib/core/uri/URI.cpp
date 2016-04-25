@@ -23,35 +23,33 @@
 
   \brief URI.
 
-  \author Gilberto Ribeiro de Queiroz
   \author Vinicius Campanha
+  \author Gilberto Ribeiro de Queiroz
  */
 
 // TerraLib
 #include "URI.h"
-#include "../../common/Translator.h"
-#include "../Exception.h"
 
-static const te::core::URI::string_type regex_scheme = "(?<SCHEME_TYPE>[^\\]\\[:/?#@!$&'()*+,;=]+?):";
+static const std::string regex_scheme = "(?<SCHEME_TYPE>[^\\]\\[:/?#@!$&'()*+,;=]+?):";
 
-static const te::core::URI::string_type regex_userInfo = "((?<USER_TYPE>.+):(?<PASSWORD_TYPE>.+)@)?";
+static const std::string regex_userInfo = "((?<USER_TYPE>.+):(?<PASSWORD_TYPE>.+)@)?";
 
-static const te::core::URI::string_type regex_host = "(?<HOST_TYPE>[^\\]\\[:/?#@!$&'()*+,;=]+)";
+static const std::string regex_host = "(?<HOST_TYPE>[^\\]\\[:/?#@!$&'()*+,;=]+)";
 
-static const te::core::URI::string_type regex_port = "(:(?<PORT_TYPE>[0-9]{1,5}))?";
+static const std::string regex_port = "(:(?<PORT_TYPE>[0-9]{1,5}))?";
 
-static const te::core::URI::string_type regex_path = "(?<PATH_TYPE>[^\\]\\[:?#!$&'()*+,;=]+)?";
+static const std::string regex_path = "(?<PATH_TYPE>[^\\]\\[:?#!$&'()*+,;=]+)?";
 
-static const te::core::URI::string_type regex_query = "(\\?(?<QUERY_TYPE>[^\\]\\[/?#@!$'()*+,]+))?";
+static const std::string regex_query = "(\\?(?<QUERY_TYPE>[^\\]\\[/?#@!$'()*+,]+))?";
 
-static const te::core::URI::string_type regex_fragment = "(#(?<FRAGMENT_TYPE>.+))?";
+static const std::string regex_fragment = "(#(?<FRAGMENT_TYPE>.+))?";
 
 te::core::URI::URI()
   : isValid_(false)
 {
 }
 
-te::core::URI::URI(const string_type& uri)
+te::core::URI::URI(const std::string& uri)
   : uri_(uri), isValid_(false)
 {
   parse();
@@ -70,48 +68,48 @@ te::core::URI::operator=(const URI& other)
   return *this;
 }
 
-const te::core::URI::string_type&
+const std::string&
 te::core::URI::uri() const
 {
   return uri_;
 }
 
-te::core::URI::string_type te::core::URI::scheme() const
+std::string te::core::URI::scheme() const
 {
   return match_["SCHEME_TYPE"].str();
 }
 
-te::core::URI::string_type te::core::URI::user() const
+std::string te::core::URI::user() const
 {
   return match_["USER_TYPE"].str();
 }
 
-te::core::URI::string_type te::core::URI::password() const
+std::string te::core::URI::password() const
 {
   return match_["PASSWORD_TYPE"].str();
 }
 
-te::core::URI::string_type te::core::URI::host() const
+std::string te::core::URI::host() const
 {
   return match_["HOST_TYPE"].str();
 }
 
-te::core::URI::string_type te::core::URI::port() const
+std::string te::core::URI::port() const
 {
   return match_["PORT_TYPE"].str();
 }
 
-te::core::URI::string_type te::core::URI::path() const
+std::string te::core::URI::path() const
 {
   return match_["PATH_TYPE"].str();
 }
 
-te::core::URI::string_type te::core::URI::query() const
+std::string te::core::URI::query() const
 {
   return match_["QUERY_TYPE"].str();
 }
 
-te::core::URI::string_type te::core::URI::fragment() const
+std::string te::core::URI::fragment() const
 {
   return match_["FRAGMENT_TYPE"].str();
 }
@@ -139,7 +137,7 @@ te::core::URI::parse()
 // first, let's try to match an URI with host
   boost::regex expression(regex_scheme + "//" + regex_userInfo + regex_host + regex_port + regex_path + regex_query + regex_fragment);
 
-  boost::match_results< const_iterator > match;
+  boost::match_results< std::string::const_iterator > match;
 
 // clear match results
   match_ = match;
@@ -166,9 +164,9 @@ te::core::URI::parse()
 void
 te::core::URI::encode()
 {
-  string_type temp;
+  std::string temp;
 
-  const_iterator it = std::begin(uri_);
+  std::string::const_iterator it = std::begin(uri_);
 
   while(it != std::end(uri_))
   {
@@ -190,11 +188,11 @@ te::core::URI::encode()
 }
 
 
-te::core::URI::string_type
+std::string
 te::core::URI::hexToLetter(int i)
 {
   int ASCIIvalue = i;
-  te::core::URI::string_type value;
+  std::string value;
 
   switch (ASCIIvalue) {
     case 0:
@@ -222,5 +220,5 @@ te::core::URI::hexToLetter(int i)
       return value;
     }
   }
-  return te::core::URI::string_type();
+  return std::string();
 }

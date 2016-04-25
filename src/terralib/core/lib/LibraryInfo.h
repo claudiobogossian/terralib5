@@ -30,7 +30,7 @@
 #define __TERRALIB_CORE_LIB_LIBRARYINFO_H__
 
 // TerraLib
-#include "Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>

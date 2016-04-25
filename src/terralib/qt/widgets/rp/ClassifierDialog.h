@@ -28,7 +28,9 @@
 
 // TerraLib
 #include "../Config.h"
+#ifndef Q_MOC_RUN
 #include "../../../raster/Raster.h"
+#endif
 
 // Qt
 #include <QDialog>
@@ -38,7 +40,9 @@
 #include <string>
 
 // Boost
+#ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
+#endif
 
 // Forward user interface declaration
 namespace Ui

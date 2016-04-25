@@ -105,7 +105,7 @@ namespace te
           \param endTimePropIdx  The property index of the ptypes vector that contains the observation phenomenon end time.  
           \param gmPropIdx       The property index of the ptypes vector that contains geometries. 
         */
-        DataSet(const std::vector<std::string>& pnames, const std::vector<int>& ptyes, const std::map<int, te::common::CharEncoding>& encodings, int begTimePropIdx, int endTimePropIdx, int gmPropIdx);
+        DataSet(const std::vector<std::string>& pnames, const std::vector<int>& ptyes, const std::map<int, te::core::EncodingType>& encodings, int begTimePropIdx, int endTimePropIdx, int gmPropIdx);
 
                 
         /*!
@@ -389,7 +389,7 @@ namespace te
 
         std::string getPropertyName(std::size_t i) const;
 
-        te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const;
+        te::core::EncodingType getPropertyCharEncoding(std::size_t i) const;
 
         std::string getDatasetNameOfProperty(std::size_t i) const;
 
@@ -530,7 +530,7 @@ namespace te
         bool                                                    m_beforeFirst;    //! internal control  
         std::vector<std::string>                                m_pnames;         //!< The list of property names.
         std::vector<int>                                        m_ptypes;         //!< The list of property types.
-        std::map<int, te::common::CharEncoding> m_encodings;                      //!< The list of string properties char-encoding.
+        std::map<int, te::core::EncodingType> m_encodings;                      //!< The list of string properties char-encoding.
         int                                                     m_begTimePropIdx; //!< The property index of the DataSetType that contains the phenomenon beginning time. 
         int                                                     m_endTimePropIdx; //!< The property index of the DataSetType that contains the phenomenon end time. 
         int                                                     m_geomPropIdx;    //!< The property index of the DataSetType that contains geometries. 

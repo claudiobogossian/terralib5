@@ -135,9 +135,9 @@ void te::pgis::DataSource::open()
   // Retrieve the char encoding
   std::map<std::string, std::string>::const_iterator it = m_connInfo.find("PG_CLIENT_ENCODING");
   if(it != m_connInfo.end())
-    m_encoding = te::common::CharEncodingConv::getCharEncodingType(it->second);
+    m_encoding = te::core::CharEncoding::getEncodingType(it->second);
   else
-    m_encoding = te::common::UNKNOWN_CHAR_ENCODING;
+    m_encoding = te::core::EncodingType::UNKNOWN;
 
   m_pool->initialize();
 
@@ -197,7 +197,7 @@ te::pgis::ConnectionPool* te::pgis::DataSource::getConnPool() const
   return m_pool;
 }
 
-te::common::CharEncoding te::pgis::DataSource::getCharEncoding() const
+te::core::EncodingType te::pgis::DataSource::getCharEncoding() const
 {
   return m_encoding;
 }
@@ -478,18 +478,18 @@ std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map
 }
 
 
-std::vector<te::common::CharEncoding> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
+std::vector<te::core::EncodingType> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  std::vector<te::common::CharEncoding> encodings;
+  std::vector<te::core::EncodingType> encodings;
 
-  encodings.push_back(te::common::UTF8);    // UTF8
-  encodings.push_back(te::common::CP1250);  // WIN1250
-  encodings.push_back(te::common::CP1251);  // WIN1251
-  encodings.push_back(te::common::CP1252);  // WIN1252
-  encodings.push_back(te::common::CP1253);  // WIN1253
-  encodings.push_back(te::common::CP1254);  // WIN1254
-  encodings.push_back(te::common::CP1257);  // WIN1257
-  encodings.push_back(te::common::LATIN1);  // LATIN1
+  encodings.push_back(te::core::EncodingType::UTF8);    // UTF8
+  encodings.push_back(te::core::EncodingType::CP1250);  // WIN1250
+  encodings.push_back(te::core::EncodingType::CP1251);  // WIN1251
+  encodings.push_back(te::core::EncodingType::CP1252);  // WIN1252
+  encodings.push_back(te::core::EncodingType::CP1253);  // WIN1253
+  encodings.push_back(te::core::EncodingType::CP1254);  // WIN1254
+  encodings.push_back(te::core::EncodingType::CP1257);  // WIN1257
+  encodings.push_back(te::core::EncodingType::LATIN1);  // LATIN1
 
   //std::auto_ptr<DataSource> ds(new DataSource());
 

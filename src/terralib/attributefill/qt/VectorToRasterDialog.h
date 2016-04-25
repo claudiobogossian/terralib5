@@ -27,9 +27,11 @@
 #define __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTORASTERDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../statistics/core/Enums.h"
 #include "../Config.h"

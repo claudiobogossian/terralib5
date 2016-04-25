@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/DataSetTypeCapabilities.h"
 #include "../dataaccess/datasource/DataSource.h"
@@ -41,6 +42,7 @@
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
 #include "../memory/DataSet.h"
+#include "AlgorithmParams.h"
 #include "Utils.h"
 
 //STL
@@ -50,6 +52,7 @@
 // Boost
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -361,31 +364,17 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
 
   try
   {
-    if(source->getType() == "OGR")
-    {
-      // create the dataset
-      source->createDataSet(outDsType, options);
+    t->begin();
+
+    // create the dataset
+    t->createDataSet(outDsType, options);
   
-      // copy from memory to output datasource
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      source->add(outDsType->getName(), result, options);
-    }
-    else
-    {
-      t->begin();
+    // copy from memory to output datasource
+    result->moveBeforeFirst();
+    std::string name = outDsType->getName();
+    t->add(outDsType->getName(), result, options);
 
-      // create the dataset
-      t->createDataSet(outDsType, options);
-  
-      // copy from memory to output datasource
-      result->moveBeforeFirst();
-      std::string name = outDsType->getName();
-      t->add(outDsType->getName(), result, options);
-
-      t->commit();
-    }
-
+    t->commit();
   }
   catch(te::common::Exception& e)
   {
@@ -530,4 +519,126 @@ te::da::DataSourcePtr te::vp::CreateOGRDataSource(std::string repository)
   te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
 
   return te::da::DataSourceManager::getInstance().get(id_ds, "OGR", dsInfoPtr->getConnInfo());
+}
+
+void te::vp::ValidateAlgorithmParams(te::vp::AlgorithmParams* mainParams, Strategy st)
+{
+  std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
+
+  for (std::size_t i = 0; i < inputParams.size(); ++i)
+  {
+    if (!inputParams[i].m_inputDataSetType)
+      throw te::common::Exception(TE_TR("It is necessary to set the DataSetType from Input Layer."));
+
+    if (st == MEMORY)
+    {
+      if (!inputParams[i].m_inputDataSet)
+        throw te::common::Exception(TE_TR("It is necessary to set the Input DataSet."));
+    }
+    else
+    {
+      if (!inputParams[i].m_inputQuery)
+        throw te::common::Exception(TE_TR("It is necessary to set the Input Query."));
+    }
+  }
+
+  if (!mainParams->getOutputDataSource())
+    throw te::common::Exception(TE_TR("It is necessary to set the Output DataSource."));
+}
+
+te::sam::rtree::Index<size_t, 8>* te::vp::GetRtree(te::da::DataSet* data)
+{
+  te::sam::rtree::Index<size_t, 8>* rtree = new te::sam::rtree::Index<size_t, 8>;
+
+  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(data);
+
+  data->moveBeforeFirst();
+
+  int count = 0;
+
+  while (data->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
+
+    rtree->insert(*geom->getMBR(), count);
+
+    ++count;
+  }
+
+  return rtree;
+}
+
+te::gm::Geometry* te::vp::SetGeomAsMulti(te::gm::Geometry* geom)
+{
+
+  switch (geom->getGeomTypeId())
+  {
+    case te::gm::PointType:
+    {
+      te::gm::MultiPoint* geomColl = new te::gm::MultiPoint(0, te::gm::MultiPointType, geom->getSRID());
+      geomColl->add(geom);
+
+      return geomColl;
+    }
+    case te::gm::LineStringType:
+    {
+      te::gm::MultiLineString* geomColl = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, geom->getSRID());
+      geomColl->add(geom);
+
+      return geomColl;
+    }
+    case te::gm::PolygonType:
+    {
+      te::gm::MultiPolygon* geomColl = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, geom->getSRID());
+      geomColl->add(geom);
+
+      return geomColl;
+    }
+  }
+
+  return geom;
+}
+
+std::string te::vp::GetDistinctName(const std::string& name, std::vector<std::string> names, std::size_t maxSize)
+{
+  std::string result = name;
+
+  bool hasToResize = false;
+
+  if (maxSize > 0)
+    hasToResize = true;
+
+  std::size_t count = 1;
+
+  while (std::find(names.begin(), names.end(), result) != names.end())
+  {
+    std::size_t aux = 2;
+    if (count > 99)
+      aux = 3;
+    if (count > 999)
+      aux = 4;
+
+    if (hasToResize)
+    {
+      if (result.size() + aux > maxSize)
+      {
+        result = result.substr(0, maxSize - aux) + "_" + boost::lexical_cast<std::string>(count);
+      }
+      else
+      {
+        result = result + "_" + boost::lexical_cast<std::string>(count);
+      }
+    }
+    else
+    {
+      result = result + "_" + boost::lexical_cast<std::string>(count);
+    }
+
+    ++count;
+  }
+
+  if (maxSize > 0 && name.size() > maxSize)
+    result = result.substr(0, maxSize);
+
+  return result;
 }

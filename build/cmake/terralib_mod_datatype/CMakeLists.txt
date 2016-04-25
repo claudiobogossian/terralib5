@@ -57,11 +57,13 @@ add_library(terralib_mod_datatype SHARED ${TERRALIB_FILES})
 
 if(TERRALIB_MOD_XML_ENABLED)
   target_link_libraries(terralib_mod_datatype terralib_mod_common
+                                              terralib_mod_core
                                               terralib_mod_xml
                                               ${Boost_DATE_TIME_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY})
 else()
   target_link_libraries(terralib_mod_datatype terralib_mod_common
+                                              terralib_mod_core
                                               ${Boost_DATE_TIME_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY})
 endif()

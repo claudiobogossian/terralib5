@@ -68,9 +68,11 @@
 // TerraLib
 #include "../../../color/RGBAColor.h"
 #include "../../../geometry/Coord2D.h"
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/MixtureModel.h"
+#endif
 #include "../Config.h"
 
 // STL

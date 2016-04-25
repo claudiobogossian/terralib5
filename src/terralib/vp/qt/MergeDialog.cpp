@@ -34,10 +34,17 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+
+#include "../../vp/Merge.h"
+
 #include "../../vp/MergeOp.h"
 #include "../../vp/MergeMemory.h"
 #include "MergeDialog.h"
 #include "ui_MergeDialogForm.h"
+
+#include "../../vp/AlgorithmParams.h"
+#include "../../vp/ComplexData.h"
+#include "../../vp/InputParams.h"
 
 // Qt
 #include <QComboBox>
@@ -250,15 +257,46 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
 
   std::auto_ptr<te::da::DataSet> firstDs(firstAdapter);
   std::auto_ptr<te::da::DataSet> secondDs(secondAdapter);
-
+  
   try
   {
 
+    te::vp::InputParams inputParam;
+    inputParam.m_inputDataSet = firstDs.get();
+    inputParam.m_inputDataSetType = firstDst;
+    inputParam.m_inputDataSource = firstSource;
+
+    te::vp::InputParams mergeParam;
+    mergeParam.m_inputDataSet = secondDs.get();
+    mergeParam.m_inputDataSetType = secondDst;
+    mergeParam.m_inputDataSource = secondSource;
+
+    std::vector<te::vp::InputParams> params;
+    params.push_back(inputParam);
+    params.push_back(mergeParam);
+
+    te::vp::ComplexData<std::vector<std::pair<std::string, std::string> > >* attrs = new te::vp::ComplexData<std::vector<std::pair<std::string, std::string> > >(getTablePropertiesNames());
+
+    te::vp::ComplexData<bool>* isUp = new te::vp::ComplexData<bool>(isUpdate);
+
+    std::map<std::string, te::dt::AbstractData*> specificParams;
+    specificParams["ATTRIBUTES"] = attrs;
+    specificParams["ISUPDATE"] = isUp;
+
+    te::vp::AlgorithmParams* aParams = new te::vp::AlgorithmParams();
+    aParams->setInputParams(params);
+    aParams->setOutputDataSetName(outputdataset);
+    aParams->setSpecificParams(specificParams);
+
+    te::da::DataSourcePtr auxSource;
+    std::map<std::string, std::string> ogrDsinfo;
+    boost::filesystem::path ogrUri;
+
     if (m_toFile)
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      ogrUri = m_ui->m_repositoryLineEdit->text().toStdString();
 
-      if (boost::filesystem::exists(uri))
+      if (boost::filesystem::exists(ogrUri))
       {
         QMessageBox::information(this, tr("Merge"), tr("Output file already exists. Remove it or select a new name and try again."));
         return;
@@ -268,87 +306,70 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      std::map<std::string, std::string> dsinfo;
-      dsinfo["URI"] = uri.string();
+      ogrDsinfo["URI"] = ogrUri.string();
 
-      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-      dsOGR->setConnectionInfo(dsinfo);
-      dsOGR->open();
+      auxSource.reset(te::da::DataSourceFactory::make("OGR").release());
+      auxSource->setConnectionInfo(ogrDsinfo);
+      auxSource->open();
 
-      if (dsOGR->dataSetExists(outputdataset))
+      if (auxSource->dataSetExists(outputdataset))
       {
         QMessageBox::information(this, tr("Merge"), tr("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
         return;
       }
-
-      std::auto_ptr<te::vp::MergeOp> merge(new te::vp::MergeMemory());
-
-      merge->setInput(firstSource, firstDst, firstDs.get(), m_firstSelectedLayer->getSRID(), secondDst, secondDs.get());
-
-      merge->setParams(getTablePropertiesNames(), isUpdate);
-
+    }
+    else
+    {
       if (!isUpdate)
       {
-        merge->setOutput(dsOGR, outputdataset);
+        auxSource = te::da::GetDataSource(m_outputDatasource->getId());
+        if (!auxSource)
+        {
+          QMessageBox::information(this, tr("Merge"), tr("The selected output datasource can not be accessed."));
+          return;
+        }
+        if (auxSource->dataSetExists(outputdataset))
+        {
+          QMessageBox::information(this, tr("Merge"), tr("Dataset already exists. Remove it or select a new name and try again."));
+          return;
+        }
       }
+    }
 
-      bool res = merge->run();
+  
+    if (!isUpdate)
+    {
+      aParams->setOutputDataSource(auxSource);
+    }
+    else
+    {
+      aParams->setOutputDataSource(firstSource);
+    }
 
-      if (!res)
-      {
-        dsOGR->close();
-        QMessageBox::information(this, tr("Merge"), tr("Error: could not generate the merge."));
-      }
-      dsOGR->close();
+    te::vp::Merge merge;
+    merge.executeMemory(aParams);
 
+    delete aParams;
+
+    if (m_toFile)
+    {
       // let's include the new datasource in the managers
       boost::uuids::basic_random_generator<boost::mt19937> gen;
       boost::uuids::uuid u = gen();
       std::string id = boost::uuids::to_string(u);
 
       te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-      ds->setConnInfo(dsinfo);
-      ds->setTitle(uri.stem().string());
+      ds->setConnInfo(ogrDsinfo);
+      ds->setTitle(ogrUri.stem().string());
       ds->setAccessDriver("OGR");
       ds->setType("OGR");
-      ds->setDescription(uri.string());
+      ds->setDescription(ogrUri.string());
       ds->setId(id);
 
       te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
       newds->open();
       te::da::DataSourceInfoManager::getInstance().add(ds);
       m_outputDatasource = ds;
-    }
-    else
-    {
-      te::da::DataSourcePtr aux;
-      if (!isUpdate)
-      {
-        aux = te::da::GetDataSource(m_outputDatasource->getId());
-        if (!aux)
-        {
-          QMessageBox::information(this, tr("Merge"), tr("The selected output datasource can not be accessed."));
-          return;
-        }
-        if (aux->dataSetExists(outputdataset))
-        {
-          QMessageBox::information(this, tr("Merge"), tr("Dataset already exists. Remove it or select a new name and try again."));
-          return;
-        }
-      }
-
-      std::auto_ptr<te::vp::MergeOp> merge(new te::vp::MergeMemory());
-
-      merge->setInput(firstSource, firstDst, firstDs.get(), m_firstSelectedLayer->getSRID(), secondDst, secondDs.get());
-
-      merge->setParams(getTablePropertiesNames(), isUpdate);
-
-      if (!isUpdate)
-      {
-        merge->setOutput(aux, outputdataset);
-      }
-
-      bool res = merge->run();
     }
 
     if (!isUpdate)
@@ -374,6 +395,12 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
   }
   catch (const te::common::Exception& e)
   {
+    QMessageBox::warning(this, tr("Merge"), e.what());
+    return;
+  }
+  catch (const std::exception& e)
+  {
+    std::string eeeee = e.what();
     QMessageBox::warning(this, tr("Merge"), e.what());
     return;
   }

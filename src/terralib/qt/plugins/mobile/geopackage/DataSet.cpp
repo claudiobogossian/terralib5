@@ -106,7 +106,7 @@ std::string te::gpkg::DataSet::getPropertyName(std::size_t pos) const
   return m_dt->getProperty(pos)->getName();
 }
 
-te::common::CharEncoding te::gpkg::DataSet::getPropertyCharEncoding(std::size_t i) const
+te::core::EncodingType te::gpkg::DataSet::getPropertyCharEncoding(std::size_t i) const
 {
   te::dt::StringProperty* p = dynamic_cast<te::dt::StringProperty*>(m_dt->getProperty(i));
   assert(p);

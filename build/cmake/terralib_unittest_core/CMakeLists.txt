@@ -22,6 +22,7 @@
 #
 #  Author: Vinicius Campanha
 #          Matheus Cavassan Zaglia
+#          Frederico Bedê
 #
 
 include_directories(${Boost_INCLUDE_DIR})
@@ -38,17 +39,43 @@ file(GLOB TERRALIB_UNITTEST_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/uni
 file(GLOB TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/encoding/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/encoding/*.h)
 
+file(GLOB TERRALIB_UNITTEST_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/lib/*.cpp)
+
 source_group("Source Files"            FILES ${TERRALIB_UNITTEST_CORE_SRC_FILES})
 source_group("Header Files"            FILES ${TERRALIB_UNITTEST_CORE_HDR_FILES})
 source_group("Source Files\\uri"       FILES ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES})
 source_group("Header Files\\uri"       FILES ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES})
 source_group("Source Files\\encoding"  FILES ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES})
 source_group("Header Files\\encoding"  FILES ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES})
+source_group("Source Files\\lib"  FILES ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES})
+source_group("Header Files\\lib"  FILES ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
 
 
 add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERRALIB_UNITTEST_CORE_HDR_FILES}
                                       ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES} ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES}
-                                      ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES} ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES})
+                                      ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES} ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES}
+                                      ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES} ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
 
-target_link_libraries(terralib_unittest_core terralib_mod_core 
-                                             ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+
+if(WIN32)
+  add_definitions(-DTECOREDLL)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+else()
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+endif()
+
+file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
+file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.cpp)
+
+add_library(terralib_unittest_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
+
+set_target_properties(terralib_unittest_core_lib_function
+                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+
+add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)

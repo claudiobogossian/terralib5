@@ -25,8 +25,12 @@
   \author Vinicius campanha
  */
 
+// TerraLib
+#include <terralib/Defines.h>
+
 // STL
 #include <cstdlib>
+#include <iostream>
 
 // Boost
 #define BOOST_TEST_NO_MAIN

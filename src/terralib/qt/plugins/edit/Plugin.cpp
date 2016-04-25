@@ -132,7 +132,8 @@ void te::qt::plugins::edit::Plugin::startup()
   pluginsMenu->insertMenu(lastAction, m_menu);
 
   m_action = new QAction(m_menu);
-  m_action->setText(TE_TR("Edit Tools"));
+  m_action->setText(TE_TR("Tools"));
+  m_action->setIcon(QIcon::fromTheme("edit_tools"));
   m_menu->addAction(m_action);
 
   connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
@@ -174,8 +175,7 @@ void te::qt::plugins::edit::Plugin::onActionActivated(bool)
 
 void te::qt::plugins::edit::Plugin::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
-  // Blocks the edit toolbar in TerraAmazon project
-  if (te::qt::af::AppCtrlSingleton::getInstance().getAppName().compare("TerraAmazon", Qt::CaseInsensitive) == 0)
+  if (!m_toolbar->m_isEnabled)
     return;
 
   switch(e->m_id)
@@ -242,6 +242,9 @@ void te::qt::plugins::edit::Plugin::onGeometriesChanged()
 
 void te::qt::plugins::edit::Plugin::drawStashed()
 {
+  if (!m_toolbar->m_isEnabled)
+    return;
+  
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
 
@@ -251,14 +254,14 @@ void te::qt::plugins::edit::Plugin::drawStashed()
   if(display == 0)
     return;
 
-  QPixmap* draft = display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
   te::map::AbstractLayer* l = GetSelectedLayer(getLayerExplorer());
 
   if(l != 0 && l->getVisibility() == te::map::VISIBLE)
   {
     te::gm::Envelope env = display->getExtent();
+
+    QPixmap* draft = display->getDraftPixmap();
+    draft->fill(Qt::transparent);
 
     te::edit::Renderer& renderer = te::edit::Renderer::getInstance();
     renderer.begin(draft, env, display->getSRID());
@@ -270,14 +273,11 @@ void te::qt::plugins::edit::Plugin::drawStashed()
   }
 
   display->repaint();
+
 }
 
 void te::qt::plugins::edit::Plugin::updateDelegate(const bool& add)
 {
-  // Blocks the edit toolbar in TerraAmazon project
-  if (te::qt::af::AppCtrlSingleton::getInstance().getAppName().compare("TerraAmazon", Qt::CaseInsensitive) == 0)
-    return;
-
   te::qt::widgets::LayerItemView* view = getLayerExplorer();
 
   if(view == 0)

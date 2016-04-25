@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_DATASET_EXPLORER_INTERNAL_DATASETTREEVIEW_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#endif
 #include "../../Config.h"
 
 // STL

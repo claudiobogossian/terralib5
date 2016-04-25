@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "Library.h"
-#include "../Defines.h"
+#include "../../Defines.h"
 #include "Exception.h"
 
 #ifndef TE_PLATFORM
@@ -146,7 +146,7 @@ te::core::Library::load()
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
 
-  m_pimpl->module = (void*)LoadLibraryA(m_pimpl->slib_file_name.c_str());
+    m_pimpl->module = (void*)LoadLibraryA(m_pimpl->slib_file_name.c_str());
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
@@ -220,7 +220,7 @@ te::core::Library::getAddress(const char* symbol) const
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
 
-  void* f = GetProcAddress((HMODULE)m_module, symbol.c_str());
+  void* f = GetProcAddress((HINSTANCE)m_pimpl->module, symbol);
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
@@ -245,32 +245,30 @@ te::core::Library::getAddress(const char* symbol) const
 std::string
 te::core::Library::getNativeName(const std::string& name)
 {
-#if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
-
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
   std::string nativeName = name + ".dll";
+#else
+  std::string nativeName = name + "d.dll";
+#endif
 
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
   std::string nativeName = "lib" + name + ".so";
 
-#elif (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-
+#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
   std::string nativeName = "lib" + name + ".dylib";
 
 #else
-
-  #error "Platform not supported! Please, contact TerraLib team (gribeiro@dpi.inpe.br) for helping support this platform!"
-
+#error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
 #endif
 
   return nativeName;
 }
 
+#if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
 void
 te::core::Library::addSearchDir(const std::string& dir_name)
 {
-#if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
-
   if(dir_name.length() > (MAX_PATH - 2))
   {
     boost::format err_msg("The DLL lookup path is too long: %1%.");
@@ -279,83 +277,21 @@ te::core::Library::addSearchDir(const std::string& dir_name)
   }
 
 // add dir to the path of LoadLibrary
-  BOOL retval = SetDllDirectory(d.c_str());
+  BOOL retval = SetDllDirectory(dir_name.c_str());
 
   if(retval == FALSE)
   {
-    boost::format err_msg("The informed dir \"%1%\" couldn't be added to the application dll lookup path due to the following error: %2%."");
+    boost::format err_msg("The informed dir \"%1%\" couldn't be added to the application dll lookup path due to the following error: \"%2%\".");
 
-    throw library_invalid_search_path_error() << error_description((err_msg % dir_name % te_get_os_error()).str());
+    throw te::core::LibraryInvalidSearchPathException() << te::ErrorDescription((err_msg % dir_name % te_get_os_error()).str());
   }
 
   te::core::Library::Impl::added_search_path_ = true;
-
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-  const char* ldLibraryPath = getenv("LD_LIBRARY_PATH");
-#else
-  const char* ldLibraryPath = getenv("DYLD_LIBRARY_PATH");
-#endif
-
-  if(ldLibraryPath == nullptr)
-  {
-// XX_LIBRARY_PATH doesn't exist
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-    int result = setenv("LD_LIBRARY_PATH", dir_name.c_str(), 1);
-#else
-    int result = setenv("DYLD_LIBRARY_PATH", dir_name.c_str(), 1);
-#endif
-
-    if(result)
-    {
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-      boost::format err_msg("Could not create LD_LIBRARY_PATH for the application. It is not pointing to the informed dir \"%1%\".");
-#else
-      boost::format err_msg("Could not create DYLD_LIBRARY_PATH for the application. It is not pointing to the informed dir \"%1%\".");
-#endif
-
-      throw LibraryInvalidSearchPathException() << te::ErrorDescription((err_msg % dir_name).str());
-    }
-  }
-  else
-  {
-// XX_LIBRARY_PATH may be empty or may have any other value, we need to concatenate
-
-    std::string newLdLibraryPath(ldLibraryPath);
-    newLdLibraryPath += ";";
-    newLdLibraryPath += dir_name;
-
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-    int result = setenv("LD_LIBRARY_PATH", newLdLibraryPath.c_str(), 1);
-#else
-    int result = setenv("DYLD_LIBRARY_PATH", newLdLibraryPath.c_str(), 1);
-#endif
-
-    if(result)
-    {
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-      boost::format err_msg("Couldn't add the informed dir \"%1%\" to the application's environment variable LD_LIBRARY_PATH.");
-#else
-      boost::format err_msg("Couldn't add the informed dir \"%1%\" to the application's environment variable DYLD_LIBRARY_PATH.");
-#endif
-
-      throw LibraryInvalidSearchPathException() << te::ErrorDescription((err_msg % dir_name).str());
-    }
-  }
-
-#else
-
-  #error "Platform not supported! Please, contact TerraLib team (terralib-team@terralib.org) for helping support this platform!"
-
-#endif
 }
 
 void
 te::core::Library::resetSearchPath()
 {
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-
 // come back with default Windows path
   BOOL retval = SetDllDirectory("");
 
@@ -367,18 +303,11 @@ te::core::Library::resetSearchPath()
   }
 
   te::core::Library::Impl::added_search_path_ = false;
-
-#else
-
-  throw LibraryResetSearchPathException() << te::ErrorDescription("method: void te::common::Library::resetSearchPath() throw(Exception) not implemented for this platform! Contact gribeiro@dpi.inpe.br");
-
-#endif
 }
 
 std::string
 te::core::Library::getSearchPath()
 {
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 
   const DWORD buff_size = 32768;
 
@@ -393,7 +322,7 @@ te::core::Library::getSearchPath()
     throw LibrarySearchPathException() << te::ErrorDescription((err_msg % te_get_os_error()).str());
   }
 
-  if(length <= buffSize)
+  if(length <= buff_size)
   {
     return std::string(buff, length);
   }
@@ -401,20 +330,5 @@ te::core::Library::getSearchPath()
   {
     throw LibrarySearchPathException() << te::ErrorDescription("Windows DLL lookup path too long!");
   }
-
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-
-#if (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
-  const char* ldLibraryPath = getenv("LD_LIBRARY_PATH");
-#else
-  const char* ldLibraryPath = getenv("DYLD_LIBRARY_PATH");
-#endif
-
-  return (ldLibraryPath == nullptr) ? std::string("") : std::string(ldLibraryPath);
-
-#else
-
-  #error "Platform not supported! Please, contact TerraLib team (terralib-team@terralib.org) for helping support this platform!"
-
-#endif
 }
+#endif

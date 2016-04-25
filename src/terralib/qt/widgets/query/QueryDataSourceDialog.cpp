@@ -384,7 +384,7 @@ void te::qt::widgets::QueryDataSourceDialog::onClearPushButtonClicked()
 
   m_dataSetDisplay->clear();
 
-  m_tableModel->setDataSet(0, te::common::LATIN1);
+  m_tableModel->setDataSet(0, te::core::EncodingType::LATIN1);
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onSQLEditorTextChanged()
@@ -475,9 +475,12 @@ void te::qt::widgets::QueryDataSourceDialog::onSaveSqlToolButtonClicked()
   if(path.isNull())
     return;
 
+  if (!path.endsWith(".sql"))
+    path += ".sql";
+
  //open file
   QFile file(path);
-  
+
   if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) 
   {
     QMessageBox::warning(this, tr("Query DataSource"), file.errorString());

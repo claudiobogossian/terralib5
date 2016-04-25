@@ -1,20 +1,20 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-TerraLib is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See them_initialPosition
-GNU Lesser General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See them_initialPosition
+  GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with TerraLib. See COPYING. If not, write to
-TerraLib Team at <terralib-team@terralib.org>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
@@ -51,7 +51,8 @@ te::edit::UpdateCommand::UpdateCommand(std::vector<Feature*> items, te::qt::widg
 }
 
 te::edit::UpdateCommand::~UpdateCommand()
-{}
+{
+}
 
 void  te::edit::UpdateCommand::undo()
 {
@@ -69,6 +70,8 @@ void  te::edit::UpdateCommand::undo()
     RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
     draw(m_undoCommandType);
+
+    emit geometryAcquired(f->clone()->getGeometry());
 
   }
 
@@ -102,6 +105,8 @@ void te::edit::UpdateCommand::redo()
 
     draw(m_redoCommandType);
 
+    emit geometryAcquired(f->clone()->getGeometry());
+
   }
 
 }
@@ -123,7 +128,6 @@ void te::edit::UpdateCommand::draw(const int commandType)
   // Draw the layer edited geometries
   renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
-  // Draw the layer edited geometries
   if (commandType == m_undoCommandType)
     renderer.draw(m_updateItems[m_previousFeature]->getGeometry(), true);
   else

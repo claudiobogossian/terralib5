@@ -27,7 +27,9 @@
 #define __TERRALIB_QT_PLUGINS_EDIT_INTERNAL_TOOLBAR_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "Config.h"
 
 // Qt
@@ -160,6 +162,8 @@ namespace te
 
         public:
           te::map::AbstractLayerPtr getSelectedLayer();
+
+          bool m_isEnabled;
 
         protected:
           te::map::AbstractLayerPtr getLayer(const std::string& id);

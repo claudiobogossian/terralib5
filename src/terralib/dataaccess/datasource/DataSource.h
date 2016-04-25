@@ -1224,7 +1224,7 @@ namespace te
 
           \return The DataSource current encoding.
         */
-        virtual te::common::CharEncoding getEncoding();
+        virtual te::core::EncodingType getEncoding();
 
         /*!
           \brief It removes all the informed items from the dataset.
@@ -1356,7 +1356,7 @@ namespace te
 
           \return The encoding types of the data source.
         */
-        static std::vector<te::common::CharEncoding> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
+        static std::vector<te::core::EncodingType> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
         //@}
 
       protected:
@@ -1424,7 +1424,7 @@ namespace te
           \return The encoding types for the data source.
 
         */
-        virtual std::vector<te::common::CharEncoding> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual std::vector<te::core::EncodingType> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
         //@}
 
       protected:

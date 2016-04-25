@@ -67,7 +67,6 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt:
   : QObject(),
     m_app(app),
     m_display(display),
-    m_tool(0),
     m_menu(0),
     m_currentExtentIndex(-1),
     m_extentStackMaxSize(5),
@@ -97,23 +96,10 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt:
   
   // Getting default display color
   m_display->setBackgroundColor(te::qt::af::GetDefaultDisplayColorFromSettings());
-
-  m_pantoSelectedAction = new QAction(this);
-  m_pantoSelectedAction->setCheckable(true);
-  m_pantoSelectedAction->setChecked(false);
-  m_pantoSelectedAction->setText(tr("Enable pan to selected"));
-  m_pantoSelectedAction->setToolTip(tr("Enable / disable pan to selected operation"));
-
-  // Inserting action
-  QList<QAction*> acts = m_menu->findChildren<QAction*>();
-
-  if(!acts.isEmpty())
-    m_menu->insertAction(acts.at(3), m_pantoSelectedAction);
 }
 
 te::qt::af::MapDisplay::~MapDisplay()
 {
-  delete m_tool;
   delete m_display;
 }
 
@@ -137,8 +123,10 @@ bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
   switch(e->type())
   {
     case QEvent::ContextMenu:
-      if(m_menu)
+    {
+      if (m_menu)
         m_menu->exec(static_cast<QContextMenuEvent*>(e)->globalPos());
+    }
     break;
           
     default:
@@ -184,20 +172,6 @@ void te::qt::af::MapDisplay::clear()
   std::list<te::map::AbstractLayerPtr> empty;
   m_display->setLayerList(empty);
   m_display->refresh();
-}
-
-void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious)
-{
-  if(m_tool != 0)
-    m_display->removeEventFilter(m_tool);
-
-  if(delPrevious)
-    delete m_tool;
-
-  m_tool = tool;
-
-  if(m_tool != 0)
-    m_display->installEventFilter(m_tool);
 }
 
 void te::qt::af::MapDisplay::nextExtent()
@@ -288,25 +262,6 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
     {
       te::qt::af::evt::LayerSelectedObjectsChanged* evt = static_cast<te::qt::af::evt::LayerSelectedObjectsChanged*> (e);
-
-      if(m_pantoSelectedAction->isChecked() && evt->m_envelope != 0)
-      {
-        te::gm::Envelope* env = evt->m_envelope;
-        te::gm::Envelope map_env = m_display->getExtent();
-
-        if(evt->m_layer->getSRID() != m_display->getSRID())
-          env->transform(evt->m_layer->getSRID(), m_display->getSRID());
-
-        if(!env->intersects(map_env))
-        {
-          env->m_llx = env->getCenter().x - map_env.getWidth()/2;
-          env->m_urx = env->m_llx + map_env.getWidth();
-          env->m_lly = env->getCenter().y - map_env.getHeight()/2;
-          env->m_ury = env->m_lly + map_env.getHeight();
-
-          m_display->setExtent(*env);
-        }
-      }
 
       QPixmap* content = m_display->getDisplayPixmap();
       content->fill(Qt::transparent);

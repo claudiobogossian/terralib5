@@ -40,6 +40,8 @@ bool te::mnt::TINCreateIsolines::run()
 
     for (size_t i = 0; i < ntri; i++)
     {
+      if (!task.isActive())
+        return false;
       task.pulse();
       if (!NodesId((int32_t)i, nodesid))
         continue;

@@ -87,44 +87,26 @@ te::vp::Difference::Difference()
 
 bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 {
+  te::vp::ValidateAlgorithmParams(mainParams, te::vp::MEMORY);
+
 // Validating parameters
   std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
   
   if (inputParams.size() < 2)
     throw te::common::Exception(TE_TR("It is necessary more than one item for performing the operation."));
 
-// Get DataSetType and Geometry Property of InputLayer Layer.
-  if (!inputParams[0].m_inputDataSetType)
-    throw te::common::Exception(TE_TR("It is necessary to set the DataSetType from Input Layer."));
+  te::da::DataSetType* dsType_input = inputParams[0].m_inputDataSetType;
 
-  std::auto_ptr<te::da::DataSetType> dsType_input(inputParams[0].m_inputDataSetType);
+  te::gm::GeometryProperty* inputGeomProp = te::da::GetFirstGeomProperty(dsType_input);
 
-  te::gm::GeometryProperty* inputGeomProp = te::da::GetFirstGeomProperty(dsType_input.get());
+  te::da::DataSetType* dsType_difference = inputParams[1].m_inputDataSetType;
 
-
-// Get DataSetType and Geometry Property of Difference Layer.
-  if (!inputParams[1].m_inputDataSetType)
-    throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Difference Layer."));
-
-  std::auto_ptr<te::da::DataSetType> dsType_difference(inputParams[1].m_inputDataSetType);
-
-  te::gm::GeometryProperty* differenceGeomProp = te::da::GetFirstGeomProperty(dsType_difference.get());
-
-// Verify if the operation has DataSet.
-  if (!inputParams[0].m_inputDataSet)
-    throw te::common::Exception(TE_TR("It is necessary to set the Input DataSet."));
-
-  std::auto_ptr<te::da::DataSet>inputDataSet(inputParams[0].m_inputDataSet);
-
-  if (!inputParams[1].m_inputDataSet)
-    throw te::common::Exception(TE_TR("It is necessary to set the Difference DataSet."));
-
-  std::auto_ptr<te::da::DataSet> differenceDataSet(inputParams[1].m_inputDataSet);
-
-// Get Output DataSource.
-  if (!mainParams->getOutputDataSource())
-    throw te::common::Exception(TE_TR("It is necessary to set the Output DataSource."));
-
+  te::gm::GeometryProperty* differenceGeomProp = te::da::GetFirstGeomProperty(dsType_difference);
+  
+  te::da::DataSet* inputDataSet = inputParams[0].m_inputDataSet;
+  
+  te::da::DataSet* differenceDataSet = inputParams[1].m_inputDataSet;
+  
   te::da::DataSourcePtr outputDataSource = mainParams->getOutputDataSource();
 
 // Build output dataset type
@@ -132,7 +114,6 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 
 // Get the first geometry property from output datasettype.
   te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(outputDataSetType.get());
-
 
 // Insert difference dataset in rtree.
   DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
@@ -270,50 +251,33 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 
 bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 {
+  te::vp::ValidateAlgorithmParams(mainParams, te::vp::QUERY);
+
 // Validating parameters
   std::vector<te::vp::InputParams> inputParams = mainParams->getInputParams();
 
   if (inputParams.size() < 2)
     throw te::common::Exception(TE_TR("It is necessary more than one item for performing the operation."));
 
+  te::da::DataSetType* dsType_input = inputParams[0].m_inputDataSetType;
 
-// Get DataSetType and Geometry Property of InputLayer Layer.
-  if (!inputParams[0].m_inputDataSetType)
-    throw te::common::Exception(TE_TR("It is necessary to set the DataSetType from Input Layer."));
-    
-  std::auto_ptr<te::da::DataSetType> dsType_input(inputParams[0].m_inputDataSetType);
+  te::gm::GeometryProperty* geom_input = te::da::GetFirstGeomProperty(dsType_input);
 
-  te::gm::GeometryProperty* geom_input = te::da::GetFirstGeomProperty(dsType_input.get());
-  
   std::string aliasInput = dsType_input->getName();
 
-// Get DataSetType and Geometry Property of Difference Layer.
-  if (!inputParams[1].m_inputDataSetType)
-    throw te::common::Exception(TE_TR("It is necessary to set the DataSetType or DataSetName from Difference Layer."));
-    
-  std::auto_ptr<te::da::DataSetType> dsType_difference(inputParams[1].m_inputDataSetType);
-  
-  te::gm::GeometryProperty* geom_difference = te::da::GetFirstGeomProperty(dsType_difference.get());
+  te::da::DataSetType* dsType_difference = inputParams[1].m_inputDataSetType;
+
+  te::gm::GeometryProperty* geom_difference = te::da::GetFirstGeomProperty(dsType_difference);
   
   std::string aliasDifference = dsType_difference->getName();
-
-
-// Verify if the operation has Query.
-  if (!inputParams[0].m_inputQuery)
-    throw te::common::Exception(TE_TR("It is necessary to set the Input Query."));
 
   te::da::Select* selectInput = inputParams[0].m_inputQuery;
   te::da::SubSelect* subSelectInput = new te::da::SubSelect(selectInput, "inputLayer");
   aliasInput = subSelectInput->getAlias();
 
-  if (!inputParams[1].m_inputQuery)
-    throw te::common::Exception(TE_TR("It is necessary to set the Difference Query."));
-
   te::da::Select* selectDifference = inputParams[1].m_inputQuery;
   te::da::SubSelect* subSelectDifference = new te::da::SubSelect(selectDifference, "differenceLayer");
   aliasDifference = subSelectDifference->getAlias();
-
-
 
 // Building Difference Query.
 

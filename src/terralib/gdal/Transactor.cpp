@@ -610,8 +610,8 @@ void te::gdal::Transactor::renameDataSet(const std::string& name, const std::str
   boost::filesystem::rename(mpath, newpath);
 }
 
-te::common::CharEncoding te::gdal::Transactor::getEncoding()
+te::core::EncodingType te::gdal::Transactor::getEncoding()
 {
-  return te::common::LATIN1;
+  return te::core::EncodingType::LATIN1;
 }
 

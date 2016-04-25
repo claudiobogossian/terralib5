@@ -30,7 +30,7 @@
 #define __TERRALIB_CORE_LIB_LIBRARY_H__
 
 // TerraLib
-#include "Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -70,7 +70,7 @@ namespace te
 
       \warning Shared libraries should not be loaded by multiple threads.
      */
-    class TEMODULEEXPORT Library : public boost::noncopyable
+    class TECOREEXPORT Library : public boost::noncopyable
     {
       public:
 
@@ -95,7 +95,7 @@ namespace te
         /*!
           If the shared library was already loaded this method doesn't perform operations.
 
-          \exception library_load_error If the shared library can not be loaded to memory.
+          \exception LibraryLoadException If the shared library can not be loaded to memory.
 
           \note Not thread-safe.
          */
@@ -106,7 +106,7 @@ namespace te
           If the library wasn't previously loaded or if it was already unloaded
           this method doesn't perform operations.
 
-          \exception library_unload_error If the library can not be
+          \exception LibraryUnloadException If the library can not be
                      unload from memory this method raises an exception.
 
           \note Not thread-safe.
@@ -126,7 +126,7 @@ namespace te
 
           \return The address where the symbol is loaded.
 
-          \exception library_symbol_not_found_error It throws an exception if it is not possible to locate the given symbol.
+          \exception LibrarySymbolNotFoundException It throws an exception if it is not possible to locate the given symbol.
 
           \note Not thread-safe.
          */
@@ -139,17 +139,21 @@ namespace te
         /*!
           \param dir_name A directory to be added to the lookup of shared libraries.
 
-          \exception library_invalid_search_path_error It throws an exception if the path couldn't be added to the search path.
+          \exception LibraryInvalidSearchPathException It throws an exception if the path couldn't be added to the search path.
 
           \note Not thread-safe.
+         
+          \note For Linux and Mac OS X this method doesn't perform operations.
          */
         static void addSearchDir(const std::string& dir_name);
 
         //! Comes back the application lookup path to the original state, before any add_search_dir has been called.
         /*!
-          \exception library_reset_search_path_error It throws an exception if the path couldn't be reset.
+          \exception LibraryResetSearchPathError It throws an exception if the path couldn't be reset.
 
           \note Not thread-safe.
+         
+          \note For Linux and Mac OS X this method doesn't perform operations.
          */
         static void resetSearchPath();
 

@@ -27,7 +27,9 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_SNAPOPTIONSDIALOG_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../maptools/AbstractLayer.h"
+#endif
 #include "Config.h"
 
 // Qt

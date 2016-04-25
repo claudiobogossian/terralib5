@@ -37,6 +37,9 @@
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiLineString.h"
+#include "../geometry/MultiPoint.h"
+#include "../geometry/MultiPolygon.h"
 #include "../geometry/WKBReader.h"
 #include "VectorDataSet.h"
 #include "DataSource.h"
@@ -144,9 +147,9 @@ std::string terralib4::VectorDataSet::getPropertyName(std::size_t) const
   throw;
 }
 
-te::common::CharEncoding terralib4::VectorDataSet::getPropertyCharEncoding(std::size_t) const
+te::core::EncodingType terralib4::VectorDataSet::getPropertyCharEncoding(std::size_t) const
 {
-  return te::common::UTF8;
+  return te::core::EncodingType::UTF8;
 }
 
 std::string terralib4::VectorDataSet::getDatasetNameOfProperty(std::size_t) const
@@ -320,15 +323,44 @@ std::auto_ptr<te::gm::Geometry> terralib4::VectorDataSet::getGeometry(std::size_
   std::vector<TeGeometry*> geoms;
   m_instance.getGeometry(geoms);
 
-  std::auto_ptr<te::gm::Geometry> t5g(terralib4::GeomReader::getGeometry(*geoms[0]));
-
   int srid = m_layer->projection()->epsgCode();
-  if(srid == 4979)
+  if (srid == 4979)
     srid = 4326;
+  
+  te::gm::GeomType gType = GetMinimalRepresentation(geoms);
 
-  t5g->setSRID(srid);
+  std::auto_ptr<te::gm::Geometry> result;
 
-  return t5g;
+  if (gType == te::gm::PolygonType || gType == te::gm::MultiPolygonType)
+  {
+    result.reset(new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, srid));
+  }
+  else if (gType == te::gm::LineStringType || gType == te::gm::MultiLineStringType)
+  {
+    result.reset(new te::gm::MultiLineString(0, te::gm::MultiLineStringType, srid));
+  }
+  else if (gType == te::gm::PointType || gType == te::gm::MultiPointType)
+  {
+    result.reset(new te::gm::MultiPoint(0, te::gm::MultiPointType, srid));
+  }
+  else if (gType == te::gm::GeometryCollectionType)
+  {
+    result.reset(new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, srid));
+  }
+
+
+  for (std::size_t i = 0; i < geoms.size(); ++i)
+  {
+    te::gm::GeometryCollection* aux = dynamic_cast<te::gm::GeometryCollection*>(result.get());
+
+    std::auto_ptr<te::gm::Geometry> t5g(terralib4::GeomReader::getGeometry(*geoms[i]));
+
+    aux->add(t5g.release());
+  }
+
+  result->setSRID(srid);
+
+  return result;
 }
 
 std::auto_ptr<te::rst::Raster> terralib4::VectorDataSet::getRaster(std::size_t) const
