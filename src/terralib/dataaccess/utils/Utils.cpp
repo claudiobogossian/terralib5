@@ -683,11 +683,12 @@ void te::da::AssociateDataSetTypeConverterSRID(DataSetTypeConverter* converter, 
 
     std::size_t pos = dsType->getPropertyPosition(gmProp->getName());
 
+    te::gm::GeometryProperty* geomPropClone = dynamic_cast<te::gm::GeometryProperty*>(gmProp->clone());
+    geomPropClone->setSRID(inputSRID);
+
     //add geometry property converter
     SRIDAssociation sridConverter(inputSRID, outputSRID);
-    converter->add(pos, gmProp->clone(), sridConverter);
-
-    gmProp->setSRID(inputSRID);
+    converter->add(pos, geomPropClone, sridConverter);
 
     //fix output geometry property srid
     te::da::DataSetType* dsTypeResult = converter->getResult();

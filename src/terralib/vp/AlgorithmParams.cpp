@@ -31,10 +31,12 @@ te::vp::AlgorithmParams::AlgorithmParams():
 te::vp::AlgorithmParams::AlgorithmParams( const std::vector<te::vp::InputParams>& inputParams,
                                           te::da::DataSourcePtr outputDataSource,
                                           const std::string& outputDataSetName,
+                                          const int& outputSRID,
                                           const std::map<std::string, te::dt::AbstractData*>& specificParams)
   : m_inputParams(inputParams),
   m_outputDataSource(outputDataSource),
   m_outputDataSetName(outputDataSetName),
+  m_outputSRID(outputSRID),
   m_specificParams(specificParams)
 {
 }
@@ -74,6 +76,17 @@ const std::string& te::vp::AlgorithmParams::getOutputDataSetName()
 void te::vp::AlgorithmParams::setOutputDataSetName(const std::string& outputDataSetName)
 {
   m_outputDataSetName = outputDataSetName;
+}
+
+
+const int& te::vp::AlgorithmParams::getOutputSRID()
+{
+  return m_outputSRID;
+}
+
+void te::vp::AlgorithmParams::setOutputSRID(const int& outputSRID)
+{
+  m_outputSRID = outputSRID;
 }
 
 

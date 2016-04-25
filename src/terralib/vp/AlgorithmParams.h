@@ -63,6 +63,7 @@ namespace te
       AlgorithmParams(const std::vector<te::vp::InputParams>& inputParams,
                       te::da::DataSourcePtr outputDataSource,
                       const std::string& outputDataSetName,
+                      const int& outputSRID,
                       const std::map<std::string, te::dt::AbstractData*>& specificParams);
       
       /*! \brief Destructor. */
@@ -83,6 +84,11 @@ namespace te
 
       void setOutputDataSetName(const std::string& outputDataSetName);
 
+      
+      const int& getOutputSRID();
+
+      void setOutputSRID(const int& outputSRID);
+
 
       const std::map<std::string, te::dt::AbstractData*>& getSpecificParams();
 
@@ -93,6 +99,7 @@ namespace te
       std::vector<te::vp::InputParams> m_inputParams;
       te::da::DataSourcePtr m_outputDataSource;
       std::string m_outputDataSetName;
+      int m_outputSRID;
       std::map<std::string, te::dt::AbstractData*> m_specificParams;
     };
   }

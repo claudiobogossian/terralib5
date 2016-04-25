@@ -33,6 +33,7 @@
 #include "query/BinaryFunction.h"
 #include "query/BinaryOp.h"
 #include "query/BinaryOpEncoder.h"
+#include "query/Cast.h"
 #include "query/Coalesce.h"
 #include "query/Count.h"
 #include "query/DataSetName.h"

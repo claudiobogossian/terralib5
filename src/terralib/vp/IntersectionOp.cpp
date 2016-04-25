@@ -236,7 +236,9 @@ te::da::DataSetType* te::vp::IntersectionOp::getOutputDsType()
 
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
   newGeomProp->setGeometryType(newType);
-  newGeomProp->setSRID(te::da::GetFirstGeomProperty(m_firstDsType.get())->getSRID());
+  
+  te::gm::GeometryProperty* firstGeomProp = te::da::GetFirstGeomProperty(m_firstDsType.get());
+  newGeomProp->setSRID(firstGeomProp->getSRID());
 
   dsType->add(newGeomProp);
 

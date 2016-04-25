@@ -193,6 +193,7 @@ void te::gm::GeometryCollection::setGeometryN(std::size_t i, Geometry* g)
 {
   assert((i < m_geometries.size()) && (m_geometries[i] == 0));
   delete m_geometries[i];
+  g->setSRID(this->getSRID());
   m_geometries[i] = g;
 }
 
@@ -205,6 +206,7 @@ void te::gm::GeometryCollection::removeGeometryN(std::size_t i)
 
 void te::gm::GeometryCollection::add(Geometry* g)
 {
+  g->setSRID(this->getSRID());
   m_geometries.push_back(g);
 }
 

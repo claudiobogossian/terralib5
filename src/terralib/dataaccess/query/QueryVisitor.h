@@ -81,6 +81,7 @@ namespace te
         virtual void visit(const SelectExpression& visited) = 0;
         virtual void visit(const SubSelect& visited) = 0;
         virtual void visit(const In& visited) = 0;
+        virtual void visit(const Cast& visited) = 0;
     };
 
   } // end namespace da

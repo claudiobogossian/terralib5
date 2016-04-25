@@ -41,6 +41,7 @@ namespace te
 {
   namespace vp
   {
+    te::gm::Geometry* GetGeometryUnion(const std::vector<te::gm::Geometry*>& geomVec);
     /*!
       \brief It returns the union of a geometry vector.
 

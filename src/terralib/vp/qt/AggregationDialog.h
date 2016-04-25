@@ -29,8 +29,12 @@
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
+
 #include "../../maptools/AbstractLayer.h"
+
 #include "../../statistics/core/Enums.h"
+
+#include "../AlgorithmParams.h"
 #include "../Config.h"
 #include "../Enums.h"
 
@@ -93,7 +97,14 @@ namespace te
 
           \return a Vector with selected properties.
         */
-        std::vector<te::dt::Property*> getSelectedProperties();
+        std::vector<std::string> getSelectedPropertyNames();
+
+        /*!
+        \brief Verify if the output result is a collection or single geometry.
+
+        \return bool isCollection.
+        */
+        bool isCollection();
 
         /*!
           \brief Get the generated layer.
@@ -130,7 +141,9 @@ namespace te
 
         void onFilterLineEditTextChanged(const QString& text);
 
-        void onCalculateStatistics(bool visible);
+        void onAdvanced(bool visible);
+
+        void onMultiGeometryChecked(bool checked);
 
         void onSelectAllComboBoxChanged(int index);
 
@@ -150,15 +163,21 @@ namespace te
 
         typedef std::map<te::stat::StatisticalSummary, std::string> StaticalSummaryMap;
 
-        std::auto_ptr<Ui::AggregationDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
-        std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                    //!< Layer used for aggregation
-        std::vector<te::dt::Property*> m_properties;                  //!< Properties related to the selected Layer
-        StaticalSummaryMap m_StatisticalSummaryMap;                   //!< Maping of Statistical Summary enum
-        te::map::AbstractLayerPtr m_layer;                            //!< Generated Layer.
-        bool m_toFile;
-        std::vector<std::string> m_warnings;
+        std::auto_ptr<Ui::AggregationDialogForm> m_ui;      //!< DialogForm
+        std::list<te::map::AbstractLayerPtr> m_layers;      //!< List of layers.
+        te::map::AbstractLayerPtr m_inputLayer;             //!< Layer used for aggregation
+        
+        std::vector<te::vp::InputParams> m_inputParams;     //!< A vector of input parameters.
+        te::vp::AlgorithmParams* m_params;                  //!< Algorithm parameters.
+
+        std::vector<te::dt::Property*> m_properties;        //!< Properties related to the selected Layer
+        StaticalSummaryMap m_StatisticalSummaryMap;         //!< Maping of Statistical Summary enum
+        
+        te::da::DataSourceInfoPtr m_outputDatasource;       //!< DataSource information.
+        te::map::AbstractLayerPtr m_layer;                  //!< Generated Layer.
+        
+        bool m_toFile;                                      //!< The output file is in a file.
+        std::vector<std::string> m_warnings;                //!< Warnings during the operation.
     };
   }   // end namespace vp
 }     // end namespace te

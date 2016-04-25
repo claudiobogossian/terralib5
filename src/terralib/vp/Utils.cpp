@@ -53,6 +53,33 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+
+te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::gm::Geometry*>& geomVec)
+{
+  te::gm::Geometry* geometry = 0;
+
+  if (geomVec.size() == 1)
+  {
+    te::dt::AbstractData* abs = geomVec[0]->clone();
+    geometry = static_cast<te::gm::Geometry*>(abs);
+  }
+  else
+  {
+    geometry = geomVec[0];
+
+    te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, geometry->getSRID());
+
+    for (std::size_t g = 1; g < geomVec.size(); ++g)
+    {
+      gc->add(geomVec[g]);
+    }
+
+    geometry = geometry->Union(gc);
+  }
+
+  return geometry;
+}
+
 te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType)
 {
   te::gm::Geometry* resultGeometry(0); 
@@ -166,8 +193,8 @@ void te::vp::SplitGeometryCollection(te::gm::GeometryCollection* gcIn, te::gm::G
   for(std::size_t i = 0; i < geomVec.size(); ++i)
   {
     te::gm::GeometryCollection* gc = dynamic_cast<te::gm::GeometryCollection*>(geomVec[i]);
-    if(gc == 0)
-      gcOut->add(geomVec[i]);
+    if (gc == 0)
+      gcOut->add((te::gm::Geometry*)geomVec[i]->clone());
     else
       SplitGeometryCollection(gc, gcOut);
   }
@@ -388,6 +415,10 @@ bool te::vp::IsMultiType(te::gm::GeomType geomType)
     case te::gm::MultiPolygonMType:
     case te::gm::MultiPolygonZType:
     case te::gm::MultiPolygonZMType:
+    case te::gm::GeometryCollectionType:
+    case te::gm::GeometryCollectionMType:
+    case te::gm::GeometryCollectionZType:
+    case te::gm::GeometryCollectionZMType:
       return true;
     default:
       return false;
@@ -422,6 +453,14 @@ te::gm::GeomType te::vp::GetSimpleType(te::gm::GeomType geomType)
       return te::gm::PolygonZType;
     case te::gm::MultiPolygonZMType:
       return te::gm::PolygonZMType;
+    case te::gm::GeometryCollectionType:
+      return te::gm::GeometryType;
+    case te::gm::GeometryCollectionMType:
+      return te::gm::GeometryMType;
+    case te::gm::GeometryCollectionZType:
+      return te::gm::GeometryZType;
+    case te::gm::GeometryCollectionZMType:
+      return te::gm::GeometryZMType;
     default:
       return te::gm::UnknownGeometryType;
   }
@@ -455,6 +494,14 @@ te::gm::GeomType te::vp::GetMultiType(te::gm::GeomType geomType)
     return te::gm::MultiPolygonZType;
   case te::gm::PolygonZMType:
     return te::gm::MultiPolygonZMType;
+  case te::gm::GeometryType:
+    return te::gm::GeometryCollectionType;
+  case te::gm::GeometryMType:
+    return te::gm::GeometryCollectionMType;
+  case te::gm::GeometryZType:
+    return te::gm::GeometryCollectionZType;
+  case te::gm::GeometryZMType:
+    return te::gm::GeometryCollectionZMType;
   default:
     return te::gm::UnknownGeometryType;
   }
