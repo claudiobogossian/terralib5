@@ -60,6 +60,7 @@ file(GLOB TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/exam
 
 add_executable(terralib_example_core_lib ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
 
+
 target_link_libraries(terralib_example_core_lib terralib_mod_core
                                                 ${Boost_FILESYSTEM_LIBRARY}
                                                 ${Boost_SYSTEM_LIBRARY})
@@ -85,3 +86,14 @@ set_target_properties(terralib_example_core_lib_function
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
 add_dependencies(terralib_example_core_lib terralib_example_core_lib_function)
+
+
+#Examples of translator
+file(GLOB TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/translator/*.cpp)
+
+source_group("Source Files\\translator"  FILES ${TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES})
+
+add_executable(terralib_example_core_translator ${TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES})
+
+target_link_libraries(terralib_example_core_translator terralib_mod_core)
+
