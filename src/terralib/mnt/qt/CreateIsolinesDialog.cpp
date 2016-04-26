@@ -203,17 +203,17 @@ std::vector<double> GetNumericData(te::da::DataSet* dataSet, std::vector<std::st
 
 void te::mnt::CreateIsolinesDialog::getMinMax(te::map::AbstractLayerPtr inputLayer, double &vmin, double &vmax)
 {
-    std::auto_ptr<te::da::DataSet> dataquery;
-    std::vector<te::gm::Polygon *> vp;
-    te::da::DataSourcePtr ds = te::da::GetDataSource(inputLayer->getDataSourceId());
-    vmin = std::numeric_limits<double>::max();
-    vmax = -vmin;
+  std::auto_ptr<te::da::DataSet> dataquery;
+  std::vector<te::gm::Polygon *> vp;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(inputLayer->getDataSourceId());
+  vmin = std::numeric_limits<double>::max();
+  vmax = -vmin;
 
-    std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
-    std::vector<te::dt::Property*> props = dsType->getProperties();
+  std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
+  std::vector<te::dt::Property*> props = dsType->getProperties();
 
-    std::auto_ptr<te::da::DataSet> inDset = ds->getDataSet(m_inputLayer->getDataSetName());
-    std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+  std::auto_ptr<te::da::DataSet> inDset = ds->getDataSet(m_inputLayer->getDataSetName());
+  std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
   try
   {
     te::gm::GeomType gmType = geomProp->getGeometryType();
@@ -227,48 +227,48 @@ void te::mnt::CreateIsolinesDialog::getMinMax(te::map::AbstractLayerPtr inputLay
 
       switch (gin->getGeomTypeId())
       {
-      case te::gm::PolygonType:
-      case te::gm::PolygonZType:
-      case te::gm::PolygonMType:
-      case te::gm::PolygonZMType:
-      {
-                                  vp.push_back(dynamic_cast<te::gm::Polygon*>(gin.get()->clone()));
-                                  break;
-      }
-      case te::gm::MultiPolygonType:
-      case te::gm::MultiPolygonZType:
-      case te::gm::MultiPolygonMType:
-      case te::gm::MultiPolygonZMType:
-      {
-                                       te::gm::MultiPolygon *mg = dynamic_cast<te::gm::MultiPolygon*>(gin.get()->clone());
-                                       if (!mg)
-                                         throw te::common::Exception(TE_TR("Isn't possible to read data!"));
+        case te::gm::PolygonType:
+        case te::gm::PolygonZType:
+        case te::gm::PolygonMType:
+        case te::gm::PolygonZMType:
+        {
+          vp.push_back(dynamic_cast<te::gm::Polygon*>(gin.get()->clone()));
+          break;
+        }
+        case te::gm::MultiPolygonType:
+        case te::gm::MultiPolygonZType:
+        case te::gm::MultiPolygonMType:
+        case te::gm::MultiPolygonZMType:
+        {
+          te::gm::MultiPolygon *mg = dynamic_cast<te::gm::MultiPolygon*>(gin.get()->clone());
+          if (!mg)
+            throw te::common::Exception(TE_TR("Isn't possible to read data!"));
 
-                                       std::size_t np = mg->getNumGeometries();
-                                       for (std::size_t i = 0; i < np; i++)
-                                         vp.push_back(dynamic_cast<te::gm::Polygon*>(mg->getGeometryN(i)));
-                                       break;
-      }
-      case te::gm::MultiSurfaceType:
-      case te::gm::MultiSurfaceZType:
-      case te::gm::MultiSurfaceMType:
-      case te::gm::MultiSurfaceZMType:
-        break;
-      case te::gm::PolyhedralSurfaceType:
-      case te::gm::PolyhedralSurfaceZType:
-      case te::gm::PolyhedralSurfaceMType:
-      case te::gm::PolyhedralSurfaceZMType:
-        break;
-      case te::gm::TINType:
-      case te::gm::TINZType:
-      case te::gm::TINMType:
-      case te::gm::TINZMType:
-        break;
-      case te::gm::TriangleType:
-      case te::gm::TriangleZType:
-      case te::gm::TriangleMType:
-      case te::gm::TriangleZMType:
-        break;
+          std::size_t np = mg->getNumGeometries();
+          for (std::size_t i = 0; i < np; i++)
+            vp.push_back(dynamic_cast<te::gm::Polygon*>(mg->getGeometryN(i)));
+          break;
+        }
+        case te::gm::MultiSurfaceType:
+        case te::gm::MultiSurfaceZType:
+        case te::gm::MultiSurfaceMType:
+        case te::gm::MultiSurfaceZMType:
+          break;
+        case te::gm::PolyhedralSurfaceType:
+        case te::gm::PolyhedralSurfaceZType:
+        case te::gm::PolyhedralSurfaceMType:
+        case te::gm::PolyhedralSurfaceZMType:
+          break;
+        case te::gm::TINType:
+        case te::gm::TINZType:
+        case te::gm::TINMType:
+        case te::gm::TINZMType:
+          break;
+        case te::gm::TriangleType:
+        case te::gm::TriangleZType:
+        case te::gm::TriangleMType:
+        case te::gm::TriangleZMType:
+          break;
       }
     }
 
@@ -303,7 +303,10 @@ void te::mnt::CreateIsolinesDialog::getMinMax(te::map::AbstractLayerPtr inputLay
   catch (te::common::Exception& e)
   {
     std::cerr << "CreateIsolinesDialog::getMinMax: " << e.what() << '\n';
+    QMessageBox::information(this, "CreateIsolines", e.what());
+    vmax = vmin = 0;
   }
+
   vp.clear();
   geomProp.release();
   dsType.release();
@@ -358,6 +361,7 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
   catch (te::common::Exception& e)
   {
     std::cerr << "CreateIsolines: " << e.what() << '\n';
+    QMessageBox::information(this, "CreateIsolines", e.what());
   }
 }
 
