@@ -154,10 +154,21 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
 
   pHole->setSRID(m_display->getSRID());
 
+  if (pHole->getSRID() != m_layer->getSRID())
+    pHole->transform(m_layer->getSRID());
+
   if (!pHole->intersects(m_feature->getGeometry()))
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
   geoSubtract = convertGeomType(m_layer, differenceGeometry(m_feature->getGeometry(), pHole));
+
+  geoSubtract->setSRID(m_display->getSRID());
+
+  if (geoSubtract->getSRID() == m_layer->getSRID())
+    return geoSubtract;
+
+  // else, need conversion...
+  geoSubtract->transform(m_layer->getSRID());
 
   return geoSubtract;
 }

@@ -153,10 +153,21 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 
     polygon->setSRID(m_display->getSRID());
 
+    if (polygon->getSRID() != m_layer->getSRID())
+      polygon->transform(m_layer->getSRID());
+
     if (!polygon->intersects(m_feature->getGeometry()))
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
     geoUnion = convertGeomType(m_layer, unionGeometry(polygon, m_feature->getGeometry()));
+
+    geoUnion->setSRID(m_display->getSRID());
+
+    if (geoUnion->getSRID() == m_layer->getSRID())
+      return geoUnion;
+
+    // else, need conversion...
+    geoUnion->transform(m_layer->getSRID());
 
     return geoUnion;
 
