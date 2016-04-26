@@ -1291,8 +1291,11 @@ te::da::DataSetType* te::mnt::Tin::GetDataSetType(std::string &outDsetName)
   te::da::DataSetType* dsType = new te::da::DataSetType(outDsetName);
 
   //Primary key
+  te::dt::SimpleProperty* fidProperty = new te::dt::SimpleProperty("FID", te::dt::INT32_TYPE);
+  fidProperty->setAutoNumber(true);
+  dsType->add(fidProperty);
+
   te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty("tri_id", te::dt::INT32_TYPE);
-  pkProperty->setAutoNumber(true);
   dsType->add(pkProperty);
 
   te::da::PrimaryKey* pk = new te::da::PrimaryKey(outDsetName + "_pk", dsType);
@@ -1373,8 +1376,10 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
     s->setPointN(2, vert[2]);
     s->setPointN(3, vert[0]);
     p->push_back(s.get());
+    p->setSRID(m_srid);
 
-    dataSetItem->setInt32(0, (int32_t)tri);
+    dataSetItem->setInt32(0, (int32_t)tri); //FID
+    dataSetItem->setInt32(1, (int32_t)tri); //tri_id
     if (value[0] != m_nodatavalue)
       dataSetItem->setDouble("val1", value[0]);
     if (value[1] != m_nodatavalue)
