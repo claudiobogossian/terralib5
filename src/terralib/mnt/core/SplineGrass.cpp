@@ -54,6 +54,8 @@ bool te::mnt::SplineInterpolationGrass::generateGrid()
 
     for (unsigned int j = 0; j < m_nPartsX; j++)
     {
+      if (!task.isActive())
+        return false;
       task.pulse();
       //Calculate the init and final area
       double begin_x = X1 + (j*ew_region);

@@ -920,15 +920,17 @@ void te::qt::af::BaseApplication::onLayerSelectedObjectsChanged(const te::map::A
 
 void te::qt::af::BaseApplication::makeDialog()
 {
+  //start menu 
+  QMainWindow::setCentralWidget(m_ui->m_display);
+
+  initMenus();
+
   //start main components
   m_layerExplorer = new LayerExplorer(m_ui->m_layerExplorer);
   m_display = new MapDisplay(m_ui->m_display, m_app);
   m_styleExplorer = new StyleExplorer(m_ui->m_styleExplorer);
 
-  QMainWindow::setCentralWidget(m_ui->m_display);
-
-  initMenus();
-
+  //start actions
   initActions();
 
   initSlotsConnections();

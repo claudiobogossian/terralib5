@@ -67,7 +67,8 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/AbstractAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/CreateCellLayerAction.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/CreateCellularSpaceDialog.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/CreateCellularSpaceDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/Plugin.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 

@@ -87,6 +87,8 @@ bool te::mnt::TINCalculateGrid::run()
   //  To each triangle
   for (unsigned int i = 0; i < m_triang.size(); i++)
   { // Find Triangle Box
+    if (!task.isActive())
+      return false;
     task.pulse();
     if (!NodesId((int32_t)i, nodesid)) 
       continue;

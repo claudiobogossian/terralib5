@@ -121,6 +121,10 @@ namespace terralib4
 
   void CheckDecimalSeparator(std::string& value);
 
+  te::gm::GeomType GetMinimalRepresentation(const std::vector<TeGeometry*>& geoms);
+
+  te::gm::GeomType GetCollection(TeGeomRep rep);
+
 } // end namespace terralib4
 
 #endif  // __TERRALIB_T4_INTERNAL_UTILS_H
