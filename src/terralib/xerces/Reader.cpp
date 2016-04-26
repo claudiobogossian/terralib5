@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/Exception.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "ErrorHandler.h"
 #include "Exception.h"
 #include "Reader.h"

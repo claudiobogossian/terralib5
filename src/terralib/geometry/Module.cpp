@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../datatype/DataConverterManager.h"
 #include "../datatype/Enums.h"
 #include "Geometry.h"

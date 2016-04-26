@@ -28,7 +28,7 @@
 #include "../../../common/Exception.h"
 #include "../../../common/progress/ProgressManager.h"
 #include "../../../common/StringUtils.h"
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../common/UnitsOfMeasureManager.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"

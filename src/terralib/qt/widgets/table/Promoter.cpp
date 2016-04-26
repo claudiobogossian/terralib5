@@ -20,7 +20,7 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"

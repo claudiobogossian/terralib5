@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Logger.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"

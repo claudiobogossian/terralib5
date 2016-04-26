@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../geometry/Geometry.h"
 #include "Config.h"
 #include "DataSourceTransactor.h"

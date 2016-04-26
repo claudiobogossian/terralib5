@@ -29,7 +29,7 @@
 #include "../common/Globals.h"
 #include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/And.h"

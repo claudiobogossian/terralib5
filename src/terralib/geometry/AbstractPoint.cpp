@@ -26,7 +26,7 @@
 // TerraLib
 #include "../BuildConfig.h"
 #include "../Defines.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../srs/Converter.h"
 #include "AbstractPoint.h"
 #include "Envelope.h"

@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "Exception.h"
-#include "Translator.h"
 #include "URL.h"
 
 // uripp - MIT

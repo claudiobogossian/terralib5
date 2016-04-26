@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/BinaryOpEncoder.h"

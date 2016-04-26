@@ -29,7 +29,6 @@
 #include "Exception.h"
 #include "PlatformUtils.h"
 #include "StringUtils.h"
-#include "Translator.h"
 
 // STL
 #include <fstream>

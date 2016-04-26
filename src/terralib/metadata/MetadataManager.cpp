@@ -23,7 +23,7 @@
 
 // TerraLib
 #include "../common/Exception.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Config.h"
 #include "MetadataAnnotation.h"
 #include "MetadataManager.h"

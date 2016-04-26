@@ -30,7 +30,7 @@
 #include "SynchronizedBandBlocksManager.h"
 #include "Exception.h"
 #include "../common/PlatformUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 // STL
 #include <algorithm>

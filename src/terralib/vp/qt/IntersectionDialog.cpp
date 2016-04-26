@@ -27,7 +27,7 @@
 #include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/StringUtils.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"

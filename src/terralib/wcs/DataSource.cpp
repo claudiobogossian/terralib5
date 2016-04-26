@@ -26,7 +26,7 @@
 // TerraLib
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "DataSource.h"
 #include "Exception.h"
 #include "Transactor.h"

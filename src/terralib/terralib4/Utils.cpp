@@ -26,7 +26,7 @@
 // TerraLib 5
 #include "../common/Exception.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/NumericProperty.h"
 #include "../datatype/Property.h"

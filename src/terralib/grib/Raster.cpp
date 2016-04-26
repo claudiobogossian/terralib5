@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/STLUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../raster/BandProperty.h"

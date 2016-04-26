@@ -25,7 +25,7 @@
 #include "../../../color/ColorBar.h"
 #include "../../../common/Globals.h"
 #include "../../../common/STLUtils.h"
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/query_h.h"

@@ -28,7 +28,7 @@
 #include "../common/ByteSwapUtils.h"
 #include "../common/Globals.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/Array.h"
 #include "../datatype/ByteArray.h"

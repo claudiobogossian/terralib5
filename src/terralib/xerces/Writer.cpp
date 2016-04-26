@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/Exception.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "StrToXMLCh.h"
 #include "XMLChToStr.h"
 #include "Writer.h"

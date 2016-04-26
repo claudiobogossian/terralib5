@@ -24,7 +24,7 @@
 */
 
 // Terralib 5
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../geometry/Curve.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/LinearRing.h"

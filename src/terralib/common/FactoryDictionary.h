@@ -27,7 +27,7 @@
 
 // TerraLib
 #include "Exception.h"
-#include "Translator.h"
+#include "../core/translator/Translator.h"
 
 // STL
 #include <map>

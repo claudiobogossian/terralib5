@@ -33,7 +33,7 @@
 #include "Transactor.h"
 #include "Exception.h"
 #include "../../wcs/dataaccess/DataSource.h"
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../raster/Grid.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"

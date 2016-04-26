@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "GEOSWriter.h"
 #include "MultiPolygon.h"
 #include "Point.h"

@@ -30,7 +30,7 @@
 #include "../../attributefill/VectorToVectorMemory.h"
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"

@@ -24,7 +24,7 @@
 */
 
 // Terralib
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
 #include "ProgressResetEvent.h"

@@ -23,7 +23,7 @@
 
 // TerraLib
 #include "../BuildConfig.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Config.h"
 #include "Converter.h"
 #include "Exception.h"

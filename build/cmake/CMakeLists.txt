@@ -1471,8 +1471,8 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/schemas
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 if(TERRALIB_TRANSLATOR_ENABLED)
-  install(DIRECTORY ${CMAKE_BINARY_DIR}/*.mo
-          DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/
+  install(DIRECTORY ${CMAKE_BINARY_DIR}/translations/
+          DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/translations
           COMPONENT runtime)
 endif()
 

@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Exception.h"
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess/dataset/DataSet.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../geometry/Geometry.h"
