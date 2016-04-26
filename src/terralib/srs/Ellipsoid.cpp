@@ -22,7 +22,7 @@
  */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Ellipsoid.h"
 
 // STL

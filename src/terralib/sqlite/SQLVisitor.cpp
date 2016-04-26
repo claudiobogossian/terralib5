@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/query/LiteralByteArray.h"
 #include "../dataaccess/query/LiteralDateTime.h"
 #include "../dataaccess/query/LiteralEnvelope.h"

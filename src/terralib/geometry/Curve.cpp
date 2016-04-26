@@ -26,7 +26,7 @@
 // TerraLib
 #include "../BuildConfig.h"
 #include "../common/STLUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Config.h"
 #include "Curve.h"
 #include "GEOSWriter.h"

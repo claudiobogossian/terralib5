@@ -27,7 +27,7 @@
 */
 
 // Terralib Includes
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/StringUtils.h"
 #include "../core/Edge.h"
 #include "../core/Vertex.h"

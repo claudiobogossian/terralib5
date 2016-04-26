@@ -28,7 +28,7 @@
 #include "../core/lib/Library.h"
 #include "../core/lib/LibraryManager.h"
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../common/PlatformUtils.h"
 #include "../Defines.h"
 #include "CppPluginEngine.h"

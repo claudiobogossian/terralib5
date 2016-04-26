@@ -25,7 +25,7 @@
 */
 
 // Terralib
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../core/AbstractGraph.h"
 #include "../core/Edge.h"

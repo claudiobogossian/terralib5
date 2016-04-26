@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "cache/FIFOCachePolicyFactory.h"
 #include "cache/LFUCachePolicyFactory.h"
 #include "graphs/BidirectionalGraphFactory.h"

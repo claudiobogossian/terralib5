@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/STLUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/ByteArray.h"

@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../BuildConfig.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../srs/Converter.h"
 #include "Config.h"
 #include "Coord2D.h"

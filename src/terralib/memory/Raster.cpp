@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Grid.h"
 #include "../raster/RasterFactory.h"

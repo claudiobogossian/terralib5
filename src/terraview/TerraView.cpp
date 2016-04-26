@@ -35,7 +35,7 @@
 // TerraLib
 #include <terralib/common/Exception.h>
 #include <terralib/common/PlatformUtils.h>
-#include <terralib/common/Translator.h>
+#include <terralib/core/translator/Translator.h>
 #include <terralib/common/progress/ProgressManager.h>
 #include <terralib/dataaccess/datasource/DataSourceInfoManager.h>
 #include <terralib/maptools/Utils.h>

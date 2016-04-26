@@ -30,7 +30,7 @@
 #include "Module.h"
 #include "PlatformUtils.h"
 #include "TerraLib.h"
-#include "Translator.h"
+#include "../core/translator/Translator.h"
 #include "UnitsOfMeasureManager.h"
 #include "../BuildConfig.h"
 

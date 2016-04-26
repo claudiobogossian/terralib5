@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess/dataset/ObjectId.h"
 #include "../../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../../dataaccess/query/DataSetName.h"

@@ -37,18 +37,19 @@ BOOST_AUTO_TEST_SUITE(translator_test_case)
 BOOST_AUTO_TEST_CASE(translator_test)
 {
 
-    BOOST_CHECK_EQUAL(TE_TR("BR-GIS"), "SIG-BR");
-    BOOST_CHECK_EQUAL(TE_TR("Wrong cryptographer algorithm type!"), "O tipo de algoritmo de criptografia está errado!");
-    BOOST_CHECK_EQUAL(TE_TR("You must specify a logger configuration file!"), "Você deve especificar o arquivo de configuração do logger!");
-    BOOST_CHECK_EQUAL(TE_TR("It was not possible to initialize the the logger!"), "Não foi possível inicializar o logger!");
-    BOOST_CHECK_EQUAL(TE_TR("Invalid logger configuration type!"), "Tipo de configuração inválido para o logger!");
-    BOOST_CHECK_EQUAL(TE_TR("The logger name is empty!"), "O nome do logger está vazio!");
-    BOOST_CHECK_EQUAL(TE_TR("TerraLib Core Initialized!"), "O módulo Core do TerraLib foi inicializado!");
-    BOOST_CHECK_EQUAL(TE_TR("TerraLib Core Finalized!"), "O módulo Core do TerraLib foi finalizado!");
-    BOOST_CHECK_EQUAL(TE_TR("The text domain already exist."), "Text domain já existente.");
-    BOOST_CHECK_EQUAL(TE_TR("The text domain doesn't exist."), "O text domain informado não existe.");
-  // test un-translated messages
-    BOOST_CHECK_EQUAL(TE_TR("The unprepared english text will remain the same."), "The unprepared english text will remain the same.");
+
+  BOOST_CHECK_EQUAL(TE_TR("BR-GIS"), "SIG-BR");
+  BOOST_CHECK_EQUAL(TE_TR("Wrong cryptographer algorithm type!"), "O tipo de algoritmo de criptografia está errado!");
+  BOOST_CHECK_EQUAL(TE_TR("You must specify a logger configuration file!"), "Você deve especificar o arquivo de configuração do logger!");
+  BOOST_CHECK_EQUAL(TE_TR("It was not possible to initialize the the logger!"), "Não foi possível inicializar o logger!");
+  BOOST_CHECK_EQUAL(TE_TR("Invalid logger configuration type!"), "Tipo de configuração inválido para o logger!");
+  BOOST_CHECK_EQUAL(TE_TR("The logger name is empty!"), "O nome do logger está vazio!");
+  BOOST_CHECK_EQUAL(TE_TR("TerraLib Core Initialized!"), "O módulo Core do TerraLib foi inicializado!");
+  BOOST_CHECK_EQUAL(TE_TR("TerraLib Core Finalized!"), "O módulo Core do TerraLib foi finalizado!");
+  BOOST_CHECK_EQUAL(TE_TR("The text domain already exist."), "Text domain já existente.");
+  BOOST_CHECK_EQUAL(TE_TR("The text domain doesn't exist."), "O text domain informado não existe.");
+// test un-translated messages
+  BOOST_CHECK_EQUAL(TE_TR("The unprepared english text will remain the same."), "The unprepared english text will remain the same.");
 
     return ;
 }

@@ -27,7 +27,7 @@
 
 // TerraLib
 #include "../../common/Exception.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../datatype/SimpleData.h"
 #include "../../graph/core/Edge.h"

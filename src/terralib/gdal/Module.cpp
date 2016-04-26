@@ -27,7 +27,7 @@
 #include "../BuildConfig.h"
 #include "../common/Logger.h"
 #include "../plugin/PluginInfo.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../common/PlatformUtils.h"
 #include "../Defines.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"

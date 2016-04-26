@@ -27,7 +27,7 @@
 #include "../common/ByteSwapUtils.h"
 #include "../common/Globals.h"
 #include "../common/HexUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Exception.h"
 #include "GeometryCollection.h"
 #include "LinearRing.h"

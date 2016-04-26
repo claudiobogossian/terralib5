@@ -29,7 +29,7 @@
  
 // TerraLib Includes
 #include "../../common/StringUtils.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/dataset/DataSet.h"

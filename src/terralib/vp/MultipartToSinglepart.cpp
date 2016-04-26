@@ -27,7 +27,7 @@
 
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/ObjectId.h"

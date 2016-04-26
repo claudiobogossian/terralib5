@@ -32,7 +32,7 @@
 // Terralib Includes
 #include "../../common/STLUtils.h"
 #include "../../common/StringUtils.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../core/Edge.h"
 #include "../core/EdgeProperty.h"
 #include "../core/GraphData.h"
