@@ -65,6 +65,8 @@ namespace te
 
       te::map::AbstractLayerPtr getLayer();
 
+      void setSRID(int newSRID);
+
       protected slots:
 
       void onIsolinesComboBoxChanged(int index);
@@ -78,6 +80,7 @@ namespace te
       void onHelpPushButtonClicked();
       void onOkPushButtonClicked();
       void onCancelPushButtonClicked();
+      void onSrsToolButtonClicked();
 
     private:
 
@@ -105,6 +108,7 @@ namespace te
 
       int m_isosrid;
       int m_samplesrid;
+      int m_outsrid;
     };
   }
 }
