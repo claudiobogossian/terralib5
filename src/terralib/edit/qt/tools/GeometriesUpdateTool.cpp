@@ -47,3 +47,8 @@ void te::edit::GeometriesUpdateTool::resetVisualizationTool()
 {
   delete m_feature;
 }
+
+void te::edit::GeometriesUpdateTool::storeUndoCommand()
+{
+  return;
+}

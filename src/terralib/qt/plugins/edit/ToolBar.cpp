@@ -207,7 +207,7 @@ te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getLayer(const std::st
   throw te::common::Exception(TE_TR("Could not retrieve the layer."));
 }
 
-bool te::qt::plugins::edit::ToolBar::datasourceIsValid(const te::map::AbstractLayerPtr& layer)
+bool te::qt::plugins::edit::ToolBar::dataSrcIsPrepared(const te::map::AbstractLayerPtr& layer)
 {
   te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.get()->getDataSourceId());
 
@@ -422,7 +422,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       assert(layer.get());
 
       // The data source is it prepared?
-      if (!datasourceIsValid(layer))
+      if (!dataSrcIsPrepared(layer))
         return;
 
       // Get the data souce info

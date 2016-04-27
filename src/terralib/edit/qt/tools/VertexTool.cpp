@@ -39,7 +39,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
 #include "VertexTool.h"
 
 // Qt
@@ -55,8 +54,7 @@
 
 te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
-  m_currentStage(FEATURE_SELECTION),
-  m_updateWatches(0)
+  m_currentStage(FEATURE_SELECTION)
 {
   m_currentVertexIndex.makeInvalid();
 
@@ -68,7 +66,6 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
 te::edit::VertexTool::~VertexTool()
 {
   delete m_feature;
-  m_updateWatches.clear();
 }
 
 bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
@@ -202,8 +199,6 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
         setStage(VERTEX_SEARCH);
       }
 
-      storeUndoCommand();
-
       return true;
     }
 
@@ -212,15 +207,12 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
       updateRTree();
 
       setStage(VERTEX_SEARCH);
-
-      storeUndoCommand();
     }
 
     default:
       return false;
   }
 
-  
 }
 
 bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
@@ -257,7 +249,6 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 void te::edit::VertexTool::reset()
 {
   delete m_feature;
-  m_feature = 0;
 
   setStage(FEATURE_SELECTION);
 
@@ -431,32 +422,6 @@ void te::edit::VertexTool::storeEditedFeature()
 
 }
 
-void te::edit::VertexTool::storeUndoCommand()
-{
-    std::size_t count = 0;
-
-    if (m_feature == 0)
-      return;
-
-    m_updateWatches.push_back(m_feature->clone());
-
-    for (std::size_t i = 0; i < m_updateWatches.size(); ++i)
-    {
-      if (m_updateWatches[i]->getId()->getValueAsString() == m_feature->getId()->getValueAsString())
-        count++;
-    }
-
-    // only to store the first "feature" of geometry
-    if (count == 1)
-      return;
-
-    QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
-    connect(dynamic_cast<UpdateCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*)), SLOT(onGeometryAcquired(te::gm::Geometry*)));
-
-    UndoStackManager::getInstance().addUndoStack(command);
-
-}
-
 void te::edit::VertexTool::resetVisualizationTool()
 {
   reset();
@@ -472,4 +437,6 @@ void te::edit::VertexTool::onGeometryAcquired(te::gm::Geometry* geom)
     GetLines(m_feature->getGeometry(), m_lines);
 
   updateRTree();
+
+  draw();
 }

@@ -13,7 +13,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
 #include "AggregateAreaTool.h"
 
 // Qt
@@ -82,8 +81,6 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
     draw();
 
     storeEditedFeature();
-
-    storeUndoCommand();
 
     return true;
   }
@@ -156,6 +153,9 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
     if (polygon->getSRID() != m_layer->getSRID())
       polygon->transform(m_layer->getSRID());
 
+    if (polygon->getSRID() != m_feature->getGeometry()->getSRID())
+      m_feature->getGeometry()->transform(polygon->getSRID());
+
     if (!polygon->intersects(m_feature->getGeometry()))
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
@@ -193,7 +193,6 @@ te::gm::Envelope te::edit::AggregateAreaTool::buildEnvelope(const QPointF& pos)
 void te::edit::AggregateAreaTool::reset()
 {
   delete m_feature;
-  m_feature = 0;
 }
 
 void te::edit::AggregateAreaTool::onExtentChanged()
@@ -209,15 +208,6 @@ void te::edit::AggregateAreaTool::storeEditedFeature()
 te::gm::Geometry* te::edit::AggregateAreaTool::unionGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
   return g1->Union(g2);
-}
-
-void te::edit::AggregateAreaTool::storeUndoCommand()
-{
-  m_updateWatches.push_back(m_feature->clone());
-
-  QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
-  UndoStackManager::getInstance().addUndoStack(command);
-
 }
 
 void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)

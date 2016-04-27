@@ -36,7 +36,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
 #include "MergeGeometriesTool.h"
 
 // Qt
@@ -140,13 +139,16 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
     }
   }
 
+  mergeGeo->setSRID(m_display->getSRID());
+
+  if (mergeGeo->getSRID() != m_layer->getSRID())
+    mergeGeo->transform(m_layer->getSRID());
+
   m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(mergeGeo->clone()));
 
   draw();
 
   storeMergedFeature();
-
-  storeUndoCommand();
 
 }
 
@@ -303,13 +305,9 @@ void te::edit::MergeGeometriesTool::storeMergedFeature()
   for (it = m_oidsMerged->begin(); it != m_oidsMerged->end(); ++it)
   {
       if ((*it)->getValueAsString() == m_chosenOid)
-      {
         RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
-      }
       else
-      {
         RepositoryManager::getInstance().addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_DELETE);
-      }
   }
 
   emit geometriesEdited();
@@ -320,18 +318,9 @@ void te::edit::MergeGeometriesTool::onExtentChanged()
   draw();
 }
 
-void te::edit::MergeGeometriesTool::storeUndoCommand()
-{
-  m_updateWatches.push_back(m_feature->clone());
-
-  QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
-  UndoStackManager::getInstance().addUndoStack(command);
-}
-
 void te::edit::MergeGeometriesTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
   delete m_feature;
-  m_feature = 0;
 
   te::gm::Envelope env = buildEnvelope(pos);
 

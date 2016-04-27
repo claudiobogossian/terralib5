@@ -127,7 +127,6 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 void te::edit::MoveGeometryTool::reset()
 {
   delete m_feature;
-  m_feature = 0;
 
   m_moveStarted = false;
 

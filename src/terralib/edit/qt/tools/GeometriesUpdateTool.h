@@ -72,6 +72,8 @@ namespace te
 
       virtual void resetVisualizationTool();
 
+      virtual void storeUndoCommand();
+
     Q_SIGNALS:
 
       void geometriesEdited();

@@ -14,7 +14,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
 #include "SubtractAreaTool.h"
 
 // Qt
@@ -84,8 +83,6 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
     draw();
 
     storeEditedFeature();
-
-    storeUndoCommand();
 
     return true;
   }
@@ -157,6 +154,9 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
   if (pHole->getSRID() != m_layer->getSRID())
     pHole->transform(m_layer->getSRID());
 
+  if (pHole->getSRID() != m_feature->getGeometry()->getSRID())
+    m_feature->getGeometry()->transform(pHole->getSRID());
+
   if (!pHole->intersects(m_feature->getGeometry()))
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
@@ -193,7 +193,6 @@ te::gm::Envelope te::edit::SubtractAreaTool::buildEnvelope(const QPointF& pos)
 void te::edit::SubtractAreaTool::reset()
 {
   delete m_feature;
-  m_feature = 0;
 }
 
 void te::edit::SubtractAreaTool::onExtentChanged()
@@ -209,14 +208,6 @@ void te::edit::SubtractAreaTool::storeEditedFeature()
 te::gm::Geometry* te::edit::SubtractAreaTool::differenceGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
   return g1->difference(g2);
-}
-
-void te::edit::SubtractAreaTool::storeUndoCommand()
-{
-  m_updateWatches.push_back(m_feature->clone());
-
-  QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
-  UndoStackManager::getInstance().addUndoStack(command);
 }
 
 void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)

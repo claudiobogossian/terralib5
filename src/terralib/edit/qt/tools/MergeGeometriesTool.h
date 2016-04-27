@@ -81,8 +81,6 @@ namespace te
 
       void storeMergedFeature();
 
-      void storeUndoCommand();
-
       void mergeGeometries();
 
       bool spatialRelationDisjoint(te::gm::GeometryCollection& gc);

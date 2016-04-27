@@ -56,7 +56,7 @@ te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* di
 
 te::edit::DeleteGeometryTool::~DeleteGeometryTool()
 {
-  delete m_feature;
+  reset();
 }
 
 bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
@@ -102,7 +102,6 @@ bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
 void te::edit::DeleteGeometryTool::reset()
 {
   delete m_feature;
-  m_feature = 0;
 }
 
 te::gm::Envelope te::edit::DeleteGeometryTool::buildEnvelope(const QPointF& pos)
