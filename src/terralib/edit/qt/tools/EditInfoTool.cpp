@@ -17,7 +17,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
 #include "EditInfoTool.h"
 
 // Qt
@@ -178,7 +177,6 @@ te::gm::Envelope te::edit::EditInfoTool::buildEnvelope(const QPointF& pos)
 void te::edit::EditInfoTool::reset()
 {
   delete m_feature;
-  m_feature = 0;
 }
 
 void te::edit::EditInfoTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)

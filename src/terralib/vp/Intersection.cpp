@@ -21,6 +21,9 @@
  \file Intersection.cpp
  */
 
+#include "../common/Translator.h"
+#include "../common/Logger.h"
+
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -73,6 +76,7 @@
 #include "../statistics/core/Utils.h"
 
 #include "AlgorithmParams.h"
+#include "ComplexData.h"
 #include "Intersection.h"
 #include "Utils.h"
 
@@ -83,144 +87,203 @@ te::vp::Intersection::Intersection()
 {
 }
 
-bool te::vp::Intersection::getSpecificParams()
-{
-  return m_copyInputColumns;
-}
-
-void te::vp::Intersection::setSpecificParams(bool copyInputColumns)
-{
-  m_copyInputColumns = copyInputColumns;
-}
-
 bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
 {
-  //te::da::DataSource* dataSource = mainParams->getOutputDataSource();
-  //te::da::DataSetType* dataSetType = getOutputDataSetType(mainParams);
-  //Save(dataSource, teste, dataSetType);
-  
-//  std::vector<const te::vp::InputParams> inputParams = mainParams->getInputParams();
+  te::vp::ValidateAlgorithmParams(mainParams, te::vp::MEMORY);
 
-//
-//  te::sam::rtree::Index<size_t, 8>* rtree(new te::sam::rtree::Index<size_t, 8>);
-//
-//// ADICIONAR VERIFICAÇÂO DO NUMERO DE LAYERS.
-//  te::gm::GeometryProperty* secondGeomProp = te::da::GetFirstGeomProperty(inputParams[1].m_inputDataSetType);
-//  
-//  size_t secondDsCount = 0;
-//
-//  inputParams[1].m_inputDataSet->moveBeforeFirst();
-//  while (inputParams[1].m_inputDataSet->moveNext())
-//  {
-//    std::auto_ptr<te::gm::Geometry> g = inputParams[1].m_inputDataSet->getGeometry(secondGeomProp->getName());
-//    rtree->insert(*g->getMBR(), secondDsCount);
-//    ++secondDsCount;
-//  }
-//
-//  te::gm::GeometryProperty* firstGeomProp = te::da::GetFirstGeomProperty(inputParams[0].m_inputDataSetType);
-//
-//  inputParams[0].m_inputDataSet->moveBeforeFirst();
-//
-//  te::da::DataSetType* outputDataSetType = getOutputDataSetType(mainParams);
-//  te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType);
-//
-//  bool transform = false;
-//  if (secondGeomProp->getSRID() != firstGeomProp->getSRID())
-//    transform = true;
-//
-//  while (inputParams[0].m_inputDataSet->moveNext())
-//  {
-//    std::auto_ptr<te::gm::Geometry> currGeom = inputParams[0].m_inputDataSet->getGeometry(firstGeomProp->getName());
-//
-//    if (transform)
-//      currGeom->transform(secondGeomProp->getSRID());
-//
-//    std::vector<std::size_t> report;
-//    rtree->search(*currGeom->getMBR(), report);
-//
-//    if (!report.empty())
-//      currGeom->transform(firstGeomProp->getSRID());
-//
-//    for (std::size_t i = 0; i < report.size(); ++i)
-//    {
-//      inputParams[1].m_inputDataSet->move(report[i]);
-//      std::auto_ptr<te::gm::Geometry> secGeom = inputParams[1].m_inputDataSet->getGeometry(secondGeomProp->getName());
-//
-//      if (transform)
-//        secGeom->transform(firstGeomProp->getSRID());
-//
-//      if (!currGeom->intersects(secGeom.get()))
-//        continue;
-//
-//      te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDataSet);
-//      std::auto_ptr<te::gm::Geometry> resultGeom;
-//
-//      if (currGeom->isValid() && secGeom->isValid())
-//        resultGeom.reset(currGeom->intersection(secGeom.get()));
-//
-//      if (resultGeom.get() != 0 && resultGeom->isValid())
-//      {
-//        te::gm::GeometryProperty* outputGeometryProperty = te::da::GetFirstGeomProperty(outputDataSetType);
-//
-//        if (outputGeometryProperty->getGeometryType() == te::gm::MultiPolygonType)
-//        {
-//          if (resultGeom->getGeomTypeId() == te::gm::MultiPolygonType)
-//          {
-//            item->setGeometry("geom", resultGeom.release());
-//          }
-//          else if (resultGeom->getGeomTypeId() == te::gm::PolygonType)
-//          {
-//            te::gm::MultiPolygon* newGeom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, resultGeom->getSRID());
-//            newGeom->add(resultGeom.release());
-//            item->setGeometry("geom", newGeom);
-//          }
-//        }
-//        else if (outputGeometryProperty->getGeometryType() == te::gm::MultiLineStringType)
-//        {
-//          if (resultGeom->getGeomTypeId() == te::gm::MultiLineStringType)
-//          {
-//            item->setGeometry("geom", resultGeom.release());
-//          }
-//          else if (resultGeom->getGeomTypeId() == te::gm::LineStringType)
-//          {
-//            te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, resultGeom->getSRID());
-//            newGeom->add(resultGeom.release());
-//            item->setGeometry("geom", newGeom);
-//          }
-//        }
-//        else if (outputGeometryProperty->getGeometryType() == te::gm::MultiPointType)
-//        {
-//          if (resultGeom->getGeomTypeId() == te::gm::MultiPointType)
-//          {
-//            item->setGeometry("geom", resultGeom.release());
-//          }
-//          else if (resultGeom->getGeomTypeId() == te::gm::PointType)
-//          {
-//            te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::MultiPointType, resultGeom->getSRID());
-//            newGeom->add(resultGeom.release());
-//            item->setGeometry("geom", newGeom);
-//          }
-//        }
-//      }
-//      else
-//      {
-//#ifdef TERRALIB_LOGGER_ENABLED
-//        te::common::Logger::logDebug("vp", "Intersection - Invalid geometry found");
-//#endif //TERRALIB_LOGGER_ENABLED
-//        continue;
-//      }
-//
-//    }
-//
-//
-//  }
+  te::vp::InputParams firstInputParams = mainParams->getInputParams()[0];
+  te::vp::InputParams secondInputParams = mainParams->getInputParams()[1];
+
+  te::da::DataSourcePtr outputDataSource = mainParams->getOutputDataSource();
+
+  const std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
+
+  bool isCollection = this->isCollection(specificParams);
+
+  te::da::DataSourcePtr     firstDataSource = firstInputParams.m_inputDataSource;
+  te::da::DataSetType*      firstDataSetType = firstInputParams.m_inputDataSetType;
+  te::da::DataSet*          firstDataSet = firstInputParams.m_inputDataSet;
+  te::gm::GeometryProperty* firstGeometryProperty = te::da::GetFirstGeomProperty(firstDataSetType);
+
+  te::da::DataSourcePtr     secondDataSource = secondInputParams.m_inputDataSource;
+  te::da::DataSetType*      secondDataSetType = secondInputParams.m_inputDataSetType;
+  te::da::DataSet*          secondDataSet = secondInputParams.m_inputDataSet;
+  te::gm::GeometryProperty* secondGeometryProperty = te::da::GetFirstGeomProperty(secondDataSetType);
+
+  std::auto_ptr<te::da::DataSetType> outputDataSetType(getOutputDataSetType(mainParams));
+  std::auto_ptr<te::mem::DataSet>    outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
+  te::gm::GeometryProperty*          outputGeometryProperty = te::da::GetFirstGeomProperty(outputDataSetType.get());
+
+  te::sam::rtree::Index<size_t, 8>* rtree = te::vp::GetRtree(secondDataSet);
+
+  std::vector<te::dt::Property*> firstSelectedProperties  = getFirstSelectedProperties(firstDataSetType, specificParams);
+  std::vector<te::dt::Property*> secondSelectedProperties = getSecondSelectedProperties(secondDataSetType, specificParams);
+
+  firstDataSet->moveBeforeFirst();
+  while (firstDataSet->moveNext())
+  {
+    std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(outputDataSet.get()));
+
+    std::auto_ptr<te::gm::Geometry> currentGeometry = firstDataSet->getGeometry(firstGeometryProperty->getName());
+
+    std::vector<std::size_t> rtreeReport;
+    rtree->search(*currentGeometry->getMBR(), rtreeReport);
+
+    for (std::size_t i = 0; i < rtreeReport.size(); ++i)
+    {
+      secondDataSet->move(rtreeReport[i]);
+
+      std::auto_ptr<te::gm::Geometry> candidateGeometry = secondDataSet->getGeometry(secondGeometryProperty->getName());
+
+      if (!currentGeometry->intersects(candidateGeometry.get()))
+        continue;
+
+      te::gm::Geometry* resultingGeometry = currentGeometry->intersection(candidateGeometry.get());
+
+      if (!resultingGeometry || !resultingGeometry->isValid())
+      {
+#ifdef TERRALIB_LOGGER_ENABLED
+        te::common::Logger::logDebug("vp", "Intersection - Invalid geometry found");
+#endif //TERRALIB_LOGGER_ENABLED
+        continue;
+      }
+
+      for (std::map<std::string, std::string>::iterator it = m_firstAttrNameMap.begin(); it != m_firstAttrNameMap.end(); ++it)
+      {
+        if(!firstDataSet->isNull(it->second))
+          item->setValue(it->first, firstDataSet->getValue(it->second).release());
+      }
+
+      for (std::map<std::string, std::string>::iterator it = m_secondAttrNameMap.begin(); it != m_secondAttrNameMap.end(); ++it)
+      {
+        if (!secondDataSet->isNull(it->second))
+          item->setValue(it->first, secondDataSet->getValue(it->second).release());
+      }
+
+      if (!resultingGeometry->isEmpty())
+      {
+        std::vector<te::gm::Geometry*> geomVec;
+
+        if (isCollection)
+          geomVec.push_back(resultingGeometry);
+        else
+          te::gm::Multi2Single(resultingGeometry, geomVec);
+
+        for (std::size_t g = 0; g < geomVec.size(); ++g)
+        {
+          if (!te::vp::IsMultiType(geomVec[g]->getGeomTypeId()) && isCollection)
+            geomVec[g] = te::vp::SetGeomAsMulti(geomVec[g]);
+
+          std::auto_ptr<te::mem::DataSetItem> currentItem = item->clone();
+          currentItem->setGeometry(outputGeometryProperty->getName(), geomVec[g]);
+
+          outputDataSet->add(currentItem.release());
+        }
+      }
+
+      outputDataSet->moveNext();
+
+      std::size_t outputDsGeomePropPosition = te::da::GetFirstSpatialPropertyPos(outputDataSet.get());
+
+      if (!item->isNull(outputDsGeomePropPosition))
+        outputDataSet->add(item.release());
+    }
+  }
+
+  outputDataSet->moveBeforeFirst();
+
+  std::auto_ptr<te::da::DataSet> dataSetPrepared = PrepareAdd(outputDataSet.release(), outputDataSetType.get());
+
+  if (!dataSetPrepared.get())
+    throw te::common::Exception(TE_TR("Output DataSet was not prepared to save."));
+
+  if (dataSetPrepared->size() == 0)
+    throw te::common::Exception("The resultant layer is empty!");
+
+  te::vp::Save(outputDataSource.get(), dataSetPrepared.get(), outputDataSetType.get());
 
   return true;
+}
+
+std::vector<te::dt::Property*> te::vp::Intersection::getFirstSelectedProperties(const te::da::DataSetType* dataSetType, const std::map<std::string, te::dt::AbstractData*>& specificParams)
+{
+  std::vector<te::dt::Property*> result;
+
+  std::vector<std::pair<std::string, std::string> > selectedProperties = getSelectedProperties(specificParams);
+
+  for (std::size_t i = 0; i < selectedProperties.size(); ++i)
+  {
+    if (selectedProperties[i].first == "FIRST")
+    {
+      result.push_back(dataSetType->getProperty(selectedProperties[i].second));
+    }
+  }
+
+  return result;
+}
+
+std::vector<te::dt::Property*> te::vp::Intersection::getSecondSelectedProperties(const te::da::DataSetType* dataSetType, const std::map<std::string, te::dt::AbstractData*>& specificParams)
+{
+  std::vector<te::dt::Property*> result;
+
+  std::vector<std::pair<std::string, std::string> > selectedProperties = getSelectedProperties(specificParams);
+
+  for (std::size_t i = 0; i < selectedProperties.size(); ++i)
+  {
+    if (selectedProperties[i].first == "SECOND")
+    {
+      result.push_back(dataSetType->getProperty(selectedProperties[i].second));
+    }
+  }
+
+  return result;
+}
+
+std::vector<std::pair<std::string, std::string> > te::vp::Intersection::getSelectedProperties(const std::map<std::string, te::dt::AbstractData*>& specificParams)
+{
+  std::vector<std::pair<std::string, std::string> > result;
+
+  for (std::map<std::string, te::dt::AbstractData*>::const_iterator it = specificParams.begin(); it != specificParams.end(); ++it)
+  {
+    if (it->first == "ATTRIBUTES")
+    {
+      te::vp::ComplexData<std::vector<std::pair<std::string, std::string> > >* cd =
+        dynamic_cast<te::vp::ComplexData<std::vector<std::pair<std::string, std::string> > >* >(it->second);
+
+      if (cd)
+        result = cd->getValue();
+    }
+  }
+
+  return result;
+}
+
+bool te::vp::Intersection::isCollection(const std::map<std::string, te::dt::AbstractData*>& specificParams)
+{
+  bool isCollection = false;
+
+  for (std::map<std::string, te::dt::AbstractData*>::const_iterator it = specificParams.begin(); it != specificParams.end(); ++it)
+  {
+    if (it->first != "IS_COLLECTION")
+    {
+      continue;
+    }
+
+    te::dt::SimpleData<bool, te::dt::BOOLEAN_TYPE>* sd =
+      dynamic_cast<te::dt::SimpleData<bool, te::dt::BOOLEAN_TYPE >* >(it->second);
+
+    if (sd)
+      isCollection = sd->getValue();
+  }
+
+  return isCollection;
 }
 
 bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
 {
   
+  bool isCollection;
+
   //*TESTE SPECIFC PARAM*//
   //std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
   //std::map<std::string, te::dt::AbstractData*>::iterator it = specificParams.begin();
@@ -390,8 +453,8 @@ bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
     pk->add(pkProperty);
     outDataSetType->setPrimaryKey(pk);
 
-    te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(dsType_first.get())->getGeometryType(),
-                                                te::da::GetFirstGeomProperty(dsType_second.get())->getGeometryType());
+    te::gm::GeomType newType = getGeomResultType(te::da::GetFirstGeomProperty(dsType_first.get())->getGeometryType(),
+                                                te::da::GetFirstGeomProperty(dsType_second.get())->getGeometryType(), isCollection);
 
     te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
     newGeomProp->setGeometryType(newType);
@@ -492,41 +555,95 @@ te::da::DataSet* te::vp::Intersection::updateGeomType(te::da::DataSetType* dsTyp
 
 te::da::DataSetType* te::vp::Intersection::getOutputDataSetType(te::vp::AlgorithmParams* mainParams)
 {
-// Get the output dataset name.
+  te::vp::InputParams firstInputParams = mainParams->getInputParams()[0];
+  te::vp::InputParams secondInputParams = mainParams->getInputParams()[1];
+
   std::string outputDataSetName = mainParams->getOutputDataSetName();
+
+  const std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
+
+  bool isCollection = this->isCollection(specificParams);
+
+  te::da::DataSetType*      firstDataSetType = firstInputParams.m_inputDataSetType;
+  te::gm::GeometryProperty* firstGeometryProperty = te::da::GetFirstGeomProperty(firstDataSetType);
+  
+  te::da::DataSetType*      secondDataSetType = secondInputParams.m_inputDataSetType;
+  te::gm::GeometryProperty* secondGeometryProperty = te::da::GetFirstGeomProperty(secondDataSetType);
+
+  std::vector<te::dt::Property*> firstSelectedProperties = getFirstSelectedProperties(firstDataSetType, specificParams);
+  std::vector<te::dt::Property*> secondSelectedProperties = getSecondSelectedProperties(secondDataSetType, specificParams);
+
   te::da::DataSetType* outputDataSetType = new te::da::DataSetType(outputDataSetName);
 
-// Set to output datasettype the primary key property.
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
-  pkProperty->setAutoNumber(true);
-  outputDataSetType->add(pkProperty);
+  std::vector<std::string> attrNamesAux;
 
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(outputDataSetName + "_pk", outputDataSetType);
-  pk->add(pkProperty);
-  outputDataSetType->setPrimaryKey(pk);
+  if (mainParams->getOutputDataSource()->getType() != "OGR")
+  {
+    te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputDataSetName + "_id", te::dt::INT32_TYPE);
+    pkProperty->setAutoNumber(true);
+    outputDataSetType->add(pkProperty);
 
-// Get the first layer SRID to set in output dataSetType.
-  std::vector< te::vp::InputParams> inputParams = mainParams->getInputParams();
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(outputDataSetName + "_pk", outputDataSetType);
+    pk->add(pkProperty);
+    outputDataSetType->setPrimaryKey(pk);
+  }
 
-  te::da::DataSourcePtr dataSource = inputParams[0].m_inputDataSource;
-  std::string dataSetName = inputParams[0].m_inputDataSetName;
+  for (std::size_t i = 0; i < firstSelectedProperties.size(); ++i)
+  {
+    te::dt::Property* clonedProperty = firstSelectedProperties[i]->clone();
 
-  std::auto_ptr<te::da::DataSetType> dataSetType;
-  if (!dataSetName.empty())
-    dataSetType = dataSource->getDataSetType(dataSetName);
+    std::string pName = clonedProperty->getName();
 
-// Creating the geometry property
-  te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
-  te::gm::GeometryProperty* intputGeomProp = te::da::GetFirstGeomProperty(dataSetType.get());
-  newGeomProp->setGeometryType(intputGeomProp->getGeometryType());
-  newGeomProp->setSRID(intputGeomProp->getSRID());
-  outputDataSetType->add(newGeomProp);
+    if (mainParams->getOutputDataSource()->getType() == "OGR")
+      pName = GetDistinctName(pName, attrNamesAux, 10);
+    else
+      pName = GetDistinctName(pName, attrNamesAux);
+
+    m_firstAttrNameMap[pName] = clonedProperty->getName();
+
+    clonedProperty->setName(pName);
+
+    outputDataSetType->add(clonedProperty);
+
+    attrNamesAux.push_back(clonedProperty->getName());
+  }
+
+  for (std::size_t i = 0; i < secondSelectedProperties.size(); ++i)
+  {
+    te::dt::Property* clonedProperty = secondSelectedProperties[i]->clone();
+
+    std::string pName = clonedProperty->getName();
+
+    if (mainParams->getOutputDataSource()->getType() == "OGR")
+      pName = GetDistinctName(pName, attrNamesAux, 10);
+    else
+      pName = GetDistinctName(pName, attrNamesAux);
+
+    m_secondAttrNameMap[pName] = clonedProperty->getName();
+
+    clonedProperty->setName(pName);
+
+    outputDataSetType->add(clonedProperty);
+
+    attrNamesAux.push_back(clonedProperty->getName());
+  }
+
+  te::gm::GeometryProperty* newGeometryProperty = new te::gm::GeometryProperty("geom");
+
+  te::gm::GeomType type = getGeomResultType(firstGeometryProperty->getGeometryType(), secondGeometryProperty->getGeometryType(), isCollection);
+  newGeometryProperty->setGeometryType(type);
+
+  newGeometryProperty->setSRID(firstGeometryProperty->getSRID());
+
+  outputDataSetType->add(newGeometryProperty);
 
   return outputDataSetType;
 }
 
-te::gm::GeomType te::vp::Intersection::setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom)
+te::gm::GeomType te::vp::Intersection::getGeomResultType(const te::gm::GeomType& firstGeom, const te::gm::GeomType& secondGeom, const bool& isCollection)
 {
+  te::gm::GeomType geomType;
+
   if ((firstGeom == te::gm::PointType) ||
     (firstGeom == te::gm::PointZType) ||
     (firstGeom == te::gm::PointMType) ||
@@ -548,9 +665,9 @@ te::gm::GeomType te::vp::Intersection::setGeomResultType(te::gm::GeomType firstG
     (secondGeom == te::gm::MultiPointZType) ||
     (secondGeom == te::gm::MultiPointMType) ||
     (secondGeom == te::gm::MultiPointZMType))
-
-    return te::gm::MultiPointType;
-
+  {
+    geomType = te::gm::MultiPointType;
+  }
   else if ((firstGeom == te::gm::LineStringType) ||
     (firstGeom == te::gm::LineStringZType) ||
     (firstGeom == te::gm::LineStringMType) ||
@@ -570,10 +687,24 @@ te::gm::GeomType te::vp::Intersection::setGeomResultType(te::gm::GeomType firstG
     (secondGeom == te::gm::MultiLineStringZType) ||
     (secondGeom == te::gm::MultiLineStringMType) ||
     (secondGeom == te::gm::MultiLineStringZMType))
-
-    return te::gm::MultiLineStringType;
-
+  {
+    geomType = te::gm::MultiLineStringType;
+  }
   else
-    return te::gm::MultiPolygonType;
-}
+    geomType = te::gm::MultiPolygonType;
 
+  if (isCollection)
+  {
+    if (te::vp::IsMultiType(geomType))
+      return geomType;
+    else
+      return te::vp::GetMultiType(geomType);
+  }
+  else
+  {
+    if (te::vp::IsMultiType(geomType))
+      return te::vp::GetSimpleType(geomType);
+    else
+      return geomType;
+  }
+}

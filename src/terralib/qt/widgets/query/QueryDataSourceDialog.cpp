@@ -475,9 +475,12 @@ void te::qt::widgets::QueryDataSourceDialog::onSaveSqlToolButtonClicked()
   if(path.isNull())
     return;
 
+  if (!path.endsWith(".sql"))
+    path += ".sql";
+
  //open file
   QFile file(path);
-  
+
   if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) 
   {
     QMessageBox::warning(this, tr("Query DataSource"), file.errorString());

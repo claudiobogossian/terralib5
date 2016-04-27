@@ -31,6 +31,7 @@
 #include "../maptools/AbstractLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
+#include "../sam/rtree.h"
 #include "Config.h"
 
 //STL
@@ -79,6 +80,12 @@ namespace te
     TEVPEXPORT te::da::DataSourcePtr CreateOGRDataSource(std::string repository);
 
     void ValidateAlgorithmParams(AlgorithmParams* mainParams, Strategy st);
+
+    te::sam::rtree::Index<size_t, 8>* GetRtree(te::da::DataSet* data);
+
+    te::gm::Geometry* SetGeomAsMulti(te::gm::Geometry* geom);
+
+    std::string GetDistinctName(const std::string& name, std::vector<std::string> names, std::size_t maxSize = 0);
 
   } // end namespace vp
 }   // end namespace te

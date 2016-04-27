@@ -116,29 +116,34 @@ void te::mnt::CreateIsolinesDialog::setLayers(std::list<te::map::AbstractLayerPt
           if (dsType->hasGeom())
           {
             std::vector<te::dt::Property*> props = dsType->getProperties();
-            bool hasval = false;
-            for (size_t p = 0; p < props.size(); p++)
+            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+            te::gm::GeomType gmType = geomProp->getGeometryType();
+            switch (gmType)
             {
-              if (props[p]->getName().compare("val1") == 0 ||
-                props[p]->getName().compare("val2") == 0 ||
-                props[p]->getName().compare("val3") ==0)
-              {
-                hasval = true;
-                break;
-              }
-            }
-
-            if (hasval)
-            {
-              std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-              te::gm::GeomType gmType = geomProp->getGeometryType();
-              if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-                gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
-              {
+              case te::gm::MultiPolygonType:
+              case te::gm::MultiPolygonZType:
+              case te::gm::MultiPolygonMType:
+              case te::gm::MultiPolygonZMType:
+              case te::gm::MultiSurfaceType:
+              case te::gm::MultiSurfaceZType:
+              case te::gm::MultiSurfaceMType:
+              case te::gm::MultiSurfaceZMType:
+              case te::gm::PolyhedralSurfaceType:
+              case te::gm::PolyhedralSurfaceZType:
+              case te::gm::PolyhedralSurfaceMType:
+              case te::gm::PolyhedralSurfaceZMType:
+              case te::gm::TINType:
+              case te::gm::TINZType:
+              case te::gm::TINMType:
+              case te::gm::TINZMType:
+              case te::gm::TriangleType:
+              case te::gm::TriangleZType:
+              case te::gm::TriangleMType:
+              case te::gm::TriangleZMType:
                 m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-              }
-              geomProp.release();
+              default: break;
             }
+            geomProp.release();
           }
           if (dsType->hasRaster()) //GRID
           {
@@ -199,63 +204,165 @@ std::vector<double> GetNumericData(te::da::DataSet* dataSet, std::vector<std::st
 void te::mnt::CreateIsolinesDialog::getMinMax(te::map::AbstractLayerPtr inputLayer, double &vmin, double &vmax)
 {
   std::auto_ptr<te::da::DataSet> dataquery;
+  std::vector<te::gm::Polygon *> vp;
   te::da::DataSourcePtr ds = te::da::GetDataSource(inputLayer->getDataSourceId());
   vmin = std::numeric_limits<double>::max();
   vmax = -vmin;
-  std::string qry("select min(val1), min(val2), min(val3), max(val1), max(val2), max(val3) from ");
-  qry += inputLayer->getTitle();
-  //qry += " where val1 is not NULL and val2 is not NULL and val3 is not NULL";
-  dataquery = ds->query(qry);
-  dataquery->moveFirst();
-  vmin = std::min(std::min(dataquery->getDouble(0), dataquery->getDouble(1)), dataquery->getDouble(2));
-  vmax = std::max(std::max(dataquery->getDouble(3), dataquery->getDouble(4)), dataquery->getDouble(5));
-  dataquery.release();
+
+  std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
+  std::vector<te::dt::Property*> props = dsType->getProperties();
+
+  std::auto_ptr<te::da::DataSet> inDset = ds->getDataSet(m_inputLayer->getDataSetName());
+  std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+  try
+  {
+    te::gm::GeomType gmType = geomProp->getGeometryType();
+    std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+    inDset->moveBeforeFirst();
+    while (inDset->moveNext())
+    {
+      std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+      if (!gin.get()->is3D())
+        throw te::common::Exception(TE_TR("Data without 3D information!"));
+
+      switch (gin->getGeomTypeId())
+      {
+        case te::gm::PolygonType:
+        case te::gm::PolygonZType:
+        case te::gm::PolygonMType:
+        case te::gm::PolygonZMType:
+        {
+          vp.push_back(dynamic_cast<te::gm::Polygon*>(gin.get()->clone()));
+          break;
+        }
+        case te::gm::MultiPolygonType:
+        case te::gm::MultiPolygonZType:
+        case te::gm::MultiPolygonMType:
+        case te::gm::MultiPolygonZMType:
+        {
+          te::gm::MultiPolygon *mg = dynamic_cast<te::gm::MultiPolygon*>(gin.get()->clone());
+          if (!mg)
+            throw te::common::Exception(TE_TR("Isn't possible to read data!"));
+
+          std::size_t np = mg->getNumGeometries();
+          for (std::size_t i = 0; i < np; i++)
+            vp.push_back(dynamic_cast<te::gm::Polygon*>(mg->getGeometryN(i)));
+          break;
+        }
+        case te::gm::MultiSurfaceType:
+        case te::gm::MultiSurfaceZType:
+        case te::gm::MultiSurfaceMType:
+        case te::gm::MultiSurfaceZMType:
+          break;
+        case te::gm::PolyhedralSurfaceType:
+        case te::gm::PolyhedralSurfaceZType:
+        case te::gm::PolyhedralSurfaceMType:
+        case te::gm::PolyhedralSurfaceZMType:
+          break;
+        case te::gm::TINType:
+        case te::gm::TINZType:
+        case te::gm::TINMType:
+        case te::gm::TINZMType:
+          break;
+        case te::gm::TriangleType:
+        case te::gm::TriangleZType:
+        case te::gm::TriangleMType:
+        case te::gm::TriangleZMType:
+          break;
+      }
+    }
+
+    for (std::size_t i = 0; i < vp.size(); ++i)
+    {
+      te::gm::Polygon *pol = vp[i];
+      te::gm::Curve* c = pol->getRingN(0);
+      te::gm::LinearRing* lr = dynamic_cast<te::gm::LinearRing*>(c);
+      if (lr->getZ(0) < std::numeric_limits<double>::max())
+      {
+        if (vmin > lr->getZ(0))
+          vmin = lr->getZ(0);
+        if (vmax < lr->getZ(0))
+          vmax = lr->getZ(0);
+      }
+      if (lr->getZ(1) < std::numeric_limits<double>::max())
+      {
+        if (vmin > lr->getZ(1))
+          vmin = lr->getZ(1);
+        if (vmax < lr->getZ(1))
+          vmax = lr->getZ(1);
+      }
+      if (lr->getZ(2) < std::numeric_limits<double>::max())
+      {
+        if (vmin > lr->getZ(2))
+          vmin = lr->getZ(2);
+        if (vmax < lr->getZ(2))
+          vmax = lr->getZ(2);
+      }
+    }
+  }
+  catch (te::common::Exception& e)
+  {
+    std::cerr << "CreateIsolinesDialog::getMinMax: " << e.what() << '\n';
+    QMessageBox::information(this, "CreateIsolines", e.what());
+    vmax = vmin = 0;
+  }
+
+  vp.clear();
+  geomProp.release();
+  dsType.release();
+  inDset.release();
 }
 
 void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
 {
-  this->setCursor(Qt::WaitCursor);
-  m_inputLayer = 0;
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
-  while (it != m_layers.end())
-  {
-    if (layerID == it->get()->getId().c_str())
+  try{
+    this->setCursor(Qt::WaitCursor);
+    m_inputLayer = 0;
+    std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+    std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+    while (it != m_layers.end())
     {
-      m_inputLayer = it->get();
-
-      std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
-      std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
-      if (dsType->hasGeom())
+      if (layerID == it->get()->getId().c_str())
       {
-        m_inputType = TIN;
-        getMinMax(m_inputLayer, m_min, m_max);
-        m_ui->m_dummycheckBox->setVisible(false);
-        m_ui->m_dummylineEdit->setVisible(false);
-      }
-      if (dsType->hasRaster())
-      {
-        m_inputType = GRID;
-        std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
-        std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
-        te::mnt::getMinMax(inputRst.get(), m_min, m_max);
-        m_ui->m_dummycheckBox->setVisible(true);
-        m_ui->m_dummylineEdit->setVisible(true);
-        m_ui->m_dummylineEdit->setText(QString::number(inputRst->getBand(0)->getProperty()->m_noDataValue));
-        m_dummy = inputRst->getBand(0)->getProperty()->m_noDataValue;
-        inputRst.release();
-      }
-      dsType.release();
+        m_inputLayer = it->get();
 
-      break;
+        std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
+        std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
+        if (dsType->hasGeom())
+        {
+          m_inputType = TIN;
+          getMinMax(m_inputLayer, m_min, m_max);
+          m_ui->m_dummycheckBox->setVisible(false);
+          m_ui->m_dummylineEdit->setVisible(false);
+        }
+        if (dsType->hasRaster())
+        {
+          m_inputType = GRID;
+          std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
+          std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
+          te::mnt::getMinMax(inputRst.get(), m_min, m_max);
+          m_ui->m_dummycheckBox->setVisible(true);
+          m_ui->m_dummylineEdit->setVisible(true);
+          m_ui->m_dummylineEdit->setText(QString::number(inputRst->getBand(0)->getProperty()->m_noDataValue));
+          m_dummy = inputRst->getBand(0)->getProperty()->m_noDataValue;
+          inputRst.release();
+        }
+        dsType.release();
+
+        break;
+      }
+      it++;
     }
-    it++;
+    m_ui->m_vminrasterlineEdit->setText(QString::number(m_min));
+    m_ui->m_vmaxrasterlineEdit->setText(QString::number(m_max));
+
+    this->setCursor(Qt::ArrowCursor);
   }
-  m_ui->m_vminrasterlineEdit->setText(QString::number(m_min));
-  m_ui->m_vmaxrasterlineEdit->setText(QString::number(m_max));
-
-  this->setCursor(Qt::ArrowCursor);
-
+  catch (te::common::Exception& e)
+  {
+    std::cerr << "CreateIsolines: " << e.what() << '\n';
+    QMessageBox::information(this, "CreateIsolines", e.what());
+  }
 }
 
 void te::mnt::CreateIsolinesDialog::onDummyLineEditEditingFinished()

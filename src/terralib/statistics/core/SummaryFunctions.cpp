@@ -134,20 +134,43 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
   
   ss.m_mean = ss.m_sum/ss.m_count;
   
-  for(int i = 0; i < ss.m_count; ++i)
+  for (int i = 0; i < ss.m_count; ++i)
   {
-    double v= values[i];
-    ss.m_variance += pow((v-ss.m_mean),2);
-    ss.m_skewness += pow((v-ss.m_mean),3);
-    ss.m_kurtosis += pow((v-ss.m_mean),4);
+    double v = values[i];
+    ss.m_variance += pow((v - ss.m_mean), 2);
+    ss.m_skewness += pow((v - ss.m_mean), 3);
+    ss.m_kurtosis += pow((v - ss.m_mean), 4);
   }
-  
-  ss.m_variance /= ss.m_count;
-  ss.m_stdDeviation = pow(ss.m_variance, 0.5);
-  ss.m_skewness /= ss.m_count;
-  ss.m_skewness /= pow(ss.m_stdDeviation, 3);
-  ss.m_kurtosis /= ss.m_count;
-  ss.m_kurtosis /= pow(ss.m_stdDeviation, 4);
+
+  if (ss.m_count > 3) {
+    ss.m_skewness /= pow(ss.m_variance, 1.5);
+    ss.m_skewness *= (ss.m_count * sqrt(ss.m_count - 1)) / (ss.m_count - 2);
+
+    ss.m_kurtosis /= pow(ss.m_variance, 2);
+    ss.m_kurtosis *= (ss.m_count * (ss.m_count + 1) * (ss.m_count - 1)) / ((ss.m_count - 2) * (ss.m_count - 3));
+
+    ss.m_variance /= ss.m_count - 1;
+    ss.m_stdDeviation = sqrt(ss.m_variance);
+  } else if (ss.m_count > 2) {
+    ss.m_skewness /= pow(ss.m_variance, 1.5);
+    ss.m_skewness *= (ss.m_count * sqrt(ss.m_count - 1)) / (ss.m_count - 2);
+
+    ss.m_variance /= ss.m_count - 1;
+    ss.m_stdDeviation = sqrt(ss.m_variance);
+
+    ss.m_kurtosis = 0.0;
+  } else if (ss.m_count > 1) {
+    ss.m_variance /= ss.m_count - 1;
+    ss.m_stdDeviation = sqrt(ss.m_variance);
+
+    ss.m_skewness = 0.0;
+    ss.m_kurtosis = 0.0;
+  } else {
+    ss.m_variance = 0.0;
+    ss.m_stdDeviation = 0.0;
+    ss.m_skewness = 0.0;
+    ss.m_kurtosis = 0.0;
+  }
   
   ss.m_varCoeff = (100* ss.m_stdDeviation) / ss.m_mean;
   ss.m_amplitude = ss.m_maxVal - ss.m_minVal;

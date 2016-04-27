@@ -24,6 +24,8 @@
 */
 //TerraLib
 
+#include "../../edit/qt/tools/CreateLineTool.h"
+#include "../../qt/af/events/MapEvents.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -62,86 +64,60 @@ Q_DECLARE_METATYPE(te::map::AbstractLayerPtr)
 
 te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::ProfileDialogForm)
+    m_ui(new Ui::ProfileDialogForm),
+    m_tool(0),
+    m_app(0)
 {
 // add controls
   m_ui->setupUi(this);
 
 // add icons
- // m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("sa-bayesglobal-hint").pixmap(112,48));
- // m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_selectPushButton->setIcon(QIcon::fromTheme("mnt-profile-select"));
+  m_ui->m_addPointMousePushButton->setIcon(QIcon::fromTheme("mnt-profile-line create"));
+  m_ui->m_addPointKeyPushButton->setIcon(QIcon::fromTheme("mnt-profile-point create XY"));
+  m_ui->m_changePointPushButton->setIcon(QIcon::fromTheme("mnt-profile-vertex move"));
+  m_ui->m_addPointPushButton->setIcon(QIcon::fromTheme("mnt-profile-vertex create"));
+  m_ui->m_deletePointPushButton->setIcon(QIcon::fromTheme("mnt-profile-vertex delete"));
+  m_ui->m_deletePathPushButton->setIcon(QIcon::fromTheme("mnt-profile-delete"));
+  m_ui->m_invertPushButton->setIcon(QIcon::fromTheme("mnt-profile-invert"));
 
 // connectors
-  connect(m_ui->m_rasterLayersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRasterInputComboBoxChanged(int)));
+  connect(m_ui->m_rasterLayersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
   
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
-  connect(m_ui->m_dummylineEdit, SIGNAL(editingFinished()), this, SLOT(onDummyLineEditEditingFinished()));
+
+  connect(m_ui->m_editionradioButton, SIGNAL(toggled(bool)), this, SLOT(oneditionEnabled(bool)));
+  connect(m_ui->m_selectionradioButton, SIGNAL(toggled(bool)), this, SLOT(onselectionEnabled(bool)));
 
   connect(m_ui->m_vectorlayersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onVectorInputComboBoxChanged(int)));
 
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_selectGeometryPushButton, SIGNAL(clicked()), this, SLOT(onSelectGeometryClicked()));
-  connect(m_ui->m_clearSelectionPushButton, SIGNAL(clicked()), this, SLOT(onClearSelectionClicked()));
 
+  connect(m_ui->m_selectPushButton, SIGNAL(toggled(bool)), SLOT(onselectLineToggled(bool)));
+  connect(m_ui->m_addPointMousePushButton, SIGNAL(toggled(bool)), SLOT(onaddPointMouseToggled(bool)));
+  connect(m_ui->m_addPointKeyPushButton, SIGNAL(toggled(bool)), SLOT(onaddPointKeyToggled(bool)));
+  connect(m_ui->m_changePointPushButton, SIGNAL(toggled(bool)), SLOT(onchangePointToggled(bool)));
+  connect(m_ui->m_addPointPushButton, SIGNAL(toggled(bool)), SLOT(onaddPointToggled(bool)));
+  connect(m_ui->m_deletePointPushButton, SIGNAL(toggled(bool)), SLOT(ondeletePointToggled(bool)));
+  connect(m_ui->m_deletePathPushButton, SIGNAL(toggled(bool)), SLOT(ondeletePathToggled(bool)));
+  connect(m_ui->m_invertPushButton, SIGNAL(toggled(bool)), SLOT(oninvertToggled(bool)));
+
+  m_ui->m_selectionradioButton->setChecked(true);
+  m_ui->m_trajectorystackedWidget->setCurrentIndex(1);
 }
 
 te::mnt::ProfileDialog::~ProfileDialog()
 {
+  if (m_tool)
+  {
+    m_app->getMapDisplay()->removeEventFilter(m_tool);
+    delete m_tool;
+  }
 }
 
 te::map::AbstractLayerPtr te::mnt::ProfileDialog::getLayer()
 {
   return m_outputLayer;
-}
-
-void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
-{
-  /*m_inputLayer = 0;
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_themeTrajectoryComboBox->itemData(index, Qt::UserRole).toString().toStdString();
-  while (it != m_layers.end())
-  {
-    if (layerID == it->get()->getId().c_str())
-    {
-      m_inputLayer = it->get();
-      std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
-      std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
-      if (dsType->hasGeom())
-      {
-        QVariant varLayer = m_ui->m_themeTrajectoryComboBox->itemData(index, Qt::UserRole);
-        te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
-
-        std::string layerID = m_ui->m_themeTrajectoryComboBox->itemData(index, Qt::UserRole).toString().toStdString();
-      }
-      if (dsType->hasRaster())
-      {
-        m_inputType = GRID;
-        std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
-        std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
-        m_srid = inputRst->getSRID();
-        inputRst.release();
-      }
-      dsType.release();
-      break;
-    }
-    it++;
-  }  */
-  QVariant varLayer = m_ui->m_vectorlayersComboBox->itemData(index, Qt::UserRole);
-  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
-
-  m_inputLayer = layer;
-
-  std::string layerID = m_ui->m_vectorlayersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
-
-}
-
-void te::mnt::ProfileDialog::onSelectGeometryClicked()
-{
-
-}
-void te::mnt::ProfileDialog::onClearSelectionClicked()
-{
-
 }
 
 void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
@@ -187,7 +163,7 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
   }
 }
 
-void te::mnt::ProfileDialog::onRasterInputComboBoxChanged(int index)
+void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
 {
   m_rasterinputLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
@@ -212,9 +188,29 @@ void te::mnt::ProfileDialog::onRasterInputComboBoxChanged(int index)
   }
 }
 
-/*void te::mnt::ProfileDialog::onDummyLineEditEditingFinished()
+void  te::mnt::ProfileDialog::oneditionEnabled(bool checked)
 {
-}*/
+  if (!checked)
+    return;
+
+  m_ui->m_trajectorystackedWidget->setCurrentIndex(0);
+
+  m_app = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  m_srid = m_app->getMapDisplay()->getSRID();
+
+  m_ui->m_addPointMousePushButton->toggled(true);
+
+}
+
+
+void  te::mnt::ProfileDialog::onselectionEnabled(bool checked)
+{
+  if (!checked)
+    return;
+
+  m_ui->m_trajectorystackedWidget->setCurrentIndex(1);
+}
+
 
 void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
 {
@@ -230,20 +226,100 @@ void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
 
       std::auto_ptr<te::da::DataSetType> dsType = m_vectorinputLayer->getSchema();
       std::vector<te::dt::Property*> props = dsType->getProperties();
-      /*for (std::size_t i = 0; i < props.size(); ++i)
-      {
-        m_ui->m_attributeComboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
-      }*/
       dsType.release();
     }
     ++it;
   }
 }
 
+void te::mnt::ProfileDialog::onselectLineToggled(bool checked)
+{
+  if (!checked)
+    return;
+  if (m_tool)
+    delete m_tool;
+
+  m_tool = new te::mnt::ProfileTools(m_app->getMapDisplay(), LINE_SELECT);
+  ((te::mnt::ProfileTools*)m_tool)->setLines(m_visadas);
+  m_app->getMapDisplay()->installEventFilter(m_tool);
+
+}
+
+void te::mnt::ProfileDialog::onaddPointMouseToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+  if (!m_app)
+    return;
+
+  if (m_tool)
+    delete m_tool;
+
+  m_tool = new te::edit::CreateLineTool(m_app->getMapDisplay(), m_rasterinputLayer, Qt::ArrowCursor, 0);
+  m_app->getMapDisplay()->installEventFilter(m_tool);
+
+  connect(m_tool, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
+
+}
+
+void te::mnt::ProfileDialog::onaddPointKeyToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+ // m_tool->setType(NONE);
+}
+
+void te::mnt::ProfileDialog::onchangePointToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+ // m_tool->setType(VERTEX_MOVE);
+}
+
+void te::mnt::ProfileDialog::onaddPointToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+ // m_tool->setType(VERTEX_ADD);
+}
+
+void te::mnt::ProfileDialog::ondeletePointToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+ // m_tool->setType(VERTEX_DELETE);
+}
+
+void te::mnt::ProfileDialog::ondeletePathToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+ // m_tool->setType(NONE);
+
+}
+
+void te::mnt::ProfileDialog::oninvertToggled(bool checked)
+{
+  if (!checked)
+    return;
+ // m_tool->setType(NONE);
+}
+
+void te::mnt::ProfileDialog::onGeometriesChanged()
+{
+  te::edit::CreateLineTool *ct= dynamic_cast<te::edit::CreateLineTool*>(m_tool);
+  te::gm::LineString *ls = dynamic_cast<te::gm::LineString*>(ct->buildLine());
+  m_visadas.push_back(ls);
+}
 
 void te::mnt::ProfileDialog::onOkPushButtonClicked()
 {
-  //m_ui->m_vectorlayersComboBox->count() == 0
   try
   {
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -268,33 +344,36 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     std::auto_ptr<te::da::DataSetType> inDsetType(inrasterDataSource->getDataSetType(inDsetName));
     // end raster
 
-    //vector
-    te::map::DataSetLayer* indsvectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorinputLayer.get());
-    if (!indsvectorLayer)
-      throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
-
-    te::da::DataSourcePtr invectorDataSource = te::da::GetDataSource(indsvectorLayer->getDataSourceId(), true);
-    if (!invectorDataSource.get())
-      throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
-
-    std::string invectorDsetName = indsvectorLayer->getDataSetName();
-    std::auto_ptr<te::da::DataSetType> invectorDsetType(invectorDataSource->getDataSetType(invectorDsetName));
-    m_srid = m_vectorinputLayer->getSRID();
-
-    //end vector
-    
     Profile* profile = new Profile();
     profile->setInput(inrasterDataSource, inDsetName, inDsetType, m_dummy);
-
     std::auto_ptr<te::rst::Raster> raster = profile->getPrepareRaster();
-    te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
     std::string geostype;
-    te::gm::MultiLineString isolines(0, te::gm::MultiLineStringZType, m_srid);
-    std::vector<te::gm::LineString*> visadas = profile->prepareVector(invectorDsetName, invectorDataSource, geostype);
+
+    //vector
+    if (m_ui->m_selectionradioButton->isChecked())
+    {
+      te::map::DataSetLayer* indsvectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorinputLayer.get());
+      if (!indsvectorLayer)
+        throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
+
+      te::da::DataSourcePtr invectorDataSource = te::da::GetDataSource(indsvectorLayer->getDataSourceId(), true);
+      if (!invectorDataSource.get())
+        throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
+
+      std::string invectorDsetName = indsvectorLayer->getDataSetName();
+      std::auto_ptr<te::da::DataSetType> invectorDsetType(invectorDataSource->getDataSetType(invectorDsetName));
+      m_srid = m_vectorinputLayer->getSRID();
+      m_visadas = profile->prepareVector(invectorDsetName, invectorDataSource, geostype);
+    }
+
+    //end vector
+
+//    te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
+//    te::gm::MultiLineString isolines(0, te::gm::MultiLineStringZType, m_srid);
 
     // Principal function calling
     std::vector<te::gm::LineString*> profileSet;
-    profile->runRasterProfile(raster, visadas, profileSet);
+    profile->runRasterProfile(raster, m_visadas, profileSet);
 
     std::vector<te::color::RGBAColor> color;
     color.push_back(te::color::RGBAColor(255, 0, 0, 255));
@@ -303,10 +382,11 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     color.push_back(te::color::RGBAColor(37, 127, 0, 255));
     color.push_back(te::color::RGBAColor(0, 0, 255, 255));
 
-    DrawSelected(visadas, color);
+    DrawSelected(m_visadas, color);
 
     te::mnt::ProfileResultDialog result(m_ui->m_titleLineEdit->text(), m_ui->m_yAxisLineEdit->text(), profileSet, color, this->parentWidget());
 
+    QApplication::restoreOverrideCursor();
     if (result.exec() != QDialog::Accepted)
     {
       return;

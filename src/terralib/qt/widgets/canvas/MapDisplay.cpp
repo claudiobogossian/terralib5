@@ -30,7 +30,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/Utils.h"
-//#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+#include "../tools/AbstractTool.h"
 #include "../utils/ScopedCursor.h"
 #include "Canvas.h"
 #include "MapDisplay.h"
@@ -54,7 +54,8 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_isDrawing(false),
     m_scale(0),
     m_overridedDpiX(-1),
-    m_overridedDpiY(-1)
+    m_overridedDpiY(-1),
+    m_tool(0)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -78,7 +79,8 @@ m_interval(200),
 m_isDrawing(false),
 m_scale(0),
 m_overridedDpiX(-1),
-m_overridedDpiY(-1)
+m_overridedDpiY(-1),
+m_tool(0)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -93,6 +95,8 @@ te::qt::widgets::MapDisplay::~MapDisplay()
 {
   delete m_displayPixmap;
   delete m_draftPixmap;
+
+  delete m_tool;
 
 //  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
   //for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
@@ -561,4 +565,18 @@ void te::qt::widgets::MapDisplay::restoreDPI()
 {
   m_overridedDpiX = -1;
   m_overridedDpiY = -1;
+}
+
+void te::qt::widgets::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious)
+{
+  if (m_tool != 0)
+    removeEventFilter(m_tool);
+
+  if (delPrevious)
+    delete m_tool;
+
+  m_tool = tool;
+
+  if (m_tool != 0)
+    installEventFilter(m_tool);
 }

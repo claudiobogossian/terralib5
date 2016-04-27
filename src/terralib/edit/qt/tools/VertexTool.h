@@ -146,11 +146,11 @@ namespace te
 
         void storeEditedFeature();
 
-        void storeUndoCommand();
-
       private slots:
 
         void onExtentChanged();
+
+        void onGeometryAcquired(te::gm::Geometry*);
 
       private:
 

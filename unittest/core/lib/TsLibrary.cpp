@@ -48,10 +48,20 @@ std::string GetExampleFolder()
   return path + "/Debug/";
 #endif
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  return boost::filesystem::complete(boost::filesystem::path("example")).string() + "/";
+  return boost::filesystem::absolute("example").string() + "/";
 #else
 #error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
 #endif
+}
+
+std::string GetNativeName(const bool& dir=true)
+{
+  std::string lName = te::core::Library::getNativeName("terralib_unittest_core_lib_function");
+
+  if(dir == true)
+    return GetExampleFolder() + lName;
+
+  return lName;
 }
 
 #if TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
@@ -68,12 +78,14 @@ BOOST_AUTO_TEST_SUITE( lib_test_case )
 BOOST_AUTO_TEST_CASE(test_constructor)
 {
   te::core::Library* l1 = 0;
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = GetNativeName();
+
+  std::cout <<lName;
   
   /* Unloaded library. */
   /* -------------------- */
   // Shared library exist.
-  BOOST_CHECK(l1 = new te::core::Library(GetExampleFolder() + lName, true));
+  BOOST_CHECK(l1 = new te::core::Library(lName, true));
   delete l1;
   
   // Shared library do not exist.
@@ -88,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_constructor)
   /* Loaded library. */
   /* -------------------- */
   // Shared library exist.
-  BOOST_CHECK(l1 = new te::core::Library(GetExampleFolder() + lName));
+  BOOST_CHECK(l1 = new te::core::Library(lName));
   delete l1;
 
   // Shared library does not exist.
@@ -102,15 +114,15 @@ BOOST_AUTO_TEST_CASE(test_constructor)
 
 BOOST_AUTO_TEST_CASE(test_destructor)
 {
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = GetNativeName();
 
   /* Testing destructor on a library not loaded. */
-  te::core::Library* l = new te::core::Library(GetExampleFolder() + lName, true);
+  te::core::Library* l = new te::core::Library(lName, true);
 
   BOOST_CHECK_NO_THROW(delete l);
 
   /* Testing destructor on a loaded library. */
-  l = new te::core::Library(GetExampleFolder() + lName);
+  l = new te::core::Library(lName);
 
   BOOST_CHECK_NO_THROW(delete l); 
 
@@ -119,10 +131,10 @@ BOOST_AUTO_TEST_CASE(test_destructor)
 
 BOOST_AUTO_TEST_CASE(test_load)
 {
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = GetNativeName();
 
   /* Correct */
-  te::core::Library l1(GetExampleFolder() + lName, true);
+  te::core::Library l1(lName, true);
   BOOST_CHECK_NO_THROW(l1.load());
 
   // Loading twice
@@ -141,14 +153,14 @@ BOOST_AUTO_TEST_CASE(test_load)
 
 BOOST_AUTO_TEST_CASE(test_unload)
 {
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = GetNativeName();
 
   /* Correct */
-  te::core::Library l1(GetExampleFolder() + lName);
+  te::core::Library l1(lName);
   BOOST_CHECK_NO_THROW(l1.unload());
 
   /* Existing library but not loaded yet */
-  te::core::Library l2(GetExampleFolder() + lName, true);
+  te::core::Library l2(lName, true);
   BOOST_CHECK_NO_THROW(l1.unload());
 
   // Shared library does not exist.
@@ -164,10 +176,10 @@ BOOST_AUTO_TEST_CASE(test_unload)
 
 BOOST_AUTO_TEST_CASE(test_isloaded)
 {
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = GetNativeName();
 
   /* Correct */
-  te::core::Library l1(GetExampleFolder() + lName);
+  te::core::Library l1(lName);
   BOOST_CHECK(l1.isLoaded());
   l1.unload();
   BOOST_CHECK(!l1.isLoaded());
@@ -175,7 +187,7 @@ BOOST_AUTO_TEST_CASE(test_isloaded)
   BOOST_CHECK(l1.isLoaded());
 
   /* Existing library but not loaded yet */
-  te::core::Library l2(GetExampleFolder() + lName, true);
+  te::core::Library l2(lName, true);
   BOOST_CHECK(!l2.isLoaded());
 
   // Shared library do not exist.
@@ -191,10 +203,10 @@ BOOST_AUTO_TEST_CASE(test_isloaded)
 
 BOOST_AUTO_TEST_CASE(test_getFileName)
 {
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = GetNativeName();
 
   /* Checking fileName */
-  std::string fileName(GetExampleFolder() + lName);
+  std::string fileName(lName);
   te::core::Library l1(fileName);
   BOOST_CHECK(l1.getFileName().compare(fileName) == 0);
 
@@ -203,11 +215,10 @@ BOOST_AUTO_TEST_CASE(test_getFileName)
 
 BOOST_AUTO_TEST_CASE(test_getAddress)
 {
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = GetNativeName();
 
   /* Correct */
-  std::string fileName(GetExampleFolder() + lName);
-  te::core::Library l1(fileName);
+  te::core::Library l1(lName);
 
   /* Testing get a function that exists. */
   BOOST_CHECK(l1.getAddress("fatorial"));
@@ -221,7 +232,7 @@ BOOST_AUTO_TEST_CASE(test_getAddress)
 BOOST_AUTO_TEST_CASE(test_getNativeName)
 {
   /* Correct */
-  std::string name("functions");
+  std::string name("terralib_unittest_core_lib_function");
   std::string nname = te::core::Library::getNativeName(name);
   std::string prefix,
     suffix;
@@ -234,18 +245,10 @@ BOOST_AUTO_TEST_CASE(test_getNativeName)
 #endif
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX 
   prefix = "lib";
-#ifdef NDEBUG
   suffix = ".so";
-#else
-  suffix = "d.so";
-#endif
 #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
   prefix = "lib"
-#ifdef NDEBUG
   suffix = ".dylib";
-#else
-  suffix = "d.dylib";
-#endif
 #else
 #error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
 #endif
@@ -257,9 +260,10 @@ BOOST_AUTO_TEST_CASE(test_getNativeName)
   return;
 }
 
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 BOOST_AUTO_TEST_CASE(test_addSearchDir)
 {
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = te::core::Library::getNativeName("terralib_unittest_core_lib_function");
 
   /* Correct */
   BOOST_CHECK_NO_THROW(te::core::Library::addSearchDir(GetExampleFolder()));
@@ -279,21 +283,15 @@ BOOST_AUTO_TEST_CASE(test_addSearchDir)
   te::core::Library::addSearchDir(GetExampleFolder());
 
   /* Trying to load a library that can be found by the operational system. */
-#if TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  const char* ld = boost::filesystem::absolute(GetExePath()).c_str();
-  execl(ld, '\0');
-#endif
 
   BOOST_CHECK_NO_THROW(te::core::Library(lName.c_str()));
 
   return;
 }
 
-#if TE_PLATFORM != TE_PLATFORMCODE_LINUX && TE_PLATFORM != TE_PLATFORMCODE_APPLE
-
 BOOST_AUTO_TEST_CASE(test_resetSearchDir)
 {
-  std::string lName = te::core::Library::getNativeName("functions");
+  std::string lName = te::core::Library::getNativeName("terralib_unittest_core_lib_function");
 
   /* Testing reset on an unchanged path. */
   BOOST_CHECK_NO_THROW(te::core::Library::resetSearchPath());
@@ -311,7 +309,6 @@ BOOST_AUTO_TEST_CASE(test_resetSearchDir)
 
   return;
 }
-
 #endif
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -40,6 +40,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
 #include "TINGenerationDialog.h"
@@ -81,10 +82,18 @@ te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFla
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
+  m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
+  connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
+
   m_ui->m_noradioButton->setChecked(true);
   m_ui->m_isolinescomboBox->addItem(QString(""), QVariant(""));
   m_ui->m_samplescomboBox->addItem(QString(""), QVariant(""));
   m_ui->m_breaklinecomboBox->addItem(QString(""), QVariant(""));
+
+  m_isosrid = 0;
+  m_samplesrid = 0;
+  m_outsrid = 0;
+
 }
 
 te::mnt::TINGenerationDialog::~TINGenerationDialog()
@@ -154,70 +163,139 @@ void te::mnt::TINGenerationDialog::onIsolinesComboBoxChanged(int index)
   m_isolinesLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_isolinescomboBox->itemData(index, Qt::UserRole).toString().toStdString();
-  while (it != m_layers.end())
-  {
-    if (layerID == it->get()->getId().c_str())
+  try{
+    while (it != m_layers.end())
     {
-      te::map::AbstractLayerPtr selectedLayer = it->get();
-      m_isolinesLayer = selectedLayer;
-      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-      std::vector<te::dt::Property*> props = dsType->getProperties();
-      for (std::size_t i = 0; i < props.size(); ++i)
+      if (layerID == it->get()->getId().c_str())
       {
-        switch (props[i]->getType())
+        m_isolinesLayer = it->get();
+        std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+
+        te::map::DataSetLayer* dsisoLayer = dynamic_cast<te::map::DataSetLayer*>(m_isolinesLayer.get());
+        if (!dsisoLayer)
+          throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
+
+        m_isolinesDataSource = te::da::GetDataSource(dsisoLayer->getDataSourceId(), true);
+        if (!m_isolinesDataSource.get())
+          throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
+
+        m_isosrid = dsisoLayer->getSRID();
+
+        setSRID(m_isosrid);
+
+        m_isoSetName = dsisoLayer->getDataSetName();
+
+        std::auto_ptr<te::da::DataSet> inDset = m_isolinesDataSource->getDataSet(m_isoSetName);
+        std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+        inDset->moveFirst();
+        std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+        if (gin->is3D())
         {
-        case te::dt::FLOAT_TYPE:
-        case te::dt::DOUBLE_TYPE:
-        case te::dt::INT16_TYPE:
-        case te::dt::INT32_TYPE:
-        case te::dt::INT64_TYPE:
-        case te::dt::UINT16_TYPE:
-        case te::dt::UINT32_TYPE:
-        case te::dt::UINT64_TYPE:
-        case te::dt::NUMERIC_TYPE:
-          m_ui->m_isolinesZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
-          break;
+          m_ui->m_isolinesZlabel->hide();
+          m_ui->m_isolinesZcomboBox->hide();
+          return;
         }
+
+        m_ui->m_isolinesZlabel->show();
+        m_ui->m_isolinesZcomboBox->show();
+
+        std::vector<te::dt::Property*> props = dsType->getProperties();
+        for (std::size_t i = 0; i < props.size(); ++i)
+        {
+          switch (props[i]->getType())
+          {
+          case te::dt::FLOAT_TYPE:
+          case te::dt::DOUBLE_TYPE:
+          case te::dt::INT16_TYPE:
+          case te::dt::INT32_TYPE:
+          case te::dt::INT64_TYPE:
+          case te::dt::UINT16_TYPE:
+          case te::dt::UINT32_TYPE:
+          case te::dt::UINT64_TYPE:
+          case te::dt::NUMERIC_TYPE:
+            m_ui->m_isolinesZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
+            break;
+          }
+        }
+        break;
       }
-      break;
+      it++;
     }
-    it++;
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::information(this, tr("TIN Generation"), e.what());
+    return;
   }
 }
 
 void te::mnt::TINGenerationDialog::onSamplesComboBoxChanged(int index)
 {
-  m_ui->m_samplesZcomboBox->clear();
-  m_samplesLayer = 0;
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_samplescomboBox->itemData(index, Qt::UserRole).toString().toStdString();
-  while (it != m_layers.end())
-  {
-    if (layerID == it->get()->getId().c_str())
+  try{
+    m_ui->m_samplesZcomboBox->clear();
+    m_samplesLayer = 0;
+    std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+    std::string layerID = m_ui->m_samplescomboBox->itemData(index, Qt::UserRole).toString().toStdString();
+    while (it != m_layers.end())
     {
-      te::map::AbstractLayerPtr selectedLayer = it->get();
-      m_samplesLayer = selectedLayer;
-      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-      std::vector<te::dt::Property*> props = dsType->getProperties();
-      for (std::size_t i = 0; i < props.size(); ++i)
+      if (layerID == it->get()->getId().c_str())
       {
-        switch (props[i]->getType())
+        m_samplesLayer = it->get();
+
+        te::map::DataSetLayer* dssampleLayer = dynamic_cast<te::map::DataSetLayer*>(m_samplesLayer.get());
+        if (!dssampleLayer)
+          throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
+
+        m_samplesDataSource = te::da::GetDataSource(dssampleLayer->getDataSourceId(), true);
+        if (!m_samplesDataSource.get())
+          throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
+
+        m_sampleSetName = dssampleLayer->getDataSetName();
+        m_samplesrid = dssampleLayer->getSRID();
+        setSRID(m_samplesrid);
+
+        std::auto_ptr<te::da::DataSet> inDset = m_samplesDataSource->getDataSet(m_sampleSetName);
+        std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+        inDset->moveFirst();
+        std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+        if (gin->is3D())
         {
-        case te::dt::FLOAT_TYPE:
-        case te::dt::DOUBLE_TYPE:
-        case te::dt::INT16_TYPE:
-        case te::dt::INT32_TYPE:
-        case te::dt::INT64_TYPE:
-        case te::dt::UINT16_TYPE:
-        case te::dt::UINT32_TYPE:
-        case te::dt::UINT64_TYPE:
-        case te::dt::NUMERIC_TYPE:
-          m_ui->m_samplesZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
-          break;
+          m_ui->m_samplesZlabel->hide();
+          m_ui->m_samplesZcomboBox->hide();
+          return;
+        }
+
+        m_ui->m_samplesZlabel->show();
+        m_ui->m_samplesZcomboBox->show();
+
+        std::auto_ptr<te::da::DataSetType> dsType = m_samplesLayer->getSchema();
+        std::vector<te::dt::Property*> props = dsType->getProperties();
+
+        for (std::size_t i = 0; i < props.size(); ++i)
+        {
+          switch (props[i]->getType())
+          {
+          case te::dt::FLOAT_TYPE:
+          case te::dt::DOUBLE_TYPE:
+          case te::dt::INT16_TYPE:
+          case te::dt::INT32_TYPE:
+          case te::dt::INT64_TYPE:
+          case te::dt::UINT16_TYPE:
+          case te::dt::UINT32_TYPE:
+          case te::dt::UINT64_TYPE:
+          case te::dt::NUMERIC_TYPE:
+            m_ui->m_samplesZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
+            break;
+          }
         }
       }
+      it++;
     }
-    it++;
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::information(this, tr("TIN Generation"), e.what());
+    return;
   }
 }
 
@@ -316,8 +394,6 @@ void te::mnt::TINGenerationDialog::onHelpPushButtonClicked()
 
 void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 {
-  int srid = 0;
-
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -342,6 +418,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     // Checking consistency of the input layer where the buffer will executed
     if (m_isolinesLayer.get())
     {
+      //m_outsrid = m_isosrid;
       m_tol = m_ui->m_tollineEdit->text().toDouble(&ok);
       if (!ok)
         throw te::common::Exception(TE_TR("Define a isolines tolerance."));
@@ -350,31 +427,18 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       if (!ok)
         throw te::common::Exception(TE_TR("Define a distance of isolines points."));
 
-      te::map::DataSetLayer* dsisoLayer = dynamic_cast<te::map::DataSetLayer*>(m_isolinesLayer.get());
-      if (!dsisoLayer)
-        throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
-
-      te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsisoLayer->getDataSourceId(), true);
-      if (!inDataSource.get())
-        throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
-
-      std::string inDsetNameiso = dsisoLayer->getDataSetName();
-      Tin->setInput(inDataSource, inDsetNameiso, inDataSource->getDataSetType(inDsetNameiso), te::mnt::Isolines);
-      srid = dsisoLayer->getSRID();
+      Tin->setInput(m_isolinesDataSource, m_isoSetName, m_isolinesDataSource->getDataSetType(m_isoSetName), te::mnt::Isolines);
     }
     if (m_samplesLayer.get())
     {
-      te::map::DataSetLayer* dssampleLayer = dynamic_cast<te::map::DataSetLayer*>(m_samplesLayer.get());
-      if (!dssampleLayer)
-        throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer."));
+      //srid = m_samplesrid;
+      Tin->setInput(m_samplesDataSource, m_sampleSetName, m_samplesDataSource->getDataSetType(m_sampleSetName), te::mnt::Samples);
+    }
 
-      te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dssampleLayer->getDataSourceId(), true);
-      if (!inDataSource.get())
-        throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
-
-      std::string inDsetNamesample = dssampleLayer->getDataSetName();
-      Tin->setInput(inDataSource, inDsetNamesample, inDataSource->getDataSetType(inDsetNamesample), te::mnt::Samples);
-      srid = dssampleLayer->getSRID();
+    if (m_samplesLayer.get() && m_isolinesLayer.get())
+    {
+      if (m_isosrid != m_samplesrid)
+        throw te::common::Exception(TE_TR("Different SRID."));
     }
 
     if (m_breaklinesLayer.get())
@@ -439,18 +503,21 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       Tin->setOutput(aux, outputdataset);
     }
 
-    Tin->setSRID(srid);
+    Tin->setSRID(m_outsrid);
 
-    if (srid)
+    if (m_outsrid>0)
     {
-      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)srid);
-      te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
-
-      if (unitin->getId() != te::common::UOM_Metre)
+      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)m_outsrid);
+      if (unitin.get())
       {
-        convertPlanarToAngle(m_tol, unitout);
-        convertPlanarToAngle(m_distance, unitout);
-        convertPlanarToAngle(m_edgeSize, unitout);
+        te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+        if (unitin->getId() != te::common::UOM_Metre)
+        {
+          convertPlanarToAngle(m_tol, unitout);
+          convertPlanarToAngle(m_distance, unitout);
+          convertPlanarToAngle(m_edgeSize, unitout);
+        }
       }
     }
 
@@ -515,3 +582,34 @@ te::map::AbstractLayerPtr te::mnt::TINGenerationDialog::getLayer()
   return m_outputLayer;
 }
 
+void te::mnt::TINGenerationDialog::onSrsToolButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if (srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  int newSRID = srsDialog.getSelectedSRS().first;
+
+  setSRID(newSRID);
+ 
+}
+
+void te::mnt::TINGenerationDialog::setSRID(int newSRID)
+{
+  if (newSRID <= 0)
+  {
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+  }
+  else
+  {
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    if (name.size())
+      m_ui->m_resSRIDLabel->setText(name.c_str());
+    else
+      m_ui->m_resSRIDLabel->setText(QString("%1").arg(newSRID));
+  }
+  m_outsrid = newSRID;
+
+}

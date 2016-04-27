@@ -99,8 +99,6 @@ namespace te
 
         //@}
 
-        //void resetVisualizationTool();
-
       private:
 
         void reset();

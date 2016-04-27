@@ -27,7 +27,9 @@
 #define __TE_QT_PLUGINS_ATTRIBUTEFILL_INTERNAL_ABSTRACTACTION_H
 
 // TerraLib
+#ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#endif
 #include "Config.h"
 
 // Qt

@@ -63,9 +63,10 @@ te::edit::CreateContinuosPolygonTool::~CreateContinuosPolygonTool()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
+  delete m_feature;
   m_addWatches.clear();
-  UndoStackManager::getInstance().getUndoStack()->clear();
 
+  UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
 bool te::edit::CreateContinuosPolygonTool::mousePressEvent(QMouseEvent* e)

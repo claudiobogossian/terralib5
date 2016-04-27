@@ -70,8 +70,6 @@ namespace te
 
       void storeEditedFeature();
 
-      void storeUndoCommand();
-
       void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
       te::gm::Envelope buildEnvelope(const QPointF& pos);

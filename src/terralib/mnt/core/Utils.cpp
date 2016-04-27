@@ -48,6 +48,8 @@ size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsr
   double value;
   while (inDset->moveNext())
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
@@ -123,6 +125,8 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
   while (inDset->moveNext())
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
@@ -1509,7 +1513,7 @@ bool te::mnt::SaveIso(std::string& outDsetName, te::da::DataSourcePtr &outDsrc, 
   std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(outDsetName));
 
   //Primary key
-  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("ID", te::dt::INT32_TYPE);
+  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("FID", te::dt::INT32_TYPE);
   prop0->setAutoNumber(true);
   te::dt::SimpleProperty* prop1 = new te::dt::SimpleProperty("Z", te::dt::DOUBLE_TYPE);
   te::dt::SimpleProperty* prop11 = new te::dt::SimpleProperty("type", te::dt::STRING_TYPE);
@@ -1528,12 +1532,15 @@ bool te::mnt::SaveIso(std::string& outDsetName, te::da::DataSourcePtr &outDsrc, 
 
   for (unsigned int Idx = 0; Idx < isolist.size(); ++Idx)
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
     te::gm::LineString gout = isolist[Idx];
+    gout.setSRID(srid);
     double *zvalue = gout.getZ();
-    dataSetItem->setInt32("ID", id++);
+    dataSetItem->setInt32("FID", id++);
     if (zvalue){
       dataSetItem->setDouble("Z", zvalue[0]);
       if (std::find(guidevalues.begin(), guidevalues.end(), zvalue[0]) != guidevalues.end())

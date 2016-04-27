@@ -261,6 +261,8 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
       return false;
     m_node[(unsigned int)node].Init(*pto3d, Sample);
     InsertNode(node, 1);
+    if (!task.isActive())
+      return false;
     task.pulse();
   }
 
@@ -317,6 +319,8 @@ bool te::mnt::TINGeneration::InsertNodes(const te::gm::MultiPoint &mpt, const te
         m_node[(unsigned int)node].setType(Normalnode);
         InsertNode(node, 1);
       } //nflag
+      if (!task.isActive())
+        return false;
       task.pulse();
     } //for (std::size_t j = 0; j < gout->getNPoints(); ++j)
   
@@ -1348,6 +1352,8 @@ bool te::mnt::TINGeneration::CreateDelaunay()
 
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     if (triangid > npoly)
@@ -1524,6 +1530,8 @@ bool te::mnt::TINGeneration::TestIsolines(int iter)
 
   for (i = 0; i < m_linesize; i++)
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     if (m_line[i].getNodeFrom() == -1)
@@ -1745,6 +1753,8 @@ bool te::mnt::TINGeneration::CreateMinAngleTriangulation()
 
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     NeighborsId(triangid, neighids);
@@ -1934,6 +1944,8 @@ bool te::mnt::TINGeneration::InsertBreakNodes(te::gm::MultiLineString &breakline
   // To all breaklines
   for (unsigned int id = 0; id < breaklines.getNumGeometries(); ++id)
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     te::gm::LineString* gout = dynamic_cast<te::gm::LineString*>(breaklines.getGeometryN(id));
@@ -2578,6 +2590,8 @@ bool te::mnt::TINGeneration::ReCreateDelaunay()
 
   for (triangid = 0; triangid < m_ltriang; triangid++)
   {
+    if (!task.isActive())
+      return false;
     task.pulse();
 
     if (triangid > npoly)
