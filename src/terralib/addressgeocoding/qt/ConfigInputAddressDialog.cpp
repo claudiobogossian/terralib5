@@ -226,7 +226,7 @@ void te::addressgeocoding::ConfigInputAddressDialog::onCancelPushButtonClicked()
 
 void te::addressgeocoding::ConfigInputAddressDialog::AddAddressConfigToSettings(std::map<std::string, std::string> addressConfig)
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings sett(qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("Address Geocoding");
 
@@ -259,7 +259,7 @@ void te::addressgeocoding::ConfigInputAddressDialog::AddAddressConfigToSettings(
                                                                                 std::string neighborhood,
                                                                                 std::string postalCode)
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings sett(qApp->organizationName(), qApp->applicationName());
 
   QString key1 = "Address Geocoding/filePath";
   QString key2 = "Address Geocoding/streetType";
@@ -286,7 +286,7 @@ void te::addressgeocoding::ConfigInputAddressDialog::GetAddressConfigToSettings(
                                                                                 std::string& neighborhood,
                                                                                 std::string& postalCode)
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings sett(qApp->organizationName(), qApp->applicationName());
 
   std::string key1 = "Address Geocoding/filePath";
   std::string key2 = "Address Geocoding/streetType";

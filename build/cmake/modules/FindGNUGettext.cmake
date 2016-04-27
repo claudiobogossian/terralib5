@@ -43,7 +43,7 @@ if(UNIX)
 elseif(WIN32)
 
   find_path(GNUGETTEXT_INCLUDE_DIR
-            NAMES libintl.h
+            NAMES libintl.h libgnuintl.h
             PATH_SUFFIXES include)
 
   find_library(GNUGETTEXT_LIBRARY_RELEASE

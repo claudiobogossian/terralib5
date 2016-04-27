@@ -30,7 +30,6 @@
 #include <ui_SRSDialogForm.h>
 #include <QApplication>
 #include <QMessageBox>
-#include <QSettings>
 #include <QString>
 
 #include <iostream>
