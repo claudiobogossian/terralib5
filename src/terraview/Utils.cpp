@@ -55,7 +55,7 @@
 
 void GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("projects");
   defaultAuthor = sett.value("author_name").toString();
@@ -65,7 +65,7 @@ void GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved)
 
 void SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("projects");
   sett.setValue("author_name", defaultAuthor);
@@ -75,14 +75,14 @@ void SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& 
 
 void SaveOpenLastProjectOnSettings(bool openLast)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.setValue("projects/openLastDataSource", openLast);
 }
 
 bool GetOpenLastProjectFromSettings()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   QVariant variant = sett.value("projects/openLastDataSource");
 
@@ -124,7 +124,7 @@ void WriteDefaultProjectFile(const QString& fileName)
 
 void CreateDefaultSettings()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("toolbars");
 

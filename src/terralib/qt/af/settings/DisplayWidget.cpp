@@ -9,7 +9,6 @@
 #include <QColor>
 #include <QColorDialog>
 #include <QFrame>
-#include <QSettings>
 #include <QPalette>
 
 // Boost
@@ -23,7 +22,7 @@ m_ui(new Ui::DisplayWidgetForm)
 
   m_resumeText = tr("Configurations of the display");
 
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   QString hexColor = sett.value("display/defaultDisplayColor").toString();
   QColor dColor;
   dColor.setNamedColor(hexColor);
@@ -67,7 +66,7 @@ void te::qt::af::DisplayWidget::onChangeBackgroundPushButton()
 
 void te::qt::af::DisplayWidget::saveChanges()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.setValue("display/defaultDisplayColor", m_ui->m_backColor->palette().color(QPalette::Window).name());
 
@@ -80,7 +79,7 @@ void te::qt::af::DisplayWidget::saveChanges()
 
 void te::qt::af::DisplayWidget::resetState()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   QString hexColor = sett.value("display/defaultDisplayColor").toString();
   QColor dColor;
   dColor.setNamedColor(hexColor);

@@ -81,14 +81,10 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_display;
   delete m_styleExplorer;
 
-  // forcing the deletion of the layers before the unload  of plugins and modules
-  delete m_ui->m_layerExplorer;
-  m_ui->m_layerExplorer = 0;
-
-  delete m_ui;
-
   if(m_app)
     m_app->finalize();
+
+  delete m_ui;
 }
 
 void te::qt::af::BaseApplication::init(const QString& cfgFile)

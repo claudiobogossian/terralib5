@@ -5,9 +5,9 @@
 #include "TableWidget.h"
 
 // Qt
+#include <QSettings>
 #include <QColor>
 #include <QColorDialog>
-#include <QSettings>
 
 QString GetRGBString(QColor color)
 {
@@ -40,7 +40,7 @@ te::qt::af::TableWidget::TableWidget(QWidget* parent)
   m_primaryColor = Qt::white;
   m_secondaryColor = Qt::white;
 
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   bool isChecked = sett.value("table/tableAlternateColors").toBool();
   QColor pColor;
   pColor.setNamedColor(sett.value("table/primaryColor").toString());
@@ -84,7 +84,7 @@ void te::qt::af::TableWidget::saveChanges()
 {
   bool isChecked = m_ui->m_alternateRowColorsGroupBox->isChecked();
 
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   sett.setValue("table/tableAlternateColors", isChecked);
   sett.setValue("table/primaryColor", m_primaryColor.name());
   sett.setValue("table/secondaryColor", m_secondaryColor.name());
