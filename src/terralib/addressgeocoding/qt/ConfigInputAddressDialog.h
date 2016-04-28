@@ -39,6 +39,7 @@
 
 // Qt
 #include <QDialog>
+#include <QSettings>
 
 namespace Ui { class ConfigInputAddressDialogForm; }
 
