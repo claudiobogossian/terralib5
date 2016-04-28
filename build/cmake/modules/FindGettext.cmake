@@ -74,63 +74,32 @@ IF (WIN32)
    STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGINIT_EXECUTABLE ${GETTEXT_MSGINIT_EXECUTABLE})
 ENDIF (WIN32)
 
-macro(GETTEXT_CREATE_TEMPLATE pot_file keyword directory output_path)
-
+macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword locale directory output_path)
   get_filename_component(_absDir ${directory} ABSOLUTE)
   set(_absPot "${output_path}/${pot_file}")
+  message(" ${GETTEXT_MSGFMT_EXECUTABLE} -o ${CMAKE_BINARY_DIR}/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po")
   if (UNIX)
-    add_custom_command(OUTPUT "${pot_file}.pot"
+    add_custom_command(OUTPUT "${pot_file}.mo"
                        COMMAND test -d ${_absPot}|| mkdir -p ${_absPot}
                        COMMAND test -e ${_absPot}/${pot_file}.pot || touch ${_absPot}/${pot_file}.pot
                        COMMAND find `pwd` -name '*.cpp' -print > ${_absPot}/${pot_file}.txt
-                       COMMAND ${XGETTEXT_EXECUTABLE} --from-code=UTF-8 --keyword=${keyword} -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
+                       COMMAND ${XGETTEXT_EXECUTABLE} --from-code="UTF-8" --keyword=${keyword} -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
                        COMMAND rm ${_absPot}/${pot_file}.txt
-                       COMMENT "Generating POT file..."
+                       COMMAND test -e ${_absPot}/${pot_file}_${locale}.po || ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale}.UTF-8 -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/${pot_file}_${locale}.po
+                       COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot
+                       COMMAND test -d ${CMAKE_BINARY_DIR}/translations/${locale}/LC_MESSAGES/ || mkdir -p ${CMAKE_BINARY_DIR}/translations/${locale}/LC_MESSAGES/
+                       COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${CMAKE_BINARY_DIR}/translations/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
+                       COMMENT "Generating translations files..."
                        WORKING_DIRECTORY "${_absDir}"
                        )
   endif(UNIX)
+  if(WIN32)
+    #TODO
+  endif(WIN32)
 
-#  if(WIN32)
-#    add_custom_command(OUTPUT "${pot_file}.pot"
-#                       COMMAND if not exist ${_absPot} mkdir -p ${_absPot}
-#                       COMMAND if not exist ${_absPot}/${pot_file}.pot echo. > ${_absPot}/${pot_file}.pot
-#                       COMMAND dir *.cpp /s /b > ${_absPot}/${pot_file}.txt
-#                       COMMAND ${XGETTEXT_EXECUTABLE} --from-code=UTF-8ls
-#                       --keyword=${keyword} -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
-#                       COMMENT "Generating POT file..."
-#                       WORKING_DIRECTORY "${_absDir}"
-#                       )
-#  endif(WIN32)
-  add_custom_target(translations_pot
-                    DEPENDS "${pot_file}.pot")
-endmacro(GETTEXT_CREATE_TEMPLATE)
+  add_custom_target("${pot_file}_translation"
+                    DEPENDS  "${pot_file}.mo")
+endmacro(GETTEXT_CREATE_TRANSLATIONS)
 
-
-macro(GETTEXT_CREATE_TRANSLATION pot_file locale pot_path output_path)
-  get_filename_component(_absPot ${pot_path} ABSOLUTE)
-  set(_absPot "${_absPot}/${pot_file}")
-  if(UNIX)
-    add_custom_command(OUTPUT "${pot_file}_${locale}.po" "${pot_file}.mo"
-                        COMMAND test -e ${_absPot}/${pot_file}_${locale}.po || ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale} -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/${pot_file}_${locale}.po
-                        COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot
-                        COMMAND test -d ${CMAKE_BINARY_DIR}/translations/${locale}/LC_MESSAGES/ || mkdir -p ${CMAKE_BINARY_DIR}/translations/${locale}/LC_MESSAGES/
-                        COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${output_path}/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
-                        COMMENT "Generating translations files..."
-                        WORKING_DIRECTORY ${_absDir}
-                        )
-  endif(UNIX)
-
-#  if(WIN32)
-#   add_custom_command(OUTPUT "${pot_file}_${locale}.po" "${pot_file}.mo"
-#                       COMMAND if not exist ${_absPot}/${pot_file}_${locale}.po ${GETTEXT_MSGINIT_EXECUTABLE} --no-translator -l ${locale} -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/${pot_file}_${locale}.po
-#                       COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot
-#                       COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
-#                       COMMENT "Generating translations files..."
-#                       WORKING_DIRECTORY ${_absDir}
-#                       )
-#  endif(WIN32)
-  add_custom_target(translations DEPENDS "${pot_file}.mo" "${pot_file}_${locale}.po" )
-
-endmacro(GETTEXT_CREATE_TRANSLATION)
 
 ENDIF(XGETTEXT_FOUND)

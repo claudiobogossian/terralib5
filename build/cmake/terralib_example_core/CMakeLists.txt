@@ -97,3 +97,14 @@ add_executable(terralib_example_core_translator ${TERRALIB_EXAMPLE_CORE_TRANSLAT
 
 target_link_libraries(terralib_example_core_translator terralib_mod_core)
 
+add_dependencies(terralib_example_core_translator terralib_example_core_translation)
+
+GETTEXT_CREATE_TRANSLATIONS("terralib_example_core"
+                        "TE_TR"
+                        "pt_BR"
+                        "${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/"
+                        "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                        )
+
+
+
