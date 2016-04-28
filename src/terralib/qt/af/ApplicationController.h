@@ -51,6 +51,7 @@ class QMenu;
 class QMenuBar;
 class QToolBar;
 class QWidget;
+class QSettings;
 
 namespace te
 {

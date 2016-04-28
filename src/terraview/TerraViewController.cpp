@@ -44,6 +44,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QResource>
+#include <QSettings>
 #if QT_VERSION >= 0x050000
 #include <QStandardPaths>
 #endif
@@ -92,9 +93,7 @@ void TerraViewController::initializeProjectMenus()
 
   try
   {
-    QSettings user_settings(QSettings::IniFormat,
-                            QSettings::UserScope,
-                            QApplication::instance()->organizationName(),
+    QSettings user_settings(QApplication::instance()->organizationName(),
                             QApplication::instance()->applicationName());
 
     QVariant projPath = user_settings.value("projects/most_recent/path", "");

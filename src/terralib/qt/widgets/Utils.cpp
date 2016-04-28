@@ -368,7 +368,7 @@ QPixmap te::qt::widgets::CreatePixmapIcon(const int& size, const QColor& penColo
 
 void te::qt::widgets::AddFilePathToSettings(const QString& path, const QString& typeFile)
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings sett(qApp->organizationName(), qApp->applicationName());
 
   QString key = "Last used file path/" + typeFile;
 
@@ -377,7 +377,7 @@ void te::qt::widgets::AddFilePathToSettings(const QString& path, const QString& 
 
 QString te::qt::widgets::GetFilePathFromSettings(const QString& typeFile)
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings sett(qApp->organizationName(), qApp->applicationName());
 
   QString key = "Last used file path/" + typeFile;
 

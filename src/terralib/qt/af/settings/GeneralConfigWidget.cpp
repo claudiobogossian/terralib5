@@ -38,6 +38,7 @@
 // Qt
 #include <QDir>
 #include <QPushButton>
+#include <QSettings>
 #include <QString>
 
 te::qt::af::GeneralConfigWidget::GeneralConfigWidget(QWidget* parent)
@@ -81,7 +82,7 @@ te::qt::af::GeneralConfigWidget::~GeneralConfigWidget()
 
 void te::qt::af::GeneralConfigWidget::saveChanges()
 {
-  QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings settings(qApp->organizationName(), qApp->applicationName());
 
   settings.setValue("srs/default_srid", m_defaultSRID);
   settings.setValue("color/selection_color", m_colorPicker->getColor().name());
