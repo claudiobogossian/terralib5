@@ -33,6 +33,9 @@
 
 // GNU Text Utilities
 #ifdef TERRALIB_GNU_GETTEXT_ENABLED
+#ifdef WIN32
+#include <libintlConfig.h>
+#endif
 #include <libintl.h>
 #endif
 
