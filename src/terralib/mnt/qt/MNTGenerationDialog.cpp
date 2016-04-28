@@ -699,7 +699,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
     m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
   }
-  catch (const std::exception& e)
+  catch (te::common::Exception& e)
   {
     QApplication::restoreOverrideCursor();
     te::common::ProgressManager::getInstance().removeViewer(id);
