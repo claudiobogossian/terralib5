@@ -4426,64 +4426,64 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="99"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="101"/>
         <source>Show hidden column</source>
         <translation>Mostrar coluna oculta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="112"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="114"/>
         <source>Turns column &quot;%1&quot; visible.</source>
         <translation>Faça coluna &quot;%1&quot; visível.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="125"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="127"/>
         <source>Show all columns</source>
         <translation>Mostrar todas colunas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="61"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="60"/>
         <source>Void</source>
         <translation>Vazio</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="65"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="64"/>
         <source>Bit</source>
         <translation>Bit</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="69"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="68"/>
         <source>Char</source>
         <translation>Caracter</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="73"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="72"/>
         <source>Unsigned char</source>
         <translation>Unsigned char</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="29"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="79"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="78"/>
         <source>Integer</source>
         <translation>Inteiro</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="85"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="84"/>
         <source>Unsigned integer</source>
         <translation>Unsigned inteiro</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="89"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="88"/>
         <source>Boolean</source>
         <translation>Booleano</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="93"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="92"/>
         <source>Float</source>
         <translation>Float</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="71"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="97"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="96"/>
         <source>Double</source>
         <translation>Double</translation>
     </message>
@@ -4494,35 +4494,35 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="75"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="101"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="100"/>
         <source>Numeric</source>
         <translation>Numérico</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="76"/>
         <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="33"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="105"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="104"/>
         <source>String</source>
         <translation>String</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="109"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="108"/>
         <source>Byte array</source>
         <translation>Byte array</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="72"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="113"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="112"/>
         <source>Geometry</source>
         <translation>Geometria</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="117"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="116"/>
         <source>Date time</source>
         <translation>Data hora</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="121"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="120"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
@@ -4725,22 +4725,28 @@ p, li { white-space: pre-wrap; }
         <translation>Classificação por</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="22"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="24"/>
         <source>DataSet</source>
         <translation>Conjunto de Dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="38"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="40"/>
         <source>Connection Info</source>
         <translation>Informações de Conecção</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="55"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="57"/>
         <source>SRID: </source>
         <translation>SRID: </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="67"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="59"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="102"/>
+        <source> -  </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="71"/>
         <source>Invalid Layer</source>
         <translation>Camada Inválida</translation>
     </message>
@@ -5561,6 +5567,59 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterNavigatorWidgetForm.ui" line="252"/>
         <source>Preview</source>
         <translation>Pré-visualização.</translation>
+    </message>
+</context>
+<context>
+    <name>RasterSlicingWizardPageForm</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="20"/>
+        <source>Slicing Parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="32"/>
+        <source>Band</source>
+        <translation type="unfinished">Banda</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="42"/>
+        <source>Input raster band</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="53"/>
+        <source>Slices Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="63"/>
+        <source>The number of histogram slices to create</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="83"/>
+        <source>If checked, a paletted raster will be created instead of a multi-band raster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="86"/>
+        <source>Create Palette Raster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="96"/>
+        <source>If checked, the input raster will historgram will be equalized before the slicing process</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterSlicingWizardPageForm.ui" line="99"/>
+        <source>Equalize histogram</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -7149,168 +7208,168 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>TablePopupFilter</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="488"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="607"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="490"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="609"/>
         <source>Hide column</source>
         <translation>Ocultar coluna</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="489"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="608"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="491"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="610"/>
         <source>Hides the selected column.</source>
         <translation>Oculta a coluna selecionada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="504"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="623"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="506"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="625"/>
         <source>Reset columns order</source>
         <translation>Reorganizar colunas.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="505"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="624"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="507"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="626"/>
         <source>Put all columns in the original order.</source>
         <translation>Coloque todas as colunas na ordem original.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="511"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="630"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="513"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="632"/>
         <source>Sort data ASC</source>
         <translation>Ordenar Ascendente</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="512"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="631"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="514"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="633"/>
         <source>Sort data in ascendent order using selected columns.</source>
         <translation>Classificar dados em ordem crescente usando colunas selecionadas.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="516"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="635"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="518"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="637"/>
         <source>Sort data DESC</source>
         <translation>Ordenar descendente</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="517"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="636"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="519"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="638"/>
         <source>Sort data in descendent order using selected columns.</source>
         <translation>Classificar dados em ordem descendente usando colunas selecionadas.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="523"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="642"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="525"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="644"/>
         <source>Histogram</source>
         <translation>Histograma</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="524"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="643"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="526"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="645"/>
         <source>Creates a new histogram based on the data of the selected colunm.</source>
         <translation>Cria um novo histograma com base nos dados da coluna seleccionada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="528"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="647"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="530"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="649"/>
         <source>Normal Probability</source>
         <translation>Probabilidade Normal</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="529"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="648"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="531"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="650"/>
         <source>Show a chart that displays the normal probability curve.</source>
         <translation>Mostrar um gráfico que apresente a curva de probabilidade normal.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="533"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="652"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="535"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="654"/>
         <source>Statistics</source>
         <translation>Estatística</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="534"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="653"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="536"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="655"/>
         <source>Show the statistics summary of the selected colunm.</source>
         <translation>Mostrar resumo estatístico da coluna selecionada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="557"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="676"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="559"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="678"/>
         <source>Add column</source>
         <translation>Adiciona coluna</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="558"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="677"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="560"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="679"/>
         <source>Adds a column to the table.</source>
         <translation>Adiciona uma coluna à tabela.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="563"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="565"/>
         <source>Remove column</source>
         <translation>Remover coluna</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="564"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="566"/>
         <source>Removes a column from the table.</source>
         <translation>Remover uma coluna da tabela.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="569"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="571"/>
         <source>Rename column</source>
         <translation>Renomear coluna</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="570"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="572"/>
         <source>Renames a column of the table.</source>
         <translation>Mudar o nome de uma coluna da tabela.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="574"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="576"/>
         <source>Change column type</source>
         <translation>Alterar tipo de coluna</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="575"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="577"/>
         <source>Changes the type of a column of the table.</source>
         <translation>Altera o tipo de uma coluna da tabela.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="580"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="582"/>
         <source>Change column data</source>
         <translation>Alterar dados de uma coluna</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="581"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="583"/>
         <source>Changes the data of a column of the table.</source>
         <translation>Altera os dados de uma coluna da tabela.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="586"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="588"/>
         <source>Save editions</source>
         <translation>Salvar edições</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="587"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="589"/>
         <source>Save pendent editions to layer.</source>
         <translation>Salvar edições pendentes da camada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="699"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="701"/>
         <source>Enable auto scroll</source>
         <translation>Ativar auto rolagem</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="700"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="702"/>
         <source>Goes to the selected row.</source>
         <translation>Vai para a linha selecionada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="710"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="712"/>
         <source>Enable promotion</source>
         <translation>Ativar promoção</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="711"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="713"/>
         <source>Enables promotion of selected rows.</source>
         <translation>Ativar promoção das linhas selecionadas.</translation>
     </message>
@@ -8830,25 +8889,25 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>te::qt::widgets::ClassifierWizard</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="61"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="172"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="176"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="188"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="62"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="177"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="181"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="193"/>
         <source>Classifier</source>
         <translation>Classificador</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="172"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="177"/>
         <source>Classifier ended sucessfully</source>
         <translation>Classificação terminou com sucesso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="176"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="181"/>
         <source>Classifier execution error.</source>
         <translation>Erro na execução do classificador</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="188"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClassifierWizard.cpp" line="193"/>
         <source>Classifier initialization error.</source>
         <translation>Erro na inicialização do classificador</translation>
     </message>
@@ -9913,17 +9972,17 @@ Iremos fornecer em breve!</translation>
 <context>
     <name>te::qt::widgets::DataSetTableModel</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="571"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="570"/>
         <source>Invalid int value.</source>
         <translation>Valor Int inválido</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="583"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="582"/>
         <source>Invalid double value.</source>
         <translation>Valor Double inválido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="602"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="600"/>
         <source>Edition Failure</source>
         <translation>Falha de Edição</translation>
     </message>
@@ -9931,136 +9990,136 @@ Iremos fornecer em breve!</translation>
 <context>
     <name>te::qt::widgets::DataSetTableView</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1121"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1123"/>
         <source>This operation is not available for this type of data</source>
         <translation>Esta operação não está disponível para este tipo de dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1122"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1124"/>
         <source>TNormal Probability</source>
         <translation>Probabilidade TNormal</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1150"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1198"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1242"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1152"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1200"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1244"/>
         <source>Fail to get data source.</source>
         <translation>Falha na obtenção da fonte de dados.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1154"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1156"/>
         <source>Invalid column name. Choose another.</source>
         <translation>Nome da coluna inválido. Escolha outro.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1154"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1156"/>
         <source>TerraView</source>
         <translation>TerraView</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1164"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1166"/>
         <source>Rename Column</source>
         <translation>Renomear Coluna</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1164"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1166"/>
         <source>The column could not be renamed: </source>
         <translation>A coluna não pode ser renomeada: </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1185"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1187"/>
         <source>Fail to get property of the dataset.</source>
         <translation>Falha ao obter a propriedade do conjunto de dados.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1235"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1237"/>
         <source>This is a string column, use single quotes</source>
         <translation>Esta é uma coluna do tipo String, usar aspas simples</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1351"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1355"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1353"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1357"/>
         <source>Updating data failure</source>
         <translation>Atualizando falha de dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1355"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1357"/>
         <source>Data source operation fail for unknown reason.</source>
         <translation>Operação da fonte de dados falhou por motivo desconhecido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1503"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1505"/>
         <source>Sort operation not supported by the source of data.</source>
         <translation>Operação de ordenar não suportada por esta fonte de dados.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1520"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1522"/>
         <source>Sorting columns failure</source>
         <translation>Ordenação de colunas falharam</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1520"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1522"/>
         <source>Could not sort data: </source>
         <translation>Não foi possível ordenar os dados:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1551"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1589"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1553"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1591"/>
         <source>Fail to get data source of the layer.</source>
         <translation>Não consegue obter fonte de dados da camada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1556"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1558"/>
         <source>Name must not be empty.</source>
         <translation>Nome não pode estar vazio.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1559"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1561"/>
         <source>The property name is invalid.</source>
         <translation>O nome da propriedade está inválido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1562"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1564"/>
         <source>There already exists a property with this name.</source>
         <translation>Já existe uma propriedade com este nome.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1576"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1578"/>
         <source>Creating column failure</source>
         <translation>Criação de coluna falhou</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1576"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1578"/>
         <source>The column could not be created: </source>
         <translation>A coluna não pôde ser criada: </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1584"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1586"/>
         <source>Remove column</source>
         <translation>Remover coluna</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1584"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1586"/>
         <source>Are you sure you want to remove this column?</source>
         <translation>Tem certeza de que deseja remover esta coluna ?</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1607"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1609"/>
         <source>Removing column failure</source>
         <translation>Remoção de coluna falhou</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1607"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1609"/>
         <source>The column could not be removed: </source>
         <translation>A coluna não pôde ser removida: </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1660"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1662"/>
         <source>Fail to get data source from layer</source>
         <translation>Não consegue obter fonte de dados da camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1674"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1676"/>
         <source>Save edition failure</source>
         <translation>Salvar a edição falhou</translation>
     </message>
@@ -11443,204 +11502,204 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
 <context>
     <name>te::qt::widgets::LayerPropertiesInfo</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="42"/>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="118"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="43"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="123"/>
         <source>Layer properties</source>
         <translation>Propriedades da camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="45"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="46"/>
         <source>Id</source>
         <translation>Id</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="49"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="50"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="54"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="55"/>
         <source>SRID</source>
         <translation>SRID</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="59"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="60"/>
         <source>Connection</source>
         <translation>Conecção</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="64"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="65"/>
         <source>Num of Itens</source>
         <translation>Número de Itens</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="70"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="71"/>
         <source>Bounding box</source>
         <translation>Retângulo envolvente</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="72"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="73"/>
         <source>Lower left x</source>
         <translation>Inferior esquerdo x</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="73"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="74"/>
         <source>Lower left y</source>
         <translation>Inferior esquerdo y</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="74"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="75"/>
         <source>Upper right x</source>
         <translation>Superior direito x</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="75"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="76"/>
         <source>Upper right y</source>
         <translation>Superior direito y</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="90"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="91"/>
         <source>Visibility</source>
         <translation>Visibilidade</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="93"/>
         <source>Not visible</source>
         <translation>Não visível</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="93"/>
         <source>visible</source>
         <translation>visível</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="92"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="93"/>
         <source>Partially visible</source>
         <translation>Parcialmente visível</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="160"/>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="295"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="165"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="300"/>
         <source>Raster properties</source>
         <translation>Propriedades do Matricial (raster)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="163"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="168"/>
         <source>Number of Lines</source>
         <translation>Número de Linhas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="164"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="169"/>
         <source>Number of Columns</source>
         <translation>Número de Colunas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="165"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="170"/>
         <source>Number of Bands</source>
         <translation>Número de Bandas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="166"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="171"/>
         <source>Resolution X</source>
         <translation>Resolução X</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="167"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="172"/>
         <source>Resolution Y</source>
         <translation>Resolução Y</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="168"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="173"/>
         <source>Access Policy</source>
         <translation>Política de Acesso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="169"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="174"/>
         <source>Multi Resolution Levels</source>
         <translation>Níveis de Multi Resolução</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="200"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="205"/>
         <source>No Access</source>
         <translation>Sem acesso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="202"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="207"/>
         <source>Read Only Access</source>
         <translation>Acesso de somente leitura</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="204"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="209"/>
         <source>Write Only Access</source>
         <translation>Acesso de somente escrita</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="206"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="211"/>
         <source>Read and Write Access</source>
         <translation>Acesso de Leitura e Escrita</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="215"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="220"/>
         <source>Band </source>
         <translation>Banda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="218"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="223"/>
         <source>Description</source>
         <translation>Descrição</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="219"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="224"/>
         <source>Data Type</source>
         <translation>Tipo de Dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="220"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="225"/>
         <source>Dummy Value</source>
         <translation>Valor nulo (dummy)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="221"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="226"/>
         <source>Color Interpretation</source>
         <translation>Interpretação colorida</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="222"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="227"/>
         <source>Pallete Interpretation</source>
         <translation>Interpretação paleta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="246"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="251"/>
         <source>Block properties</source>
         <translation>Propriedades do bloco</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="248"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="253"/>
         <source>Number of blocks in X</source>
         <translation>Número de blocos em X</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="249"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="254"/>
         <source>Number of blocks in Y</source>
         <translation>Número de blocos em Y</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="250"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="255"/>
         <source>Block Width (pixels)</source>
         <translation>Largura de Blocos (pixels)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="251"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="256"/>
         <source>Block Height (pixels)</source>
         <translation>Altura de Blocos (pixels)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="273"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="278"/>
         <source>Name of categories</source>
         <translation>Nome de categorias</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="278"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.cpp" line="283"/>
         <source>Category </source>
         <translation>Categoria</translation>
     </message>
@@ -12934,102 +12993,102 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="473"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="498"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="501"/>
         <source>SQL File *.sql</source>
         <translation>SQL File *.sql</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="483"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="508"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="540"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="570"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="605"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="486"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="511"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="543"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="573"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="659"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="665"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="775"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="809"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="611"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="662"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="668"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="778"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="815"/>
         <source>Query DataSource</source>
         <translation>Conjunto de Dados de Consulta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="498"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="501"/>
         <source>Select a SQL file...</source>
         <translation>Selecione um arquivo SQL...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="531"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="617"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="623"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="629"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="534"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="620"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="626"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="632"/>
         <source>Warning</source>
         <translation>Aviso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="531"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="617"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="534"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="620"/>
         <source>SQL not defined.</source>
         <translation>SQL não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="540"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="543"/>
         <source>No layer selected.</source>
         <translation>Nenhuma camada selecionada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="570"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="659"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="573"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="662"/>
         <source>Error executing SQL.</source>
         <translation>Erro na execução do SQL.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="605"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
         <source>Error selecting objects: </source>
         <translation>Erro na seleção de objetos: </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="611"/>
         <source>Selection done.</source>
         <translation>Seleção feita.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="623"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="626"/>
         <source>Define a repository for the result.</source>
         <translation>Definir um repositório para o resultado.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="629"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="632"/>
         <source>Define a name for the resulting layer.</source>
         <translation>Defina um nome para a camada resultante.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="665"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="668"/>
         <source>Query result is empty.</source>
         <translation>Resultado da consulta está vazio.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="775"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="778"/>
         <source>Error creating output dataset.</source>
         <translation>Erro ao criar conjunto de dados de saída.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="809"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
         <source>Error creating layer. </source>
         <translation>Erro ao criar camada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="815"/>
         <source>Layer created.</source>
         <translation>Camada criada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="842"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="845"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="842"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="845"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -13229,6 +13288,43 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
         <location filename="../../../src/terralib/qt/widgets/rp/RasterNavigatorWizardPage.cpp" line="45"/>
         <source>Allows  navigate and interact over a raster.</source>
         <translation>Permite navegar e interagir sobre uma matriz.</translation>
+    </message>
+</context>
+<context>
+    <name>te::qt::widgets::RasterSlicingWizard</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="45"/>
+        <source>Raster Slicing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="166"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="170"/>
+        <source>Raster slicing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="166"/>
+        <source>Raster slicing ended sucessfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizard.cpp" line="170"/>
+        <source>Raster slicing execution error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>te::qt::widgets::RasterSlicingWizardPage</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizardPage.cpp" line="37"/>
+        <source>RasterSlicing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/RasterSlicingWizardPage.cpp" line="38"/>
+        <source>Define the raster slicing parameters.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -13750,17 +13846,19 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     <name>te::qt::widgets::SegmenterWizard</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="63"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="153"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="197"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="201"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="212"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="165"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="209"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="213"/>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="224"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="234"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="236"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="246"/>
         <source>Segmenter</source>
         <translation>Segmentação</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="103"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="111"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="117"/>
         <source>Warning</source>
         <translation>Aviso</translation>
     </message>
@@ -13770,32 +13868,42 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
         <translation>Selecione pelo menos uma banda.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="153"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="111"/>
+        <source>Invalid file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="117"/>
+        <source>The output raster file already exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="165"/>
         <source>File already exists.</source>
         <translation>Arquivo já existe.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="197"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="209"/>
         <source>Segmenter ended sucessfully</source>
         <translation>Segmentação finalizada com sucesso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="197"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="209"/>
         <source>seconds</source>
         <translation>segundos</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="201"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="213"/>
         <source>Segmenter execution error</source>
         <translation>Segmentação executada com erro</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="212"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="224"/>
         <source>Segmenter initialization error</source>
         <translation>Segmentação inicializada com erro</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="234"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizard.cpp" line="246"/>
         <source>An exception has occurred!</source>
         <translation>Ocorreu uma exceção !</translation>
     </message>
@@ -13830,8 +13938,12 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="299"/>
+        <source>Segmenter error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Constrast error.</source>
-        <translation>Contraste com erro.</translation>
+        <translation type="vanished">Contraste com erro.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/SegmenterWizardPage.cpp" line="314"/>
