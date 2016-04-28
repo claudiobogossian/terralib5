@@ -75,7 +75,9 @@
 
 void te::qt::af::UpdateUserSettings()
 {
-  QSettings user_settings(QApplication::instance()->organizationName(),
+  QSettings user_settings(QSettings::IniFormat,
+                          QSettings::UserScope,
+                          QApplication::instance()->organizationName(),
                           QApplication::instance()->applicationName());
   
 // save enabled plugins
@@ -141,7 +143,7 @@ void te::qt::af::UpdateUserSettings()
 
 void te::qt::af::SaveDataSourcesFile(te::qt::af::ApplicationController* appController)
 {
-  QSettings usettings(qApp->organizationName(), qApp->applicationName());
+  QSettings usettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   
   QString fileName = usettings.value("data_sources/data_file").toString();
 
@@ -194,7 +196,7 @@ void te::qt::af::UpdateToolBarsInTheSettings(te::qt::af::ApplicationController* 
 {
   std::vector<QToolBar*> bars = appController->getToolBars();
   std::vector<QToolBar*>::const_iterator it;
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("toolbars");
 
@@ -212,7 +214,7 @@ void te::qt::af::UpdateToolBarsInTheSettings(te::qt::af::ApplicationController* 
 
 void te::qt::af::AddToolBarToSettings(QToolBar* bar)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("toolbars");
 
@@ -223,7 +225,7 @@ void te::qt::af::AddToolBarToSettings(QToolBar* bar)
 
 void te::qt::af::RemoveToolBarFromSettings(QToolBar* bar)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("toolbars");
   sett.remove(bar->objectName());
@@ -234,7 +236,7 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(te::qt::af::Applicat
 {
   std::vector<QToolBar*> bars;
 
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("toolbars");
   QStringList lst = sett.childGroups();
@@ -286,7 +288,7 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(te::qt::af::Applicat
 
 void te::qt::af::SaveState(QMainWindow* mainWindow)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   
   sett.beginGroup("mainWindow");
   sett.setValue("geometry", mainWindow->saveGeometry());
@@ -296,7 +298,7 @@ void te::qt::af::SaveState(QMainWindow* mainWindow)
 
 void te::qt::af::RestoreState(QMainWindow* mainWindow)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("mainWindow");
   mainWindow->restoreGeometry(sett.value("geometry").toByteArray());
@@ -326,7 +328,7 @@ void te::qt::af::RestoreState(QMainWindow* mainWindow)
 
 void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.setValue("projects/last datasource used", dsType);
 }
@@ -340,7 +342,7 @@ void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
 
 QString te::qt::af::GetLastDatasourceFromSettings()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   return sett.value("projects/last datasource used").toString();
 }
@@ -378,7 +380,7 @@ QString te::qt::af::UnsavedStar(const QString windowTitle, bool isUnsaved)
 
 QColor te::qt::af::GetDefaultDisplayColorFromSettings()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   QString hexColor = sett.value("display/defaultDisplayColor").toString();  
   QColor defaultColor;
   defaultColor.setNamedColor(hexColor);
@@ -401,7 +403,7 @@ QString te::qt::af::GetStyleSheetFromColors(QColor primaryColor, QColor secondar
 
 QString te::qt::af::GetStyleSheetFromSettings()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   //bool isChecked = sett.value("table/tableAlternateColors").toBool();
   QColor pColor;
   pColor.setNamedColor(sett.value("table/primaryColor").toString());
@@ -418,7 +420,7 @@ QString te::qt::af::GetStyleSheetFromSettings()
 
 bool te::qt::af::GetAlternateRowColorsFromSettings()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   bool isChecked = sett.value("table/tableAlternateColors").toBool();
 
   return isChecked;
@@ -426,7 +428,7 @@ bool te::qt::af::GetAlternateRowColorsFromSettings()
 
 void te::qt::af::AddActionToCustomToolbars(te::qt::af::ApplicationController* appController, QAction* act)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("toolbars");
   QStringList lst = sett.childGroups();
@@ -517,21 +519,21 @@ std::vector<std::string> te::qt::af::GetPluginsNames(const std::vector<std::stri
 
 QString te::qt::af::GetDateTime()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   return sett.value("configuration/generation").toString();
 }
 
 void te::qt::af::SetDateTime(const QString& dateTime)
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.setValue("configuration/generation", dateTime);
 }
 
 QString te::qt::af::GetDefaultConfigFileOutputDir()
 {
-  QSettings sett(qApp->organizationName(), qApp->applicationName());
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   QFileInfo info(sett.fileName());
 

@@ -103,7 +103,6 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QModelIndex>
-#include <QSettings>
 #include <QToolBar>
 
 // Boost
@@ -131,7 +130,9 @@ QString GetWindowTitle(const ProjectMetadata& project, te::qt::af::ApplicationCo
 
 void GetProjectsFromSettings(QStringList& prjTitles, QStringList& prjPaths)
 {
-  QSettings s(qApp->organizationName(),
+  QSettings s(QSettings::IniFormat,
+              QSettings::UserScope,
+              qApp->organizationName(),
               qApp->applicationName());
 
   s.beginGroup("projects");
@@ -167,7 +168,9 @@ void GetProjectsFromSettings(QStringList& prjTitles, QStringList& prjPaths)
 
 void WriteProjectsToSettings(const QStringList& prjTitles, const QStringList& prjPaths)
 {
-  QSettings s(qApp->organizationName(),
+  QSettings s(QSettings::IniFormat,
+              QSettings::UserScope,
+              qApp->organizationName(),
               qApp->applicationName());
 
   s.beginGroup("projects");
@@ -273,7 +276,10 @@ void TerraView::init()
   BaseApplication::init(te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
   //check user settings file
-  QSettings user_settings(qApp->organizationName(), qApp->applicationName());
+  QSettings user_settings(QSettings::IniFormat,
+    QSettings::UserScope,
+    QApplication::instance()->organizationName(),
+    QApplication::instance()->applicationName());
 
   QFileInfo info(user_settings.fileName());
 

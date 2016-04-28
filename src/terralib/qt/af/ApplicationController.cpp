@@ -393,7 +393,9 @@ void  te::qt::af::ApplicationController::initialize()
   }
   
 // hold user settings
-  QSettings user_settings(QApplication::instance()->organizationName(),
+  QSettings user_settings(QSettings::IniFormat,
+                          QSettings::UserScope,
+                          QApplication::instance()->organizationName(),
                           QApplication::instance()->applicationName());
 
 // load icon theme
@@ -521,7 +523,9 @@ void te::qt::af::ApplicationController::initializePlugins()
 
     SplashScreenManager::getInstance().showMessage(tr("Checking enabled plugins..."));
     
-    QSettings user_settings(QApplication::instance()->organizationName(),
+    QSettings user_settings(QSettings::IniFormat,
+                            QSettings::UserScope,
+                            QApplication::instance()->organizationName(),
                             QApplication::instance()->applicationName());
 
     user_settings.beginGroup("plugins");

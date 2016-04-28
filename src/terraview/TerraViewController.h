@@ -39,6 +39,7 @@
 // Qt
 #include <QObject>
 #include <QStringList>
+#include <QSettings>
 #include <QColor>
 
 // Forward declarations
