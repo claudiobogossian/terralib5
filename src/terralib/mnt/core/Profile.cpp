@@ -51,7 +51,7 @@
 #include "../../../../src/terralib/memory/DataSetItem.h"
 
 #include "../../../../src/terralib/raster/RasterProperty.h"
-#include "../../../../src/terralib/raster/RasterFactory.h" 
+#include "../../../../src/terralib/raster/RasterFactory.h"
 #include "../../../../src/terralib/raster/Utils.h"
 #include "../../../../src/terralib/raster/BandProperty.h"
 #include "../../../../src/terralib/geometry/PointZ.h"
@@ -92,7 +92,7 @@ std::vector<te::gm::LineString*> te::mnt::Profile::prepareVector(std::string &in
   std::auto_ptr<te::da::DataSet> inDset;
   //size_t nsamples = mpt.getNumGeometries();
   inDset = inDsrc->getDataSet(inDsetName);
-  
+
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
   inDset->moveBeforeFirst();
 
@@ -236,7 +236,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
         ymin = pt1Y;
         ymax = pt2Y;
       }
-      
+
       int initcol = (int)((xmin - boxLowerLeft) / resX);
       int finalcol = (int)((xmax - boxLowerLeft) / resX + .9999);
       int initline = (int)((boxUpperRigth - ymax) / resY);
@@ -244,7 +244,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
 
       double dx = pt2X - pt1X;
       double dy = pt2Y - pt1Y;
-      
+
       //Calculate intersections of the segment with the columns
       if (((finalcol - initcol) > 1) && (fabs((double)dx) > 1.0e-6))
       {
@@ -252,7 +252,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
         {
           double x = (boxLowerLeft + c * resX);
           double y = (pt1Y + (dy / dx) * (x - pt1X));
-          
+
           collin = raster->getGrid()->geoToGrid(x, y);
           col = (unsigned int)collin.getX();
           row = (unsigned int)collin.getY();
@@ -304,7 +304,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
       if (zval != m_dummy)
       {
         double dist = sqrt(((double)dx * (double)dx) + ((double)dy* (double)dy)) + distbase;
-        
+
         if (ind_pf != ind_pfant)
           distbase = dist;
 
@@ -326,7 +326,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
       profile->setPoint(profile->size() - 1, it->first, it->second);
       it++;
     }
- 
+
     profileSet.push_back(profile);
     line.clear();
     distbase = 0;
@@ -335,158 +335,3 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
   return true;
 }
 
-<<<<<<< HEAD
-=======
-/*
-while (itVisadas != visadas.end())
-{
-bool flag = false;
-
-//Stores first end (pt1) in the profile structure
-//std::vector<te::gm::LineString*>::iterator itLine = itVisadas->begin();
-
-//std::vector<te::gm::LineString*>::iterator itLine = itVisadas->begin();
-
-for (int i = 0; i < visadas.size(); i++)
-{
-//onde estiver itLine será itLine[i]
-}
-while (flag == false && itLine != itVisadas->end())
-{
-pt1Theme = *itLine;
-collin = raster->getGrid()->geoToGrid(pt1Theme.getX, pt1Theme.getY);
-col = collin.getX();
-row = collin.getY();
-//collin = raster->coord2Index(pt1Theme);
-//col = TeRound(collin.x());
-//row = TeRound(collin.y());
-
-line.insert(std::map<double, double>::value_type(0.0, zval));
-flag = true;
-
-    }
-
-    if (itLine == itVisadas->end())
-    {
-      itVisadas++;
-      continue;
-    }
-
-    ind_pf++;
-    itLine++;
-
-    while (itLine != itVisadas->end())
-    {
-      pt2Theme = *itLine;
-
-      if (pt1Theme.getX > pt2Theme.getX)
-      {
-        xmin = pt2Theme.getX;
-        xmax = pt1Theme.getX;
-      }
-      else
-      {
-        xmin = pt1Theme.getX;
-        xmax = pt2Theme.getX;
-      }
-
-      if (pt1Theme.getY > pt2Theme.getY)
-      {
-        ymin = pt2Theme.getY;
-        ymax = pt1Theme.getY;
-      }
-      else
-      {
-        ymin = pt1Theme.getY;
-        ymax = pt2Theme.getY;
-      }
-
-      double boxLowerLeft = raster->getExtent()->getLowerLeftX(); //x1 = lowerLeftX
-      double boxUpperRigth = raster->getExtent()->getUpperRightY(); //y2 = UpperRigthY
-
-      double resX = raster->getResolutionX();
-      double resY = raster->getResolutionY();
-
-      int initcol = (int)((xmin - boxLowerLeft) / resX);
-      int finalcol = (int)((xmax - boxLowerLeft) / resX + .9999);
-      int initline = (int)((boxUpperRigth - ymax) / resY);
-      int finalline = (int)((boxUpperRigth - ymin) / resY + .9999);
-
-      double dx = pt2Theme.getX - pt1Theme.getX;
-      double dy = pt2Theme.getY - pt1Theme.getY;
-
-      //Calculate intersections of the segment with the columns
-      if (((finalcol - initcol) > 1) && (fabs((double)dx) > 1.0e-6))
-      {
-        for (int c = (initcol + 1); c < finalcol; c++)
-        {
-          double x = (boxLowerLeft + c * resX);
-          double y = (pt1Theme.getY + (dy / dx) * (x - pt1Theme.getX));
-
-          collin = raster->getGrid()->geoToGrid(x, y); //collin = raster->GeoToGrid(TeCoord2D(x, y));
-          col = collin.getX();
-          row = collin.getY();
-
-          ind_pf++;
-
-          raster->getValue(col, row, zval);
-          double dist = sqrt(((double)(x - pt1Theme.getX)*(double)(x - pt1Theme.getX)) + ((double)(y - pt1Theme.getY)*(double)(y - pt1Theme.getY))) + distbase;
-          line.insert(std::map<double, double>::value_type(dist, zval));
-        }
-      }
-
-      //Calculate intersections of the segment with the lines
-      if (((finalline - initline) > 1) && (fabs((double)dy) > 1.0e-6))
-      {
-        for (int l = (initline + 1); l < finalline; l++)
-        {
-          //Calculate intersections of the segment with the bottom line
-          double y = boxUpperRigth - (l * resY);
-          double x = pt1Theme.getX + (dx / dy) * (y - pt1Theme.getY);
-
-          collin = raster->getGrid()->geoToGrid(x, y);
-          col = collin.getX();
-          row = collin.getY();
-
-          ind_pf++;
-          raster->getValue(col, row, zval);
-          //Calculates the distance of the current point with point x1, y1
-          double dist = sqrt(((double)(x - pt1Theme.getX)*(double)(x - pt1Theme.getX)) + ((double)(y - pt1Theme.getY)*(double)(y - pt1Theme.getY))) + distbase;
-          line.insert(std::map<double, double>::value_type(dist, zval));
-        }
-      }
-      //Stores second end (pt2) in the profile structure
-
-      collin = raster->getGrid()->geoToGrid(pt2Theme.getX, pt2Theme.getY);
-      col = collin.getX();
-      row = collin.getY();
-      ind_pf++;
-
-      raster->getValue(col, row, zval);
-      double dist = sqrt(((double)dx * (double)dx) + ((double)dy* (double)dy)) + distbase;
-
-      if (ind_pf != ind_pfant)
-        distbase = dist;
-
-      ind_pfant = ind_pf;
-      pt1Theme = pt2Theme;
-      line.insert(std::map<double, double>::value_type(dist, zval));
-      itLine++;
-    }
-    te::gm::LineString* profile = new te::gm::LineString(0, te::gm::LineStringType);
-    std::map<double, double>::iterator it = line.begin();
-
-    while (it != line.end())
-    {
-      profile->setNumCoordinates(profile->size() + 1);
-      profile->setPoint(profile->size() - 1, it->first, it->second);
-      it++;
-    }
-    profileSet[0].push_back(profile);
-
-    line.clear();
-    itVisadas++;
-    distbase = 0;
-  }
-*/
->>>>>>> Changing common/Translator.h to core/translator/Translator.h

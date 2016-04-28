@@ -12,7 +12,7 @@
 
 #include "../../common/Exception.h"
 #include "../../common/progress/TaskProgress.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 
 #include "../../dataaccess/utils/Utils.h"
 
@@ -207,7 +207,7 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
     //1. Set the segment line r whose endpoints point p and the vertice v
     te::gm::PointZ ptr2 = m_node[(unsigned int)v].getNPoint();
 
-    //2. Set the edge assist aaux as null 
+    //2. Set the edge assist aaux as null
     int32_t aaux = -1;
 
     //3. Be m be the number of edges opposite to v . Set the set A = { a1, . , Am } the opposite edges to v ,
@@ -226,7 +226,7 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
     int32_t vi;
     for (;;)
     {
-      //6. For each vertice vi (i Î  {1,  .,n}) of V, do:
+      //6. For each vertice vi (i ÃŽ  {1,  .,n}) of V, do:
       size_t iiv;
       for (iiv = 0; iiv < vvn.size(); iiv++)
       {
@@ -259,7 +259,7 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
       if (iiv != vvn.size())
         break;
 
-      //7. For each edge ai (i Î  {1,  .,m}) of A, do:
+      //7. For each edge ai (i ÃŽ  {1,  .,m}) of A, do:
       size_t iia;
       for (iia = 0; iia < aam.size(); iia++)
       {
@@ -274,7 +274,7 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
             int32_t taux = m_line[(unsigned int)ai].getLeftPolygon();
             if (vaux != -1)
             { //  7.1.1. If vaux is not NULL, do:
-              //   7.1.1.1. Defines the t triangle that sharing ai 
+              //   7.1.1.1. Defines the t triangle that sharing ai
               //    with the  taux triangle that contains the vaux vertex ,
               if (OppositeNode(taux, ai) == vaux)
                 t = m_line[(unsigned int)ai].getRightPolygon();
@@ -283,7 +283,7 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
             }
             else if (aaux != -1)
             { // 7.1.2. Else, aaux is not NULL, do:
-              //  7.1.2.1. Defines the t triangle that sharing ai with 
+              //  7.1.2.1. Defines the t triangle that sharing ai with
               //    the taux triangle that constins aaux.
               int32_t lidsaux[3];
               t = m_line[(unsigned int)ai].getLeftPolygon();
@@ -371,7 +371,7 @@ int32_t te::mnt::Tin::FindTriangle(te::gm::PointZ &ptr1)
       if (!NodeTriangles(v, ttk))
         return -1;
 
-      //8.2. For each ti triangle (i Î  {1,  .,k}) of T, do:
+      //8.2. For each ti triangle (i ÃŽ  {1,  .,k}) of T, do:
       for (size_t iit = 0; iit < ttk.size(); iit++)
       {
         int32_t ti = ttk[iit];
@@ -500,7 +500,7 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
   for (size_t i = 0; i < a.size(); i++)
   {
     if (a[i] == -1) continue;
-    // 1. Defines td as triangle that is right of 
+    // 1. Defines td as triangle that is right of
     // edge a and te as triangle is left of a,
     td = m_line[(unsigned int)a[i]].getRightPolygon();
     te = m_line[(unsigned int)a[i]].getLeftPolygon();
@@ -509,8 +509,8 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
     ai = a[i];
     ti = td;
 
-    // 3. If the triangle ti is not null, insert the edge ao of ti 
-    // that is not directly connected to v in set A, 
+    // 3. If the triangle ti is not null, insert the edge ao of ti
+    // that is not directly connected to v in set A,
     if (ti != -1)
     {
       ao = OppositeEdge(ti, v);
@@ -535,7 +535,7 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
         te = -1;
         // 4.1.3. Defines ai as edge a,
         ai = a[i];
-        // 4.1.4. If triangle ti is not null, insert edge ao 
+        // 4.1.4. If triangle ti is not null, insert edge ao
         // of ti is not directly connected to v in set A,
         if (ti != -1)
         {
@@ -553,7 +553,7 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
         continue;
       }
 
-      // 4.2. Defines edge aaux of ti triangle that conects the v vertice and is different of ai 
+      // 4.2. Defines edge aaux of ti triangle that conects the v vertice and is different of ai
       if (!m_triang[(unsigned int)ti].LinesId(lids))
         //return false;
         break;
@@ -573,7 +573,7 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
 
       aaux = lids[j];
 
-      // 4.3. Defines taux as the triangle that sharing the aaux edge with ti 
+      // 4.3. Defines taux as the triangle that sharing the aaux edge with ti
       if (m_line[(unsigned int)aaux].getRightPolygon() == ti)
         taux = m_line[(unsigned int)aaux].getLeftPolygon();
       else if (m_line[(unsigned int)aaux].getLeftPolygon() == ti)
@@ -587,7 +587,7 @@ bool te::mnt::Tin::NodeOppositeLines(int32_t v, std::vector<int32_t> &linids)
       ti = taux;
       ai = aaux;
 
-      // 4.5. If ti triangle isn't NULL, insert ao edge of ti that isn't directly connected to v in A set 
+      // 4.5. If ti triangle isn't NULL, insert ao edge of ti that isn't directly connected to v in A set
       if (ti != -1)
       {
         ao = OppositeEdge(ti, v);
@@ -816,7 +816,7 @@ bool te::mnt::Tin::NodeLines(int32_t v, std::vector<int32_t> &linids)
 
   for (size_t i = 0; i < a.size(); i++)
   {
-    // 1. Defines td as the triangle that is on the right edge a 
+    // 1. Defines td as the triangle that is on the right edge a
     // and te as the triangle that is on the left of a,
     td = m_line[(unsigned int)a[i]].getRightPolygon();
     te = m_line[(unsigned int)a[i]].getLeftPolygon();
@@ -847,7 +847,7 @@ bool te::mnt::Tin::NodeLines(int32_t v, std::vector<int32_t> &linids)
         continue;
       }
 
-      //    4.2. Defines edge aaux of traingle ti that conects 
+      //    4.2. Defines edge aaux of traingle ti that conects
       //    vertice v and is different of ai,
       if (!m_triang[(unsigned int)ti].LinesId(lids))
         break;
@@ -1045,7 +1045,7 @@ bool te::mnt::Tin::NodeNodes(int32_t v, std::vector<int32_t>& nodids)
 
   for (size_t i = 0; i < a.size(); i++)
   {
-    // 1. Defines td as triangle that is right of 
+    // 1. Defines td as triangle that is right of
     // edge a and te as triangle is left of a,
     td = m_line[(unsigned int)a[i]].getRightPolygon();
     te = m_line[(unsigned int)a[i]].getLeftPolygon();
@@ -1083,7 +1083,7 @@ bool te::mnt::Tin::NodeNodes(int32_t v, std::vector<int32_t>& nodids)
         break;
       }
 
-      //    4.2. Defines edge aaux of triangle ti that connects 
+      //    4.2. Defines edge aaux of triangle ti that connects
       //   to vertice v and is different of ai,
       m_triang[(unsigned int)ti].LinesId(lids);
       for (j = 0; j < 3; j++)
@@ -1165,7 +1165,7 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
   {
     if (a[i] == -1)
       continue;
-    // 1. Defines td as triangle that is right of 
+    // 1. Defines td as triangle that is right of
     //  edge a and te as troiangle that is left of a,
     td = m_line[(unsigned int)a[i]].getRightPolygon();
     te = m_line[(unsigned int)a[i]].getLeftPolygon();
@@ -1195,7 +1195,7 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
         te = -1;
         //      4.1.3. Defines ai as edge a,
         ai = a[i];
-        //      4.1.4. Insert the trinagle ti in set C if 
+        //      4.1.4. Insert the trinagle ti in set C if
         //      it is not null,
         if (ti != -1)
         {
@@ -1209,7 +1209,7 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
         continue;
       }
 
-      // 4.2. Defines the edge aaux of triangle ti that conects the vertice v 
+      // 4.2. Defines the edge aaux of triangle ti that conects the vertice v
       //    and is different of ai,
       m_triang[(unsigned int)ti].LinesId(lids);
       for (j = 0; j < 3; j++)
@@ -1226,7 +1226,7 @@ bool te::mnt::Tin::NodeTriangles(int32_t v, std::vector<int32_t> &triangles)
 
       aaux = lids[j];
 
-      // 4.3. Defines taux as triangle that sharing the 
+      // 4.3. Defines taux as triangle that sharing the
       //    edge aaux with ti,
       if (m_line[(unsigned int)aaux].getRightPolygon() == ti)
         taux = m_line[(unsigned int)aaux].getLeftPolygon();
@@ -1957,7 +1957,7 @@ bool te::mnt::Tin::NodeFirstDeriv()
 {
   int32_t clstnids[CLNODES];
   size_t i;
-  
+
   // Create and Initialize first derivatives vector
   if (m_nfderiv.size())
   {
@@ -2024,7 +2024,7 @@ bool te::mnt::Tin::NodeSecondDeriv()
       // Node with DUMMY value
       continue;
     if (m_node[i].getType() == Deletednode)
-      // Deleted node 
+      // Deleted node
       continue;
 
     // Look for closest point of the node
@@ -2676,7 +2676,7 @@ bool te::mnt::Tin::CalcTriangleSecondDeriv(std::vector<int32_t> &triangles, std:
       m_tsderiv[(unsigned int)triid].setZ(m_nodatavalue);
       continue;
     }
-    
+
     // Calculate using dx
     for (unsigned int j = 0; j < 3; j++)
     {
@@ -3230,7 +3230,7 @@ bool te::mnt::Tin::FillGridValue(int32_t triid, int32_t flin, int32_t llin, int3
       m_rst->setValue((unsigned int)ncol, (unsigned int)nlin, zvalue);
     }
   }
-  
+
   return true;
 }
 
