@@ -1206,77 +1206,72 @@
 <context>
     <name>te::vp::MergeDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="182"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="189"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="183"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="190"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished">Shapefile (*.shp *.SHP);;</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="204"/>
         <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="211"/>
         <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="218"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="227"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="263"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="280"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="300"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="330"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="335"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="377"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="555"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="225"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="234"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="301"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="317"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="328"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="333"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="398"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="404"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="582"/>
         <source>Merge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="204"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="211"/>
         <source>It is necessary at least two layer to operat!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="211"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="218"/>
         <source>Select a repository for the resulting layer!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="218"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="225"/>
         <source>Define a name for the resulting layer!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="227"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="234"/>
         <source>All layers must have SRID!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="263"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="301"/>
         <source>Output file already exists. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="280"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="317"/>
         <source>There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="300"/>
-        <source>Error: could not generate the merge.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="330"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="328"/>
         <source>The selected output datasource can not be accessed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="335"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="333"/>
         <source>Dataset already exists. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="555"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="582"/>
         <source>To use first layer as output (update), it must be a DataSet Layer!</source>
         <translation type="unfinished"></translation>
     </message>

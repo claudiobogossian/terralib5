@@ -93,6 +93,7 @@ te::mnt::CreateIsolinesDialog::CreateIsolinesDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
 
   m_ui->m_stepFixedradioButton->clicked(true);
+  onStepFixeEnabled(true);
 
   m_outsrid = 0;
 }

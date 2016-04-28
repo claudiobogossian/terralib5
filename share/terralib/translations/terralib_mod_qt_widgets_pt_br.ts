@@ -12993,102 +12993,102 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="473"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="498"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="501"/>
         <source>SQL File *.sql</source>
         <translation>SQL File *.sql</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="483"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="508"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="540"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="570"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="605"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="486"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="511"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="543"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="573"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="659"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="665"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="775"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="809"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="611"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="662"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="668"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="778"/>
         <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="815"/>
         <source>Query DataSource</source>
         <translation>Conjunto de Dados de Consulta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="498"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="501"/>
         <source>Select a SQL file...</source>
         <translation>Selecione um arquivo SQL...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="531"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="617"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="623"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="629"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="534"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="620"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="626"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="632"/>
         <source>Warning</source>
         <translation>Aviso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="531"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="617"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="534"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="620"/>
         <source>SQL not defined.</source>
         <translation>SQL não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="540"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="543"/>
         <source>No layer selected.</source>
         <translation>Nenhuma camada selecionada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="570"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="659"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="573"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="662"/>
         <source>Error executing SQL.</source>
         <translation>Erro na execução do SQL.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="605"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
         <source>Error selecting objects: </source>
         <translation>Erro na seleção de objetos: </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="611"/>
         <source>Selection done.</source>
         <translation>Seleção feita.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="623"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="626"/>
         <source>Define a repository for the result.</source>
         <translation>Definir um repositório para o resultado.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="629"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="632"/>
         <source>Define a name for the resulting layer.</source>
         <translation>Defina um nome para a camada resultante.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="665"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="668"/>
         <source>Query result is empty.</source>
         <translation>Resultado da consulta está vazio.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="775"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="778"/>
         <source>Error creating output dataset.</source>
         <translation>Erro ao criar conjunto de dados de saída.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="809"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
         <source>Error creating layer. </source>
         <translation>Erro ao criar camada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="815"/>
         <source>Layer created.</source>
         <translation>Camada criada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="842"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="845"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="842"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="845"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
