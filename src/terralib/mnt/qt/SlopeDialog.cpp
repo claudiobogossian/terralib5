@@ -37,7 +37,10 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
+#include "../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../raster.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
+
 #include "SlopeDialog.h"
 #include "ui_SlopeDialogForm.h"
 
@@ -84,6 +87,11 @@ te::mnt::SlopeDialog::SlopeDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
+  m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
+  connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
+
+  m_outsrid = 0;
 
 }
 
@@ -139,6 +147,9 @@ void te::mnt::SlopeDialog::onInputComboBoxChanged(int index)
     if (layerID == it->get()->getId().c_str())
     {
       m_inputLayer = it->get();
+
+      setSRID(m_inputLayer->getSRID());
+
       std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
       if (dsType->hasRaster()) //GRID
       {
@@ -374,7 +385,7 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
 
     double dummy = m_ui->m_dummylineEdit->text().toDouble();
 
-    decl->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), grad, slope, m_inputLayer->getSRID(), dummy);
+    decl->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), grad, slope, m_outsrid, dummy);
 
     decl->run();
 
@@ -402,3 +413,35 @@ void te::mnt::SlopeDialog::onCancelPushButtonClicked()
   reject();
 }
 
+
+void te::mnt::SlopeDialog::onSrsToolButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if (srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  int newSRID = srsDialog.getSelectedSRS().first;
+
+  setSRID(newSRID);
+
+}
+
+void te::mnt::SlopeDialog::setSRID(int newSRID)
+{
+  if (newSRID <= 0)
+  {
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+  }
+  else
+  {
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    if (name.size())
+      m_ui->m_resSRIDLabel->setText(name.c_str());
+    else
+      m_ui->m_resSRIDLabel->setText(QString("%1").arg(newSRID));
+  }
+  m_outsrid = newSRID;
+
+}

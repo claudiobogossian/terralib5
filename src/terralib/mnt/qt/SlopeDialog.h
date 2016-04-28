@@ -64,6 +64,8 @@ namespace te
 
       te::map::AbstractLayerPtr getLayer();
 
+      void setSRID(int newSRID);
+
       protected slots:
 
       void onInputComboBoxChanged(int index);
@@ -78,6 +80,7 @@ namespace te
       void onHelpPushButtonClicked();
       void onOkPushButtonClicked();
       void onCancelPushButtonClicked();
+      void onSrsToolButtonClicked();
 
     private:
 
@@ -92,6 +95,7 @@ namespace te
 
       mntType m_inputType;  //!< Input type (TIN, GRID)
 
+      int m_outsrid;
 
     }; //class SlopeDialog
   } //mnt

@@ -62,6 +62,8 @@ namespace te
 
       void getMinMax(te::map::AbstractLayerPtr inputLayer, double &min, double &max);
 
+      void setSRID(int newSRID);
+
       protected slots:
 
       void onInputComboBoxChanged(int index);
@@ -76,6 +78,7 @@ namespace te
       void onHelpPushButtonClicked();
       void onOkPushButtonClicked();
       void onCancelPushButtonClicked();
+      void onSrsToolButtonClicked();
 
     private:
 
@@ -93,6 +96,7 @@ namespace te
       double m_dummy;
       bool m_toFile;
       bool m_hasDummy;
+      int m_outsrid;
 
     };
   } //mnt

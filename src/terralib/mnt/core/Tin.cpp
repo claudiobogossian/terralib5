@@ -1404,8 +1404,8 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
 
   Save(outDsrc.get(), outDSet.get(), outDSType.get());
 
-  outDSet.release();
-  outDSType.release();
+ // outDSet.release();
+ // outDSType.release();
 
   return true;
 }
@@ -1602,7 +1602,7 @@ bool te::mnt::Tin::LoadTinQGIS(te::da::DataSourcePtr &inDsrc, std::string &inDse
     geomProp.release();
     dsType.release();
     inDset.release();
-    return false;
+    throw (e);
   }
   geomProp.release();
   dsType.release();
@@ -1645,7 +1645,14 @@ bool te::mnt::Tin::LoadTin(te::da::DataSourcePtr &inDsrc, std::string &inDsetNam
 
   if (!isTeTIN)
   {
-    LoadTinQGIS(inDsrc, inDsetName, zmin, zmax);
+    try
+    {
+      LoadTinQGIS(inDsrc, inDsetName, zmin, zmax);
+    }
+    catch (te::common::Exception& e)
+    {
+      throw (e);
+    }
 
     m_nodesize = m_node.size();
     m_lnode = (int32_t)m_nodesize;
