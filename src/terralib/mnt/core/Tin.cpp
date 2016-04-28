@@ -1404,8 +1404,8 @@ bool te::mnt::Tin::SaveTin(te::da::DataSourcePtr &outDsrc, std::string &outDsetN
 
   Save(outDsrc.get(), outDSet.get(), outDSType.get());
 
-  outDSet.release();
-  outDSType.release();
+ // outDSet.release();
+ // outDSType.release();
 
   return true;
 }

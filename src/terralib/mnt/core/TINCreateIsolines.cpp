@@ -32,7 +32,9 @@ bool te::mnt::TINCreateIsolines::run()
   LoadTin(m_inDsrc, m_inDsetName, zmin, zmax);
 
   std::size_t ntri = m_triang.size();
-  te::common::TaskProgress task("Creating Isolines...", te::common::TaskProgress::UNDEFINED, (int)(ntri*m_values.size()));
+  te::common::TaskProgress task("Creating Isolines...");
+  task.setTotalSteps((int)m_values.size()*ntri);
+  //task.useTimer(true);
 
   for (size_t v = 0; v < m_values.size(); v++)
   {
