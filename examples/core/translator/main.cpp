@@ -27,8 +27,10 @@
 */
 
 // TerraLib
-#include <terralib/core/encoding/CharEncoding.h>
-#include <terralib/BuildConfig.h>
+#include <terralib/core/translator/Translator.h>
+#include <terralib/common/PlatformUtils.h>
+
+#include <boost/locale.hpp>
 
 // STL
 #include <cstdlib>
@@ -37,60 +39,9 @@
 
 int main(int argc, char *argv[])
 {
-  {
-    std::cout << "===> Handling character encoding CP1252 <===" << std::endl;
-    std::ifstream input_file(TERRALIB_DATA_DIR "/encoding/arq_cp1252.txt");
-  
-    std::string text_in_cp1252((std::istreambuf_iterator<char>(input_file)),
-                               std::istreambuf_iterator<char>());
-  
-    std::cout << "Original text size in CP1252: " << text_in_cp1252.size() << std::endl;
-    std::cout << "Original text in CP1252:\n" << text_in_cp1252 << std::endl << std::endl;
-    
-    std::string text_in_utf8 = te::core::CharEncoding::toUTF8(text_in_cp1252, te::core::EncodingType::CP1252);
-    
-    std::cout << "Text size when converted from CP1252 to UTF-8: " << text_in_utf8.size() << std::endl;
-    std::cout << "Text converted from CP1252 to UTF-8:\n" << text_in_utf8 << std::endl << std::endl ;
-  }
-
-  {
-    std::cout << "===> Handling character encoding LATIN1 <===" << std::endl;
-    
-    std::ifstream input_file(TERRALIB_DATA_DIR "/encoding/arq_latin1.txt");
-    
-    std::string text_in_latin1((std::istreambuf_iterator<char>(input_file)),
-                               std::istreambuf_iterator<char>());
-    
-    std::cout << "Original text size in LATIN1: " << text_in_latin1.size() << std::endl;
-    std::cout << "Original text in LATIN1:\n" << text_in_latin1 << std::endl << std::endl;
-    
-    std::string text_in_utf8 = te::core::CharEncoding::toUTF8(text_in_latin1, te::core::EncodingType::LATIN1);
-    
-    std::cout << "Text size when converted from LATIN1 to UTF-8: " << text_in_utf8.size() << std::endl;
-    std::cout << "Text converted from LATIN1 to UTF-8:\n" << text_in_utf8 << std::endl << std::endl ;
-  }
-  
-  {
-    std::cout << "===> // Handling character encoding UTF8 <===" << std::endl;
-    
-    std::ifstream input_file(TERRALIB_DATA_DIR "/encoding/arq_utf8.txt");
-    
-    std::string text_in_utf8((std::istreambuf_iterator<char>(input_file)),
-                               std::istreambuf_iterator<char>());
-    
-    std::cout << "Original text size in UTF8: " << text_in_utf8.size() << std::endl;
-    std::cout << "Original text in UTF8:\n" << text_in_utf8 << std::endl << std::endl;
-    
-    std::string text_in_latin1 = te::core::CharEncoding::fromUTF8(text_in_utf8, te::core::EncodingType::LATIN1);
-    
-    std::cout << "Text size when converted from UTF8 to LATIN1: " << text_in_latin1.size() << std::endl;
-    std::cout << "Text converted from UTF8 to LATIN1:\n" << text_in_latin1 << std::endl << std::endl;
-    
-    std::string text_in_cp1252 = te::core::CharEncoding::fromUTF8(text_in_utf8, te::core::EncodingType::CP1252);
-    
-    std::cout << "Text size when converted from UTF8 to CP1252: " << text_in_cp1252.size() << std::endl;
-    std::cout << "Text converted from UTF8 to CP1252:\n" << text_in_cp1252 << std::endl ;
-  }
-  
+  // Add your your text domain, will throw and error if was already added
+  TE_ADD_TEXT_DOMAIN("terralib_example_core");
+  std::cout << TE_TR("This text will be in portuguese if your system locale is pt_BR") << "\n";
+  std::cout << TE_TR("This text will remain the same, because there is no translation for it.") << "\n";
   return EXIT_SUCCESS;
 }

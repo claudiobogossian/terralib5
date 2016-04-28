@@ -89,15 +89,11 @@ set_target_properties(terralib_unittest_core_lib_function
 add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)
 
 
-add_dependencies(terralib_unittest_core translations translations_pot)
+add_dependencies(terralib_unittest_core terralib_unittest_core_translation)
 
-GETTEXT_CREATE_TEMPLATE(terralib_unittest_core
-                        "TE_TR"
-                        "${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/"
-                        "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
-                        )
-
-GETTEXT_CREATE_TRANSLATION(terralib_unittest_core
-                           "pt_BR"
-                           "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
-                           "${CMAKE_BINARY_DIR}/translations/")
+GETTEXT_CREATE_TRANSLATIONS("terralib_unittest_core"
+                            "TE_TR"
+                            "pt_BR"
+                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/"
+                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                           )
