@@ -91,7 +91,7 @@ te::qt::plugins::wfs::Plugin::~Plugin()
 
 void te::qt::plugins::wfs::Plugin::startup()
 {
-//  if(m_initialized)
+  if(m_initialized)
     return;
 
   te::qt::widgets::DataSourceTypeManager::getInstance().add(new WFSType);
