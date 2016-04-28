@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>275</width>
-    <height>505</height>
+    <height>460</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,16 +46,6 @@
       </item>
       <item>
        <widget class="QComboBox" name="m_layersComboBox"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="m_Zlabel">
-        <property name="text">
-         <string>Quota Column:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="m_ZcomboBox"/>
       </item>
      </layout>
     </widget>
@@ -317,11 +307,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>m_SmoothIsolinesTitleLabel</zorder>
-  <zorder>m_inputGroupBox</zorder>
-  <zorder>m_simplParamsGroupBox</zorder>
-  <zorder>m_outputGroupBox</zorder>
-  <zorder>m_helpPushButton</zorder>
  </widget>
  <customwidgets>
   <customwidget>

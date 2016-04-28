@@ -85,7 +85,6 @@ te::mnt::MNTGenerationDialog::MNTGenerationDialog(QWidget* parent , Qt::WindowFl
   connect(m_ui->m_dimCLineEdit, SIGNAL(editingFinished()), this, SLOT(onDimCLineEditEditingFinished()));
   connect(m_ui->m_dimLLineEdit, SIGNAL(editingFinished()), this, SLOT(onDimLLineEditEditingFinished()));
 
-  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
@@ -219,8 +218,9 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           }
 
         }
-        if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-          gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
+        if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType || gmType == te::gm::PolygonType ||
+          gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType || gmType == te::gm::PolygonZType ||
+          gmType == te::gm::GeometryType)//TIN
         {
           m_inputType = TIN;
           std::auto_ptr<te::da::DataSet> dataquery;
@@ -392,27 +392,6 @@ void te::mnt::MNTGenerationDialog::onDimCLineEditEditingFinished()
   m_ui->m_resYLineEdit->setText(QString::number(resY));
 }
 
-void te::mnt::MNTGenerationDialog::onTargetDatasourceToolButtonPressed()
-{
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_newLayerNameLineEdit->setEnabled(true);
-  te::qt::widgets::DataSourceSelectorDialog dlg(this);
-  dlg.exec();
-
-  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
-
-  if (dsPtrList.empty())
-    return;
-
-  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
-
-  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
-
-  m_outputDatasource = *it;
-
-  m_toFile = false;
-}
-
 void te::mnt::MNTGenerationDialog::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
@@ -430,7 +409,6 @@ void te::mnt::MNTGenerationDialog::onTargetFileToolButtonPressed()
   aux = outfile.string();
   m_ui->m_repositoryLineEdit->setText(aux.c_str());
 
-  m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
