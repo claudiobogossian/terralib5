@@ -150,7 +150,7 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   WriteRegStr HKCR \"TerraView.Project\\shell\" \"\" \"open\"; #extension open command
   WriteRegStr HKCR \"TerraView.Project\\shell\\open\" \"\" '\"Open with TerraView\"';
   WriteRegStr HKCR \"TerraView.Project\\shell\\open\\command\" \"\" '\"$INSTDIR\\bin\\terraview.exe\" \"%1\"';
-  System::Call '\"shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)"'
+  System::Call '\"shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)\"'
  ")
 
  list (APPEND CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
@@ -158,7 +158,7 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   WriteRegStr HKCR \".tview\" \"\" \"$R0\"   
   DeleteRegKey HKCR '.tview' #removing extension register
   DeleteRegKey HKCR 'TerraView.Project' #removing file association register 
-  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
+  System::Call '\"shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)\"'
   ")
   
  # File types association:
