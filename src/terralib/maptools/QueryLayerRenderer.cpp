@@ -124,6 +124,8 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
   // Adjust internal renderer transformer
   m_transformer.setTransformationParameters(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury, canvas->getWidth(), canvas->getHeight());
 
+  canvas->setWindow(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury);
+
   // Resets internal renderer state
   reset();
 

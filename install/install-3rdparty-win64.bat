@@ -1481,6 +1481,7 @@ goto end_libboost_deps
   IF NOT EXIST %ICONV% call :remove_lib boost && goto pgis_deps
   IF NOT EXIST %BZIP% call :remove_lib boost && goto pgis_deps
   IF NOT EXIST %ICU% call :remove_lib boost && goto pgis_deps
+  IF NOT EXIST %ZLIB% call :remove_lib boost && goto pgis_deps  
   goto pgis_deps
 :end_libboost_deps
   
@@ -1494,10 +1495,10 @@ goto end_libboost_deps
   
   cd %B_DIR% >nul 2>nul
 
-  ( call bootstrap.bat vc12 setup-amd64 --with-chrono,date_time,filesystem,system,thread,timer,locale >>%CONFIG_LOG% 2>nul ) || goto configFail
+  ( call bootstrap.bat vc12 setup amd64  >>%CONFIG_LOG% 2>nul ) || goto configFail
   
-  ( b2 -a toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building" && goto minizip
-
+  ( b2 --reconfigure toolset=msvc-12.0 address-model=64 architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR%  --layout=tagged -sICU_PATH=%ICUROOT% -sICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -sBZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -sBZIP2_LIBPATH=%BZIP2D_LIBRARY%\.. -sZLIB_INCLUDE=%ZLIB_INCLUDE_DIR% -sZLIB_LIBPATH=%ZLIB_LIBRARY% install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building" && goto minizip
+ 
   echo done.
 
   call :append_log_end libboost
