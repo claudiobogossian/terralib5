@@ -81,7 +81,6 @@ te::mnt::SlopeDialog::SlopeDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_dimCLineEdit, SIGNAL(editingFinished()), this, SLOT(onDimCLineEditEditingFinished()));
   connect(m_ui->m_dimLLineEdit, SIGNAL(editingFinished()), this, SLOT(onDimLLineEditEditingFinished()));
 
-  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
@@ -120,7 +119,8 @@ void te::mnt::SlopeDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers
             std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
             te::gm::GeomType gmType = geomProp->getGeometryType();
             if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-              gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
+              gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType ||
+              gmType == te::gm::GeometryType)//TIN
             {
               m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
             }
@@ -275,28 +275,6 @@ void te::mnt::SlopeDialog::onDimCLineEditEditingFinished()
   m_ui->m_resYLineEdit->setText(QString::number(resY));
 }
 
-
-void te::mnt::SlopeDialog::onTargetDatasourceToolButtonPressed()
-{
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_newLayerNameLineEdit->setEnabled(true);
-  te::qt::widgets::DataSourceSelectorDialog dlg(this);
-  dlg.exec();
-
-  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
-
-  if (dsPtrList.empty())
-    return;
-
-  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
-
-  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
-
-  m_outputDatasource = *it;
-
-  m_toFile = false;
-}
-
 void te::mnt::SlopeDialog::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
@@ -314,7 +292,6 @@ void te::mnt::SlopeDialog::onTargetFileToolButtonPressed()
   aux = outfile.string();
   m_ui->m_repositoryLineEdit->setText(aux.c_str());
 
-  m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
@@ -358,17 +335,14 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
     std::map<std::string, std::string> outdsinfo;
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
-    if (m_toFile)
-    {
-      if (boost::filesystem::exists(uri))
-        throw te::common::Exception(TE_TR("Output file already exists! Remove it or select a new name and try again."));
+    if (boost::filesystem::exists(uri))
+      throw te::common::Exception(TE_TR("Output file already exists! Remove it or select a new name and try again."));
 
-      std::size_t idx = outputdataset.find(".");
-      if (idx != std::string::npos)
-        outputdataset = outputdataset.substr(0, idx);
+    std::size_t idx = outputdataset.find(".");
+    if (idx != std::string::npos)
+      outputdataset = outputdataset.substr(0, idx);
 
-      outdsinfo["URI"] = uri.string();
-    }
+    outdsinfo["URI"] = uri.string();
 
     te::mnt::Slope *decl = new te::mnt::Slope();
     decl->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
@@ -393,7 +367,7 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
 
     m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
   }
-  catch (const std::exception& e)
+  catch (te::common::Exception& e)
   {
     QApplication::restoreOverrideCursor();
     te::common::ProgressManager::getInstance().removeViewer(id);
@@ -404,7 +378,6 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
   QApplication::restoreOverrideCursor();
   te::common::ProgressManager::getInstance().removeViewer(id);
   accept();
-
 
 }
 

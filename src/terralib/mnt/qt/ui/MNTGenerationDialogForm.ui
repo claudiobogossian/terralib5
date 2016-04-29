@@ -436,19 +436,6 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QToolButton" name="m_targetDatasourceToolButton">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>BD</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
@@ -462,12 +449,6 @@
        <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
       </item>
      </layout>
-     <zorder>m_rasterGroupBox</zorder>
-     <zorder>m_repositoryLabel</zorder>
-     <zorder>m_layerNameLabel</zorder>
-     <zorder>m_newLayerNameLineEdit</zorder>
-     <zorder>layoutWidget</zorder>
-     <zorder>m_srsToolButton</zorder>
     </widget>
    </item>
    <item>

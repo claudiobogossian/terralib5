@@ -272,19 +272,6 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QToolButton" name="m_targetDatasourceToolButton">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>BD</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>

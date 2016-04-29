@@ -38,12 +38,11 @@ void te::mnt::Smooth::setOutput(te::da::DataSourcePtr outDsrc, std::string dsnam
   m_outDsetName = dsname;
 }
 
-void te::mnt::Smooth::setParams(double factor, double maxdist, bool simpl_out, std::string &attr)
+void te::mnt::Smooth::setParams(double factor, double maxdist, bool simpl_out)
 {
   m_factor = factor;
   m_maxdist = maxdist;
   m_simpl_out = simpl_out;
-  m_Zattr = attr;
 }
 
 bool te::mnt::Smooth::run()
@@ -53,9 +52,10 @@ bool te::mnt::Smooth::run()
   std::vector<te::gm::LineString> isolines_suavizado;
 
   std::string geostype;
-   te::gm::Envelope env;
+  te::gm::Envelope env;
+  std::string attr;
 
-  ReadSamples(m_inDsetName, m_inDsrc, m_Zattr, m_factor, m_maxdist, DouglasPeucker, mpt, isolines_simp, geostype, env);
+  ReadSamples(m_inDsetName, m_inDsrc, attr, m_factor, m_maxdist, DouglasPeucker, mpt, isolines_simp, geostype, env);
 
   te::common::TaskProgress task("Smoothing Isolines...", te::common::TaskProgress::UNDEFINED, (int)isolines_simp.getNumGeometries());
 

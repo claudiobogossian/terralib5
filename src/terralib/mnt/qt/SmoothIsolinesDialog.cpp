@@ -127,9 +127,6 @@ void te::mnt::SmoothIsolinesDialog::onInputComboBoxChanged(int index)
   m_inputLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
-  m_ui->m_Zlabel->setVisible(false);
-  m_ui->m_ZcomboBox->clear();
-  m_ui->m_ZcomboBox->setVisible(false);
 
   while (it != m_layers.end())
   {
@@ -139,36 +136,6 @@ void te::mnt::SmoothIsolinesDialog::onInputComboBoxChanged(int index)
       m_inputLayer = selectedLayer;
       
       setSRID(m_inputLayer->getSRID());
-
-      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-
-      std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-      te::gm::GeomType gmType = geomProp->getGeometryType();
-      if (gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType)
-      {
-        m_ui->m_Zlabel->setVisible(true);
-        m_ui->m_ZcomboBox->setVisible(true);
-        std::vector<te::dt::Property*> props = dsType->getProperties();
-        for (std::size_t i = 0; i < props.size(); ++i)
-        {
-          switch (props[i]->getType())
-          {
-          case te::dt::FLOAT_TYPE:
-          case te::dt::DOUBLE_TYPE:
-          case te::dt::INT16_TYPE:
-          case te::dt::INT32_TYPE:
-          case te::dt::INT64_TYPE:
-          case te::dt::UINT16_TYPE:
-          case te::dt::UINT32_TYPE:
-          case te::dt::UINT64_TYPE:
-          case te::dt::NUMERIC_TYPE:
-            m_ui->m_ZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
-            break;
-          }
-        }
-      }
-      geomProp.release();
-      dsType.release();
 
       break;
     }
@@ -313,7 +280,6 @@ void te::mnt::SmoothIsolinesDialog::onOkPushButtonClicked()
     }
 
     bool simpl_out = m_ui->m_simploutCheckBox->isChecked();
-    std::string attr = m_ui->m_ZcomboBox->currentText().toStdString();
 
     iso->setSRID(m_outsrid);
     if (m_outsrid)
@@ -331,7 +297,7 @@ void te::mnt::SmoothIsolinesDialog::onOkPushButtonClicked()
       }
     }
 
-    iso->setParams(m_factor, m_maxdist, simpl_out, attr);
+    iso->setParams(m_factor, m_maxdist, simpl_out);
 
     bool result = iso->run();
 

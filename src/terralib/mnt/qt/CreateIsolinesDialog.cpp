@@ -128,6 +128,11 @@ void te::mnt::CreateIsolinesDialog::setLayers(std::list<te::map::AbstractLayerPt
             te::gm::GeomType gmType = geomProp->getGeometryType();
             switch (gmType)
             {
+              case te::gm::GeometryType:
+              case te::gm::PolygonType:
+              case te::gm::PolygonZType:
+              case te::gm::PolygonMType:
+              case te::gm::PolygonZMType:
               case te::gm::MultiPolygonType:
               case te::gm::MultiPolygonZType:
               case te::gm::MultiPolygonMType:
