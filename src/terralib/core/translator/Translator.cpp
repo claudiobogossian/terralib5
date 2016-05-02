@@ -51,7 +51,7 @@ const char* te::core::Translator::translate(const char* message)
   {
     std::string domain = *it;
 
-    std::string path = boost::filesystem::current_path().string() + "/../../share/terralib/translations";
+    std::string path = te::core::FindInTerraLibPath("share/terralib/translations");
     boost::locale::generator gen;
     gen.add_messages_domain(domain);
 
@@ -110,7 +110,7 @@ void te::core::Translator::addTextDomain(const std::string& textDomain)
 {
   if(exist(textDomain))
   {
-    boost::format err_msg("The text domain %1 already exist.");
+    boost::format err_msg(TE_TR("The text domain %1 already exist."));
     throw Exception() << te::ErrorDescription((err_msg % textDomain).str());
   }
   m_textDomainVector.push_back(textDomain);

@@ -17,10 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/examples/core/translator/main.cpp:44
-msgid "This text will be in portuguese if your system locale is pt_BR"
-msgstr ""
-
-#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/examples/core/translator/main.cpp:45
-msgid "This text will remain the same, because there is no translation for it."
+#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/src/terralib/core/translator/Translator.cpp:113
+msgid "The text domain %1 already exist."
 msgstr ""

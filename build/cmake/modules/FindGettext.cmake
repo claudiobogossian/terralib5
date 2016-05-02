@@ -54,9 +54,9 @@ IF (GETTEXT_MSGMERGE_EXECUTABLE AND GETTEXT_MSGFMT_EXECUTABLE AND GETTEXT_MSGINI
   SET(GETTEXT_FOUND TRUE)
 ELSE (GETTEXT_MSGMERGE_EXECUTABLE AND GETTEXT_MSGFMT_EXECUTABLE AND GETTEXT_MSGINIT_EXECUTABLE)
   SET(GETTEXT_FOUND FALSE)
-  IF (GetText_REQUIRED)
+  IF (Gettext_REQUIRED)
     MESSAGE(FATAL_ERROR "GetText not found")
-  ENDIF (GetText_REQUIRED)
+  ENDIF (Gettext_REQUIRED)
 ENDIF (GETTEXT_MSGMERGE_EXECUTABLE AND GETTEXT_MSGFMT_EXECUTABLE AND GETTEXT_MSGINIT_EXECUTABLE)
 IF(XGETTEXT_EXECUTABLE)
   SET(XGETTEXT_FOUND TRUE)
@@ -77,16 +77,17 @@ macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory 
   get_filename_component(_absDir ${directory} ABSOLUTE)
   set(_absPot "${po_path}/${pot_file}")
   if (UNIX)
-    add_custom_command(OUTPUT "${pot_file}.mo"
+    add_custom_command(OUTPUT "${pot_file}.pot"
                        COMMAND test -d ${_absPot}|| mkdir -p ${_absPot}
                        COMMAND test -e ${_absPot}/${pot_file}.pot || touch ${_absPot}/${pot_file}.pot
                        COMMAND find `pwd` -name '*.cpp' -print > ${_absPot}/${pot_file}.txt
                        COMMAND ${XGETTEXT_EXECUTABLE} --from-code="UTF-8" --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
                        COMMAND rm ${_absPot}/${pot_file}.txt
-                       COMMAND test -e ${_absPot}/${pot_file}_${locale}.po || ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale}.UTF-8 -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/${pot_file}_${locale}.po
-                       COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot
+                       COMMAND test -s ${_absPot}/${pot_file}.pot && ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale}.UTF-8 -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/temp.po
+                       COMMAND test -e  ${_absPot}/${pot_file}_${locale}.po && ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot || mv ${_absPot}/temp.po ${_absPot}/${pot_file}_${locale}.po
+                       COMMAND rm ${_absPot}/temp.po
                        COMMAND test -d ${mo_path}/${locale}/LC_MESSAGES/ || mkdir -p ${mo_path}/${locale}/LC_MESSAGES/
-                       COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${mo_path}/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
+                       COMMAND test -e ${_absPot}/${pot_file}_${locale}.po && ${GETTEXT_MSGFMT_EXECUTABLE} -o ${mo_path}/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
                        COMMENT "Generating translations files..."
                        WORKING_DIRECTORY "${_absDir}"
                        )
@@ -96,7 +97,7 @@ macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory 
   endif(WIN32)
 
   add_custom_target("${pot_file}_translation"
-                    DEPENDS  "${pot_file}.mo")
+                    DEPENDS  "${pot_file}.pot")
 endmacro(GETTEXT_CREATE_TRANSLATIONS)
 
 

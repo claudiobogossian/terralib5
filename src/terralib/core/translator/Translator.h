@@ -33,8 +33,6 @@
 #include "../../BuildConfig.h"
 #include "Config.h"
 
-#include "../../common/Singleton.h"
-
 // STL
 #include <vector>
 #include <string>
