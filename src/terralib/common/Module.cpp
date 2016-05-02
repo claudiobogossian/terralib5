@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "Enums.h"
-#include "LibraryManager.h"
+#include "../core/lib/LibraryManager.h"
 #include "Logger.h"
 #include "Module.h"
 #include "PlatformUtils.h"
@@ -60,7 +60,7 @@ te::common::Module::Module()
   TE_ADD_TEXT_DOMAIN(TERRALIB_TEXT_DOMAIN, TERRALIB_TEXT_DOMAIN_DIR, "UTF-8");
 
 // initialize the singleton LibraryManager
-  LibraryManager::getInstance();
+//  LibraryManager::getInstance();
 
 // initialize the singleton UnitsOfMeasureManager
   UnitsOfMeasureManager::getInstance();

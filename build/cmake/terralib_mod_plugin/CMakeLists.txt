@@ -38,6 +38,7 @@ add_library(terralib_mod_plugin SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILE
 
 target_link_libraries(terralib_mod_plugin terralib_mod_xml
                                           terralib_mod_common
+                                          terralib_mod_core
                                           ${Boost_FILE_SYSTEM_LIBRARY}
                                           ${Boost_SYSTEM_LIBRARY})
 
