@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: terralib 5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-28 16:47-0300\n"
+"POT-Creation-Date: 2016-04-29 14:25-0300\n"
 "PO-Revision-Date: 2016-04-28 16:47-0300\n"
 "Last-Translator: Matheus Zaglia <EMAIL@ADDRESS>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -17,7 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:41
 msgid "BR-GIS"
@@ -62,3 +61,10 @@ msgstr "O text domain informado não existe."
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:52
 msgid "The unprepared english text will remain the same."
 msgstr ""
+
+#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:55
+#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:56
+msgid "1 layer is selected."
+msgid_plural "2 layers are selected."
+msgstr[0] "1 camada está selecionada."
+msgstr[1] "2 camadas estão selecionadas."
