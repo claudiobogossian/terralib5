@@ -80,11 +80,26 @@ set_target_properties(terralib_mod_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
+
+add_dependencies(terralib_mod_core terralib_mod_core_translation)
+
+GETTEXT_CREATE_TRANSLATIONS("terralib_mod_core"
+                            "TE_TR"
+                            "TE_TR_PLURAL"
+                            "pt_BR"
+                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core"
+                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                            "${CMAKE_BINARY_DIR}/share/terralib/translations"
+                            )
+
+
+
 install(TARGETS terralib_mod_core
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
+
 
 install(FILES ${TERRALIB_CORE_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core COMPONENT devel)

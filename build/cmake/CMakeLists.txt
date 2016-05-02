@@ -233,8 +233,6 @@ find_package(GDAL)
 
 find_package(GEOS)
 
-find_package(GNUGettext)
-
 find_package(Gettext)
 
 find_package(Log4cxx)

@@ -18,10 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/examples/core/translator/main.cpp:44
-msgid "This text will be in portuguese if your system locale is pt_BR"
-msgstr "Este texto estará em português se a região de seu sistema for pt_BR"
-
-#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/examples/core/translator/main.cpp:45
-msgid "This text will remain the same, because there is no translation for it."
-msgstr ""
+#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/src/terralib/core/translator/Translator.cpp:113
+msgid "The text domain %1 already exist."
+msgstr "O domínio %1 já existe."
