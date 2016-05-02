@@ -434,6 +434,33 @@ namespace te
       return result;
     }
 
+    inline te::dt::DateTime* Internal2TimeStampTZ(boost::int64_t ival, int z)
+    {
+      boost::int64_t dateval;
+      boost::int64_t timeval = ival;
+
+      //1 day has 86400 seconds (* 1000000)
+      dateval = timeval / 86400000000LL;
+      if(dateval != 0)
+        timeval -= dateval * 86400000000LL;
+
+      if (timeval < 0)
+      {
+          timeval += 86400000000LL;
+          dateval -= 1;
+      }
+
+      te::dt::Date* aux1 = static_cast<te::dt::Date*>(Internal2Date((long)dateval));
+      te::dt::TimeInstantTZ* aux2 = static_cast<te::dt::TimeInstantTZ*>(Internal2TimeTZ(timeval, z));
+
+      boost::local_time::local_date_time tz(aux1->getDate(), aux2->getTimeInstantTZ().local_time().time_of_day(), aux2->getTimeInstantTZ().zone(), true);
+
+      te::dt::TimeInstantTZ* result = new te::dt::TimeInstantTZ(tz);
+      delete aux1;
+      delete aux2;
+      return result;
+    }
+
 
     /*!
       \brief It creates a PropertyType from a PostgreSQL attribute description.
