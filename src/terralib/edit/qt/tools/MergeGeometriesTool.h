@@ -79,7 +79,7 @@ namespace te
 
       te::gm::Envelope buildEnvelope(const QPointF& pos);
 
-      void storeMergedFeature();
+      void storeFeature();
 
       void mergeGeometries();
 

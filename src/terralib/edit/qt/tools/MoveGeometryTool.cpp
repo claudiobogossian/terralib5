@@ -60,9 +60,6 @@ te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* displa
 
 te::edit::MoveGeometryTool::~MoveGeometryTool()
 {
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
   delete m_feature;
 }
 
@@ -97,7 +94,7 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
   // Move geometry using the current delta
   MoveGeometry(m_feature->getGeometry(), m_delta.x(), m_delta.y());
 
-  storeEditedFeature();
+  storeFeature();
 
   draw();
 
@@ -214,7 +211,7 @@ void te::edit::MoveGeometryTool::onExtentChanged()
   draw();
 }
 
-void te::edit::MoveGeometryTool::storeEditedFeature()
+void te::edit::MoveGeometryTool::storeFeature()
 {
   m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
   

@@ -70,7 +70,7 @@ void  te::edit::AddCommand::undo()
   if (count == 1)
     RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_addItems[m_addItems.size() - 1]->getId());
 
-  m_previousFeature = m_addItems.size() - 2;
+  m_previousFeature = (int)m_addItems.size() - 2;
 
   if (m_previousFeature < 0) 
     m_previousFeature = 0;
@@ -104,7 +104,7 @@ void te::edit::AddCommand::redo()
     }
   }
 
-  m_nextFeature = m_addItems.size() - 1;
+  m_nextFeature = (int)m_addItems.size() - 1;
 
   //no makes redo while the command is not on the stack
   if (resultFound)

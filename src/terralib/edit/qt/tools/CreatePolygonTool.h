@@ -114,7 +114,7 @@ namespace te
 
         te::gm::Geometry* buildLine();
 
-        void storeNewGeometry();
+        void storeFeature();
 
         void storeUndoCommand();
 

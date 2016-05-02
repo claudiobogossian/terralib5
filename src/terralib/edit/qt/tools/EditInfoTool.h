@@ -68,6 +68,8 @@ namespace te
 
       std::auto_ptr<te::dt::AbstractData> getValue(int type, QString value) const;
 
+      void storeFeature();
+
       te::da::DataSet* m_dataset;                           //!< The attributes dataset type.
       std::map<std::size_t, te::dt::AbstractData*> m_data;
       std::vector<std::size_t> m_restrictivePropertyPos;

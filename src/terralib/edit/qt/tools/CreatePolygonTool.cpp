@@ -60,9 +60,6 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 
 te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
   m_addWatches.clear();
   m_geometries.clear();
 }
@@ -132,7 +129,7 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   m_isFinished = true;
 
-  storeNewGeometry();
+  storeFeature();
 
   storeUndoCommand();
 
@@ -244,7 +241,7 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
   return line;
 }
 
-void te::edit::CreatePolygonTool::storeNewGeometry()
+void te::edit::CreatePolygonTool::storeFeature()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), convertGeomType(m_layer, buildPolygon()), te::edit::GEOMETRY_CREATE);
   emit geometriesEdited();
