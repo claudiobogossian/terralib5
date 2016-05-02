@@ -48,6 +48,11 @@ file(GLOB TERRALIB_CORE_LIB_HDR_FILES ${TERRALIB_CORE_DIR}/lib/*.h)
 file(GLOB TERRALIB_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_CORE_DIR}/translator/*.cpp)
 file(GLOB TERRALIB_CORE_TRANSLATOR_HDR_FILES ${TERRALIB_CORE_DIR}/translator/*.h)
 
+
+file(GLOB TERRALIB_CORE_UTILS_SRC_FILES ${TERRALIB_CORE_DIR}/utils/*.cpp)
+file(GLOB TERRALIB_CORE_UTILS_HDR_FILES ${TERRALIB_CORE_DIR}/utils/*.h)
+
+
 source_group("Source Files"            FILES ${TERRALIB_CORE_SRC_FILES})
 source_group("Header Files"            FILES ${TERRALIB_CORE_HDR_FILES})
 source_group("Source Files\\uri"       FILES ${TERRALIB_CORE_URI_SRC_FILES})
@@ -58,12 +63,16 @@ source_group("Source Files\\lib"       FILES ${TERRALIB_CORE_LIB_SRC_FILES})
 source_group("Header Files\\lib"       FILES ${TERRALIB_CORE_LIB_HDR_FILES})
 source_group("Source Files\\translator"       FILES ${TERRALIB_CORE_TRANSLATOR_SRC_FILES})
 source_group("Header Files\\translator"       FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES})
+source_group("Source Files\\utils"       FILES ${TERRALIB_CORE_UTILS_SRC_FILES})
+source_group("Header Files\\utils"       FILES ${TERRALIB_CORE_UTILS_HDR_FILES})
+
 
 add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}
                                      ${TERRALIB_CORE_URI_SRC_FILES} ${TERRALIB_CORE_URI_HDR_FILES}
                                      ${TERRALIB_CORE_ENCODING_SRC_FILES} ${TERRALIB_CORE_ENCODING_HDR_FILES}
                                      ${TERRALIB_CORE_LIB_SRC_FILES} ${TERRALIB_CORE_LIB_HDR_FILES}
-                                     ${TERRALIB_CORE_TRANSLATOR_SRC_FILES} ${TERRALIB_CORE_TRANSLATOR_HDR_FILES})
+                                     ${TERRALIB_CORE_TRANSLATOR_SRC_FILES} ${TERRALIB_CORE_TRANSLATOR_HDR_FILES}
+                                     ${TERRALIB_CORE_UTILS_SRC_FILES} ${TERRALIB_CORE_UTILS_HDR_FILES})
 
 target_link_libraries(terralib_mod_core ${Boost_LOCALE_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 
@@ -88,3 +97,8 @@ install(FILES ${TERRALIB_CORE_ENCODING_HDR_FILES}
 
 install(FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/translator COMPONENT devel)
+
+install(FILES ${TERRALIB_CORE_UTILS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/utils COMPONENT devel)
+
+
