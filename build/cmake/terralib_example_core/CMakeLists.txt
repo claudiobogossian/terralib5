@@ -101,9 +101,11 @@ add_dependencies(terralib_example_core_translator terralib_example_core_translat
 
 GETTEXT_CREATE_TRANSLATIONS("terralib_example_core"
                         "TE_TR"
+                        "TE_TR_PLURAL"
                         "pt_BR"
-                        "${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/"
+                        "${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core"
                         "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                        "${CMAKE_BINARY_DIR}/share/terralib/translations"
                         )
 
 

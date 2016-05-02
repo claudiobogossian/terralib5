@@ -141,7 +141,6 @@ namespace te
           original message (always in English).
 
           \param message    The text to be translated.
-          \param textDomain The text domain used in translation. A text domain is the name of the catalog used to translate the message.
 
           \return A pointer to the translated message. You must not delete the memory pointed by the returned pointer.
 
@@ -156,7 +155,6 @@ namespace te
           original message (always in English).
 
           \param message    The text to be translated.
-          \param textDomain The text domain used in the translation. A text domain is the name of the catalog used to translate the message.
 
           \return A pointer to the translated message. You must not delete the memory pointed by the returned pointer.
 
@@ -170,7 +168,6 @@ namespace te
           If no translation is available it will return the
           original message (always in English).
 
-          \param textDomain The text domain used in the translation. A text domain is the name of the catalog used to translate the message.
           \param msg1       The singular form of the text to be translated.
           \param msg2       The plural form of the text to be translated.
           \param n          This parameter is used to determine the plural form.
@@ -189,7 +186,6 @@ namespace te
           If no translation is available it will return the
           original message (always in English).
 
-          \param textDomain The text domain used in translation. A text domain is the name of the catalog used to translate the message.
           \param msg1       The singular form of the text to be translated.
           \param msg2       The plural form of the text to be translated.
           \param n          This parameter is used to determine the plural form.
@@ -207,11 +203,9 @@ namespace te
 
           \param textDomain    A given message domain (just a name). A text domain is the name of the catalog used to translate the message.
 
-          \return A NULL string if the domain is not added.
-
           \exception Exception If the text domain already exists it raises an exception. If you are not sure about the existence of a text domain, use the exist() method.
          */
-        const char* addTextDomain(const std::string& textDomain);
+        void addTextDomain(const std::string& textDomain);
 
 
         /*!
@@ -225,14 +219,14 @@ namespace te
         //@}
       private:
 
-        /*! \brief Singleton constructor must be protected. */
+        /*! \brief Singleton constructor must be private. */
         Translator(){};
 
         void operator=(Translator const&);
 
       private:
 
-        std::vector<std::string> m_textDomainVector;  //!< A map from text domains to base directory for the message catalog.
+        std::vector<std::string> m_textDomainVector;  //!< A vector from text domains to base directory for the message catalog.
 
     };
 
@@ -260,9 +254,8 @@ namespace te
 
   \brief It contains the name of the text domain used in the translation of messages in TerraLib.
  */
+
 #define TERRALIB_TEXT_DOMAIN "terralib_mod_core"
-
-
 
 /*!
   \def TE_ADD_TEXT_DOMAIN
@@ -275,18 +268,6 @@ namespace te
   #define TE_ADD_TEXT_DOMAIN(domain) te::core::Translator::getInstance().addTextDomain(domain)
 #else
   #define TE_ADD_TEXT_DOMAIN(domain) ((void)0)
-#endif
-
-
-/*!
-  \def TE_GENERAL_TR_PLURAL
-
-  \brief Try to translate the message according to the given domain and plural form. See the TE_TR_PLURAL macro for more infomation on how to create a translation mark for your code.
- */
-#ifdef TERRALIB_TRANSLATOR_ENABLED
-  #define TE_GENERAL_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n)
-#else
-  #define TE_GENERAL_TR_PLURAL(message1, message2, n) (n > 1 ? message2 : message1)
 #endif
 
 /*!
@@ -324,7 +305,7 @@ namespace te
   the plural versin will be choosed, otherwise, it will choose the
   singular form (the fisrt one).
  */
-#define TE_TR_PLURAL(message1, message2, n) TE_GENERAL_TR_PLURAL(message1, message2, n)
+#define TE_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n)
 
 //@}
 

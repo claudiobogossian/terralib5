@@ -29,10 +29,12 @@
 // Boost
 #include <boost/locale.hpp>
 #include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 
 // TerraLib
 #include "Translator.h"
 #include "../Exception.h"
+#include "../utils/Platform.h"
 
 // GNU Text Utilities
 
@@ -49,9 +51,11 @@ const char* te::core::Translator::translate(const char* message)
   {
     std::string domain = *it;
 
+    std::string path = boost::filesystem::current_path().string() + "/../../share/terralib/translations";
     boost::locale::generator gen;
     gen.add_messages_domain(domain);
-    gen.add_messages_path("/home/mzaglia/mydevel/terralib-5.1/build-develop-qt/translations");
+
+    gen.add_messages_path(path);
     std::locale::global(gen(""));
 
     std::string translated = boost::locale::translate(message).str(std::locale());
@@ -69,21 +73,40 @@ const char* te::core::Translator::translate(const std::string& msg1,
                                               const std::string& msg2,
                                               unsigned int n)
 {
-//  return translate(textDomain.c_str(), msg1.c_str(), msg2.c_str(), n);
+  return translate(msg1.c_str(), msg2.c_str(), n);
 }
 
 const char* te::core::Translator::translate(const char* msg1,
                                               const char* msg2,
                                               unsigned int n)
 {
-//#ifdef TERRALIB_TRANSLATOR_ENABLED
-//  return boost::locale::dngettext(textDomain, msg1, msg2, n).c_str();
-//#else
-//  return ((n == 1) ? msg1 : msg2);
-//#endif
+#ifdef TERRALIB_TRANSLATOR_ENABLED
+  for(auto it = m_textDomainVector.begin(); it != m_textDomainVector.end();++it)
+  {
+    std::string domain = *it;
+
+    std::string path = te::core::FindInTerraLibPath("share/terralib/translations");
+    boost::locale::generator gen;
+    gen.add_messages_domain(domain);
+
+    gen.add_messages_path(path);
+    std::locale::global(gen(""));
+
+    std::string translated = boost::locale::translate(msg1, msg2, n).str(std::locale());
+
+    if(n == 1 && translated != msg1)
+      return translated.c_str();
+    else if(n > 1 && translated != msg2)
+      return translated.c_str();
+
+  }
+  return ((n == 1) ? msg1 : msg2);
+#else
+  return ((n == 1) ? msg1 : msg2);
+#endif
 }
 
-const char* te::core::Translator::addTextDomain(const std::string& textDomain)
+void te::core::Translator::addTextDomain(const std::string& textDomain)
 {
   if(exist(textDomain))
   {

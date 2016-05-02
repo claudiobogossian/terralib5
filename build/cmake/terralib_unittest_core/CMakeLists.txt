@@ -93,7 +93,9 @@ add_dependencies(terralib_unittest_core terralib_unittest_core_translation)
 
 GETTEXT_CREATE_TRANSLATIONS("terralib_unittest_core"
                             "TE_TR"
+                            "TE_TR_PLURAL"
                             "pt_BR"
-                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/"
+                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core"
                             "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                            "${CMAKE_BINARY_DIR}/share/terralib/translations"
                            )

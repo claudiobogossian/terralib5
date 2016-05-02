@@ -35,16 +35,15 @@
 #
 #  Usage:
 #
-#    add_dependencies(module translations translations_pot)
+#    add_dependencies(module module_translation)
 #
-#    GETTEXT_CREATE_TEMPLATE(module                                         <--- Name of the POT file
-#                            "TE_TR"                                        <--- Keyword that will be searched
-#                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/" <--- Where the macro will search for the keyword
-#                            "${CMAKE_CURRENT_BINARY_DIR}")                 <--- Destination for the POT file
-#
-#    GETTEXT_CREATE_TRANSLATION(module                                      <--- Name of the POT file
-#                               "pt_BR.UTF-8"                               <--- Translation language
-#                               "${CMAKE_CURRENT_BINARY_DIR}")              <--- Destination for the translations files
+#    GETTEXT_CREATE_TRANSLATIONs(module             <--- Name of the POT file(Note: this name will be used in your dependecies with _translations at the end)
+#    "TE_TR"                                        <--- Keyword that will be searched
+#    "TE_TR_PLURAL"                                 <--- Keyword for plural texts
+#    "${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core" <--- Where the macro will search for the keyword
+#    "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations") <--- Destination for the POT and PO files
+#    "${CMAKE_BINARY_DIR}/share/terralib/translations
+
 
 FIND_PROGRAM(GETTEXT_MSGMERGE_EXECUTABLE msgmerge)
 FIND_PROGRAM(GETTEXT_MSGFMT_EXECUTABLE msgfmt)
@@ -74,21 +73,20 @@ IF (WIN32)
    STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGINIT_EXECUTABLE ${GETTEXT_MSGINIT_EXECUTABLE})
 ENDIF (WIN32)
 
-macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword locale directory output_path)
+macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory po_path mo_path)
   get_filename_component(_absDir ${directory} ABSOLUTE)
-  set(_absPot "${output_path}/${pot_file}")
-  message(" ${GETTEXT_MSGFMT_EXECUTABLE} -o ${CMAKE_BINARY_DIR}/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po")
+  set(_absPot "${po_path}/${pot_file}")
   if (UNIX)
     add_custom_command(OUTPUT "${pot_file}.mo"
                        COMMAND test -d ${_absPot}|| mkdir -p ${_absPot}
                        COMMAND test -e ${_absPot}/${pot_file}.pot || touch ${_absPot}/${pot_file}.pot
                        COMMAND find `pwd` -name '*.cpp' -print > ${_absPot}/${pot_file}.txt
-                       COMMAND ${XGETTEXT_EXECUTABLE} --from-code="UTF-8" --keyword=${keyword} -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
+                       COMMAND ${XGETTEXT_EXECUTABLE} --from-code="UTF-8" --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
                        COMMAND rm ${_absPot}/${pot_file}.txt
                        COMMAND test -e ${_absPot}/${pot_file}_${locale}.po || ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale}.UTF-8 -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/${pot_file}_${locale}.po
                        COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot
-                       COMMAND test -d ${CMAKE_BINARY_DIR}/translations/${locale}/LC_MESSAGES/ || mkdir -p ${CMAKE_BINARY_DIR}/translations/${locale}/LC_MESSAGES/
-                       COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${CMAKE_BINARY_DIR}/translations/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
+                       COMMAND test -d ${mo_path}/${locale}/LC_MESSAGES/ || mkdir -p ${mo_path}/${locale}/LC_MESSAGES/
+                       COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${mo_path}/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
                        COMMENT "Generating translations files..."
                        WORKING_DIRECTORY "${_absDir}"
                        )

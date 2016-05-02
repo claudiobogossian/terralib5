@@ -51,6 +51,10 @@ BOOST_AUTO_TEST_CASE(translator_test)
 // test un-translated messages
   BOOST_CHECK_EQUAL(TE_TR("The unprepared english text will remain the same."), "The unprepared english text will remain the same.");
 
+// test plural messages
+  BOOST_CHECK_EQUAL(TE_TR_PLURAL("1 layer is selected.","2 layers are selected.", 2), "2 camadas estão selecionadas.");
+  BOOST_CHECK_EQUAL(TE_TR_PLURAL("1 layer is selected.","2 layers are selected.", 1), "1 camada está selecionada.");
+
     return ;
 }
 BOOST_AUTO_TEST_SUITE_END()
