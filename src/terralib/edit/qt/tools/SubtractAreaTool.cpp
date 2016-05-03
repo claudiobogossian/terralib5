@@ -82,7 +82,7 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     draw();
 
-    storeEditedFeature();
+    storeFeature();
 
     return true;
   }
@@ -200,7 +200,7 @@ void te::edit::SubtractAreaTool::onExtentChanged()
   draw();
 }
 
-void te::edit::SubtractAreaTool::storeEditedFeature()
+void te::edit::SubtractAreaTool::storeFeature()
 {
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 }

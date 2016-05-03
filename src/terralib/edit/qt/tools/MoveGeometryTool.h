@@ -111,7 +111,7 @@ namespace te
 
         void updateCursor();
 
-        void storeEditedFeature();
+        void storeFeature();
 
         void storeUndoCommand();
 

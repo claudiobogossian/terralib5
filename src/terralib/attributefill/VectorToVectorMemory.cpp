@@ -31,7 +31,7 @@
 #include "../common/progress/TaskProgress.h"
 #include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"

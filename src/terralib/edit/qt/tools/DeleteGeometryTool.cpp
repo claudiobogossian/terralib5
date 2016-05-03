@@ -73,26 +73,7 @@ bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
   }
   else
   {
-    if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()->clone()))
-    {
-      switch (m_feature->clone()->getOperationType())
-      {
-        case te::edit::GEOMETRY_DELETE:
-
-          m_feature->setOperation(te::edit::GEOMETRY_UPDATE);
-          storeFeature(te::edit::GEOMETRY_UPDATE);
-
-          break;
-        case te::edit::GEOMETRY_UPDATE:
-
-          m_feature->setOperation(te::edit::GEOMETRY_DELETE);
-          storeFeature(te::edit::GEOMETRY_DELETE);
-
-          break;
-      }
-    }
-    else
-      storeFeature(te::edit::GEOMETRY_DELETE);
+    storeFeature();
   }
 
   return true;
@@ -121,8 +102,34 @@ te::gm::Envelope te::edit::DeleteGeometryTool::buildEnvelope(const QPointF& pos)
   return env;
 }
 
-void te::edit::DeleteGeometryTool::storeFeature(te::edit::OperationType op)
+void te::edit::DeleteGeometryTool::storeFeature()
 {
+  te::edit::OperationType op = te::edit::GEOMETRY_DELETE;
+
+  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()->clone()) == true)
+  {
+    switch (m_feature->clone()->getOperationType())
+    {
+      case te::edit::GEOMETRY_DELETE:
+
+        m_feature->setOperation(te::edit::GEOMETRY_UPDATE);
+        op = te::edit::GEOMETRY_UPDATE;
+
+        break;
+
+      case te::edit::GEOMETRY_UPDATE:
+      case te::edit::GEOMETRY_UPDATE_ATTRIBUTES:
+
+        m_feature->setOperation(te::edit::GEOMETRY_DELETE);
+        op = te::edit::GEOMETRY_DELETE;
+
+        break;
+
+      default:
+        return;
+    }
+  }
+
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), op);
 
   emit geometriesEdited();

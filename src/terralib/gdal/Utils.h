@@ -30,7 +30,7 @@
 #include "../raster/BandProperty.h"
 #include "../raster/Enums.h"
 #include "../raster/Raster.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Config.h"
 #include "Band.h"
 #include "Raster.h"

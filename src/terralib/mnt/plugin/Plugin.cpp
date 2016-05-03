@@ -1,5 +1,5 @@
 // TerraLib
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "../../../../common/Logger.h"
 #include "../../../../plugin/Plugin.h"
 #include "../../../af/ApplicationController.h"

@@ -21,7 +21,7 @@
 #include "Transactor.h"
 #include "Utils.h"
 
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/query/SQLDialect.h"
 
 // OGR

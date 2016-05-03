@@ -26,7 +26,7 @@
 
 // Terralib Includes
 #include "../../../common/StringUtils.h"
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ForeignKey.h"
 #include "../../../dataaccess/dataset/Index.h"

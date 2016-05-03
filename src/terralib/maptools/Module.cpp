@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "AbstractLayerRendererFactory.h"
 #include "DataSetLayerRendererFactory.h"
 #include "Config.h"

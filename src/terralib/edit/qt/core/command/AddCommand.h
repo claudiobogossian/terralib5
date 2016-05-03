@@ -74,8 +74,8 @@ namespace te
         std::vector<Feature*> m_addItems;
         void draw();
 
-        std::size_t m_nextFeature;
-        std::size_t m_previousFeature;
+        int m_nextFeature;
+        int m_previousFeature;
 
     };
   }

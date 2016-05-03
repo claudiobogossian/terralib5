@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/DataSetTypeCapabilities.h"
 #include "../dataaccess/datasource/DataSource.h"

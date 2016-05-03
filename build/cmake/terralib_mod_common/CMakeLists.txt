@@ -60,12 +60,7 @@ if(LOG4CXX_FOUND)
   list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${LOG4CXX_LIBRARY})
 endif()
 
-if(GNUGETTEXT_FOUND)
-  include_directories(${GNUGETTEXT_INCLUDE_DIR})
-  list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${GNUGETTEXT_LIBRARY})
-endif()
-
-target_link_libraries(terralib_mod_common ${TERRALIB_LIBRARIES_DEPENDENCIES})
+target_link_libraries(terralib_mod_common terralib_mod_core ${TERRALIB_LIBRARIES_DEPENDENCIES})
 
 set_target_properties(terralib_mod_common
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

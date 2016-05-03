@@ -29,7 +29,6 @@
 #include "Exception.h"
 #include "PlatformUtils.h"
 #include "StringUtils.h"
-#include "Translator.h"
 
 // STL
 #include <fstream>
@@ -47,15 +46,15 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/sysctl.h>
-#include <sys/types.h>  
+#include <sys/types.h>
 #include <unistd.h>
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
 #include <cstdlib>
 #include <dirent.h>
-#include <sys/stat.h>  
+#include <sys/stat.h>
 #include <sys/sysctl.h>
-#include <mach/mach.h> 
+#include <mach/mach.h>
 
 #else
   #error "Unsuported plataform for physical memory checking"
@@ -77,7 +76,7 @@ unsigned long long int te::common::GetFreePhysicalMemory()
       std::size_t usermem_len = sizeof(usermem);
 
       int mib[2] = { CTL_HW, HW_USERMEM };
-        
+
       if(sysctl(mib, 2, &usermem, &usermem_len, NULL, 0) == 0)
       {
         freemem = static_cast<unsigned long int>(usermem);
@@ -132,7 +131,7 @@ unsigned long long int te::common::GetTotalPhysicalMemory()
 
     if(sysctl(mib, 2, &physmem, &physmem_len, NULL, 0) == 0)
     {
-      totalmem = static_cast<unsigned long long int>(physmem); 
+      totalmem = static_cast<unsigned long long int>(physmem);
     }
     else
     {
@@ -164,28 +163,28 @@ unsigned long long int te::common::GetTotalPhysicalMemory()
 unsigned long long int te::common::GetUsedVirtualMemory()
 {
     unsigned long long int usedmem = 0;
-      
+
 #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD
       struct rusage rusageinfo;
       getrusage( RUSAGE_SELF, &rusageinfo );
       usedmem = static_cast<unsigned long long int>(1024 * rusageinfo.ru_maxrss);
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-      std::string pid, comm, state, ppid, pgrp, session, tty_nr, 
+      std::string pid, comm, state, ppid, pgrp, session, tty_nr,
                   tpgid, flags, minflt, cminflt, majflt, cmajflt,
                   utime, stime, cutime, cstime, priority, nice,
                   stringO, itrealvalue, starttime;
-      
-      std::ifstream stat_stream("/proc/self/stat", std::ios_base::in); 
+
+      std::ifstream stat_stream("/proc/self/stat", std::ios_base::in);
       if( !stat_stream.is_open() )
       {
         throw Exception("Could not get the used virtual memory!");
       }
-        
-      stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr 
-                  >> tpgid >> flags >> minflt >> cminflt >> majflt >> cmajflt 
-                  >> utime >> stime >> cutime >> cstime >> priority >> nice 
-                  >> stringO >> itrealvalue >> starttime >> usedmem;    
+
+      stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr
+                  >> tpgid >> flags >> minflt >> cminflt >> majflt >> cmajflt
+                  >> utime >> stime >> cutime >> cstime >> priority >> nice
+                  >> stringO >> itrealvalue >> starttime >> usedmem;
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_AIX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
     struct mach_task_basic_info info;
@@ -222,7 +221,7 @@ unsigned long long int te::common::GetTotalVirtualMemory()
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_FREEBSD) || (TE_PLATFORM == TE_PLATFORMCODE_OPENBSD) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE) || (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
       struct rlimit info;
-        
+
       if( getrlimit( RLIMIT_AS, &info ) == 0 )
       {
         totalmem = (unsigned long long int)info.rlim_max;
@@ -251,7 +250,7 @@ unsigned long long int te::common::GetTotalVirtualMemory()
 unsigned int te::common::GetPhysProcNumber()
 {
       unsigned int procnmb = 0;
-      
+
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
       SYSTEM_INFO siSysInfo;
       GetSystemInfo(&siSysInfo);
@@ -262,17 +261,17 @@ unsigned int te::common::GetPhysProcNumber()
 
 #else
   #error "ERROR: Unsupported platform"
-#endif    
+#endif
 
       return procnmb;
 }
-    
+
 void te::common::GetDecompostedPathEnvVar( std::vector< std::string >& paths )
 {
       paths.clear();
-      
+
       char* varValuePtr = getenv("PATH");
-      
+
       std::string separator;
       #if (TE_PLATFORM == TE_PLATFORMCODE_FREEBSD) || (TE_PLATFORM == TE_PLATFORMCODE_OPENBSD) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE) || (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
         separator = ":";
@@ -281,19 +280,19 @@ void te::common::GetDecompostedPathEnvVar( std::vector< std::string >& paths )
       #else
         #error "Unsuported plataform for virtual memory checking"
       #endif
-      
+
       if( varValuePtr )
       {
         Tokenize( std::string( varValuePtr ), paths, separator );
       }
 }
-    
+
 void te::common::GetDecompostedLDPathEnvVar( std::vector< std::string >& paths )
 {
       paths.clear();
-      
+
       char* varValuePtr = getenv("LD_LIBRARY_PATH");
-      
+
       std::string separator;
       #if (TE_PLATFORM == TE_PLATFORMCODE_FREEBSD) || (TE_PLATFORM == TE_PLATFORMCODE_OPENBSD) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE) || (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
         separator = ":";
@@ -302,7 +301,7 @@ void te::common::GetDecompostedLDPathEnvVar( std::vector< std::string >& paths )
       #else
         #error "Unsuported plataform for virtual memory checking"
       #endif
-      
+
       if( varValuePtr )
       {
         Tokenize( std::string( varValuePtr ), paths, separator );
@@ -313,48 +312,48 @@ std::string te::common::FindInTerraLibPath(const std::string& p)
 {
 // 1st: look in the neighborhood of the executable
   boost::filesystem::path tl_path = boost::filesystem::current_path();
-  
+
   boost::filesystem::path eval_path = tl_path / p;
-  
+
   if(boost::filesystem::exists(eval_path))
     return eval_path.string();
-  
+
   tl_path /= "..";
-  
+
   eval_path = tl_path / p;
-  
+
   if(boost::filesystem::exists(eval_path))
     return eval_path.string();
 
 // 2rd: look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
   const char* te_env = getenv(TERRALIB_DIR_VAR_NAME);
-  
+
   if(te_env != 0)
   {
     tl_path = te_env;
-    
+
     eval_path = tl_path / p;
-    
+
     if(boost::filesystem::exists(eval_path))
       return eval_path.string();
   }
-  
+
 // 3th: look into install prefix-path
   tl_path = TERRALIB_INSTALL_PREFIX_PATH;
-  
+
   eval_path = tl_path / p;
-  
+
   if(boost::filesystem::exists(eval_path))
     return eval_path.string();
 
 // 4nd: look into the codebase path
   tl_path = TERRALIB_CODEBASE_PATH;
-  
+
   eval_path = tl_path / p;
-  
+
   if(boost::filesystem::exists(eval_path))
     return eval_path.string();
-  
+
 
   return "";
 }

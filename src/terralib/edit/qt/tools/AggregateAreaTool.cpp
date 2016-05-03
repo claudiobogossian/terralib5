@@ -80,7 +80,7 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     draw();
 
-    storeEditedFeature();
+    storeFeature();
 
     return true;
   }
@@ -200,7 +200,7 @@ void te::edit::AggregateAreaTool::onExtentChanged()
   draw();
 }
 
-void te::edit::AggregateAreaTool::storeEditedFeature()
+void te::edit::AggregateAreaTool::storeFeature()
 {
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 }

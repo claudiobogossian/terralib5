@@ -28,7 +28,7 @@
 #include "../common/ByteSwapUtils.h"
 #include "../common/Globals.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/Array.h"
 #include "../datatype/ByteArray.h"
@@ -540,19 +540,31 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
     case PG_TIMESTAMPTZ_TYPE:
       {
         if(m_timeIsInteger)
+        {
           ival = getInt64(i);
+          iz = 0;
+        }
         else
         {
           char* c = (char*)PQgetvalue(m_result, m_i, i);
           dval = *((double*)c);
+          c += 8;
+          iz = *((int*)c);
 
           #if TE_MACHINE_BYTE_ORDER == TE_NDR
             te::common::SwapBytes(dval);
+            te::common::SwapBytes(iz);
           #endif
 
           ival = (boost::int64_t)(dval * 1000000);
         }
-        return std::auto_ptr<te::dt::DateTime>(Internal2TimeStamp(ival));
+        iz /= 3600;
+        if(iz < -12)
+          iz = -12;
+        if(iz > 14)
+          iz = 14;
+
+        return std::auto_ptr<te::dt::DateTime>(Internal2TimeStampTZ(ival, iz));
       }
     case PG_TIMETZ_TYPE:
       {

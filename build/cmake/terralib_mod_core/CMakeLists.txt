@@ -45,6 +45,14 @@ file(GLOB TERRALIB_CORE_ENCODING_HDR_FILES ${TERRALIB_CORE_DIR}/encoding/*.h)
 file(GLOB TERRALIB_CORE_LIB_SRC_FILES ${TERRALIB_CORE_DIR}/lib/*.cpp)
 file(GLOB TERRALIB_CORE_LIB_HDR_FILES ${TERRALIB_CORE_DIR}/lib/*.h)
 
+file(GLOB TERRALIB_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_CORE_DIR}/translator/*.cpp)
+file(GLOB TERRALIB_CORE_TRANSLATOR_HDR_FILES ${TERRALIB_CORE_DIR}/translator/*.h)
+
+
+file(GLOB TERRALIB_CORE_UTILS_SRC_FILES ${TERRALIB_CORE_DIR}/utils/*.cpp)
+file(GLOB TERRALIB_CORE_UTILS_HDR_FILES ${TERRALIB_CORE_DIR}/utils/*.h)
+
+
 source_group("Source Files"            FILES ${TERRALIB_CORE_SRC_FILES})
 source_group("Header Files"            FILES ${TERRALIB_CORE_HDR_FILES})
 source_group("Source Files\\uri"       FILES ${TERRALIB_CORE_URI_SRC_FILES})
@@ -53,23 +61,45 @@ source_group("Source Files\\encoding"  FILES ${TERRALIB_CORE_ENCODING_SRC_FILES}
 source_group("Header Files\\encoding"  FILES ${TERRALIB_CORE_ENCODING_HDR_FILES})
 source_group("Source Files\\lib"       FILES ${TERRALIB_CORE_LIB_SRC_FILES})
 source_group("Header Files\\lib"       FILES ${TERRALIB_CORE_LIB_HDR_FILES})
+source_group("Source Files\\translator"       FILES ${TERRALIB_CORE_TRANSLATOR_SRC_FILES})
+source_group("Header Files\\translator"       FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES})
+source_group("Source Files\\utils"       FILES ${TERRALIB_CORE_UTILS_SRC_FILES})
+source_group("Header Files\\utils"       FILES ${TERRALIB_CORE_UTILS_HDR_FILES})
+
 
 add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}
                                      ${TERRALIB_CORE_URI_SRC_FILES} ${TERRALIB_CORE_URI_HDR_FILES}
                                      ${TERRALIB_CORE_ENCODING_SRC_FILES} ${TERRALIB_CORE_ENCODING_HDR_FILES}
-                                     ${TERRALIB_CORE_LIB_SRC_FILES} ${TERRALIB_CORE_LIB_HDR_FILES})
+                                     ${TERRALIB_CORE_LIB_SRC_FILES} ${TERRALIB_CORE_LIB_HDR_FILES}
+                                     ${TERRALIB_CORE_TRANSLATOR_SRC_FILES} ${TERRALIB_CORE_TRANSLATOR_HDR_FILES}
+                                     ${TERRALIB_CORE_UTILS_SRC_FILES} ${TERRALIB_CORE_UTILS_HDR_FILES})
 
-target_link_libraries(terralib_mod_core ${Boost_LOCALE_LIBRARY} ${Boost_REGEX_LIBRARY})
+target_link_libraries(terralib_mod_core ${Boost_LOCALE_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 
 set_target_properties(terralib_mod_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+
+
+add_dependencies(terralib_mod_core terralib_mod_core_translation)
+
+GETTEXT_CREATE_TRANSLATIONS("terralib_mod_core"
+                            "TE_TR"
+                            "TE_TR_PLURAL"
+                            "pt_BR"
+                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core"
+                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                            "${CMAKE_BINARY_DIR}/share/terralib/translations"
+                            )
+
+
 
 install(TARGETS terralib_mod_core
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
+
 
 install(FILES ${TERRALIB_CORE_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core COMPONENT devel)
@@ -79,3 +109,11 @@ install(FILES ${TERRALIB_CORE_URI_HDR_FILES}
 
 install(FILES ${TERRALIB_CORE_ENCODING_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/encoding COMPONENT devel)
+
+install(FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/translator COMPONENT devel)
+
+install(FILES ${TERRALIB_CORE_UTILS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/utils COMPONENT devel)
+
+

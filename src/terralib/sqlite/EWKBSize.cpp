@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../geometry/GeometryCollection.h"
 #include "../geometry/LinearRing.h"
 #include "../geometry/LineString.h"

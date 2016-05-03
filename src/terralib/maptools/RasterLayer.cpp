@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"

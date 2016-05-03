@@ -61,7 +61,7 @@ namespace te
 
       void reset();
 
-      void storeEditedFeature();
+      void storeFeature();
 
       void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 

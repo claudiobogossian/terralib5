@@ -50,7 +50,6 @@
 #include "common/StringUtils.h"
 #include "common/TerraLib.h"
 #include "common/ThreadingPolicies.h"
-#include "common/Translator.h"
 #include "common/TreeItem.h"
 #include "common/UnitOfMeasure.h"
 #include "common/UnitsOfMeasureManager.h"

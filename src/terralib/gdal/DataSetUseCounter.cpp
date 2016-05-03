@@ -26,7 +26,7 @@
 // TerraLib
 #include "DataSetUseCounter.h"
 #include "Exception.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 te::gdal::DataSetUseCounter::DataSetUseCounter( const std::string& uri,
   const DataSetsManager::AccessType aType )

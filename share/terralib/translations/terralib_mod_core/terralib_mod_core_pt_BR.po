@@ -1,0 +1,23 @@
+# Portuguese translations for terralib package
+# Traduções em português brasileiro para o pacote terralib.
+# Copyright (C) 2016 THE terralib'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the terralib package.
+# Matheus Zaglia <EMAIL@ADDRESS>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: terralib 5.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-05-02 15:25-0300\n"
+"PO-Revision-Date: 2016-05-02 15:25-0300\n"
+"Last-Translator: Matheus Zaglia <EMAIL@ADDRESS>\n"
+"Language-Team: Brazilian Portuguese\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/src/terralib/core/translator/Translator.cpp:113
+msgid "The text domain %1 already exist."
+msgstr "O domínio %1 já existe."

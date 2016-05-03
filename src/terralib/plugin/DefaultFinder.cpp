@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../common/PlatformUtils.h"
 #include "DefaultFinder.h"
 #include "PluginInfo.h"

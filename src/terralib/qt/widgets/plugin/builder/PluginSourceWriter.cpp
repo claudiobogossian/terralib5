@@ -130,7 +130,7 @@ void te::qt::widgets::PluginSourceWriter::createCppFile(const std::string& sourc
   file << "#include \"Plugin.h\"\n\n";
   file << "#include <terralib/common/Config.h>\n";
   file << "#include <terralib/common/Logger.h>\n";
-  file << "#include <terralib/common/Translator.h>\n\n";
+  file << "#include <terralib/core/translator/Translator.h>\n\n";
   
   //constructor
   file << "te::qt::plugins::" + nameSpace + "::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)\n";

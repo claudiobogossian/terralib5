@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/PlatformUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
 #include "Exception.h"

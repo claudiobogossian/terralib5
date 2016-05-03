@@ -36,7 +36,7 @@
 */
 
 // TerraLib
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../geometry/Coord2D.h"
 #include "../../geometry/GeometryProperty.h"

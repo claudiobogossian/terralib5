@@ -144,7 +144,7 @@ namespace te
 
         void updateCursor();
 
-        void storeEditedFeature();
+        void storeFeature();
 
       private slots:
 

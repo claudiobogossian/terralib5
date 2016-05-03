@@ -148,7 +148,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   draw();
 
-  storeMergedFeature();
+  storeFeature();
 
 }
 
@@ -298,7 +298,7 @@ void te::edit::MergeGeometriesTool::draw()
 
 }
 
-void te::edit::MergeGeometriesTool::storeMergedFeature()
+void te::edit::MergeGeometriesTool::storeFeature()
 {
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
 

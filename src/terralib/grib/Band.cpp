@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../raster/BandProperty.h"
 #include "../datatype/Enums.h"
 #include "Band.h"

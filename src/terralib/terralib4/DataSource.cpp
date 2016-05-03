@@ -18,7 +18,7 @@
  */
 
 // TerraLib 5
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Config.h"
 #include "DataSource.h"
 #include "Exception.h"

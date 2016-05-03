@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess/dataset/CheckConstraint.h"
 #include "../../Exception.h"
 #include "CheckConstraintItem.h"

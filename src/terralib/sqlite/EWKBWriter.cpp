@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/ByteSwapUtils.h"
 #include "../common/Globals.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/Exception.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryCollection.h"

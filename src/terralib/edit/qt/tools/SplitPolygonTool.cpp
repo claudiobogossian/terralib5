@@ -50,8 +50,6 @@ te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* displa
 
 te::edit::SplitPolygonTool::~SplitPolygonTool()
 {
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
 }
 /*
 bool te::edit::SplitPolygonTool::mousePressEvent(QMouseEvent* e)

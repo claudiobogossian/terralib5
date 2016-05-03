@@ -19,18 +19,18 @@
 
 /*!
   \file terralib/common/Module.cpp
-   
+
   \brief This singleton defines an entry in the Platform for the TerraLib Common Runtime module.
 */
 
 // TerraLib
 #include "Enums.h"
-#include "LibraryManager.h"
+#include "../core/lib/LibraryManager.h"
 #include "Logger.h"
 #include "Module.h"
 #include "PlatformUtils.h"
 #include "TerraLib.h"
-#include "Translator.h"
+#include "../core/translator/Translator.h"
 #include "UnitsOfMeasureManager.h"
 #include "../BuildConfig.h"
 
@@ -57,10 +57,10 @@ te::common::Module::Module()
 // let's start all singletons in the right order and other stuffs that must be in the static initialization!
 
 // initialize the translator singleton and the common runtime multilanguage support
-  TE_ADD_TEXT_DOMAIN(TERRALIB_TEXT_DOMAIN, TERRALIB_TEXT_DOMAIN_DIR, "UTF-8");
+  TE_ADD_TEXT_DOMAIN(TERRALIB_TEXT_DOMAIN);
 
 // initialize the singleton LibraryManager
-  LibraryManager::getInstance();
+//  LibraryManager::getInstance();
 
 // initialize the singleton UnitsOfMeasureManager
   UnitsOfMeasureManager::getInstance();
@@ -83,7 +83,7 @@ void te::common::Module::initialize()
 void te::common::Module::finalize()
 {
   TE_LOG_TRACE(TE_TR("TerraLib Common Runtime finalized!"));
- 
+
 #ifdef TERRALIB_AUTOMATIC_INITIALIZATION
   UnitsOfMeasureManager::getInstance().clear();
 #endif

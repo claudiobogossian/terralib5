@@ -103,7 +103,7 @@ namespace te
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
-        void storeFeature(te::edit::OperationType op);
+        void storeFeature();
 
         void updateCursor();
 

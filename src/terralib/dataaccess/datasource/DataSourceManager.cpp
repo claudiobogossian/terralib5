@@ -27,7 +27,7 @@
 #include "../../common/Globals.h"
 #include "../../common/STLUtils.h"
 #include "../../common/StringUtils.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../Exception.h"
 #include "DataSource.h"
 #include "DataSourceFactory.h"

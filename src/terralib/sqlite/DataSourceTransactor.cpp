@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/Globals.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/datasource/ScopedTransaction.h"
 #include "../dataaccess/query/Select.h"

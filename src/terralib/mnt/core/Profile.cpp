@@ -26,7 +26,7 @@
 
 //TerraLib
 
-#include "../../../../src/terralib/common/Translator.h"
+#include "../../../../src/terralib/core/translator/Translator.h"
 #include "../../../../src/terralib/common/progress/TaskProgress.h"
 #include "../../../../src/terralib/common/Logger.h"
 
@@ -51,7 +51,7 @@
 #include "../../../../src/terralib/memory/DataSetItem.h"
 
 #include "../../../../src/terralib/raster/RasterProperty.h"
-#include "../../../../src/terralib/raster/RasterFactory.h" 
+#include "../../../../src/terralib/raster/RasterFactory.h"
 #include "../../../../src/terralib/raster/Utils.h"
 #include "../../../../src/terralib/raster/BandProperty.h"
 #include "../../../../src/terralib/geometry/PointZ.h"
@@ -92,7 +92,7 @@ std::vector<te::gm::LineString*> te::mnt::Profile::prepareVector(std::string &in
   std::auto_ptr<te::da::DataSet> inDset;
   //size_t nsamples = mpt.getNumGeometries();
   inDset = inDsrc->getDataSet(inDsetName);
-  
+
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
   inDset->moveBeforeFirst();
 
@@ -236,7 +236,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
         ymin = pt1Y;
         ymax = pt2Y;
       }
-      
+
       int initcol = (int)((xmin - boxLowerLeft) / resX);
       int finalcol = (int)((xmax - boxLowerLeft) / resX + .9999);
       int initline = (int)((boxUpperRigth - ymax) / resY);
@@ -244,7 +244,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
 
       double dx = pt2X - pt1X;
       double dy = pt2Y - pt1Y;
-      
+
       //Calculate intersections of the segment with the columns
       if (((finalcol - initcol) > 1) && (fabs((double)dx) > 1.0e-6))
       {
@@ -252,7 +252,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
         {
           double x = (boxLowerLeft + c * resX);
           double y = (pt1Y + (dy / dx) * (x - pt1X));
-          
+
           collin = raster->getGrid()->geoToGrid(x, y);
           col = (unsigned int)collin.getX();
           row = (unsigned int)collin.getY();
@@ -304,7 +304,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
       if (zval != m_dummy)
       {
         double dist = sqrt(((double)dx * (double)dx) + ((double)dy* (double)dy)) + distbase;
-        
+
         if (ind_pf != ind_pfant)
           distbase = dist;
 
@@ -326,7 +326,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
       profile->setPoint(profile->size() - 1, it->first, it->second);
       it++;
     }
- 
+
     profileSet.push_back(profile);
     line.clear();
     distbase = 0;

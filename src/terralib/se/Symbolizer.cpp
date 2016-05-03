@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/Exception.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../common/UnitOfMeasure.h"
 #include "../common/UnitsOfMeasureManager.h"
 #include "../xlink/SimpleLink.h"

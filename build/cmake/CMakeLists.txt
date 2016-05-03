@@ -233,7 +233,7 @@ find_package(GDAL)
 
 find_package(GEOS)
 
-find_package(GNUGettext)
+find_package(Gettext)
 
 find_package(Log4cxx)
 
@@ -305,20 +305,10 @@ if(GEOSC_FOUND)
   set(TERRALIB_GEOSC_ENABLED ON)
 endif()
 
-if(GNUGETTEXT_FOUND)
-
-  set(TERRALIB_GNU_GETTEXT_ENABLED ON)
-
-  if(NOT DEFINED TERRALIB_TRANSLATOR_ENABLED)
-    set(TERRALIB_TRANSLATOR_ENABLED 1 CACHE BOOL "Enable translator support?")
-  endif()
-
+if(GETTEXT_FOUND)
+   set(TERRALIB_TRANSLATOR_ENABLED 1 CACHE BOOL "Enable translator support?")
 else()
-
-  if(DEFINED TERRALIB_TRANSLATOR_ENABLED)
     set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?" FORCE)
-  endif()
-
 endif()
 
 if(LUA_FOUND)
@@ -1477,6 +1467,12 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/schemas
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
+
+if(TERRALIB_TRANSLATOR_ENABLED)
+  install(DIRECTORY ${CMAKE_BINARY_DIR}/share/terralib/translations/
+          DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/translations
+          COMPONENT runtime)
+endif()
 
 #
 # Track dependencies

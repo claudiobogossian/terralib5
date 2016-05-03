@@ -60,9 +60,6 @@ te::edit::CreateContinuosPolygonTool::CreateContinuosPolygonTool(te::qt::widgets
 
 te::edit::CreateContinuosPolygonTool::~CreateContinuosPolygonTool()
 {
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
   delete m_feature;
   m_addWatches.clear();
 
@@ -136,7 +133,7 @@ bool te::edit::CreateContinuosPolygonTool::mouseReleaseEvent(QMouseEvent* e)
 
   m_isFinished = true;
 
-  storeNewGeometry();
+  storeFeature();
 
   UndoStackManager::getInstance().getUndoStack()->clear();
 
@@ -279,7 +276,7 @@ void te::edit::CreateContinuosPolygonTool::storeUndoCommand()
   UndoStackManager::getInstance().addUndoStack(command);
 }
 
-void te::edit::CreateContinuosPolygonTool::storeNewGeometry()
+void te::edit::CreateContinuosPolygonTool::storeFeature()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), convertGeomType(m_layer, buildPolygon()), te::edit::GEOMETRY_CREATE);
 }

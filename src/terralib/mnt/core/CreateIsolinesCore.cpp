@@ -26,7 +26,7 @@
 
 //TerraLib
 
-#include "../../../../src/terralib/common/Translator.h"
+#include "../../../../src/terralib/core/translator/Translator.h"
 #include "../../../../src/terralib/common/progress/TaskProgress.h"
 #include "../../../../src/terralib/common/Logger.h"
 

@@ -86,6 +86,8 @@ namespace te
 
       virtual void saveGeometry(te::gm::Geometry* gm, const int& op);
 
+      virtual void storeFeature();
+
       bool m_isInUse;
 
       Feature*                m_feature;
