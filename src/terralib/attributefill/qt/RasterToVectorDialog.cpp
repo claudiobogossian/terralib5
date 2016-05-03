@@ -211,15 +211,7 @@ std::vector<te::stat::StatisticalSummary> te::attributefill::RasterToVectorDialo
 
 bool te::attributefill::RasterToVectorDialog::getValueOption()
 {
-  for (int i = 0; i < m_ui->m_statisticsListWidget->count(); ++i)
-  {
-    if (m_ui->m_statisticsListWidget->isItemSelected(m_ui->m_statisticsListWidget->item(i)))
-    {
-      return true;
-    }
-    return false;
-  }
-
+  return !m_ui->m_statisticsListWidget->selectedItems().isEmpty();
 }
 
 void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
