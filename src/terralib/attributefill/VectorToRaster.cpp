@@ -244,7 +244,6 @@ bool te::attributefill::VectorToRaster::run()
 
                                             while (it != itend)
                                             {
-                                              double val = (*it)[0];
                                               rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
                                               ++it;
                                             }
