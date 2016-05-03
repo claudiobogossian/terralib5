@@ -80,7 +80,7 @@ set_target_properties(terralib_mod_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
-
+if(GETTEXT_FOUND)
 add_dependencies(terralib_mod_core terralib_mod_core_translation)
 
 GETTEXT_CREATE_TRANSLATIONS("terralib_mod_core"
@@ -91,6 +91,7 @@ GETTEXT_CREATE_TRANSLATIONS("terralib_mod_core"
                             "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
                             "${CMAKE_BINARY_DIR}/share/terralib/translations"
                             )
+endif()
 
 
 
