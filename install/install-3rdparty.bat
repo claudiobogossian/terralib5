@@ -1596,7 +1596,6 @@ set BOOST_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
 :: Check dependencies
 goto end_libboost_deps
 :libboost_deps
-IF NOT EXIST %ICONV% call :remove_lib boost && goto pgis_deps
 IF NOT EXIST %BZIP% call :remove_lib boost && goto pgis_deps
 IF NOT EXIST %ICU% call :remove_lib boost && goto pgis_deps
 IF NOT EXIST %ZLIB% call :remove_lib boost && goto pgis_deps
@@ -1622,6 +1621,8 @@ IF DEFINED TERRALIB_X64 (
 
 set "BOOST_REGEX_NO_LIB=1"
 
+call :remove_lib boost
+
 ( call bootstrap.bat vc12 %_b2_setup% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog minizip "configuring" && goto uriparser
 
 set "_build_type=release"
@@ -1629,7 +1630,7 @@ set "_bzip_bin=BZIP2_BINARY=libbz2"
 set "_zlib_bin=ZLIB_BINARY=zlib"
 set "_zlib_path=ZLIB_LIBPATH=%ZL_DIR%\build%_X86%\Release"
 
-( b2 --reconfigure toolset=msvc-12.0 %_am% architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --with-log --layout=tagged -s ICU_PATH=%ICU_DIR% -s ICONV_PATH=%TERRALIB_DEPENDENCIES_DIR% -s%_bzip_bin% -s BZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -s BZIP2_LIBPATH=%BZIP2_DIR%\lib%_X86% -s %_zlib_bin% -s ZLIB_INCLUDE=%ZL_DIR% -s ZLIB_LIBPATH=%_zlib_path% install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
+( b2 --reconfigure toolset=msvc-12.0 %_am% architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --with-log --layout=tagged -s ICU_PATH=%ICU_DIR% -s%_bzip_bin% -s BZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -s BZIP2_LIBPATH=%BZIP2_DIR%\lib%_X86% -s %_zlib_bin% -s ZLIB_INCLUDE=%ZL_DIR% -s ZLIB_LIBPATH=%_zlib_path% boost.locale.winapi=off boost.locale.std=off install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
 
 echo done.
 
@@ -2344,7 +2345,7 @@ RD /S /Q features >nul 2>nul
 
 RD /S /Q plugins >nul 2>nul
 
-del *.exe /S /Q >nul 2>nul
+del lib/*.exe /S /Q >nul 2>nul
 
 del *.pdb /S /Q >nul 2>nul
 

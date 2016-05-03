@@ -91,10 +91,23 @@ macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory 
                        COMMENT "Generating translations files..."
                        WORKING_DIRECTORY "${_absDir}"
                        )
-  endif(UNIX)
-  if(WIN32)
-    #TODO
-  endif(WIN32)
+  elseif(WIN32)
+    add_custom_command(OUTPUT "${pot_file}.pot"
+                       COMMAND ${CMAKE_COMMAND} -E make_directory ${_absPot}
+                       COMMAND dir /b /S *.cpp > ${_absPot}/${pot_file}.txt
+                       COMMAND ${XGETTEXT_EXECUTABLE} --from-code="UTF-8" --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
+                       COMMAND ${CMAKE_COMMAND} -E remove ${_absPot}/${pot_file}.txt
+                       COMMAND ${GETTEXT_MSGINIT_EXECUTABLE} -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/temp.po
+                       COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot 
+                       #|| mv ${_absPot}/temp.po ${_absPot}/${pot_file}_${locale}.po
+#                       COMMAND ${CMAKE_COMMAND} -E remove ${_absPot}/temp.po
+                       COMMAND ${CMAKE_COMMAND} -E make_directory ${mo_path}/${locale}/LC_MESSAGES/ 
+                       #|| mkdir -p ${mo_path}/${locale}/LC_MESSAGES/
+                       COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${mo_path}/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
+                       COMMENT "Generating translations files..."
+                       WORKING_DIRECTORY "${_absDir}"
+                       )
+  endif()
 
   add_custom_target("${pot_file}_translation"
                     DEPENDS  "${pot_file}.pot")
