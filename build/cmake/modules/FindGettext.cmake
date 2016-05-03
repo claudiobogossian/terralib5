@@ -64,7 +64,7 @@ ELSE(XGETTEXT_EXECUTABLE)
   MESSAGE(STATUS "xgettext not found.")
   SET(XGETTTEXT_FOUND FALSE)
 ENDIF(XGETTEXT_EXECUTABLE)
-IF(XGETTEXT_FOUND)
+
 
 IF (WIN32)
    STRING(REGEX REPLACE "/" "\\\\" XGETTEXT_EXECUTABLE ${XGETTEXT_EXECUTABLE})
@@ -74,6 +74,7 @@ IF (WIN32)
 ENDIF (WIN32)
 
 macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory po_path mo_path)
+  IF(XGETTEXT_FOUND)
   get_filename_component(_absDir ${directory} ABSOLUTE)
   set(_absPot "${po_path}/${pot_file}")
   if (UNIX)
@@ -98,7 +99,8 @@ macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory 
 
   add_custom_target("${pot_file}_translation"
                     DEPENDS  "${pot_file}.pot")
+
+  ENDIF(XGETTEXT_FOUND)
 endmacro(GETTEXT_CREATE_TRANSLATIONS)
 
 
-ENDIF(XGETTEXT_FOUND)
