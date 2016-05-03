@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(test_getNativeName)
   prefix = "lib";
   suffix = ".so";
 #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  prefix = "lib"
+  prefix = "lib";
   suffix = ".dylib";
 #else
 #error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
