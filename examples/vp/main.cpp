@@ -44,9 +44,9 @@ int main(int argc, char** argv)
   try
   {
     TerraLib::getInstance().initialize();
-    
+
     te::plugin::PluginInfo* info;
-  
+
     std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_GDAL_ENABLED

@@ -97,6 +97,9 @@ add_executable(terralib_example_core_translator ${TERRALIB_EXAMPLE_CORE_TRANSLAT
 
 target_link_libraries(terralib_example_core_translator terralib_mod_core)
 
+
+
+if(GETTEXT_FOUND)
 add_dependencies(terralib_example_core_translator terralib_example_core_translation)
 
 GETTEXT_CREATE_TRANSLATIONS("terralib_example_core"
@@ -107,6 +110,6 @@ GETTEXT_CREATE_TRANSLATIONS("terralib_example_core"
                         "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
                         "${CMAKE_BINARY_DIR}/share/terralib/translations"
                         )
-
+endif()
 
 
