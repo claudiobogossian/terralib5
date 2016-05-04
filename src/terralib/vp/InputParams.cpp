@@ -28,25 +28,25 @@
 
 te::vp::InputParams::InputParams()
   :
-  m_inputDataSetName(""),
-  m_inputDataSet(0),
   m_inputDataSetType(0),
-  m_inputQuery(0)
+  m_inputDataSet(0),
+  m_inputQuery(0),
+  m_inputDataSetName("")
 {
 }
 
 te::vp::InputParams::InputParams(const InputParams& rhs)
   :
-  m_inputDataSetName(""),
-  m_inputDataSet(0),
   m_inputDataSetType(0),
-  m_inputQuery(0)
+  m_inputDataSet(0),
+  m_inputQuery(0),
+  m_inputDataSetName("")
 {
   m_inputDataSource = rhs.m_inputDataSource;
-  m_inputDataSetName = rhs.m_inputDataSetName;
-  m_inputDataSet = rhs.m_inputDataSet;
   m_inputDataSetType = rhs.m_inputDataSetType;
+  m_inputDataSet = rhs.m_inputDataSet;
   m_inputQuery = rhs.m_inputQuery;
+  m_inputDataSetName = rhs.m_inputDataSetName;
 }
 
 te::vp::InputParams::~InputParams()
@@ -61,10 +61,10 @@ te::vp::InputParams& te::vp::InputParams::operator=(const InputParams& rhs)
     clear();
 
     m_inputDataSource = rhs.m_inputDataSource;
-    m_inputDataSetName = rhs.m_inputDataSetName;
-    m_inputDataSet = rhs.m_inputDataSet;
     m_inputDataSetType = rhs.m_inputDataSetType;
+    m_inputDataSet = rhs.m_inputDataSet;
     m_inputQuery = rhs.m_inputQuery;
+    m_inputDataSetName = rhs.m_inputDataSetName;
   }
 
   return *this;
@@ -73,8 +73,8 @@ te::vp::InputParams& te::vp::InputParams::operator=(const InputParams& rhs)
 void te::vp::InputParams::clear()
 {
   m_inputDataSource.reset();
-  m_inputDataSetName = "";
-  m_inputDataSet = 0;
   m_inputDataSetType = 0;
+  m_inputDataSet = 0;
   m_inputQuery = 0;
+  m_inputDataSetName = "";
 }

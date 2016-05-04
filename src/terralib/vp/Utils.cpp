@@ -547,6 +547,8 @@ te::gm::Geometry* te::vp::SetGeomAsMulti(te::gm::Geometry* geom)
 
       return geomColl;
     }
+    default:
+      break;
   }
 
   return geom;

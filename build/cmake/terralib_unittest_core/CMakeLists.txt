@@ -88,7 +88,7 @@ set_target_properties(terralib_unittest_core_lib_function
 
 add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)
 
-
+if(GETTEXT_FOUND)
 add_dependencies(terralib_unittest_core terralib_unittest_core_translation)
 
 GETTEXT_CREATE_TRANSLATIONS("terralib_unittest_core"
@@ -99,3 +99,4 @@ GETTEXT_CREATE_TRANSLATIONS("terralib_unittest_core"
                             "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
                             "${CMAKE_BINARY_DIR}/share/terralib/translations"
                            )
+endif()
