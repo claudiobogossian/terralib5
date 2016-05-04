@@ -262,6 +262,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
   
   int pk = 0;
   
+  std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
+
   std::auto_ptr<te::da::DataSet> inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
   std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
   
@@ -280,7 +282,10 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
     {
       for(std::size_t prop_pos = 0; prop_pos < m_selectedProps.size(); ++prop_pos)
       {
-        item->setValue(m_selectedProps[prop_pos], inDset->getValue(m_selectedProps[prop_pos]).release());
+        std::size_t inputPropertyPos = inDsType->getPropertyPosition(m_selectedProps[prop_pos]);
+
+        if (!inDset->isNull(inputPropertyPos))
+          item->setValue(m_selectedProps[prop_pos], inDset->getValue(m_selectedProps[prop_pos]).release());
       }
     }
 
