@@ -67,5 +67,5 @@ msgstr ""
 msgid "1 layer is selected."
 msgid_plural "2 layers are selected."
 msgstr[0] "1 camada está selecionada."
-msgstr[1] "2 camadas estão selecionadas"
+msgstr[1] "2 camadas estão selecionadas."
 
