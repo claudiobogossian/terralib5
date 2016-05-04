@@ -280,7 +280,7 @@ namespace te
   throw Exception(TE_TR("My other message!"));
   \endcode
  */
-#define TE_TR(message) te::core::Translator::getInstance().translate(message)
+#define TE_TR(message) te::core::Translator::getInstance().translate(message).c_str()
 
 /*!
   \def TE_TR_PLURAL
@@ -303,7 +303,7 @@ namespace te
   the plural versin will be choosed, otherwise, it will choose the
   singular form (the fisrt one).
  */
-#define TE_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n)
+#define TE_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n).c_str()
 
 //@}
 
