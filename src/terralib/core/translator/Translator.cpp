@@ -38,12 +38,12 @@
 
 // GNU Text Utilities
 
-const char* te::core::Translator::translate(const std::string& message)
+std::string te::core::Translator::translate(const std::string& message)
 {
   return translate(message.c_str());
 }
 
-const char* te::core::Translator::translate(const char* message)
+std::string te::core::Translator::translate(const char* message)
 {
 
 #ifdef TERRALIB_TRANSLATOR_ENABLED
@@ -61,7 +61,7 @@ const char* te::core::Translator::translate(const char* message)
     std::string translated = boost::locale::translate(message).str(std::locale());
 
     if(translated != message)
-      return translated.c_str();
+      return translated;
   }
   return message;
 #else
@@ -69,14 +69,14 @@ const char* te::core::Translator::translate(const char* message)
 #endif
 }
 
-const char* te::core::Translator::translate(const std::string& msg1,
+std::string te::core::Translator::translate(const std::string& msg1,
                                               const std::string& msg2,
                                               unsigned int n)
 {
-  return translate(msg1.c_str(), msg2.c_str(), n);
+  return translate(msg1, msg2, n);
 }
 
-const char* te::core::Translator::translate(const char* msg1,
+std::string te::core::Translator::translate(const char* msg1,
                                               const char* msg2,
                                               unsigned int n)
 {
@@ -95,9 +95,9 @@ const char* te::core::Translator::translate(const char* msg1,
     std::string translated = boost::locale::translate(msg1, msg2, n).str(std::locale());
 
     if(n == 1 && translated != msg1)
-      return translated.c_str();
+      return translated;
     else if(n > 1 && translated != msg2)
-      return translated.c_str();
+      return translated;
 
   }
   return ((n == 1) ? msg1 : msg2);

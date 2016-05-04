@@ -144,7 +144,7 @@ namespace te
 
           \note The returned message is UTF-8 encoded.
          */
-        const char* translate(const std::string& message);
+        std::string translate(const std::string& message);
 
         /*!
           \brief It tries to translate the specified text string.
@@ -158,7 +158,7 @@ namespace te
 
           \note The returned message is UTF-8 encoded.
          */
-        const char* translate(const char* message);
+        std::string translate(const char* message);
 
         /*!
           \brief It tries to translate the specified text string accounting for plural forms.
@@ -174,7 +174,7 @@ namespace te
 
           \note The returned message is UTF-8 encoded.
          */
-        const char* translate(const std::string& msg1,
+        std::string translate(const std::string& msg1,
                               const std::string& msg2,
                               unsigned int n);
 
@@ -192,7 +192,7 @@ namespace te
 
           \note The returned message is UTF-8 encoded.
          */
-        const char* translate(const char* msg1,
+        std::string translate(const char* msg1,
                               const char* msg2,
                               unsigned int n);
 
