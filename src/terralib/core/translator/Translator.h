@@ -144,7 +144,7 @@ namespace te
 
           \note The returned message is UTF-8 encoded.
          */
-        const char* translate(const std::string& message);
+        std::string translate(const std::string& message);
 
         /*!
           \brief It tries to translate the specified text string.
@@ -158,7 +158,7 @@ namespace te
 
           \note The returned message is UTF-8 encoded.
          */
-        const char* translate(const char* message);
+        std::string translate(const char* message);
 
         /*!
           \brief It tries to translate the specified text string accounting for plural forms.
@@ -174,7 +174,7 @@ namespace te
 
           \note The returned message is UTF-8 encoded.
          */
-        const char* translate(const std::string& msg1,
+        std::string translate(const std::string& msg1,
                               const std::string& msg2,
                               unsigned int n);
 
@@ -192,7 +192,7 @@ namespace te
 
           \note The returned message is UTF-8 encoded.
          */
-        const char* translate(const char* msg1,
+        std::string translate(const char* msg1,
                               const char* msg2,
                               unsigned int n);
 
@@ -280,7 +280,7 @@ namespace te
   throw Exception(TE_TR("My other message!"));
   \endcode
  */
-#define TE_TR(message) te::core::Translator::getInstance().translate(message)
+#define TE_TR(message) te::core::Translator::getInstance().translate(message).c_str()
 
 /*!
   \def TE_TR_PLURAL
@@ -303,7 +303,7 @@ namespace te
   the plural versin will be choosed, otherwise, it will choose the
   singular form (the fisrt one).
  */
-#define TE_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n)
+#define TE_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n).c_str()
 
 //@}
 

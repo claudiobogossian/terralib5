@@ -57,7 +57,6 @@ bool IntersectionOGRToOGR()
   std::auto_ptr<te::da::DataSet> inDset2 = srcDs2->getDataSet(inDsetName2);
   std::auto_ptr<te::da::DataSetType> inDsetType2 = srcDs2->getDataSetType(inDsetName2);
 
-  bool copyInputColumns = true;
   std::vector<int> inSRID;
 
   std::string filenameResult(data_dir + "/shp/Intersection/intersectionOGR2OGR.shp");
@@ -148,7 +147,6 @@ bool IntersectionOGRToPGIS()
   std::auto_ptr<te::da::DataSet> inDset2 = srcDs2->getDataSet(inDsetName2);
   std::auto_ptr<te::da::DataSetType> inDsetType2 = srcDs2->getDataSetType(inDsetName2);
 
-  bool copyInputColumns = true;
   std::vector<int> inSRID;
 
   std::map<std::string, std::string> connInfo;
@@ -237,7 +235,6 @@ bool IntersectionPGISToPGIS()
   std::auto_ptr<te::da::DataSet> inDset2 = srcDs2->getDataSet(inDsetName2);
   std::auto_ptr<te::da::DataSetType> inDsetType2 = srcDs2->getDataSetType(inDsetName2);
 
-  bool copyInputColumns = true;
   std::vector<int> inSRID;
 
   //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
@@ -317,10 +314,7 @@ bool IntersectionPGISToOGR()
   std::auto_ptr<te::da::DataSet> inDset2 = srcDs2->getDataSet(inDsetName2);
   std::auto_ptr<te::da::DataSetType> inDsetType2 = srcDs2->getDataSetType(inDsetName2);
 
-
-  bool copyInputColumns = true;
   std::vector<int> inSRID;
-
 
   std::string outDSet = "intersectionPGIS2OGR";
   

@@ -83,7 +83,7 @@ macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory 
                        COMMAND find `pwd` -name '*.cpp' -print > ${_absPot}/${pot_file}.txt
                        COMMAND ${XGETTEXT_EXECUTABLE} --from-code="UTF-8" --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
                        COMMAND rm ${_absPot}/${pot_file}.txt
-                       COMMAND test -s ${_absPot}/${pot_file}.pot && ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale}.UTF-8 -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/temp.po
+                       COMMAND test -s ${_absPot}/${pot_file}.pot && ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale}.UTF-8 --no-translator -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/temp.po
                        COMMAND test -e  ${_absPot}/${pot_file}_${locale}.po && ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot || mv ${_absPot}/temp.po ${_absPot}/${pot_file}_${locale}.po
                        COMMAND rm ${_absPot}/temp.po
                        COMMAND test -d ${mo_path}/${locale}/LC_MESSAGES/ || mkdir -p ${mo_path}/${locale}/LC_MESSAGES/
@@ -99,16 +99,13 @@ macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory 
                        COMMAND ${CMAKE_COMMAND} -E remove ${_absPot}/${pot_file}.txt
                        COMMAND ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale}.UTF-8 -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/temp.po
                        COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot 
-                       #|| mv ${_absPot}/temp.po ${_absPot}/${pot_file}_${locale}.po
-#                       COMMAND ${CMAKE_COMMAND} -E remove ${_absPot}/temp.po
+                       COMMAND ${CMAKE_COMMAND} -E remove ${_absPot}/temp.po
                        COMMAND ${CMAKE_COMMAND} -E make_directory ${mo_path}/${locale}/LC_MESSAGES/ 
-                       #|| mkdir -p ${mo_path}/${locale}/LC_MESSAGES/
                        COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${mo_path}/${locale}/LC_MESSAGES/${pot_file}.mo ${_absPot}/${pot_file}_${locale}.po
                        COMMENT "Generating translations files..."
                        WORKING_DIRECTORY "${_absDir}"
                        )
                        
-                       message("loc: ${locale}")
   endif()
 
   add_custom_target("${pot_file}_translation"
