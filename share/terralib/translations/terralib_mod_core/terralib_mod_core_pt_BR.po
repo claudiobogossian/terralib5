@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: terralib 5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-02 15:25-0300\n"
+"POT-Creation-Date: 2016-05-04 16:21-0300\n"
 "PO-Revision-Date: 2016-05-02 15:25-0300\n"
 "Last-Translator: Matheus Zaglia <EMAIL@ADDRESS>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -19,5 +19,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/src/terralib/core/translator/Translator.cpp:113
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:113
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:131
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:132
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:135
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:133
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:116
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:119
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:121
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:123
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:115
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:118
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:154
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:155
+#: D:\funcate\MyDevel\terralib5_dev\src\terralib\core\translator\Translator.cpp:190
 msgid "The text domain %1 already exist."
 msgstr "O domínio %1 já existe."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-02 15:29-0300\n"
+"POT-Creation-Date: 2016-05-04 16:59-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,51 +19,76 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:41
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:41
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:42
 msgid "BR-GIS"
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:42
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:42
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:43
 msgid "Wrong cryptographer algorithm type!"
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:43
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:43
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:44
 msgid "You must specify a logger configuration file!"
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:44
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:44
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:45
 msgid "It was not possible to initialize the the logger!"
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:45
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:45
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:46
 msgid "Invalid logger configuration type!"
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:46
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:46
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:47
 msgid "The logger name is empty!"
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:47
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:47
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:48
 msgid "TerraLib Core Initialized!"
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:48
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:48
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:49
 msgid "TerraLib Core Finalized!"
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:49
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:49
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:50
 msgid "The text domain already exist."
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:50
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:50
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:51
 msgid "The text domain doesn't exist."
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:52
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:52
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:53
 msgid "The unprepared english text will remain the same."
 msgstr ""
 
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:55
 #: /home/mzaglia/mydevel/terralib-5.1/codebase-develop/unittest/core/translator/TsTranslator.cpp:56
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:55
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:56
+#: D:\funcate\MyDevel\terralib5_dev\unittest\core\translator\TsTranslator.cpp:57
 msgid "1 layer is selected."
 msgid_plural "2 layers are selected."
 msgstr[0] ""

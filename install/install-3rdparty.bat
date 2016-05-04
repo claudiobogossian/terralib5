@@ -1630,7 +1630,7 @@ set "_bzip_bin=BZIP2_BINARY=libbz2"
 set "_zlib_bin=ZLIB_BINARY=zlib"
 set "_zlib_path=ZLIB_LIBPATH=%ZL_DIR%\build%_X86%\Release"
 
-( b2 --reconfigure toolset=msvc-12.0 %_am% architecture=x86 variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --with-log --layout=tagged -s ICU_PATH=%ICU_DIR% -s%_bzip_bin% -s BZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -s BZIP2_LIBPATH=%BZIP2_DIR%\lib%_X86% -s %_zlib_bin% -s ZLIB_INCLUDE=%ZL_DIR% -s ZLIB_LIBPATH=%_zlib_path% boost.locale.winapi=off boost.locale.std=off install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
+( b2 --reconfigure -a toolset=msvc-12.0 %_am% variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --with-log --layout=tagged -sICU_PATH=%ICU_DIR% -s%_bzip_bin% -s BZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -s BZIP2_LIBPATH=%BZIP2_DIR%\lib%_X86% -s %_zlib_bin% -s ZLIB_INCLUDE=%ZL_DIR% -s ZLIB_LIBPATH=%_zlib_path% install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
 
 echo done.
 

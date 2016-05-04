@@ -67,10 +67,10 @@ ENDIF(XGETTEXT_EXECUTABLE)
 IF(XGETTEXT_FOUND)
 
 IF (WIN32)
-   STRING(REGEX REPLACE "/" "\\\\" XGETTEXT_EXECUTABLE ${XGETTEXT_EXECUTABLE})
-   STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGFMT_EXECUTABLE ${GETTEXT_MSGFMT_EXECUTABLE})
-   STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGMERGE_EXECUTABLE ${GETTEXT_MSGMERGE_EXECUTABLE})
-   STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGINIT_EXECUTABLE ${GETTEXT_MSGINIT_EXECUTABLE})
+#   STRING(REGEX REPLACE "/" "\\\\" XGETTEXT_EXECUTABLE ${XGETTEXT_EXECUTABLE})
+#   STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGFMT_EXECUTABLE ${GETTEXT_MSGFMT_EXECUTABLE})
+#   STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGMERGE_EXECUTABLE ${GETTEXT_MSGMERGE_EXECUTABLE})
+#   STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGINIT_EXECUTABLE ${GETTEXT_MSGINIT_EXECUTABLE})
 ENDIF (WIN32)
 
 macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory po_path mo_path)
@@ -97,7 +97,7 @@ macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory 
                        COMMAND dir /b /S *.cpp > ${_absPot}/${pot_file}.txt
                        COMMAND ${XGETTEXT_EXECUTABLE} --from-code="UTF-8" --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -C -j -f ${_absPot}/${pot_file}.txt -o ${_absPot}/${pot_file}.pot
                        COMMAND ${CMAKE_COMMAND} -E remove ${_absPot}/${pot_file}.txt
-                       COMMAND ${GETTEXT_MSGINIT_EXECUTABLE} -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/temp.po
+                       COMMAND ${GETTEXT_MSGINIT_EXECUTABLE} -l ${locale}.UTF-8 -i ${_absPot}/${pot_file}.pot  -o ${_absPot}/temp.po
                        COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_absPot}/${pot_file}_${locale}.po ${_absPot}/${pot_file}.pot 
                        #|| mv ${_absPot}/temp.po ${_absPot}/${pot_file}_${locale}.po
 #                       COMMAND ${CMAKE_COMMAND} -E remove ${_absPot}/temp.po
@@ -107,6 +107,8 @@ macro(GETTEXT_CREATE_TRANSLATIONS pot_file keyword_s keyword_p locale directory 
                        COMMENT "Generating translations files..."
                        WORKING_DIRECTORY "${_absDir}"
                        )
+                       
+                       message("loc: ${locale}")
   endif()
 
   add_custom_target("${pot_file}_translation"
