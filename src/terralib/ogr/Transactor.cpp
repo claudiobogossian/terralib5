@@ -1021,7 +1021,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
           break;
 
           case te::dt::INT64_TYPE:
-            feat->SetField(currfield, d->getInt64(i));
+            feat->SetField(currfield, (GIntBig)d->getInt64(i));
             ++currfield;
             break;
 
