@@ -408,6 +408,13 @@ OGRFieldDefn* te::ogr::Convert2OGR(te::dt::Property* p)
       return fieldDef;
     break;
 
+    case te::dt::INT64_TYPE:
+    {
+      fieldDef->SetType(OFTInteger64);
+      return fieldDef;
+      break;
+    }
+
     case te::dt::ARRAY_TYPE:
     {
       te::dt::ArrayProperty* at = static_cast<te::dt::ArrayProperty*>(p);
