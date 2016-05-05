@@ -1876,6 +1876,7 @@ void TerraView::openProject(const QString& prjFileName)
     LoadProject(prjFileName, *m_project, lst);
 
     XMLFormatter::format(m_project, lst, false);
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
     getLayerExplorer()->setLayers(lst);
 
