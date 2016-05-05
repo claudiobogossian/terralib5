@@ -261,7 +261,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
         std::size_t propPos = outputDt->getPropertyPosition(name);
 
-        if ((propPos < 0) || (propPos >= outputDt->size()))
+        if (propPos == std::string::npos)
           continue;
 
         te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
@@ -277,7 +277,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
         std::size_t propPos = outputDt->getPropertyPosition(name);
 
-        if ((propPos < 0) || (propPos >= outputDt->size()))
+        if (propPos == std::string::npos)
           continue;
 
         te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();

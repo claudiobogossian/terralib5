@@ -214,7 +214,7 @@ namespace te
     {
       const unsigned int nstep = 2 * npoints;
 
-      for(register unsigned int i = 0; i != nstep; i+=2)
+      for(unsigned int i = 0; i != nstep; i+=2)
       {
         pts[i] = (line[i] - m_wllx) / m_mapUnitsPP;
         pts[i + 1] = (m_wury - line[i + 1]) / m_mapUnitsPP;

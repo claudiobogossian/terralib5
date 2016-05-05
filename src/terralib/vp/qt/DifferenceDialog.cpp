@@ -446,9 +446,6 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
     te::da::Select* inputSelect = 0;
     te::da::Select* differenceSelect = 0;
 
-    te::da::DataSet* inputDataSet = 0;
-    te::da::DataSet* differenceDataSet = 0;
-
     if ((inputDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() &&
       differenceDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect()) &&
       (inputDataSource->getId() == differenceDataSource->getId()) &&

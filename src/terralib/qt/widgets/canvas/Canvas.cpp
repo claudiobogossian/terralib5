@@ -478,7 +478,7 @@ void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
   p1.setX(coords[0].x);
   p1.setY(coords[0].y);
 
-  for(register std::size_t i = 1; i != size; ++i)
+  for(std::size_t i = 1; i != size; ++i)
   {
     p2.setX(coords[i].x);
     p2.setY(coords[i].y);
@@ -644,7 +644,7 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
 
   std::vector<te::gm::LinearRing*> rings;
 
-  for(register std::size_t i = 0; i != nRings; ++i)
+  for(std::size_t i = 0; i != nRings; ++i)
   {
     te::gm::LinearRing* ring = static_cast<te::gm::LinearRing*>(poly->getRingN(i));
     rings.push_back(ring);
@@ -743,7 +743,7 @@ void te::qt::widgets::Canvas::drawContour(const te::gm::LineString* line)
   QPointF p1(coords[0].x, coords[0].y);
   QPointF p2;
 
-  for(register std::size_t i = 1; i != size; ++i)
+  for(std::size_t i = 1; i != size; ++i)
   {
     p2.setX(coords[i].x);
     p2.setY(coords[i].y);
