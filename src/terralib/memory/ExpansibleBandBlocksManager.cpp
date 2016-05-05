@@ -764,7 +764,7 @@ bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int 
   FILE** fileptr, std::string& fullFileName ) const
 {
   fullFileName = boost::filesystem::unique_path( 
-    boost::filesystem::temp_directory_path() /= 
+    boost::filesystem::path( te::common::GetUserHomeDirPath() ) /= 
     boost::filesystem::path( "TerralibExpansibleBandBlocksManager_%%%%-%%%%-%%%%-%%%%" ) ).string();
   if( fullFileName.empty() )
   {

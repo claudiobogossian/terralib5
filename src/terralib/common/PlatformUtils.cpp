@@ -357,3 +357,30 @@ std::string te::common::FindInTerraLibPath(const std::string& p)
 
   return "";
 }
+
+std::string te::common::GetUserHomeDirPath()
+{
+  std::string returnString;
+  
+  #if TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    char* homePtr = getenv( "HOME" );
+    if( homePtr )
+    {
+      returnString = std::string( homePtr );
+    }
+  #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    char* homePathPtr = getenv( "HOMEPATH" );
+    char* homeDrivePtr = getenv( "HOMEDRIVE" );    
+    
+    if( ( homePathPtr!= 0 ) && ( homeDrivePtr != 0 ) )
+    {
+      returnString = std::string( homeDrivePtr ) +
+        std::string( homePathPtr );
+    }
+  #else
+    #error "Unsuported plataform"
+  #endif
+  
+  return returnString;
+}
+
