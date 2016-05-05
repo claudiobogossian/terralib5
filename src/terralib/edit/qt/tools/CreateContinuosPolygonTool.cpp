@@ -264,10 +264,13 @@ void te::edit::CreateContinuosPolygonTool::storeUndoCommand()
 
   if (m_currentIndex < (int)(m_addWatches.size() - 2))
   {
-    for (std::size_t i = (m_currentIndex + 1); i < m_addWatches.size(); i++)
+    std::size_t i = 0;
+    while (i < m_addWatches.size())
     {
       m_addWatches.pop_back();
+      i = (m_currentIndex + 1);
     }
+    m_addWatches.push_back(m_feature->clone());
   }
 
   m_currentIndex = (int)(m_addWatches.size() - 1);

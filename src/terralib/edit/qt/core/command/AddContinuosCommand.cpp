@@ -62,9 +62,7 @@ void  te::edit::AddContinuosCommand::undo()
   if (m_currentIndex >= 0)
   {
     m_coords.clear();
-
-    for (std::size_t i = 0; i < m_addItems.at(m_currentIndex)->clone()->getCoords().size(); i++)
-      m_coords.push_back(m_addItems.at(m_currentIndex)->clone()->getCoords()[i]);
+    m_coords = m_addItems.at(m_currentIndex)->clone()->getCoords();
   }
   else
     m_currentIndex = -1;
@@ -100,9 +98,7 @@ void te::edit::AddContinuosCommand::redo()
     }
 
     m_coords.clear();
-
-    for (std::size_t i = 0; i < m_addItems.at(m_currentIndex)->clone()->getCoords().size(); i++)
-      m_coords.push_back(m_addItems.at(m_currentIndex)->clone()->getCoords()[i]);
+    m_coords = m_addItems.at(m_currentIndex)->clone()->getCoords();
 
     draw();
   }
