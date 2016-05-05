@@ -58,7 +58,7 @@ std::string te::core::Translator::translate(const char* message)
     gen.add_messages_path(path);
     std::locale::global(gen(""));
 
-    std::string translated = boost::locale::translate(message).str(std::locale());
+    std::string translated = boost::locale::translate(message);
 
     if(translated != message)
       return translated;
@@ -92,7 +92,7 @@ std::string te::core::Translator::translate(const char* msg1,
     gen.add_messages_path(path);
     std::locale::global(gen(""));
 
-    std::string translated = boost::locale::translate(msg1, msg2, n).str(std::locale());
+    std::string translated = boost::locale::translate(msg1, msg2, n);
 
     if(n == 1 && translated != msg1)
       return translated;
