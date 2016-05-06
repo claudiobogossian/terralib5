@@ -55,10 +55,13 @@ OGRFieldType GetOGRType(int te_type)
     case te::dt::UINT16_TYPE:
     case te::dt::INT32_TYPE:
     case te::dt::UINT32_TYPE:
-    case te::dt::INT64_TYPE:
-    case te::dt::UINT64_TYPE:
       return OFTInteger;
     break;
+
+    case te::dt::INT64_TYPE:
+    case te::dt::UINT64_TYPE:
+      return OFTInteger64;
+      break;
 
     case te::dt::FLOAT_TYPE:
     case te::dt::DOUBLE_TYPE:
