@@ -91,23 +91,28 @@ bool te::attributefill::VectorToVectorMemory::run()
   int toSrid = m_toLayer->getSRID();
 
   std::auto_ptr<te::da::DataSetType> fromSchemaOrigin = m_fromLayer->getSchema();
+  std::auto_ptr<te::da::DataSet>     fromDsOrigin = m_fromLayer->getData();
 
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(fromSchemaOrigin.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
+  std::auto_ptr<te::da::DataSetType> toSchemaOrigin = m_toLayer->getSchema();
+  std::auto_ptr<te::da::DataSet>     toDsOrigin = m_toLayer->getData();
 
-  te::da::AssociateDataSetTypeConverterSRID(converter, fromSrid, toSrid);
+  te::da::DataSetTypeConverter* fromConverter = new te::da::DataSetTypeConverter(fromSchemaOrigin.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
 
-  std::auto_ptr<te::da::DataSetType> fromSchema(converter->getResult());
+  te::da::AssociateDataSetTypeConverterSRID(fromConverter, fromSrid, toSrid);
 
-  std::auto_ptr<te::da::DataSet> fromDsOrigin = m_fromLayer->getData();
+  std::auto_ptr<te::da::DataSetType>    fromSchema(fromConverter->getResult());
+  std::auto_ptr<te::da::DataSetAdapter> fromDs(te::da::CreateAdapter(fromDsOrigin.get(), fromConverter));
 
-  std::auto_ptr<te::da::DataSetAdapter> fromDs(te::da::CreateAdapter(fromDsOrigin.get(), converter));
+  te::da::DataSetTypeConverter* toConverter = new te::da::DataSetTypeConverter(toSchemaOrigin.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
+
+  te::da::AssociateDataSetTypeConverterSRID(toConverter, toSrid);
+
+  std::auto_ptr<te::da::DataSetType>    toSchema(toConverter->getResult());
+  std::auto_ptr<te::da::DataSetAdapter> toDs(te::da::CreateAdapter(toDsOrigin.get(), toConverter));
 
   te::gm::Envelope fromEnv = m_fromLayer->getExtent();
-
   te::gm::Envelope toEnv = m_toLayer->getExtent();
-  std::auto_ptr<te::da::DataSet> toDs = m_toLayer->getData();
-  std::auto_ptr<te::da::DataSetType> toSchema = m_toLayer->getSchema();
-
+  
   if (fromSrid != toSrid)
     fromEnv.transform(fromSrid, toSrid);
 
@@ -401,12 +406,27 @@ bool te::attributefill::VectorToVectorMemory::isToLayerOGR()
 
 te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetType()
 {
-  std::auto_ptr<te::da::DataSet> fromDs = m_fromLayer->getData();
-  std::auto_ptr<te::da::DataSetType> fromSchema = m_fromLayer->getSchema();
+  std::auto_ptr<te::da::DataSetType> fromSchemaOrigin = m_fromLayer->getSchema();
+  std::auto_ptr<te::da::DataSet>     fromDsOrigin = m_fromLayer->getData();
 
-  std::auto_ptr<te::da::DataSetType> toScheme = m_toLayer->getSchema();
+  std::auto_ptr<te::da::DataSetType> toSchemaOrigin = m_toLayer->getSchema();
+  std::auto_ptr<te::da::DataSet>     toDsOrigin = m_toLayer->getData();
 
-  te::da::DataSetType* dst = new te::da::DataSetType(*toScheme.get());
+  te::da::DataSetTypeConverter* fromConverter = new te::da::DataSetTypeConverter(fromSchemaOrigin.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
+
+  te::da::AssociateDataSetTypeConverterSRID(fromConverter, m_fromLayer->getSRID(), m_toLayer->getSRID());
+
+  std::auto_ptr<te::da::DataSetType>    fromSchema(fromConverter->getResult());
+  std::auto_ptr<te::da::DataSetAdapter> fromDs(te::da::CreateAdapter(fromDsOrigin.get(), fromConverter));
+
+  te::da::DataSetTypeConverter* toConverter = new te::da::DataSetTypeConverter(toSchemaOrigin.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
+
+  te::da::AssociateDataSetTypeConverterSRID(toConverter, m_toLayer->getSRID());
+
+  std::auto_ptr<te::da::DataSetType>    toSchema(toConverter->getResult());
+  std::auto_ptr<te::da::DataSetAdapter> toDs(te::da::CreateAdapter(toDsOrigin.get(), toConverter));
+
+  te::da::DataSetType* dst = new te::da::DataSetType(*toSchema.get());
   dst->setName(m_outDset);
   dst->setTitle(m_outDset);
 
