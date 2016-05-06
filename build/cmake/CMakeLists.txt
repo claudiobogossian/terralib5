@@ -306,7 +306,7 @@ if(GEOSC_FOUND)
 endif()
 
 if(GETTEXT_FOUND)
-    set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?" FORCE)
+    set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?")
 endif()
 
 if(LUA_FOUND)
