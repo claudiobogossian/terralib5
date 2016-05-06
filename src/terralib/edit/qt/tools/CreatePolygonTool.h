@@ -122,6 +122,8 @@ namespace te
 
         void onExtentChanged();
 
+        void onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>);
+
       protected:
 
         std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
@@ -129,7 +131,7 @@ namespace te
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
         std::vector<Feature*> m_addWatches;
-        std::vector<te::gm::Geometry*> m_geometries;
+        int m_currentIndex;
 
 
     };

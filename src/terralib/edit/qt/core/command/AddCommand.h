@@ -29,14 +29,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define __TERRALIB_EDIT_QT_INTERNAL_ADD_COMMAND_H
 
 // TerraLib
-#include "../../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../Config.h"
 #include "../../../Feature.h"
 
 // Qt
 #include <QUndoCommand>
-#include <QString>
-#include <QPointF>
 
 namespace te
 {
@@ -46,11 +43,13 @@ namespace te
     \brief Undo/Redo for add one components.
 
     */
-    class TEEDITQTEXPORT AddCommand : public QUndoCommand
+    class TEEDITQTEXPORT AddCommand : public QObject, public QUndoCommand
     {
+      Q_OBJECT
+
       public:
         // Pass all parameters that the command need to fulfill its task in the constructor
-        AddCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+        AddCommand(std::vector<Feature*>& items, int& currentIndex, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
         /*!
         \brief Destructor
@@ -67,15 +66,15 @@ namespace te
         */
         virtual void redo();
 
+      signals:
+
+        void geometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> coords);
+
       private:
 
-        te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
-        std::vector<Feature*> m_addItems;
-        void draw();
-
-        int m_nextFeature;
-        int m_previousFeature;
+        std::vector<Feature*>& m_addItems;
+        int &m_currentIndex;
 
     };
   }

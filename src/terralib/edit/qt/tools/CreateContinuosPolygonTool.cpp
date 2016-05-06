@@ -33,7 +33,7 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/AddContinuosCommand.h"
+#include "../core/command/AddCommand.h"
 #include "../core/UndoStackManager.h"
 #include "CreateContinuosPolygonTool.h"
 
@@ -164,7 +164,7 @@ void te::edit::CreateContinuosPolygonTool::draw()
     // Draw the geometry being created
     if(m_coords.size() < 3)
       drawLine();
-    else
+    else if (m_currentIndex > -1)
       drawPolygon();
 
     if(m_continuousMode == false)
@@ -253,10 +253,15 @@ void te::edit::CreateContinuosPolygonTool::storeUndoCommand()
   if (buildPolygon()->getNPoints() < 4)
     return;
 
-  if (!m_feature)
+  if (m_coords.empty())
+    return;
+
+  m_coords.push_back(m_lastPos);
+
+  if (m_feature == 0)
     m_feature = new Feature();
-  
-  m_feature->setGeometry(buildPolygon());
+
+  m_feature->setGeometry(convertGeomType(m_layer, buildPolygon()));
   m_feature->setOperation(te::edit::GEOMETRY_CREATE);
   m_feature->setCoords(m_coords);
 
@@ -275,7 +280,9 @@ void te::edit::CreateContinuosPolygonTool::storeUndoCommand()
 
   m_currentIndex = (int)(m_addWatches.size() - 1);
 
-  QUndoCommand* command = new AddContinuosCommand(m_addWatches, m_coords, m_currentIndex, m_display, m_layer);
+  QUndoCommand* command = new AddCommand(m_addWatches, m_currentIndex, m_layer);
+  connect(dynamic_cast<AddCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)), SLOT(onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)));
+
   UndoStackManager::getInstance().addUndoStack(command);
 }
 
@@ -290,6 +297,19 @@ void te::edit::CreateContinuosPolygonTool::onExtentChanged()
     return;
 
   m_coords.push_back(m_lastPos);
+
+  draw();
+}
+
+void te::edit::CreateContinuosPolygonTool::onGeometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> coords)
+{
+  m_feature->setGeometry(convertGeomType(m_layer, geom));
+
+  m_coords.clear();
+  m_coords = coords;
+
+  if (m_isFinished)
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 
   draw();
 }

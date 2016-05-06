@@ -122,6 +122,8 @@ namespace te
 
         void onExtentChanged();
 
+        void onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>);
+
       protected:
 
         std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
