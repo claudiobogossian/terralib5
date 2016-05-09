@@ -74,14 +74,15 @@ ENDIF (WIN32)
 
 macro(GETTEXT_CREATE_TRANSLATIONS proj_name keyword_s keyword_p locale directory)
   get_filename_component(_absDir ${directory} ABSOLUTE)
-  set(_template_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/template_translation.po.in")
   set(_pot_file ${CMAKE_CURRENT_BINARY_DIR}/${proj_name}.pot)
   set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
   set(_mo_file "${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/${proj_name}.mo")
   file(GLOB_RECURSE _srcs RELATIVE ${_absDir} ${_absDir}/*.cpp)
   set(encoding "UTF-8")
-  configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/template_translation.po.in
-                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po @ONLY)
+  if(NOT EXISTS "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
+    configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/template_translation.po.in
+                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po @ONLY)
+  endif()
   add_custom_command(
     TARGET ${proj_name}
     PRE_BUILD
