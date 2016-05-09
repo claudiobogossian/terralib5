@@ -78,7 +78,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
+        CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~CreatePolygonTool();
@@ -95,6 +95,8 @@ namespace te
         bool mouseMoveEvent(QMouseEvent* e);
 
         bool mouseDoubleClickEvent(QMouseEvent* e);
+
+        bool mouseReleaseEvent(QMouseEvent* e);
 
         //@}
 
@@ -132,6 +134,7 @@ namespace te
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
         std::vector<Feature*> m_addWatches;
         int m_currentIndex;
+        Qt::MouseButton m_sideToClose;
 
 
     };

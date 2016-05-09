@@ -46,12 +46,13 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
     m_addWatches(0),
-    m_currentIndex(0)
+    m_currentIndex(0),
+    m_sideToClose(sideToClose)
 {
   setCursor(cursor);
 
@@ -60,6 +61,7 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 
 te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
+  delete m_feature;
   clear();
 }
 
@@ -121,6 +123,9 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
+  if (m_sideToClose != Qt::LeftButton)
+    return false;
+
   if (e->button() != Qt::LeftButton)
     return false;
 
@@ -130,6 +135,26 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
   m_isFinished = true;
 
   storeFeature();
+
+  return true;
+}
+
+bool te::edit::CreatePolygonTool::mouseReleaseEvent(QMouseEvent* e)
+{
+  if (m_sideToClose != Qt::RightButton)
+    return false;
+
+  if (e->button() != Qt::RightButton)
+    return false;
+
+  if (m_coords.size() < 3) // Can not stop yet...
+    return false;
+
+  m_isFinished = true;
+
+  storeFeature();
+
+  UndoStackManager::getInstance().getUndoStack()->clear();
 
   return true;
 }
@@ -304,7 +329,12 @@ void te::edit::CreatePolygonTool::onGeometryAcquired(te::gm::Geometry* geom, std
   m_coords = coords;
 
   if (m_isFinished)
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+  {
+    if (m_currentIndex > -1)
+      RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+    else
+      RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_feature->getId());
+  }
 
   draw();
 }
