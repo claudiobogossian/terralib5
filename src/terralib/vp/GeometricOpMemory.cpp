@@ -56,6 +56,7 @@
 #include "Utils.h"
 
 // STL
+#include <iostream>
 #include <map>
 #include <math.h>
 #include <string>
@@ -143,15 +144,8 @@ bool te::vp::GeometricOpMemory::run() throw(te::common::Exception)
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
 
-            try
-            {
-              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
-              result = true;
-            }
-            catch(...)
-            {
-              result = false;
-            }
+            te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+            result = true;
 
             if(!result)
               return result;
@@ -219,15 +213,9 @@ bool te::vp::GeometricOpMemory::run() throw(te::common::Exception)
 
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
-            try
-            {
-              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
-              result = true;
-            }
-            catch(...)
-            {
-              result = false;
-            }
+
+            te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+            result = true;
 
             if(!result)
               return result;
@@ -396,17 +384,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
       switch(g->getGeomTypeId())
       {
         case te::gm::PointType:
-          {
-            if(g->isValid())
-              teGeomColl->add(g.release());
-          }
-          break;
         case te::gm::LineStringType:
-          {
-            if(g->isValid())
-              teGeomColl->add(g.release());
-          }
-          break;
         case te::gm::PolygonType:
           {
             if(g->isValid())
