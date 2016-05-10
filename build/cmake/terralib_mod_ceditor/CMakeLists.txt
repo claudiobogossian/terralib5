@@ -34,12 +34,14 @@ endif()
 file(GLOB TERRALIB_CEDITOR_CONFIGHDR_FILE ${TERRALIB_CEDITOR_DIR}/*.h)
 file(GLOB TERRALIB_CEDITOR_HDR_FILES ${TERRALIB_CEDITOR_DIR}/ceditor/*.h)
 file(GLOB TERRALIB_CEDITOR_SRC_FILES ${TERRALIB_CEDITOR_DIR}/ceditor/*.cpp)
+file(GLOB TERRALIB_CEDITOR_UI_FILES ${TERRALIB_CEDITOR_DIR}/ceditor/ui/*.ui)
 
 source_group("Header Files"                     FILES ${TERRALIB_CEDITOR_CONFIGHDR_FILES})
 source_group("Header Files\\ceditor"            FILES ${TERRALIB_CEDITOR_HDR_FILES})
 source_group("Source Files\\ceditor"            FILES ${TERRALIB_CEDITOR_SRC_FILES})
+source_group("Ui Files"                         FILES ${TERRALIB_CEDITOR_UI_FILES})
 
-add_library(terralib_mod_ceditor SHARED ${TERRALIB_CEDITOR_SRC_FILES} ${TERRALIB_CEDITOR_CONFIGHDR_FILE} ${TERRALIB_CEDITOR_HDR_FILES})
+add_library(terralib_mod_ceditor SHARED ${TERRALIB_CEDITOR_SRC_FILES} ${TERRALIB_CEDITOR_CONFIGHDR_FILE} ${TERRALIB_CEDITOR_HDR_FILES} ${TERRALIB_CEDITOR_UI_FILES})
 
 target_link_libraries(terralib_mod_ceditor terralib_mod_core ${QScintilla_LIBRARY})
 
