@@ -20,7 +20,7 @@
 /*!
   \file terralib/unittest/core/utils/TsPlatform.cpp
 
-  \brief A test suit for the TerraLib Core Utils Module.
+  \brief A test suite for the TerraLib Core Utils Module.
 
   \author Carolina Galvão dos Santos
  */
@@ -30,41 +30,48 @@
 
 // TerraLib
 #include <terralib/core/utils/Platform.h>
-#include <terralib/core/Exception.h>
 
 // Boost
 #include <boost/test/unit_test.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
-BOOST_AUTO_TEST_SUITE( platform_test )
+BOOST_AUTO_TEST_SUITE( platform_tests )
 
 BOOST_AUTO_TEST_CASE( findpath_correct_tests )
 {
-  std::string emptyMessage = "Find in TerraLib path is empty.";
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("") != "", emptyMessage);
+  /* Empty path */
+  BOOST_CHECK(te::core::FindInTerraLibPath("") != "");
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("/terralib_unittest_core") != "", emptyMessage);
+  /* Search in the same path */
+  BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("/terralib_unittest_core"),"/terralib_unittest_core"));
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("/share") != "", emptyMessage);
+  /* Search in the previous path */
+  BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("/share"),"/share"));
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("/src") != "", emptyMessage);
+  /* Search in codebase path */
+  BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("/src"),"/src"));
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("bin") != "", emptyMessage);
+  /* Search without / */
+  BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("bin"),"/bin"));
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("/unittest/core") != "", emptyMessage);
+  /* Search a file path */
+  BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("src/terralib/core/utils/Platform.cpp"),"src/terralib/core/utils/Platform.cpp"));
 
   return;
 }
 
-BOOST_AUTO_TEST_CASE( findpath_incorrect_tests )
+BOOST_AUTO_TEST_CASE( findpath_wrong_tests )
 {
-  std::string emptyMessage = "Find in TerraLib path should be empty.";
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("bin/") != "", emptyMessage);
+  /* Search path that doesn't exist */
+  BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("/abacate"),"/abacate") == false);
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("/abacate") == "", emptyMessage);
+  /* Search an incorrect path*/
+  BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("/src/core/utils"),"/src/core/utils") == false);
 
-  BOOST_CHECK_MESSAGE(te::core::FindInTerraLibPath("/core") == "", emptyMessage);
+  /* First directory is not in the search directories */
+  BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("/core/encoding"),"/core/encoding") == false);
 
   return;
 }
