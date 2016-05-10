@@ -72,11 +72,25 @@ IF (WIN32)
    STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGINIT_EXECUTABLE ${GETTEXT_MSGINIT_EXECUTABLE})
 ENDIF (WIN32)
 
-macro(GETTEXT_CREATE_TRANSLATIONS proj_name keyword_s keyword_p locale directory)
+
+macro(GETTEXT_TRANSLATION_BINARY proj_name locale)
+  set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
+  set(_mo_file "${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/${proj_name}.mo")
+  if(EXISTS _po_file)
+    add_custom_command(
+      TARGET ${proj_name}
+      PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/
+      COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_mo_file} ${_po_file}
+      WORKING_DIRECTORY "${_absDir}"
+      COMMENT "Generating translation binary file for ${proj_name}...")
+  endif()
+endmacro(GETTEXT_TRANSLATION_BINARY)
+
+macro(GETTEXT_TRANSLATION_SOURCE proj_name keyword_s keyword_p locale directory)
   get_filename_component(_absDir ${directory} ABSOLUTE)
   set(_pot_file ${CMAKE_CURRENT_BINARY_DIR}/${proj_name}.pot)
   set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
-  set(_mo_file "${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/${proj_name}.mo")
   file(GLOB_RECURSE _srcs RELATIVE ${_absDir} ${_absDir}/*.cpp)
   set(encoding "UTF-8")
   if(NOT EXISTS "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
@@ -88,12 +102,7 @@ macro(GETTEXT_CREATE_TRANSLATIONS proj_name keyword_s keyword_p locale directory
     PRE_BUILD
     COMMAND ${XGETTEXT_EXECUTABLE} --from-code=${encoding} --no-wrap --c++ --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -o ${_pot_file} ${_srcs}
     COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_po_file} ${_pot_file}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/
-    COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_mo_file} ${_po_file}
     WORKING_DIRECTORY "${_absDir}"
-    COMMENT "Generating translation file for ${proj_name}...")
-
-endmacro(GETTEXT_CREATE_TRANSLATIONS)
-
-
+    COMMENT "Generating translation source file for ${proj_name}...")
+endmacro(GETTEXT_TRANSLATION_SOURCE)
 ENDIF(XGETTEXT_FOUND)

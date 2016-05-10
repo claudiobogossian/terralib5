@@ -97,12 +97,7 @@ add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)
 
 if(GETTEXT_FOUND)
   if(TERRALIB_TRANSLATOR_ENABLED)
-GETTEXT_CREATE_TRANSLATIONS("terralib_unittest_core"
-                            "TE_TR"
-                            "TE_TR_PLURAL"
-                            "pt_BR"
-                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core"
-                           )
+    GETTEXT_TRANSLATION_BINARY("terralib_unittest_core" "pt_BR")
   endif()
 endif()
 
