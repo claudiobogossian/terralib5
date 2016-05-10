@@ -165,6 +165,7 @@ endif()
 
 include_directories(${CMAKE_BINARY_DIR})
 
+include(CTest)
 
 #
 # Build will generate files into a single folder
