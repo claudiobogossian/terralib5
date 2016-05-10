@@ -27,6 +27,9 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
+
+add_definitions(-DBOOST_LOG_DYN_LINK)
+
 # Examples of core/uri
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.cpp)
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.h)
@@ -101,17 +104,24 @@ target_link_libraries(terralib_example_core_translator terralib_mod_core)
 
 if(GETTEXT_FOUND)
   if(TERRALIB_TRANSLATOR_ENABLED)
-add_dependencies(terralib_example_core_translator terralib_example_core_translation)
-
-GETTEXT_CREATE_TRANSLATIONS("terralib_example_core"
-                        "TE_TR"
-                        "TE_TR_PLURAL"
-                        "pt_BR"
-                        "${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core"
-                        "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
-                        "${CMAKE_BINARY_DIR}/share/terralib/translations"
-                        )
+GETTEXT_CREATE_TRANSLATIONS("terralib_example_core_translator"
+                            "TE_TR"
+                            "TE_TR_PLURAL"
+                            "pt_BR"
+                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core"
+                            )
   endif()
 endif()
+
+#Examples of logger
+file(GLOB TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/logger/*.cpp)
+
+source_group("Source Files\\logger"  FILES ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+
+add_executable(terralib_example_core_logger ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+
+target_link_libraries(terralib_example_core_logger terralib_mod_core)
+
+
 
 
