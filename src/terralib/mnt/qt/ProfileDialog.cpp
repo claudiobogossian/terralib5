@@ -106,9 +106,6 @@ te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_deletePathPushButton, SIGNAL(toggled(bool)), SLOT(ondeletePathToggled(bool)));
   connect(m_ui->m_invertPushButton, SIGNAL(toggled(bool)), SLOT(oninvertToggled(bool)));
 
-  m_ui->m_rasterLayersComboBox->addItem(QString(""), QVariant(""));
-  m_ui->m_vectorlayersComboBox->addItem(QString(""), QVariant(""));
-
   m_color.push_back(te::color::RGBAColor(255, 0, 0, 255));
   m_color.push_back(te::color::RGBAColor(255, 0, 255, 255));
   m_color.push_back(te::color::RGBAColor(0, 255, 255, 255));
@@ -122,7 +119,6 @@ te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
 
 te::mnt::ProfileDialog::~ProfileDialog()
 {
-  release();
 }
 
 te::map::AbstractLayerPtr te::mnt::ProfileDialog::getLayer()
@@ -135,6 +131,9 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
   m_layers = layers;
   m_ui->m_vectorlayersComboBox->clear();
   m_ui->m_rasterLayersComboBox->clear();
+
+  m_ui->m_rasterLayersComboBox->addItem(QString(""), QVariant(""));
+  m_ui->m_vectorlayersComboBox->addItem(QString(""), QVariant(""));
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
@@ -204,6 +203,8 @@ void te::mnt::ProfileDialog::release()
 
   te::qt::af::BaseApplication* window = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
   window->onDrawTriggered();
+ 
+  setDefaultInterface();
 
 }
 
@@ -231,7 +232,6 @@ void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
     }
     ++it;
   }
-  setDefaultInterface();
 
 }
 
@@ -248,6 +248,8 @@ void  te::mnt::ProfileDialog::oneditionEnabled(bool checked)
   m_ui->m_addPointMousePushButton->setChecked(true);
   m_ui->m_addPointMousePushButton->toggled(true);
 
+  onInputComboBoxChanged(0);
+  m_visadas.clear();
 }
 
 void  te::mnt::ProfileDialog::onselectionEnabled(bool checked)
@@ -455,17 +457,20 @@ void te::mnt::ProfileDialog::onGeometriesChanged()
 
 void te::mnt::ProfileDialog::onOkPushButtonClicked()
 {
+  te::map::Visibility visibility;
+
   try
   {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     //raster
     if (!m_tool)
     {
-      if (!m_rasterinputLayer.get() || !m_vectorinputLayer.get())
+      if (!m_rasterinputLayer.get())
         throw te::common::Exception(TE_TR("Select an input layer!"));
 
-      if (m_rasterinputLayer->getSRID() != m_vectorinputLayer->getSRID())
-        throw te::common::Exception(TE_TR("Can not execute this operation with different SRIDs geometries!"));
+      if (m_vectorinputLayer)
+        if (m_rasterinputLayer->getSRID() != m_vectorinputLayer->getSRID())
+          throw te::common::Exception(TE_TR("Can not execute this operation with different SRIDs geometries!"));
     }
     m_dummy = m_ui->m_dummylineEdit->text().toDouble();
 
@@ -489,6 +494,9 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     //vector
     if (m_ui->m_selectionradioButton->isChecked())
     {
+      if (!m_vectorinputLayer)
+        throw te::common::Exception(TE_TR("Select an vector layer!"));
+
       te::map::DataSetLayer* indsvectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorinputLayer.get());
       if (!indsvectorLayer)
         throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
@@ -501,6 +509,10 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
       std::auto_ptr<te::da::DataSetType> invectorDsetType(invectorDataSource->getDataSetType(invectorDsetName));
       m_srid = m_vectorinputLayer->getSRID();
       m_visadas = profile->prepareVector(invectorDsetName, invectorDataSource, geostype);
+
+      visibility = m_vectorinputLayer->getVisibility();
+      if (visibility == te::map::VISIBLE)
+        m_vectorinputLayer->setVisibility(te::map::NOT_VISIBLE);
     }
     else
     {
@@ -516,24 +528,36 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     std::vector<te::gm::LineString*> profileSet;
     profile->runRasterProfile(raster, m_visadas, profileSet);
 
-    DrawSelected(m_visadas, 1, false);
+    DrawSelected(m_visadas, 2, false);
 
     te::mnt::ProfileResultDialog result(m_ui->m_titleLineEdit->text(), m_ui->m_yAxisLineEdit->text(), profileSet, m_color, this->parentWidget());
 
     QApplication::restoreOverrideCursor();
     if (result.exec() != QDialog::Accepted)
     {
+      if (m_vectorinputLayer)
+        m_vectorinputLayer->setVisibility(visibility);
+
+      DrawSelected(m_visadas, 1, false);
+
       return;
     }
-
-   //result = profile->run(raster);
- }
+  }
   catch (const std::exception& e)
   {
     QApplication::restoreOverrideCursor();
     QMessageBox::information(this, tr("Profile "), e.what());
+
+    if (m_vectorinputLayer)
+      m_vectorinputLayer->setVisibility(visibility);
+    release();
+
     return;
   }
+
+  if (m_vectorinputLayer)
+    m_vectorinputLayer->setVisibility(visibility);
+  release();
 
   QApplication::restoreOverrideCursor();
   accept();
