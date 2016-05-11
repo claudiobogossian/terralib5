@@ -36,6 +36,9 @@ namespace te
 {
   namespace core
   {
+    //! An execption indicating an error when the library name is empty.
+    struct LibraryNameException: virtual Exception { };
+
     //! An exception indicating an error when loading a shared library.
     struct LibraryLoadException: virtual Exception { };
 

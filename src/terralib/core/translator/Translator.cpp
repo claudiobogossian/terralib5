@@ -69,16 +69,18 @@ std::string te::core::Translator::translate(const char* message)
 #endif
 }
 
-std::string te::core::Translator::translate(const std::string& msg1,
-                                              const std::string& msg2,
-                                              unsigned int n)
+std::string
+te::core::Translator::translate(const std::string& msg1,
+                                const std::string& msg2,
+                                unsigned int n)
 {
-  return translate(msg1, msg2, n);
+  return translate(msg1.c_str(), msg2.c_str(), n);
 }
 
-std::string te::core::Translator::translate(const char* msg1,
-                                              const char* msg2,
-                                              unsigned int n)
+std::string
+te::core::Translator::translate(const char* msg1,
+                                const char* msg2,
+                                unsigned int n)
 {
 #ifdef TERRALIB_TRANSLATOR_ENABLED
   for(auto it = m_textDomainVector.begin(); it != m_textDomainVector.end();++it)

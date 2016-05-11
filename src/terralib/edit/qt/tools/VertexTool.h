@@ -132,17 +132,7 @@ namespace te
 
         void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
-        void pickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env);
-
         void draw(te::gm::Point* virtualVertex = 0);
-
-        te::gm::Envelope buildEnvelope(const QPointF& pos);
-
-        void updateRTree();
-
-        void setStage(StageType stage);
-
-        void updateCursor();
 
         void storeFeature();
 
@@ -152,16 +142,24 @@ namespace te
 
         void onGeometryAcquired(te::gm::Geometry*);
 
-      private:
-
-          std::vector<te::gm::LineString*> m_lines;
-          VertexIndex m_currentVertexIndex;
-          te::sam::rtree::Index<VertexIndex, 8> m_rtree;
-          StageType m_currentStage;
-
       protected:
 
+        std::vector<te::gm::LineString*> m_lines;
+        VertexIndex m_currentVertexIndex;
+        te::sam::rtree::Index<VertexIndex, 8> m_rtree;
+        StageType m_currentStage;
+
         std::vector<Feature*> m_updateWatches;
+
+        te::gm::Envelope buildEnvelope(const QPointF& pos);
+
+        void pickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env);
+
+        void updateRTree();
+
+        void updateCursor();
+
+        void setStage(StageType stage);
 
     };
 

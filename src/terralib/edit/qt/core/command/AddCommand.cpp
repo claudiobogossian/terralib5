@@ -87,7 +87,6 @@ void te::edit::AddCommand::redo()
     }
 
     emit geometryAcquired(dynamic_cast<te::gm::Geometry*>(m_addItems[m_currentIndex]->getGeometry()->clone()), m_addItems.at(m_currentIndex)->clone()->getCoords());
-
   }
 
 }

@@ -88,16 +88,9 @@ set_target_properties(terralib_mod_core
 
 if(GETTEXT_FOUND)
   if(TERRALIB_TRANSLATOR_ENABLED)
-GETTEXT_CREATE_TRANSLATIONS("terralib_mod_core"
-                            "TE_TR"
-                            "TE_TR_PLURAL"
-                            "pt_BR"
-                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core"
-                            )
+    GETTEXT_TRANSLATION_BINARY("terralib_mod_core" "pt_BR")
   endif()
 endif()
-
-
 
 install(TARGETS terralib_mod_core
         EXPORT terralib-targets
