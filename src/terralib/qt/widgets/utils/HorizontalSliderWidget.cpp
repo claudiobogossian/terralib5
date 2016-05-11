@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "ui_HorizontalSliderWidgetForm.h"
 #include "HorizontalSliderWidget.h"
 

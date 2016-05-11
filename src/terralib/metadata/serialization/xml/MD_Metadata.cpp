@@ -24,7 +24,7 @@
  */
 
 // TerraLib
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../metadata/iso19115/CI_Citation.h"
 #include "../../../metadata/iso19115/CI_ResponsibleParty.h"
 #include "../../../metadata/iso19115/MD_Format.h"

@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess/dataset/UniqueKey.h"
 #include "../../Exception.h"
 #include "PropertyItem.h"

@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../common/BoostUtils.h"
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../dataaccess/dataset/AttributeConverterManager.h"
 #include "../../../dataaccess/dataset/DataSetTypeConverter.h"

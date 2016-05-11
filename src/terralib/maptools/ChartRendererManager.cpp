@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "AbstractChartRenderer.h"
 #include "ChartRendererManager.h"
 #include "Exception.h"

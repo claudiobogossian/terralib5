@@ -28,7 +28,7 @@
 #include "IdlBand.h"
 #include "Functions.h"
 
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../raster/Utils.h"
 
 te::idl::IdlRaster::IdlRaster()

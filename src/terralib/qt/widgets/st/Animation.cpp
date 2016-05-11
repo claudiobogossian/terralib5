@@ -108,10 +108,6 @@ int te::qt::widgets::Animation::getClosestAnimationDataIndex(const double& trel)
 {
   AnimationItem* ai = (AnimationItem*)targetObject();
 
-  // this animation: initial and final time 
-  boost::posix_time::ptime aiTime = m_temporalExtent.getInitialTimeInstant().getTimeInstant();
-  boost::posix_time::ptime afTime = m_temporalExtent.getFinalTimeInstant().getTimeInstant();
-
   // temporal animation extent 
   boost::posix_time::ptime iTime = m_temporalAnimationExtent.getInitialTimeInstant().getTimeInstant();
   boost::posix_time::ptime fTime = m_temporalAnimationExtent.getFinalTimeInstant().getTimeInstant();

@@ -35,7 +35,7 @@
 // TerraLib
 #include <terralib/common/Exception.h>
 #include <terralib/common/PlatformUtils.h>
-#include <terralib/common/Translator.h>
+#include <terralib/core/translator/Translator.h>
 #include <terralib/common/progress/ProgressManager.h>
 #include <terralib/dataaccess/datasource/DataSourceInfoManager.h>
 #include <terralib/maptools/Utils.h>
@@ -1876,6 +1876,7 @@ void TerraView::openProject(const QString& prjFileName)
     LoadProject(prjFileName, *m_project, lst);
 
     XMLFormatter::format(m_project, lst, false);
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
     getLayerExplorer()->setLayers(lst);
 

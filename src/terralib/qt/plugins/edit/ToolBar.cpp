@@ -24,7 +24,7 @@
   */
 // Terralib
 #include "../../../common/Exception.h"
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -340,11 +340,38 @@ void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QStrin
 
 void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 {
-  enableActionsByGeomType(m_tools, checked);
-
-  enableCurrentTool(checked);
-
   m_isEnabled = checked;
+
+  enableActionsByGeomType(m_tools, m_isEnabled);
+
+  enableCurrentTool(m_isEnabled);
+
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  if (e.m_display == 0)
+    return;
+
+  if (!m_isEnabled)
+  {
+    QPixmap* draft = e.m_display->getDisplay()->getDraftPixmap();
+    draft->fill(Qt::transparent);
+
+    // Clear the repositories
+    std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
+
+    std::map<std::string, te::edit::Repository*>::const_iterator it;
+    for (it = repositories.begin(); it != repositories.end(); ++it)
+    {
+      if (it->second)
+        it->second->clear();
+    }
+
+    // Clear the undo stack
+    te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
+  }
+
+  e.m_display->getDisplay()->repaint();
 }
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
@@ -682,7 +709,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
+  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, Qt::LeftButton, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)

@@ -34,7 +34,7 @@ MACRO(TeInstallPlugins plugins location)
     list(APPEND _files ${_loc})
   endforeach()
   
-	install(FILES ${_files}
+  install(FILES ${_files}
            DESTINATION "${TERRALIB_BASE_DESTINATION_DIR}qtplugins/${location}"
            CONFIGURATIONS Release
            COMPONENT runtime)

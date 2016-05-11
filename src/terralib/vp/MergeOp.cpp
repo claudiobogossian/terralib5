@@ -21,7 +21,7 @@
  \file MergeOp.cpp
  */
 
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/SimpleProperty.h"

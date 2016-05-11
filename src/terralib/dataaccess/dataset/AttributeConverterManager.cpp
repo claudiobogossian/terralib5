@@ -24,7 +24,7 @@
 */
 
 // Terralib
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../Exception.h"
 #include "AttributeConverters.h"
 #include "AttributeConverterManager.h"

@@ -29,7 +29,7 @@
 #include "../common/Globals.h"
 #include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/And.h"
@@ -123,6 +123,8 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
 
   // Adjust internal renderer transformer
   m_transformer.setTransformationParameters(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury, canvas->getWidth(), canvas->getHeight());
+
+  canvas->setWindow(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury);
 
   // Resets internal renderer state
   reset();

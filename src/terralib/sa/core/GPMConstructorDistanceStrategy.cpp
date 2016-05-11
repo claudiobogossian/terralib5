@@ -25,7 +25,7 @@
 
 // TerraLib Includes
 #include "../../common/Exception.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSource.h"

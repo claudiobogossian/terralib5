@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/PlatformUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../common/UnitsOfMeasureManager.h"
 #include "Exception.h"
 #include "SpatialReferenceSystemManager.h"

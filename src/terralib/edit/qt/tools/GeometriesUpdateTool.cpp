@@ -43,10 +43,18 @@ void te::edit::GeometriesUpdateTool::setInUse(const bool& status)
 {
   m_isInUse = status;
 }
+
 void te::edit::GeometriesUpdateTool::resetVisualizationTool()
 {
   if (m_feature)
     delete m_feature;
+}
+
+void te::edit::GeometriesUpdateTool::storeFeature()
+{
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+
+  emit geometriesEdited();
 }
 
 void te::edit::GeometriesUpdateTool::storeUndoCommand()

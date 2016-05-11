@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../xml/Reader.h"
 #include "../xml/ReaderFactory.h"
 #include "AbstractPlugin.h"

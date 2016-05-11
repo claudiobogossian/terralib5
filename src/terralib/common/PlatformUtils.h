@@ -107,6 +107,16 @@ namespace te
       \return A complete path to the file or directory if it is found, otherwise returns an empty string.
     */
     TECOMMONEXPORT std::string FindInTerraLibPath(const std::string& p);
+    
+    /*!
+      \brief Returns the system user home dir path.
+
+      \return Returns the system user home dir path.
+      
+      \note An empty estring will be returned on errors.
+    */
+    TECOMMONEXPORT std::string GetUserHomeDirPath();
+    
 
   }     // end namespace common
 }       // end namespace te

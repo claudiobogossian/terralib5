@@ -28,7 +28,7 @@
 #include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
@@ -261,7 +261,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
         std::size_t propPos = outputDt->getPropertyPosition(name);
 
-        if ((propPos < 0) || (propPos >= outputDt->size()))
+        if (propPos == std::string::npos)
           continue;
 
         te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
@@ -277,7 +277,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
         std::size_t propPos = outputDt->getPropertyPosition(name);
 
-        if ((propPos < 0) || (propPos >= outputDt->size()))
+        if (propPos == std::string::npos)
           continue;
 
         te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();

@@ -25,10 +25,10 @@
 
 // TerraLib
 #include "../common/Exception.h"
-#include "../common/Library.h"
-#include "../common/LibraryManager.h"
+#include "../core/lib/Library.h"
+#include "../core/lib/LibraryManager.h"
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../common/PlatformUtils.h"
 #include "../Defines.h"
 #include "CppPluginEngine.h"
@@ -69,14 +69,10 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
   std::string libName = getPluginFileName(it->second);
 
 // is there a library already loaded with this name?
-  te::common::LibraryPtr slib(te::common::LibraryManager::getInstance().find(libName));
+  std::shared_ptr<te::core::Library> slib(new te::core::Library(libName));
 
-  if(slib.get() != 0)
-  {
-// if it already exists, just check if it is loaded
-    if(!slib->isLoaded())
-      slib->load();
-  }
+  if(!slib->isLoaded())
+    slib->load();
   else
   {
 // if not loaded yet, load it!
@@ -87,7 +83,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
     
     boost::filesystem::path pluginFile(libName);
 
-    slib.reset(new te::common::Library(pluginFile.string(), true));
+    slib.reset(new te::core::Library(pluginFile.string(), true));
 
     try
     {
@@ -122,7 +118,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
         {
           pluginFile = alternative_paths[i];
           pluginFile /= libName;
-          slib.reset(new te::common::Library(pluginFile.string(), true));
+          slib.reset(new te::core::Library(pluginFile.string(), true));
           slib->load();
           errorMessage.clear();
           break;
@@ -138,7 +134,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
           pluginFile = alternative_paths[i];
           pluginFile /= "lib";
           pluginFile /= libName;
-          slib.reset(new te::common::Library(pluginFile.string(), true));
+          slib.reset(new te::core::Library(pluginFile.string(), true));
           slib->load();
           errorMessage.clear();
           break;
@@ -155,7 +151,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
           pluginFile = alternative_paths[i];
           pluginFile /= "Release";
           pluginFile /= libName;
-          slib.reset(new te::common::Library(pluginFile.string(), true));
+          slib.reset(new te::core::Library(pluginFile.string(), true));
           slib->load();
           errorMessage.clear();
           break;
@@ -171,7 +167,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
           pluginFile = alternative_paths[i];
           pluginFile /= "Debug";
           pluginFile /= libName;
-          slib.reset(new te::common::Library(pluginFile.string(), true));
+          slib.reset(new te::core::Library(pluginFile.string(), true));
           slib->load();
           errorMessage.clear();
           break;
@@ -229,7 +225,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 
   CppPluginProxy* proxy = new CppPluginProxy(slib, cppPlugin.release());
 
-  te::common::LibraryManager::getInstance().add(libName, slib);
+  te::core::LibraryManager::instance().insert(libName, slib);
 
   return proxy;
 }
@@ -243,7 +239,7 @@ void te::plugin::CppPluginEngine::unload(AbstractPlugin* plugin)
 
 std::string te::plugin::CppPluginEngine::getPluginFileName(const std::string& libName)
 {
-  std::string nativeName = te::common::Library::getNativeName(libName);
+  std::string nativeName = te::core::Library::getNativeName(libName);
 
   return nativeName;
 }

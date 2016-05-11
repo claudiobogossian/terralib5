@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../Translator.h"
+#include "../../core/translator/Translator.h"
 #include "ConsoleProgressViewer.h"
 #include "TaskProgress.h"
 

@@ -104,7 +104,7 @@ namespace te
 
         void draw();
 
-        void storeNewGeometry();
+        void storeFeature();
 
       private slots:
 

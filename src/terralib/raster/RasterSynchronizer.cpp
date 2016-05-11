@@ -28,7 +28,7 @@
 #include "Band.h"
 #include "BandProperty.h"
 #include "Exception.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include <climits>
 

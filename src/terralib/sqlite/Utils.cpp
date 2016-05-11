@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/Exception.h"
 #include "../datatype/ByteArray.h"
 #include "../datatype/DateTimeProperty.h"

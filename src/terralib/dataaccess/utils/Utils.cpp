@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/StringUtils.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
@@ -1116,10 +1116,10 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
     return false;
   }
 
-  ff = name.find("¨");
+  ff = name.find("Â¨");
   if(ff >= 0)
   {
-    invalidChar += "invalid symbol: '¨'\n";
+    invalidChar += "invalid symbol: 'Â¨'\n";
     return false;
   }
 
@@ -1159,11 +1159,11 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
   }
 
   std::vector<std::string> vecInvalidChars;
-  vecInvalidChars.push_back("ª");
-  vecInvalidChars.push_back("º");
-  vecInvalidChars.push_back("¹");
-  vecInvalidChars.push_back("²");
-  vecInvalidChars.push_back("³");
+  vecInvalidChars.push_back("Âª");
+  vecInvalidChars.push_back("Âº");
+  vecInvalidChars.push_back("Â¹");
+  vecInvalidChars.push_back("Â²");
+  vecInvalidChars.push_back("Â³");
 
   for(unsigned int i = 0; i < vecInvalidChars.size(); ++i)
   {
@@ -1348,7 +1348,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
         v = (v + values[meio-1]) / 2.;
     }
   }
-  else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores
+  else if(sumary == "MODE")  // nao dÃ¡ porque pode gerar nenhum ou vÃ¡rios valores
   {
   }
 

@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/Exception.h"
 #include "../common/STLUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/ObjectId.h"
 #include "../datatype/SimpleData.h"
 #include "../geometry/Coord2D.h"

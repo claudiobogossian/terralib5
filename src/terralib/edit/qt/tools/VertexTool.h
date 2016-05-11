@@ -134,7 +134,7 @@ namespace te
 
         void draw(te::gm::Point* virtualVertex = 0);
 
-        void storeEditedFeature();
+        void storeFeature();
 
       private slots:
 

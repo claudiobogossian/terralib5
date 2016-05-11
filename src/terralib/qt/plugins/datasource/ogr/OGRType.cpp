@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "../../../widgets/layer/selector/DataSetLayerSelector.h"
 #include "OGRConnector.h"
 #include "OGRType.h"

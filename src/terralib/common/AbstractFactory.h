@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "FactoryDictionary.h"
-
+#include "../core/Exception.h"
 // Boost
 #include <boost/noncopyable.hpp>
 

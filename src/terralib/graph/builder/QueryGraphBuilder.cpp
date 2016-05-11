@@ -28,7 +28,7 @@
 */
 
 // TerraLib
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/query/Expression.h"
 #include "../core/AbstractGraphFactory.h"

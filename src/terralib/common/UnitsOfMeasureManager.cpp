@@ -28,7 +28,7 @@
 #include "PlatformUtils.h"
 #include "STLUtils.h"
 #include "StringUtils.h"
-#include "Translator.h"
+#include "../core/translator/Translator.h"
 #include "UnitOfMeasure.h"
 #include "UnitsOfMeasureManager.h"
 

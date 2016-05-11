@@ -21,7 +21,7 @@
  \file Intersection.cpp
  */
 
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../common/Logger.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -281,7 +281,7 @@ bool te::vp::Intersection::isCollection(const std::map<std::string, te::dt::Abst
 
 bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
 {
-  
+
   bool isCollection;
 
   //*TESTE SPECIFC PARAM*//
@@ -321,7 +321,7 @@ bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
 
 // Build Query to Intersect data.
   te::da::Fields* fields = new te::da::Fields;
-  
+
   std::auto_ptr<te::da::DataSetType> dsType_first;
   std::auto_ptr<te::da::DataSetType> dsType_second;
 
@@ -359,7 +359,7 @@ bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
 
   te::da::Select* mainSelect = new te::da::Select(fields, from);
 
-/*If the input parameters size is greater than two, add the previous 
+/*If the input parameters size is greater than two, add the previous
   select query into a subselect and builds a new external select to query.*/
   for (std::size_t i = 2; i < inputParams.size(); ++i)
   {
@@ -394,7 +394,7 @@ bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
     mainSelect = new te::da::Select(external_fields, externalFrom);
   }
 
-/*Check if the input and output dataSource are the same, if so, 
+/*Check if the input and output dataSource are the same, if so,
   persists the result of select query into database with insert command.*/
   te::da::DataSourcePtr outputDataSource = mainParams->getOutputDataSource();
 
@@ -469,7 +469,7 @@ bool te::vp::Intersection::executeQuery(te::vp::AlgorithmParams* mainParams)
     t->commit();
   }
 
-  
+
   return true;
 }
 
@@ -566,7 +566,7 @@ te::da::DataSetType* te::vp::Intersection::getOutputDataSetType(te::vp::Algorith
 
   te::da::DataSetType*      firstDataSetType = firstInputParams.m_inputDataSetType;
   te::gm::GeometryProperty* firstGeometryProperty = te::da::GetFirstGeomProperty(firstDataSetType);
-  
+
   te::da::DataSetType*      secondDataSetType = secondInputParams.m_inputDataSetType;
   te::gm::GeometryProperty* secondGeometryProperty = te::da::GetFirstGeomProperty(secondDataSetType);
 

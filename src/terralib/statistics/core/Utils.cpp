@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "Config.h"
 #include "Enums.h"

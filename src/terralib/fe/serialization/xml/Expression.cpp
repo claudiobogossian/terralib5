@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../fe/BinaryOperator.h"
 #include "../../../fe/Expression.h"
 #include "../../../fe/Globals.h"

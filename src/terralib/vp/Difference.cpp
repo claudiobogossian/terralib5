@@ -21,7 +21,7 @@
  \file Difference.cpp
  */
 
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
@@ -123,8 +123,6 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 
   bool isCollection = this->isCollection(specificParams);
 
-// Geometry type for the output data.
-  te::gm::GeomType outputGeomType = setGeomResultType(inputGeomProp->getGeometryType(), isCollection);
 
 // Create output dataset in memory.
   std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
@@ -617,6 +615,8 @@ te::gm::Geometry* te::vp::Difference::setGeomAsMulti(te::gm::Geometry* geom)
 
                               return geomColl;
     }
+    default:
+      break;
   }
 
   return geom;

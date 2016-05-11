@@ -90,7 +90,7 @@ bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
     {
       RemoveVertex(m_lines, m_currentVertexIndex);
 
-      storeEditedFeature();
+      storeFeature();
 
       m_currentVertexIndex.makeInvalid();
 
@@ -170,7 +170,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
 
       MoveVertex(m_lines, m_currentVertexIndex, point.x(), point.y());
 
-      storeEditedFeature();
+      storeFeature();
 
       draw();
 
@@ -231,7 +231,7 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     AddVertex(m_lines, point.x(), point.y(), e, m_display->getSRID());
 
-    storeEditedFeature();
+    storeFeature();
 
     m_currentVertexIndex.makeInvalid();
 
@@ -323,7 +323,6 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
     else
       renderer.drawVertexes(m_feature->getGeometry());
   }
- // m_display->repaint(); //teste-rosa
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
@@ -334,7 +333,6 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
     renderer.setPointStyle("circle", Qt::transparent, Qt::blue, 3, 24);
     renderer.draw(point.get());
   }
-  m_display->repaint(); //teste-rosa
 
   // Draw the virtual vertex
   if(virtualVertex)
@@ -421,7 +419,7 @@ void te::edit::VertexTool::updateCursor()
   }
 }
 
-void te::edit::VertexTool::storeEditedFeature()
+void te::edit::VertexTool::storeFeature()
 {
   if (m_feature)
     RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());

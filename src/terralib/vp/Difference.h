@@ -80,8 +80,6 @@ namespace te
 
     private:
 
-      std::size_t m_SRID;
-
       typedef te::sam::rtree::Index<size_t, 8>* DataSetRTree;
 
     };
