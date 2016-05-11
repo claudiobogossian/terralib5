@@ -73,30 +73,28 @@ std::string GetExePath()
 }
 #endif
 
-BOOST_AUTO_TEST_SUITE( lib_test_case ) 
+BOOST_AUTO_TEST_SUITE( lib_test_case )
 
 BOOST_AUTO_TEST_CASE(test_constructor)
 {
   te::core::Library* l1 = 0;
   std::string lName = GetNativeName();
 
-  std::cout <<lName;
-  
+
   /* Unloaded library. */
   /* -------------------- */
   // Shared library exist.
   BOOST_CHECK(l1 = new te::core::Library(lName, true));
   delete l1;
-  
+
   // Shared library do not exist.
   BOOST_CHECK(l1 = new te::core::Library("fred.dll", true));
   delete l1;
 
   // Name of the library is empty
-  // -> This should throw an exception...
-  BOOST_CHECK(l1 = new te::core::Library("", true));
-  delete l1;
+  BOOST_CHECK_THROW(l1 = new te::core::Library("", true), te::core::LibraryNameException);
 
+  BOOST_CHECK_THROW(l1 = new te::core::Library("        ", true), te::core::LibraryNameException);
   /* Loaded library. */
   /* -------------------- */
   // Shared library exist.
@@ -105,9 +103,6 @@ BOOST_AUTO_TEST_CASE(test_constructor)
 
   // Shared library does not exist.
   BOOST_CHECK_THROW(l1 = new te::core::Library("fred.dll"), te::core::LibraryLoadException);
-
-  // Name of the library is empty
-  BOOST_CHECK_THROW(l1 = new te::core::Library(""), te::core::LibraryLoadException);
 
   return;
 }
@@ -124,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_destructor)
   /* Testing destructor on a loaded library. */
   l = new te::core::Library(lName);
 
-  BOOST_CHECK_NO_THROW(delete l); 
+  BOOST_CHECK_NO_THROW(delete l);
 
   return;
 }
@@ -144,10 +139,6 @@ BOOST_AUTO_TEST_CASE(test_load)
   te::core::Library l2("fred.dll", true);
   BOOST_CHECK_THROW(l2.load(), te::core::LibraryLoadException);
 
-  // Name of the library is empty
-  te::core::Library l3("", true);
-  BOOST_CHECK_THROW(l3.load(), te::core::LibraryLoadException);
-
   return;
 }
 
@@ -161,15 +152,11 @@ BOOST_AUTO_TEST_CASE(test_unload)
 
   /* Existing library but not loaded yet */
   te::core::Library l2(lName, true);
-  BOOST_CHECK_NO_THROW(l1.unload());
+  BOOST_CHECK_NO_THROW(l2.unload());
 
   // Shared library does not exist.
   te::core::Library l3("fred.dll", true);
-  BOOST_CHECK_THROW(l3.unload(), te::core::LibraryUnloadException);
-
-  // Name of the library is empty
-  te::core::Library l4("", true);
-  BOOST_CHECK_THROW(l4.unload(), te::core::LibraryUnloadException);
+  BOOST_CHECK_NO_THROW(l3.unload());
 
   return;
 }
@@ -193,10 +180,6 @@ BOOST_AUTO_TEST_CASE(test_isloaded)
   // Shared library do not exist.
   te::core::Library l3("fred.dll", true);
   BOOST_CHECK(!l3.isLoaded());
-
-  // Name of the library is empty
-  te::core::Library l4("", true);
-  BOOST_CHECK(!l4.isLoaded());
 
   return;
 }
@@ -222,7 +205,7 @@ BOOST_AUTO_TEST_CASE(test_getAddress)
 
   /* Testing get a function that exists. */
   BOOST_CHECK(l1.getAddress("fatorial"));
-  
+
   /* Testing get a function that does not exists. */
   BOOST_CHECK_THROW(l1.getAddress("fatorializando"), te::core::LibrarySymbolNotFoundException);
 
@@ -243,7 +226,7 @@ BOOST_AUTO_TEST_CASE(test_getNativeName)
 #else
   suffix = "d.dll";
 #endif
-#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX 
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
   prefix = "lib";
   suffix = ".so";
 #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
@@ -278,7 +261,7 @@ BOOST_AUTO_TEST_CASE(test_addSearchDir)
   BOOST_CHECK_THROW(te::core::Library::addSearchDir("X:/funcate/kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"), te::core::LibraryInvalidSearchPathException);
 
   /* Trying to load a library that can not be found by the operational system. */
-  BOOST_CHECK_THROW(te::core::Library(lName.c_str()), te::core::LibraryLoadException);  
+  BOOST_CHECK_THROW(te::core::Library(lName.c_str()), te::core::LibraryLoadException);
 
   te::core::Library::addSearchDir(GetExampleFolder());
 

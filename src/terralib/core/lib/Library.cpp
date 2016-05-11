@@ -40,6 +40,7 @@
 
 // Boost
 #include <boost/format.hpp>
+#include <boost/algorithm/cxx11/all_of.hpp>
 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 #include <windows.h>
@@ -113,6 +114,13 @@ static std::string te_get_os_error()
 te::core::Library::Library(const std::string& slib_file_name, bool delay_load)
   : m_pimpl(nullptr)
 {
+  if(slib_file_name.empty() || boost::algorithm::all_of(slib_file_name.begin(), slib_file_name.end(), isspace))
+  {
+    boost::format err_msg("Library name cannot be empty.");
+
+    throw LibraryNameException() << te::ErrorDescription(err_msg.str());
+  }
+
   m_pimpl = new Impl(slib_file_name);
 
   if(delay_load)
@@ -126,7 +134,7 @@ te::core::Library::~Library()
 #ifdef NDEBUG
   try
   {
-#endif  
+#endif
     unload();
 #ifdef NDEBUG
   }
@@ -141,7 +149,7 @@ te::core::Library::~Library()
 void
 te::core::Library::load()
 {
-  if(m_pimpl->module != nullptr)
+  if(isLoaded())
     return;
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
@@ -158,7 +166,7 @@ te::core::Library::load()
 
 #endif
 
-  if(m_pimpl->module == nullptr)
+  if(!isLoaded())
   {
     boost::format err_msg("Could not load library: %1%, due to following error: %2%.");
 
@@ -169,7 +177,7 @@ te::core::Library::load()
 void
 te::core::Library::unload()
 {
-  if(m_pimpl->module == nullptr)
+  if(!isLoaded())
     return;
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS)
@@ -353,3 +361,4 @@ te::core::Library::getSearchPath()
 
 #endif
 }
+
