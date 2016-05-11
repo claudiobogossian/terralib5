@@ -88,7 +88,7 @@ set_target_properties(terralib_mod_core
 
 if(GETTEXT_FOUND)
   if(TERRALIB_TRANSLATOR_ENABLED)
-    GETTEXT_TRANSLATION_BINARY("terralib_mod_core" "pt_BR")
+    TERRALIB_REGISTER_TRANSLATION("terralib_mod_core" "pt_BR")
   endif()
 endif()
 

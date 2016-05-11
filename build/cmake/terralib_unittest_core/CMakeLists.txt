@@ -97,8 +97,8 @@ add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)
 
 if(GETTEXT_FOUND)
   if(TERRALIB_TRANSLATOR_ENABLED)
-    GETTEXT_TRANSLATION_BINARY("terralib_unittest_core" "pt_BR")
+    TERRALIB_REGISTER_TRANSLATION("terralib_unittest_core" "pt_BR")
   endif()
 endif()
-
-add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core)
+add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
