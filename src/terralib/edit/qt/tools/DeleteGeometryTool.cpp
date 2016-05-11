@@ -101,7 +101,8 @@ bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
 
 void te::edit::DeleteGeometryTool::reset()
 {
-  delete m_feature;
+  if (m_feature)
+    delete m_feature;
 }
 
 te::gm::Envelope te::edit::DeleteGeometryTool::buildEnvelope(const QPointF& pos)

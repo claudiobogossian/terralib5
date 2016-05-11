@@ -65,7 +65,8 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
 
 te::edit::VertexTool::~VertexTool()
 {
-  delete m_feature;
+  if (m_feature)
+    delete m_feature;
 }
 
 bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
@@ -248,7 +249,8 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 void te::edit::VertexTool::reset()
 {
-  delete m_feature;
+  if (m_feature)
+    delete m_feature;
 
   setStage(FEATURE_SELECTION);
 
@@ -314,10 +316,14 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   }
 
   // Draw the vertexes
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
-    renderer.draw(m_feature->getGeometry(), true);
-  else
-    renderer.drawVertexes(m_feature->getGeometry());
+  if (m_feature)
+  {
+    if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+      renderer.draw(m_feature->getGeometry(), true);
+    else
+      renderer.drawVertexes(m_feature->getGeometry());
+  }
+ // m_display->repaint(); //teste-rosa
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
@@ -328,6 +334,7 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
     renderer.setPointStyle("circle", Qt::transparent, Qt::blue, 3, 24);
     renderer.draw(point.get());
   }
+  m_display->repaint(); //teste-rosa
 
   // Draw the virtual vertex
   if(virtualVertex)
@@ -416,7 +423,8 @@ void te::edit::VertexTool::updateCursor()
 
 void te::edit::VertexTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+  if (m_feature)
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 
   emit geometriesEdited();
 
@@ -431,10 +439,11 @@ void te::edit::VertexTool::onGeometryAcquired(te::gm::Geometry* geom)
 {
   m_lines.clear();
 
-  m_feature->setGeometry(geom);
-
   if (m_feature != 0)
+  {
+    m_feature->setGeometry(geom);
     GetLines(m_feature->getGeometry(), m_lines);
+  }
 
   updateRTree();
 

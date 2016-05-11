@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>334</width>
-    <height>448</height>
+    <width>268</width>
+    <height>430</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -142,7 +142,7 @@
             <enum>QFrame::Plain</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="m_editionpage">
             <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -150,36 +150,7 @@
               <widget class="QGroupBox" name="editiongroupBox">
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
-                 <widget class="QToolButton" name="m_selectPushButton">
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoRaise">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <widget class="QToolButton" name="m_addPointMousePushButton">
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QToolButton" name="m_addPointKeyPushButton">
                   <property name="text">
                    <string/>
                   </property>

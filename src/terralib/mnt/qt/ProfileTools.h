@@ -28,7 +28,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 // TerraLib
 #include "../core/Config.h"
-#include "../../qt/widgets/tools/AbstractTool.h"
+#include "../../edit/qt/tools/VertexTool.h"
+#include "../../edit/Utils.h"
+#include "../../sam/rtree/Index.h"
 
 // Qt
 #include <QMouseEvent>
@@ -44,20 +46,24 @@ namespace te
       VERTEX_MOVE,
       VERTEX_ADD,
       VERTEX_DELETE,
+      LINE_DELETE,
+      LINE_INVERT,
       NONE
     };
 
-    class TEMNTEXPORT ProfileTools : public te::qt::widgets::AbstractTool
+    class TEMNTEXPORT ProfileTools : public te::edit::VertexTool
     {
 
       public:
-        ProfileTools(te::qt::widgets::MapDisplay* display, EditType type, QObject* parent = 0);
+        ProfileTools(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
         ~ProfileTools();
 
         void setType(EditType t);
 
-        void setLines(std::vector<te::gm::LineString*> &l) { m_lines = l; }
+        EditType getType() { return m_type; }
+
+        void setLines(std::vector<te::gm::LineString*> &l);
 
         bool mousePressEvent(QMouseEvent* e);
 
@@ -67,10 +73,9 @@ namespace te
 
         bool mouseDoubleClickEvent(QMouseEvent* e);
 
-      protected:
+    protected:
         EditType m_type;
-        std::vector<te::gm::LineString*> m_lines;
-        te::gm::LineString* m_selectline;
+
     };
   }
 }
