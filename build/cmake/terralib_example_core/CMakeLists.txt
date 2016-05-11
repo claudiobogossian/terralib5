@@ -103,7 +103,7 @@ target_link_libraries(terralib_example_core_translator terralib_mod_core)
 
 if(GETTEXT_FOUND)
   if(TERRALIB_TRANSLATOR_ENABLED)
-    GETTEXT_TRANSLATION_BINARY("terralib_example_core_translator" "pt_BR")
+    TERRALIB_REGISTER_TRANSLATION("terralib_example_core_translator" "pt_BR")
   endif()
 endif()
 

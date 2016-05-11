@@ -90,7 +90,6 @@ std::vector<te::gm::LineString*> te::mnt::Profile::prepareVector(std::string &in
 {
   std::vector<te::gm::LineString*> lsOut;
   std::auto_ptr<te::da::DataSet> inDset;
-  //size_t nsamples = mpt.getNumGeometries();
   inDset = inDsrc->getDataSet(inDsetName);
 
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
@@ -120,6 +119,7 @@ std::vector<te::gm::LineString*> te::mnt::Profile::prepareVector(std::string &in
   }
   return lsOut;
 }
+
 std::auto_ptr<te::mem::DataSet> te::mnt::Profile::createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType)
 {
   std::auto_ptr<te::mem::DataSet> outDataset(new te::mem::DataSet(dsType));

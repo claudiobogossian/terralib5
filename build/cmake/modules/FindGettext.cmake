@@ -73,7 +73,7 @@ IF (WIN32)
 ENDIF (WIN32)
 
 
-macro(GETTEXT_TRANSLATION_BINARY proj_name locale)
+macro(TERRALIB_REGISTER_TRANSLATION proj_name locale)
   set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
   set(_mo_file "${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/${proj_name}.mo")
   if(EXISTS _po_file)
@@ -85,9 +85,9 @@ macro(GETTEXT_TRANSLATION_BINARY proj_name locale)
       WORKING_DIRECTORY "${_absDir}"
       COMMENT "Generating translation binary file for ${proj_name}...")
   endif()
-endmacro(GETTEXT_TRANSLATION_BINARY)
+endmacro(TERRALIB_REGISTER_TRANSLATION)
 
-macro(GETTEXT_TRANSLATION_SOURCE proj_name keyword_s keyword_p locale directory)
+macro(TERRALIB_CREATE_TRANSLATION proj_name keyword_s keyword_p locale directory)
   get_filename_component(_absDir ${directory} ABSOLUTE)
   set(_pot_file ${CMAKE_CURRENT_BINARY_DIR}/${proj_name}.pot)
   set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
@@ -104,5 +104,5 @@ macro(GETTEXT_TRANSLATION_SOURCE proj_name keyword_s keyword_p locale directory)
     COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_po_file} ${_pot_file}
     WORKING_DIRECTORY "${_absDir}"
     COMMENT "Generating translation source file for ${proj_name}...")
-endmacro(GETTEXT_TRANSLATION_SOURCE)
+endmacro(TERRALIB_CREATE_TRANSLATION)
 ENDIF(XGETTEXT_FOUND)
