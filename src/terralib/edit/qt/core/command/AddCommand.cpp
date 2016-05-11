@@ -25,67 +25,40 @@
 */
 
 // TerraLib
-#include "../../../../dataaccess/dataset/ObjectId.h"
-#include "../../../../geometry/Geometry.h"
-#include "../../../Utils.h"
-#include "../../../RepositoryManager.h"
-#include "../../Utils.h"
-#include "../../Renderer.h"
 #include "../UndoStackManager.h"
 #include "AddCommand.h"
 
 // STL
 #include <set>
 
-te::edit::AddCommand::AddCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
-  QUndoCommand *parent) :
+te::edit::AddCommand::AddCommand(std::vector<Feature*>& items, int& currentIndex,
+  const te::map::AbstractLayerPtr& layer, QUndoCommand *parent) :
   QUndoCommand(parent)
-, m_display(display)
 , m_layer(layer)
 , m_addItems(items)
-, m_nextFeature(0)
-, m_previousFeature(0)
+, m_currentIndex(currentIndex)
 {
-  setText(QObject::tr("Add Geometry to %1").arg(QString(m_addItems[0]->getId()->getValueAsString().c_str())));
 }
 
 te::edit::AddCommand::~AddCommand()
-{}
+{
+}
 
 void  te::edit::AddCommand::undo()
 {
-  std::size_t count = 0;
+  int pos = 0;
 
   if (m_addItems.empty())
     return;
 
-  std::string lastOid = m_addItems[m_addItems.size() - 1]->getId()->getValueAsString();
+  m_currentIndex--;
 
-  for (std::size_t i = 0; i < m_addItems.size(); i++)
-  {
-    if (m_addItems[i]->getId()->getValueAsString() == lastOid)
-      count++;
-  }
+  if (m_currentIndex < 0)
+    m_currentIndex = -1;
 
-  if (count == 1)
-    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_addItems[m_addItems.size() - 1]->getId());
+  pos = (m_currentIndex < 0) ? 0 : m_currentIndex;
 
-  m_previousFeature = (int)m_addItems.size() - 2;
-
-  if (m_previousFeature < 0) 
-    m_previousFeature = 0;
-
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_addItems[m_previousFeature]->getId()) == true)
-  {
-
-    Feature* f = new Feature(m_addItems[m_previousFeature]->getId(), m_addItems[m_previousFeature]->getGeometry(), m_addItems[m_previousFeature]->getOperationType());
-
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
-
-  }
-
-  draw();
-
+  emit geometryAcquired(dynamic_cast<te::gm::Geometry*>(m_addItems[pos]->getGeometry()->clone()), m_addItems.at(pos)->clone()->getCoords());
 }
 
 void te::edit::AddCommand::redo()
@@ -99,47 +72,21 @@ void te::edit::AddCommand::redo()
   {
     const QUndoCommand* cmd = UndoStackManager::getInstance().getUndoStack()->command(i);
     if (cmd == this)
-    {
       resultFound = true;
-    }
   }
-
-  m_nextFeature = (int)m_addItems.size() - 1;
 
   //no makes redo while the command is not on the stack
   if (resultFound)
   {
+    m_currentIndex++;
 
-    Feature* f = new Feature(m_addItems[m_nextFeature]->getId(), m_addItems[m_nextFeature]->getGeometry(), m_addItems[m_nextFeature]->getOperationType());
+    if (m_currentIndex >= (int)m_addItems.size())
+    {
+      m_currentIndex = (int)m_addItems.size() - 1;
+      return;
+    }
 
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
-
-    draw();
-
+    emit geometryAcquired(dynamic_cast<te::gm::Geometry*>(m_addItems[m_currentIndex]->getGeometry()->clone()), m_addItems.at(m_currentIndex)->clone()->getCoords());
   }
-
-  
-}
-
-void te::edit::AddCommand::draw()
-{
-  const te::gm::Envelope& env = m_display->getExtent();
-  if (!env.isValid())
-    return;
-
-  // Clear!
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
-  // Initialize the renderer
-  Renderer& renderer = Renderer::getInstance();
-  renderer.begin(draft, env, m_display->getSRID());
-
-  // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
-
-  renderer.end();
-
-  m_display->repaint();
 
 }

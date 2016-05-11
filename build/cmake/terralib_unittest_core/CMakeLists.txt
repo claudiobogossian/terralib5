@@ -43,6 +43,10 @@ file(GLOB TERRALIB_UNITTEST_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/uni
 
 file(GLOB TERRALIB_UNITTEST_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/translator/*.cpp)
 
+file(GLOB TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/logger/*.cpp)
+
+file(GLOB TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/utils/*.cpp)
+
 
 
 source_group("Source Files"              FILES ${TERRALIB_UNITTEST_CORE_SRC_FILES})
@@ -55,6 +59,8 @@ source_group("Source Files\\lib"         FILES ${TERRALIB_UNITTEST_CORE_LIB_SRC_
 source_group("Header Files\\lib"         FILES ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
 source_group("Source Files\\translator"  FILES ${TERRALIB_UNITTEST_CORE_TRANSLATOR_SRC_FILES})
 source_group("Header Files\\translator"  FILES ${TERRALIB_UNITTEST_CORE_TRANSLATOR_HDR_FILES})
+source_group("Source Files\\logger"      FILES ${TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES})
+source_group("Source Files\\utils"       FILES ${TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES})
 
 
 add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERRALIB_UNITTEST_CORE_HDR_FILES}
@@ -62,19 +68,20 @@ add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERR
                                       ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES} ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES}
                                       ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES} ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES}
                                       ${TERRALIB_UNITTEST_CORE_TRANSLATOR_SRC_FILES} ${TERRALIB_UNITTEST_CORE_TRANSLATOR_HDR_FILES}
-                                      )
+                                      ${TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES}
+                                      ${TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES})
 
 target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 
 if(WIN32)
   add_definitions(-DTECOREDLL)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_unittest_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_unittest_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_unittest_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
 else()
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_unittest_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_unittest_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_unittest_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
 endif()
 
 file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
@@ -89,14 +96,9 @@ set_target_properties(terralib_unittest_core_lib_function
 add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)
 
 if(GETTEXT_FOUND)
-add_dependencies(terralib_unittest_core terralib_unittest_core_translation)
-
-GETTEXT_CREATE_TRANSLATIONS("terralib_unittest_core"
-                            "TE_TR"
-                            "TE_TR_PLURAL"
-                            "pt_BR"
-                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core"
-                            "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
-                            "${CMAKE_BINARY_DIR}/share/terralib/translations"
-                           )
+  if(TERRALIB_TRANSLATOR_ENABLED)
+    GETTEXT_TRANSLATION_BINARY("terralib_unittest_core" "pt_BR")
+  endif()
 endif()
+
+add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core)

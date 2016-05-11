@@ -1,4 +1,4 @@
-﻿/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,30 +18,51 @@
  */
 
 /*!
-  \file terralib/unittest/core/main.cpp
+  \file terralib/core/logger/Logger.h
 
-  \brief Main file of test suit for the Core Runtime Library.
+  \brief This class is designed to create Logs in TerraLib.
 
-  \author Vinicius campanha
- */
+  \author Matheus Cavassan Zaglia
+  \author Gilberto Ribeiro de Queiroz
+*/
+
+#ifndef __TERRALIB_LOGGER_TRANSLATOR_H__
+#define __TERRALIB_LOGGER_TRANSLATOR_H__
 
 // TerraLib
-#include <terralib/Defines.h>
+#include "../../BuildConfig.h"
+#include "Config.h"
 
 // STL
-#include <cstdlib>
-#include <iostream>
+#include <vector>
+#include <string>
 
-// Boost
-#define BOOST_TEST_NO_MAIN
-#include <boost/test/unit_test.hpp>
-
-bool init_unit_test()
+namespace te
 {
-  return true;
-}
+  namespace core
+  {
 
-int main(int argc, char *argv[])
-{
-  return boost::unit_test::unit_test_main(init_unit_test, argc, argv);
-}
+    class TECOREEXPORT Logger
+    {
+
+      public:
+
+        static Logger& getInstance()
+        {
+           static Logger instance;
+           return instance;
+        }
+
+
+      private:
+
+        Logger(){}
+        void operator=(Logger const&){}
+    };
+
+  } // end namespace common
+}   // end namespace te
+
+
+#endif  // __TERRALIB_LOGGER_TRANSLATOR_H__
+

@@ -65,9 +65,16 @@
 
 
 te::qt::plugins::mnt::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo),
-    m_mntMenu(0),
-    m_TINGeneration(0)
+: te::plugin::Plugin(pluginInfo),
+m_mntMenu(0),
+m_ISOGeneration(0),
+m_MNTGeneration(0),
+m_ShowValue(0),
+m_Slope(0),
+m_Smooth(0),
+m_TINGeneration(0),
+m_Volume(0),
+m_Profile(0)
 {
 }
 
@@ -191,6 +198,7 @@ void  te::qt::plugins::mnt::Plugin::unRegisterActions()
   delete m_Smooth;
   delete m_ShowValue;
   delete m_Volume;
+  delete m_Profile;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::mnt::Plugin)

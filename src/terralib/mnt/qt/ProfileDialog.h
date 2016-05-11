@@ -50,6 +50,15 @@ namespace te
 {
   namespace mnt
   {
+    enum ToolType
+    {
+      CreateLine,
+      EditVertex,
+      DeleteLine,
+      InvertLine,
+      ToolNone
+    };
+
 // Forward declarations
 
     class TEMNTEXPORT ProfileDialog : public QDialog
@@ -62,71 +71,68 @@ namespace te
 
         ~ProfileDialog();
 
-      //Q_SIGNALS:
-      //  void geometriesEdited();
+        te::map::AbstractLayerPtr getLayer();
+
+        void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+
+        void setDefaultInterface();
+
+        void release();
+
+      Q_SIGNALS:
+        void geometriesEdited();
 
       protected slots:
-      
-      void onInputComboBoxChanged(int index);
 
-      void oneditionEnabled(bool);
-      void onselectionEnabled(bool);
+        void onInputComboBoxChanged(int index);
 
-      void onVectorInputComboBoxChanged(int index);
+        void oneditionEnabled(bool);
+        void onselectionEnabled(bool);
 
-      void onselectLineToggled(bool checked);
-      void onaddPointMouseToggled(bool checked);
-      void onaddPointKeyToggled(bool checked);
-      void onchangePointToggled(bool checked);
-      void onaddPointToggled(bool checked);
-      void ondeletePointToggled(bool checked);
-      void ondeletePathToggled(bool checked);
-      void oninvertToggled(bool checked);
+        void onVectorInputComboBoxChanged(int index);
 
-      void onGeometriesChanged();
+        void onaddPointMouseToggled(bool checked);
+        void onchangePointToggled(bool checked);
+        void onaddPointToggled(bool checked);
+        void ondeletePointToggled(bool checked);
+        void ondeletePathToggled(bool checked);
+        void oninvertToggled(bool checked);
 
-      void onOkPushButtonClicked();   
+        void onGeometriesChanged();
 
-      void DrawSelected(const std::vector<te::gm::LineString*> visadas, const std::vector<te::color::RGBAColor>color);
+        void onOkPushButtonClicked();
 
- /*   protected:
-      void setCurrentTool(te::edit::GeometriesUpdateTool* tool, te::qt::af::MapDisplay* display);
-*/
-    public:
-      te::map::AbstractLayerPtr getLayer();
-      void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+        void DrawSelected(const std::vector<te::gm::LineString*> visadas, int width = 1, bool vertex = true); // Draws trajectories
 
-    private:
-      std::auto_ptr<Ui::ProfileDialogForm> m_ui;
-      
-      te::map::AbstractLayerPtr m_outputLayer;
+        void setVertexEdition(); //sets parameters to edition of vertexes
 
-      te::map::AbstractLayerPtr m_inputLayer;
-      std::list<te::map::AbstractLayerPtr> m_layers;
-      mntType m_inputType;  //!< Input type (TIN, GRID)
-      int m_srid;
-      double m_dummy;
-      std::auto_ptr<te::da::DataSetType> m_dsType;
-      te::map::AbstractLayerPtr m_rasterinputLayer;                                
-      te::map::AbstractLayerPtr m_vectorinputLayer;
+        void testGeometries(); //test if geometries is valid
 
-      //ProfileTools* m_tool;
-      te::qt::widgets::AbstractTool *m_tool;
-      te::qt::af::BaseApplication* m_app;
 
-      //QAction* m_selectLineToolAction;
-      //QAction* m_addPointMouseToolAction;
-      //QAction* m_addPointKeyToolAction;
-      //QAction* m_changePointToolAction;
-      //QAction* m_addPointToolAction;
-      //QAction* m_deletePointToolAction;
-      //QAction* m_deletePathToolAction;
-      //QAction* m_invertToolAction;
+      private:
 
-      //te::edit::GeometriesUpdateTool* m_currentTool;
+        std::auto_ptr<Ui::ProfileDialogForm> m_ui;
 
-      std::vector<te::gm::LineString*> m_visadas;
+        ToolType m_tooltype;
+        float m_tol;
 
+        te::qt::widgets::AbstractTool *m_tool;
+        te::qt::af::BaseApplication* m_app;
+
+        te::map::AbstractLayerPtr m_outputLayer;
+
+        te::map::AbstractLayerPtr m_inputLayer;
+        std::list<te::map::AbstractLayerPtr> m_layers;
+        mntType m_inputType;  //!< Input type (TIN, GRID)
+        int m_srid;
+        double m_dummy;
+        std::auto_ptr<te::da::DataSetType> m_dsType;
+        te::map::AbstractLayerPtr m_rasterinputLayer;
+        te::map::AbstractLayerPtr m_vectorinputLayer;
+
+        std::vector<te::gm::LineString*> m_visadas;
+        std::vector<te::color::RGBAColor> m_color;
+        bool m_vertex; //draw vertexes of editing line
     };
   }   // end namespace mnt
 }     // end namespace te

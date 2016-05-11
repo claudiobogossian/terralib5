@@ -62,7 +62,6 @@ te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, c
 
 te::edit::CreateLineTool::~CreateLineTool()
 {
-  //delete _line;
 }
 
 bool te::edit::CreateLineTool::mousePressEvent(QMouseEvent* e)

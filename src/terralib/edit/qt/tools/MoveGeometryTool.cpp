@@ -94,8 +94,6 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
   // Move geometry using the current delta
   MoveGeometry(m_feature->getGeometry(), m_delta.x(), m_delta.y());
 
-  storeFeature();
-
   draw();
 
   m_origin = currentPosition;
@@ -114,6 +112,8 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 
   if(m_feature == 0)
     return false;
+
+  storeFeature();
 
   storeUndoCommand();
 

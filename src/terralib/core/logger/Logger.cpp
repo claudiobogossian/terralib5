@@ -1,4 +1,4 @@
-﻿/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,30 +18,12 @@
  */
 
 /*!
-  \file terralib/unittest/core/main.cpp
+  \file terralib/core/translator/Translator.cpp
 
-  \brief Main file of test suit for the Core Runtime Library.
+  \brief This class is designed for dealing with multi-language text translation in TerraLib.
 
-  \author Vinicius campanha
+  \author Matheus Cavassan Zaglia
+  \author Gilberto Ribeiro de Queiroz
  */
 
-// TerraLib
-#include <terralib/Defines.h>
-
-// STL
-#include <cstdlib>
-#include <iostream>
-
 // Boost
-#define BOOST_TEST_NO_MAIN
-#include <boost/test/unit_test.hpp>
-
-bool init_unit_test()
-{
-  return true;
-}
-
-int main(int argc, char *argv[])
-{
-  return boost::unit_test::unit_test_main(init_unit_test, argc, argv);
-}

@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/core/encoding/CharEncoding.cpp
+  \file terralib/core/utils/Platform.cpp
 
-  \brief A class for handling character enconding/decoding.
+  \brief This file contains several utility functions when dealing with Linux specific API.
 
   \author Matheus Cavassan Zaglia
   \author Gilberto Ribeiro de Queiroz
@@ -44,19 +44,13 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
   if(boost::filesystem::exists(eval_path))
     return eval_path.string();
 
-  // Check for one path above, works for Install
+  // Check for one path above
   tl_path /= "..";
   eval_path = tl_path / path;
 
   if(boost::filesystem::exists(eval_path))
     return eval_path.string();
 
-  //Check for two paths above, works for Examples/Unittest
-  tl_path /="..";
-  eval_path = tl_path / path;
-
-  if(boost::filesystem::exists(eval_path))
-    return eval_path.string();
 
 // 2rd: look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
   const char* te_env = getenv(TERRALIB_DIR_VAR_NAME);

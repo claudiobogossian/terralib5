@@ -37,10 +37,6 @@
 // STL
 #include <cstdlib>
 
-#ifdef TERRALIB_GNU_GETTEXT_ENABLED
-// GNU Text Utilities -> it is not true for now!
-#include <locale.h>
-#endif
 
 const te::common::Module& sm_module = te::common::Module::getInstance();
 
@@ -57,7 +53,7 @@ te::common::Module::Module()
 // let's start all singletons in the right order and other stuffs that must be in the static initialization!
 
 // initialize the translator singleton and the common runtime multilanguage support
-  TE_ADD_TEXT_DOMAIN(TERRALIB_TEXT_DOMAIN);
+//  TE_ADD_TEXT_DOMAIN("terralib_mod_common");
 
 // initialize the singleton LibraryManager
 //  LibraryManager::getInstance();

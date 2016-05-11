@@ -49,28 +49,27 @@ namespace te
       The Translator job is to manage "Internationalization" of the TerraLib messages.
       This class is all about Native Language Support.
       For each string you want to have a translation, you have to use
-      the special macro TR_XXX("string"). This macro does nothing with your code;
+      the special macro TR_TR("string") or TE_TR_PLURAL("string1","string2", int). This macro does nothing with your code;
       its job is just to mark the code fragment that you want to translate and it does
-      all the job of calling the translation for you. Actually, the translation
-      is done using GNU Text Utilities. So, you can use commands like:
-      \verbatim
-      terralib# xgettext -D ../src/terralib/common -d tlcommon -o tlcommon.pot -f common.txt --keyword=TE_TR --from-code=UTF-8 --msgid-bugs-address=gribeiro.mg@gmail.com -p common
-      terralib# msginit -i core.pot -o core.po -l pt_BR.UTF-8
-      terralib# msgmerge --directory=common -U tlcommon-pt_BR.po tlcommon.pot
-      msgfmt --directory=common -c -v -o common/tlcommon-pt_BR.mo tlcommon-pt_BR.po
-      \endverbatim
+      all the job of calling the translation for you. The translations
+      are created with the GNU Gettext Utilities.
 
-      Each module must define its translation macro. For example, in the
-      Common module we define the macro TE_TR, and all strings in the Common module are marked like:
+      We provide a cmake module that searchs for all the necessary GNU Gettext tools, and adds a macro that creates the files for
+      your translations.
+      This macro searchs in a given directory for all ".cpp" files and for the given keywords inside the found files,
+      then automatically generates the ".po", ".pot" and ".mo" files when you build your project.
+      The macro implementation can be found in the file build/cmake/modules/FindGettext.cmake.
 
       \code
       #include <terralib/core/translator/Translator.h>
       ...
-      char* msg = TE_TR("My Message");
+      TE_ADD_TEXT_DOMAIN("terralib_mod_core");
+      ...
+      std::string msg = TE_TR("My Message");
       ...
       or
       ...
-      std::cout << TE_TR("Other message");
+      std::cout << TE_TR_PLURAL("One message", "Two messages", 1);
       ...
       \endcode
 
@@ -78,42 +77,9 @@ namespace te
       create several po documents, one for each idiom. These .po files
       can be used to generate a .mo binary file with the translation.
 
-      To create a translation macro, just do the following "define":
-      \code
-      #define TR_MYMODULE(message) TR(message, MY_MODULE_TEXT_DOMAIN)
-      \endcode
-
-      It is recommended that you create a text domain for your module like:
-      \code
-      #define MY_MODULE_TEXT_DOMAIN "mymodule"
-      #define MY_MODULE_TEXT_DOMAIN_DIR "locale"
-      \endcode
-
-      Then you can create a initialization routine for registering your module's text domain (i.e. the message catalog of your module):
-      \code
-      #include <terralib/core/translator/Translator.h>
-      ...
-      te::core::Translator::getInstance().addTextDomain(MY_MODULE_TEXT_DOMAIN, MY_MODULE_TEXT_DOMAIN_DIR);
-      \endcode
-
-      This will register your module text domain, enabling the selection of the domain
-      the strings are coming from when you use the macro TR_MYMODULE.
-
-      You can create plurals like:
-      \code
-      int n = f(...);
-      const char* c = TR_PLURAL_COMMON("The module was initialized!", "The modules were initialized!", n);
-      \endcode
-
       \warning It is supposed that PO files are UTF-8 encoded.
 
-      \todo Investigar o uso da biblioteca de formatacao de mensagens da BOOST para que seja possivel construir mensagens parametrizadas como no caso do printf. Isso pode dar um efeito muito melhor aas mensagens!
-
-      \todo O todo acima deve ser considerado e todo codigo deve ser visto para poder colocar caracteres curinga dentro da mensagem que sejam substituidas, como o printf e cia!
-
-      \todo Investigar o uso de mensagens no plural: http://www.gnu.org/software/hello/manual/gettext/Plural-forms.html#Plural-forms.
-
-      \ingroup common
+      \ingroup core
      */
     class TECOREEXPORT Translator
     {
@@ -140,7 +106,7 @@ namespace te
 
           \param message    The text to be translated.
 
-          \return A pointer to the translated message. You must not delete the memory pointed by the returned pointer.
+          \return A string of the translated message. You must not delete the memory pointed by the returned pointer.
 
           \note The returned message is UTF-8 encoded.
          */
@@ -154,7 +120,7 @@ namespace te
 
           \param message    The text to be translated.
 
-          \return A pointer to the translated message. You must not delete the memory pointed by the returned pointer.
+          \return A string of the translated message. You must not delete the memory pointed by the returned pointer.
 
           \note The returned message is UTF-8 encoded.
          */
@@ -170,7 +136,7 @@ namespace te
           \param msg2       The plural form of the text to be translated.
           \param n          This parameter is used to determine the plural form.
 
-          \return A pointer to the translated message. You must not delete the memory pointed by the returned pointer.
+          \return A string of the translated message. You must not delete the memory pointed by the returned pointer.
 
           \note The returned message is UTF-8 encoded.
          */
@@ -188,7 +154,7 @@ namespace te
           \param msg2       The plural form of the text to be translated.
           \param n          This parameter is used to determine the plural form.
 
-          \return A pointer to the translated message. You must not delete the memory pointed by the returned pointer.
+          \return A string of the translated message. You must not delete the memory pointed by the returned pointer.
 
           \note The returned message is UTF-8 encoded.
          */
@@ -253,7 +219,7 @@ namespace te
   \brief It contains the name of the text domain used in the translation of messages in TerraLib.
  */
 
-#define TERRALIB_TEXT_DOMAIN "terralib_mod_core"
+//#define TERRALIB_TEXT_DOMAIN "terralib_mod_core"
 
 /*!
   \def TE_ADD_TEXT_DOMAIN

@@ -75,7 +75,7 @@ te::mnt::ProfileResultDialog::ProfileResultDialog(
   m_ui->setupUi(this);
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
-  connect(m_ui->m_OKPushButton, SIGNAL(clicked()), this, SLOT(onOKPushButtonClicked()));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOKPushButtonClicked()));
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();

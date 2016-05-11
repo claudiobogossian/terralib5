@@ -46,12 +46,13 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
     m_addWatches(0),
-    m_geometries(0)
+    m_currentIndex(0),
+    m_sideToClose(sideToClose)
 {
   setCursor(cursor);
 
@@ -60,8 +61,8 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 
 te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
-  m_addWatches.clear();
-  m_geometries.clear();
+  delete m_feature;
+  clear();
 }
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
@@ -83,8 +84,7 @@ bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
 
   m_coords.push_back(coord);
 
-  if (m_coords.size() > 2)
-    m_geometries.push_back(convertGeomType(m_layer,buildPolygon()));
+  storeUndoCommand();
 
   return true;
 }
@@ -108,7 +108,11 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
   if (e->buttons() & Qt::LeftButton)
+  {
     m_continuousMode = true;
+
+    storeUndoCommand();
+  }
   else
     m_continuousMode = false;
 
@@ -119,10 +123,11 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  if (e->button() != Qt::LeftButton)
-  {
+  if (m_sideToClose != Qt::LeftButton)
     return false;
-  }
+
+  if (e->button() != Qt::LeftButton)
+    return false;
 
   if(m_coords.size() < 3) // Can not stop yet...
     return false;
@@ -131,14 +136,31 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   storeFeature();
 
-  storeUndoCommand();
+  return true;
+}
+
+bool te::edit::CreatePolygonTool::mouseReleaseEvent(QMouseEvent* e)
+{
+  if (m_sideToClose != Qt::RightButton)
+    return false;
+
+  if (e->button() != Qt::RightButton)
+    return false;
+
+  if (m_coords.size() < 3) // Can not stop yet...
+    return false;
+
+  m_isFinished = true;
+
+  storeFeature();
+
+  UndoStackManager::getInstance().getUndoStack()->clear();
 
   return true;
 }
 
 void te::edit::CreatePolygonTool::draw()
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -159,7 +181,7 @@ void te::edit::CreatePolygonTool::draw()
     // Draw the geometry being created
     if(m_coords.size() < 3)
       drawLine();
-    else
+    else if (m_currentIndex > -1)
       drawPolygon();
 
     if(m_continuousMode == false)
@@ -169,7 +191,6 @@ void te::edit::CreatePolygonTool::draw()
   renderer.end();
 
   m_display->repaint();
-
 }
 
 void te::edit::CreatePolygonTool::drawPolygon()
@@ -198,8 +219,12 @@ void te::edit::CreatePolygonTool::drawLine()
 
 void te::edit::CreatePolygonTool::clear()
 {
-  m_geometries.clear();
+  m_feature = 0;
+  m_currentIndex = 0;
   m_coords.clear();
+  m_addWatches.clear();
+
+  UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
 te::gm::Geometry* te::edit::CreatePolygonTool::buildPolygon()
@@ -243,7 +268,8 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 
 void te::edit::CreatePolygonTool::storeFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), convertGeomType(m_layer, buildPolygon()), te::edit::GEOMETRY_CREATE);
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+
   emit geometriesEdited();
 }
 
@@ -259,21 +285,58 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 
 void te::edit::CreatePolygonTool::storeUndoCommand()
 {
-
-  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), m_layer->getSRID());
-
-  if (m_feature == 0)
+  if (buildPolygon()->getNPoints() < 4)
     return;
 
-  for (std::size_t i = 0; i < m_geometries.size(); i++)
-  {
-    m_feature->setGeometry(m_geometries[i]);
-    m_addWatches.push_back(m_feature->clone());
+  if (m_coords.empty())
+    return;
 
-    QUndoCommand* command = new AddCommand(m_addWatches, m_display, m_layer);
-    UndoStackManager::getInstance().addUndoStack(command);
+  m_coords.push_back(m_lastPos);
+
+  if (m_feature == 0)
+    m_feature = new Feature();
+
+  m_feature->setGeometry(convertGeomType(m_layer,buildPolygon()));
+  m_feature->setOperation(te::edit::GEOMETRY_CREATE);
+  m_feature->setCoords(m_coords);
+
+  m_addWatches.push_back(m_feature->clone());
+
+  if (m_currentIndex < (int)(m_addWatches.size() - 2))
+  {
+    std::size_t i = 0;
+    while (i < m_addWatches.size())
+    {
+      m_addWatches.pop_back();
+      i = (m_currentIndex + 1);
+    }
+    m_addWatches.push_back(m_feature->clone()); 
   }
 
+  m_currentIndex = (int)(m_addWatches.size() - 1);
+
+  QUndoCommand* command = new AddCommand(m_addWatches, m_currentIndex, m_layer);
+  connect(dynamic_cast<AddCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)), SLOT(onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)));
+
+  UndoStackManager::getInstance().addUndoStack(command);
+}
+
+void te::edit::CreatePolygonTool::onGeometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> coords)
+{
+  m_feature->setGeometry(convertGeomType(m_layer, geom));
+
+  m_coords.clear();
+  m_coords = coords;
+
+  if (m_isFinished)
+  {
+    if (m_currentIndex > -1)
+      RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+    else
+      RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_feature->getId());
+  }
+
+  draw();
 }
 
 void te::edit::CreatePolygonTool::resetVisualizationTool()
