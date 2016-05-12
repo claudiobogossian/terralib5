@@ -354,9 +354,12 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
 
   std::auto_ptr<te::rst::Raster> inputRst = rasterDataSet->getRaster(rpos);
 
-  if (m_rasterLayer->getSRID() == 0 || m_vectorLayer->getSRID() == 0)
+  std::string srdiMessage;
+  bool isValidSRIDs = te::qt::widgets::isValidSRIDs(m_rasterLayer->getSRID(), m_vectorLayer->getSRID(), srdiMessage);
+
+  if (!isValidSRIDs)
   {
-    QMessageBox::information(this, "Fill", "Input layer with invalid SRID information.");
+    QMessageBox::information(this, "Fill", srdiMessage.c_str());
     return;
   }
 

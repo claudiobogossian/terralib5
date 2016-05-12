@@ -331,6 +331,19 @@ namespace te
       TEQTWIDGETSEXPORT void GetValidLayers(QAbstractItemModel* model, const QModelIndex& parent, std::list<te::map::AbstractLayerPtr>& layers);
 
       TEQTWIDGETSEXPORT void GetChangedAndVisibleLayers(const QModelIndexList& idxs, std::list<te::map::AbstractLayerPtr>& layers);
+
+
+      /*!
+        \brief Verify if the SRID from informed Layers are valids to execute the operation.
+
+        \param firstSRID    The SRID from the first layer.
+        \param secondSRID   The SRID from the second layer.
+        \param msg          Fiils this parameter in case of invalid SRIDs.
+
+        return Resturns a bool value. If false, it fills the message parameter.
+      */
+      TEQTWIDGETSEXPORT bool isValidSRIDs(const int& firstSRID, const int& secondSRID, std::string& msg);
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
