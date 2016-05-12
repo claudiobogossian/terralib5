@@ -71,6 +71,8 @@ namespace te
         QString getScriptName() const;
         
         void open(const QString& fileName);
+
+        void save(const QString& fileName);
         
         bool hasChanged() const { return m_hasChanged; }
         

@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::open()
 {
-  QString file = QFileDialog::getOpenFileName(this, tr("Open Script File"), "", tr("Lua file (*.lua *.LUA);; Pyhton file (*.py *.PY)"), 0);
+  QString file = QFileDialog::getOpenFileName(this, tr("Open Script File"), "", tr("Lua files (*.lua *.LUA);; Pyhton files (*.py *.PY)"), 0);
 
   if(!file.isEmpty())
   {
@@ -42,7 +42,31 @@ void MainWindow::newScript()
 
 void MainWindow::save()
 {
+  QString selFilter;
 
+  std::map<QString, QString> ext;
+
+  QString luaFilter = tr("Lua files (*.lua *.LUA)"),
+  pyFilter = tr("Pyhton files (*.py *.PY)");
+
+  ext[luaFilter] = ".lua";
+  ext[pyFilter] = ".py";
+
+  QString file = QFileDialog::getSaveFileName(this, tr("Save Script File"), "", luaFilter + ";;" +pyFilter, &selFilter);
+
+  if(!file.isEmpty())
+  {
+    QFileInfo info(file);
+
+    if(info.suffix().isEmpty())
+      file.append(ext[selFilter]);
+
+    te::ce::ScriptWidget* editor = (te::ce::ScriptWidget*)m_ui->m_codeTab->currentWidget();
+
+    editor->save(file);
+
+    m_ui->m_codeTab->setTabText(m_ui->m_codeTab->currentIndex(), info.fileName());
+  }
 }
 
 void MainWindow::run()

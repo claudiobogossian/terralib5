@@ -131,6 +131,13 @@ void te::ce::ScriptWidget::open(const QString& fileName)
   m_hasChanged = false;
 }
 
+void te::ce::ScriptWidget::save(const QString& fileName)
+{
+  m_fileName = fileName;
+
+  save();
+}
+
 void te::ce::ScriptWidget::save()
 {
   if(m_fileName == 0)
