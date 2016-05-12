@@ -119,6 +119,8 @@ namespace te
 
         void onExtentChanged();
 
+        void onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>);
+
       protected:
 
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
@@ -126,6 +128,8 @@ namespace te
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
         QPointF m_deltaSum;                 //!< Sum of all delta
         std::map<std::string, QList<QPointF> > m_moveWatches;
+        std::vector<Feature*> m_addWatches;
+        int m_currentIndex;
     };
 
   }   // end namespace edit

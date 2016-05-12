@@ -46,8 +46,7 @@ void te::edit::GeometriesUpdateTool::setInUse(const bool& status)
 
 void te::edit::GeometriesUpdateTool::resetVisualizationTool()
 {
-  if (m_feature)
-    delete m_feature;
+  m_feature = 0;
 }
 
 void te::edit::GeometriesUpdateTool::storeFeature()

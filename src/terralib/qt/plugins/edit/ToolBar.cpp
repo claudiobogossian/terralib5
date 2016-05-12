@@ -79,6 +79,7 @@ QObject(parent),
   m_toolBar(0),
   m_editAction(0),
   m_saveAction(0),
+  m_clearEditionAction(0),
   m_vertexToolAction(0),
   m_createPolygonToolAction(0),
   m_createLineToolAction(0),
@@ -243,7 +244,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
 {
   // Enable Edition Mode
   createAction(m_editAction, tr("Turn on/off edition mode"), QString("edit-enable"), true, true, "edit_enable", SLOT(onEditActivated(bool)));
-
   m_toolBar->addAction(m_editAction);
 
   m_toolBar->addSeparator();
@@ -251,6 +251,11 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   // Save
   createAction(m_saveAction, tr("Save edition"), "edit-save", false, false, "save_edition", SLOT(onSaveActivated()));
   m_toolBar->addAction(m_saveAction);
+
+  // Cancel all Edition
+  createAction(m_clearEditionAction, tr("Cancel all edition [ESC]"), "clearEdition", false, false, "cancel_edition", SLOT(onResetVisualizationToolActivated(bool)));
+  m_clearEditionAction->setShortcut(Qt::Key_Escape);
+  m_toolBar->addAction(m_clearEditionAction);
 
   // Undo/Redo
   te::qt::af::evt::GetMapDisplay e;
@@ -297,6 +302,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
 
   // Grouping...
   m_tools.push_back(m_saveAction);
+  m_tools.push_back(m_clearEditionAction);
   m_tools.push_back(m_vertexToolAction);
   m_tools.push_back(m_createPolygonToolAction);
   m_tools.push_back(m_createLineToolAction);
@@ -311,7 +317,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   {
     m_toolBar->addAction(m_tools[i]);
 
-    if (i == 0)
+    if (i == 1)
     {
       m_toolBar->addSeparator();
       m_toolBar->addAction(m_undoToolAction);
@@ -879,7 +885,41 @@ void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool)
 
 }
 
-void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onResetVisualizationToolActivated(bool /*checked*/)
+{
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if (layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
+  // Clear the repository
+  te::edit::Repository* repo = te::edit::RepositoryManager::getInstance().getRepository(layer->getId());
+
+  if (repo)
+    repo->clear();
+
+  // Reset visualization tool
+  if (m_currentTool)
+    m_currentTool->resetVisualizationTool();
+
+  // Clear the undo stack
+  te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
+
+  // Repaint
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  if (e.m_display == 0)
+    return;
+
+  e.m_display->getDisplay()->getDraftPixmap()->fill(Qt::transparent);
+  e.m_display->getDisplay()->repaint();
+
+}
+
+void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool /*checked*/)
 {
   try
   {

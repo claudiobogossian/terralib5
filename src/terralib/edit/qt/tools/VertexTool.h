@@ -136,11 +136,13 @@ namespace te
 
         void storeFeature();
 
+        void storeUndoCommand();
+
       private slots:
 
         void onExtentChanged();
 
-        void onGeometryAcquired(te::gm::Geometry*);
+        void onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>);
 
       protected:
 
@@ -148,8 +150,8 @@ namespace te
         VertexIndex m_currentVertexIndex;
         te::sam::rtree::Index<VertexIndex, 8> m_rtree;
         StageType m_currentStage;
-
-        std::vector<Feature*> m_updateWatches;
+        std::vector<Feature*> m_addWatches;
+        int m_currentIndex;
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
