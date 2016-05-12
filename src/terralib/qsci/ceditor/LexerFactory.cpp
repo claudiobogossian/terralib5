@@ -27,7 +27,7 @@
 #include "LexerFactory.h"
 
 // Qt
-#include <QtCore/QString.h>
+#include <QString>
 
 // QScintilla
 #include <Qsci/qscilexercpp.h>
@@ -38,7 +38,7 @@
 #include <Qsci/qscilexerpython.h>
 #include <Qsci/qscilexerruby.h>
 
-QsciLexer* te::qt::widgets::LexerFactory::make(const QString& lang, QObject* parent)
+QsciLexer* te::ce::LexerFactory::make(const QString& lang, QObject* parent)
 {
   const QString ulang = lang.toUpper();
 
@@ -55,4 +55,3 @@ QsciLexer* te::qt::widgets::LexerFactory::make(const QString& lang, QObject* par
     return 0;
   }
 }
-

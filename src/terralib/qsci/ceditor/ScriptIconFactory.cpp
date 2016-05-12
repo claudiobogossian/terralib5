@@ -27,9 +27,9 @@
 #include "ScriptIconFactory.h"
 
 // Qt
-#include <QtCore/QString.h>
+#include <QString>
 
-QIcon te::qt::widgets::ScriptIconFactory::make(const QString& lang)
+QIcon te::ce::ScriptIconFactory::make(const QString& lang)
 {
   const QString ulang = lang.toUpper();
 

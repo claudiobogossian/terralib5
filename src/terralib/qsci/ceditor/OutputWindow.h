@@ -27,42 +27,45 @@
 #define __TERRALIB_CODE_EDITOR_CORE_INTERNAL_OUTPUTWINDOW_H
 
 // TerraLib Code Editor
-#include "Config.h"
+#include "../Config.h"
 
 // Qt
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 
 // Forward declaration
 class QTextEdit;
 
-namespace tce
+namespace te
 {
-  /*!
+  namespace ce
+  {
+    /*!
     \class OutputWindow
 
     \brief A widget to output the script execution.
   */
-  class TCECOREEXPORT OutputWindow : public QDockWidget
-  {
-    Q_OBJECT
+    class TECEDITOREXPORT OutputWindow : public QDockWidget
+    {
+        Q_OBJECT
 
-    public:      
+      public:
 
-      OutputWindow(QWidget* parent = 0);
+        OutputWindow(QWidget* parent = 0);
 
-      ~OutputWindow();
+        ~OutputWindow();
 
-      const QTextEdit* getText() const;
+        const QTextEdit* getText() const;
 
-      QTextEdit* getText();
+        QTextEdit* getText();
 
-    private:
+      private:
 
-      QTextEdit* m_txt;
+        QTextEdit* m_txt;
 
-  };
+    };
 
-} // end namespace tce
+  } // end namespace tce
+}
 
 #endif  // __TERRALIB_CODE_EDITOR_CORE_INTERNAL_OUTPUTWINDOW_H
 

@@ -24,42 +24,40 @@
 */
 
 // TerraLib Code Editor
-#include "Application.h"
 #include "ScriptTabWidget.h"
 #include "ScriptWidget.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QMouseEvent>
+#include <QMenu>
+#include <QMouseEvent>
 
-tce::ScriptTabWidget::ScriptTabWidget(Application* parent)
-  : QTabWidget(parent),
-    m_parent(parent)
+te::ce::ScriptTabWidget::ScriptTabWidget(QWidget* parent)
+  : QTabWidget(parent)
 {
 }
 
-tce::ScriptTabWidget::~ScriptTabWidget()
+te::ce::ScriptTabWidget::~ScriptTabWidget()
 {
 }
 
-tce::Application* tce::ScriptTabWidget::getApplication() const
-{
-  return m_parent;
-}
+//te::ce::Application* te::ce::ScriptTabWidget::getApplication() const
+//{
+//  return m_parent;
+//}
 
-void tce::ScriptTabWidget::mousePressEvent(QMouseEvent* evt)
+void te::ce::ScriptTabWidget::mousePressEvent(QMouseEvent* evt)
 {
   if(evt->button() == Qt::RightButton)
   {
     QMenu m(this);
 
-    if(m_parent->isFullScreen())
+//    if(m_parent->isFullScreen())
     {
       QAction* viewNormal = new QAction(tr("&View Normal"), this);
       
       m.addAction(viewNormal);
 
-      connect(viewNormal, SIGNAL(triggered()), m_parent, SLOT(viewNormal()));
+//      connect(viewNormal, SIGNAL(triggered()), m_parent, SLOT(viewNormal()));
     }
 
     //m.popup(evt->pos());

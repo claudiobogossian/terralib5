@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../common/StringUtils.h"
+#include "../../common/StringUtils.h"
 #include "LexerFactory.h"
 #include "ScriptWidget.h"
 
@@ -34,25 +34,26 @@
 //#include <terralib/binding/vm/VirtualMachineManager.h>
 
 // Boost
-#include <boost/filesystem.hpp>
-#include <boost/format.hpp>
+//#include <boost/filesystem.hpp>
+//#include <boost/format.hpp>
 
 // Qt
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
-#include <QtGui/QApplication>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QVBoxLayout>
+#include <QFileDialog>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
+
+#include <QApplication>
+#include <QMessageBox>
+#include <QVBoxLayout>
 
 // QScintilla
 #include <Qsci/qsciscintilla.h>
 
-te::qt::widgets::ScriptWidget::ScriptWidget(QWidget* parent)
+te::ce::ScriptWidget::ScriptWidget(QWidget* parent)
   : QWidget(parent),
     m_txtEditor(0),
     m_lexer(0),
-    m_fileName(0),
     m_hasChanged(false)
 {
   m_txtEditor = new QsciScintilla(this);  
@@ -72,43 +73,35 @@ te::qt::widgets::ScriptWidget::ScriptWidget(QWidget* parent)
   connect(m_txtEditor, SIGNAL(textChanged()), this, SLOT(setTextChanged()));
 }
 
-te::qt::widgets::ScriptWidget::~ScriptWidget()
+te::ce::ScriptWidget::~ScriptWidget()
 {
 // dont't save if close is called, let's wait for application decision!
   //close();
 
-  delete m_fileName;
+//  delete m_fileName;
 }
 
-QString te::qt::widgets::ScriptWidget::getScriptType() const
+QString te::ce::ScriptWidget::getScriptType() const
 {
-  if(m_fileName == 0)
+  if(m_fileName.isEmpty())
     return QString(tr("lang-unknown"));
 
-  boost::filesystem::path fpath(m_fileName->toStdString());
+  QFileInfo info(m_fileName);
 
-  //testar: extension() ou inves de stem()
-  std::string fext = te::common::Convert2UCase(fpath.stem().string());
-
-  std::string::size_type pos = fext.find('.');
-
-  if(pos != std::string::npos)
-    return QString(fext.substr(pos + 1).c_str());
-  else
-    return QString(fext.c_str());
+  return info.suffix();
 }
 
-QString te::qt::widgets::ScriptWidget::getScriptName() const
+QString te::ce::ScriptWidget::getScriptName() const
 {
-  if(m_fileName == 0)
+//  if(m_fileName == 0)
     return QString(tr("New-Script"));
 
-  boost::filesystem::path fpath(m_fileName->toStdString());
+//  boost::filesystem::path fpath(m_fileName->toStdString());
 
-  return QString(fpath.filename().string().c_str());
+//  return QString(fpath.filename().string().c_str());
 }
 
-void te::qt::widgets::ScriptWidget::open(const QString& fileName)
+void te::ce::ScriptWidget::open(const QString& fileName)
 {
 // close any previous opened script
   close();
@@ -131,33 +124,33 @@ void te::qt::widgets::ScriptWidget::open(const QString& fileName)
 
   QApplication::restoreOverrideCursor();
 
-  m_fileName = new QString(fileName);
+  m_fileName = fileName;
 
   setLexer();
 
   m_hasChanged = false;
 }
 
-void te::qt::widgets::ScriptWidget::save()
+void te::ce::ScriptWidget::save()
 {
   if(m_fileName == 0)
     saveAs();
   else
-    saveFile(*m_fileName);
+    saveFile(m_fileName);
 
   m_hasChanged = false;
 }
 
-void te::qt::widgets::ScriptWidget::saveAs()
+void te::ce::ScriptWidget::saveAs()
 {
   QString fileName = QFileDialog::getSaveFileName(this);
 
   if(fileName.isEmpty())
     return;
 
-  delete m_fileName;
+//  delete m_fileName;
 
-  m_fileName = new QString(fileName);
+  m_fileName = fileName;
 
   saveFile(fileName);
 
@@ -166,7 +159,7 @@ void te::qt::widgets::ScriptWidget::saveAs()
   m_hasChanged = false;
 }
 
-void te::qt::widgets::ScriptWidget::close()
+void te::ce::ScriptWidget::close()
 {
 // save changes
   if(m_hasChanged)
@@ -176,15 +169,15 @@ void te::qt::widgets::ScriptWidget::close()
   m_txtEditor->clear();
 
 // release file name
-  delete m_fileName;
+//  delete m_fileName;
 
-  m_fileName = 0;
+  m_fileName = "";
 
 // set to no-changes state
   m_hasChanged = false;
 }
 
-void te::qt::widgets::ScriptWidget::execute()
+void te::ce::ScriptWidget::execute()
 {
 // save changes before executing
   if(m_hasChanged)
@@ -221,33 +214,33 @@ void te::qt::widgets::ScriptWidget::execute()
 }
 
 
-void te::qt::widgets::ScriptWidget::stop()
+void te::ce::ScriptWidget::stop()
 {
 }
 
 
-void te::qt::widgets::ScriptWidget::pause()
+void te::ce::ScriptWidget::pause()
 {
 }
 
-void te::qt::widgets::ScriptWidget::zoomIn()
+void te::ce::ScriptWidget::zoomIn()
 {
   m_txtEditor->zoomIn();
   m_txtEditor->setMarginWidth(1, QString("0000"));
 }
 
-void te::qt::widgets::ScriptWidget::zoomOut()
+void te::ce::ScriptWidget::zoomOut()
 {
   m_txtEditor->zoomOut();
   m_txtEditor->setMarginWidth(1, QString("0000"));
 }
 
-void te::qt::widgets::ScriptWidget::setTextChanged()
+void te::ce::ScriptWidget::setTextChanged()
 {
   m_hasChanged = true;
 }
 
-void te::qt::widgets::ScriptWidget::saveFile(const QString& fileName)
+void te::ce::ScriptWidget::saveFile(const QString& fileName)
 {
   QFile file(fileName);
 
@@ -270,7 +263,7 @@ void te::qt::widgets::ScriptWidget::saveFile(const QString& fileName)
   //statusBar()->showMessage(tr("File saved"), 2000);
 }
 
-void te::qt::widgets::ScriptWidget::setLexer()
+void te::ce::ScriptWidget::setLexer()
 {
   //if(m_lexer || (m_fileName == 0))
   //{

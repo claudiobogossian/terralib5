@@ -27,10 +27,10 @@
 #include "OutputWindow.h"
 
 // Qt
-#include <QtGui/QTextEdit>
-#include <QtGui/QVBoxLayout>
+#include <QTextEdit>
+#include <QVBoxLayout>
 
-tce::OutputWindow::OutputWindow(QWidget* parent)
+te::ce::OutputWindow::OutputWindow(QWidget* parent)
   : QDockWidget(parent)
 {
   setWindowTitle(tr("Output"));
@@ -46,16 +46,16 @@ tce::OutputWindow::OutputWindow(QWidget* parent)
   setWidget(m_txt);
 }
 
-tce::OutputWindow::~OutputWindow()
+te::ce::OutputWindow::~OutputWindow()
 {
 }
 
-const QTextEdit* tce::OutputWindow::getText() const
+const QTextEdit* te::ce::OutputWindow::getText() const
 {
   return m_txt;
 }
 
-QTextEdit* tce::OutputWindow::getText()
+QTextEdit* te::ce::OutputWindow::getText()
 {
   return m_txt;
 }

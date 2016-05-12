@@ -25,29 +25,32 @@
 
 set(TERRALIB_CEDITOR_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qsci)
 
-include_directories(${QScintilla_INCLUDE_DIR})
+include_directories(${QScintilla_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
 if (WIN32)
   add_definitions(-DTECEDITOR)
 endif()
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 file(GLOB TERRALIB_CEDITOR_CONFIGHDR_FILE ${TERRALIB_CEDITOR_DIR}/*.h)
 file(GLOB TERRALIB_CEDITOR_HDR_FILES ${TERRALIB_CEDITOR_DIR}/ceditor/*.h)
 file(GLOB TERRALIB_CEDITOR_SRC_FILES ${TERRALIB_CEDITOR_DIR}/ceditor/*.cpp)
-file(GLOB TERRALIB_CEDITOR_UI_FILES ${TERRALIB_CEDITOR_DIR}/ceditor/ui/*.ui)
 
 source_group("Header Files"                     FILES ${TERRALIB_CEDITOR_CONFIGHDR_FILES})
 source_group("Header Files\\ceditor"            FILES ${TERRALIB_CEDITOR_HDR_FILES})
 source_group("Source Files\\ceditor"            FILES ${TERRALIB_CEDITOR_SRC_FILES})
-source_group("Ui Files"                         FILES ${TERRALIB_CEDITOR_UI_FILES})
 
-add_library(terralib_mod_ceditor SHARED ${TERRALIB_CEDITOR_SRC_FILES} ${TERRALIB_CEDITOR_CONFIGHDR_FILE} ${TERRALIB_CEDITOR_HDR_FILES} ${TERRALIB_CEDITOR_UI_FILES})
+add_library(terralib_mod_ceditor SHARED ${TERRALIB_CEDITOR_SRC_FILES} ${TERRALIB_CEDITOR_CONFIGHDR_FILE} ${TERRALIB_CEDITOR_HDR_FILES})
 
 target_link_libraries(terralib_mod_ceditor terralib_mod_core ${QScintilla_LIBRARY})
 
 set_target_properties(terralib_mod_ceditor
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+
+qt5_use_modules(terralib_mod_ceditor Widgets)
 
 install(TARGETS terralib_mod_ceditor
         EXPORT terralib-targets

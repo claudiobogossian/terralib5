@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Code Editor</string>
   </property>
+  <property name="windowIcon">
+   <iconset theme="terralib" resource="../res.qrc">
+    <normaloff>:/imgs/imgs/terralib-globe.png</normaloff>:/imgs/imgs/terralib-globe.png</iconset>
+  </property>
   <property name="documentMode">
    <bool>false</bool>
   </property>
@@ -27,36 +31,8 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="m_codeTab">
       <property name="currentIndex">
-       <number>0</number>
+       <number>-1</number>
       </property>
-      <widget class="QWidget" name="m_luaEditor">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>../../../../../share/terralib/icons/terralib/scalable/lang-lua.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/lang-lua.svg</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Lua Code</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QTextEdit" name="m_luaEdit"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="m_PythonEditor">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>../../../../../share/terralib/icons/terralib/scalable/lang-python.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/lang-python.svg</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Code Python</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QTextEdit" name="m_pythonEdit"/>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -109,13 +85,7 @@
    <addaction name="m_actionNew"/>
    <addaction name="m_actionRun"/>
   </widget>
-  <widget class="QDockWidget" name="m_downDock">
-   <property name="autoFillBackground">
-    <bool>false</bool>
-   </property>
-   <property name="floating">
-    <bool>false</bool>
-   </property>
+  <widget class="te::ce::OutputWindow" name="dockWidget">
    <property name="features">
     <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
@@ -128,18 +98,12 @@
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QTextBrowser" name="m_output"/>
-     </item>
-    </layout>
-   </widget>
+   <widget class="QWidget" name="dockWidgetContents_2"/>
   </widget>
   <action name="m_actionOpen">
    <property name="icon">
-    <iconset theme="folder">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/document-open.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/document-open.svg</iconset>
+    <iconset theme="folder" resource="../res.qrc">
+     <normaloff>:/imgs/imgs/document-open.svg</normaloff>:/imgs/imgs/document-open.svg</iconset>
    </property>
    <property name="text">
     <string>Open script..</string>
@@ -150,8 +114,8 @@
   </action>
   <action name="m_actionSave">
    <property name="icon">
-    <iconset theme="terralib">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/document-save.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/document-save.svg</iconset>
+    <iconset theme="terralib" resource="../res.qrc">
+     <normaloff>:/imgs/imgs/document-save.svg</normaloff>:/imgs/imgs/document-save.svg</iconset>
    </property>
    <property name="text">
     <string>Save script..</string>
@@ -162,8 +126,8 @@
   </action>
   <action name="m_actionNew">
    <property name="icon">
-    <iconset theme="terralib">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/document-new.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/document-new.svg</iconset>
+    <iconset theme="terralib" resource="../res.qrc">
+     <normaloff>:/imgs/imgs/document-new.svg</normaloff>:/imgs/imgs/document-new.svg</iconset>
    </property>
    <property name="text">
     <string>New script...</string>
@@ -174,8 +138,8 @@
   </action>
   <action name="m_actionRun">
    <property name="icon">
-    <iconset theme="terralib">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/go-next.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/go-next.svg</iconset>
+    <iconset theme="terralib" resource="../res.qrc">
+     <normaloff>:/imgs/imgs/go-next.svg</normaloff>:/imgs/imgs/go-next.svg</iconset>
    </property>
    <property name="text">
     <string>Run...</string>
@@ -185,24 +149,25 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>te::ce::OutputWindow</class>
+   <extends>QDockWidget</extends>
+   <header>terralib/qsci/ceditor/OutputWindow.h</header>
+   <container>1</container>
+   <slots>
+    <slot>open()</slot>
+    <slot>load()</slot>
+    <slot>save()</slot>
+    <slot>run()</slot>
+    <slot>newScript()</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../res.qrc"/>
+ </resources>
  <connections>
-  <connection>
-   <sender>m_actionNew</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>new()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>434</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>m_actionOpen</sender>
    <signal>triggered()</signal>
@@ -240,6 +205,22 @@
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>run()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>434</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_actionNew</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>newScript()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
