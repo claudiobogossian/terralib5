@@ -132,7 +132,6 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
   m_ui->m_vectorlayersComboBox->clear();
   m_ui->m_rasterLayersComboBox->clear();
 
-  m_ui->m_rasterLayersComboBox->addItem(QString(""), QVariant(""));
   m_ui->m_vectorlayersComboBox->addItem(QString(""), QVariant(""));
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
@@ -248,7 +247,7 @@ void  te::mnt::ProfileDialog::oneditionEnabled(bool checked)
   m_ui->m_addPointMousePushButton->setChecked(true);
   m_ui->m_addPointMousePushButton->toggled(true);
 
-  onInputComboBoxChanged(0);
+  m_ui->m_vectorlayersComboBox->setCurrentIndex(0);
   m_visadas.clear();
 }
 
@@ -260,6 +259,7 @@ void  te::mnt::ProfileDialog::onselectionEnabled(bool checked)
   release();
 
   m_ui->m_trajectorystackedWidget->setCurrentIndex(1);
+  m_ui->m_vectorlayersComboBox->setCurrentIndex(0);
 }
 
 
@@ -291,6 +291,9 @@ void te::mnt::ProfileDialog::onaddPointMouseToggled(bool checked)
   if (!m_app)
     return;
 
+  if (!m_rasterinputLayer)
+    return;
+
   if (m_tooltype != CreateLine)
   {
     m_tooltype = CreateLine;
@@ -313,6 +316,9 @@ void te::mnt::ProfileDialog::onchangePointToggled(bool checked)
   if (!checked)
     return;
 
+  if (!m_rasterinputLayer)
+    return;
+
   setVertexEdition();
 
   ((te::mnt::ProfileTools*)m_tool)->setType(VERTEX_MOVE);
@@ -325,6 +331,9 @@ void te::mnt::ProfileDialog::onchangePointToggled(bool checked)
 void te::mnt::ProfileDialog::onaddPointToggled(bool checked)
 {
   if (!checked)
+    return;
+
+  if (!m_rasterinputLayer)
     return;
 
   setVertexEdition();
@@ -340,6 +349,9 @@ void te::mnt::ProfileDialog::ondeletePointToggled(bool checked)
   if (!checked)
     return;
 
+  if (!m_rasterinputLayer)
+    return;
+
   setVertexEdition();
 
   ((te::mnt::ProfileTools*)m_tool)->setType(VERTEX_DELETE);
@@ -351,6 +363,9 @@ void te::mnt::ProfileDialog::ondeletePointToggled(bool checked)
 void te::mnt::ProfileDialog::ondeletePathToggled(bool checked)
 {
   if (!checked)
+    return;
+
+  if (!m_rasterinputLayer)
     return;
 
   ((te::mnt::ProfileTools*)m_tool)->setType(LINE_DELETE);
@@ -386,6 +401,9 @@ void te::mnt::ProfileDialog::oninvertToggled(bool checked)
   if (!checked)
     return;
  
+  if (!m_rasterinputLayer)
+    return;
+
   setVertexEdition();
   
   ((te::mnt::ProfileTools*)m_tool)->setType(LINE_INVERT);
@@ -397,6 +415,9 @@ void te::mnt::ProfileDialog::oninvertToggled(bool checked)
 
 void te::mnt::ProfileDialog::onGeometriesChanged()
 {
+  if (!m_rasterinputLayer)
+    return;
+
   if (m_tooltype == CreateLine)
   {
     te::edit::CreateLineTool *ct = dynamic_cast<te::edit::CreateLineTool*>(m_tool);
@@ -465,7 +486,7 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     //raster
     if (!m_tool)
     {
-      if (!m_rasterinputLayer.get())
+      if (!m_rasterinputLayer)
         throw te::common::Exception(TE_TR("Select an input layer!"));
 
       if (m_vectorinputLayer)
@@ -496,19 +517,45 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     {
       if (!m_vectorinputLayer)
         throw te::common::Exception(TE_TR("Select an vector layer!"));
+      std::auto_ptr<te::da::DataSet> inDset;
 
-      te::map::DataSetLayer* indsvectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorinputLayer.get());
-      if (!indsvectorLayer)
-        throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
-
-      te::da::DataSourcePtr invectorDataSource = te::da::GetDataSource(indsvectorLayer->getDataSourceId(), true);
-      if (!invectorDataSource.get())
-        throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
-
-      std::string invectorDsetName = indsvectorLayer->getDataSetName();
-      std::auto_ptr<te::da::DataSetType> invectorDsetType(invectorDataSource->getDataSetType(invectorDsetName));
       m_srid = m_vectorinputLayer->getSRID();
-      m_visadas = profile->prepareVector(invectorDsetName, invectorDataSource, geostype);
+
+      if (m_ui->m_selectCheckBox->isChecked())
+      {
+        const te::da::ObjectIdSet* objSet = m_vectorinputLayer->getSelected();
+        inDset = m_vectorinputLayer->getData(objSet);
+      }
+      else
+        inDset = te::da::GetDataSource(m_vectorinputLayer->getDataSourceId(), true)->getDataSet(m_vectorinputLayer->getDataSetName());
+
+      std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+
+      inDset->moveBeforeFirst();
+
+      m_visadas.clear();
+
+      while (inDset->moveNext())
+      {
+        std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+        geostype = gin.get()->getGeometryType();
+
+        if (geostype == "LineString")
+        {
+          te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(gin.get()->clone());
+          m_visadas.push_back(l);
+        }
+        if (geostype == "MultiLineString")
+        {
+          te::gm::MultiLineString *g = dynamic_cast<te::gm::MultiLineString*>(gin.get());
+          std::size_t np = g->getNumGeometries();
+          for (std::size_t i = 0; i < np; ++i)
+          {
+            te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(g->getGeometryN(i)->clone());
+            m_visadas.push_back(l);
+          }
+        }
+      }
 
       visibility = m_vectorinputLayer->getVisibility();
       if (visibility == te::map::VISIBLE)
@@ -536,7 +583,10 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     if (result.exec() != QDialog::Accepted)
     {
       if (m_vectorinputLayer)
+      {
         m_vectorinputLayer->setVisibility(visibility);
+        m_visadas.clear();
+      }
 
       DrawSelected(m_visadas, 1, false);
 
@@ -638,5 +688,4 @@ void te::mnt::ProfileDialog::setVertexEdition()
 
   ((te::mnt::ProfileTools*)m_tool)->setLines(m_visadas);
 }
-
 
