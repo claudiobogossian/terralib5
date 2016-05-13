@@ -37,10 +37,11 @@
 
 // STL
 #include <cassert>
+#include <algorithm>
+#include <cctype>
 
 // Boost
 #include <boost/format.hpp>
-#include <boost/algorithm/cxx11/all_of.hpp>
 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 #include <windows.h>
@@ -114,7 +115,7 @@ static std::string te_get_os_error()
 te::core::Library::Library(const std::string& slib_file_name, bool delay_load)
   : m_pimpl(nullptr)
 {
-  if(slib_file_name.empty() || boost::algorithm::all_of(slib_file_name.begin(), slib_file_name.end(), isspace))
+  if(slib_file_name.empty() || std::all_of(slib_file_name.begin(), slib_file_name.end(), isspace))
   {
     boost::format err_msg("Library name cannot be empty.");
 
