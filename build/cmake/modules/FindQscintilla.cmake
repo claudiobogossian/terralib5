@@ -22,7 +22,7 @@
 #
 #  Qscintilla_INCLUDE_DIR - where to find Qsci/qsciscintilla.h.
 #  Qscintilla_LIBRARY     - where to find qscintilla library.
-#  Qscintilla_FOUND       - True if Qscintilla found.
+#  QSCINTILLA_FOUND       - True if Qscintilla found.
 #
 #  Author: Frederico Bedê <frederico.bede@funcate.org.br>
 #
