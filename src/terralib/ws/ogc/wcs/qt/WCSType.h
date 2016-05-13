@@ -23,8 +23,8 @@
   \brief WCS data source type.
 */
 
-#ifndef __TERRALIB_WS_OGC_WCS_QT_CONFIG_H
-#define __TERRALIB_WS_OGC_WCS_QT_CONFIG_H
+#ifndef __TERRALIB_WS_OGC_WCS_QT_WCSTYPE_H
+#define __TERRALIB_WS_OGC_WCS_QT_WCSTYPE_H
 
 #include "Config.h"
 #include "../../../../qt/widgets/datasource/core/DataSourceType.h"
@@ -73,4 +73,4 @@ namespace te
   }
 }
 
-#endif // __TERRALIB_WS_OGC_WCS_QT_CONFIG_H
+#endif // __TERRALIB_WS_OGC_WCS_QT_WCSTYPE_H
