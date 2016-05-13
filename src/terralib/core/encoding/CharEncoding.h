@@ -47,7 +47,7 @@ namespace te
 
       \brief Supported character encodings.
     */
-    enum class EncodingType
+    enum EncodingType
     {
       UTF8,     /*!< UTF-8 encoding.               */
       CP1250,   /*!< CP1250 encoding.              */

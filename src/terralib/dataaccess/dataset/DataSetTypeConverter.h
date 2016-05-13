@@ -29,6 +29,7 @@
 // TerraLib
 #include "../Config.h"
 #include "AttributeConverters.h"
+#include "../../core/encoding/CharEncoding.h"
 
 // STL
 #include <vector>
@@ -98,7 +99,7 @@ namespace te
           
           \sa DataSetType, DataSourceCapabilities DataTypeCapabilities
         */
-        DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, te::core::EncodingType et = te::core::EncodingType::UNKNOWN);
+        DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, te::core::EncodingType et = te::core::UNKNOWN);
 
         /*! \brief Destructor. */
         ~DataSetTypeConverter();
