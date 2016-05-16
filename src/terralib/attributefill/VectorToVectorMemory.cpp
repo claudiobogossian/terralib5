@@ -549,6 +549,9 @@ std::vector<std::string> te::attributefill::VectorToVectorMemory::getDistinctCla
 
   while(fromDs->moveNext())
   {
+    if (fromDs->isNull(propertyName))
+      continue;
+
     std::string strClass = fromDs->getAsString(propertyName, 9);
 
     if(std::find(result.begin(), result.end(), strClass) == result.end())
@@ -667,7 +670,7 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
     if (!g->isValid())
       hasInvalid = true;
 
-    if(geom->intersects(g))
+    if(geom->intersects(g) && !geom->touches(g))
     {
       interVec.push_back(report[i]);
     }
@@ -857,8 +860,6 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
   std::map<std::string, std::size_t> counter;
   for (std::size_t i = 0; i < dsPos.size(); ++i)
   {
-    //dataValues[i][propIndex];
-
     if (!dataValues[i][propIndex])
       continue;
 
@@ -867,7 +868,9 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
     if (counter.find(value) == counter.end())
     {
       counter[value] = 1;
-      highOccur = 1;
+
+      if(highOccur == 0)
+        highOccur = 1;
     }
     else
     {
@@ -938,12 +941,10 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
   std::map<std::string, double> classAreaMap;
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
-    //dataValues[i][propIndex];
-
     if (!dataValues[i][propIndex])
       continue;
 
-    te::gm::Geometry* fromGeom = m_mapGeom[dsPos[i]]; //fromDs->getGeometry(fromGeomPos);
+    te::gm::Geometry* fromGeom = m_mapGeom[dsPos[i]];
 
     std::auto_ptr<te::gm::Geometry> interGeom;
 
@@ -967,7 +968,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
       continue;
     }
 
-    std::string value = dataValues[i][propIndex]->toString();// fromDs->getAsString(propertyName);
+    std::string value = dataValues[i][propIndex]->toString();
 
     double area = getArea(interGeom.get());
 
@@ -1013,9 +1014,10 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
   std::map<std::string, std::size_t> aux;
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
-    //dataValues[i][propIndex];//fromDs->move(dsPos[i]);
+    if (dataValues[i][propIndex] == 0)
+      continue;
 
-    std::string value = dataValues[i][propIndex]->toString();//fromDs->getAsString(propertyName);
+    std::string value = dataValues[i][propIndex]->toString();
 
     if(aux.find(value) == aux.end())
     {
@@ -1108,9 +1110,10 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
-    //dataValues[i][propIndex];//fromDs->move(dsPos[i]);
+    if (dataValues[i][propIndex] == 0)
+      continue;
 
-    te::gm::Geometry* fromGeom = m_mapGeom[dsPos[i]];//fromDs->getGeometry(fromGeomPos);
+    te::gm::Geometry* fromGeom = m_mapGeom[dsPos[i]];
 
     if(!checkGeometries(fromGeom, dsPos[i], toGeom.get()))
     {
@@ -1120,7 +1123,7 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 
     std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom));
 
-    std::string value = dataValues[i][propIndex]->toString();//fromDs->getAsString(propertyName);
+    std::string value = dataValues[i][propIndex]->toString();
 
     double area = getArea(interGeom.get());
 
@@ -1159,9 +1162,10 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
 
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
-    //fromDs->move(dsPos[i]);
+    if (dataValues[i][propIndex] == 0)
+      continue;
 
-    te::gm::Geometry* fromGeom = m_mapGeom[dsPos[i]];//fromDs->getGeometry(fromGeomPos);
+    te::gm::Geometry* fromGeom = m_mapGeom[dsPos[i]];
 
     if(!checkGeometries(fromGeom, dsPos[i], toGeom.get()))
     {
@@ -1173,11 +1177,8 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
 
     double value_num = 0;
 
-    if(!fromDs->isNull(propertyName))
-    {
-      std::string value = dataValues[i][propIndex]->toString();//fromDs->getAsString(propertyName);
-      value_num = boost::lexical_cast<double>(value);
-    }
+    std::string value = dataValues[i][propIndex]->toString();
+    value_num = boost::lexical_cast<double>(value);
 
     double intersectionArea = getArea(interGeom.get());
 
@@ -1207,9 +1208,10 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
 
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
-    //fromDs->move(dsPos[i]);
+    if (dataValues[i][propIndex] == 0)
+      continue;
 
-    te::gm::Geometry* fromGeom = m_mapGeom[dsPos[i]];//fromDs->getGeometry(fromGeomPos);
+    te::gm::Geometry* fromGeom = m_mapGeom[dsPos[i]];
 
     double fromGeomArea = getArea(fromGeom);
 
@@ -1223,11 +1225,8 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
 
     double value_num = 0;
 
-    if (!dataValues[i][propIndex])
-    {
-      std::string value = dataValues[i][propIndex]->toString();//fromDs->getAsString(propertyName);
-      value_num = boost::lexical_cast<double>(value);
-    }
+    std::string value = dataValues[i][propIndex]->toString();
+    value_num = boost::lexical_cast<double>(value);
 
     double intersectionArea = getArea(interGeom.get());
 
