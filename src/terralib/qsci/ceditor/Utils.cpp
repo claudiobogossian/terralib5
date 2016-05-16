@@ -18,23 +18,62 @@
   TerraLib Team at <terralib-team@terralib.org>.
  */
 
+/*!
+  \file terralib/qsci/ceditor/Utils.cpp
+
+  \brief Utility functions for dealing with code editor.
+*/
+
+
+// TerraLib
 #include "Utils.h"
 
 // Qt
 #include <QFileInfo>
+#include <QString>
 
-QIcon te::ce::GetIcon(QString fileName)
+// QScintilla
+//#include <Qsci/qscilexercpp.h>
+//#include <Qsci/qscilexerd.h>
+//#include <Qsci/qscilexerjava.h>
+//#include <Qsci/qscilexerjavascript.h>
+#include <Qsci/qscilexerlua.h>
+#include <Qsci/qscilexerpython.h>
+//#include <Qsci/qscilexerruby.h>
+
+QsciLexer*
+te::ce::LexerFactory(const QString& lang, QObject* parent)
+{
+  const QString ulang = lang.toUpper();
+
+  if(ulang == "LUA")
+    return new QsciLexerLua(parent);
+
+  if((ulang == "PY") || (ulang == "PYTHON"))
+    return new QsciLexerPython(parent);
+
+  return nullptr;
+}
+
+QIcon te::ce::ScriptIconFactory(const QString& lang)
+{
+  const QString ulang = lang.toUpper();
+  
+  if(ulang == "LUA")
+    return QIcon::fromTheme("lang-lua");
+
+  if((ulang == "PY") || (ulang == "PYTHON"))
+    return QIcon::fromTheme("lang-python");
+
+  return QIcon::fromTheme("lang-unknown");
+}
+
+QIcon te::ce::CreateLangIcon(const QString& fileName)
 {
   QFileInfo in(fileName);
 
   QString lang(in.suffix()),
       ulang = lang.toUpper();
 
-  if(ulang == "LUA")
-    return QIcon(":/imgs/imgs/lang-lua.svg");
-
-  if((ulang == "PY") || (ulang == "PYTHON"))
-    return QIcon(":/imgs/imgs/lang-python.svg");
-
-  return QIcon();
+  return ScriptIconFactory(ulang);
 }

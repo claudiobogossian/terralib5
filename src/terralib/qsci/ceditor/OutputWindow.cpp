@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file OutputWindow.cpp
+  \file terralib/qsci/ceditor/OutputWindow.cpp
 
   \brief A widget to output the script execution.
 */
@@ -60,4 +60,3 @@ QTextEdit* te::ce::OutputWindow::getText()
 {
   return m_txt;
 }
-

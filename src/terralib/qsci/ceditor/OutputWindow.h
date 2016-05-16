@@ -19,13 +19,13 @@
  */
 
 /*!
-  \file OutputWindow.h
+  \file terralib/qsci/ceditor/OutputWindow.h
 
   \brief A widget to output the script execution.
 */
 
-#ifndef __TERRALIB_CODE_EDITOR_CORE_INTERNAL_OUTPUTWINDOW_H
-#define __TERRALIB_CODE_EDITOR_CORE_INTERNAL_OUTPUTWINDOW_H
+#ifndef __TERRALIB_QSCI_CEDITOR_OUTPUTWINDOW_H__
+#define __TERRALIB_QSCI_CEDITOR_OUTPUTWINDOW_H__
 
 // TerraLib Code Editor
 #include "../Config.h"
@@ -41,13 +41,13 @@ namespace te
   namespace ce
   {
     /*!
-    \class OutputWindow
+      \class OutputWindow
 
-    \brief A widget to output the script execution.
-  */
+      \brief A widget to output the script execution.
+     */
     class TECEDITOREXPORT OutputWindow : public QDockWidget
     {
-        Q_OBJECT
+      Q_OBJECT
 
       public:
 
@@ -68,5 +68,4 @@ namespace te
   } // end namespace tce
 }
 
-#endif  // __TERRALIB_CODE_EDITOR_CORE_INTERNAL_OUTPUTWINDOW_H
-
+#endif  // __TERRALIB_QSCI_CEDITOR_OUTPUTWINDOW_H__

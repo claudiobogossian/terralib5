@@ -18,24 +18,49 @@
   TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#ifndef __TERRALIB_CEDITOR_INTERNAL_UTILS_H
-#define __TERRALIB_CEDITOR_INTERNAL_UTILS_H
+/*!
+  \file terralib/qsci/ceditor/Utils.h
 
+  \brief Utility functions for dealing with code editor.
+*/
+
+#ifndef __TERRALIB_QSCI_CEDITOR_UTILS_H__
+#define __TERRALIB_QSCI_CEDITOR_UTILS_H__
+
+// TerraLib
 #include "../Config.h"
 
 // Qt
 #include <QIcon>
+
+// Qt Forward Declaration
+class QObject;
+class QString;
+
+// QScintilla Forward Declaration
+class QsciLexer;
 
 namespace te
 {
   namespace ce
   {
     /*!
-     * \brief Returns the icon related to the extension of the file.
-     * \param fileName Name of the file that contains the script. Script allowed are written in Python and Lua.
+      \brief A factory method for language lexers.
      */
-    TECEDITOREXPORT QIcon GetIcon(QString fileName);
+    QsciLexer* LexerFactory(const QString& lang, QObject* parent = 0);
+
+    /*!
+      \brief A factory method for language icons.
+     */
+    QIcon ScriptIconFactory(const QString& lang);
+
+    /*!
+      \brief Returns the icon related to the extension of the file.
+
+      \param fileName Name of the file that contains the script. Script allowed are written in Python and Lua.
+     */
+    TECEDITOREXPORT QIcon CreateLangIcon(const QString& fileName);
   }
 }
 
-#endif // __TERRALIB_CEDITOR_INTERNAL_UTILS_H
+#endif // __TERRALIB_QSCI_CEDITOR_UTILS_H__

@@ -19,13 +19,13 @@
  */
 
 /*!
-  \file ScriptTabWidget.h
-  
+  \file terralib/qsci/ceditor/ScriptTabWidget.h
+
   \brief The main tab widget may be used to display several scripts.
 */
 
-#ifndef __TERRALIB_CODE_EDITOR_CORE_INTERNAL_SCRIPTTABWIDGET_H
-#define __TERRALIB_CODE_EDITOR_CORE_INTERNAL_SCRIPTTABWIDGET_H
+#ifndef __TERRALIB_QSCI_CEDITOR_SCRIPTTABWIDGET_H__
+#define __TERRALIB_QSCI_CEDITOR_SCRIPTTABWIDGET_H__
 
 // TerraLib Code Editor
 #include "../Config.h"
@@ -38,33 +38,27 @@ namespace te
   namespace ce
   {
     /*!
-    \class ScriptTabWidget
-    
-    \brief The main tab widget may be used to display several scripts.
-  */
+      \class ScriptTabWidget
+
+      \brief The main tab widget may be used to display several scripts.
+     */
     class TECEDITOREXPORT ScriptTabWidget : public QTabWidget
     {
         Q_OBJECT
-        
-      public:      
-        
+
+      public:
+
         ScriptTabWidget(QWidget* parent=0);
-        
+
         ~ScriptTabWidget();
-        
-//        Application* getApplication() const;
-        
+
       protected:
-        
+
         void mousePressEvent(QMouseEvent* evt);
-        
-      private:
-        
-  //      Application* m_parent;
-    };    
-  }
-}
-  
-#endif  // __TERRALIB_CODE_EDITOR_CORE_INTERNAL_SCRIPTTABWIDGET_H
-  
-  
+
+    };
+
+  }  // end namespace ce
+}    // end namespace te
+
+#endif  // __TERRALIB_QSCI_CEDITOR_SCRIPTTABWIDGET_H__

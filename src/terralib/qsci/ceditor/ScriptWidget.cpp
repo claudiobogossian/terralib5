@@ -25,9 +25,8 @@
 */
 
 // TerraLib
-#include "../../common/StringUtils.h"
-#include "LexerFactory.h"
 #include "ScriptWidget.h"
+#include "Utils.h"
 
 //// TerraLib
 //#include <terralib/binding/vm/VirtualMachine.h>
@@ -40,7 +39,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
-
 #include <QApplication>
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -50,11 +48,11 @@
 
 te::ce::ScriptWidget::ScriptWidget(QWidget* parent)
   : QWidget(parent),
-    m_txtEditor(0),
-    m_lexer(0),
+    m_txtEditor(nullptr),
+    m_lexer(nullptr),
     m_hasChanged(false)
 {
-  m_txtEditor = new QsciScintilla(this);  
+  m_txtEditor = new QsciScintilla(this);
   
   m_txtEditor->setAutoCompletionSource(QsciScintilla::AcsAll);
   
@@ -263,12 +261,12 @@ void te::ce::ScriptWidget::setLexer()
     //m_lexer = 0;
   //}
 
-  if(m_fileName == 0)
+  if(m_fileName.isEmpty())
     return;
 
   QString lang = getScriptType();
 
-  m_lexer = LexerFactory::make(lang, m_txtEditor);
+  m_lexer = LexerFactory(lang, m_txtEditor);
   
   m_txtEditor->setLexer(m_lexer);
 }

@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file ScriptTabWidget.cpp
+  \file terralib/qsci/ceditor/ScriptTabWidget.cpp
 
   \brief The main tab widget may be used to display several scripts.
 */
@@ -41,30 +41,20 @@ te::ce::ScriptTabWidget::~ScriptTabWidget()
 {
 }
 
-//te::ce::Application* te::ce::ScriptTabWidget::getApplication() const
-//{
-//  return m_parent;
-//}
-
 void te::ce::ScriptTabWidget::mousePressEvent(QMouseEvent* evt)
 {
   if(evt->button() == Qt::RightButton)
   {
     QMenu m(this);
 
-//    if(m_parent->isFullScreen())
     {
       QAction* viewNormal = new QAction(tr("&View Normal"), this);
       
       m.addAction(viewNormal);
-
-//      connect(viewNormal, SIGNAL(triggered()), m_parent, SLOT(viewNormal()));
     }
 
-    //m.popup(evt->pos());
     m.exec(evt->globalPos());
   }
 
   QTabWidget::mousePressEvent(evt);
 }
-

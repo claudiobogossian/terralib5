@@ -30,7 +30,7 @@ void MainWindow::open()
 
     te::ce::ScriptWidget* editor = new te::ce::ScriptWidget(this);
 
-    m_ui->m_codeTab->insertTab(0, editor, te::ce::GetIcon(file), scName);
+    m_ui->m_codeTab->insertTab(0, editor, te::ce::CreateLangIcon(file), scName);
 
     editor->open(file);
   }
