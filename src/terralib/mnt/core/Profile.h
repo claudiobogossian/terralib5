@@ -48,6 +48,7 @@ namespace te
   //forward declarations
   namespace da  { class DataSetType; }
   namespace gm  { class Geometry; }
+  namespace map { class AbstractLayer; }
   namespace mem { class DataSet; }
 }
 
@@ -76,8 +77,7 @@ namespace te
     public:
 
       bool runRasterProfile(std::auto_ptr<te::rst::Raster> raster, std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
-      std::vector<te::gm::LineString*> prepareVector(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &geostype);
-    
+
       std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType);
       std::auto_ptr<te::rst::Raster> getPrepareRaster();
       void setInput(te::da::DataSourcePtr inRasterDsrc, std::string inRasterName, std::auto_ptr<te::da::DataSetType> inDsetType, double dummy);
@@ -86,7 +86,6 @@ namespace te
       te::da::DataSourcePtr m_inRasterDsrc;
       std::string m_inRasterName;
       std::auto_ptr<te::da::DataSetType> m_inRasterDsType;
-
   
     };
   }

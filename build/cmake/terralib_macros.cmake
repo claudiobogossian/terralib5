@@ -33,12 +33,12 @@ MACRO(TeInstallPlugins plugins location)
     get_target_property(_loc ${plugin} LOCATION)
     list(APPEND _files ${_loc})
   endforeach()
-  
+
   install(FILES ${_files}
            DESTINATION "${TERRALIB_BASE_DESTINATION_DIR}qtplugins/${location}"
            CONFIGURATIONS Release
            COMPONENT runtime)
-  
+
 ENDMACRO(TeInstallPlugins)
 
 
@@ -48,11 +48,11 @@ MACRO(TeInstallQt5Plugins)
 # Installing image plugins
   set(_plugins Qt5::QGifPlugin Qt5::QICOPlugin Qt5::QJpegPlugin Qt5::QMngPlugin Qt5::QTiffPlugin)
   TeInstallPlugins("${_plugins}" "imageformats")
-  
+
 # Installing svg plugins
   set(_plugins Qt5::QSvgPlugin Qt5::QSvgIconPlugin)
   TeInstallPlugins("${_plugins}" "iconengines")
-    
+
 # Installing sql plugins
   set(_plugins Qt5::QSQLiteDriverPlugin)
   TeInstallPlugins("${_plugins}" "sqldrivers")
@@ -62,7 +62,7 @@ MACRO(TeInstallQt5Plugins)
     set(_plugins Qt5::QWindowsPrinterSupportPlugin)
     TeInstallPlugins("${_plugins}" "printsupport")
   endif()
-  
+
 # Installing platform plugins
   if(WIN32)
     set(_plugins Qt5::QWindowsIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
@@ -71,7 +71,7 @@ MACRO(TeInstallQt5Plugins)
     set(_plugins Qt5::QCocoaIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
     TeInstallPlugins("${_plugins}" "platforms")
   endif()
-  
+
 ENDMACRO(TeInstallQt5Plugins)
 
 #
@@ -131,26 +131,26 @@ ENDMACRO(TeInstallQtPlugins)
 MACRO(TeInstallTerraLibPlugins plugins location)
   set(_files "")
   set(_filesd "")
-  
+
   foreach(plugin ${plugins})
     get_target_property(_loc ${plugin} LOCATION_RELEASE)
     list(APPEND _files ${_loc})
-    
+
     get_target_property(_locd ${plugin} LOCATION_DEBUG)
     list(APPEND _filesd ${_locd})
   endforeach()
-  
+
   install (FILES ${_files}
     DESTINATION ${location}
     CONFIGURATIONS Release
     COMPONENT runtime
-  )  
+  )
 
   install (FILES ${_filesd}
     DESTINATION ${location}
     CONFIGURATIONS Debug
     COMPONENT runtime
-  )  
+  )
 ENDMACRO(TeInstallTerraLibPlugins)
 
 MACRO(GetTerraLibModules _modules)
@@ -158,13 +158,47 @@ MACRO(GetTerraLibModules _modules)
 
   foreach(module ${allModules})
     set (_mod_name terralib_mod_${module})
-    
+
     string(FIND ${_mod_name} python _py_ok)
-        
+
     if(${_py_ok} GREATER 0)
       set(_mod_name _${_mod_name})
     endif()
-    
+
     list(APPEND ${_modules} ${_mod_name})
   endforeach()
 ENDMACRO(GetTerraLibModules)
+
+IF(XGETTEXT_FOUND)
+  macro(TERRALIB_REGISTER_TRANSLATION proj_name locale)
+    set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
+    set(_mo_file "${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/${proj_name}.mo")
+    if(EXISTS ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po)
+      add_custom_command(
+        TARGET ${proj_name}
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/
+        COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_mo_file} ${_po_file}
+        COMMENT "Generating translation binary file for ${proj_name}...")
+    endif()
+  endmacro(TERRALIB_REGISTER_TRANSLATION)
+
+  macro(TERRALIB_CREATE_TRANSLATION proj_name keyword_s keyword_p locale directory)
+    get_filename_component(_absDir ${directory} ABSOLUTE)
+    set(_pot_file ${CMAKE_CURRENT_BINARY_DIR}/${proj_name}.pot)
+    set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
+    file(GLOB_RECURSE _srcs RELATIVE ${_absDir} ${_absDir}/*.cpp)
+    set(encoding "UTF-8")
+    if(NOT EXISTS "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
+      configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/template_translation.po.in
+                     ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po @ONLY)
+    endif()
+    add_custom_command(
+      TARGET ${proj_name}
+      PRE_BUILD
+      COMMAND ${XGETTEXT_EXECUTABLE} --from-code=${encoding} --no-wrap --c++ --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -o ${_pot_file} ${_srcs}
+      COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_po_file} ${_pot_file}
+      COMMENT "Generating translation source file for ${proj_name}...")
+  endmacro(TERRALIB_CREATE_TRANSLATION)
+ENDIF(XGETTEXT_FOUND)
+

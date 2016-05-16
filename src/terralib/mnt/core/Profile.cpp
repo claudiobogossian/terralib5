@@ -26,39 +26,40 @@
 
 //TerraLib
 
-#include "../../../../src/terralib/core/translator/Translator.h"
-#include "../../../../src/terralib/common/progress/TaskProgress.h"
-#include "../../../../src/terralib/common/Logger.h"
+#include "../../core/translator/Translator.h"
+#include "../../common/progress/TaskProgress.h"
+#include "../../common/Logger.h"
+#include "../../common/UnitsOfMeasureManager.h"
 
-#include "../../../../src/terralib/dataaccess/dataset/DataSetTypeConverter.h"
-#include "../../../../src/terralib/dataaccess/dataset/DataSetTypeCapabilities.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../../dataaccess/dataset/DataSetTypeCapabilities.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/query/EqualTo.h"
 
-#include "../../../../src/terralib/dataaccess/datasource/DataSource.h"
-#include "../../../../src/terralib/dataaccess/datasource/DataSourceFactory.h"
-#include "../../../../src/terralib/dataaccess/datasource/DataSourceInfo.h"
-#include "../../../../src/terralib/dataaccess/datasource/DataSourceManager.h"
-#include "../../../../src/terralib/dataaccess/query/EqualTo.h"
+#include "../../datatype/Property.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../datatype/StringProperty.h"
 
+#include "../../geometry/Geometry.h"
+#include "../../geometry/GeometryProperty.h"
+#include "../../geometry/MultiLineString.h"
+#include "../../geometry/PointZ.h"
 
-#include "../../../../src/terralib/datatype/Property.h"
-#include "../../../../src/terralib/datatype/SimpleProperty.h"
-#include "../../../../src/terralib/datatype/StringProperty.h"
+#include "../../maptools/AbstractLayer.h"
 
-#include "../../../../src/terralib/geometry/Geometry.h"
-#include "../../../../src/terralib/geometry/GeometryProperty.h"
+#include "../../memory/DataSet.h"
+#include "../../memory/DataSetItem.h"
 
-#include "../../../../src/terralib/memory/DataSet.h"
-#include "../../../../src/terralib/memory/DataSetItem.h"
+#include "../../raster/RasterProperty.h"
+#include "../../raster/RasterFactory.h"
+#include "../../raster/Utils.h"
+#include "../../raster/BandProperty.h"
 
-#include "../../../../src/terralib/raster/RasterProperty.h"
-#include "../../../../src/terralib/raster/RasterFactory.h"
-#include "../../../../src/terralib/raster/Utils.h"
-#include "../../../../src/terralib/raster/BandProperty.h"
-#include "../../../../src/terralib/geometry/PointZ.h"
-#include "../../../../src/terralib/geometry/MultiLineString.h"
-#include "../../../../src/terralib/common/UnitsOfMeasureManager.h"
-#include "../../../../src/terralib/srs/SpatialReferenceSystemManager.h"
-#include "../../../../src/terralib/statistics/core/Enums.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
+#include "../../statistics/core/Enums.h"
 
 #include "Profile.h"
 #include "Utils.h"
@@ -68,8 +69,6 @@
 
 //Boost
 #include <boost/lexical_cast.hpp>
-
-
 
 te::mnt::Profile::Profile()
 {
@@ -84,40 +83,6 @@ void te::mnt::Profile::setInput(te::da::DataSourcePtr inRasterDsrc, std::string 
   m_inRasterName = inRasterName;
   m_inRasterDsType = inDsetType;
   m_dummy = dummy;
-}
-
-std::vector<te::gm::LineString*> te::mnt::Profile::prepareVector(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &geostype)
-{
-  std::vector<te::gm::LineString*> lsOut;
-  std::auto_ptr<te::da::DataSet> inDset;
-  inDset = inDsrc->getDataSet(inDsetName);
-
-  std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
-  inDset->moveBeforeFirst();
-
-
-  while (inDset->moveNext())
-  {
-    std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
-    geostype = gin.get()->getGeometryType();
-
-    if (geostype == "LineString")
-    {
-      te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(gin.get());
-      lsOut.push_back(l);
-    }
-    if (geostype == "MultiLineString")
-    {
-      te::gm::MultiLineString *g = dynamic_cast<te::gm::MultiLineString*>(gin.get());
-      std::size_t np = g->getNumGeometries();
-      for (std::size_t i = 0; i < np; ++i)
-      {
-        te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(g->getGeometryN(i)->clone());
-        lsOut.push_back(l);
-      }
-    }
-  }
-  return lsOut;
 }
 
 std::auto_ptr<te::mem::DataSet> te::mnt::Profile::createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType)

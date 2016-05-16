@@ -29,6 +29,7 @@
 // TerraLib
 #include "../Config.h"
 #include "AttributeConverters.h"
+#include "../../core/encoding/CharEncoding.h"
 
 // STL
 #include <vector>
@@ -95,7 +96,7 @@ namespace te
           \note If the method "getHint" does not inform any hint, the specific property will not have a conversion.
           \note The method "add" can be used to do manual conversions.
           \note The method "getNonConvertedProperties" can be used to retrieve that properties that have no defined conversion.
-          
+
           \sa DataSetType, DataSourceCapabilities DataTypeCapabilities
         */
         DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, te::core::EncodingType et = te::core::EncodingType::UNKNOWN);
@@ -146,7 +147,7 @@ namespace te
           \brief This method tells which Attribute Converter was used in the porperty position.
 
           \param propertyPos A property position of the DataSetTypeConverter.
-          
+
           \return Attribute Converter name.
         */
         std::string getConverterName(std::size_t propertyPos);
