@@ -1,20 +1,21 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*
+  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
@@ -33,9 +34,6 @@
 //#include <terralib/binding/vm/VirtualMachineFactory.h>
 //#include <terralib/binding/vm/VirtualMachineManager.h>
 
-// Boost
-//#include <boost/filesystem.hpp>
-//#include <boost/format.hpp>
 
 // Qt
 #include <QFileDialog>
@@ -75,10 +73,6 @@ te::ce::ScriptWidget::ScriptWidget(QWidget* parent)
 
 te::ce::ScriptWidget::~ScriptWidget()
 {
-// dont't save if close is called, let's wait for application decision!
-  //close();
-
-//  delete m_fileName;
 }
 
 QString te::ce::ScriptWidget::getScriptType() const
@@ -93,12 +87,7 @@ QString te::ce::ScriptWidget::getScriptType() const
 
 QString te::ce::ScriptWidget::getScriptName() const
 {
-//  if(m_fileName == 0)
-    return QString(tr("New-Script"));
-
-//  boost::filesystem::path fpath(m_fileName->toStdString());
-
-//  return QString(fpath.filename().string().c_str());
+  return QString(tr("New-Script"));
 }
 
 void te::ce::ScriptWidget::open(const QString& fileName)
@@ -155,8 +144,6 @@ void te::ce::ScriptWidget::saveAs()
   if(fileName.isEmpty())
     return;
 
-//  delete m_fileName;
-
   m_fileName = fileName;
 
   saveFile(fileName);
@@ -174,9 +161,6 @@ void te::ce::ScriptWidget::close()
 
 // clear text editor
   m_txtEditor->clear();
-
-// release file name
-//  delete m_fileName;
 
   m_fileName = "";
 

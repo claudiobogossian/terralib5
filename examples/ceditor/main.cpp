@@ -32,6 +32,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 // Qt
 #include <QApplication>
 
+
+// Main program
 int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);

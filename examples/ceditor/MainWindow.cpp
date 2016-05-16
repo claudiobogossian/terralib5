@@ -1,3 +1,4 @@
+
 #include "MainWindow.h"
 
 #include <ui_CodeEditorForm.h>
@@ -29,7 +30,7 @@ void MainWindow::open()
 
     te::ce::ScriptWidget* editor = new te::ce::ScriptWidget(this);
 
-    m_ui->m_codeTab->insertTab(0, editor, te::ce::getIcon(file), scName);
+    m_ui->m_codeTab->insertTab(0, editor, te::ce::GetIcon(file), scName);
 
     editor->open(file);
   }
