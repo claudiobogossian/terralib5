@@ -213,7 +213,7 @@ te::core::Library::unload()
 bool
 te::core::Library::isLoaded() const
 {
-  return (m_pimpl->module != nullptr);
+  return (m_pimpl != nullptr) && (m_pimpl->module != nullptr);
 }
 
 const std::string&
