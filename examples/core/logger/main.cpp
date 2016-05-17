@@ -33,10 +33,10 @@
 
 int main(int argc, char *argv[])
 {
-  TE_LOG_INIT("terralib_example_core_logger");
-  TE_LOG_TRACE("mensagem");
+  TE_LOG_CORE_INIT("terralib_example_core_logger");
+  TE_LOG_CORE_TRACE("mensagem");
   {
-    TE_LOG_INIT("segundo_logger");
-    TE_LOG_TRACE("log2");
+    TE_LOG_CORE_INIT("segundo_logger");
+    TE_LOG_CORE_TRACE("log2");
   }
 }

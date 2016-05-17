@@ -69,14 +69,14 @@ namespace te
 
   } // end namespace common
 }   // end namespace te
-#define TE_LOG_INIT(name) te::core::Logger logger(name)
+#define TE_LOG_CORE_INIT(name) te::core::Logger logger(name)
 
-#define TE_LOG_TRACE(message)   logger.logTrace(message)
-#define TE_LOG_ERROR(message)   logger.logError(message)
-#define TE_LOG_FATAL(message)   logger.logFatal(message)
-#define TE_LOG_INFO(message)    logger.logInfo(message)
-#define TE_LOG_WARNING(message) logger.logWarning(message)
-#define TE_LOG_DEBUG(message)   logger.logDebug(message)
+#define TE_LOG_CORE_TRACE(message)   logger.logTrace(message)
+#define TE_LOG_CORE_ERROR(message)   logger.logError(message)
+#define TE_LOG_CORE_FATAL(message)   logger.logFatal(message)
+#define TE_LOG_CORE_INFO(message)    logger.logInfo(message)
+#define TE_LOG_CORE_WARNING(message) logger.logWarning(message)
+#define TE_LOG_CORE_DEBUG(message)   logger.logDebug(message)
 
 
 #endif  // __TERRALIB_LOGGER_TRANSLATOR_H__
