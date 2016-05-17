@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../geometry.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -62,7 +63,10 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
   delete m_feature;
-  clear();
+  te::common::FreeContents(m_addWatches);
+  m_addWatches.clear();
+
+  UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
@@ -222,6 +226,8 @@ void te::edit::CreatePolygonTool::clear()
   m_feature = 0;
   m_currentIndex = 0;
   m_coords.clear();
+
+  te::common::FreeContents(m_addWatches);
   m_addWatches.clear();
 
   UndoStackManager::getInstance().getUndoStack()->clear();

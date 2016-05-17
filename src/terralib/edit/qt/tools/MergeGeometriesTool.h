@@ -101,8 +101,6 @@ namespace te
 
       te::gm::GeometryCollection* m_geocollection;
 
-      std::vector<Feature*> m_updateWatches;
-
       te::da::ObjectIdSet* m_oidsMerged;
 
     };

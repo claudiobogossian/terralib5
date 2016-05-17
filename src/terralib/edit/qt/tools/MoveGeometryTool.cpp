@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
@@ -62,7 +63,9 @@ te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* displa
 te::edit::MoveGeometryTool::~MoveGeometryTool()
 {
   delete m_feature;
+  te::common::FreeContents(m_addWatches);
   m_addWatches.clear();
+
   UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
@@ -239,6 +242,7 @@ void te::edit::MoveGeometryTool::storeUndoCommand()
   {
     if (m_addWatches.at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
     {
+      te::common::FreeContents(m_addWatches);
       m_addWatches.clear();
       UndoStackManager::getInstance().getUndoStack()->clear();
       break;
