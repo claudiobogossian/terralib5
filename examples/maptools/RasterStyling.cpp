@@ -159,6 +159,7 @@ void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, 
 
   //set channel selection
   te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+  cs->setColorCompositionType(te::se::RGB_COMPOSITION);
 
   //channel R
   te::se::SelectedChannel* scR = new te::se::SelectedChannel();
@@ -203,6 +204,7 @@ void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, 
 
   //set channel selection
   te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+  cs->setColorCompositionType(te::se::RGB_COMPOSITION);
 
   //channel R
   te::se::SelectedChannel* scR = new te::se::SelectedChannel();
@@ -247,6 +249,7 @@ void RGB_012_G_Contrast_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer*
 
   //set channel selection
   te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+  cs->setColorCompositionType(te::se::RGB_COMPOSITION);
 
   //channel R
   te::se::SelectedChannel* scR = new te::se::SelectedChannel();
@@ -295,6 +298,7 @@ void RGB_012_RGB_Contrast_Style(te::qt::widgets::Canvas* c, te::map::DataSetLaye
 
   //set channel selection
   te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+  cs->setColorCompositionType(te::se::RGB_COMPOSITION);
 
   //channel R
   te::se::SelectedChannel* scR = new te::se::SelectedChannel();
@@ -351,6 +355,7 @@ void MONO_0_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::
 
   //set channel selection
   te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+  cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
 
   //channel M
   te::se::SelectedChannel* scM = new te::se::SelectedChannel();
@@ -385,6 +390,7 @@ void MONO_2_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::
 
   //set channel selection
   te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+  cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
 
   //channel M
   te::se::SelectedChannel* scM = new te::se::SelectedChannel();
@@ -419,6 +425,7 @@ void RED_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Env
 
   //set channel selection
   te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+  cs->setColorCompositionType(te::se::RED_COMPOSITION);
 
   //channel R
   te::se::SelectedChannel* scR = new te::se::SelectedChannel();

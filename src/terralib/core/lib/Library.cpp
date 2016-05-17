@@ -30,6 +30,7 @@
 #include "Library.h"
 #include "../../Defines.h"
 #include "Exception.h"
+#include "../translator/Translator.h"
 
 #ifndef TE_PLATFORM
 #error "Could not determine platform! Please, contact TerraLib team (terralib-team@terralib.org) for helping support this platform!"
@@ -37,10 +38,11 @@
 
 // STL
 #include <cassert>
+#include <algorithm>
+#include <cctype>
 
 // Boost
 #include <boost/format.hpp>
-#include <boost/algorithm/cxx11/all_of.hpp>
 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 #include <windows.h>
@@ -90,7 +92,7 @@ static std::string te_get_os_error()
                 NULL);
 
   if(lp_msg_buf == 0)
-    return std::string("Shared Library: could not determine the Operational System report error!");
+    return std::string(TE_TR("Shared Library: could not determine the Operational System report error!"));
 
   std::string msg((char*)(lp_msg_buf));
 
@@ -102,7 +104,7 @@ static std::string te_get_os_error()
 
   const char* err_msg = dlerror();
 
-  return (err_msg == nullptr) ? std::string("Shared Library: could not determine the Operational System report error!") : std::string(err_msg);
+  return (err_msg == nullptr) ? std::string(TE_TR("Shared Library: could not determine the Operational System report error!")) : std::string(err_msg);
 
 #else
 
@@ -114,9 +116,9 @@ static std::string te_get_os_error()
 te::core::Library::Library(const std::string& slib_file_name, bool delay_load)
   : m_pimpl(nullptr)
 {
-  if(slib_file_name.empty() || boost::algorithm::all_of(slib_file_name.begin(), slib_file_name.end(), isspace))
+  if(slib_file_name.empty() || std::all_of(slib_file_name.begin(), slib_file_name.end(), isspace))
   {
-    boost::format err_msg("Library name cannot be empty.");
+    boost::format err_msg(TE_TR("Library name cannot be empty."));
 
     throw LibraryNameException() << te::ErrorDescription(err_msg.str());
   }
@@ -168,7 +170,7 @@ te::core::Library::load()
 
   if(!isLoaded())
   {
-    boost::format err_msg("Could not load library: %1%, due to following error: %2%.");
+    boost::format err_msg(TE_TR("Could not load library: %1%, due to following error: %2%."));
 
     throw LibraryLoadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
@@ -186,7 +188,7 @@ te::core::Library::unload()
 
   if(result == FALSE)
   {
-    boost::format err_msg("Could not unload library: %1%, due to following error: %2%.");
+    boost::format err_msg(TE_TR("Could not unload library: %1%, due to following error: %2%."));
 
     throw LibraryUnloadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
@@ -195,7 +197,7 @@ te::core::Library::unload()
 
   if(dlclose(m_pimpl->module))
   {
-    boost::format err_msg("Could not unload library: %1%, due to following error: %2%.");
+    boost::format err_msg(TE_TR("Could not unload library: %1%, due to following error: %2%."));
 
     throw LibraryUnloadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
@@ -212,7 +214,7 @@ te::core::Library::unload()
 bool
 te::core::Library::isLoaded() const
 {
-  return (m_pimpl->module != nullptr);
+  return (m_pimpl != nullptr) && (m_pimpl->module != nullptr);
 }
 
 const std::string&
@@ -242,7 +244,7 @@ te::core::Library::getAddress(const char* symbol) const
 
   if(f == nullptr)
   {
-    boost::format err_msg("Could not find symbol: %1%, in the library %2%, due to the following error: %3%.");
+    boost::format err_msg(TE_TR("Could not find symbol: %1%, in the library %2%, due to the following error: %3%."));
 
     throw LibrarySymbolNotFoundException() << te::ErrorDescription((err_msg % symbol % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
@@ -280,7 +282,7 @@ te::core::Library::addSearchDir(const std::string& dir_name)
 
   if(dir_name.length() > (MAX_PATH - 2))
   {
-    boost::format err_msg("The DLL lookup path is too long: %1%.");
+    boost::format err_msg(TE_TR("The DLL lookup path is too long: %1%."));
 
     throw LibraryInvalidSearchPathException() << te::ErrorDescription((err_msg % dir_name).str());
   }
@@ -290,7 +292,7 @@ te::core::Library::addSearchDir(const std::string& dir_name)
 
   if(retval == FALSE)
   {
-    boost::format err_msg("The informed dir \"%1%\" couldn't be added to the application dll lookup path due to the following error: \"%2%\".");
+    boost::format err_msg(TE_TR("The informed dir \"%1%\" couldn't be added to the application dll lookup path due to the following error: \"%2%\"."));
 
     throw te::core::LibraryInvalidSearchPathException() << te::ErrorDescription((err_msg % dir_name % te_get_os_error()).str());
   }
@@ -309,7 +311,7 @@ te::core::Library::resetSearchPath()
 
   if(retval == FALSE)
   {
-    boost::format err_msg("Couldn't come back with default Windows DLL lookup path due to the following error: %1%.");
+    boost::format err_msg(TE_TR("Couldn't come back with default Windows DLL lookup path due to the following error: %1%."));
 
     throw LibraryResetSearchPathException() << te::ErrorDescription((err_msg % te_get_os_error()).str());
   }
@@ -331,7 +333,7 @@ te::core::Library::getSearchPath()
 
   if(length == 0 && te::core::Library::Impl::added_search_path_)
   {
-    boost::format err_msg("Couldn't get Windows DLL lookup path due to the following error: %1%!");
+    boost::format err_msg(TE_TR("Couldn't get Windows DLL lookup path due to the following error: %1%!"));
 
     throw LibrarySearchPathException() << te::ErrorDescription((err_msg % te_get_os_error()).str());
   }
@@ -342,7 +344,7 @@ te::core::Library::getSearchPath()
   }
   else
   {
-    throw LibrarySearchPathException() << te::ErrorDescription("Windows DLL lookup path too long!");
+    throw LibrarySearchPathException() << te::ErrorDescription(TE_TR("Windows DLL lookup path too long!"));
   }
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)

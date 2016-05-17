@@ -52,8 +52,6 @@ namespace te
       references to them. These references will be automatically removed
       when a library goes out of scope (or been destroyed). Actually it works
       like an observer of known libraries.
-
-      \note This class is based on pimpl idiom.
      */
     class TECOREEXPORT LibraryManager : public boost::noncopyable
     {
@@ -78,7 +76,7 @@ namespace te
         /*!
           \param name The library name.
 
-          \return A pointer to an already loaded library or null.
+          \return A pointer to an already loaded library or null if the library was unloaded and not unregistered.
 
           \excpetion te::OutOfRangeException If a library with the given identifier is not registered.
         */

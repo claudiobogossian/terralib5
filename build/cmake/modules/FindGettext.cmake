@@ -64,45 +64,12 @@ ELSE(XGETTEXT_EXECUTABLE)
   SET(XGETTTEXT_FOUND FALSE)
 ENDIF(XGETTEXT_EXECUTABLE)
 IF(XGETTEXT_FOUND)
-
 IF (WIN32)
    STRING(REGEX REPLACE "/" "\\\\" XGETTEXT_EXECUTABLE ${XGETTEXT_EXECUTABLE})
    STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGFMT_EXECUTABLE ${GETTEXT_MSGFMT_EXECUTABLE})
    STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGMERGE_EXECUTABLE ${GETTEXT_MSGMERGE_EXECUTABLE})
    STRING(REGEX REPLACE "/" "\\\\" GETTEXT_MSGINIT_EXECUTABLE ${GETTEXT_MSGINIT_EXECUTABLE})
 ENDIF (WIN32)
-
-
-macro(TERRALIB_REGISTER_TRANSLATION proj_name locale)
-  set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
-  set(_mo_file "${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/${proj_name}.mo")
-  if(EXISTS _po_file)
-    add_custom_command(
-      TARGET ${proj_name}
-      PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/
-      COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_mo_file} ${_po_file}
-      WORKING_DIRECTORY "${_absDir}"
-      COMMENT "Generating translation binary file for ${proj_name}...")
-  endif()
-endmacro(TERRALIB_REGISTER_TRANSLATION)
-
-macro(TERRALIB_CREATE_TRANSLATION proj_name keyword_s keyword_p locale directory)
-  get_filename_component(_absDir ${directory} ABSOLUTE)
-  set(_pot_file ${CMAKE_CURRENT_BINARY_DIR}/${proj_name}.pot)
-  set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
-  file(GLOB_RECURSE _srcs RELATIVE ${_absDir} ${_absDir}/*.cpp)
-  set(encoding "UTF-8")
-  if(NOT EXISTS "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
-    configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/template_translation.po.in
-                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po @ONLY)
-  endif()
-  add_custom_command(
-    TARGET ${proj_name}
-    PRE_BUILD
-    COMMAND ${XGETTEXT_EXECUTABLE} --from-code=${encoding} --no-wrap --c++ --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -o ${_pot_file} ${_srcs}
-    COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_po_file} ${_pot_file}
-    WORKING_DIRECTORY "${_absDir}"
-    COMMENT "Generating translation source file for ${proj_name}...")
-endmacro(TERRALIB_CREATE_TRANSLATION)
 ENDIF(XGETTEXT_FOUND)
+
+include(terralib_macros.cmake)

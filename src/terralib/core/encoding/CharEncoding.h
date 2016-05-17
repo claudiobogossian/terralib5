@@ -62,7 +62,7 @@ namespace te
 
     /*!
       \class CharEncoding
-     
+
       \brief A class for handling character enconding/decoding.
      */
     class TECOREEXPORT CharEncoding
@@ -71,10 +71,10 @@ namespace te
 
         /*!
           \brief Convert a string from a given character encoding to UTF-8.
-         
+
           \param src  String to be encoded in UTF-8.
           \param from String character encoding.
-         
+
           \return String encoded in UTF-8.
          */
         static std::string toUTF8(const std::string& src, EncodingType from);
@@ -91,11 +91,11 @@ namespace te
 
         /*!
           \brief Convert a string from one character encoding to another one.
-         
+
           \param src  String encoded according to "from" encoding type.
           \param from Current string encoding.
           \param to   New encoding for the string.
-         
+
           \return String in a new encoding.
          */
         static std::string convert(const std::string& src,
@@ -118,17 +118,17 @@ namespace te
           \return Encoding as enum.
          */
         static te::core::EncodingType getEncodingType(const std::string &name);
-      
+
       private:
 
 // Not instantiable
         CharEncoding();
-      
+
         ~CharEncoding();
 
         static const std::map<EncodingType, std::string> EncodingString; //!< An index over character encoding types.
     };
-    
+
   }  // end namespace core
 }    // end namespace te
 

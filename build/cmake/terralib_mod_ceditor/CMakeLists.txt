@@ -25,7 +25,7 @@
 
 set(TERRALIB_CEDITOR_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qsci)
 
-include_directories(${QScintilla_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
+include_directories(${Qscintilla_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
 if (WIN32)
   add_definitions(-DTECEDITOR)
@@ -44,7 +44,7 @@ source_group("Source Files\\ceditor"            FILES ${TERRALIB_CEDITOR_SRC_FIL
 
 add_library(terralib_mod_ceditor SHARED ${TERRALIB_CEDITOR_SRC_FILES} ${TERRALIB_CEDITOR_CONFIGHDR_FILE} ${TERRALIB_CEDITOR_HDR_FILES})
 
-target_link_libraries(terralib_mod_ceditor terralib_mod_core ${QScintilla_LIBRARY})
+target_link_libraries(terralib_mod_ceditor terralib_mod_core ${Qscintilla_LIBRARY})
 
 set_target_properties(terralib_mod_ceditor
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
