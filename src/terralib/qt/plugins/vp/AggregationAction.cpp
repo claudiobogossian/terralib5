@@ -72,8 +72,7 @@ void te::qt::plugins::vp::AggregationAction::onActionActivated(bool)
     std::string details;
     for (std::size_t w = 0; w < warnings.size(); ++w)
       details += warnings[w] + "\n";
-    
-    //reply = QMessageBox::question(0, tr("Aggregation Result"), tr(), QMessageBox::No, QMessageBox::Yes);
+
     QMessageBox question(QMessageBox::Warning, tr("Aggregation Result"), tr("The operation was concluded successfully. But it has warning(s). Would you like to add the layer to the project?"));
     question.addButton(QMessageBox::No);
     question.addButton(QMessageBox::Yes);

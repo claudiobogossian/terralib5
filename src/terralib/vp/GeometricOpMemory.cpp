@@ -56,6 +56,7 @@
 #include "Utils.h"
 
 // STL
+#include <iostream>
 #include <map>
 #include <math.h>
 #include <string>
@@ -143,15 +144,8 @@ bool te::vp::GeometricOpMemory::run() throw(te::common::Exception)
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
 
-            try
-            {
-              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
-              result = true;
-            }
-            catch(...)
-            {
-              result = false;
-            }
+            te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+            result = true;
 
             if(!result)
               return result;
@@ -219,15 +213,9 @@ bool te::vp::GeometricOpMemory::run() throw(te::common::Exception)
 
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
-            try
-            {
-              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
-              result = true;
-            }
-            catch(...)
-            {
-              result = false;
-            }
+
+            te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+            result = true;
 
             if(!result)
               return result;
@@ -262,6 +250,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
   
   int pk = 0;
   
+  std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
+
   std::auto_ptr<te::da::DataSet> inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
   std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
   
@@ -280,7 +270,10 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
     {
       for(std::size_t prop_pos = 0; prop_pos < m_selectedProps.size(); ++prop_pos)
       {
-        item->setValue(m_selectedProps[prop_pos], inDset->getValue(m_selectedProps[prop_pos]).release());
+        std::size_t inputPropertyPos = inDsType->getPropertyPosition(m_selectedProps[prop_pos]);
+
+        if (!inDset->isNull(inputPropertyPos))
+          item->setValue(m_selectedProps[prop_pos], inDset->getValue(m_selectedProps[prop_pos]).release());
       }
     }
 
@@ -391,17 +384,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
       switch(g->getGeomTypeId())
       {
         case te::gm::PointType:
-          {
-            if(g->isValid())
-              teGeomColl->add(g.release());
-          }
-          break;
         case te::gm::LineStringType:
-          {
-            if(g->isValid())
-              teGeomColl->add(g.release());
-          }
-          break;
         case te::gm::PolygonType:
           {
             if(g->isValid())

@@ -274,6 +274,8 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
     te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outDataSetName).release());
     m_outLayer = converter(dt);
+    m_outLayer->setSRID(toLayer->getSRID());
+
   }
   catch(te::common::Exception& e)
   {
