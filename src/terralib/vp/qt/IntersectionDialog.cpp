@@ -234,11 +234,6 @@ void te::vp::IntersectionDialog::updateDoubleListWidget()
   {
     if (secondProps[i]->getType() != te::dt::GEOMETRY_TYPE)
     {
-      std::string name = secondSchema->getTitle();
-
-      if (name.empty())
-        name = secondSchema->getName();
-
       inputValues.push_back(secondSchema->getTitle() + ": " + secondProps[i]->getName());
     }
   }

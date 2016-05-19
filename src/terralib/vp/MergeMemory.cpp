@@ -363,8 +363,7 @@ bool te::vp::MergeMemory::run() throw(te::common::Exception)
   catch (const std::exception& e)
   {
     transactor->rollBack();
-    std::string err = e.what();
-    throw e;
+    throw;
   }
 
   return true;

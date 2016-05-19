@@ -342,7 +342,6 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
   
     // copy from memory to output datasource
     result->moveBeforeFirst();
-    std::string name = outDsType->getName();
     t->add(outDsType->getName(), result, options);
 
     t->commit();
@@ -350,12 +349,12 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
   catch(te::common::Exception& e)
   {
     t->rollBack();
-    throw e;
+    throw;
   }
   catch(std::exception& e)
   {
     t->rollBack();
-    throw e;
+    throw;
   }
 }
 

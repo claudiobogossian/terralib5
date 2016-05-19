@@ -400,7 +400,6 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
   }
   catch (const std::exception& e)
   {
-    std::string eeeee = e.what();
     QMessageBox::warning(this, tr("Merge"), e.what());
     return;
   }
