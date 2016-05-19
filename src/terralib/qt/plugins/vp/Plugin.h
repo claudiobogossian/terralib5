@@ -58,6 +58,7 @@ namespace te
         class MergeAction;
         class MultipartToSinglepartAction;
         class PolygonToLineAction;
+		class UnionAction;
 
         class Plugin : public QObject, public te::plugin::Plugin
         {
@@ -105,6 +106,7 @@ namespace te
             MergeAction* m_merge;    //!< Intersection Operation Action
             MultipartToSinglepartAction* m_multipart2singlepart;    //!< Intersection Operation Action
             PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action
+			UnionAction* m_union;    //!< Polygon to Line Operation Action
             //SummarizationAction* m_summarization;    //!< Summarization Operation Action
             //TransformationAction* m_transformation;    //!< Transformation Operation Action
 

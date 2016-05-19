@@ -40,6 +40,7 @@
 #include "MultipartToSinglepartAction.h"
 #include "Plugin.h"
 #include "PolygonToLineAction.h"
+#include "UnionAction.h"
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
 //Log4cxx
@@ -74,7 +75,8 @@ te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
     m_lineToPolygon(0),
     m_merge(0),
     m_multipart2singlepart(0),
-    m_polygonToLine(0)
+    m_polygonToLine(0),
+    m_union(0)
 {
 }
 
@@ -167,6 +169,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
   m_lineToPolygon = new te::qt::plugins::vp::LineToPolygonAction(m_vpMenu);
   m_multipart2singlepart = new te::qt::plugins::vp::MultipartToSinglepartAction(m_vpMenu);
   m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
+  m_union = new te::qt::plugins::vp::UnionAction(m_vpMenu);
 
   connect(m_aggregation, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_buffer, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
@@ -177,6 +180,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
   connect(m_lineToPolygon, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_multipart2singlepart, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_polygonToLine, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_union, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_aggregation->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_buffer->getAction());
@@ -186,6 +190,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_merge->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_multipart2singlepart->getAction());
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_polygonToLine->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_union->getAction());
 }
 
 void  te::qt::plugins::vp::Plugin::unRegisterActions()
@@ -199,6 +204,7 @@ void  te::qt::plugins::vp::Plugin::unRegisterActions()
   delete m_lineToPolygon;
   delete m_multipart2singlepart;
   delete m_polygonToLine;
+  delete m_union;
   
 }
 
