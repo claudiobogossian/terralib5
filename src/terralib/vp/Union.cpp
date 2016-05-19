@@ -202,8 +202,17 @@ bool te::vp::Union::executeMemory(te::vp::AlgorithmParams* mainParams)
     }
   }
 
+  outputDataSet->moveBeforeFirst();
 
-  te::vp::Save(outputSource.get(), outputDataSet.get(), outputDataSetType.get());
+  std::auto_ptr<te::da::DataSet> dataSetPrepared = PrepareAdd(outputDataSet.release(), outputDataSetType.get());
+
+  if (!dataSetPrepared.get())
+    throw te::common::Exception(TE_TR("Output DataSet was not prepared to save."));
+
+  if (dataSetPrepared->size() == 0)
+    throw te::common::Exception("The resultant layer is empty!");
+
+  te::vp::Save(outputSource.get(), dataSetPrepared.get(), outputDataSetType.get());
 
   return true;
 }
@@ -300,6 +309,13 @@ te::da::DataSetType* te::vp::Union::getOutputDataSetType(te::vp::AlgorithmParams
   {
     te::dt::Property* clonedProperty = firstSelectedProperties[i]->clone();
 
+    te::dt::SimpleProperty* spAux = dynamic_cast<te::dt::SimpleProperty*>(clonedProperty);
+
+    if (spAux)
+    {
+      spAux->setRequired(false);
+    }
+
     std::string pName = clonedProperty->getName();
 
     if (mainParams->getOutputDataSource()->getType() == "OGR")
@@ -319,6 +335,13 @@ te::da::DataSetType* te::vp::Union::getOutputDataSetType(te::vp::AlgorithmParams
   for (std::size_t i = 0; i < secondSelectedProperties.size(); ++i)
   {
     te::dt::Property* clonedProperty = secondSelectedProperties[i]->clone();
+
+    te::dt::SimpleProperty* spAux = dynamic_cast<te::dt::SimpleProperty*>(clonedProperty);
+
+    if (spAux)
+    {
+      spAux->setRequired(false);
+    }
 
     std::string pName = clonedProperty->getName();
 
