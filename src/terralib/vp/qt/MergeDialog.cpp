@@ -37,8 +37,6 @@
 
 #include "../../vp/Merge.h"
 
-#include "../../vp/MergeOp.h"
-#include "../../vp/MergeMemory.h"
 #include "MergeDialog.h"
 #include "ui_MergeDialogForm.h"
 
