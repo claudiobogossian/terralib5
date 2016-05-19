@@ -70,7 +70,9 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
 te::edit::VertexTool::~VertexTool()
 {
   delete m_feature;
+  te::common::FreeContents(m_addWatches);
   m_addWatches.clear();
+
   UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
@@ -436,6 +438,7 @@ void te::edit::VertexTool::storeUndoCommand()
   {
     if (m_addWatches.at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
     {
+      te::common::FreeContents(m_addWatches);
       m_addWatches.clear();
       UndoStackManager::getInstance().getUndoStack()->clear();
       break;

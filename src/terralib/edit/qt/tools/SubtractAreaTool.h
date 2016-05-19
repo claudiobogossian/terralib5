@@ -57,11 +57,11 @@ namespace te
 
       void drawPolygon();
 
-      void draw();
-
-      void reset();
+      void draw(bool onlyRepository = false);
 
       void storeFeature();
+
+      void storeUndoCommand();
 
       void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
@@ -77,9 +77,12 @@ namespace te
 
       void onExtentChanged();
 
+      void onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>);
+
     protected:
 
-      std::vector<Feature*> m_updateWatches;
+      std::vector<Feature*> m_addWatches;
+      int m_currentIndex;
 
     };
 

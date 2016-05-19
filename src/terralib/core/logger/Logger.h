@@ -29,12 +29,18 @@
 #ifndef __TERRALIB_LOGGER_TRANSLATOR_H__
 #define __TERRALIB_LOGGER_TRANSLATOR_H__
 
+// Boost
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sources/severity_channel_logger.hpp>
+
 // TerraLib
 #include "../../BuildConfig.h"
 #include "Config.h"
 
 // STL
-#include <vector>
 #include <string>
 
 namespace te
@@ -47,22 +53,30 @@ namespace te
 
       public:
 
-        static Logger& getInstance()
-        {
-           static Logger instance;
-           return instance;
-        }
+        Logger(const std::string &filename);
+        ~Logger();
+        void logInfo(const std::string& message);
+        void logTrace(const std::string& message);
+        void logWarning(const std::string& message);
+        void logError(const std::string& message);
+        void logFatal(const std::string& message);
+        void logDebug(const std::string& message);
 
+      protected:
+          boost::log::sources::severity_channel_logger_mt<boost::log::trivial::severity_level, std::string>  m_logger;
 
-      private:
-
-        Logger(){}
-        void operator=(Logger const&){}
     };
 
   } // end namespace common
 }   // end namespace te
+#define TE_LOG_CORE_INIT(name) te::core::Logger logger(name)
+
+#define TE_LOG_CORE_TRACE(message)   logger.logTrace(message)
+#define TE_LOG_CORE_ERROR(message)   logger.logError(message)
+#define TE_LOG_CORE_FATAL(message)   logger.logFatal(message)
+#define TE_LOG_CORE_INFO(message)    logger.logInfo(message)
+#define TE_LOG_CORE_WARNING(message) logger.logWarning(message)
+#define TE_LOG_CORE_DEBUG(message)   logger.logDebug(message)
 
 
 #endif  // __TERRALIB_LOGGER_TRANSLATOR_H__
-

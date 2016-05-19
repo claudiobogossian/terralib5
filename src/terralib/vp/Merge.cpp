@@ -172,6 +172,9 @@ bool te::vp::Merge::executeMemory(te::vp::AlgorithmParams* mainParams)
 
         for (std::size_t i = 0; i < m_properties.size(); ++i)
         {
+          if (m_inputDs->isNull(m_properties[i].second))
+            continue;
+
           if (!m_properties[i].first.empty())
           {
             if (isPrimaryKeyProperty(dst.get(), m_properties[i].first))

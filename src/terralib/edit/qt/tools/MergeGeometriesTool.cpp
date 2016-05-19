@@ -36,6 +36,8 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/AddCommand.h"
+#include "../core/UndoStackManager.h"
 #include "MergeGeometriesTool.h"
 
 // Qt
@@ -52,10 +54,8 @@
 te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
   m_geocollection(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, m_layer->getSRID())),
-  m_updateWatches(0),
   m_oidsMerged(0)
 {
-
   setCursor(cursor);
 
   mergeGeometries();
@@ -64,7 +64,6 @@ te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* 
 te::edit::MergeGeometriesTool::~MergeGeometriesTool()
 {
   delete m_feature;
-  m_updateWatches.clear();
   delete m_oidsMerged;
 }
 
@@ -85,9 +84,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
     m_oidsMerged = new te::da::ObjectIdSet();
 
   while (ds->moveNext())
-  {
     m_geocollection->add(dynamic_cast<te::gm::Geometry*>(ds->getGeometry(geomProp->getName()).release()));
-  }
 
   if (spatialRelationDisjoint(*m_geocollection))
   {
@@ -110,13 +107,6 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Merge not possible"));
     return;
-  }
-
-  //used to undo/redo
-  if (m_updateWatches.size() == 0)
-  {
-    m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(m_geocollection->getGeometryN(0)->clone()));
-    m_updateWatches.push_back(m_feature->clone());
   }
 
   mergeGeo = dynamic_cast<te::gm::Geometry*>(m_geocollection->getGeometryN(0)->clone());

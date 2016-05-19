@@ -27,14 +27,16 @@
 */
 
 // TerraLib
-
-
-// Boost
-#include <boost/log/trivial.hpp>
+#include <terralib/core/logger/Logger.h>
 
 // STL
 
 int main(int argc, char *argv[])
 {
-// BOOST_LOG_TRIVIAL(fatal) << "Fatal error";
+  TE_LOG_CORE_INIT("terralib_example_core_logger");
+  TE_LOG_CORE_TRACE("mensagem");
+  {
+    TE_LOG_CORE_INIT("segundo_logger");
+    TE_LOG_CORE_TRACE("log2");
+  }
 }

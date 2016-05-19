@@ -18,63 +18,50 @@
  */
 
 /*!
-  \file MergeMemory.h
-   
-  \brief 
- 
-  \ingroup vp
+  \file terralib/qt/plugins/vp/UnionAction.h
+
+  \brief This file defines the Union class
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_MERGE_MEMORY_H
-#define __TERRALIB_VP_INTERNAL_MERGE_MEMORY_H
+#ifndef __TE_QT_PLUGINS_VP_INTERNAL_UNIONACTION_H
+#define __TE_QT_PLUGINS_VP_INTERNAL_UNIONACTION_H
 
-//Terralib
-#include "MergeOp.h"
+// TerraLib
 #include "Config.h"
-
-
-// STL
-#include <memory>
+#include "AbstractAction.h"
 
 namespace te
 {
-  namespace dt{ class Property; }
-
-  namespace vp
+  namespace qt
   {
-    class TEVPEXPORT MergeMemory : public MergeOp
+    namespace plugins
     {
-
-      enum Strategy
+      namespace vp
       {
-        PUREMERGE = 0,
-        TRYGETMAX = 1,
-        AUTOINCREMENT = 2
-      };
+        /*!
+          \class UnionAction
 
-    public:
-      
-      MergeMemory();
-      
-      ~MergeMemory();
-      
-      bool run() throw( te::common::Exception );
+          \brief This class register the contrast action into VP Plugin.
 
-    private:
+        */
+        class UnionAction : public te::qt::plugins::vp::AbstractAction
+        {
+          Q_OBJECT
 
-      std::auto_ptr<te::da::DataSetType> buildOutDataSetType();
+          public:
 
-      Strategy checkStrategy();
+            UnionAction(QMenu* menu);
 
-      int tryGetMax();
+            virtual ~UnionAction();
 
-      bool isPrimaryKeyProperty(const te::da::DataSetType* dst, const std::string& p);
+          protected slots:
 
-      int getPropertyType(const te::dt::Property* p);
+            virtual void onActionActivated(bool checked);
+        };
 
-    }; // end class
-  } // end namespace vp
-}   // end namespace te
+      } // end namespace vp
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_MERGE_MEMORY_H
-
+#endif //__TE_QT_PLUGINS_VP_INTERNAL_UNIONACTION_H

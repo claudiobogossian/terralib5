@@ -214,7 +214,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread log locale regex unit_test_framework)
+find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread log log_setup locale regex unit_test_framework)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")

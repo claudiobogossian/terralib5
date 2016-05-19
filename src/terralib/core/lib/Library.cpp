@@ -188,7 +188,7 @@ te::core::Library::unload()
 
   if(result == FALSE)
   {
-    boost::format err_msg(TE_TR("Could not unload library: %1%, due to following error: %2%.");
+    boost::format err_msg(TE_TR("Could not unload library: %1%, due to following error: %2%."));
 
     throw LibraryUnloadException() << te::ErrorDescription((err_msg % m_pimpl->slib_file_name % te_get_os_error()).str());
   }
@@ -311,7 +311,7 @@ te::core::Library::resetSearchPath()
 
   if(retval == FALSE)
   {
-    boost::format err_msg(TE_TR("Couldn't come back with default Windows DLL lookup path due to the following error: %1%.");
+    boost::format err_msg(TE_TR("Couldn't come back with default Windows DLL lookup path due to the following error: %1%."));
 
     throw LibraryResetSearchPathException() << te::ErrorDescription((err_msg % te_get_os_error()).str());
   }

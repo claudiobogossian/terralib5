@@ -1,30 +1,31 @@
-/*  Copyright (C) 2011-20011 National Institute For Space Research (INPE) - Brazil.
+/*
+  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of TerraLib Code Editor - A widget component for scripting with TerraLib Platform.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib Code Editor is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-    TerraLib Code Editor is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with TerraLib Code Editor. See COPYING. If not, write to
-    Gilberto Ribeiro de Queiroz at <gribeiro@dpi.inpe.br>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
-  \file OutputWindow.h
+  \file terralib/qsci/ceditor/OutputWindow.h
 
   \brief A widget to output the script execution.
 */
 
-#ifndef __TERRALIB_CODE_EDITOR_CORE_INTERNAL_OUTPUTWINDOW_H
-#define __TERRALIB_CODE_EDITOR_CORE_INTERNAL_OUTPUTWINDOW_H
+#ifndef __TERRALIB_QSCI_CEDITOR_OUTPUTWINDOW_H__
+#define __TERRALIB_QSCI_CEDITOR_OUTPUTWINDOW_H__
 
 // TerraLib Code Editor
 #include "../Config.h"
@@ -40,13 +41,13 @@ namespace te
   namespace ce
   {
     /*!
-    \class OutputWindow
+      \class OutputWindow
 
-    \brief A widget to output the script execution.
-  */
+      \brief A widget to output the script execution.
+     */
     class TECEDITOREXPORT OutputWindow : public QDockWidget
     {
-        Q_OBJECT
+      Q_OBJECT
 
       public:
 
@@ -67,5 +68,4 @@ namespace te
   } // end namespace tce
 }
 
-#endif  // __TERRALIB_CODE_EDITOR_CORE_INTERNAL_OUTPUTWINDOW_H
-
+#endif  // __TERRALIB_QSCI_CEDITOR_OUTPUTWINDOW_H__
