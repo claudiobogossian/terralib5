@@ -244,44 +244,11 @@ bool te::attributefill::VectorToRaster::run()
 
                                             while (it != itend)
                                             {
-                                              double val = (*it)[0];
                                               rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
                                               ++it;
                                             }
                                           }
                                         }
-                                        //te::gm::LineString* lineString = 0;
-
-                                        //if (vectorIt->first->getGeomTypeId() == te::gm::MultiLineStringType)
-                                        //{
-                                        //  te::gm::MultiLineString* mLineString = dynamic_cast<te::gm::MultiLineString*>(vectorIt->first);
-                                        //  lineString = dynamic_cast<te::gm::LineString*>(mLineString->getGeometryN(0));
-                                        //}
-                                        //else
-                                        //{
-                                        //  lineString = static_cast<te::gm::LineString*>(vectorIt->first);
-                                        //}
-
-                                        //if (!lineString)
-                                        //  continue;
-
-                                        //std::size_t nPoints = lineString->getNPoints();
-                                        //
-                                        //for (std::size_t n = 0; n < nPoints-1; ++n)
-                                        //{
-                                        //  std::auto_ptr<te::gm::Line> line(new te::gm::Line(*lineString->getPointN(n),
-                                        //                                                     *lineString->getPointN(n + 1),
-                                        //                                                     te::gm::LineStringType,
-                                        //                                                     geomProp->getSRID()));
-                                        //  te::rst::LineIterator<double> it = te::rst::LineIterator<double>::begin(rst.get(), line.get());
-                                        //  te::rst::LineIterator<double> itend = te::rst::LineIterator<double>::end(rst.get(), line.get());
-                                        //  
-                                        //  while (it != itend)
-                                        //  {
-                                        //    rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
-                                        //    ++it;
-                                        //  }
-                                        //}
                                         
                                         break;
       }

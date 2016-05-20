@@ -213,14 +213,7 @@ std::vector<te::stat::StatisticalSummary> te::attributefill::RasterToVectorDialo
 
 bool te::attributefill::RasterToVectorDialog::getValueOption()
 {
-  for (int i = 0; i < m_ui->m_statisticsListWidget->count(); ++i)
-  {
-    if (m_ui->m_statisticsListWidget->isItemSelected(m_ui->m_statisticsListWidget->item(i)))
-    {
-      return true;
-    }
-  }
-  return false;
+  return !m_ui->m_statisticsListWidget->selectedItems().isEmpty();
 }
 
 void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
@@ -363,9 +356,12 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
 
   std::auto_ptr<te::rst::Raster> inputRst = rasterDataSet->getRaster(rpos);
 
-  if (m_rasterLayer->getSRID() == 0 || m_vectorLayer->getSRID() == 0)
+  std::string srdiMessage;
+  bool isValidSRIDs = te::qt::widgets::isValidSRIDs(m_rasterLayer->getSRID(), m_vectorLayer->getSRID(), srdiMessage);
+
+  if (!isValidSRIDs)
   {
-    QMessageBox::information(this, "Fill", "Input layer with invalid SRID information.");
+    QMessageBox::information(this, "Fill", srdiMessage.c_str());
     return;
   }
 

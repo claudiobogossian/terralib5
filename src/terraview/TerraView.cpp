@@ -1871,8 +1871,6 @@ void TerraView::openProject(const QString& prjFileName)
 
   try
   {
-    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
-
     LoadProject(prjFileName, *m_project, lst);
 
     XMLFormatter::format(m_project, lst, false);

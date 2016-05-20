@@ -146,7 +146,7 @@ double te::gm::Line::distance(te::gm::Point p)
   A = m_coords[0].y - m_coords[1].y;
   B = m_coords[1].x - m_coords[0].x;
   C = (m_coords[0].x - m_coords[1].x)* m_coords[0].y + (m_coords[1].y - m_coords[0].y)*m_coords[0].x;
-  distance = abs(A*(p.getX()) + B*(p.getY()) + C) / std::sqrt(A*A + B*B);
+  distance = std::fabs(A*(p.getX()) + B*(p.getY()) + C) / std::sqrt(A*A + B*B);
 
   return(distance);
 }

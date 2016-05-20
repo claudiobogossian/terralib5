@@ -97,7 +97,6 @@ te::graph::AbstractGraph* te::sa::MinimumSpanningTree::kruskal(int weightAttrIdx
 
   //run kruskal algorithm
   typedef boost::graph_traits<boostGraph>::edge_descriptor Edge;
-  typedef boost::graph_traits<boostGraph>::vertex_descriptor Vertex;
 
   boost::property_map<boostGraph, boost::edge_weight_t>::type weight = boost::get(boost::edge_weight, graph);
 
