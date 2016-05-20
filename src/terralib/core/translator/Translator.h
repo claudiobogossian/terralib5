@@ -163,6 +163,12 @@ namespace te
                               unsigned int n);
 
         /*!
+         * \brief It sets the locale for the Translator.
+         * \param locale A string of the new locale.
+         */
+        void setLocale(const std::string &locale);
+
+        /*!
           \brief It adds a new text domain (text catalog).
 
           \param textDomain    A given message domain (just a name). A text domain is the name of the catalog used to translate the message.
@@ -189,7 +195,7 @@ namespace te
         void operator=(Translator const&);
 
       private:
-
+        std::string m_locale= "";
         std::vector<std::string> m_textDomainVector;  //!< A vector from text domains to base directory for the message catalog.
 
     };
@@ -270,6 +276,8 @@ namespace te
   singular form (the fisrt one).
  */
 #define TE_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n).c_str()
+
+#define TE_TR_LANGUAGE(message) te::core::Translator::getInstance().setLocale(message)
 
 //@}
 

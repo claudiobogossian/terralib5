@@ -56,7 +56,7 @@ std::string te::core::Translator::translate(const char* message)
     gen.add_messages_domain(domain);
 
     gen.add_messages_path(path);
-    std::locale::global(gen(""));
+    std::locale::global(gen(m_locale));
 
     std::string translated = boost::locale::translate(message).str(std::locale());
 
@@ -92,7 +92,7 @@ te::core::Translator::translate(const char* msg1,
     gen.add_messages_domain(domain);
 
     gen.add_messages_path(path);
-    std::locale::global(gen(""));
+    std::locale::global(gen(m_locale));
 
     std::string translated = boost::locale::translate(msg1, msg2, n).str(std::locale());
 
@@ -106,6 +106,11 @@ te::core::Translator::translate(const char* msg1,
 #else
   return ((n == 1) ? msg1 : msg2);
 #endif
+}
+
+void te::core::Translator::setLocale(const std::string& locale)
+{
+  m_locale = locale + ".UTF-8";
 }
 
 void te::core::Translator::addTextDomain(const std::string& textDomain)
