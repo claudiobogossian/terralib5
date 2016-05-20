@@ -99,3 +99,24 @@ void te::vp::AlgorithmParams::setSpecificParams(const std::map<std::string, te::
 {
   m_specificParams = specificParams;
 }
+
+
+const std::vector<std::string>& te::vp::AlgorithmParams::getWarnings()
+{
+  return m_warnings;
+}
+
+void te::vp::AlgorithmParams::addWarning(const std::string& warning, const bool& appendIfExists)
+{
+  if (!appendIfExists)
+  {
+    std::vector<std::string>::iterator it = std::find(m_warnings.begin(), m_warnings.end(), warning);
+    if (it == m_warnings.end())
+      m_warnings.push_back(warning);
+  }
+  else
+  {
+    m_warnings.push_back(warning);
+  }
+  
+}

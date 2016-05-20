@@ -54,6 +54,23 @@ namespace te
 {
   namespace vp
   {
+    std::vector<std::string> GetDissolveProps(const std::map<std::string, te::dt::AbstractData*>& specificParams);
+
+    std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > GetSummaryProps(const std::map<std::string, te::dt::AbstractData*>& specificParams);
+
+    bool IsCollection(const std::map<std::string, te::dt::AbstractData*>& specificParams);
+
+    te::da::DataSetType* GetOutputDataSetType(te::vp::AlgorithmParams* mainParams);
+
+    te::gm::GeomType SetGeomResultType(const te::gm::GeomType& geomType, const bool& isCollection);
+
+    std::vector<te::gm::Geometry*> ExtractGeometry(te::gm::Geometry* inputGeometry, te::gm::GeomType outputGeomType);
+
+    void PopulateItens(te::da::DataSetType* inputDataSetType, std::vector<te::mem::DataSetItem*> inputItens, std::map<std::string, te::dt::AbstractData*> specificParams, std::vector<te::mem::DataSetItem*> outputItemVec);
+
+
+    class GroupThreadManager;
+
     class TEVPEXPORT Dissolve : public Algorithm
     {
     public:
@@ -66,19 +83,9 @@ namespace te
 
       bool executeQuery(te::vp::AlgorithmParams* mainParams);
 
-    protected:
+      static void threadUnion(GroupThreadManager* manager);
 
-      std::vector<std::string> getDissolveProps(const std::map<std::string, te::dt::AbstractData*>& specificParams);
-
-      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > getSummaryProps(const std::map<std::string, te::dt::AbstractData*>& specificParams);
-
-      bool isCollection(const std::map<std::string, te::dt::AbstractData*>& specificParams);
-
-      te::da::DataSetType* getOutputDataSetType(te::vp::AlgorithmParams* mainParams);
-
-      te::gm::GeomType setGeomResultType(const te::gm::GeomType& geomType, const bool& isCollection);
-
-      te::gm::Geometry* setGeomAsMulti(te::gm::Geometry* geom);
+      static void threadSave(GroupThreadManager* manager);
 
     private:
 

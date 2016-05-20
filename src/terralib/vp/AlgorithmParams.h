@@ -29,6 +29,7 @@
 #define __TERRALIB_VP_INTERNAL_ALGORITHM_PARAMS_H
 
 // Terralib
+
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "Config.h"
@@ -94,13 +95,22 @@ namespace te
 
       void setSpecificParams(const std::map<std::string, te::dt::AbstractData*>& specificParams);
 
+
+      const std::vector<std::string>& getWarnings();
+
+      void addWarning(const std::string& warning, const bool& appendIfExist = false);
+
     protected:
 
       std::vector<te::vp::InputParams> m_inputParams;
+
       te::da::DataSourcePtr m_outputDataSource;
       std::string m_outputDataSetName;
       int m_outputSRID;
+
       std::map<std::string, te::dt::AbstractData*> m_specificParams;
+
+      std::vector<std::string> m_warnings;
     };
   }
 }

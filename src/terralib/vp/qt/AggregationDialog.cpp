@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../../common/Logger.h"
-#include "../../common/progress/ProgressManager.h"
 #include "../../common/STLUtils.h"
 #include "../../common/StringUtils.h"
 #include "../../common/Translator.h"
@@ -578,7 +577,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 // Validate Input Layer.
   if (m_ui->m_layersComboBox->count() == 0)
   {
-    QMessageBox::information(this, "Dissolve", "Select an input layer.");
+    QMessageBox::information(this, tr("Dissolve"), tr("Select an input layer."));
     return;
   }
 
@@ -586,7 +585,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   te::da::DataSourcePtr inputDataSource = te::da::GetDataSource(m_inputLayer->getDataSourceId(), true);
   if (!inputDataSource.get())
   {
-    QMessageBox::information(this, "Dissolve", "The selected input data source can not be accessed.");
+    QMessageBox::information(this, tr("Dissolve"), tr("The selected input data source can not be accessed."));
     return;
   }
 
@@ -594,7 +593,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   std::vector<std::string> selProperties = getSelectedPropertyNames();
   if (selProperties.empty())
   {
-    QMessageBox::information(this, "Dissolve", "Select at least one grouping attribute.");
+    QMessageBox::information(this, tr("Dissolve"), tr("Select at least one grouping attribute."));
     return;
   }
 
@@ -612,7 +611,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 // Validade output repository.
   if (m_ui->m_repositoryLineEdit->text().isEmpty())
   {
-    QMessageBox::information(this, "Dissolve", "Define a repository for the result.");
+    QMessageBox::information(this, tr("Dissolve"), tr("Define a repository for the result."));
     return;
   }
 
@@ -620,7 +619,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   if (outputdataset.empty())
   {
-    QMessageBox::information(this, "Dissolve", "Define a name for the resulting layer.");
+    QMessageBox::information(this, tr("Dissolve"), tr("Define a name for the resulting layer."));
     return;
   }
 
@@ -629,10 +628,6 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   if (m_ui->m_onlySelectedCheckBox->isChecked())
     inputIsChecked = true;
-
-// Progress
-  te::qt::widgets::ProgressViewerDialog v(this);
-  int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
   try
   {
@@ -649,9 +644,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
     if (!geomInputProp)
     {
-      QMessageBox::information(this, "Dissolve", "Problem to get geometry property of input layer.");
-
-      te::common::ProgressManager::getInstance().removeViewer(id);
+      QMessageBox::information(this, tr("Dissolve"), tr("Problem to get geometry property of input layer."));
 
       return;
     }
@@ -701,9 +694,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
       if (boost::filesystem::exists(uri))
       {
-        QMessageBox::information(this, "Dissolve", "Output file already exists. Remove it and try again. ");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
+        QMessageBox::information(this, tr("Dissolve"), tr("Output file already exists. Remove it and try again. "));
 
         return;
       }
@@ -743,9 +734,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       {
         dsOGR->close();
 
-        QMessageBox::information(this, "Dissolve", "Error: could not generate the dissolve.");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
+        QMessageBox::information(this, tr("Dissolve"), tr("Error: could not generate the dissolve."));
 
         reject();
       }
@@ -754,12 +743,12 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
       if (!m_outputDatasource)
       {
-        QMessageBox::information(this, "Dissolve", "The output data source can not be accessed.");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
+        QMessageBox::information(this, tr("Dissolve"), tr("The output data source can not be accessed."));
 
         return;
       }
+
+      m_warnings = m_params->getWarnings();
 
       delete m_params;
     }
@@ -768,9 +757,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
       if (!aux.get())
       {
-        QMessageBox::information(this, "Dissolve", "The output data source can not be accessed.");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
+        QMessageBox::information(this, tr("Dissolve"), tr("The output data source can not be accessed."));
 
         return;
       }
@@ -779,9 +766,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
       if (aux->dataSetExists(name))
       {
-        QMessageBox::information(this, "Dissolve", "Dataset already exists. Remove it or select a new name and try again.");
-
-        te::common::ProgressManager::getInstance().removeViewer(id);
+        QMessageBox::information(this, tr("Dissolve"), tr("Dataset already exists. Remove it or select a new name and try again."));
 
         return;
       }
@@ -810,12 +795,14 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         res = dissolve.executeMemory(m_params);
       }
 
+      m_warnings = m_params->getWarnings();
+
       delete m_params;
 
       if (!res)
       {
         this->setCursor(Qt::ArrowCursor);
-        QMessageBox::information(this, "Dissolve", "Error: could not generate the dissolve.");
+        QMessageBox::information(this, tr("Dissolve"), tr("Error: could not generate the dissolve."));
         reject();
       }
     }
@@ -840,11 +827,9 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     te::common::Logger::logDebug("vp", str.c_str());
 #endif // TERRALIB_LOGGER_ENABLED
 
-    te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }
 
-  te::common::ProgressManager::getInstance().removeViewer(id);
   this->setCursor(Qt::ArrowCursor);
 
   accept();
