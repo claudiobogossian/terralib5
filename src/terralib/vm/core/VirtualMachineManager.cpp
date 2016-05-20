@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../common/STLUtils.h"
 #include "../../core/translator/Translator.h"
-#include "Exception.h"
+//#include "Exception.h"
 #include "VirtualMachine.h"
 #include "VirtualMachineManager.h"
 
@@ -37,8 +37,8 @@ te::vm::VirtualMachine* te::vm::VirtualMachineManager::getVM(const std::string& 
 
 void te::vm::VirtualMachineManager::add(const std::string& id, VirtualMachine* vm)
 {
-  if(getVM(id))
-    throw Exception(TR_VM("Could not manage VM because its id already exists!"));
+//  if(getVM(id))
+//    throw Exception(TR_VM("Could not manage VM because its id already exists!"));
 
   m_vmMap[id] = vm;
 }

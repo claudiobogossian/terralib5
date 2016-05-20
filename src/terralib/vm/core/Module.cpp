@@ -27,7 +27,7 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../core/translator/Translator.h"
-#include "Config.h"
+#include "../Config.h"
 #include "Module.h"
 #include "VirtualMachineManager.h"
 
@@ -44,7 +44,7 @@ te::vm::Module::Module()
   TerraLib::getInstance().add(m);
 
 // it initializes the Translator support for the TerraLib Lua Common Runtime support
- TE_ADD_TEXT_DOMAIN(TE_VM_TEXT_DOMAIN, TE_VM_TEXT_DOMAIN_DIR, "UTF-8");
+ TE_ADD_TEXT_DOMAIN("terralib_mod_vm");
 
 // initialize the singleton VirtualMachineManager
  VirtualMachineManager::getInstance();

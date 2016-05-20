@@ -27,7 +27,7 @@
 #define __TERRALIB_BINDING_VM_INTERNAL_VIRTUALMACHINE_H
 
 // TerraLib
-#include "Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>
