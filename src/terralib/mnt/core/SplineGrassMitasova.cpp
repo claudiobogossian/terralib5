@@ -392,7 +392,7 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
         double overlapDistX = distx*nOverlaping;
         double overlapDistY = disty*nOverlaping;
         //adds control points and the overlaping area
-        setControlPoints(begin_x - overlapDistX, end_x + overlapDistX, begin_y - overlapDistY, end_y + overlapDistY, KMAX2, begin_x, begin_y, dnorm);
+        setControlPoints(begin_x - overlapDistX, end_x + overlapDistX, begin_y - overlapDistY, end_y + overlapDistY, (int)KMAX2, begin_x, begin_y, dnorm);
 
         poucosPontos = m_pointsRegion.size() < m_minimoPontos;
         nOverlaping++;
@@ -413,7 +413,7 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
       b.resize(KMAX2 + 3);
 
       //create matrix
-      if (IL_matrix_create(matrix, indx, fi, rsm, KMAX2) < 0)
+      if (IL_matrix_create(matrix, indx, fi, rsm, (int)KMAX2) < 0)
       {
         b.clear();
         indx.clear();
@@ -441,7 +441,7 @@ bool te::mnt::SplineInterpolationGrassMitasova::calculateGrid()
       matrix.clear();
 
       //Computes the grid
-      if (!IL_grid_calc(begin_x, end_x, begin_y, end_y, zmin, zmax, KMAX2, b, fi, dnorm))
+      if (!IL_grid_calc(begin_x, end_x, begin_y, end_y, zmin, zmax, (int)KMAX2, b, fi, dnorm))
       {
         b.clear();
         return false;

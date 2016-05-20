@@ -150,7 +150,7 @@ te::gm::GeomType te::vp::IntersectionOp::setGeomResultType(te::gm::GeomType firs
     (secondGeom == te::gm::MultiLineStringMType) ||
     (secondGeom == te::gm::MultiLineStringZMType))
 
-    return te::gm::MultiLineStringType;
+    return te::gm::MultiPointType;
 
   else
     return te::gm::MultiPolygonType;

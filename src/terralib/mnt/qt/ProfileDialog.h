@@ -120,15 +120,14 @@ namespace te
         te::qt::af::BaseApplication* m_app;
 
         te::map::AbstractLayerPtr m_outputLayer;
-
         te::map::AbstractLayerPtr m_inputLayer;
+
         std::list<te::map::AbstractLayerPtr> m_layers;
         mntType m_inputType;  //!< Input type (TIN, GRID)
         int m_srid;
         double m_dummy;
         std::auto_ptr<te::da::DataSetType> m_dsType;
-        te::map::AbstractLayerPtr m_rasterinputLayer;
-        te::map::AbstractLayerPtr m_vectorinputLayer;
+        te::map::AbstractLayerPtr m_trajectoryLayer;
 
         std::vector<te::gm::LineString*> m_visadas;
         std::vector<te::color::RGBAColor> m_color;
