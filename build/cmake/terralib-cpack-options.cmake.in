@@ -142,17 +142,38 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   
  # File types association:
  list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-   WriteRegStr HKCR \".tview\" \"\" \"TerraView.Project\"; #registering file extension
-   WriteRegStr HKCR \"TerraView.Project\" \"\" \"TerraView Project File\"; #registering extension desc
-   WriteRegStr HKCR \"TerraView.Project\\DefaultIcon\" \"\" \"$INSTDIR\\share\\terraview\\images\\ico\\terraview-projectfile-icon.ico\"; #registering extension icon 
-   WriteRegStr HKCR \"TerraView.Project\\shell\\open\\command\" \"\" '\"$INSTDIR\\bin\\terraview.exe\" \"%1\"'; #extension open command
-   SetRebootFlag true
+  ReadRegStr \$R0 HKCR \".tview\" \"\";
+  WriteRegStr HKCR \".tview\" \"TerraView.Project_backup\" \"\$R0\";  # Backup the previously associated file class
+  WriteRegStr HKCR \".tview\" \"\" \"TerraView.Project\"; #registering file extension
+  WriteRegStr HKCR \"TerraView.Project\" \"\" '\"TerraView Project File\"'; #registering extension desc
+  WriteRegStr HKCR \"TerraView.Project\\DefaultIcon\" \"\" '\"$INSTDIR\\share\\terraview\\images\\ico\\terraview-projectfile-icon.ico\"'; #registering extension icon
+  WriteRegStr HKCR \"TerraView.Project\\shell\" \"\" \"open\"; #extension open command
+  WriteRegStr HKCR \"TerraView.Project\\shell\\open\" \"\" '\"Open with TerraView\"';
+  WriteRegStr HKCR \"TerraView.Project\\shell\\open\\command\" \"\" '\"$INSTDIR\\bin\\terraview.exe\" \"%1\"';
+  System::Call '\"shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)\"'
  ")
-  
+
  list (APPEND CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-   DeleteRegKey HKCR \".tview\"; #removing extension register
-   DeleteRegKey HKCR \"TerraView.Project\"; #removing file association register
- ")
+  ReadRegStr $R0 HKCR \".tview\" 'TerraView.Project_backup' #Backup the previously associated file class
+  WriteRegStr HKCR \".tview\" \"\" \"$R0\"   
+  DeleteRegKey HKCR '.tview' #removing extension register
+  DeleteRegKey HKCR 'TerraView.Project' #removing file association register 
+  System::Call '\"shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)\"'
+  ")
+  
+ # File types association:
+ #list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+ #  WriteRegStr HKCR \".tview\" \"\" \"TerraView.Project\"; #registering file extension
+ #  WriteRegStr HKCR \"TerraView.Project\" \"\" \"TerraView Project File\"; #registering extension desc
+ #  WriteRegStr HKCR \"TerraView.Project\\DefaultIcon\" \"\" \"$INSTDIR\\share\\terraview\\images\\ico\\terraview-projectfile-icon.ico\"; #registering extension icon 
+ #  WriteRegStr HKCR \"TerraView.Project\\shell\\open\\command\" \"\" '\"$INSTDIR\\bin\\terraview.exe %1\"'; #extension open command
+ #  SetRebootFlag true
+ #")
+  
+ #list (APPEND CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+ #  DeleteRegKey HKCR \".tview\"; #removing extension register
+ #  DeleteRegKey HKCR \"TerraView.Project\"; #removing file association register
+ #")
  
 endif()
 

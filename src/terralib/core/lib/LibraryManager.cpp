@@ -30,7 +30,7 @@
 #include "LibraryManager.h"
 #include "Exception.h"
 #include "Library.h"
-
+#include "../translator/Translator.h"
 // STL
 #include <cassert>
 #include <map>
@@ -49,12 +49,12 @@ te::core::LibraryManager::insert(const std::string& id, const std::shared_ptr<Li
   std::map<std::string, std::weak_ptr<Library> >::const_iterator it = m_pimpl->libraries.find(id);
   if(it != m_pimpl->libraries.end())
   {
-    boost::format err_msg("A library named '%1%' is already registered with identifier: %2%.");
+    boost::format err_msg(TE_TR("A library named '%1%' is already registered with identifier: %2%."));
 
     std::shared_ptr<Library> lib = it->second.lock();
 
     std::string lib_name = lib ? lib->getFileName() : std::string();
-  
+
     throw te::InvalidArgumentException() << te::ErrorDescription((err_msg % lib_name % it->first).str());
   }
 
@@ -68,7 +68,7 @@ te::core::LibraryManager::get(const std::string& id)
 
   if(it == m_pimpl->libraries.end())
   {
-    boost::format err_msg("There is no library registered with identifier: %1%.");
+    boost::format err_msg(TE_TR("There is no library registered with identifier: %1%."));
 
     throw te::OutOfRangeException() << te::ErrorDescription((err_msg % id).str());
   }

@@ -79,11 +79,12 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpWizardPage.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/IntersectionDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LineToPolygonDialog.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/MergeDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/MergeDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/MultipartToSinglepartDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PolygonToLineDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/SummarizationDialog.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/TransformationDialog.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/TransformationDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/UnionDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 

@@ -26,7 +26,7 @@
 // TerraLib
 #include "../BuildConfig.h"
 #include "../common/Globals.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../datatype/Enums.h"
 #include "Envelope.h"
 #include "Exception.h"

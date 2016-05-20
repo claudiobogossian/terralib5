@@ -19,6 +19,6 @@
     <Email>terralib-team@terralib.org</Email>
   </Provider>
   <Resources>
-    <Resource name="SharedLibraryName" xlink:href="terralib_mod_ws_ogc_wcs_dataaccess"/>
+    <Resource name="SharedLibraryName" xlink:href="terralib_mod_ws_ogc_wcs_qt_plugin"/>
   </Resources>
 </PluginInfo>

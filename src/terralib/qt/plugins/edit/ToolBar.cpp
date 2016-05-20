@@ -24,7 +24,7 @@
   */
 // Terralib
 #include "../../../common/Exception.h"
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -79,6 +79,7 @@ QObject(parent),
   m_toolBar(0),
   m_editAction(0),
   m_saveAction(0),
+  m_clearEditionAction(0),
   m_vertexToolAction(0),
   m_createPolygonToolAction(0),
   m_createLineToolAction(0),
@@ -207,7 +208,7 @@ te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getLayer(const std::st
   throw te::common::Exception(TE_TR("Could not retrieve the layer."));
 }
 
-bool te::qt::plugins::edit::ToolBar::datasourceIsValid(const te::map::AbstractLayerPtr& layer)
+bool te::qt::plugins::edit::ToolBar::dataSrcIsPrepared(const te::map::AbstractLayerPtr& layer)
 {
   te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.get()->getDataSourceId());
 
@@ -243,7 +244,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
 {
   // Enable Edition Mode
   createAction(m_editAction, tr("Turn on/off edition mode"), QString("edit-enable"), true, true, "edit_enable", SLOT(onEditActivated(bool)));
-
   m_toolBar->addAction(m_editAction);
 
   m_toolBar->addSeparator();
@@ -251,6 +251,11 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   // Save
   createAction(m_saveAction, tr("Save edition"), "edit-save", false, false, "save_edition", SLOT(onSaveActivated()));
   m_toolBar->addAction(m_saveAction);
+
+  // Cancel all Edition
+  createAction(m_clearEditionAction, tr("Cancel all edition [ESC]"), "clearEdition", false, false, "cancel_edition", SLOT(onResetVisualizationToolActivated(bool)));
+  m_clearEditionAction->setShortcut(Qt::Key_Escape);
+  m_toolBar->addAction(m_clearEditionAction);
 
   // Undo/Redo
   te::qt::af::evt::GetMapDisplay e;
@@ -278,7 +283,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false, "move_geometry", SLOT(onMoveGeometryToolActivated(bool)));
   createAction(m_aggregateAreaToolAction, tr("Aggregate Area"), "edit-aggregateGeometry", true, false, "aggregate_area", SLOT(onAggregateAreaToolActivated(bool)));
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "edit-subtractGeometry", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
-  createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
+  createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit-deletetool", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
   createAction(m_featureAttributesAction, tr("Feature Attributes"), "edit-Info", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
 
   // Get the action group of map tools.
@@ -297,6 +302,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
 
   // Grouping...
   m_tools.push_back(m_saveAction);
+  m_tools.push_back(m_clearEditionAction);
   m_tools.push_back(m_vertexToolAction);
   m_tools.push_back(m_createPolygonToolAction);
   m_tools.push_back(m_createLineToolAction);
@@ -311,7 +317,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   {
     m_toolBar->addAction(m_tools[i]);
 
-    if (i == 0)
+    if (i == 1)
     {
       m_toolBar->addSeparator();
       m_toolBar->addAction(m_undoToolAction);
@@ -340,11 +346,38 @@ void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QStrin
 
 void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 {
-  enableActionsByGeomType(m_tools, checked);
-
-  enableCurrentTool(checked);
-
   m_isEnabled = checked;
+
+  enableActionsByGeomType(m_tools, m_isEnabled);
+
+  enableCurrentTool(m_isEnabled);
+
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  if (e.m_display == 0)
+    return;
+
+  if (!m_isEnabled)
+  {
+    QPixmap* draft = e.m_display->getDisplay()->getDraftPixmap();
+    draft->fill(Qt::transparent);
+
+    // Clear the repositories
+    std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
+
+    std::map<std::string, te::edit::Repository*>::const_iterator it;
+    for (it = repositories.begin(); it != repositories.end(); ++it)
+    {
+      if (it->second)
+        it->second->clear();
+    }
+
+    // Clear the undo stack
+    te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
+  }
+
+  e.m_display->getDisplay()->repaint();
 }
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
@@ -422,7 +455,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       assert(layer.get());
 
       // The data source is it prepared?
-      if (!datasourceIsValid(layer))
+      if (!dataSrcIsPrepared(layer))
         return;
 
       // Get the data souce info
@@ -682,7 +715,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
+  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, Qt::LeftButton, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
@@ -852,7 +885,41 @@ void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool)
 
 }
 
-void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onResetVisualizationToolActivated(bool /*checked*/)
+{
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if (layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
+  // Clear the repository
+  te::edit::Repository* repo = te::edit::RepositoryManager::getInstance().getRepository(layer->getId());
+
+  if (repo)
+    repo->clear();
+
+  // Reset visualization tool
+  if (m_currentTool)
+    m_currentTool->resetVisualizationTool();
+
+  // Clear the undo stack
+  te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
+
+  // Repaint
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  if (e.m_display == 0)
+    return;
+
+  e.m_display->getDisplay()->getDraftPixmap()->fill(Qt::transparent);
+  e.m_display->getDisplay()->repaint();
+
+}
+
+void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool /*checked*/)
 {
   try
   {

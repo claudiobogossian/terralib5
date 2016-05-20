@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/progress/TaskProgress.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSource.h"

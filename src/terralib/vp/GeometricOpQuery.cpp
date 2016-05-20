@@ -28,7 +28,7 @@
 #include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
@@ -143,7 +143,7 @@ bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
     {
       case te::vp::ALL_OBJ:
         {
-          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma soluna geometrica...
+          if(hasMultiGeomColumns) //CondiÃ§Ã£o se o DataSource suporta mais de uma soluna geometrica...
           {
             dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, true));
           }
@@ -177,7 +177,7 @@ bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
         break;
       case te::vp::AGGREG_OBJ:
         {
-          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
+          if(hasMultiGeomColumns) //CondiÃ§Ã£o se o DataSource suporta mais de uma coluna geometrica...
           {
             dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, true));
           }
@@ -216,7 +216,7 @@ bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
         break;
       case te::vp::AGGREG_BY_ATTRIBUTE:
         {
-          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
+          if(hasMultiGeomColumns) //CondiÃ§Ã£o se o DataSource suporta mais de uma coluna geometrica...
           {
             dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, true));
           }
@@ -267,7 +267,7 @@ bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
   }
   else
   {
-    //Descobrir se o DataSource suporta adição de mais de uma coluna geometrica.
+    //Descobrir se o DataSource suporta adiÃ§Ã£o de mais de uma coluna geometrica.
     return false;
   }
 

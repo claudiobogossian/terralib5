@@ -17,7 +17,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
 #include "EditInfoTool.h"
 
 // Qt
@@ -178,7 +177,6 @@ te::gm::Envelope te::edit::EditInfoTool::buildEnvelope(const QPointF& pos)
 void te::edit::EditInfoTool::reset()
 {
   delete m_feature;
-  m_feature = 0;
 }
 
 void te::edit::EditInfoTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
@@ -343,7 +341,7 @@ std::auto_ptr<te::dt::AbstractData> te::edit::EditInfoTool::getValue(int type, Q
   switch (type)
   {
   case te::dt::INT16_TYPE:
-    return std::auto_ptr<te::dt::AbstractData>(  new te::dt::Int16(atoi(value.toStdString().c_str())));
+    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int16(atoi(value.toStdString().c_str())));
 
   case te::dt::INT32_TYPE:
     return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int32(atoi(value.toStdString().c_str())));
@@ -392,10 +390,7 @@ void te::edit::EditInfoTool::onOkPushButtonPressed()
     }
   }
 
-  m_feature->setData(m_data);
-  m_feature->setOperation(te::edit::GEOMETRY_UPDATE_ATTRIBUTES);
-
-  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+  storeFeature();
 }
 
 void te::edit::EditInfoTool::onCancelPushButtonPressed()
@@ -443,4 +438,12 @@ void te::edit::EditInfoTool::draw()
 void te::edit::EditInfoTool::updateCursor()
 {
   m_display->setCursor(Qt::WhatsThisCursor);
+}
+
+void te::edit::EditInfoTool::storeFeature()
+{
+  m_feature->setData(m_data);
+  m_feature->setOperation(te::edit::GEOMETRY_UPDATE_ATTRIBUTES);
+
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 }

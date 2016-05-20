@@ -48,6 +48,7 @@ namespace te
   //forward declarations
   namespace da  { class DataSetType; }
   namespace gm  { class Geometry; }
+  namespace map { class AbstractLayer; }
   namespace mem { class DataSet; }
 }
 
@@ -73,21 +74,25 @@ namespace te
       /*! \brief Virtual destructor. */
       ~Profile();
 
-    public:
 
-      bool runRasterProfile(std::auto_ptr<te::rst::Raster> raster, std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
-      std::vector<te::gm::LineString*> prepareVector(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &geostype);
-    
+      bool runRasterProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
+      bool runIsolinesProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
+
+      te::gm::LineString* calculateProfile(te::gm::MultiLineString &isolines, te::gm::LineString &trajectory);
+
       std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType);
       std::auto_ptr<te::rst::Raster> getPrepareRaster();
-      void setInput(te::da::DataSourcePtr inRasterDsrc, std::string inRasterName, std::auto_ptr<te::da::DataSetType> inDsetType, double dummy);
+      void setInput(te::da::DataSourcePtr inDsrc, std::string inName, std::auto_ptr<te::da::DataSetType> inDsetType, double dummy);
+
+      void setSRID(int srid) { m_srid = srid; }
+
+    private:
       int m_srid;
       double m_dummy;
-      te::da::DataSourcePtr m_inRasterDsrc;
-      std::string m_inRasterName;
-      std::auto_ptr<te::da::DataSetType> m_inRasterDsType;
+      te::da::DataSourcePtr m_inDsrc;
+      std::string m_inName;
+      std::auto_ptr<te::da::DataSetType> m_inDsType;
 
-  
     };
   }
 }

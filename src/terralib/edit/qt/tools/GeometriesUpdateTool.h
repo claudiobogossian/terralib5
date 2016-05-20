@@ -72,6 +72,8 @@ namespace te
 
       virtual void resetVisualizationTool();
 
+      virtual void storeUndoCommand();
+
     Q_SIGNALS:
 
       void geometriesEdited();
@@ -83,6 +85,8 @@ namespace te
     protected:
 
       virtual void saveGeometry(te::gm::Geometry* gm, const int& op);
+
+      virtual void storeFeature();
 
       bool m_isInUse;
 

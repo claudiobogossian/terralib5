@@ -75,6 +75,9 @@ m_tmger(0)
 
 te::qt::widgets::MultiThreadMapDisplay::~MultiThreadMapDisplay()
 {
+  if (m_isDrawing)
+    onDrawCanceled();
+
   te::common::FreeContents(m_images);
   m_images.clear();
 }
@@ -211,6 +214,9 @@ void te::qt::widgets::MultiThreadMapDisplay::updateLayer(te::map::AbstractLayerP
 
 void te::qt::widgets::MultiThreadMapDisplay::resizeEvent(QResizeEvent* e)
 {
+  if (m_isDrawing)
+    onDrawCanceled();
+
   if(!m_images.empty())
   {
     te::common::FreeContents(m_images);

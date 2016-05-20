@@ -25,7 +25,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 //terralib
 #include "../../common/progress/ProgressManager.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -37,7 +37,10 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
+#include "../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../raster.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
+
 #include "SlopeDialog.h"
 #include "ui_SlopeDialogForm.h"
 
@@ -78,12 +81,16 @@ te::mnt::SlopeDialog::SlopeDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_dimCLineEdit, SIGNAL(editingFinished()), this, SLOT(onDimCLineEditEditingFinished()));
   connect(m_ui->m_dimLLineEdit, SIGNAL(editingFinished()), this, SLOT(onDimLLineEditEditingFinished()));
 
-  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
+  m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
+  connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
+
+  m_outsrid = 0;
 
 }
 
@@ -112,7 +119,8 @@ void te::mnt::SlopeDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers
             std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
             te::gm::GeomType gmType = geomProp->getGeometryType();
             if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-              gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
+              gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType ||
+              gmType == te::gm::GeometryType)//TIN
             {
               m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
             }
@@ -139,6 +147,9 @@ void te::mnt::SlopeDialog::onInputComboBoxChanged(int index)
     if (layerID == it->get()->getId().c_str())
     {
       m_inputLayer = it->get();
+
+      setSRID(m_inputLayer->getSRID());
+
       std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
       if (dsType->hasRaster()) //GRID
       {
@@ -264,28 +275,6 @@ void te::mnt::SlopeDialog::onDimCLineEditEditingFinished()
   m_ui->m_resYLineEdit->setText(QString::number(resY));
 }
 
-
-void te::mnt::SlopeDialog::onTargetDatasourceToolButtonPressed()
-{
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_newLayerNameLineEdit->setEnabled(true);
-  te::qt::widgets::DataSourceSelectorDialog dlg(this);
-  dlg.exec();
-
-  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
-
-  if (dsPtrList.empty())
-    return;
-
-  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
-
-  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
-
-  m_outputDatasource = *it;
-
-  m_toFile = false;
-}
-
 void te::mnt::SlopeDialog::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
@@ -303,7 +292,6 @@ void te::mnt::SlopeDialog::onTargetFileToolButtonPressed()
   aux = outfile.string();
   m_ui->m_repositoryLineEdit->setText(aux.c_str());
 
-  m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
@@ -347,17 +335,14 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
     std::map<std::string, std::string> outdsinfo;
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
-    if (m_toFile)
-    {
-      if (boost::filesystem::exists(uri))
-        throw te::common::Exception(TE_TR("Output file already exists! Remove it or select a new name and try again."));
+    if (boost::filesystem::exists(uri))
+      throw te::common::Exception(TE_TR("Output file already exists! Remove it or select a new name and try again."));
 
-      std::size_t idx = outputdataset.find(".");
-      if (idx != std::string::npos)
-        outputdataset = outputdataset.substr(0, idx);
+    std::size_t idx = outputdataset.find(".");
+    if (idx != std::string::npos)
+      outputdataset = outputdataset.substr(0, idx);
 
-      outdsinfo["URI"] = uri.string();
-    }
+    outdsinfo["URI"] = uri.string();
 
     te::mnt::Slope *decl = new te::mnt::Slope();
     decl->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
@@ -374,7 +359,7 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
 
     double dummy = m_ui->m_dummylineEdit->text().toDouble();
 
-    decl->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), grad, slope, m_inputLayer->getSRID(), dummy);
+    decl->setParams(m_ui->m_resXLineEdit->text().toDouble(), m_ui->m_resYLineEdit->text().toDouble(), grad, slope, m_outsrid, dummy);
 
     decl->run();
 
@@ -382,7 +367,7 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
 
     m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
   }
-  catch (const std::exception& e)
+  catch (te::common::Exception& e)
   {
     QApplication::restoreOverrideCursor();
     te::common::ProgressManager::getInstance().removeViewer(id);
@@ -394,7 +379,6 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
   te::common::ProgressManager::getInstance().removeViewer(id);
   accept();
 
-
 }
 
 void te::mnt::SlopeDialog::onCancelPushButtonClicked()
@@ -402,3 +386,35 @@ void te::mnt::SlopeDialog::onCancelPushButtonClicked()
   reject();
 }
 
+
+void te::mnt::SlopeDialog::onSrsToolButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if (srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  int newSRID = srsDialog.getSelectedSRS().first;
+
+  setSRID(newSRID);
+
+}
+
+void te::mnt::SlopeDialog::setSRID(int newSRID)
+{
+  if (newSRID <= 0)
+  {
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+  }
+  else
+  {
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    if (name.size())
+      m_ui->m_resSRIDLabel->setText(name.c_str());
+    else
+      m_ui->m_resSRIDLabel->setText(QString("%1").arg(newSRID));
+  }
+  m_outsrid = newSRID;
+
+}

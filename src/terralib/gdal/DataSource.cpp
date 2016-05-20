@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../geometry/Envelope.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../raster/Grid.h"

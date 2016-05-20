@@ -64,6 +64,8 @@ namespace te
 
       te::map::AbstractLayerPtr getLayer();
 
+      void setSRID(int newSRID);
+
       protected slots:
 
       void onInputComboBoxChanged(int index);
@@ -73,6 +75,7 @@ namespace te
       void onHelpPushButtonClicked();
       void onOkPushButtonClicked();
       void onCancelPushButtonClicked();
+      void onSrsToolButtonClicked();
 
     private:
 
@@ -88,6 +91,8 @@ namespace te
       double m_scale;
       double m_factor;
       double m_maxdist;
+
+      int m_outsrid;
     }; //class SmoothIsolinesDialog
   } //mnt
 } //te

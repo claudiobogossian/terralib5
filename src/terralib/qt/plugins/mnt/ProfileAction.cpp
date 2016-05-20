@@ -56,12 +56,16 @@ te::qt::plugins::mnt::ProfileAction::~ProfileAction()
 
 void te::qt::plugins::mnt::ProfileAction::onActionActivated(bool actived)
 {
-  // get the list of layers from current project
+ // get the list of layers from current project
   m_profiledlg->setLayers(getLayers());
  // if (actived)
     m_profiledlg->show();
 
-  //if (dlg.exec() != QDialog::Accepted)
-  //  return;
+    if (m_profiledlg->exec() != QDialog::Accepted)
+    {
+    }
+
+    m_profiledlg->release();
+    return;
 }
 

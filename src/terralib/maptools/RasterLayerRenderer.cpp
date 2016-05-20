@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Raster.h"
 #include "../se/CoverageStyle.h"

@@ -27,7 +27,7 @@
 #define __TERRALIB_PLUGIN_INTERNAL_CPPPLUGINPROXY_H
 
 // TerraLib
-#include "../common/Library.h"
+#include "../core/lib/Library.h"
 #include "AbstractPlugin.h"
 
 // STL
@@ -59,7 +59,7 @@ namespace te
           \param lib    A pointer to the library that contains the plugin.
           \param plugin The real C++ plugin. The CppPluginProxy will take the ownership of the given plugin.
         */
-        CppPluginProxy(const te::common::LibraryPtr& lib, Plugin* plugin);
+        CppPluginProxy(const std::shared_ptr<te::core::Library>& lib, Plugin* plugin);
 
         /*! \brief Destructor. */
         ~CppPluginProxy();
@@ -78,7 +78,7 @@ namespace te
 
       private:
 
-        te::common::LibraryPtr m_lib;    //!< The library that contains the real plugin.
+        std::shared_ptr<te::core::Library> m_lib;    //!< The library that contains the real plugin.
         std::auto_ptr<Plugin> m_plugin;  //!< The real C++ plugin.
     };
 

@@ -30,7 +30,7 @@
 #include "../../common/progress/TaskProgress.h"
 #include "../../common/StringUtils.h"
 #include "../../common/STLUtils.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../datatype/AbstractData.h"

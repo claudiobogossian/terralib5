@@ -30,7 +30,7 @@
 #include "../../BuildConfig.h"
 #include "../../common/Exception.h"
 #include "../../common/PlatformUtils.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/TerraLib.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"

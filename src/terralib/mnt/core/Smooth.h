@@ -32,7 +32,7 @@ namespace te
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
-      void setParams(double factor, double max_dist, bool simpl, std::string &attr);
+      void setParams(double factor, double max_dist, bool simpl);
 
       /*! Function used to set the Spatial Reference System ID  */
       void setSRID(int srid) { m_srid = srid; }
@@ -57,7 +57,6 @@ namespace te
       double m_factor;
       double m_maxdist;
       bool m_simpl_out;
-      std::string m_Zattr;
     };
   }
 }

@@ -79,9 +79,7 @@ namespace te
 
       te::gm::Envelope buildEnvelope(const QPointF& pos);
 
-      void storeMergedFeature();
-
-      void storeUndoCommand();
+      void storeFeature();
 
       void mergeGeometries();
 
@@ -102,8 +100,6 @@ namespace te
       std::string m_chosenOid;
 
       te::gm::GeometryCollection* m_geocollection;
-
-      std::vector<Feature*> m_updateWatches;
 
       te::da::ObjectIdSet* m_oidsMerged;
 

@@ -165,6 +165,7 @@ endif()
 
 include_directories(${CMAKE_BINARY_DIR})
 
+include(CTest)
 
 #
 # Build will generate files into a single folder
@@ -213,7 +214,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread log locale regex unit_test_framework)
+find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread log log_setup locale regex unit_test_framework)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
@@ -233,7 +234,7 @@ find_package(GDAL)
 
 find_package(GEOS)
 
-find_package(GNUGettext)
+find_package(Gettext)
 
 find_package(Log4cxx)
 
@@ -268,6 +269,7 @@ endif()
 if(Qt5_FOUND OR QT4_FOUND)
   find_package(Qwt)
   find_package(QtPropertyBrowser)
+  find_package(Qscintilla)
 endif()
 
 find_package(Xerces)
@@ -305,20 +307,8 @@ if(GEOSC_FOUND)
   set(TERRALIB_GEOSC_ENABLED ON)
 endif()
 
-if(GNUGETTEXT_FOUND)
-
-  set(TERRALIB_GNU_GETTEXT_ENABLED ON)
-
-  if(NOT DEFINED TERRALIB_TRANSLATOR_ENABLED)
-    set(TERRALIB_TRANSLATOR_ENABLED 1 CACHE BOOL "Enable translator support?")
-  endif()
-
-else()
-
-  if(DEFINED TERRALIB_TRANSLATOR_ENABLED)
-    set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?" FORCE)
-  endif()
-
+if(GETTEXT_FOUND)
+    set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?")
 endif()
 
 if(LUA_FOUND)
@@ -408,7 +398,7 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" OFF)
 endif()
 
-option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" OFF)
+option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" ON)
 
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
@@ -435,6 +425,8 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_DATAACCESS_ENABLED "Build Data Access module
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_PLUGIN_ENABLED "Build Plugin module?" ON "TERRALIB_MOD_XML_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_XERCES_ENABLED "Build Xerces support?" ON "TERRALIB_XERCES_ENABLED;TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_CEDITOR_ENABLED "Build CEditor support?" ON "Qt5_FOUND;QSCINTILLA_FOUND" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_POSTGIS_ENABLED "Build PostGIS support?" ON "TERRALIB_LIBPQ_ENABLED;TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
 
@@ -558,7 +550,7 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_EDIT_QT_ENABLED "Build Edit Qt module?" ON "
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_EDIT_ENABLED "Build Edit Qt plugin?" ON "TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED;TERRALIB_MOD_EDIT_QT_ENABLED" OFF)
 
-CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_MNT_CORE_ENABLED "Build MNT Processing Core module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_MNT_CORE_ENABLED "Build MNT Processing Core module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_EDIT_CORE_ENABLED;TERRALIB_MOD_EDIT_QT_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_MNT_QT_ENABLED "Build MNT Processing Qt module?" ON "TERRALIB_QT_ENABLED;TERRALIB_MOD_MNT_CORE_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
@@ -573,6 +565,8 @@ endif()
 #
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_CORE_ENABLED "Build Core Runtime examples?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_CEDITOR_ENABLED "Build Code Editor example?" ON "TERRALIB_MOD_CEDITOR_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ADO_ENABLED "Build the ADO example?" ON "WIN32;TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
 
@@ -807,6 +801,10 @@ endif()
 add_subdirectory(terralib_mod_common)
 list(APPEND TERRALIB_MODULES common)
 
+if(TERRALIB_MOD_CEDITOR_ENABLED)
+  add_subdirectory(terralib_mod_ceditor)
+  list(APPEND TERRALIB_MODULES ceditor)
+endif()
 
 if(TERRALIB_MOD_DATAACCESS_ENABLED)
   add_subdirectory(terralib_mod_dataaccess)
@@ -1147,6 +1145,10 @@ if(TERRALIB_EXAMPLE_CORE_ENABLED)
   add_subdirectory(terralib_example_core)
 endif()
 
+if(TERRALIB_EXAMPLE_CEDITOR_ENABLED)
+  add_subdirectory(terralib_example_ceditor)
+endif()
+
 if(TERRALIB_EXAMPLE_ADO_ENABLED)
   add_subdirectory(terralib_example_ado)
 endif()
@@ -1477,6 +1479,12 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/schemas
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
+
+if(TERRALIB_TRANSLATOR_ENABLED)
+  install(DIRECTORY ${CMAKE_BINARY_DIR}/share/terralib/translations/
+          DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/translations
+          COMPONENT runtime)
+endif()
 
 #
 # Track dependencies

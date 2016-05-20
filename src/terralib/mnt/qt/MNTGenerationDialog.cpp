@@ -26,7 +26,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 //terralib
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -40,9 +40,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
+#include "../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../raster.h"
 #include "../../raster/Interpolator.h"
 #include "../../raster/RasterFactory.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
 
 #include "MNTGenerationDialog.h"
 #include "ui_MNTGenerationDialogForm.h"
@@ -83,12 +85,14 @@ te::mnt::MNTGenerationDialog::MNTGenerationDialog(QWidget* parent , Qt::WindowFl
   connect(m_ui->m_dimCLineEdit, SIGNAL(editingFinished()), this, SLOT(onDimCLineEditEditingFinished()));
   connect(m_ui->m_dimLLineEdit, SIGNAL(editingFinished()), this, SLOT(onDimLLineEditEditingFinished()));
 
-  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
+  m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
+  connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
 
   for (int i = 2; i < 10; i++)
     m_ui->m_powerComboBox->addItem(QString::number(i));
@@ -97,6 +101,8 @@ te::mnt::MNTGenerationDialog::MNTGenerationDialog(QWidget* parent , Qt::WindowFl
   m_ui->m_tensionLineEdit->setText("40");
   m_ui->m_smothLineEdit->setText("0.1");
   m_ui->m_minPtsMitLineEdit->setText("50");
+
+  m_outsrid = 0;
 
 }
 
@@ -142,6 +148,9 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
     if (layerID == it->get()->getId().c_str())
     {
       m_inputLayer = it->get();
+
+      setSRID(m_inputLayer->getSRID());
+
       std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
       if (dsType->hasGeom())
       {
@@ -209,8 +218,9 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           }
 
         }
-        if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-          gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType)//TIN
+        if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType || gmType == te::gm::PolygonType ||
+          gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType || gmType == te::gm::PolygonZType ||
+          gmType == te::gm::GeometryType)//TIN
         {
           m_inputType = TIN;
           std::auto_ptr<te::da::DataSet> dataquery;
@@ -382,27 +392,6 @@ void te::mnt::MNTGenerationDialog::onDimCLineEditEditingFinished()
   m_ui->m_resYLineEdit->setText(QString::number(resY));
 }
 
-void te::mnt::MNTGenerationDialog::onTargetDatasourceToolButtonPressed()
-{
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_newLayerNameLineEdit->setEnabled(true);
-  te::qt::widgets::DataSourceSelectorDialog dlg(this);
-  dlg.exec();
-
-  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
-
-  if (dsPtrList.empty())
-    return;
-
-  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
-
-  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
-
-  m_outputDatasource = *it;
-
-  m_toFile = false;
-}
-
 void te::mnt::MNTGenerationDialog::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
@@ -420,7 +409,6 @@ void te::mnt::MNTGenerationDialog::onTargetFileToolButtonPressed()
   aux = outfile.string();
   m_ui->m_repositoryLineEdit->setText(aux.c_str());
 
-  m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
@@ -430,8 +418,6 @@ void te::mnt::MNTGenerationDialog::onHelpPushButtonClicked()
 
 void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 {
-  int srid;
-
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -453,7 +439,6 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
     std::map<std::string, std::string> outdsinfo;
     std::string inDsetName = indsLayer->getDataSetName();
-    srid = indsLayer->getSRID();
 
     // Checking consistency of output paramenters
     if (m_ui->m_repositoryLineEdit->text().isEmpty())
@@ -529,7 +514,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
           grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
           grid->setOutput(outdsinfo);
           grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
-          grid->setSRID(srid);
+          grid->setSRID(m_outsrid);
 
           grid->run();
 
@@ -545,7 +530,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
           grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
           grid->setOutput(outdsinfo);
           grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
-          grid->setSRID(srid);
+          grid->setSRID(m_outsrid);
 
           grid->calculateGrid();
 
@@ -564,7 +549,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
           grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
           grid->setOutput(outdsinfo);
           grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
-          grid->setSRID(srid);
+          grid->setSRID(m_outsrid);
 
           grid->generateGrid();
 
@@ -593,7 +578,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
         grid->setOutput(outdsinfo);
         grid->setParams(resxo, resyo, m_inter);
-        grid->setSRID(srid);
+        grid->setSRID(m_outsrid);
 
         grid->run();
 
@@ -638,7 +623,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         int X1 = inputRst.get()->getExtent()->getLowerLeftX();
         int Y2 = inputRst.get()->getExtent()->getUpperRightY();
         te::gm::Coord2D ulc(X1, Y2);
-        te::rst::Grid* grid = new te::rst::Grid(outputWidth, outputHeight, resxo, resyo, &ulc, inputRst.get()->getSRID());
+        te::rst::Grid* grid = new te::rst::Grid(outputWidth, outputHeight, resxo, resyo, &ulc, m_outsrid);
 
         std::vector<te::rst::BandProperty*> bands;
         bands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "DTM GRID"));
@@ -692,7 +677,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
     m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
   }
-  catch (const std::exception& e)
+  catch (te::common::Exception& e)
   {
     QApplication::restoreOverrideCursor();
     te::common::ProgressManager::getInstance().removeViewer(id);
@@ -711,3 +696,35 @@ void te::mnt::MNTGenerationDialog::onCancelPushButtonClicked()
   reject();
 }
 
+
+void te::mnt::MNTGenerationDialog::onSrsToolButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if (srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  int newSRID = srsDialog.getSelectedSRS().first;
+
+  setSRID(newSRID);
+
+}
+
+void te::mnt::MNTGenerationDialog::setSRID(int newSRID)
+{
+  if (newSRID <= 0)
+  {
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+  }
+  else
+  {
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    if (name.size())
+      m_ui->m_resSRIDLabel->setText(name.c_str());
+    else
+      m_ui->m_resSRIDLabel->setText(QString("%1").arg(newSRID));
+  }
+  m_outsrid = newSRID;
+
+}

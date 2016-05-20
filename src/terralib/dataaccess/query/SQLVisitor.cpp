@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../common/StringUtils.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../datatype/AbstractData.h"
 #include "../../datatype/SimpleData.h"
 #include "../../datatype/Enums.h"

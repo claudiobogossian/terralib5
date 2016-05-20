@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include "Exception.h"
 #include "Module.h"

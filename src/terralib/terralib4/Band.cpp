@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Band.h"
 #include "Exception.h"
 #include "Raster.h"

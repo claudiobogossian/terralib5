@@ -27,7 +27,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 //terralib
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/UnitsOfMeasureManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -40,6 +40,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
 #include "TINGenerationDialog.h"
@@ -81,6 +82,9 @@ te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFla
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
+  m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
+  connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
+
   m_ui->m_noradioButton->setChecked(true);
   m_ui->m_isolinescomboBox->addItem(QString(""), QVariant(""));
   m_ui->m_samplescomboBox->addItem(QString(""), QVariant(""));
@@ -88,6 +92,7 @@ te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFla
 
   m_isosrid = 0;
   m_samplesrid = 0;
+  m_outsrid = 0;
 
 }
 
@@ -175,6 +180,9 @@ void te::mnt::TINGenerationDialog::onIsolinesComboBoxChanged(int index)
           throw te::common::Exception(TE_TR("The selected input data source can not be accessed."));
 
         m_isosrid = dsisoLayer->getSRID();
+
+        setSRID(m_isosrid);
+
         m_isoSetName = dsisoLayer->getDataSetName();
 
         std::auto_ptr<te::da::DataSet> inDset = m_isolinesDataSource->getDataSet(m_isoSetName);
@@ -244,6 +252,7 @@ void te::mnt::TINGenerationDialog::onSamplesComboBoxChanged(int index)
 
         m_sampleSetName = dssampleLayer->getDataSetName();
         m_samplesrid = dssampleLayer->getSRID();
+        setSRID(m_samplesrid);
 
         std::auto_ptr<te::da::DataSet> inDset = m_samplesDataSource->getDataSet(m_sampleSetName);
         std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
@@ -385,8 +394,6 @@ void te::mnt::TINGenerationDialog::onHelpPushButtonClicked()
 
 void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 {
-  int srid = 0;
-
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -411,6 +418,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     // Checking consistency of the input layer where the buffer will executed
     if (m_isolinesLayer.get())
     {
+      //m_outsrid = m_isosrid;
       m_tol = m_ui->m_tollineEdit->text().toDouble(&ok);
       if (!ok)
         throw te::common::Exception(TE_TR("Define a isolines tolerance."));
@@ -423,6 +431,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
     }
     if (m_samplesLayer.get())
     {
+      //srid = m_samplesrid;
       Tin->setInput(m_samplesDataSource, m_sampleSetName, m_samplesDataSource->getDataSetType(m_sampleSetName), te::mnt::Samples);
     }
 
@@ -432,7 +441,6 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
         throw te::common::Exception(TE_TR("Different SRID."));
     }
 
-    srid = m_isosrid;
     if (m_breaklinesLayer.get())
     {
       m_breaktol = m_ui->m_breaktollineEdit->text().toDouble(&ok);
@@ -495,18 +503,21 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       Tin->setOutput(aux, outputdataset);
     }
 
-    Tin->setSRID(srid);
+    Tin->setSRID(m_outsrid);
 
-    if (srid)
+    if (m_outsrid>0)
     {
-      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)srid);
-      te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
-
-      if (unitin->getId() != te::common::UOM_Metre)
+      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)m_outsrid);
+      if (unitin.get())
       {
-        convertPlanarToAngle(m_tol, unitout);
-        convertPlanarToAngle(m_distance, unitout);
-        convertPlanarToAngle(m_edgeSize, unitout);
+        te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+        if (unitin->getId() != te::common::UOM_Metre)
+        {
+          convertPlanarToAngle(m_tol, unitout);
+          convertPlanarToAngle(m_distance, unitout);
+          convertPlanarToAngle(m_edgeSize, unitout);
+        }
       }
     }
 
@@ -571,3 +582,34 @@ te::map::AbstractLayerPtr te::mnt::TINGenerationDialog::getLayer()
   return m_outputLayer;
 }
 
+void te::mnt::TINGenerationDialog::onSrsToolButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if (srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  int newSRID = srsDialog.getSelectedSRS().first;
+
+  setSRID(newSRID);
+ 
+}
+
+void te::mnt::TINGenerationDialog::setSRID(int newSRID)
+{
+  if (newSRID <= 0)
+  {
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+  }
+  else
+  {
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    if (name.size())
+      m_ui->m_resSRIDLabel->setText(name.c_str());
+    else
+      m_ui->m_resSRIDLabel->setText(QString("%1").arg(newSRID));
+  }
+  m_outsrid = newSRID;
+
+}

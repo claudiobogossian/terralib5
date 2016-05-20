@@ -1,5 +1,29 @@
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-//TerraLib
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/edit/qt/tools/AggregateAreaTool.cpp
+
+  \brief This class implements a concrete tool to aggregate geometries.
+*/
+
+// TerraLib
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
@@ -13,7 +37,8 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
+#include "../core/command/AddCommand.h"
+#include "../core/UndoStackManager.h"
 #include "AggregateAreaTool.h"
 
 // Qt
@@ -30,13 +55,18 @@
 
 te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-  m_updateWatches(0)
+  m_addWatches(0),
+  m_currentIndex(0)
 {
 }
 
 te::edit::AggregateAreaTool::~AggregateAreaTool()
 {
-  reset();
+  delete m_feature;
+  te::common::FreeContents(m_addWatches);
+  m_addWatches.clear();
+
+  UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
 bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
@@ -81,7 +111,7 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     draw();
 
-    storeEditedFeature();
+    storeFeature();
 
     storeUndoCommand();
 
@@ -94,9 +124,8 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
   }
 }
 
-void te::edit::AggregateAreaTool::draw()
+void te::edit::AggregateAreaTool::draw(bool onlyRepository)
 {
-  
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
     return;
@@ -111,6 +140,13 @@ void te::edit::AggregateAreaTool::draw()
 
   // Draw the layer edited geometries
   renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+
+  if (onlyRepository)
+  {
+    renderer.end();
+    m_display->repaint();
+    return;
+  }
 
   if (!m_coords.empty())
   {
@@ -153,10 +189,24 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 
     polygon->setSRID(m_display->getSRID());
 
+    if (polygon->getSRID() != m_layer->getSRID())
+      polygon->transform(m_layer->getSRID());
+
+    if (polygon->getSRID() != m_feature->getGeometry()->getSRID())
+      m_feature->getGeometry()->transform(polygon->getSRID());
+
     if (!polygon->intersects(m_feature->getGeometry()))
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
     geoUnion = convertGeomType(m_layer, unionGeometry(polygon, m_feature->getGeometry()));
+
+    geoUnion->setSRID(m_display->getSRID());
+
+    if (geoUnion->getSRID() == m_layer->getSRID())
+      return geoUnion;
+
+    // else, need conversion...
+    geoUnion->transform(m_layer->getSRID());
 
     return geoUnion;
 
@@ -179,18 +229,12 @@ te::gm::Envelope te::edit::AggregateAreaTool::buildEnvelope(const QPointF& pos)
   return env;
 }
 
-void te::edit::AggregateAreaTool::reset()
-{
-  delete m_feature;
-  m_feature = 0;
-}
-
 void te::edit::AggregateAreaTool::onExtentChanged()
 {
   draw();
 }
 
-void te::edit::AggregateAreaTool::storeEditedFeature()
+void te::edit::AggregateAreaTool::storeFeature()
 {
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 }
@@ -198,15 +242,6 @@ void te::edit::AggregateAreaTool::storeEditedFeature()
 te::gm::Geometry* te::edit::AggregateAreaTool::unionGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
   return g1->Union(g2);
-}
-
-void te::edit::AggregateAreaTool::storeUndoCommand()
-{
-  m_updateWatches.push_back(m_feature->clone());
-
-  QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
-  UndoStackManager::getInstance().addUndoStack(command);
-
 }
 
 void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
@@ -219,10 +254,9 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
     {
       m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
-      if (m_feature){
-        m_updateWatches.push_back(m_feature->clone());
+      if (m_feature)
         m_oidsSet.insert(m_feature->getId()->getValueAsString());
-      }
+
     }
     else
     {
@@ -231,7 +265,6 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
       {
         if (m_oidsSet.find(feature->getId()->clone()->getValueAsString()) == m_oidsSet.end())
         {
-          m_updateWatches.push_back(feature->clone());
           m_oidsSet.insert(feature->getId()->clone()->getValueAsString());
           m_feature = feature;
         }
@@ -248,4 +281,68 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
   {
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
   }
+}
+
+void te::edit::AggregateAreaTool::storeUndoCommand()
+{
+  if (m_feature == 0)
+    return;
+
+  //ensures that the vector has not repeated features after several clicks on the same
+  if (m_addWatches.size())
+  {
+    if (m_addWatches.at(0)->getGeometry()->equals(m_feature->getGeometry()))
+      return;
+  }
+
+  //If another feature is selected the stack is cleaned
+  for (std::size_t i = 0; i < m_addWatches.size(); i++)
+  {
+    if (m_addWatches.at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
+    {
+      te::common::FreeContents(m_addWatches);
+      m_addWatches.clear();
+      UndoStackManager::getInstance().getUndoStack()->clear();
+      break;
+    }
+  }
+
+  m_addWatches.push_back(m_feature->clone());
+
+  //If a feature is changed in the middle of the stack, this change ends up being the top of the stack
+  if (m_currentIndex < (int)(m_addWatches.size() - 2))
+  {
+    std::size_t i = 0;
+    while (i < m_addWatches.size())
+    {
+      m_addWatches.pop_back();
+      i = (m_currentIndex + 1);
+    }
+    m_addWatches.push_back(m_feature->clone());
+  }
+
+  m_currentIndex = (int)(m_addWatches.size() - 1);
+
+  if (m_addWatches.size() < 2)
+    return;
+
+  QUndoCommand* command = new AddCommand(m_addWatches, m_currentIndex, m_layer);
+  connect(dynamic_cast<AddCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)), SLOT(onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)));
+
+  UndoStackManager::getInstance().addUndoStack(command);
+}
+
+void te::edit::AggregateAreaTool::onGeometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> /*coords*/)
+{
+  if (m_feature == 0)
+    return;
+
+  m_feature->setGeometry(geom);
+
+  if (m_currentIndex > -1)
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+  else
+    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_feature->getId());
+
+  draw(true);
 }

@@ -37,8 +37,6 @@
 
 #include "../../vp/Merge.h"
 
-#include "../../vp/MergeOp.h"
-#include "../../vp/MergeMemory.h"
 #include "MergeDialog.h"
 #include "ui_MergeDialogForm.h"
 
@@ -400,7 +398,6 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
   }
   catch (const std::exception& e)
   {
-    std::string eeeee = e.what();
     QMessageBox::warning(this, tr("Merge"), e.what());
     return;
   }

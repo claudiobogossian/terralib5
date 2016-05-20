@@ -24,7 +24,7 @@
 */
 
 // Terralib
-#include "../../../common/Translator.h"
+#include "../../../core/translator/Translator.h"
 #include "ProgressResetEvent.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
@@ -106,7 +106,7 @@ void te::qt::widgets::ProgressViewerDialog::setTotalValues(int taskId)
 
 void te::qt::widgets::ProgressViewerDialog::updateValue(int /*taskId*/)
 {
-  m_dlgProgress->show();
+  //m_dlgProgress->show();
 
   m_currentStep++;
 

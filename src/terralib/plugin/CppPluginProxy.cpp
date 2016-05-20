@@ -27,7 +27,7 @@
 #include "CppPluginProxy.h"
 #include "Plugin.h"
 
-te::plugin::CppPluginProxy::CppPluginProxy(const te::common::LibraryPtr& lib, Plugin* plugin)
+te::plugin::CppPluginProxy::CppPluginProxy(const std::shared_ptr<te::core::Library>& lib, Plugin* plugin)
   : m_lib(lib),
     m_plugin(plugin)
 {

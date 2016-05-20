@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
@@ -32,7 +33,7 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/MoveCommand.h"
+#include "../core/command/AddCommand.h"
 #include "../core/UndoStackManager.h"
 #include "MoveGeometryTool.h"
 
@@ -47,10 +48,11 @@
 #include <cassert>
 #include <memory>
 
-
 te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
-    m_moveStarted(false)
+    m_moveStarted(false),
+    m_addWatches(0),
+    m_currentIndex(0)
 {
   updateCursor();
 
@@ -60,10 +62,11 @@ te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* displa
 
 te::edit::MoveGeometryTool::~MoveGeometryTool()
 {
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
   delete m_feature;
+  te::common::FreeContents(m_addWatches);
+  m_addWatches.clear();
+
+  UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
 bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
@@ -97,8 +100,6 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
   // Move geometry using the current delta
   MoveGeometry(m_feature->getGeometry(), m_delta.x(), m_delta.y());
 
-  storeEditedFeature();
-
   draw();
 
   m_origin = currentPosition;
@@ -118,6 +119,8 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
   if(m_feature == 0)
     return false;
 
+  storeFeature();
+
   storeUndoCommand();
 
   return false;
@@ -127,7 +130,6 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 void te::edit::MoveGeometryTool::reset()
 {
   delete m_feature;
-  m_feature = 0;
 
   m_moveStarted = false;
 
@@ -187,7 +189,7 @@ void te::edit::MoveGeometryTool::draw()
   // Draw the layer edited geometries
   renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
-  if(m_feature == 0)
+  if (m_feature == 0 || m_currentIndex < 0)
   {
     renderer.end();
     m_display->repaint();
@@ -215,7 +217,7 @@ void te::edit::MoveGeometryTool::onExtentChanged()
   draw();
 }
 
-void te::edit::MoveGeometryTool::storeEditedFeature()
+void te::edit::MoveGeometryTool::storeFeature()
 {
   m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
   
@@ -225,10 +227,58 @@ void te::edit::MoveGeometryTool::storeEditedFeature()
 
 void te::edit::MoveGeometryTool::storeUndoCommand()
 {
-  m_moveWatches[m_feature->getId()->clone()->getValueAsString()].push_back(m_deltaSum);
+  if (m_feature == 0)
+    return;
 
-  QUndoCommand* command = new MoveCommand(m_moveWatches, m_feature->clone(), m_display, m_layer);
+  //ensures that the vector has not repeated features after several clicks on the same
+  if (m_addWatches.size())
+  {
+    if (m_addWatches.at(0)->getGeometry()->equals(m_feature->getGeometry()))
+      return;
+  }
+
+  //If another feature is selected the stack is cleaned
+  for (std::size_t i = 0; i < m_addWatches.size(); i++)
+  {
+    if (m_addWatches.at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
+    {
+      te::common::FreeContents(m_addWatches);
+      m_addWatches.clear();
+      UndoStackManager::getInstance().getUndoStack()->clear();
+      break;
+    }
+  }
+
+  m_addWatches.push_back(m_feature->clone());
+
+  //If a feature is changed in the middle of the stack, this change ends up being the top of the stack
+  if (m_currentIndex < (int)(m_addWatches.size() - 2))
+  {
+    std::size_t i = 0;
+    while (i < m_addWatches.size())
+    {
+      m_addWatches.pop_back();
+      i = (m_currentIndex + 1);
+    }
+    m_addWatches.push_back(m_feature->clone());
+  }
+
+  m_currentIndex = (int)(m_addWatches.size() - 1);
+
+  QUndoCommand* command = new AddCommand(m_addWatches, m_currentIndex, m_layer);
+  connect(dynamic_cast<AddCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)), SLOT(onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)));
 
   UndoStackManager::getInstance().addUndoStack(command);
+}
 
+void te::edit::MoveGeometryTool::onGeometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> /*coords*/)
+{
+  m_feature->setGeometry(geom);
+
+  if (m_currentIndex > -1)
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+  else
+    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_feature->getId());
+
+  draw();
 }

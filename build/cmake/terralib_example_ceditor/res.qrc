@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="imgs">
+    <file>terralib-globe.png</file>
+    <file>document-new.svg</file>
+    <file>document-open.svg</file>
+    <file>document-save.svg</file>
+    <file>go-next.svg</file>
+    <file>lang-lua.svg</file>
+    <file>lang-python.svg</file>
+  </qresource>
+</RCC>

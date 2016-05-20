@@ -21,7 +21,7 @@
  \file Difference.cpp
  */
 
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
@@ -618,6 +618,8 @@ te::gm::Geometry* te::vp::Difference::setGeomAsMulti(te::gm::Geometry* geom)
 
                               return geomColl;
     }
+    default:
+      break;
   }
 
   return geom;

@@ -113,6 +113,24 @@
     </message>
 </context>
 <context>
+    <name>te::qt::plugins::rp::RasterSlicingAction</name>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/rp/RasterSlicingAction.cpp" line="41"/>
+        <source>Raster Slicing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/rp/RasterSlicingAction.cpp" line="82"/>
+        <source>Warning</source>
+        <translation type="unfinished">Aviso</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/rp/RasterSlicingAction.cpp" line="82"/>
+        <source>The layer selected is invalid or does not have an raster representation.</source>
+        <translation type="unfinished">A camada selecionada é inválida ou não tem uma representação matricial (raster).</translation>
+    </message>
+</context>
+<context>
     <name>te::qt::plugins::rp::RasterizationAction</name>
     <message>
         <location filename="../../../src/terralib/qt/plugins/rp/RasterizationAction.cpp" line="31"/>

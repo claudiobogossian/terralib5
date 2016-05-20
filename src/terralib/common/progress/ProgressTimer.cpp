@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../StringUtils.h"
-#include "../Translator.h"
+#include "../../core/translator/Translator.h"
 #include "ProgressTimer.h"
 
 te::common::ProgressTimer::ProgressTimer(int totalSteps, std::string message)

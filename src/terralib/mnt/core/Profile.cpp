@@ -26,39 +26,40 @@
 
 //TerraLib
 
-#include "../../../../src/terralib/common/Translator.h"
-#include "../../../../src/terralib/common/progress/TaskProgress.h"
-#include "../../../../src/terralib/common/Logger.h"
+#include "../../core/translator/Translator.h"
+#include "../../common/progress/TaskProgress.h"
+#include "../../common/Logger.h"
+#include "../../common/UnitsOfMeasureManager.h"
 
-#include "../../../../src/terralib/dataaccess/dataset/DataSetTypeConverter.h"
-#include "../../../../src/terralib/dataaccess/dataset/DataSetTypeCapabilities.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../../dataaccess/dataset/DataSetTypeCapabilities.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/query/EqualTo.h"
 
-#include "../../../../src/terralib/dataaccess/datasource/DataSource.h"
-#include "../../../../src/terralib/dataaccess/datasource/DataSourceFactory.h"
-#include "../../../../src/terralib/dataaccess/datasource/DataSourceInfo.h"
-#include "../../../../src/terralib/dataaccess/datasource/DataSourceManager.h"
-#include "../../../../src/terralib/dataaccess/query/EqualTo.h"
+#include "../../datatype/Property.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../datatype/StringProperty.h"
 
+#include "../../geometry/Geometry.h"
+#include "../../geometry/GeometryProperty.h"
+#include "../../geometry/MultiLineString.h"
+#include "../../geometry/PointZ.h"
 
-#include "../../../../src/terralib/datatype/Property.h"
-#include "../../../../src/terralib/datatype/SimpleProperty.h"
-#include "../../../../src/terralib/datatype/StringProperty.h"
+#include "../../maptools/AbstractLayer.h"
 
-#include "../../../../src/terralib/geometry/Geometry.h"
-#include "../../../../src/terralib/geometry/GeometryProperty.h"
+#include "../../memory/DataSet.h"
+#include "../../memory/DataSetItem.h"
 
-#include "../../../../src/terralib/memory/DataSet.h"
-#include "../../../../src/terralib/memory/DataSetItem.h"
+#include "../../raster/RasterProperty.h"
+#include "../../raster/RasterFactory.h"
+#include "../../raster/Utils.h"
+#include "../../raster/BandProperty.h"
 
-#include "../../../../src/terralib/raster/RasterProperty.h"
-#include "../../../../src/terralib/raster/RasterFactory.h" 
-#include "../../../../src/terralib/raster/Utils.h"
-#include "../../../../src/terralib/raster/BandProperty.h"
-#include "../../../../src/terralib/geometry/PointZ.h"
-#include "../../../../src/terralib/geometry/MultiLineString.h"
-#include "../../../../src/terralib/common/UnitsOfMeasureManager.h"
-#include "../../../../src/terralib/srs/SpatialReferenceSystemManager.h"
-#include "../../../../src/terralib/statistics/core/Enums.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
+#include "../../statistics/core/Enums.h"
 
 #include "Profile.h"
 #include "Utils.h"
@@ -69,8 +70,6 @@
 //Boost
 #include <boost/lexical_cast.hpp>
 
-
-
 te::mnt::Profile::Profile()
 {
 }
@@ -78,48 +77,14 @@ te::mnt::Profile::Profile()
 te::mnt::Profile::~Profile()
 {
 }
-void te::mnt::Profile::setInput(te::da::DataSourcePtr inRasterDsrc, std::string inRasterName, std::auto_ptr<te::da::DataSetType> inDsetType,  double dummy)
+void te::mnt::Profile::setInput(te::da::DataSourcePtr inDsrc, std::string inName, std::auto_ptr<te::da::DataSetType> inDsetType,  double dummy)
 {
-  m_inRasterDsrc = inRasterDsrc;
-  m_inRasterName = inRasterName;
-  m_inRasterDsType = inDsetType;
+  m_inDsrc = inDsrc;
+  m_inName = inName;
+  m_inDsType = inDsetType;
   m_dummy = dummy;
 }
 
-std::vector<te::gm::LineString*> te::mnt::Profile::prepareVector(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &geostype)
-{
-  std::vector<te::gm::LineString*> lsOut;
-  std::auto_ptr<te::da::DataSet> inDset;
-  //size_t nsamples = mpt.getNumGeometries();
-  inDset = inDsrc->getDataSet(inDsetName);
-  
-  std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
-  inDset->moveBeforeFirst();
-
-
-  while (inDset->moveNext())
-  {
-    std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
-    geostype = gin.get()->getGeometryType();
-
-    if (geostype == "LineString")
-    {
-      te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(gin.get());
-      lsOut.push_back(l);
-    }
-    if (geostype == "MultiLineString")
-    {
-      te::gm::MultiLineString *g = dynamic_cast<te::gm::MultiLineString*>(gin.get());
-      std::size_t np = g->getNumGeometries();
-      for (std::size_t i = 0; i < np; ++i)
-      {
-        te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(g->getGeometryN(i)->clone());
-        lsOut.push_back(l);
-      }
-    }
-  }
-  return lsOut;
-}
 std::auto_ptr<te::mem::DataSet> te::mnt::Profile::createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType)
 {
   std::auto_ptr<te::mem::DataSet> outDataset(new te::mem::DataSet(dsType));
@@ -152,16 +117,16 @@ std::auto_ptr<te::mem::DataSet> te::mnt::Profile::createDataSet(te::da::DataSet*
 
 std::auto_ptr<te::rst::Raster> te::mnt::Profile::getPrepareRaster()
 {
-  std::auto_ptr<te::da::DataSetType>dsTypeRaster = m_inRasterDsrc->getDataSetType(m_inRasterName);
+  std::auto_ptr<te::da::DataSetType>dsTypeRaster = m_inDsrc->getDataSetType(m_inName);
   //prepare raster
-  te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(dsTypeRaster.get());
-  std::auto_ptr<te::da::DataSet> dsRaster = m_inRasterDsrc->getDataSet(m_inRasterName);
-  std::auto_ptr<te::rst::Raster> raster = dsRaster->getRaster(rasterProp->getName());
+  te::rst::RasterProperty* inProp = te::da::GetFirstRasterProperty(dsTypeRaster.get());
+  std::auto_ptr<te::da::DataSet> ds = m_inDsrc->getDataSet(m_inName);
+  std::auto_ptr<te::rst::Raster> raster = ds->getRaster(inProp->getName());
   return raster;
 }
 
 
-bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet)
+bool te::mnt::Profile::runRasterProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet)
 {
   double distbase = 0;
   int ind_pf = -1;
@@ -173,6 +138,12 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
   te::gm::Coord2D collin;
 
   std::map<double, double> line;
+
+  std::auto_ptr<te::rst::Raster> raster = getPrepareRaster();
+  if (!raster.get())
+  {
+    return false;
+  }
 
   double boxLowerLeft = raster->getExtent()->getLowerLeftX(); //x1 = lowerLeftX
   double boxUpperRigth = raster->getExtent()->getUpperRightY(); //y2 = UpperRigthY
@@ -236,7 +207,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
         ymin = pt1Y;
         ymax = pt2Y;
       }
-      
+
       int initcol = (int)((xmin - boxLowerLeft) / resX);
       int finalcol = (int)((xmax - boxLowerLeft) / resX + .9999);
       int initline = (int)((boxUpperRigth - ymax) / resY);
@@ -244,7 +215,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
 
       double dx = pt2X - pt1X;
       double dy = pt2Y - pt1Y;
-      
+
       //Calculate intersections of the segment with the columns
       if (((finalcol - initcol) > 1) && (fabs((double)dx) > 1.0e-6))
       {
@@ -252,7 +223,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
         {
           double x = (boxLowerLeft + c * resX);
           double y = (pt1Y + (dy / dx) * (x - pt1X));
-          
+
           collin = raster->getGrid()->geoToGrid(x, y);
           col = (unsigned int)collin.getX();
           row = (unsigned int)collin.getY();
@@ -304,7 +275,7 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
       if (zval != m_dummy)
       {
         double dist = sqrt(((double)dx * (double)dx) + ((double)dy* (double)dy)) + distbase;
-        
+
         if (ind_pf != ind_pfant)
           distbase = dist;
 
@@ -326,12 +297,141 @@ bool te::mnt::Profile::runRasterProfile(std::auto_ptr<te::rst::Raster> raster, s
       profile->setPoint(profile->size() - 1, it->first, it->second);
       it++;
     }
- 
+
     profileSet.push_back(profile);
     line.clear();
     distbase = 0;
   }
 
+  return true;
+}
+
+te::gm::LineString* te::mnt::Profile::calculateProfile(te::gm::MultiLineString &isolines, te::gm::LineString &trajectory)
+{
+  std::vector<double> distances, altitudes;
+  std::vector<te::gm::MultiPoint*> result;
+
+  //Calculate intersections
+  std::auto_ptr<te::gm::Geometry> resultGeom;
+  for (std::size_t i = 0; i < isolines.getNumGeometries(); i++)
+  {
+    resultGeom.reset(trajectory.intersection(isolines.getGeometryN(i)));
+    if (resultGeom.get() != 0 && resultGeom->isValid())
+    {
+
+      if (resultGeom->getGeomTypeId() == te::gm::MultiPointType ||
+        resultGeom->getGeomTypeId() == te::gm::MultiPointZType ||
+        resultGeom->getGeomTypeId() == te::gm::MultiPointMType ||
+        resultGeom->getGeomTypeId() == te::gm::MultiPointZMType)
+      {
+        te::gm::MultiPoint *pz = dynamic_cast<te::gm::MultiPoint*>(resultGeom.get());
+        for (size_t p = 0; p < pz->getNumGeometries(); p++)
+        {
+          altitudes.push_back(dynamic_cast<te::gm::PointZ*>(pz->getGeometryN(p))->getZ());
+        }
+        result.push_back(pz);
+      }
+      else if (resultGeom->getGeomTypeId() == te::gm::PointType ||
+        resultGeom->getGeomTypeId() == te::gm::PointZType || 
+        resultGeom->getGeomTypeId() == te::gm::PointMType ||
+        resultGeom->getGeomTypeId() == te::gm::PointZMType)
+      {
+        altitudes.push_back(dynamic_cast<te::gm::PointZ*>(resultGeom.get())->getZ());
+        te::gm::MultiPoint *pz = new te::gm::MultiPoint(1, te::gm::MultiPointZType, m_srid);
+        pz->setGeometryN(0, dynamic_cast<te::gm::PointZ*>(resultGeom.get()));
+        result.push_back(pz);
+      }
+      resultGeom.release();
+    }
+  }
+
+  /*For to pass through result and add the intersections distances
+  to trajectory first point in a vector (profile X values)
+  */
+  for (std::size_t j = 0; j < result.size(); j++)
+  {
+    for (std::size_t i = 0; i < result[j]->getNPoints(); i++)
+    {
+      double dist = 0.;
+      double distance;
+      te::gm::Coord2D pout;
+      for (std::size_t k = 0; k < trajectory.size() - 1; k++)
+      {
+        te::gm::Coord2D first(trajectory.getX(k), trajectory.getY(k));
+        te::gm::Coord2D last(trajectory.getX(k + 1), trajectory.getY(k + 1));
+
+        te::gm::Coord2D pin(dynamic_cast<te::gm::PointZ*>(result[j]->getGeometryN(i))->getX(), dynamic_cast<te::gm::PointZ*>(result[j]->getGeometryN(i))->getY());
+        double dist_seg = PerpendicularDistance(first, last, pin, pout);
+        if (dist_seg < 0.001)
+        {
+          distance = dist + Distance(pin, first);
+          distances.push_back(distance);
+        }
+        else
+        {
+          dist += Distance(first, last);
+        }
+      }
+    }
+  }
+
+  result.clear();
+
+  std::map<double, double> line;
+
+  size_t sizemin = MIN(altitudes.size(), distances.size());
+  if (sizemin >0)
+  {
+    //For to sort profile's coordinates vector
+    for (size_t i = 0; i < sizemin; i++)
+      line.insert(std::map<double, double>::value_type(distances[i], altitudes[i]));
+
+    te::gm::LineString* profile = new te::gm::LineString(0, te::gm::LineStringType);
+    std::map<double, double>::iterator it = line.begin();
+
+    while (it != line.end())
+    {
+      profile->setNumCoordinates(profile->size() + 1);
+      profile->setPoint(profile->size() - 1, it->first, it->second);
+      it++;
+    }
+    line.clear();
+    return profile;
+  }
+
+  line.clear();
+
+  return 0;
+
+}
+
+bool te::mnt::Profile::runIsolinesProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet)
+{
+  std::auto_ptr<te::da::DataSetType>dsType = m_inDsrc->getDataSetType(m_inName);
+
+  bool isll = false;
+  if (m_srid)
+  {
+    te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)m_srid);
+    if (unitin && unitin->getId() != te::common::UOM_Metre)
+      isll = true;
+  }
+  te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+  te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
+  te::gm::MultiLineString isolines(0, te::gm::MultiLineStringZType, m_srid);
+  std::string geostype;
+  te::gm::Envelope env;
+
+  std::string vazio;
+  size_t nsamples = ReadSamples(m_inName, m_inDsrc, vazio, 0, 0, None, mpt, isolines, geostype, env, m_srid);
+
+  for (std::size_t v = 0; v < visadas.size(); ++v)
+  {
+    te::gm::LineString* profile = calculateProfile(isolines, *visadas[v]);
+    if (profile)
+      profileSet.push_back(profile);
+  }
   return true;
 }
 

@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../common/StringUtils.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../cache/AbstractCachePolicyFactory.h"
 #include "../drivers/datasource/DataSourceGraphMetadata.h"

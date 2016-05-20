@@ -24,8 +24,9 @@
 */
 
 // TerraLib
+
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/DataSetTypeCapabilities.h"
@@ -210,8 +211,6 @@ void te::vp::SplitGeometryCollection(te::gm::GeometryCollection* gcIn, te::gm::G
 
 bool te::vp::VerifyGeometryRepresentation(te::gm::Geometry* geom, te::gm::GeomType type)
 {
-  bool geometryRepresentation = false;
-
   if (type == te::gm::GeometryCollectionType ||
     type == te::gm::GeometryCollectionZType ||
     type == te::gm::GeometryCollectionMType ||
@@ -623,6 +622,8 @@ te::gm::Geometry* te::vp::SetGeomAsMulti(te::gm::Geometry* geom)
 
       return geomColl;
     }
+    default:
+      break;
   }
 
   return geom;

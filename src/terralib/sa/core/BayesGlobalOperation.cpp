@@ -30,7 +30,7 @@
 
 //TerraLib
 #include "../../common/Exception.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"

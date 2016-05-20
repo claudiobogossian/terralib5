@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+﻿/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,7 +43,5 @@ bool init_unit_test()
 
 int main(int argc, char *argv[])
 {
-  boost::unit_test::unit_test_main(init_unit_test, argc, argv);
-
-  return EXIT_SUCCESS;
+  return boost::unit_test::unit_test_main(init_unit_test, argc, argv);
 }

@@ -26,7 +26,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 //terralib
 #include "../../common/progress/ProgressManager.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -39,6 +39,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
+#include "../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../raster.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
@@ -75,6 +76,11 @@ te::mnt::SmoothIsolinesDialog::SmoothIsolinesDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
+  m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
+  connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
+
+  m_outsrid = 0;
 }
 
 te::mnt::SmoothIsolinesDialog::~SmoothIsolinesDialog()
@@ -121,9 +127,6 @@ void te::mnt::SmoothIsolinesDialog::onInputComboBoxChanged(int index)
   m_inputLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
-  m_ui->m_Zlabel->setVisible(false);
-  m_ui->m_ZcomboBox->clear();
-  m_ui->m_ZcomboBox->setVisible(false);
 
   while (it != m_layers.end())
   {
@@ -131,35 +134,8 @@ void te::mnt::SmoothIsolinesDialog::onInputComboBoxChanged(int index)
     {
       te::map::AbstractLayerPtr selectedLayer = it->get();
       m_inputLayer = selectedLayer;
-      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-
-      std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-      te::gm::GeomType gmType = geomProp->getGeometryType();
-      if (gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType)
-      {
-        m_ui->m_Zlabel->setVisible(true);
-        m_ui->m_ZcomboBox->setVisible(true);
-        std::vector<te::dt::Property*> props = dsType->getProperties();
-        for (std::size_t i = 0; i < props.size(); ++i)
-        {
-          switch (props[i]->getType())
-          {
-          case te::dt::FLOAT_TYPE:
-          case te::dt::DOUBLE_TYPE:
-          case te::dt::INT16_TYPE:
-          case te::dt::INT32_TYPE:
-          case te::dt::INT64_TYPE:
-          case te::dt::UINT16_TYPE:
-          case te::dt::UINT32_TYPE:
-          case te::dt::UINT64_TYPE:
-          case te::dt::NUMERIC_TYPE:
-            m_ui->m_ZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
-            break;
-          }
-        }
-      }
-      geomProp.release();
-      dsType.release();
+      
+      setSRID(m_inputLayer->getSRID());
 
       break;
     }
@@ -304,23 +280,24 @@ void te::mnt::SmoothIsolinesDialog::onOkPushButtonClicked()
     }
 
     bool simpl_out = m_ui->m_simploutCheckBox->isChecked();
-    std::string attr = m_ui->m_ZcomboBox->currentText().toStdString();
 
-    int srid = m_inputLayer->getSRID();
-    iso->setSRID(srid);
-    if (srid)
+    iso->setSRID(m_outsrid);
+    if (m_outsrid)
     {
-      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned)srid);
-      te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
-
-      if (unitin->getId() != te::common::UOM_Metre)
+      te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned)m_outsrid);
+      if (unitin.get())
       {
-        convertPlanarToAngle(m_factor, unitout);
-        convertPlanarToAngle(m_maxdist, unitout);
+        te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+        if (unitin->getId() != te::common::UOM_Metre)
+        {
+          convertPlanarToAngle(m_factor, unitout);
+          convertPlanarToAngle(m_maxdist, unitout);
+        }
       }
     }
 
-    iso->setParams(m_factor, m_maxdist, simpl_out, attr);
+    iso->setParams(m_factor, m_maxdist, simpl_out);
 
     bool result = iso->run();
 
@@ -377,3 +354,34 @@ void te::mnt::SmoothIsolinesDialog::onCancelPushButtonClicked()
   reject();
 }
 
+
+void te::mnt::SmoothIsolinesDialog::onSrsToolButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if (srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  int newSRID = srsDialog.getSelectedSRS().first;
+
+  setSRID(newSRID);
+
+}
+
+void te::mnt::SmoothIsolinesDialog::setSRID(int newSRID)
+{
+  if (newSRID <= 0)
+  {
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+  }
+  else
+  {
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    if (name.size())
+      m_ui->m_resSRIDLabel->setText(name.c_str());
+    else
+      m_ui->m_resSRIDLabel->setText(QString("%1").arg(newSRID));
+  }
+  m_outsrid = newSRID;
+}

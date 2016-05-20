@@ -28,7 +28,7 @@
 #include "../common/Enums.h"
 #include "../common/Globals.h"
 #include "../common/HexUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/Exception.h"
 #include "../geometry.h"
 #include "EWKBReader.h"

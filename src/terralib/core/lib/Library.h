@@ -68,7 +68,7 @@ namespace te
       named addSearchDir that can be used to control the behaviour of
       operational system when loading the shared library dependencies.
 
-      \warning Shared libraries should not be loaded by multiple threads.
+      \warning Shared libraries should not be loaded concurrently by multiple threads.
      */
     class TECOREEXPORT Library : public boost::noncopyable
     {
@@ -84,7 +84,8 @@ namespace te
           \param slib_file_name The library file name. The file name may contain the full library path.
           \param delay_load     If true the client object must call explicitly the load method before trying to access any symbol in the library.
 
-          \exception LibraryLoadException It can throws an exception if delay_load is set to false and the library can not be loaded.
+          \exception LibraryLoadException It can throw an exception if delay_load is set to false and the library can not be loaded.
+          \exception LibraryNameException It throws an exception if library name is empty or just white-spaces.
          */
         Library(const std::string& slib_file_name, const bool delay_load = false);
 
@@ -142,31 +143,26 @@ namespace te
           \exception LibraryInvalidSearchPathException It throws an exception if the path couldn't be added to the search path.
 
           \note Not thread-safe.
-         
+
           \note For Linux and Mac OS X this method doesn't perform operations.
          */
         static void addSearchDir(const std::string& dir_name);
 
         //! Comes back the application lookup path to the original state, before any add_search_dir has been called.
         /*!
-          \exception LibraryResetSearchPathError It throws an exception if the path couldn't be reset.
+          \exception LibraryResetSearchPathException It throws an exception if the path couldn't be reset.
 
           \note Not thread-safe.
-         
+
           \note For Linux and Mac OS X this method doesn't perform operations.
          */
         static void resetSearchPath();
 
         //! Returns the system lookup path.
         /*!
-          \exception library_search_path_error It throws an exception if the path couldn't be reset.
+          \exception LibrarySearchPathException It throws an exception if the path couldn't be reset.
 
           \note Not thread-safe.
-
-          \todo This method needs a checkup! Instead of
-                throwing an exception in windows implementation,
-                this methods should take an interative
-                loop to allocate more room for the path string!
          */
         static std::string getSearchPath();
 

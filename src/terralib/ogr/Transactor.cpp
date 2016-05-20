@@ -19,7 +19,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/ObjectId.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/query/DataSetName.h"
@@ -56,10 +56,13 @@ OGRFieldType GetOGRType(int te_type)
     case te::dt::UINT16_TYPE:
     case te::dt::INT32_TYPE:
     case te::dt::UINT32_TYPE:
-    case te::dt::INT64_TYPE:
-    case te::dt::UINT64_TYPE:
       return OFTInteger;
     break;
+
+    case te::dt::INT64_TYPE:
+    case te::dt::UINT64_TYPE:
+      return OFTInteger64;
+      break;
 
     case te::dt::FLOAT_TYPE:
     case te::dt::DOUBLE_TYPE:
@@ -1025,6 +1028,11 @@ void te::ogr::Transactor::add(const std::string& datasetName,
             feat->SetField(currfield, d->getInt32(i));
             ++currfield;
           break;
+
+          case te::dt::INT64_TYPE:
+            feat->SetField(currfield, (GIntBig)d->getInt64(i));
+            ++currfield;
+            break;
 
           case te::dt::STRING_TYPE:
             feat->SetField(currfield, d->getAsString(i).c_str());

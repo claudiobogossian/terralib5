@@ -41,32 +41,47 @@ file(GLOB TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR
 
 file(GLOB TERRALIB_UNITTEST_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/lib/*.cpp)
 
-source_group("Source Files"            FILES ${TERRALIB_UNITTEST_CORE_SRC_FILES})
-source_group("Header Files"            FILES ${TERRALIB_UNITTEST_CORE_HDR_FILES})
-source_group("Source Files\\uri"       FILES ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES})
-source_group("Header Files\\uri"       FILES ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES})
-source_group("Source Files\\encoding"  FILES ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES})
-source_group("Header Files\\encoding"  FILES ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES})
-source_group("Source Files\\lib"  FILES ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES})
-source_group("Header Files\\lib"  FILES ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
+file(GLOB TERRALIB_UNITTEST_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/translator/*.cpp)
+
+file(GLOB TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/logger/*.cpp)
+
+file(GLOB TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/utils/*.cpp)
+
+
+
+source_group("Source Files"              FILES ${TERRALIB_UNITTEST_CORE_SRC_FILES})
+source_group("Header Files"              FILES ${TERRALIB_UNITTEST_CORE_HDR_FILES})
+source_group("Source Files\\uri"         FILES ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES})
+source_group("Header Files\\uri"         FILES ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES})
+source_group("Source Files\\encoding"    FILES ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES})
+source_group("Header Files\\encoding"    FILES ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES})
+source_group("Source Files\\lib"         FILES ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES})
+source_group("Header Files\\lib"         FILES ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
+source_group("Source Files\\translator"  FILES ${TERRALIB_UNITTEST_CORE_TRANSLATOR_SRC_FILES})
+source_group("Header Files\\translator"  FILES ${TERRALIB_UNITTEST_CORE_TRANSLATOR_HDR_FILES})
+source_group("Source Files\\logger"      FILES ${TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES})
+source_group("Source Files\\utils"       FILES ${TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES})
 
 
 add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERRALIB_UNITTEST_CORE_HDR_FILES}
                                       ${TERRALIB_UNITTEST_CORE_URI_SRC_FILES} ${TERRALIB_UNITTEST_CORE_URI_HDR_FILES}
                                       ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES} ${TERRALIB_UNITTEST_CORE_ENCODING_HDR_FILES}
-                                      ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES} ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES})
+                                      ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES} ${TERRALIB_UNITTEST_CORE_LIB_HDR_FILES}
+                                      ${TERRALIB_UNITTEST_CORE_TRANSLATOR_SRC_FILES} ${TERRALIB_UNITTEST_CORE_TRANSLATOR_HDR_FILES}
+                                      ${TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES}
+                                      ${TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES})
 
 target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 
 if(WIN32)
   add_definitions(-DTECOREDLL)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_unittest_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_unittest_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_unittest_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
 else()
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_unittest_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_unittest_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_unittest_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
 endif()
 
 file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
@@ -79,3 +94,11 @@ set_target_properties(terralib_unittest_core_lib_function
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
 add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)
+
+if(GETTEXT_FOUND)
+  if(TERRALIB_TRANSLATOR_ENABLED)
+    TERRALIB_REGISTER_TRANSLATION("terralib_unittest_core" "pt_BR")
+  endif()
+endif()
+add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

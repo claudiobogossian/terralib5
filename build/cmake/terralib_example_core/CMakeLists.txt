@@ -27,6 +27,9 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
+
+add_definitions(-DBOOST_LOG_DYN_LINK)
+
 # Examples of core/uri
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.cpp)
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.h)
@@ -60,19 +63,20 @@ file(GLOB TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/exam
 
 add_executable(terralib_example_core_lib ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
 
+
 target_link_libraries(terralib_example_core_lib terralib_mod_core
                                                 ${Boost_FILESYSTEM_LIBRARY}
                                                 ${Boost_SYSTEM_LIBRARY})
 
 if(WIN32)
   add_definitions(-DTECOREDLL)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_example_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_example_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+  set(terralib_example_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
 else()
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_example_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_example_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  set(terralib_example_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
 endif()
 
 file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
@@ -85,3 +89,33 @@ set_target_properties(terralib_example_core_lib_function
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
 add_dependencies(terralib_example_core_lib terralib_example_core_lib_function)
+
+
+#Examples of translator
+file(GLOB TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/translator/*.cpp)
+
+source_group("Source Files\\translator"  FILES ${TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES})
+
+add_executable(terralib_example_core_translator ${TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES})
+
+target_link_libraries(terralib_example_core_translator terralib_mod_core)
+
+
+if(GETTEXT_FOUND)
+  if(TERRALIB_TRANSLATOR_ENABLED)
+    TERRALIB_REGISTER_TRANSLATION("terralib_example_core_translator" "pt_BR")
+  endif()
+endif()
+
+#Examples of logger
+#file(GLOB TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/logger/*.cpp)
+
+#source_group("Source Files\\logger"  FILES ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+
+#add_executable(terralib_example_core_logger ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+
+#target_link_libraries(terralib_example_core_logger terralib_mod_core)
+
+
+
+

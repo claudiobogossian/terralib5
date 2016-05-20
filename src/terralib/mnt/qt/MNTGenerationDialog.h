@@ -64,6 +64,8 @@ namespace te
 
       te::map::AbstractLayerPtr getLayer();
 
+      void setSRID(int newSRID);
+
       protected slots:
 
       void onInputComboBoxChanged(int index);
@@ -72,11 +74,11 @@ namespace te
       void onResYLineEditEditingFinished();
       void onDimLLineEditEditingFinished();
       void onDimCLineEditEditingFinished();
-      void onTargetDatasourceToolButtonPressed();
       void onTargetFileToolButtonPressed();
       void onHelpPushButtonClicked();
       void onOkPushButtonClicked();
       void onCancelPushButtonClicked();
+      void onSrsToolButtonClicked();
 
     private:
 
@@ -84,7 +86,6 @@ namespace te
 
       te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
       std::string m_outputArchive;                                                      //!< Archive information.
-      bool m_toFile;
       std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
@@ -93,6 +94,8 @@ namespace te
 
       mntType m_inputType;  //!< Input type (SAMPLE, TIN, GRID)
       Interpolator m_inter;
+
+      int m_outsrid;
 
     }; //class MNTGenerationDialog
   } //mnt

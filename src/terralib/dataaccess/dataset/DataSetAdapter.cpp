@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../datatype/Array.h"
 #include "../../datatype/ByteArray.h"
 #include "../../datatype/DataConverterManager.h"

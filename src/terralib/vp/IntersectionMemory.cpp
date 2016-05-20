@@ -28,7 +28,7 @@
 #include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
@@ -219,13 +219,19 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
         }
         else if(fiGeomProp->getGeometryType() == te::gm::MultiLineStringType)
         {
-          if(resultGeom->getGeomTypeId() == te::gm::MultiLineStringType)
+          if (resultGeom->getGeomTypeId() == te::gm::MultiPointType ||
+            resultGeom->getGeomTypeId() == te::gm::MultiPointZType ||
+            resultGeom->getGeomTypeId() == te::gm::MultiPointMType ||
+            resultGeom->getGeomTypeId() == te::gm::MultiPointZMType)
           {
             item->setGeometry("geom", resultGeom.release());
           }
-          else if(resultGeom->getGeomTypeId() == te::gm::LineStringType)
+          else if (resultGeom->getGeomTypeId() == te::gm::PointType ||
+            resultGeom->getGeomTypeId() == te::gm::PointZType ||
+            resultGeom->getGeomTypeId() == te::gm::PointMType ||
+            resultGeom->getGeomTypeId() == te::gm::PointZMType)
           {
-            te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, resultGeom->getSRID());
+            te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::GeomType(resultGeom->getGeomTypeId()+3), resultGeom->getSRID());
             newGeom->add(resultGeom.release());
             item->setGeometry("geom", newGeom);
           }
@@ -261,7 +267,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
         std::size_t propPos = outputDt->getPropertyPosition(name);
 
-        if ((propPos < 0) || (propPos >= outputDt->size()))
+        if (propPos >= outputDt->size())
           continue;
 
         te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
@@ -277,7 +283,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
         std::size_t propPos = outputDt->getPropertyPosition(name);
 
-        if ((propPos < 0) || (propPos >= outputDt->size()))
+        if (propPos >= outputDt->size())
           continue;
 
         te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();

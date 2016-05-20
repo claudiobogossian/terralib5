@@ -62,10 +62,6 @@ te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, c
 
 te::edit::CreateLineTool::~CreateLineTool()
 {
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
-  //delete _line;
 }
 
 bool te::edit::CreateLineTool::mousePressEvent(QMouseEvent* e)
@@ -124,7 +120,7 @@ bool te::edit::CreateLineTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   m_isFinished = true;
 
-  storeNewGeometry();
+  storeFeature();
 
   return true;
 }
@@ -186,7 +182,7 @@ te::gm::Geometry* te::edit::CreateLineTool::buildLine()
   return line;
 }
 
-void te::edit::CreateLineTool::storeNewGeometry()
+void te::edit::CreateLineTool::storeFeature()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine(), te::edit::GEOMETRY_CREATE);
   emit geometriesEdited();

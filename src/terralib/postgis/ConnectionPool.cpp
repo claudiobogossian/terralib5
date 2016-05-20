@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/Enums.h"
 #include "../common/STLUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/datasource/ConnectionPoolManager.h"
 #include "Connection.h"
 #include "ConnectionPool.h"

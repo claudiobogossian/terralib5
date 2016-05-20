@@ -29,7 +29,7 @@
 #include <curl/curl.h>
 
 // TerraLib
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "WCS.h"
 #include <iostream>
 

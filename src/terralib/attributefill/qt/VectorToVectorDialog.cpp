@@ -30,7 +30,7 @@
 #include "../../attributefill/VectorToVectorMemory.h"
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
@@ -274,6 +274,8 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
     te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outDataSetName).release());
     m_outLayer = converter(dt);
+    m_outLayer->setSRID(toLayer->getSRID());
+
   }
   catch(te::common::Exception& e)
   {

@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Exception.h"
 #include "WKTParser.h"
 #include "WKTReader.h"

@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../../common/Translator.h"
+#include "../../../../core/translator/Translator.h"
 #include "../../../../wms/qt/WMSLayerSelector.h"
 #include "WMSConnector.h"
 #include "WMSType.h"

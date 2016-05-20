@@ -26,7 +26,7 @@
 // TerraLib
 #include "../common/Exception.h"
 #include "../common/Globals.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/ArrayProperty.h"
@@ -407,6 +407,13 @@ OGRFieldDefn* te::ogr::Convert2OGR(te::dt::Property* p)
     case te::dt::INT32_TYPE:
       return fieldDef;
     break;
+
+    case te::dt::INT64_TYPE:
+    {
+      fieldDef->SetType(OFTInteger64);
+      return fieldDef;
+      break;
+    }
 
     case te::dt::ARRAY_TYPE:
     {

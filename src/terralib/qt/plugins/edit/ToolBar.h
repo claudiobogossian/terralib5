@@ -118,6 +118,8 @@ namespace te
 
           void onFeatureAttributesActivated(bool checked);
 
+          void onResetVisualizationToolActivated(bool checked);
+
         Q_SIGNALS:
 
           /*! This signal is emitted when the layer selection changed. */
@@ -138,6 +140,7 @@ namespace te
           QToolBar* m_toolBar;
           QAction* m_editAction;
           QAction* m_saveAction;
+          QAction* m_clearEditionAction;
           QAction* m_vertexToolAction;
           QAction* m_createPolygonToolAction;
           QAction* m_createLineToolAction;
@@ -170,7 +173,7 @@ namespace te
           void initialize();
           void initializeActions();
           void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
-          bool datasourceIsValid(const te::map::AbstractLayerPtr& layer);
+          bool dataSrcIsPrepared(const te::map::AbstractLayerPtr& layer);
         };
 
       } // end namespace edit

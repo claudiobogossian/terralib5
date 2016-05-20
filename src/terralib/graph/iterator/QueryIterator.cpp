@@ -24,7 +24,7 @@
 */
 
 // Terralib Includes
-#include "../../common/Translator.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/datasource/DataSource.h"

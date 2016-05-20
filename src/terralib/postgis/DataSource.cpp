@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/CheckConstraint.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/ForeignKey.h"

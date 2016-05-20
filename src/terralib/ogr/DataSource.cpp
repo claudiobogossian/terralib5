@@ -21,7 +21,7 @@
 #include "Transactor.h"
 #include "Utils.h"
 
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/query/SQLDialect.h"
 
 // OGR
@@ -41,6 +41,7 @@ void GetDataSetTypeCapabilities(te::da::DataSourceCapabilities& caps)
   te::da::DataTypeCapabilities dt_caps;
 
   dt_caps.setSupportInt32(true);
+  dt_caps.setSupportInt64(true);
   dt_caps.setSupportArray(true);
   dt_caps.setSupportString(true);
   dt_caps.setSupportDouble(true);

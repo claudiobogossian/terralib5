@@ -57,11 +57,9 @@ namespace te
 
       void drawPolygon();
 
-      void draw();
+      void draw(bool onlyRepository = false);
 
-      void reset();
-
-      void storeEditedFeature();
+      void storeFeature();
 
       void storeUndoCommand();
 
@@ -79,9 +77,12 @@ namespace te
 
       void onExtentChanged();
 
+      void onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>);
+
     protected:
 
-      std::vector<Feature*> m_updateWatches;
+      std::vector<Feature*> m_addWatches;
+      int m_currentIndex;
 
     };
 

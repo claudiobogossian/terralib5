@@ -27,7 +27,7 @@
 #include "Exception.h"
 //#include "OSSettingsDir.h"
 #include "SystemApplicationSettings.h"
-#include "Translator.h"
+//#include "../core/translator/Translator.h"
 #include "UserApplicationSettings.h"
 
 // STL

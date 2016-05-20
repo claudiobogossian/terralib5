@@ -28,7 +28,7 @@
 
 #ifdef TERRALIB_GEOS_ENABLED
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "Exception.h"
 #include "GeometryCollection.h"
 #include "LineString.h"

@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
+#include "../core/translator/Translator.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../maptools/AbstractRenderer.h"
 #include "../maptools/RendererFactory.h"

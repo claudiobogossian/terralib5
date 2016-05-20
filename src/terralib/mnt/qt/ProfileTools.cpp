@@ -5,9 +5,18 @@
 
 */
 
+#include <algorithm>
 // TerraLib
+#include "../../edit/Feature.h"
+#include "../../edit/qt/Renderer.h"
 #include "../../edit/qt/Utils.h"
+#include "../../edit/RepositoryManager.h"
 #include "../../edit/Utils.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/Geometry.h"
+#include "../../geometry/MultiLineString.h"
+#include "../../qt/af/ApplicationController.h"
+#include "../../qt/af/BaseApplication.h"
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/canvas/MapDisplay.h"
 #include "../../qt/widgets/Utils.h"
@@ -17,148 +26,143 @@
 #include <QMessageBox>
 
 
-te::mnt::ProfileTools::ProfileTools(te::qt::widgets::MapDisplay* display, EditType t, QObject* parent)
-  : AbstractTool(display, 0)
+te::mnt::ProfileTools::ProfileTools(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+: te::edit::VertexTool(display, layer)
 {
-  m_type = t;
+  te::edit::VertexTool::pickFeature(layer, layer->getExtent());
 }
 
 te::mnt::ProfileTools::~ProfileTools()
 {
-  m_lines.clear();
 }
 
 void te::mnt::ProfileTools::setType(EditType t)
 {
   m_type = t;
+  switch (m_type)
+  {
+    case VERTEX_MOVE:
+    case VERTEX_DELETE:
+      te::edit::VertexTool::setStage(VERTEX_SEARCH);
+      break;
+    case VERTEX_ADD:
+      te::edit::VertexTool::setStage(VERTEX_READY_TO_ADD);
+    default:
+      break;
+  }
 }
 
+void te::mnt::ProfileTools::setLines(std::vector<te::gm::LineString*> &l)
+{ 
+  m_lines = l;
+  updateRTree();
+
+  for (size_t i = 0; i < m_lines.size(); i++)
+   te::edit::RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_lines[i], te::edit::GEOMETRY_CREATE);
+
+}
 
 bool te::mnt::ProfileTools::mousePressEvent(QMouseEvent* e)
 {
-  if (e->button() != Qt::LeftButton)
-    return false;
-  
-  switch (m_type)
-  {
-  case LINE_SELECT:
-    break;
-  case LINE_CREATE:
-    break;
-  case VERTEX_MOVE:
-  case VERTEX_ADD:
-  case VERTEX_DELETE:
-  case NONE:
-    break;
-  }
-
+  if (m_type == VERTEX_ADD)
     return true;
+
+  if (m_type == VERTEX_DELETE)
+    e->setModifiers(Qt::ShiftModifier);
+
+  return (te::edit::VertexTool::mousePressEvent(e));
 }
 
 bool te::mnt::ProfileTools::mouseMoveEvent(QMouseEvent* e)
 {
-  //switch (m_type)
-  //{
-  //case LINE_SELECT:
-  //  break;
-  //case LINE_CREATE:
-  //  if (m_coords.size() < 1 || m_isFinished)
-  //    return false;
-
-  //  QPointF pos = te::edit::GetPosition(e);
-
-  //  QPointF pw = m_display->transform(pos);
-
-  //  te::gm::Coord2D coord = te::gm::Coord2D(pw.x(), pw.y());
-
-  //  te::edit::TrySnap(coord, m_display->getSRID());
-
-  //  m_coords.push_back(coord);
-
-  //  m_lastPos = te::gm::Coord2D(coord.x, coord.y);
-
-  //  if (e->buttons() & Qt::LeftButton)
-  //    m_continuousMode = true;
-  //  else
-  //    m_continuousMode = false;
-
-  //  //draw();
-  //  break;
-  //case VERTEX_MOVE:
-  //case VERTEX_ADD:
-  //case VERTEX_DELETE:
-  //case NONE:
-  //  break;
-  //}
-
-  return true;
+  //if (m_type == LINE_INVERT)
+    m_feature = 0;
+  return (te::edit::VertexTool::mouseMoveEvent(e));
 }
 
 bool te::mnt::ProfileTools::mouseReleaseEvent(QMouseEvent* e)
 {
-  try
+  if (m_type == VERTEX_ADD)
+    return true;
+
+  if (te::edit::VertexTool::m_currentStage == FEATURE_SELECTION)
+    te::edit::VertexTool::setStage(VERTEX_SEARCH);
+
+  if (m_type == LINE_INVERT)
   {
-    switch (m_type)
+    te::gm::Envelope env = buildEnvelope(te::edit::GetPosition(e));
+
+    te::gm::LineString env_line(5, te::gm::LineStringType, m_layer->getSRID());
+    env_line.setPoint(0, env.getLowerLeftX(), env.getLowerLeftY());
+    env_line.setPoint(1, env.getLowerLeftX(), env.getUpperRightY());
+    env_line.setPoint(2, env.getUpperRightX(), env.getUpperRightY());
+    env_line.setPoint(3, env.getUpperRightX(), env.getLowerLeftY());
+    env_line.setPoint(4, env.getLowerLeftX(), env.getLowerLeftY());
+
+    te::color::RGBAColor green(0, 255, 0, 255);
+    for (size_t i = 0; i < m_lines.size(); i++)
     {
-    case LINE_SELECT:
-    {
-      QPointF pos = te::edit::GetPosition(e);
-      QPointF pw = m_display->transform(pos);
-      te::gm::Point *coord = new te::gm::Point(pw.x(), pw.y());
-      coord->setSRID(m_display->getSRID());
-      for (size_t i = 0; i < m_lines.size(); i++)
+      if (m_lines[i]->intersects(&env_line))
       {
-        if (m_lines[i]->intersects(coord))
+        const te::gm::Envelope& displayExtent = m_display->getExtent();
+        te::qt::widgets::Canvas canvas(m_display->getDisplayPixmap());
+        canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
+        canvas.setLineColor(green);
+        canvas.setLineWidth(3);
+        canvas.setLineDashStyle(te::map::SolidLine);
+        canvas.draw(m_lines[i]);
+        te::qt::widgets::Config2DrawPoints(&canvas, "circle", 16, QColor(green.getRgba()), QColor(green.getRgba()), 1);
+        canvas.draw(m_lines[i]->getStartPoint());
+        te::qt::widgets::Config2DrawPoints(&canvas, "star", 16, QColor(green.getRgba()), QColor(green.getRgba()), 1);
+        canvas.draw(m_lines[i]->getEndPoint());
+
+        if (QMessageBox::question(0, tr("Profile"), tr("Invert this trajectory?")) == QMessageBox::Yes)
         {
-          m_selectline = m_lines[i];
-          te::qt::widgets::Canvas canvas(m_display->getDisplayPixmap());
-          canvas.setLineColor(Qt::green);
-          te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::black, 1);
-
-          canvas.draw(m_selectline);
-          for (std::size_t j = 0; j < m_selectline->getNPoints(); ++j)
+          te::gm::Coord2D *coords = m_lines[i]->getCoordinates();
+          std::vector<te::gm::Coord2D> pts;
+          for (size_t j = 0; j <  m_lines[i]->getNPoints(); j++)
           {
-            std::auto_ptr<te::gm::Point> point(m_selectline->getPointN(j));
-            canvas.draw(point.get());
+            pts.push_back(coords[j]);
           }
-
-          return true;
+          std::reverse(pts.begin(),pts.end());
+          for (size_t j = 0; j < m_lines[i]->getNPoints(); j++)
+          {
+            coords[j].x = pts[j].getX();
+            coords[j].y = pts[j].getY();
+          }
         }
+        break;
       }
-      return false;
     }
-    break;
-
-    case LINE_CREATE:
-    case VERTEX_MOVE:
-    case VERTEX_ADD:
-    case VERTEX_DELETE:
-    case NONE:
-      break;
-    }
-
   }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(0, "Profile ", e.what());
-    return EXIT_FAILURE;
-  }
-  return true;
+
+  //if (m_type == VERTEX_DELETE || m_type == VERTEX_MOVE)
+  //{
+  //  if (m_lines.size() && m_feature)
+  //    m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(m_lines[0]->clone()));
+  //  else
+  //    te::edit::VertexTool::pickFeature(m_layer, m_layer->getExtent());
+  //}
+
+  bool ret = te::edit::VertexTool::mouseReleaseEvent(e);
+
+  emit geometriesEdited();
+
+  te::edit::VertexTool::setStage(VERTEX_SEARCH);
+  return ret;
 }
 
 bool te::mnt::ProfileTools::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  switch (m_type)
+  if (m_type == VERTEX_ADD)
   {
-  case LINE_SELECT:
-  case LINE_CREATE:
-  case VERTEX_MOVE:
-  case VERTEX_ADD:
-  case VERTEX_DELETE:
-  case NONE:
-    break;
+    te::edit::VertexTool::setStage(VERTEX_READY_TO_ADD);
+    bool ret = te::edit::VertexTool::mouseDoubleClickEvent(e);
+    te::edit::VertexTool::setStage(VERTEX_READY_TO_ADD);
+    return ret;
   }
 
-  return true;
+  return (te::edit::VertexTool::mouseDoubleClickEvent(e));
 }
+
 
