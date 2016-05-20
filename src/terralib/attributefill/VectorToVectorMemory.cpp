@@ -108,7 +108,7 @@ bool te::attributefill::VectorToVectorMemory::run()
   te::da::AssociateDataSetTypeConverterSRID(toConverter, toSrid);
 
   std::auto_ptr<te::da::DataSetType>    toSchema(toConverter->getResult());
-  std::auto_ptr<te::da::DataSetAdapter> toDs(te::da::CreateAdapter(toDsOrigin.get(), toConverter));
+  std::auto_ptr<te::da::DataSet> toDs(te::da::CreateAdapter(toDsOrigin.get(), toConverter));
 
   te::gm::Envelope fromEnv = m_fromLayer->getExtent();
   te::gm::Envelope toEnv = m_toLayer->getExtent();
@@ -154,7 +154,9 @@ bool te::attributefill::VectorToVectorMemory::run()
         {
           if(toProps[j]->getName() == outPropName)
           {
-            item->setValue(outPropName, toDs->getValue(outPropName).release());
+            if(!toDs->isNull(outPropName))
+              item->setValue(outPropName, toDs->getValue(outPropName).release());
+
             break;
           }
         }
@@ -169,7 +171,12 @@ bool te::attributefill::VectorToVectorMemory::run()
         te::da::PrimaryKey* toPk = toSchema->getPrimaryKey();
         te::dt::Property* pkProp = toPk->getProperties()[0];
 
-        std::string ex = "The \"To\" layer geometry (" + pkProp->getName() + ": " + toDs->getValue(pkProp->getName())->toString() + ") has intersection candidate invalid!";
+        std::string value = "Unknown";
+
+        if (!toDs->isNull(pkProp->getName()))
+          value = toDs->getValue(pkProp->getName())->toString();
+
+        std::string ex = "The \"To\" layer geometry (" + pkProp->getName() + ": " + value + ") has intersection candidate invalid!";
         te::common::Logger::logDebug("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
 
