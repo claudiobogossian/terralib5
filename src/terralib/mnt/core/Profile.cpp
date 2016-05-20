@@ -423,7 +423,8 @@ bool te::mnt::Profile::runIsolinesProfile(std::vector<te::gm::LineString*> visad
   std::string geostype;
   te::gm::Envelope env;
 
-  size_t nsamples = ReadSamples(m_inName, m_inDsrc, std::string(), 0, 0, None, mpt, isolines, geostype, env, m_srid);
+  std::string vazio;
+  size_t nsamples = ReadSamples(m_inName, m_inDsrc, vazio, 0, 0, None, mpt, isolines, geostype, env, m_srid);
 
   for (std::size_t v = 0; v < visadas.size(); ++v)
   {
