@@ -253,6 +253,8 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     if (!te::da::DataSourceInfoManager::getInstance().add(ds))
       ds = te::da::DataSourceInfoManager::getInstance().getByConnInfo(ds->getConnInfoAsString());
 
+    id = ds->getId();
+
     if(IsShapeFile(*it) && !HasShapeFileSpatialIndex(*it))
     {
       QString datasetName(fileBaseName.c_str());
