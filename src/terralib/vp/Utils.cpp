@@ -349,12 +349,12 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
   catch(te::common::Exception& e)
   {
     t->rollBack();
-    throw;
+    throw e;
   }
   catch(std::exception& e)
   {
     t->rollBack();
-    throw;
+    throw e;
   }
 }
 
