@@ -4,7 +4,7 @@
 // TerraLib
 #include <terralib/Defines.h>
 
-#ifdef TECOREDLL
+#ifdef TEEXEMPCOREDLL
   #define TECOREEXPORT TE_DLL_EXPORT
 #else
   #define TECOREEXPORT TE_DLL_IMPORT
