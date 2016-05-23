@@ -28,8 +28,9 @@
 
 // TerraLib
 #include <terralib/Defines.h>
-#include <terralib/core/lib/Library.h>
 #include <terralib/core/lib/Exception.h>
+#include <terralib/core/lib/Library.h>
+#include <terralib/core/utils/Platform.h>
 
 // Boost
 #include <boost/test/unit_test.hpp>
@@ -203,7 +204,7 @@ BOOST_AUTO_TEST_CASE(test_addSearchDir)
   std::string lName = te::core::Library::getNativeName("terralib_unittest_core_lib_function");
 
   /* Correct */
-  BOOST_CHECK_NO_THROW(te::core::Library::addSearchDir(GetExampleFolder()));
+  BOOST_CHECK_NO_THROW(te::core::Library::addSearchDir(te::core::FindInTerraLibPath("example")));
 
   /* Empty path. */
   BOOST_CHECK_THROW(te::core::Library::addSearchDir(""), te::core::LibraryInvalidSearchPathException);
@@ -217,7 +218,7 @@ BOOST_AUTO_TEST_CASE(test_addSearchDir)
   /* Trying to load a library that can not be found by the operational system. */
   BOOST_CHECK_THROW(te::core::Library(lName.c_str()), te::core::LibraryLoadException);
 
-  te::core::Library::addSearchDir(GetExampleFolder());
+  te::core::Library::addSearchDir(te::core::FindInTerraLibPath("example"));
 
   /* Trying to load a library that can be found by the operational system. */
 
@@ -232,7 +233,7 @@ BOOST_AUTO_TEST_CASE(test_resetSearchDir)
   BOOST_CHECK_NO_THROW(te::core::Library::resetSearchPath());
 
   /* Testing load a shared library adding a search path. */
-  te::core::Library::addSearchDir(GetExampleFolder());
+  te::core::Library::addSearchDir(te::core::FindInTerraLibPath("example"));
   te::core::Library l(g_shared_library_name, true);
   BOOST_CHECK_NO_THROW(l.load());
 
@@ -240,7 +241,7 @@ BOOST_AUTO_TEST_CASE(test_resetSearchDir)
 
   /* Testing load library after reset search path. */
   te::core::Library::resetSearchPath();
-  BOOST_CHECK_THROW(te::core::Library(g_shared_library_name), te::core::LibraryLoadException);
+  BOOST_CHECK_THROW(te::core::Library(te::core::Library::getNativeName("terralib_unittest_core_lib_function")), te::core::LibraryLoadException);
 
   return;
 }
