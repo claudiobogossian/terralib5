@@ -19,25 +19,31 @@
  */
 
 /*!
-  \file terralib/vm/core/Config.h
+  \file terralib/vm/core/Exception.h
 
-  \brief Configuration flags for TerraLib VM Library.
-*/
+  \brief Exception classes for the TerraLib Virtual Machine Library.
 
-#ifndef __TERRALIB_VM_CORE_CONFIG_H__
-#define __TERRALIB_VM_CORE_CONFIG_H__
+  \author Frederico Augusto Bedê
+  \author Gilberto Ribeiro de Queiroz
+ */
+
+#ifndef __TERRALIB_VM_CORE_EXCEPTION_H__
+#define __TERRALIB_VM_CORE_EXCEPTION_H__
 
 // TerraLib
-#include "../../Defines.h"
+#include "../../Exception.h"
 
-#ifdef WIN32
-  #ifdef TEVMDLL
-    #define TEVMEXPORT TE_DLL_EXPORT
-  #else
-    #define TEVMEXPORT TE_DLL_IMPORT
-  #endif
-#else
-  #define TEVMEXPORT
-#endif
+namespace te
+{
+  namespace vm
+  {
+    namespace core
+    {
+      //! Base exception class for TerraLib Virtual Machine Library.
+      struct Exception: virtual te::Exception { };
 
-#endif  // __TERRALIB_VM_CORE_CONFIG_H__
+    }
+  }  // end namespace core
+}    // end namespace te
+
+#endif  // __TERRALIB_VM_CORE_EXCEPTION_H__
