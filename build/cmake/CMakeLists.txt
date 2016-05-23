@@ -303,10 +303,6 @@ if(GEOS_FOUND)
   set(TERRALIB_GEOS_ENABLED ON)
 endif()
 
-if(GEOSC_FOUND)
-  set(TERRALIB_GEOSC_ENABLED ON)
-endif()
-
 if(GETTEXT_FOUND)
     set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?")
 endif()
