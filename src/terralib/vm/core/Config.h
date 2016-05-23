@@ -19,18 +19,16 @@
  */
 
 /*!
-  \file terralib/ceditor/lib/Config.h
+  \file terralib/vm/core/Config.h
 
   \brief Configuration flags for TerraLib VM Library.
 */
 
-#ifndef __TERRALIB_VM_CONFIG_H__
-#define __TERRALIB_VM_CONFIG_H__
+#ifndef __TERRALIB_VM_CORE_CONFIG_H__
+#define __TERRALIB_VM_CORE_CONFIG_H__
 
 // TerraLib
-#include "../Defines.h"
-
-#define TE_VM_MODULE_NAME "te.vm"
+#include "../../Defines.h"
 
 #ifdef WIN32
   #ifdef TEVMDLL
@@ -42,4 +40,4 @@
   #define TEVMEXPORT
 #endif
 
-#endif  // __TERRALIB_VM_CONFIG_H__
+#endif  // __TERRALIB_VM_CORE_CONFIG_H__

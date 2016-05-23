@@ -163,8 +163,9 @@ namespace te
                               unsigned int n);
 
         /*!
-         * \brief It sets the locale for the Translator.
-         * \param locale A string of the new locale.
+          \brief It sets the locale for the Translator.
+
+          \param locale A string of the new locale.
          */
         void setLocale(const std::string &locale);
 
@@ -185,8 +186,8 @@ namespace te
          */
         bool exist(const std::string& textDomain);
 
-
         //@}
+
       private:
 
         /*! \brief Singleton constructor must be private. */
@@ -195,7 +196,8 @@ namespace te
         void operator=(Translator const&);
 
       private:
-        std::string m_locale= "";
+
+        std::string m_locale;
         std::vector<std::string> m_textDomainVector;  //!< A vector from text domains to base directory for the message catalog.
 
     };

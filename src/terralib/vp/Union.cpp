@@ -41,6 +41,8 @@ te::vp::Union::Union()
 
 bool te::vp::Union::executeMemory(te::vp::AlgorithmParams* mainParams)
 {
+  te::vp::ValidateAlgorithmParams(mainParams, te::vp::MEMORY);
+
   std::vector<te::vp::InputParams> inputParams =  mainParams->getInputParams();
 
   te::da::DataSourcePtr firstSource       = inputParams[0].m_inputDataSource;

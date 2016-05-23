@@ -1,78 +1,75 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*
+  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
-  \file VirtualMachineManager.cpp
-  
+  \file terralib/vm/core/VirtualMachineManager.cpp
+
   \brief A singleton for managing TerraLib Virtual Machines.
+
+  \author Frederico Augusto Bedê
+  \author Gilberto Ribeiro de Queiroz
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
-#include "../../core/translator/Translator.h"
-//#include "Exception.h"
-#include "VirtualMachine.h"
 #include "VirtualMachineManager.h"
+#include "Exception.h"
+#include "VirtualMachine.h"
 
-te::vm::VirtualMachine* te::vm::VirtualMachineManager::getVM(const std::string& id) const
+// STL
+#include <cassert>
+#include <map>
+
+struct te::vm::core::VirtualMachineManager::Impl
 {
-  return te::common::GetPValue(m_vmMap, id);
-}
+  std::map<std::string, std::shared_ptr<VirtualMachine> > vms;  //!< A map from (VM id) to (VM instance).
+};
 
-void te::vm::VirtualMachineManager::add(const std::string& id, VirtualMachine* vm)
-{
-//  if(getVM(id))
-//    throw Exception(TR_VM("Could not manage VM because its id already exists!"));
-
-  m_vmMap[id] = vm;
-}
-
-void te::vm::VirtualMachineManager::clear()
-{
-  te::common::FreeContents(m_vmMap);
-  m_vmMap.clear();
-}
-
-void te::vm::VirtualMachineManager::removeAll(const std::string& vmType)
-{
-  std::map<std::string, VirtualMachine*>::iterator it = m_vmMap.begin();
-  std::map<std::string, VirtualMachine*>::iterator itend = m_vmMap.end();
-
-  while(it != itend)
-  {
-    if(it->second->getName() == vmType)
-    {
-      VirtualMachine* vm = it->second;
-      ++it;
-      delete vm;
-      m_vmMap.erase(it);
-    }
-    else
-      ++it;
-  }
-}
-
-te::vm::VirtualMachineManager::VirtualMachineManager()
+te::vm::core::VirtualMachine*
+te::vm::core::VirtualMachineManager::get(const std::string& id) const
 {
 }
 
-te::vm::VirtualMachineManager::~VirtualMachineManager()
+void
+te::vm::core::VirtualMachineManager::insert(const std::string& id, std::unique_ptr<VirtualMachine> vm)
 {
-  //clear();
+}
+
+void
+te::vm::core::VirtualMachineManager::clear()
+{
+}
+
+void
+te::vm::core::VirtualMachineManager::erase(const std::string& id)
+{
+}
+
+te::vm::core::VirtualMachineManager&
+te::vm::core::VirtualMachineManager::instance()
+{
+}
+
+te::vm::core::VirtualMachineManager::VirtualMachineManager()
+{
+}
+
+te::vm::core::VirtualMachineManager::~VirtualMachineManager()
+{
 }
