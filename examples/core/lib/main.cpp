@@ -29,6 +29,7 @@
 // TerraLib
 #include <terralib/core/lib/Exception.h>
 #include <terralib/core/lib/Library.h>
+#include <terralib/core/utils/Platform.h>
 
 // STL
 #include <cstdlib>
@@ -41,6 +42,14 @@ int main()
   {
 // Get the shared library file name according to the operational system.
     std::string lName = te::core::Library::getNativeName("terralib_example_core_lib_function");
+    std::string lPath = te::core::FindInTerraLibPath("example");
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    if(!lPath.empty())
+      te::core::Library::addSearchDir(lPath);
+#else
+    lName = lPath + "/" + lName;
+#endif
 
 // The library is located at the same directory as the executable. */
     te::core::Library l1(lName);

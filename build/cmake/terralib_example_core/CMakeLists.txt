@@ -69,23 +69,6 @@ target_link_libraries(terralib_example_core_lib terralib_mod_core
                                                 ${Boost_SYSTEM_LIBRARY})
 
 
-add_definitions(-DTEEXEMPCOREDLL)
-set(terralib_example_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-set(terralib_example_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-set(terralib_example_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-
-file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
-file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.cpp)
-
-add_library(terralib_example_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
-
-set_target_properties(terralib_example_core_lib_function
-                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
-
-add_dependencies(terralib_example_core_lib terralib_example_core_lib_function)
-
-
 #Examples of translator
 file(GLOB TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/translator/*.cpp)
 
@@ -111,6 +94,28 @@ endif()
 
 #target_link_libraries(terralib_example_core_logger terralib_mod_core)
 
+# Library of functions to example lib
 
+if(WIN32)
+  add_definitions(-DTECOREEXEMPDLL)
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+
+file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
+file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.cpp)
+
+add_library(terralib_example_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
+
+set_target_properties(terralib_example_core_lib_function
+                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+
+add_dependencies(terralib_example_core_lib terralib_example_core_lib_function)
 
 
