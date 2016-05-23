@@ -40,6 +40,7 @@
 #include <iostream>
 
 static const std::string g_shared_library_name(te::core::Library::getNativeName("terralib_unittest_core_lib_function"));
+static const std::string g_shared_library_path(te::core::FindInTerraLibPath("example"));
 
 BOOST_AUTO_TEST_SUITE( lib_test_case )
 
@@ -60,13 +61,10 @@ BOOST_AUTO_TEST_CASE(test_constructor)
   // Name of the library is empty
   BOOST_CHECK_THROW(l1 = new te::core::Library("", true), te::core::LibraryNameException);
 
-  BOOST_CHECK_THROW(l1 = new te::core::Library("        ", true), te::core::LibraryNameException);
-
   /* Loaded library. */
   /* -------------------- */
   // Shared library exist.
-  BOOST_CHECK(l1 = new te::core::Library(g_shared_library_name));
-  delete l1;
+  BOOST_CHECK(l1 = new te::core::Library(g_shared_library_path + "/" + g_shared_library_name));
 
   // Shared library does not exist.
   BOOST_CHECK_THROW(l1 = new te::core::Library("fred.dll"), te::core::LibraryLoadException);
@@ -82,7 +80,7 @@ BOOST_AUTO_TEST_CASE(test_destructor)
   BOOST_CHECK_NO_THROW(delete l);
 
   /* Testing destructor on a loaded library. */
-  l = new te::core::Library(g_shared_library_name);
+  l = new te::core::Library(g_shared_library_path + "/" + g_shared_library_name);
 
   BOOST_CHECK_NO_THROW(delete l);
 
@@ -92,7 +90,7 @@ BOOST_AUTO_TEST_CASE(test_destructor)
 BOOST_AUTO_TEST_CASE(test_load)
 {
   /* Correct */
-  te::core::Library l1(g_shared_library_name, true);
+  te::core::Library l1(g_shared_library_path + "/" + g_shared_library_name, true);
   BOOST_CHECK_NO_THROW(l1.load());
 
   // Loading twice
@@ -108,7 +106,7 @@ BOOST_AUTO_TEST_CASE(test_load)
 BOOST_AUTO_TEST_CASE(test_unload)
 {
   /* Correct */
-  te::core::Library l1(g_shared_library_name);
+  te::core::Library l1(g_shared_library_path + "/" + g_shared_library_name);
   BOOST_CHECK_NO_THROW(l1.unload());
 
   /* Existing library but not loaded yet */
@@ -125,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_unload)
 BOOST_AUTO_TEST_CASE(test_isloaded)
 {
   /* Correct */
-  te::core::Library l1(g_shared_library_name);
+  te::core::Library l1(g_shared_library_path + "/" + g_shared_library_name);
   BOOST_CHECK(l1.isLoaded());
   l1.unload();
   BOOST_CHECK(!l1.isLoaded());
@@ -146,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_isloaded)
 BOOST_AUTO_TEST_CASE(test_getFileName)
 {
   /* Checking fileName */
-  std::string fileName(g_shared_library_name);
+  std::string fileName(g_shared_library_path + "/" + g_shared_library_name);
   te::core::Library l1(fileName);
   BOOST_CHECK(l1.getFileName().compare(fileName) == 0);
 
@@ -156,7 +154,7 @@ BOOST_AUTO_TEST_CASE(test_getFileName)
 BOOST_AUTO_TEST_CASE(test_getAddress)
 {
   /* Correct */
-  te::core::Library l1(g_shared_library_name);
+  te::core::Library l1(g_shared_library_path + "/" + g_shared_library_name);
 
   /* Testing get a function that exists. */
   BOOST_CHECK(l1.getAddress("fatorial"));
@@ -241,7 +239,7 @@ BOOST_AUTO_TEST_CASE(test_resetSearchDir)
 
   /* Testing load library after reset search path. */
   te::core::Library::resetSearchPath();
-  BOOST_CHECK_THROW(te::core::Library(te::core::Library::getNativeName("terralib_unittest_core_lib_function")), te::core::LibraryLoadException);
+  BOOST_CHECK_THROW(te::core::Library(g_shared_library_name, false), te::core::LibraryLoadException);
 
   return;
 }

@@ -43,9 +43,5 @@ bool init_unit_test()
 
 int main(int argc, char *argv[])
 {
-  int x = boost::unit_test::unit_test_main(init_unit_test, argc, argv);
-
-  getchar();
-
-  return x;
+  return boost::unit_test::unit_test_main(init_unit_test, argc, argv);
 }
