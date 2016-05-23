@@ -38,6 +38,7 @@ BOOST_AUTO_TEST_CASE(translator_test)
 {
 
   TE_ADD_TEXT_DOMAIN("terralib_unittest_core");
+  TE_TR_LANGUAGE("pt_BR");
   BOOST_CHECK_EQUAL(TE_TR("BR-GIS"), "SIG-BR");
   BOOST_CHECK_EQUAL(TE_TR("Wrong cryptographer algorithm type!"), "O tipo de algoritmo de criptografia está errado!");
   BOOST_CHECK_EQUAL(TE_TR("You must specify a logger configuration file!"), "Você deve especificar o arquivo de configuração do logger!");
