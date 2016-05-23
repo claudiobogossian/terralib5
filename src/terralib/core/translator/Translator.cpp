@@ -47,10 +47,8 @@ std::string te::core::Translator::translate(const char* message)
 {
 
 #ifdef TERRALIB_TRANSLATOR_ENABLED
-  for(auto it = m_textDomainVector.begin(); it != m_textDomainVector.end();++it)
+  for(const auto& domain : m_textDomainVector)
   {
-    std::string domain = *it;
-
     std::string path = te::core::FindInTerraLibPath("share/terralib/translations");
     boost::locale::generator gen;
     gen.add_messages_domain(domain);
@@ -83,10 +81,8 @@ te::core::Translator::translate(const char* msg1,
                                 unsigned int n)
 {
 #ifdef TERRALIB_TRANSLATOR_ENABLED
-  for(auto it = m_textDomainVector.begin(); it != m_textDomainVector.end();++it)
+  for(const auto& domain : m_textDomainVector)
   {
-    std::string domain = *it;
-
     std::string path = te::core::FindInTerraLibPath("share/terralib/translations");
     boost::locale::generator gen;
     gen.add_messages_domain(domain);
