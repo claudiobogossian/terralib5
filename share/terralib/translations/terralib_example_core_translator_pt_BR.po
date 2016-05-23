@@ -15,7 +15,7 @@ msgstr ""
 
 #: translator/main.cpp:44
 msgid "This text will be in portuguese if your system locale is pt_BR"
-msgstr ""
+msgstr "Este texto estará em português se a região do seu sistema for pt_BR"
 
 #: translator/main.cpp:45
 msgid "This text will remain the same, because there is no translation for it."

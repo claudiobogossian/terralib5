@@ -94,7 +94,7 @@ size_t te::mnt::ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsr
 }
 
 size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, double max, Simplify alg,
-  te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype, te::gm::Envelope &env)
+  te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype, te::gm::Envelope &env, int srid)
 {
 
   if (inDsetName.empty())
@@ -130,6 +130,7 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
     task.pulse();
 
     std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+    gin->setSRID(srid);
     geostype = gin.get()->getGeometryType();
 
     if (geostype == "LineString")
@@ -554,35 +555,35 @@ te::gm::LineString* te::mnt::pointListSimplify(te::gm::LineString *ls, double sn
 \param pti is a pointer to the intersection point
 \return the distance between the point and the segment
 */
-double te::mnt::pointToSegmentDistance(te::gm::PointZ &fseg, te::gm::PointZ &lseg, te::gm::PointZ &pt, te::gm::PointZ *pti)
+double te::mnt::SegmentDistance(double fx, double fy, double lx, double ly, double ptx, double pty, double *pix, double *piy)
 {
-  double ux = lseg.getX() - fseg.getX();
-  double uy = lseg.getY() - fseg.getY();
-  double vx = pt.getX() - fseg.getX();
-  double vy = pt.getY() - fseg.getY();
+  double ux = lx - fx;
+  double uy = ly - fy;
+  double vx = ptx - fx;
+  double vy = pty - fy;
   double uv = (ux*vx + uy*vy);
   if (uv < 0.)
   {
-    if (pti)
+    if (pix && piy)
     {
-      pti->setX(lseg.getX());
-      pti->setY(lseg.getY());
+      *pix = lx;
+      *piy = ly;
     }
     return (sqrt(vx*vx + vy*vy));
   }
   else
   {
-    ux = fseg.getX() - lseg.getX();
-    uy = fseg.getY() - lseg.getY();
-    vx = pt.getX() - lseg.getX();
-    vy = pt.getY() - lseg.getY();
+    ux = fx - lx;
+    uy = fy - ly;
+    vx = ptx - lx;
+    vy = pty - lx;
     uv = (ux*vx + uy*vy);
     if (uv < 0.)
     {
-      if (pti)
+      if (pix && piy)
       {
-        pti->setX(lseg.getX());
-        pti->setY(lseg.getY());
+        *pix = lx;
+        *piy = ly;
       }
       return (sqrt(vx*vx + vy*vy));
     }
@@ -590,17 +591,43 @@ double te::mnt::pointToSegmentDistance(te::gm::PointZ &fseg, te::gm::PointZ &lse
 
   double  a, b, c, k, dist, aabb;
 
-  a = lseg.getY() - fseg.getY();
-  b = fseg.getX() - lseg.getX();
-  c = lseg.getX()*fseg.getY() - fseg.getX()*lseg.getY();
+  a = ly - fy;
+  b = fx - lx;
+  c = lx*fy - fx*ly;
   aabb = a*a + b*b;
 
-  dist = fabs((a*pt.getX() + b*pt.getY() + c) / (sqrt(aabb)));
+  dist = fabs((a*ptx + b*pty + c) / (sqrt(aabb)));
+  if (pix && piy)
+  {
+    k = b*ptx - a*pty;
+    *pix = (b*k - a*c) / aabb;
+    *piy = (-a*k - b*c) / aabb;
+  }
+
+  return dist;
+
+}
+
+double te::mnt::coordToSegmentDistance(te::gm::Coord2D &fseg, te::gm::Coord2D &lseg, te::gm::Coord2D &pt, te::gm::Coord2D *pti)
+{
+  double pix, piy;
+  double dist = SegmentDistance(fseg.getX(), fseg.getY(), lseg.getX(), lseg.getY(), pt.getX(), pt.getY(), &pix, &piy);
   if (pti)
   {
-    k = b*pt.getX() - a*pt.getY();
-    pti->setX((b*k - a*c) / aabb);
-    pti->setY((-a*k - b*c) / aabb);
+    pti->x = pix;
+    pti->y = piy;
+  }
+  return dist;
+}
+
+double te::mnt::pointToSegmentDistance(te::gm::PointZ &fseg, te::gm::PointZ &lseg, te::gm::PointZ &pt, te::gm::PointZ *pti)
+{
+  double pix, piy;
+  double dist = SegmentDistance(fseg.getX(), fseg.getY(), lseg.getX(), lseg.getY(), pt.getX(), pt.getY(), &pix, &piy);
+  if (pti)
+  {
+    pti->setX(pix);
+    pti->setY(piy);
   }
   return dist;
 }
@@ -1696,4 +1723,49 @@ void te::mnt::getMinMax(te::rst::Raster *inputRst, double &vmin, double &vmax)
 
   vmin = min;
   vmax = max;
+}
+
+double te::mnt::PerpendicularDistance(te::gm::Coord2D& first, te::gm::Coord2D& last, te::gm::Coord2D& pin, te::gm::Coord2D& pinter)
+{
+  double	d12, xmin, ymin;
+
+  double xi = first.getX();
+  double xf = last.getX();
+  double yi = first.getY();
+  double yf = last.getY();
+  double x = pin.getX();
+  double y = pin.getY();
+
+  double dx = xf - xi;
+  double dy = yf - yi;
+  double a2 = (y - yi) * dx - (x - xi)*dy;
+
+  if (dx == 0. && dy == 0.)
+  {
+    d12 = sqrt(((x - xi) * (x - xi)) + ((y - yi) * (y - yi)));
+    d12 *= d12;
+  }
+  else
+    d12 = a2 * a2 / (dx * dx + dy * dy);
+
+  if (dx == 0.)
+  {
+    xmin = xi;
+    ymin = y;
+  }
+  else if (dy == 0.)
+  {
+    xmin = x;
+    ymin = yi;
+  }
+  else
+  {
+    double alfa = dy / dx;
+    xmin = (x + alfa * (y - yi) + alfa * alfa * xi) / (1. + alfa * alfa);
+    ymin = (x - xmin) / alfa + y;
+  }
+
+  pinter.x = xmin;
+  pinter.y = ymin;
+  return (sqrt(d12));
 }

@@ -88,7 +88,7 @@ te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_invertPushButton->setIcon(QIcon::fromTheme("mnt-profile-invert"));
 
 // connectors
-  connect(m_ui->m_rasterLayersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
+  connect(m_ui->m_inputLayersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
   
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
 
@@ -130,7 +130,7 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
 {
   m_layers = layers;
   m_ui->m_vectorlayersComboBox->clear();
-  m_ui->m_rasterLayersComboBox->clear();
+  m_ui->m_inputLayersComboBox->clear();
 
   m_ui->m_vectorlayersComboBox->addItem(QString(""), QVariant(""));
 
@@ -148,23 +148,18 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
           if (dsType->hasGeom())
           {
             std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            //te::gm::GeomType gmType = geomProp->getGeometryType();
-            /*if (gmType == te::gm::PolygonType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-            gmType == te::gm::PolygonZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType ||
-            gmType == te::gm::PolygonMType || gmType == te::gm::MultiPolygonMType || gmType == te::gm::PolyhedralSurfaceMType ||
-            gmType == te::gm::PolygonZMType || gmType == te::gm::MultiPolygonZMType || gmType == te::gm::PolyhedralSurfaceZMType
-            )
+            te::gm::GeomType gmType = geomProp->getGeometryType();
+            if (gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType ||
+              gmType == te::gm::LineStringZType || gmType == te::gm::MultiLineStringZType ||
+              gmType == te::gm::LineStringMType || gmType == te::gm::MultiLineStringMType ||
+              gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringZMType)
             {
-            m_ui->m_vectorlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-            }*/
-            m_ui->m_vectorlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+              m_ui->m_vectorlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+            }
 
             geomProp.release();
           }
-          if (dsType->hasRaster())
-          {
-            m_ui->m_rasterLayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-          }
+          m_ui->m_inputLayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
           dsType.release();
         }
       }
@@ -193,9 +188,9 @@ void te::mnt::ProfileDialog::release()
   }
   m_tooltype = ToolNone;
 
-  if (m_rasterinputLayer)
+  if (m_inputLayer)
   {
-    te::edit::Repository* repository = te::edit::RepositoryManager::getInstance().getRepository(m_rasterinputLayer->getId());
+    te::edit::Repository* repository = te::edit::RepositoryManager::getInstance().getRepository(m_inputLayer->getId());
     if (repository)
       repository->clear();
   }
@@ -209,24 +204,28 @@ void te::mnt::ProfileDialog::release()
 
 void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
 {
-  m_rasterinputLayer = 0;
+  m_inputLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_rasterLayersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_inputLayersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
   while (it != m_layers.end())
   {
     if (layerID == it->get()->getId().c_str())
     {
-      m_rasterinputLayer = it->get();
-      std::auto_ptr<te::da::DataSetType> dsType = m_rasterinputLayer->getSchema();
-      te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(dsType.get());
-      te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterinputLayer.get());
+      m_inputLayer = it->get();
+      std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
+      te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
       std::auto_ptr<te::da::DataSet> dsRaster = inDataSource->getDataSet(indsLayer->getDataSetName());
-      std::auto_ptr<te::rst::Raster> in_raster = dsRaster->getRaster(rasterProp->getName());
-      m_ui->m_dummylineEdit->setText(QString::number(in_raster->getBand(0)->getProperty()->m_noDataValue));
-      m_tol = in_raster->getResolutionX()*3;
-      in_raster.release();
-      dsRaster.release();
+      if (dsType->hasRaster()) //GRID
+      {
+        te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(dsType.get());
+        std::auto_ptr<te::rst::Raster> in_raster = dsRaster->getRaster(rasterProp->getName());
+        m_ui->m_dummylineEdit->setText(QString::number(in_raster->getBand(0)->getProperty()->m_noDataValue));
+        m_tol = in_raster->getResolutionX() * 3;
+        in_raster.release();
+        dsRaster.release();
+      }
+      m_srid = m_inputLayer->getSRID();
       dsType.release();
     }
     ++it;
@@ -265,7 +264,7 @@ void  te::mnt::ProfileDialog::onselectionEnabled(bool checked)
 
 void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
 {
-  m_vectorinputLayer = 0;
+  m_trajectoryLayer = 0;
   
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_vectorlayersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
@@ -273,11 +272,16 @@ void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
   {
     if (layerID == it->get()->getId().c_str())
     {
-      m_vectorinputLayer = it->get();
-
-      std::auto_ptr<te::da::DataSetType> dsType = m_vectorinputLayer->getSchema();
-      std::vector<te::dt::Property*> props = dsType->getProperties();
-      dsType.release();
+      m_trajectoryLayer = it->get();
+      if (m_trajectoryLayer == m_inputLayer)
+      {
+        m_ui->m_vectorlayersComboBox->setCurrentIndex(0);
+        m_trajectoryLayer = 0;
+        throw te::common::Exception(TE_TR("Trajectory layer must be different from input layer!"));
+      }
+      //std::auto_ptr<te::da::DataSetType> dsType = m_trajectoryLayer->getSchema();
+      //std::vector<te::dt::Property*> props = dsType->getProperties();
+      //dsType.release();
     }
     ++it;
   }
@@ -291,7 +295,7 @@ void te::mnt::ProfileDialog::onaddPointMouseToggled(bool checked)
   if (!m_app)
     return;
 
-  if (!m_rasterinputLayer)
+  if (!m_inputLayer)
     return;
 
   if (m_tooltype != CreateLine)
@@ -300,7 +304,7 @@ void te::mnt::ProfileDialog::onaddPointMouseToggled(bool checked)
     if (m_tool)
       delete m_tool;
 
-    m_tool = new te::edit::CreateLineTool(m_app->getMapDisplay(), m_rasterinputLayer, Qt::ArrowCursor, 0);
+    m_tool = new te::edit::CreateLineTool(m_app->getMapDisplay(), m_inputLayer, Qt::ArrowCursor, 0);
     m_app->getMapDisplay()->installEventFilter(m_tool);
 
     connect(m_tool, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
@@ -316,7 +320,7 @@ void te::mnt::ProfileDialog::onchangePointToggled(bool checked)
   if (!checked)
     return;
 
-  if (!m_rasterinputLayer)
+  if (!m_inputLayer)
     return;
 
   setVertexEdition();
@@ -333,7 +337,7 @@ void te::mnt::ProfileDialog::onaddPointToggled(bool checked)
   if (!checked)
     return;
 
-  if (!m_rasterinputLayer)
+  if (!m_inputLayer)
     return;
 
   setVertexEdition();
@@ -349,7 +353,7 @@ void te::mnt::ProfileDialog::ondeletePointToggled(bool checked)
   if (!checked)
     return;
 
-  if (!m_rasterinputLayer)
+  if (!m_inputLayer)
     return;
 
   setVertexEdition();
@@ -365,7 +369,7 @@ void te::mnt::ProfileDialog::ondeletePathToggled(bool checked)
   if (!checked)
     return;
 
-  if (!m_rasterinputLayer)
+  if (!m_inputLayer)
     return;
 
   ((te::mnt::ProfileTools*)m_tool)->setType(LINE_DELETE);
@@ -376,9 +380,9 @@ void te::mnt::ProfileDialog::ondeletePathToggled(bool checked)
     if (m_tool)
       delete m_tool;
 
-    m_tool = new te::edit::DeleteGeometryTool(m_app->getMapDisplay(), m_rasterinputLayer, 0);
+    m_tool = new te::edit::DeleteGeometryTool(m_app->getMapDisplay(), m_inputLayer, 0);
     m_app->getMapDisplay()->installEventFilter(m_tool);
-    te::edit::Repository *rep = te::edit::RepositoryManager::getInstance().getRepository(m_rasterinputLayer->getId());
+    te::edit::Repository *rep = te::edit::RepositoryManager::getInstance().getRepository(m_inputLayer->getId());
     if (rep)
     {
       rep->clear();
@@ -401,7 +405,7 @@ void te::mnt::ProfileDialog::oninvertToggled(bool checked)
   if (!checked)
     return;
  
-  if (!m_rasterinputLayer)
+  if (!m_inputLayer)
     return;
 
   setVertexEdition();
@@ -415,7 +419,7 @@ void te::mnt::ProfileDialog::oninvertToggled(bool checked)
 
 void te::mnt::ProfileDialog::onGeometriesChanged()
 {
-  if (!m_rasterinputLayer)
+  if (!m_inputLayer)
     return;
 
   if (m_tooltype == CreateLine)
@@ -427,7 +431,7 @@ void te::mnt::ProfileDialog::onGeometriesChanged()
   }
   else if (m_tooltype == DeleteLine)
   {
-    std::vector<te::edit::Feature*> features = te::edit::RepositoryManager::getInstance().getFeatures(m_rasterinputLayer->getId(), m_rasterinputLayer->getExtent(), m_rasterinputLayer->getSRID());
+    std::vector<te::edit::Feature*> features = te::edit::RepositoryManager::getInstance().getFeatures(m_inputLayer->getId(), m_inputLayer->getExtent(), m_inputLayer->getSRID());
     for (size_t i = 0; i < features.size(); i++)
     { 
       if (features[i]->getOperationType() == te::edit::GEOMETRY_UPDATE)
@@ -447,7 +451,7 @@ void te::mnt::ProfileDialog::onGeometriesChanged()
           }
         }
 
-        te::edit::Repository* repository = te::edit::RepositoryManager::getInstance().getRepository(m_rasterinputLayer->getId());
+        te::edit::Repository* repository = te::edit::RepositoryManager::getInstance().getRepository(m_inputLayer->getId());
         if (repository)
           repository->clear();
         for (size_t j = 0; j < m_visadas.size(); j++)
@@ -463,7 +467,7 @@ void te::mnt::ProfileDialog::onGeometriesChanged()
   {
     if (((te::mnt::ProfileTools*)m_tool)->getType() != te::mnt::VERTEX_ADD)
     {
-      te::edit::Repository* repository = te::edit::RepositoryManager::getInstance().getRepository(m_rasterinputLayer->getId());
+      te::edit::Repository* repository = te::edit::RepositoryManager::getInstance().getRepository(m_inputLayer->getId());
       if (repository)
         repository->clear();
       ((te::mnt::ProfileTools*)m_tool)->setLines(m_visadas);
@@ -486,48 +490,50 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     //raster
     if (!m_tool)
     {
-      if (!m_rasterinputLayer)
+      if (!m_inputLayer)
         throw te::common::Exception(TE_TR("Select an input layer!"));
 
-      if (m_vectorinputLayer)
-        if (m_rasterinputLayer->getSRID() != m_vectorinputLayer->getSRID())
-          throw te::common::Exception(TE_TR("Can not execute this operation with different SRIDs geometries!"));
+      if (m_trajectoryLayer)
+        if (m_inputLayer->getSRID() != m_trajectoryLayer->getSRID())
+            throw te::common::Exception(TE_TR("Can not execute this operation with different SRIDs geometries!"));
     }
+
     m_dummy = m_ui->m_dummylineEdit->text().toDouble();
 
-    te::map::DataSetLayer* indsrasterLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterinputLayer.get());
-    if (!indsrasterLayer)
+    te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
+    if (!indsLayer)
       throw te::common::Exception(TE_TR("Can not execute this operation on this type of layer!"));
 
-    te::da::DataSourcePtr inrasterDataSource = te::da::GetDataSource(indsrasterLayer->getDataSourceId(), true);
-    if (!inrasterDataSource.get())
+    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
+    if (!inDataSource.get())
       throw te::common::Exception(TE_TR("The selected input data source can not be accessed!"));
 
-    std::string inDsetName = indsrasterLayer->getDataSetName();
-    std::auto_ptr<te::da::DataSetType> inDsetType(inrasterDataSource->getDataSetType(inDsetName));
+    std::string inDsetName = indsLayer->getDataSetName();
+    std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
     // end raster
 
     Profile* profile = new Profile();
-    profile->setInput(inrasterDataSource, inDsetName, inDsetType, m_dummy);
-    std::auto_ptr<te::rst::Raster> raster = profile->getPrepareRaster();
+    profile->setInput(inDataSource, inDsetName, inDsetType, m_dummy);
+    profile->setSRID(m_inputLayer->getSRID());
+
     std::string geostype;
 
     //vector
     if (m_ui->m_selectionradioButton->isChecked())
     {
-      if (!m_vectorinputLayer)
+      if (!m_trajectoryLayer)
         throw te::common::Exception(TE_TR("Select an vector layer!"));
       std::auto_ptr<te::da::DataSet> inDset;
 
-      m_srid = m_vectorinputLayer->getSRID();
+      m_srid = m_trajectoryLayer->getSRID();
 
       if (m_ui->m_selectCheckBox->isChecked())
       {
-        const te::da::ObjectIdSet* objSet = m_vectorinputLayer->getSelected();
-        inDset = m_vectorinputLayer->getData(objSet);
+        const te::da::ObjectIdSet* objSet = m_trajectoryLayer->getSelected();
+        inDset = m_trajectoryLayer->getData(objSet);
       }
       else
-        inDset = te::da::GetDataSource(m_vectorinputLayer->getDataSourceId(), true)->getDataSet(m_vectorinputLayer->getDataSetName());
+        inDset = te::da::GetDataSource(m_trajectoryLayer->getDataSourceId(), true)->getDataSet(m_trajectoryLayer->getDataSetName());
 
       std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
 
@@ -538,6 +544,7 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
       while (inDset->moveNext())
       {
         std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+        gin->setSRID(m_srid);
         geostype = gin.get()->getGeometryType();
 
         if (geostype == "LineString")
@@ -557,9 +564,9 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
         }
       }
 
-      visibility = m_vectorinputLayer->getVisibility();
+      visibility = m_trajectoryLayer->getVisibility();
       if (visibility == te::map::VISIBLE)
-        m_vectorinputLayer->setVisibility(te::map::NOT_VISIBLE);
+        m_trajectoryLayer->setVisibility(te::map::NOT_VISIBLE);
     }
     else
     {
@@ -568,23 +575,46 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     }
     //end vector
 
-//    te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
-//    te::gm::MultiLineString isolines(0, te::gm::MultiLineStringZType, m_srid);
-
     // Principal function calling
     std::vector<te::gm::LineString*> profileSet;
-    profile->runRasterProfile(raster, m_visadas, profileSet);
+    std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
+    if (dsType->hasRaster())
+    {
+      profile->runRasterProfile(m_visadas, profileSet);
+    }
+    if (dsType->hasGeom())
+    {
+      std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+      te::gm::GeomType gmType = geomProp->getGeometryType();
+      if (gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType ||
+        gmType == te::gm::LineStringZType || gmType == te::gm::MultiLineStringZType ||
+        gmType == te::gm::LineStringMType || gmType == te::gm::MultiLineStringMType ||
+        gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringZMType)
+        {
+          profile->runIsolinesProfile(m_visadas, profileSet);
+        }
+      else if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType || gmType == te::gm::PolygonType ||
+        gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType || gmType == te::gm::PolygonZType ||
+        gmType == te::gm::GeometryType)//TIN
+        {
+        }
+      else
+        throw te::common::Exception(TE_TR("Input layer type is invalid!"));
+
+    }
 
     DrawSelected(m_visadas, 2, false);
+
+    dsType.release();
 
     te::mnt::ProfileResultDialog result(m_ui->m_titleLineEdit->text(), m_ui->m_yAxisLineEdit->text(), profileSet, m_color, this->parentWidget());
 
     QApplication::restoreOverrideCursor();
     if (result.exec() != QDialog::Accepted)
     {
-      if (m_vectorinputLayer)
+      if (m_trajectoryLayer)
       {
-        m_vectorinputLayer->setVisibility(visibility);
+        m_trajectoryLayer->setVisibility(visibility);
         m_visadas.clear();
       }
 
@@ -598,16 +628,20 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     QApplication::restoreOverrideCursor();
     QMessageBox::information(this, tr("Profile "), e.what());
 
-    if (m_vectorinputLayer)
-      m_vectorinputLayer->setVisibility(visibility);
+    if (m_trajectoryLayer)
+      m_trajectoryLayer->setVisibility(visibility);
     release();
 
     return;
   }
 
-  if (m_vectorinputLayer)
-    m_vectorinputLayer->setVisibility(visibility);
+  if (m_trajectoryLayer)
+    m_trajectoryLayer->setVisibility(visibility);
   release();
+
+  if (m_tool)
+    delete m_tool;
+  m_tool = 0;
 
   QApplication::restoreOverrideCursor();
   accept();
@@ -680,7 +714,7 @@ void te::mnt::ProfileDialog::setVertexEdition()
     if (m_tool)
       delete m_tool;
 
-    m_tool = new te::mnt::ProfileTools(m_app->getMapDisplay(), m_rasterinputLayer);
+    m_tool = new te::mnt::ProfileTools(m_app->getMapDisplay(), m_inputLayer);
     connect(m_tool, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
 
     m_app->getMapDisplay()->installEventFilter(m_tool);

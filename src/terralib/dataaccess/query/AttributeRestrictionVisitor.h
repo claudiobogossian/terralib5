@@ -101,6 +101,7 @@ namespace te
         virtual void visit(const SelectExpression& visited) {}
         virtual void visit(const SubSelect& visited) {}
         virtual void visit(const In& visited) {}
+        virtual void visit(const Cast& visited) {}
 
         bool hasAttributeRestrictions() const;
 

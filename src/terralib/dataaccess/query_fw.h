@@ -38,6 +38,7 @@ namespace te
     class BinaryFunction;
     class BinaryOp;
     class BinaryOpEncoder;
+    class Cast;
     class Coalesce;
     class Count;
     class DataSetName;

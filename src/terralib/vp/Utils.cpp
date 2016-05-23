@@ -24,7 +24,10 @@
 */
 
 // TerraLib
+
+#include "../common/StringUtils.h"
 #include "../core/translator/Translator.h"
+
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/DataSetTypeCapabilities.h"
 #include "../dataaccess/datasource/DataSource.h"
@@ -55,6 +58,36 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+
+std::auto_ptr<te::gm::Geometry> te::vp::GetGeometryUnion(const std::vector< std::auto_ptr<te::gm::Geometry> >& geomVec)
+{
+  std::auto_ptr<te::gm::Geometry> geometry;
+
+  if (geomVec.size() == 1)
+  {
+    te::dt::AbstractData* abs = geomVec[0]->clone();
+    geometry.reset(static_cast<te::gm::Geometry*>(abs));
+  }
+  else
+  {
+    const std::auto_ptr<te::gm::Geometry>& seedGeometry = geomVec[0];
+
+    te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, seedGeometry->getSRID());
+
+    for (std::size_t g = 1; g < geomVec.size(); ++g)
+    {
+      te::dt::AbstractData* c_abs = geomVec[g]->clone();
+      gc->add(static_cast<te::gm::Geometry*>(c_abs));
+    }
+
+    geometry.reset(seedGeometry->Union(gc));
+
+    delete gc;
+  }
+
+  return geometry;
+}
 
 te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType)
 {
@@ -169,8 +202,8 @@ void te::vp::SplitGeometryCollection(te::gm::GeometryCollection* gcIn, te::gm::G
   for(std::size_t i = 0; i < geomVec.size(); ++i)
   {
     te::gm::GeometryCollection* gc = dynamic_cast<te::gm::GeometryCollection*>(geomVec[i]);
-    if(gc == 0)
-      gcOut->add(geomVec[i]);
+    if (gc == 0)
+      gcOut->add((te::gm::Geometry*)geomVec[i]->clone());
     else
       SplitGeometryCollection(gc, gcOut);
   }
@@ -337,8 +370,33 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
   {
     t->begin();
 
-    // create the dataset
-    t->createDataSet(outDsType, options);
+    std::string dsTypeName = outDsType->getName();
+    std::vector<std::string> dataSetNames = t->getDataSetNames();
+    bool create = true;
+    
+    for (std::size_t i = 0; i < dataSetNames.size(); ++i)
+    {
+      std::vector<std::string> tok;
+      te::common::Tokenize(dataSetNames[i], tok, ".");
+
+      std::string temp_dsName;
+
+      if (tok.size() > 1)
+        temp_dsName = tok[1];
+      else
+        temp_dsName = dataSetNames[i];
+
+      if (dsTypeName == temp_dsName)
+      {
+        create = false;
+      }
+    }
+
+    if (create)
+    {
+      // create the dataset
+      t->createDataSet(outDsType, options);
+    }
   
     // copy from memory to output datasource
     result->moveBeforeFirst();
@@ -349,12 +407,12 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
   catch(te::common::Exception& e)
   {
     t->rollBack();
-    throw;
+    throw e;
   }
   catch(std::exception& e)
   {
     t->rollBack();
-    throw;
+    throw e;
   }
 }
 
@@ -374,6 +432,10 @@ bool te::vp::IsMultiType(te::gm::GeomType geomType)
     case te::gm::MultiPolygonMType:
     case te::gm::MultiPolygonZType:
     case te::gm::MultiPolygonZMType:
+    case te::gm::GeometryCollectionType:
+    case te::gm::GeometryCollectionMType:
+    case te::gm::GeometryCollectionZType:
+    case te::gm::GeometryCollectionZMType:
       return true;
     default:
       return false;
@@ -408,6 +470,14 @@ te::gm::GeomType te::vp::GetSimpleType(te::gm::GeomType geomType)
       return te::gm::PolygonZType;
     case te::gm::MultiPolygonZMType:
       return te::gm::PolygonZMType;
+    case te::gm::GeometryCollectionType:
+      return te::gm::GeometryType;
+    case te::gm::GeometryCollectionMType:
+      return te::gm::GeometryMType;
+    case te::gm::GeometryCollectionZType:
+      return te::gm::GeometryZType;
+    case te::gm::GeometryCollectionZMType:
+      return te::gm::GeometryZMType;
     default:
       return te::gm::UnknownGeometryType;
   }
@@ -441,6 +511,14 @@ te::gm::GeomType te::vp::GetMultiType(te::gm::GeomType geomType)
     return te::gm::MultiPolygonZType;
   case te::gm::PolygonZMType:
     return te::gm::MultiPolygonZMType;
+  case te::gm::GeometryType:
+    return te::gm::GeometryCollectionType;
+  case te::gm::GeometryMType:
+    return te::gm::GeometryCollectionMType;
+  case te::gm::GeometryZType:
+    return te::gm::GeometryCollectionZType;
+  case te::gm::GeometryZMType:
+    return te::gm::GeometryCollectionZMType;
   default:
     return te::gm::UnknownGeometryType;
   }

@@ -50,6 +50,8 @@ namespace te
       QUERY
     };
 
+    std::auto_ptr<te::gm::Geometry> GetGeometryUnion(const std::vector<std::auto_ptr<te::gm::Geometry> >& geomVec);
+
     /*!
       \brief It returns the union of a geometry vector.
 

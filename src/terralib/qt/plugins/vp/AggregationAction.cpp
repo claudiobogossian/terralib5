@@ -39,7 +39,7 @@
 te::qt::plugins::vp::AggregationAction::AggregationAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Aggregation...").toStdString(), "vector-processing-aggregation");
+  createAction(tr("Dissolve...").toStdString(), "vector-processing-aggregation");
   m_action->setObjectName("Processing.Vector Processing.Aggregation");
 }
 
@@ -73,7 +73,7 @@ void te::qt::plugins::vp::AggregationAction::onActionActivated(bool)
     for (std::size_t w = 0; w < warnings.size(); ++w)
       details += warnings[w] + "\n";
 
-    QMessageBox question(QMessageBox::Warning, tr("Aggregation Result"), tr("The operation was concluded successfully. But it has warning(s). Would you like to add the layer to the project?"));
+    QMessageBox question(QMessageBox::Warning, tr("Dissolve Result"), tr("The operation was concluded successfully. But it has warning(s). Would you like to add the layer to the project?"));
     question.addButton(QMessageBox::No);
     question.addButton(QMessageBox::Yes);
     question.setDetailedText(QString(details.c_str()));
@@ -82,7 +82,7 @@ void te::qt::plugins::vp::AggregationAction::onActionActivated(bool)
   }
   else
   {
-    reply = QMessageBox::question(0, tr("Aggregation Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+    reply = QMessageBox::question(0, tr("Dissolve Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
   }
 
   if(reply == QMessageBox::Yes)

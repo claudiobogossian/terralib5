@@ -106,7 +106,7 @@ void te::qt::widgets::ProgressViewerDialog::setTotalValues(int taskId)
 
 void te::qt::widgets::ProgressViewerDialog::updateValue(int /*taskId*/)
 {
-  m_dlgProgress->show();
+  //m_dlgProgress->show();
 
   m_currentStep++;
 

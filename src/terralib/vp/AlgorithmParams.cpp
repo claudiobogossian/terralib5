@@ -31,10 +31,12 @@ te::vp::AlgorithmParams::AlgorithmParams():
 te::vp::AlgorithmParams::AlgorithmParams( const std::vector<te::vp::InputParams>& inputParams,
                                           te::da::DataSourcePtr outputDataSource,
                                           const std::string& outputDataSetName,
+                                          const int& outputSRID,
                                           const std::map<std::string, te::dt::AbstractData*>& specificParams)
   : m_inputParams(inputParams),
   m_outputDataSource(outputDataSource),
   m_outputDataSetName(outputDataSetName),
+  m_outputSRID(outputSRID),
   m_specificParams(specificParams)
 {
 }
@@ -77,6 +79,17 @@ void te::vp::AlgorithmParams::setOutputDataSetName(const std::string& outputData
 }
 
 
+const int& te::vp::AlgorithmParams::getOutputSRID()
+{
+  return m_outputSRID;
+}
+
+void te::vp::AlgorithmParams::setOutputSRID(const int& outputSRID)
+{
+  m_outputSRID = outputSRID;
+}
+
+
 const std::map<std::string, te::dt::AbstractData*>& te::vp::AlgorithmParams::getSpecificParams()
 {
   return m_specificParams;
@@ -85,4 +98,25 @@ const std::map<std::string, te::dt::AbstractData*>& te::vp::AlgorithmParams::get
 void te::vp::AlgorithmParams::setSpecificParams(const std::map<std::string, te::dt::AbstractData*>& specificParams)
 {
   m_specificParams = specificParams;
+}
+
+
+const std::vector<std::string>& te::vp::AlgorithmParams::getWarnings()
+{
+  return m_warnings;
+}
+
+void te::vp::AlgorithmParams::addWarning(const std::string& warning, const bool& appendIfExists)
+{
+  if (!appendIfExists)
+  {
+    std::vector<std::string>::iterator it = std::find(m_warnings.begin(), m_warnings.end(), warning);
+    if (it == m_warnings.end())
+      m_warnings.push_back(warning);
+  }
+  else
+  {
+    m_warnings.push_back(warning);
+  }
+  
 }

@@ -81,11 +81,6 @@ namespace te
                                                                              IntersectionMember firstMember, 
                                                                              IntersectionMember secondMember);
 
-      te::da::DataSetType* createDataSetType(std::string newName, 
-                                            te::da::DataSetType* firstDt,
-                                            std::vector<te::dt::Property*> firstProps, 
-                                            te::da::DataSetType* secondDt,
-                                            std::vector<te::dt::Property*> secondProps);
 
     }; // end class
   } // end namespace vp

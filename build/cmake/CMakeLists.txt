@@ -394,7 +394,9 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" OFF)
 endif()
 
-option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" ON)
+option(TERRALIB_MOD_CORE_ENABLED "Build TerraLib Core Runtime Library?" ON)
+
+option(TERRALIB_MOD_VM_ENABLED "Build TerraLib Virtual Machine Library?" OFF)
 
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
@@ -753,6 +755,11 @@ endif()
 
 add_subdirectory(terralib_mod_core)
 list(APPEND TERRALIB_MODULES core)
+
+if(TERRALIB_MOD_VM_ENABLED)
+  add_subdirectory(terralib_mod_vm)
+  list(APPEND TERRALIB_MODULES vm)
+endif()
 
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
   add_subdirectory(terralib_mod_annotationtext)

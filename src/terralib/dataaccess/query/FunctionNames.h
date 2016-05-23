@@ -117,6 +117,7 @@ namespace te
         static const std::string sm_Variance;
 
 // others
+        static const std::string sm_Cast;
         static const std::string sm_Coalesce;
         static const std::string sm_IsNull;
         static const std::string sm_In;

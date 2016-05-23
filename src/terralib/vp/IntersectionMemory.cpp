@@ -219,13 +219,19 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
         }
         else if(fiGeomProp->getGeometryType() == te::gm::MultiLineStringType)
         {
-          if(resultGeom->getGeomTypeId() == te::gm::MultiLineStringType)
+          if (resultGeom->getGeomTypeId() == te::gm::MultiPointType ||
+            resultGeom->getGeomTypeId() == te::gm::MultiPointZType ||
+            resultGeom->getGeomTypeId() == te::gm::MultiPointMType ||
+            resultGeom->getGeomTypeId() == te::gm::MultiPointZMType)
           {
             item->setGeometry("geom", resultGeom.release());
           }
-          else if(resultGeom->getGeomTypeId() == te::gm::LineStringType)
+          else if (resultGeom->getGeomTypeId() == te::gm::PointType ||
+            resultGeom->getGeomTypeId() == te::gm::PointZType ||
+            resultGeom->getGeomTypeId() == te::gm::PointMType ||
+            resultGeom->getGeomTypeId() == te::gm::PointZMType)
           {
-            te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, resultGeom->getSRID());
+            te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::GeomType(resultGeom->getGeomTypeId()+3), resultGeom->getSRID());
             newGeom->add(resultGeom.release());
             item->setGeometry("geom", newGeom);
           }
@@ -311,49 +317,4 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
   resultPair.first = outputDt;
   resultPair.second = outputDs;
   return resultPair;
-}
-
-te::da::DataSetType* te::vp::IntersectionMemory::createDataSetType(std::string newName, 
-                                                                  te::da::DataSetType* firstDt,
-                                                                  std::vector<te::dt::Property*> firstProps, 
-                                                                  te::da::DataSetType* secondDt,
-                                                                  std::vector<te::dt::Property*> secondProps)
-{
-  te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
-  
-  
-
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(newName + "_id", te::dt::INT32_TYPE);
-  pkProperty->setAutoNumber(true);
-  outputDt->add(pkProperty);
-  
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(newName + "_pk", outputDt);
-  pk->add(pkProperty);
-  outputDt->setPrimaryKey(pk);
-
-  for(size_t i = 0; i < firstProps.size(); ++i)
-  {
-    te::dt::Property* prop = firstProps[i]->clone();
-    if (!m_inFirstDsetName.empty())
-      prop->setName(te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + prop->getName());
-    outputDt->add(prop);
-  }
-
-  for(size_t i = 0; i < secondProps.size(); ++i)
-  {
-    te::dt::Property* prop = secondProps[i]->clone();
-    if (!m_inSecondDsetName.empty())
-      prop->setName(te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + prop->getName());
-    outputDt->add(prop);
-  }
-
-  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(firstDt)->getGeometryType(), te::da::GetFirstGeomProperty(secondDt)->getGeometryType());
-
-  te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
-  newGeomProp->setGeometryType(newType);
-  newGeomProp->setSRID(te::da::GetFirstGeomProperty(firstDt)->getSRID());
-  
-  outputDt->add(newGeomProp);
-
-  return outputDt;
 }

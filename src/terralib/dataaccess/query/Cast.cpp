@@ -18,19 +18,26 @@
  */
 
 /*!
-  \file VirtualMachine.cpp
+  \file terralib/dataaccess/query/Cast.cpp
 
-  \brief An abstract class that defines a Virtual Machine for executing code in any TerraLib supported language.
+  \brief Cast a expression function.
 */
 
 // TerraLib
-#include "VirtualMachine.h"
+#include "Cast.h"
 
-te::vm::VirtualMachine::VirtualMachine()
+te::da::Cast::Cast(const Cast& rhs)
+: BinaryFunction(rhs)
 {
 }
 
-te::vm::VirtualMachine::~VirtualMachine()
+te::da::Cast& te::da::Cast::operator=(const Cast& rhs)
 {
+  BinaryFunction::operator=(rhs);
+  return *this;
 }
 
+te::da::Expression* te::da::Cast::clone() const
+{
+  return new Cast(*this);
+}

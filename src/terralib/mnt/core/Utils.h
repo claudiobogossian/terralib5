@@ -37,9 +37,11 @@ namespace te
 {
   namespace mnt
   {
-    size_t ReadPoints(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, te::gm::MultiPoint &mpt, std::string &geostype, te::gm::Envelope &env);
+    size_t ReadPoints(  std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, te::gm::MultiPoint &mpt, std::string &geostype, 
+                        te::gm::Envelope &env);
 
-    size_t ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, double max, Simplify alg, te::gm::MultiPoint &mpt, te::gm::MultiLineString &isolines, std::string &geostype, te::gm::Envelope &env);
+    size_t ReadSamples( std::string &inDsetName, te::da::DataSourcePtr &inDsrc, std::string &atrZ, double tol, double max, Simplify alg, te::gm::MultiPoint &mpt,
+                        te::gm::MultiLineString &isolines, std::string &geostype, te::gm::Envelope &env, int srid = 0);
 
     double Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2);
 
@@ -53,7 +55,11 @@ namespace te
 
     TEMNTEXPORT te::gm::LineString* pointListSimplify(te::gm::LineString *ls, double snap, double maxdist, double Zvalue);
 
+    double SegmentDistance(double fx, double fy, double lx, double ly, double ptx, double pty, double *pix, double *piy);
+      
     double pointToSegmentDistance(te::gm::PointZ &fseg, te::gm::PointZ &lseg, te::gm::PointZ &pt, te::gm::PointZ *pti);
+
+    double coordToSegmentDistance(te::gm::Coord2D &fseg, te::gm::Coord2D &lseg, te::gm::Coord2D &pt, te::gm::Coord2D *pti);
 
     // Find center point of triangle using its vertices.
     short findCenter(te::gm::PointZ* vert, double* pcx, double* pcy);
@@ -104,6 +110,9 @@ namespace te
     TEMNTEXPORT bool convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr unit);
 
     TEMNTEXPORT void getMinMax(te::rst::Raster* inputRst, double &vmin, double &vmax);
+ 
+    double PerpendicularDistance(te::gm::Coord2D& first, te::gm::Coord2D& last, te::gm::Coord2D& pin, te::gm::Coord2D& pinter);
+
   }
 }
 

@@ -271,7 +271,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.end();
 
       // Fred: revisar
-      drawLayersSelection(getSelectedLayer());
+     drawLayersSelection(getSelectedLayer());
     }
     break;
 

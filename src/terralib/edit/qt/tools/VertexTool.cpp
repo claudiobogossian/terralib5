@@ -196,7 +196,7 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
 
     pickFeature(m_layer, GetPosition(e));
 
-    if (m_feature)
+    if (m_feature != 0)
       setStage(VERTEX_SEARCH);
   }
   else if (m_currentStage == VERTEX_MOVING)
@@ -244,7 +244,10 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 void te::edit::VertexTool::reset()
 {
-  delete m_feature;
+  
+  if (m_feature != 0)
+    delete m_feature;
+  m_feature = 0;
 
   setStage(FEATURE_SELECTION);
 
@@ -310,10 +313,13 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   }
 
   // Draw the vertexes
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
-    renderer.draw(m_feature->getGeometry(), true);
-  else
-    renderer.drawVertexes(m_feature->getGeometry());
+  if (m_feature != 0)
+  {
+    if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+      renderer.draw(m_feature->getGeometry(), true);
+    else
+      renderer.drawVertexes(m_feature->getGeometry());
+  }
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
