@@ -1,20 +1,21 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*
+  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
@@ -26,16 +27,16 @@
   \author Gilberto Ribeiro de Queiroz
 */
 
-#ifndef __TERRALIB_CORE_TRANSLATOR_H__
-#define __TERRALIB_CORE_TRANSLATOR_H__
+#ifndef __TERRALIB_CORE_TRANSLATOR_TRANSLATOR_H__
+#define __TERRALIB_CORE_TRANSLATOR_TRANSLATOR_H__
 
 // TerraLib
 #include "../../BuildConfig.h"
 #include "Config.h"
 
 // STL
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace te
 {
@@ -92,11 +93,7 @@ namespace te
          */
         //@{
 
-        static Translator& getInstance()
-        {
-          static Translator instance;
-          return instance;
-        }
+        static Translator& getInstance();
 
         /*!
           \brief It tries to translate the specified text string.
@@ -190,19 +187,20 @@ namespace te
 
       private:
 
-        /*! \brief Singleton constructor must be private. */
+        /*! \brief Singleton constructor. */
         Translator(){};
 
-        void operator=(Translator const&);
+// No copy allowed
+        Translator(Translator const&);
+        Translator& operator=(Translator const&);
 
       private:
 
-        std::string m_locale;
+        std::string m_locale;                         //!< If not empty, it is the current locale.
         std::vector<std::string> m_textDomainVector;  //!< A vector from text domains to base directory for the message catalog.
-
     };
 
-  } // end namespace common
+  } // end namespace core
 }   // end namespace te
 
 
@@ -232,9 +230,7 @@ namespace te
 /*!
   \def TE_ADD_TEXT_DOMAIN
 
-  \brief It adds the given text domain located at domain-dir with the given codeset to the multilingual system.
-
-  \note This macro will check if the domain already exists before doing anyting.
+  \brief It adds the given text domain to the multilingual system.
  */
 #ifdef TERRALIB_TRANSLATOR_ENABLED
   #define TE_ADD_TEXT_DOMAIN(domain) te::core::Translator::getInstance().addTextDomain(domain)
@@ -283,5 +279,5 @@ namespace te
 
 //@}
 
-#endif  // __TERRALIB_CORE_TRANSLATOR_H__
+#endif  // __TERRALIB_CORE_TRANSLATOR_TRANSLATOR_H__
 

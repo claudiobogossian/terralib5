@@ -36,7 +36,12 @@
 #include "../Exception.h"
 #include "../utils/Platform.h"
 
-// GNU Text Utilities
+te::core::Translator& te::core::Translator::getInstance()
+{
+  static Translator instance;
+
+  return instance;
+}
 
 std::string te::core::Translator::translate(const std::string& message)
 {
