@@ -92,8 +92,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
 
-file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
-file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.cpp)
+file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.h)
+file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.cpp)
 
 add_library(terralib_unittest_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
 
