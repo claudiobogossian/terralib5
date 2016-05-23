@@ -68,16 +68,11 @@ target_link_libraries(terralib_example_core_lib terralib_mod_core
                                                 ${Boost_FILESYSTEM_LIBRARY}
                                                 ${Boost_SYSTEM_LIBRARY})
 
-if(WIN32)
-  add_definitions(-DTECOREDLL)
-  set(terralib_example_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(terralib_example_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(terralib_example_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-else()
-  set(terralib_example_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(terralib_example_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(terralib_example_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-endif()
+
+add_definitions(-DTEEXEMPCOREDLL)
+set(terralib_example_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+set(terralib_example_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+set(terralib_example_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
 
 file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
 file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.cpp)
