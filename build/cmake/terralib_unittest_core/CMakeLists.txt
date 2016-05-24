@@ -75,11 +75,11 @@ target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST
                                                                ${Boost_FILESYSTEM_LIBRARY}
                                                                ${Boost_SYSTEM_LIBRARY})
 
-if(GETTEXT_FOUND)
-  if(TERRALIB_TRANSLATOR_ENABLED)
-    TERRALIB_REGISTER_TRANSLATION("terralib_unittest_core" "pt_BR")
-  endif()
-endif()
+
+TERRALIB_REGISTER_TRANSLATION("terralib_unittest_core" "pt_BR"
+                              "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                              "${CMAKE_BINARY_DIR}/share/terralib/translations")
+
 add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 

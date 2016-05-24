@@ -84,11 +84,10 @@ set_target_properties(terralib_mod_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
-if(GETTEXT_FOUND)
-  if(TERRALIB_TRANSLATOR_ENABLED)
-    TERRALIB_REGISTER_TRANSLATION("terralib_mod_core" "pt_BR")
-  endif()
-endif()
+
+TERRALIB_REGISTER_TRANSLATION("terralib_mod_core" "pt_BR"
+                              "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                              "${CMAKE_BINARY_DIR}/share/terralib/translations")
 
 install(TARGETS terralib_mod_core
         EXPORT terralib-targets

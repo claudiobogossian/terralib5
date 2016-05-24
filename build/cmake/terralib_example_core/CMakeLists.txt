@@ -78,12 +78,9 @@ add_executable(terralib_example_core_translator ${TERRALIB_EXAMPLE_CORE_TRANSLAT
 
 target_link_libraries(terralib_example_core_translator terralib_mod_core)
 
-
-if(GETTEXT_FOUND)
-  if(TERRALIB_TRANSLATOR_ENABLED)
-    TERRALIB_REGISTER_TRANSLATION("terralib_example_core_translator" "pt_BR")
-  endif()
-endif()
+TERRALIB_REGISTER_TRANSLATION("terralib_example_core_translator" "pt_BR"
+                              "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                              "${CMAKE_BINARY_DIR}/share/terralib/translations")
 
 #Examples of logger
 #file(GLOB TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/logger/*.cpp)
