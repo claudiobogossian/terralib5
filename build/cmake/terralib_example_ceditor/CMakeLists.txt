@@ -23,15 +23,13 @@
 #  Author: Frederico Bedê
 #
 
-include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${Boost_INCLUDE_DIR} ${Qscintilla_INCLUDE_DIR})
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${Qscintilla_INCLUDE_DIR})
 
 set(CMAKE_AUTOMOC ON)
-
+set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_AUTORCC ON)
-
-set (TERRALIB_CEDITOR_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ceditor)
+set(TERRALIB_CEDITOR_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ceditor)
 
 file(GLOB TERRALIB_EXAMPLE_CEDITOR_HDR_FILES ${TERRALIB_CEDITOR_DIR}/*.h)
 file(GLOB TERRALIB_EXAMPLE_CEDITOR_SRC_FILES ${TERRALIB_CEDITOR_DIR}/*.cpp)
@@ -52,4 +50,3 @@ add_executable(terralib_example_ceditor ${TERRALIB_EXAMPLE_CEDITOR_HDR_FILES} ${
 target_link_libraries(terralib_example_ceditor terralib_mod_ceditor ${Qscintilla_LIBRARY})
 
 qt5_use_modules(terralib_example_ceditor Widgets)
-

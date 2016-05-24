@@ -22,11 +22,11 @@
 #
 #  Author: Vinicius Campanha
 #          Matheus Cavassan Zaglia
+#          Frederico Augusto Bedê
+#          Gilberto Ribeiro de Queiroz
 #
 
-include_directories(${Boost_INCLUDE_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
-
 
 add_definitions(-DBOOST_LOG_DYN_LINK)
 

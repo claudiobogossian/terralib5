@@ -41,6 +41,15 @@ namespace te
     {
       //! Base exception class for TerraLib Virtual Machine Library.
       struct Exception: virtual te::Exception { };
+      
+      //! An exception that tells that the virtual machine could not be created.
+      struct CreationException: virtual Exception { };
+      
+      //! An exception that tells that the virtual machine could not build a script.
+      struct BuildException: virtual Exception { };
+      
+      //! An exception that tells that the virtual machine could not run compiled script.
+      struct RunException: virtual Exception { };
 
     }
   }  // end namespace core

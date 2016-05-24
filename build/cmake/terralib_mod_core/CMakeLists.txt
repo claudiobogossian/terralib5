@@ -27,8 +27,6 @@
 
 set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
-include_directories(${Boost_INCLUDE_DIR})
-
 add_definitions(-DBOOST_LOG_DYN_LINK)
 
 if (WIN32)

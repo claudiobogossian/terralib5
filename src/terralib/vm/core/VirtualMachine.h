@@ -49,14 +49,21 @@ namespace te
       {
         public:
 
+          /*!
+            \exception VMCreationException If the Virtual Machine can not be created.
+           */
           VirtualMachine() { }
 
+          /*! \brief Virtual destructor. */
           virtual ~VirtualMachine() { }
 
+          /*! \Return the name of the Virtual Machine: it is also an identifier about the VM type. */
           virtual std::string getName() const = 0;
 
+          /*! \brief Return the title of Virtual Machine: a name that can be used by applications to show in a GUI. */
           virtual std::string getTitle() const = 0;
 
+          /*! \brief Returns a brief description about the underlying Virtual Machine. */
           virtual std::string getDescription() const = 0;
 
           virtual void build(const std::string& file) = 0;

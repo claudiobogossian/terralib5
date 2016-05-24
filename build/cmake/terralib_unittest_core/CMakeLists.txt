@@ -23,9 +23,9 @@
 #  Author: Vinicius Campanha
 #          Matheus Cavassan Zaglia
 #          Frederico Bedê
+#          Gilberto Ribeiro de Queiroz
 #
 
-include_directories(${Boost_INCLUDE_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
@@ -71,7 +71,9 @@ add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERR
                                       ${TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES}
                                       ${TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES})
 
-target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                                                               ${Boost_FILESYSTEM_LIBRARY}
+                                                               ${Boost_SYSTEM_LIBRARY})
 
 if(GETTEXT_FOUND)
   if(TERRALIB_TRANSLATOR_ENABLED)

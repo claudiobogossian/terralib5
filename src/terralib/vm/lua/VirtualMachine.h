@@ -43,9 +43,9 @@ namespace te
       {
         public:
 
-          VirtualMachine() { }
+          VirtualMachine();
 
-          ~VirtualMachine() { }
+          ~VirtualMachine();
 
           std::string getName() const;
 
