@@ -86,6 +86,8 @@ namespace te
             \brief It removes a given virtual machine.
 
             \param id The VM id.
+
+            \exception te::OutOfRangeException If there is no virtual machine registered with the given id.
            */
           void erase(const std::string& id);
 
@@ -107,7 +109,7 @@ namespace te
         private:
 
           struct Impl;
-          Impl* pimpl_;
+          Impl* m_pimpl;
       };
 
     } // end namespace core

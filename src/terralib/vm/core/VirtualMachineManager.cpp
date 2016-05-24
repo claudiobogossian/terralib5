@@ -29,47 +29,73 @@
 
 // TerraLib
 #include "VirtualMachineManager.h"
+
 #include "Exception.h"
 #include "VirtualMachine.h"
 
+#include "../../core/translator/Translator.h"
+
 // STL
-#include <cassert>
 #include <map>
 
 struct te::vm::core::VirtualMachineManager::Impl
 {
-  std::map<std::string, std::shared_ptr<VirtualMachine> > vms;  //!< A map from (VM id) to (VM instance).
+  std::map<std::string, std::shared_ptr<VirtualMachine> > m_vms;  //!< A map from (VM id) to (VM instance).
 };
 
 te::vm::core::VirtualMachine*
 te::vm::core::VirtualMachineManager::get(const std::string& id) const
 {
+  std::map<std::string, std::shared_ptr<VirtualMachine> >::iterator it = m_pimpl->m_vms.find(id);
+
+  if(it == m_pimpl->m_vms.end())
+    throw te::OutOfRangeException() << te::ErrorDescription(TE_TR("There is NO Virtual Machine registered for the required id."));
+
+  return it->second.get();
 }
 
 void
 te::vm::core::VirtualMachineManager::insert(const std::string& id, std::unique_ptr<VirtualMachine> vm)
 {
+  std::map<std::string, std::shared_ptr<VirtualMachine> >::iterator it = m_pimpl->m_vms.find(id);
+
+  if(it != m_pimpl->m_vms.end())
+    throw te::InvalidArgumentException() << te::ErrorDescription(TE_TR("There is a Virtual Machine already registered with the required id."));
+
+  m_pimpl->m_vms[id] = std::shared_ptr<VirtualMachine>(vm.release());
 }
 
 void
 te::vm::core::VirtualMachineManager::clear()
 {
+  m_pimpl->m_vms.clear();
 }
 
 void
 te::vm::core::VirtualMachineManager::erase(const std::string& id)
 {
+  std::map<std::string, std::shared_ptr<VirtualMachine> >::iterator it = m_pimpl->m_vms.find(id);
+
+  if(it == m_pimpl->m_vms.end())
+    throw te::OutOfRangeException() << te::ErrorDescription(TE_TR("There is NO Virtual Machine registered for the required id."));
+
+  m_pimpl->m_vms.erase(id);
 }
 
 te::vm::core::VirtualMachineManager&
 te::vm::core::VirtualMachineManager::instance()
 {
+  static VirtualMachineManager m_singleton;  // The singleton instance.
+
+  return m_singleton;
 }
 
 te::vm::core::VirtualMachineManager::VirtualMachineManager()
 {
+  m_pimpl = new Impl();
 }
 
 te::vm::core::VirtualMachineManager::~VirtualMachineManager()
 {
+  delete m_pimpl;
 }

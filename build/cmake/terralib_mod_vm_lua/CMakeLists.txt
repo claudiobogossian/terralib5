@@ -29,12 +29,13 @@ file(GLOB TERRALIB_VM_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vm/lu
 file(GLOB TERRALIB_VM_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vm/lua/*.cpp)
 
 source_group("Header Files"                  FILES ${TERRALIB_VM_FILES})
-source_group("Header Files\\core"            FILES ${TERRALIB_VM_HDR_FILES})
-source_group("Source Files\\core"            FILES ${TERRALIB_VM_SRC_FILES})
+source_group("Header Files\\lua"            FILES ${TERRALIB_VM_HDR_FILES})
+source_group("Source Files\\lua"            FILES ${TERRALIB_VM_SRC_FILES})
 
 add_library(terralib_mod_vm_lua SHARED ${TERRALIB_VM_HDR_FILES} ${TERRALIB_VM_SRC_FILES})
 
 target_link_libraries(terralib_mod_vm_lua terralib_mod_vm
+                                          terralib_mod_plugin
                                           terralib_mod_core
                                           ${LUA_LIBRARIES})
 
