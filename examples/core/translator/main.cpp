@@ -30,8 +30,6 @@
 #include <terralib/core/translator/Translator.h>
 #include <terralib/core/utils/Platform.h>
 
-#include <boost/locale.hpp>
-
 // STL
 #include <cstdlib>
 #include <iostream>
