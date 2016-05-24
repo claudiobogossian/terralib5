@@ -125,9 +125,9 @@ namespace te
         const struct Capabilities& getCapabilities() const;
 
       private:
-        std::string uri_;
-        std::string version_;
-        struct Capabilities capabilities_;
+        std::string m_uri;
+        std::string m_version;
+        struct Capabilities m_capabilities;
       };
     }
   }

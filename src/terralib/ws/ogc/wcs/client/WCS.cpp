@@ -34,7 +34,7 @@
 #include <iostream>
 
 te::ws::ogc::WCS::WCS(const std::string uri, const std::string version)
-  : uri_(uri + "?SERVICE=WCS"), version_(version)
+  : m_uri(uri + "?SERVICE=WCS"), m_version(version)
 {
 
 }
@@ -50,9 +50,9 @@ void te::ws::ogc::WCS::updateCapabilities()
 {
   std::string url;
 
-  if(version_ == "2.0.1")
+  if(m_version == "2.0.1")
   {
-    url = uri_ + "&VERSION=" + version_ + "&REQUEST=GetCapabilities";
+    url = m_uri + "&VERSION=" + m_version + "&REQUEST=GetCapabilities";
   }
   else
   {
@@ -63,7 +63,7 @@ void te::ws::ogc::WCS::updateCapabilities()
   std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url, "capabilities.xml");
 
   // Parse the XML file into a struct
-  capabilities_ = parseCapabilities(xmlPath);
+  m_capabilities = parseCapabilities(xmlPath);
 }
 
 
@@ -73,9 +73,9 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::s
 
   std::string url;
 
-  if(version_ == "2.0.1")
+  if(m_version == "2.0.1")
   {
-    url = uri_ + "&VERSION=" + version_ + "&REQUEST=DescribeCoverage&CoverageID=" + coverage;
+    url = m_uri + "&VERSION=" + m_version + "&REQUEST=DescribeCoverage&CoverageID=" + coverage;
   }
   else
   {
@@ -98,9 +98,9 @@ std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest)
 
   std::string url;
 
-  if(version_ == "2.0.1")
+  if(m_version == "2.0.1")
   {
-    url = uri_ + "&VERSION=" + version_ + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
+    url = m_uri + "&VERSION=" + m_version + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
 
     if(!coverageRequest.format.empty())
       url += "&FORMAT=" + coverageRequest.format;
@@ -244,5 +244,5 @@ std::string te::ws::ogc::WCS::makeFileRequest(const std::string url, const std::
 
 const struct te::ws::ogc::Capabilities& te::ws::ogc::WCS::getCapabilities() const
 {
-  return capabilities_;
+  return m_capabilities;
 }

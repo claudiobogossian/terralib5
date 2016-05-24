@@ -23,8 +23,12 @@
 #  Author: Vinicius Campanha
 #
 
+include_directories(${Boost_INCLUDE_DIR})
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/qt/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/qt/*.h)
+file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/qt/ui/*.ui)
+
 
 source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
 source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
@@ -35,11 +39,16 @@ if(Qt5_FOUND)
   set(CMAKE_AUTOMOC ON)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+  # uic'ing
+  QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
 
   add_library(terralib_mod_ws_ogc_wcs_qt SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_ws_ogc_wcs_qt terralib_mod_qt_widgets terralib_mod_qt_apf)
+  target_link_libraries(terralib_mod_ws_ogc_wcs_qt terralib_mod_qt_widgets
+                                                   terralib_mod_qt_apf
+                                                   terralib_mod_ws_ogc_wcs_dataaccess)
 
   qt5_use_modules(terralib_mod_ws_ogc_wcs_qt Widgets)
 
@@ -49,7 +58,7 @@ else()
   include_directories(${QT_INCLUDE_DIR})
   add_definitions(${QT_DEFINITIONS})
 
-  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/qt/*.h)
+  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/qt/WCSConnectDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
@@ -59,6 +68,7 @@ else()
 
   target_link_libraries(terralib_mod_ws_ogc_wcs_qt terralib_mod_qt_widgets
                                                      terralib_mod_qt_apf
+                                                     terralib_mod_ws_ogc_wcs_dataaccess
                                                      ${QT_LIBRARIES})
 endif()
 

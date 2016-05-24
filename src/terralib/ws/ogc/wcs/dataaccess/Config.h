@@ -35,7 +35,7 @@
 
   \brief The OGC WCS driver identifier string.
 */
-#define TE_OGC_WCS_DRIVER_IDENTIFIER "OGC_WCS"
+#define TE_OGC_WCS_DRIVER_IDENTIFIER "WCS2"
 
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
