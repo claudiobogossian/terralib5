@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file terralib/vm/core/VirtualMachine.h
+  \file terralib/vm/lua/VirtualMachine.h
 
   \brief Implementation of a virtual machine for the Lua Programming Language.
 
