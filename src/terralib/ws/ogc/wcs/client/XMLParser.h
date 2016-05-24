@@ -40,7 +40,7 @@
 // TerraLib
 #include "../../../../xml.h"
 #include "XMLParser.h"
-
+#include "DataTypes.h"
 
 namespace te
 {
@@ -48,60 +48,6 @@ namespace te
   {
     namespace ogc
     {
-      struct Capabilities
-      {
-        std::vector< std::string > operations;
-        std::vector< std::string > coverages;
-      };
-
-      struct SubSet
-      {
-        std::string axis;
-        std::string min;
-        std::string max;
-      };
-
-      struct DomainSet
-      {
-        std::vector< SubSet > subSet;
-      };
-
-      struct EnvelopeWithTimePeriod
-      {
-        std::string srsName;
-        std::string srsDimension;
-        std::vector< std::string > uomLabels;
-
-        std::string firstLabel;
-        std::string secondLabel;
-
-        std::string lowerCorner_X;
-        std::string lowerCorner_Y;
-
-        std::string upperCorner_X;
-        std::string upperCorner_Y;
-
-        std::string timeLabel;
-        std::string beginPosition;
-        std::string endPosition;
-      };
-
-      struct ServiceParameters
-      {
-        std::string coverageSubtype;
-        std::string coverageSubtypeParent;
-        std::string nativeFormat;
-        std::string extension;
-      };
-
-      struct CoverageDescription
-      {
-        std::string coverageId;
-        struct EnvelopeWithTimePeriod envelope;
-        struct DomainSet domainSet;
-        struct ServiceParameters serviceParameters;
-        std::vector< std::string > extension;
-      };
 
       static Capabilities parseCapabilities(const std::string xmlPath)
       {

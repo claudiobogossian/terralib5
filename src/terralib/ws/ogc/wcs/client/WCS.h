@@ -38,6 +38,7 @@
 // TerraLib
 #include "../../../../dataaccess/dataset/DataSet.h"
 #include "XMLParser.h"
+#include "DataTypes.h"
 
 
 namespace te
@@ -46,18 +47,6 @@ namespace te
   {
     namespace ogc
     {
-
-      /*! \brief A struct to set the parameters of wanted coverage */
-      struct CoverageRequest
-      {
-        std::string coverageID;
-        std::string format;
-        std::string mediaType;
-        EnvelopeWithTimePeriod envelope;
-        std::string time;
-        std::vector< SubSet > subSet;
-        std::map< std::string, std::string > additionalParameters;
-      };
 
       /*!
         \class ClientWCS
