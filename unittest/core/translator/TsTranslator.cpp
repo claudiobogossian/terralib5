@@ -27,7 +27,9 @@
 
 // STL
 // TerraLib
+#include <terralib/core/Exception.h>
 #include <terralib/core/translator/Translator.h>
+#include <terralib/core/utils/Platform.h>
 
 // Boost
 #include <boost/test/unit_test.hpp>
@@ -36,9 +38,9 @@ BOOST_AUTO_TEST_SUITE(translator_test_case)
 
 BOOST_AUTO_TEST_CASE(translator_test)
 {
-
-  TE_ADD_TEXT_DOMAIN("terralib_unittest_core");
-  TE_TR_LANGUAGE("pt_BR");
+  BOOST_CHECK_NO_THROW(TE_ADD_TEXT_DOMAIN("terralib_unittest_core", te::core::FindInTerraLibPath("share/terralib/translations")));
+  BOOST_CHECK_THROW(TE_ADD_TEXT_DOMAIN("terralib_unittest_core", te::core::FindInTerraLibPath("share/terralib/translations")), te::core::Exception);
+  BOOST_CHECK_NO_THROW(TE_TR_LANGUAGE("pt_BR"));
   BOOST_CHECK_EQUAL(TE_TR("BR-GIS"), "SIG-BR");
   BOOST_CHECK_EQUAL(TE_TR("Wrong cryptographer algorithm type!"), "O tipo de algoritmo de criptografia está errado!");
   BOOST_CHECK_EQUAL(TE_TR("You must specify a logger configuration file!"), "Você deve especificar o arquivo de configuração do logger!");

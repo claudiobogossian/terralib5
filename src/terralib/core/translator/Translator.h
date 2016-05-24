@@ -36,6 +36,7 @@
 
 // STL
 #include <string>
+#include <map>
 #include <vector>
 
 namespace te
@@ -88,7 +89,7 @@ namespace te
       public:
 
 
-        /** @name Translation Methods
+        /** @name Translation Methods#define TE_ADD_TEXT_DOMAIN(domain) te::core::Translator::getInstance().addTextDomain(domain)
          *  Methods that can be used to tranlate texts.
          */
         //@{
@@ -171,9 +172,11 @@ namespace te
 
           \param textDomain    A given message domain (just a name). A text domain is the name of the catalog used to translate the message.
 
+          \param dir Where the text domain is located.
+
           \exception Exception If the text domain already exists it raises an exception. If you are not sure about the existence of a text domain, use the exist() method.
          */
-        void addTextDomain(const std::string& textDomain);
+        void addTextDomain(const std::string& textDomain, const std::string& dir);
 
 
         /*!
@@ -188,7 +191,7 @@ namespace te
       private:
 
         /*! \brief Singleton constructor. */
-        Translator(){};
+        Translator(){}
 
 // No copy allowed
         Translator(Translator const&);
@@ -197,7 +200,7 @@ namespace te
       private:
 
         std::string m_locale;                         //!< If not empty, it is the current locale.
-        std::vector<std::string> m_textDomainVector;  //!< A vector from text domains to base directory for the message catalog.
+        std::map<std::string, std::vector<std::string> > m_textDomainMap;  //!< A vector from text domains to base directory for the message catalog.
     };
 
   } // end namespace core
@@ -220,20 +223,12 @@ namespace te
 #endif
 
 /*!
-  \def TERRALIB_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib.
- */
-
-//#define TERRALIB_TEXT_DOMAIN "terralib_mod_core"
-
-/*!
   \def TE_ADD_TEXT_DOMAIN
 
-  \brief It adds the given text domain to the multilingual system.
+  \brief It adds the given text domain and its directory to the multilingual system.
  */
 #ifdef TERRALIB_TRANSLATOR_ENABLED
-  #define TE_ADD_TEXT_DOMAIN(domain) te::core::Translator::getInstance().addTextDomain(domain)
+  #define TE_ADD_TEXT_DOMAIN(domain, dir) te::core::Translator::getInstance().addTextDomain(domain, dir)
 #else
   #define TE_ADD_TEXT_DOMAIN(domain) ((void)0)
 #endif
@@ -275,6 +270,11 @@ namespace te
  */
 #define TE_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n).c_str()
 
+/*!
+  \def TE_TR_LANGUAGE
+
+  \brief It sets the locale for the Translator.
+ */
 #define TE_TR_LANGUAGE(message) te::core::Translator::getInstance().setLocale(message)
 
 //@}
