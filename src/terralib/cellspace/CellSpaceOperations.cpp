@@ -70,6 +70,11 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
   {
     refDs = layerBase->getData();
     useMask=true;
+
+    if (layerBase->getSchema()->hasRaster())
+    {
+      throw te::common::Exception(TE_TR("Can not generate cellspace based on Raster with mask!"));
+    }
   }
 
   std::auto_ptr<te::da::DataSetType> outputDataSetType(createCellularDataSetType(name, srid, type));

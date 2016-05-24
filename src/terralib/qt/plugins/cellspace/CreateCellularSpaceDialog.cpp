@@ -188,7 +188,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
   te::map::AbstractLayerPtr layer = getReferenceLayer();
   if(!layer)
     return;
-  
+
   m_bbSRID = layer->getSRID();
   int precision = 2;
   if (m_bbSRID>0)
@@ -209,7 +209,18 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
     precision = 6;
   }
   showEnvelope(layer->getExtent(),precision);
-  m_ui->m_maskRadioButton->setChecked(true);
+
+  if(layer->getSchema()->hasRaster())
+  {
+    m_ui->m_maskRadioButton->setEnabled(false);
+    m_ui->m_noMaskRadioButton->setChecked(true);
+  }
+  else
+  {
+    m_ui->m_maskRadioButton->setEnabled(true);
+    m_ui->m_maskRadioButton->setChecked(true);
+  }
+  
 }
 
 
