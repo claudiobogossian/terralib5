@@ -14,8 +14,8 @@
    <string>Code Editor</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="terralib" resource="../res.qrc">
-    <normaloff>:/imgs/imgs/terralib-globe.png</normaloff>:/imgs/imgs/terralib-globe.png</iconset>
+   <iconset>
+    <normaloff>../../../share/terralib/images/png/terralib-globe.png</normaloff>../../../share/terralib/images/png/terralib-globe.png</iconset>
   </property>
   <property name="documentMode">
    <bool>false</bool>
@@ -102,8 +102,8 @@
   </widget>
   <action name="m_actionOpen">
    <property name="icon">
-    <iconset theme="folder" resource="../res.qrc">
-     <normaloff>:/imgs/imgs/document-open.svg</normaloff>:/imgs/imgs/document-open.svg</iconset>
+    <iconset theme="folder">
+     <normaloff>../../../share/terralib/icons/terralib/scalable/folder-open.svg</normaloff>../../../share/terralib/icons/terralib/scalable/folder-open.svg</iconset>
    </property>
    <property name="text">
     <string>Open script..</string>
@@ -114,8 +114,8 @@
   </action>
   <action name="m_actionSave">
    <property name="icon">
-    <iconset theme="terralib" resource="../res.qrc">
-     <normaloff>:/imgs/imgs/document-save.svg</normaloff>:/imgs/imgs/document-save.svg</iconset>
+    <iconset theme="document-save">
+     <normaloff>../../../share/terralib/icons/terralib/scalable/document-save.svg</normaloff>../../../share/terralib/icons/terralib/scalable/document-save.svg</iconset>
    </property>
    <property name="text">
     <string>Save script..</string>
@@ -126,8 +126,8 @@
   </action>
   <action name="m_actionNew">
    <property name="icon">
-    <iconset theme="terralib" resource="../res.qrc">
-     <normaloff>:/imgs/imgs/document-new.svg</normaloff>:/imgs/imgs/document-new.svg</iconset>
+    <iconset theme="document-new">
+     <normaloff>../../../share/terralib/icons/terralib/scalable/document-new.svg</normaloff>../../../share/terralib/icons/terralib/scalable/document-new.svg</iconset>
    </property>
    <property name="text">
     <string>New script...</string>
@@ -138,8 +138,8 @@
   </action>
   <action name="m_actionRun">
    <property name="icon">
-    <iconset theme="terralib" resource="../res.qrc">
-     <normaloff>:/imgs/imgs/go-next.svg</normaloff>:/imgs/imgs/go-next.svg</iconset>
+    <iconset theme="go-next">
+     <normaloff>../../../share/terralib/icons/terralib/scalable/go-next.svg</normaloff>../../../share/terralib/icons/terralib/scalable/go-next.svg</iconset>
    </property>
    <property name="text">
     <string>Run...</string>
@@ -164,9 +164,7 @@
    </slots>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../res.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>m_actionOpen</sender>
