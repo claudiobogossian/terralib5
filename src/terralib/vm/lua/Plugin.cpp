@@ -53,6 +53,8 @@ class Plugin : public te::plugin::Plugin
       if(m_initialized)
         return;
 
+      te::vm::core::VirtualMachineManager::instance().insert("lua", std::unique_ptr<te::vm::core::VirtualMachine>(new te::vm::lua::VirtualMachine()));
+
       m_initialized = true;
     }
   
@@ -60,6 +62,8 @@ class Plugin : public te::plugin::Plugin
     {
       if(!m_initialized)
         return;
+
+      te::vm::core::VirtualMachineManager::instance().erase("lua");
 
       m_initialized = false;
     }
