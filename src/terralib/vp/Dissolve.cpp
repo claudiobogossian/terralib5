@@ -671,6 +671,10 @@ bool te::vp::Dissolve::executeMemory(te::vp::AlgorithmParams* mainParams)
   te::common::Logger::logDebug("vp", timeResult.c_str());
 #endif
 
+  te::common::TaskProgress task("Processing...", 0, (int)groups.size());
+  task.useTimer(false);
+  task.useMultiThread(true);
+
   GroupThreadManager* manager = new GroupThreadManager(groups
     , inputDataSet.get()
     , dsType_input.get()
@@ -1098,17 +1102,28 @@ void te::vp::Dissolve::threadUnion(GroupThreadManager* manager)
     }
 
     // Output geometry.
-    std::auto_ptr<te::gm::Geometry> resultUnionGeometry = te::vp::GetGeometryUnion(geomVec);
+    std::auto_ptr<te::gm::Geometry> resultUnionGeometry;
+
+    try
+    {
+      resultUnionGeometry = te::vp::GetGeometryUnion(geomVec);
+    }
+    catch (...)
+    {
+      std::string message = "GEOS Exception.";
+      manager->addWarning(message);
+
+      manager->addOutput(outputItemVec);
+
+      continue;
+    }
 
     if (!resultUnionGeometry->isValid())
     {
       std::string message = "The operation generated invalid geometry.";
-
-#ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", TE_TR("Dissolve - " + *message.c_str()));
-#endif // TERRALIB_LOGGER_ENABLED
-
       manager->addWarning(message);
+
+      manager->addOutput(outputItemVec);
 
       continue;
     }
@@ -1163,18 +1178,14 @@ void te::vp::Dissolve::threadSave(GroupThreadManager* manager)
 
     if (!dataSetPrepared)
     {
-#ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", "Dissolve - Output DataSet was not prepared to save.");
-#endif // TERRALIB_LOGGER_ENABLED
-      throw te::common::Exception(TE_TR("Output DataSet was not prepared to save."));
+      std::string message = "Dissolve - Output DataSet was not prepared to save.";
+      manager->addWarning(message);
     }
 
     if (dataSetPrepared->isEmpty())
     {
-#ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", "Dissolve - The resultant layer is empty!");
-#endif // TERRALIB_LOGGER_ENABLED
-      throw te::common::Exception(TE_TR("The resultant layer is empty!"));
+      std::string message = "Dissolve - The resultant layer is empty!";
+      manager->addWarning(message);
     }
 
     Save(outputDataSource, dataSetPrepared, outputDataType);

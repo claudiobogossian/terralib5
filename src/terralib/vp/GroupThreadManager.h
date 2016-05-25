@@ -118,6 +118,7 @@ namespace te
       te::da::DataSource* m_outputDataSource;
       te::mem::DataSet* m_outputDataSet;
       std::vector< std::vector<te::mem::DataSetItem*> > m_outputQueue;
+      te::common::TaskProgress m_task;
 
       std::map<std::string, te::dt::AbstractData*> m_specificParams;
 

@@ -22,7 +22,7 @@
  */
 
 // Terralib
-
+#include "../common/Logger.h"
 #include "../common/progress/TaskProgress.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -177,6 +177,10 @@ namespace te
       {
         m_warnings.push_back(warning);
       }
+
+#ifdef TERRALIB_LOGGER_ENABLED
+      te::common::Logger::logDebug("vp", warning.c_str());
+#endif // TERRALIB_LOGGER_ENABLED
     }
 
     bool GroupThreadManager::hasMoreGroups()

@@ -30,11 +30,20 @@
 #include "Exception.h"
 #include "Geometry.h"
 #include "GeometryCollection.h"
+#include "GEOSReader.h"
+#include "GEOSWriter.h"
 #include "LinearRing.h"
 #include "LineString.h"
 #include "Point.h"
 #include "Polygon.h"
 #include "Utils.h"
+
+#ifdef TERRALIB_GEOS_ENABLED
+// GEOS
+#include <geos/geom/Geometry.h>
+#include <geos/operation/union/UnaryUnionOp.h>
+#include <geos/util/GEOSException.h>
+#endif
 
 te::gm::Geometry* te::gm::GetGeomFromEnvelope(const Envelope* const e, int srid)
 {
@@ -244,4 +253,22 @@ void te::gm::Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& g
   }
   else
     geoms.push_back(g);
+}
+
+
+te::gm::Geometry* te::gm::UnaryUnion(te::gm::Geometry* geom)
+{
+#ifdef TERRALIB_GEOS_ENABLED
+
+  std::auto_ptr<geos::geom::Geometry> geomGeos(GEOSWriter::write(geom));
+
+  std::auto_ptr<geos::geom::Geometry> unionGeom = geos::operation::geounion::UnaryUnionOp::Union(*(geomGeos.get()));
+
+  unionGeom->setSRID(geom->getSRID());
+
+  return GEOSReader::read(unionGeom.get());
+
+#else
+  throw te::common::Exception(TE_TR("Union routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
 }
