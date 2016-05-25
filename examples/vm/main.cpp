@@ -27,25 +27,39 @@
 */
 
 // TerraLib
-#include <terralib/core/translator/Translator.h>
+#include <terralib/common/TerraLib.h>
 #include <terralib/core/utils/Platform.h>
-
-// STL
-#include <cstdlib>
-#include <iostream>
+#include <terralib/plugin/PluginInfo.h>
+#include <terralib/plugin/PluginManager.h>
+#include <terralib/plugin/Utils.h>
+#include <terralib/vm/core/VirtualMachine.h>
+#include <terralib/vm/core/VirtualMachineManager.h>
 
 int main(int argc, char *argv[])
 {
-  // Add your your text domain, will throw and error if was already added
-  TE_ADD_TEXT_DOMAIN("terralib_example_core_translator", te::core::FindInTerraLibPath("share/terralib/translations"));
+  TerraLib::getInstance().initialize();
 
-  TE_TR_LANGUAGE("pt_BR");
-  std::cout << TE_TR("This text will be in portuguese if your system locale is pt_BR") << "\n";
+  std::string plgManifest = te::core::FindInTerraLibPath("share/terralib/plugins/te.vm.lua.teplg");
 
-  TE_TR_LANGUAGE("en_US");
-  std::cout << TE_TR("This text will be in portuguese if your system locale is pt_BR") << "\n";
+  te::plugin::PluginInfo* info;
 
-  std::cout << TE_TR("This text will remain the same, because there is no translation for it.") << "\n";
+  info = te::plugin::GetInstalledPlugin(plgManifest);
+
+  te::plugin::PluginManager::getInstance().load(*info);
+
+  std::string luaScript = te::core::FindInTerraLibPath("share/terralib/examples/lua/teste_vm.lua");
+
+  te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get("lua");
+
+  vm->build(luaScript);
+
+  vm->execute();
+
+  delete info;
+
+  te::plugin::PluginManager::getInstance().unloadAll();
+
+  TerraLib::getInstance().finalize();
 
   return EXIT_SUCCESS;
 }

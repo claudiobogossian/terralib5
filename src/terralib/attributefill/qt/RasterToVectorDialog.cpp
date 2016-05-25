@@ -356,12 +356,12 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
 
   std::auto_ptr<te::rst::Raster> inputRst = rasterDataSet->getRaster(rpos);
 
-  std::string srdiMessage;
-  bool isValidSRIDs = te::qt::widgets::isValidSRIDs(m_rasterLayer->getSRID(), m_vectorLayer->getSRID(), srdiMessage);
+  std::string sridMessage;
+  bool isValidSRIDs = te::qt::widgets::isValidSRIDs(m_rasterLayer->getSRID(), m_vectorLayer->getSRID(), sridMessage);
 
   if (!isValidSRIDs)
   {
-    QMessageBox::information(this, "Fill", srdiMessage.c_str());
+    QMessageBox::information(this, "Fill", sridMessage.c_str());
     return;
   }
 

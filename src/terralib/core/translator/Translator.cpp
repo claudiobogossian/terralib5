@@ -36,7 +36,12 @@
 #include "../Exception.h"
 #include "../utils/Platform.h"
 
-// GNU Text Utilities
+te::core::Translator& te::core::Translator::getInstance()
+{
+  static Translator instance;
+
+  return instance;
+}
 
 std::string te::core::Translator::translate(const std::string& message)
 {
@@ -47,21 +52,22 @@ std::string te::core::Translator::translate(const char* message)
 {
 
 #ifdef TERRALIB_TRANSLATOR_ENABLED
-  for(auto it = m_textDomainVector.begin(); it != m_textDomainVector.end();++it)
+  for(const auto& dir : m_textDomainMap)
   {
-    std::string domain = *it;
+    for(const auto& domain : dir.second)
+    {
 
-    std::string path = te::core::FindInTerraLibPath("share/terralib/translations");
-    boost::locale::generator gen;
-    gen.add_messages_domain(domain);
+      boost::locale::generator gen;
+      gen.add_messages_domain(domain);
+      gen.add_messages_path(dir.first);
 
-    gen.add_messages_path(path);
-    std::locale::global(gen(m_locale));
+      std::locale::global(gen(m_locale));
 
-    std::string translated = boost::locale::translate(message).str(std::locale());
+      std::string translated = boost::locale::translate(message).str(std::locale());
 
-    if(translated != message)
-      return translated;
+      if(translated != message)
+        return translated;
+    }
   }
   return message;
 #else
@@ -83,24 +89,23 @@ te::core::Translator::translate(const char* msg1,
                                 unsigned int n)
 {
 #ifdef TERRALIB_TRANSLATOR_ENABLED
-  for(auto it = m_textDomainVector.begin(); it != m_textDomainVector.end();++it)
+  for(const auto& dir : m_textDomainMap)
   {
-    std::string domain = *it;
+    for(const auto& domain : dir.second)
+    {
+      boost::locale::generator gen;
+      gen.add_messages_domain(domain);
+      gen.add_messages_path(dir.first);
 
-    std::string path = te::core::FindInTerraLibPath("share/terralib/translations");
-    boost::locale::generator gen;
-    gen.add_messages_domain(domain);
+      std::locale::global(gen(m_locale));
 
-    gen.add_messages_path(path);
-    std::locale::global(gen(m_locale));
+      std::string translated = boost::locale::translate(msg1, msg2, n).str(std::locale());
 
-    std::string translated = boost::locale::translate(msg1, msg2, n).str(std::locale());
-
-    if(n == 1 && translated != msg1)
-      return translated;
-    else if(n > 1 && translated != msg2)
-      return translated;
-
+      if(n == 1 && translated != msg1)
+        return translated;
+      else if(n > 1 && translated != msg2)
+        return translated;
+    }
   }
   return ((n == 1) ? msg1 : msg2);
 #else
@@ -113,22 +118,25 @@ void te::core::Translator::setLocale(const std::string& locale)
   m_locale = locale + ".UTF-8";
 }
 
-void te::core::Translator::addTextDomain(const std::string& textDomain)
+void te::core::Translator::addTextDomain(const std::string& textDomain, const std::string& dir)
 {
   if(exist(textDomain))
   {
-    boost::format err_msg(TE_TR("The text domain %1 already exist."));
+    boost::format err_msg(TE_TR("The text domain %1% already exist."));
     throw Exception() << te::ErrorDescription((err_msg % textDomain).str());
   }
-  m_textDomainVector.push_back(textDomain);
+  m_textDomainMap[dir].push_back(textDomain);
 }
 
 
 bool te::core::Translator::exist(const std::string& textDomain)
 {
-  std::vector<std::string>::iterator it = std::find(m_textDomainVector.begin(),m_textDomainVector.end(), textDomain);
-  if(it != m_textDomainVector.end())
-    return true;
+  for(const auto& dir : m_textDomainMap)
+  {
+    auto domain = std::find(dir.second.begin(), dir.second.end(), textDomain);
+    if(domain != dir.second.end())
+      return true;
+  }
   return false;
 }
 

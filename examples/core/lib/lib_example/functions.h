@@ -1,19 +1,12 @@
-#ifndef __TERRALIB_EXAMPLE_LIBRARY_FUNCTIONS_H__
-#define __TERRALIB_EXAMPLE_LIBRARY_FUNCTIONS_H__
+#ifndef __TERRALIB_FUN_EXAMPLE_LIBRARY_H__
+#define __TERRALIB_FUN_EXAMPLE_LIBRARY_H__
 
-// TerraLib
-#include <terralib/Defines.h>
-
-#ifdef TECOREDLL
-  #define TECOREEXPORT TE_DLL_EXPORT
-#else
-  #define TECOREEXPORT TE_DLL_IMPORT
-#endif
+#include "Config.h"
 
 extern "C"
 {
   /* Calculates the fatorial of a number */
-  TECOREEXPORT int fatorial(int v);
+  TECOREEXEMPEXPORT int fatorial(int v);
 }
 
-#endif //__TERRALIB_EXAMPLE_LIBRARY_FUNCTIONS_H__
+#endif //__TERRALIB_FUN_EXAMPLE_LIBRARY_H__

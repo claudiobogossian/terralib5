@@ -22,11 +22,11 @@
 #
 #  Author: Vinicius Campanha
 #          Matheus Cavassan Zaglia
+#          Frederico Augusto Bedê
+#          Gilberto Ribeiro de Queiroz
 #
 
-include_directories(${Boost_INCLUDE_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
-
 
 add_definitions(-DBOOST_LOG_DYN_LINK)
 
@@ -68,28 +68,6 @@ target_link_libraries(terralib_example_core_lib terralib_mod_core
                                                 ${Boost_FILESYSTEM_LIBRARY}
                                                 ${Boost_SYSTEM_LIBRARY})
 
-if(WIN32)
-  add_definitions(-DTECOREDLL)
-  set(terralib_example_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(terralib_example_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(terralib_example_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-else()
-  set(terralib_example_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(terralib_example_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(terralib_example_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-endif()
-
-file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
-file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.cpp)
-
-add_library(terralib_example_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
-
-set_target_properties(terralib_example_core_lib_function
-                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
-
-add_dependencies(terralib_example_core_lib terralib_example_core_lib_function)
-
 
 #Examples of translator
 file(GLOB TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/translator/*.cpp)
@@ -100,12 +78,9 @@ add_executable(terralib_example_core_translator ${TERRALIB_EXAMPLE_CORE_TRANSLAT
 
 target_link_libraries(terralib_example_core_translator terralib_mod_core)
 
-
-if(GETTEXT_FOUND)
-  if(TERRALIB_TRANSLATOR_ENABLED)
-    TERRALIB_REGISTER_TRANSLATION("terralib_example_core_translator" "pt_BR")
-  endif()
-endif()
+TERRALIB_REGISTER_TRANSLATION("terralib_example_core_translator" "pt_BR"
+                              "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                              "${CMAKE_BINARY_DIR}/share/terralib/translations")
 
 #Examples of logger
 #file(GLOB TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/logger/*.cpp)
@@ -116,6 +91,28 @@ endif()
 
 #target_link_libraries(terralib_example_core_logger terralib_mod_core)
 
+# Library of functions to example lib
 
+if(WIN32)
+  add_definitions(-DTECOREEXEMPDLL)
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+
+file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.h)
+file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.cpp)
+
+add_library(terralib_example_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
+
+set_target_properties(terralib_example_core_lib_function
+                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+
+add_dependencies(terralib_example_core_lib terralib_example_core_lib_function)
 
 

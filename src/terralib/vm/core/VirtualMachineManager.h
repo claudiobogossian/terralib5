@@ -1,101 +1,119 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*
+  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
-  \file VirtualMachineManager.h
-  
+  \file terralib/vm/core/VirtualMachineManager.h
+
   \brief A singleton for managing TerraLib Virtual Machines.
+
+  \author Frederico Augusto Bedê
+  \author Gilberto Ribeiro de Queiroz
 */
 
-#ifndef __TERRALIB_BINDING_VM_INTERNAL_VIRTUALMACHINEMANAGER_H
-#define __TERRALIB_BINDING_VM_INTERNAL_VIRTUALMACHINEMANAGER_H
+#ifndef __TERRALIB_VM_CORE_VIRTUALMACHINEMANAGER_H__
+#define __TERRALIB_VM_CORE_VIRTUALMACHINEMANAGER_H__
 
 // TerraLib
-#include "../../common/Singleton.h"
-#include "../Config.h"
+#include "Config.h"
 
 // STL
-#include <map>
+#include <memory>
+
+#include <boost/function.hpp>
 
 namespace te
 {
   namespace vm
   {
-// Forward declarations
-    class VirtualMachine;
-
-    /*!
-      \class VirtualMachineManager
-      
-      \brief A singleton for managing TerraLib Virtual Machines.
-
-      \sa VirtualMachine
-    */
-    class TEVMEXPORT VirtualMachineManager : public te::common::Singleton<VirtualMachineManager>
+    namespace core
     {
-      friend class te::common::Singleton<VirtualMachineManager>;
+// Forward declarations
+      class VirtualMachine;
 
-      public: 
+      /*!
+        \class VirtualMachineManager
 
-        /*!
-          \brief It returns the VM identified by id.
+        \brief A singleton for managing TerraLib Virtual Machines.
 
-          \param id The VM identifier.
+        \sa VirtualMachine
+      */
+      class TEVMEXPORT VirtualMachineManager
+      {
+        public: 
 
-          \return A pointer to a VM managed by this singleton or NULL if none is found.
-          */
-        VirtualMachine* getVM(const std::string& id) const;
+          /*!
+            \brief It returns the VM identified by id.
 
-        /*!
-          \brief It adds a new VM to be managed.
+            \param id The VM identifier. Example: lua, python.
 
-          \param id  The VM id.
-          \param lvm The VM to be managed. The singleton will take the VM ownership.
+            \return A pointer to a VM managed by this singleton.
 
-          \exception Exception It throws an exception if a VM with the same ID already exists.
-          */
-        void add(const std::string& id, VirtualMachine* vm);
+            \exception te::OutOfRangeException If there is no virtual machine registered with the given id.
+           */
+          VirtualMachine* get(const std::string& id) const;
 
-        /*! \brief It releases all VM. */
-        void clear();
+          /*!
+            \brief It adds a new VM to be managed.
 
-        /*!
-          \brief It removes all virtual machines from the given type.
+            \param id  The VM id.
+            \param lvm The VM to be managed. The singleton will take the VM ownership.
 
-          \param vmType The type of VM to be removed.
-        */
-        void removeAll(const std::string& vmType);
+            \exception te::InvalidArgumentException It throws an exception if a VM with the same ID already exists.
+           */
+          void insert(const std::string& id, std::unique_ptr<VirtualMachine> vm);
 
-      protected:
+          /*! \brief It releases all VM. */
+          void clear();
 
-        /*! \brief Singleton constructor. */
-        VirtualMachineManager();        
+          /*!
+            \brief It removes a given virtual machine.
 
-        /*! \brief Singleton destructor. */
-        ~VirtualMachineManager();
+            \param id The VM id.
 
-      private:
-      
-        std::map<std::string, VirtualMachine*> m_vmMap;  //!< A map from (VM id) to (VM instance).
-    };
+            \exception te::OutOfRangeException If there is no virtual machine registered with the given id.
+           */
+          void erase(const std::string& id);
 
+          //! Return a reference to the singleton.
+          static VirtualMachineManager& instance();
+
+        private:
+
+          /*! \brief Singleton constructor. */
+          VirtualMachineManager();
+
+          /*! \brief Singleton destructor. */
+          ~VirtualMachineManager();
+
+// No copy allowed
+          VirtualMachineManager(const VirtualMachineManager&); 
+          VirtualMachineManager& operator=(const VirtualMachineManager&);
+
+        private:
+
+          struct Impl;
+          Impl* m_pimpl;
+      };
+
+    } // end namespace core
   }   // end namespace vm
 }     // end namespace te
 
-#endif  // __TERRALIB_BINDING_VM_INTERNAL_VIRTUALMACHINEMANAGER_H
+#endif  // __TERRALIB_VM_CORE_VIRTUALMACHINEMANAGER_H__

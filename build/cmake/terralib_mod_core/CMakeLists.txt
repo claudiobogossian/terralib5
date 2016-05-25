@@ -27,8 +27,6 @@
 
 set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
-include_directories(${Boost_INCLUDE_DIR})
-
 add_definitions(-DBOOST_LOG_DYN_LINK)
 
 if (WIN32)
@@ -86,11 +84,10 @@ set_target_properties(terralib_mod_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
-if(GETTEXT_FOUND)
-  if(TERRALIB_TRANSLATOR_ENABLED)
-    TERRALIB_REGISTER_TRANSLATION("terralib_mod_core" "pt_BR")
-  endif()
-endif()
+
+TERRALIB_REGISTER_TRANSLATION("terralib_mod_core" "pt_BR"
+                              "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                              "${CMAKE_BINARY_DIR}/share/terralib/translations")
 
 install(TARGETS terralib_mod_core
         EXPORT terralib-targets

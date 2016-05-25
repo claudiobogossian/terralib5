@@ -756,7 +756,7 @@ if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libspatialite.dylib" ]; then
   cd libspatialite-4.2.0 > /dev/null
   valid $? "Error: could not enter libspatialite-4.2.0!"
 
-  CPPFLAGS="-I$TERRALIB_DEPENDENCIES_DIR -I$TERRALIB_DEPENDENCIES_DIR/include -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2 -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2/libxml" LDFLAGS="-L$TERRALIB_DEPENDENCIES_DIR/lib"  ./configure --prefix=$TERRALIB_DEPENDENCIES_DIR --enable-proj --enable-geos --enable-geosadvanced --enable-iconv --enable-freexl --enable-geocallbacks --enable-epsg --enable-gcov --enable-mathsql --enable-libxml2=no --enable-geopackage --with-geosconfig=$TERRALIB_DEPENDENCIES_DIR/bin/geos-config  > /dev/null  2>> ../build.log
+  CPPFLAGS="-I$TERRALIB_DEPENDENCIES_DIR -I$TERRALIB_DEPENDENCIES_DIR/include -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2 -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2/libxml" LDFLAGS="-L$TERRALIB_DEPENDENCIES_DIR/lib"  ./configure --prefix=$TERRALIB_DEPENDENCIES_DIR --enable-proj --enable-geos --enable-geosadvanced --enable-iconv --enable-freexl --enable-geocallbacks --enable-epsg --enable-mathsql --enable-libxml2=no --enable-geopackage --with-geosconfig=$TERRALIB_DEPENDENCIES_DIR/bin/geos-config  > /dev/null  2>> ../build.log
   valid $? "Error: could not configure libspatialite!"
 
   make -j 4 > /dev/null 2>> ../build.log

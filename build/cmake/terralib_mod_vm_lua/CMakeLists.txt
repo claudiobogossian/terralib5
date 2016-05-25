@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+#  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 #
 #  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 #
@@ -18,37 +18,34 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the Virtual Machine Module.
+#  Description: CMake script for the TerraLib Java binding.
 #
-#  Author: Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #
 
-if(WIN32)
-  add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEVMDLL)
-endif()
+include_directories(${LUA_INCLUDE_DIR})
 
-set(TERRALIB_VM_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vm)
-
-file(GLOB TERRALIB_VM_HDR_FILES ${TERRALIB_VM_DIR}/core/*.h)
-file(GLOB TERRALIB_VM_SRC_FILES ${TERRALIB_VM_DIR}/core/*.cpp)
+file(GLOB TERRALIB_VM_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vm/lua/*.h)
+file(GLOB TERRALIB_VM_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vm/lua/*.cpp)
 
 source_group("Header Files"                  FILES ${TERRALIB_VM_FILES})
-source_group("Header Files\\core"            FILES ${TERRALIB_VM_HDR_FILES})
-source_group("Source Files\\core"            FILES ${TERRALIB_VM_SRC_FILES})
+source_group("Header Files\\lua"            FILES ${TERRALIB_VM_HDR_FILES})
+source_group("Source Files\\lua"            FILES ${TERRALIB_VM_SRC_FILES})
 
-add_library(terralib_mod_vm SHARED ${TERRALIB_VM_HDR_FILES} ${TERRALIB_VM_SRC_FILES})
+add_library(terralib_mod_vm_lua SHARED ${TERRALIB_VM_HDR_FILES} ${TERRALIB_VM_SRC_FILES})
 
-target_link_libraries(terralib_mod_vm terralib_mod_core)
+target_link_libraries(terralib_mod_vm_lua terralib_mod_vm
+                                          terralib_mod_plugin
+                                          terralib_mod_core
+                                          ${LUA_LIBRARIES})
 
-set_target_properties(terralib_mod_vm
+set_target_properties(terralib_mod_vm_lua
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
-install(TARGETS terralib_mod_vm
+install(TARGETS terralib_mod_vm_lua
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
-install(FILES ${TERRALIB_VM_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/vm/core COMPONENT devel)

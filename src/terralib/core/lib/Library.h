@@ -87,7 +87,7 @@ namespace te
           \exception LibraryLoadException It can throw an exception if delay_load is set to false and the library can not be loaded.
           \exception LibraryNameException It throws an exception if library name is empty or just white-spaces.
          */
-        Library(const std::string& slib_file_name, const bool delay_load = false);
+        Library(const std::string& slib_file_name, const bool& delay_load = false);
 
         //! The destructor automatically unloads from memory the shared library if it was not unloaded explicitly.
         ~Library();
