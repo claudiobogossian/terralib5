@@ -68,7 +68,7 @@ namespace te
     {
       boost::lock_guard<boost::mutex> lock(m_mtx);
       
-      if (hasMoreGroups() == false)
+      if (m_groupsIterator == m_groups.end())
       {
         return false;
       }
@@ -181,16 +181,6 @@ namespace te
 #ifdef TERRALIB_LOGGER_ENABLED
       te::common::Logger::logDebug("vp", warning.c_str());
 #endif // TERRALIB_LOGGER_ENABLED
-    }
-
-    bool GroupThreadManager::hasMoreGroups()
-    {
-      if (m_groupsIterator == m_groups.end())
-      {
-        return false;
-      }
-
-      return true;
     }
 
     GroupThreadManager::GroupThreadManager(const GroupThreadManager&)
