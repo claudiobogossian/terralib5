@@ -1,3 +1,27 @@
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+*/
+
+/*!
+  \file terralib/edit/qt/tools/EditInfoTool.h
+
+  \brief This class implements a concrete tool for edit attributes of geometry.
+*/
 
 //TerraLib
 #include "../../../core/encoding/CharEncoding.h"
@@ -5,6 +29,8 @@
 #include "../../../geometry.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/query/In.h"
+#include "../../../dataaccess/query/LiteralString.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype/AbstractData.h"
 #include "../../../datatype/SimpleData.h"
@@ -37,8 +63,7 @@ te::edit::EditInfoTool::EditInfoTool(te::qt::widgets::MapDisplay* display, const
 : GeometriesUpdateTool(display, layer.get(), parent),
   m_restrictivePropertyPos(0),
   m_dialog(new QDialog(display)),
-  m_infoWidget(new QTreeWidget(display)),
-  m_forceSearch(false)
+  m_infoWidget(new QTreeWidget(display))
 {
   updateCursor();
 
@@ -77,12 +102,9 @@ te::edit::EditInfoTool::EditInfoTool(te::qt::widgets::MapDisplay* display, const
 
 te::edit::EditInfoTool::~EditInfoTool()
 {
-  reset();
-
   m_dialog->close();
 
   delete m_dialog;
-
 }
 
 bool te::edit::EditInfoTool::mousePressEvent(QMouseEvent* e)
@@ -91,12 +113,9 @@ bool te::edit::EditInfoTool::mousePressEvent(QMouseEvent* e)
     return false;
 
   bool needRemap = false;
-  m_forceSearch = false;
 
   // Clear info widget!
   m_infoWidget->clear();
-
-  reset();
 
   pickFeature(m_layer, GetPosition(e));
 
@@ -122,33 +141,18 @@ bool te::edit::EditInfoTool::mousePressEvent(QMouseEvent* e)
   if (!reprojectedEnvelope.within(m_layer->getExtent()))
     return false;
 
-  m_dataset = m_layer->getData(te::da::GetFirstGeomProperty(m_layer->getSchema().get())->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release();
+  // Get the property names that compose the object id
+  std::vector<std::string> oidPropertyNames;
+  te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
 
-  // In cause of feature was moved, force search
-  if (m_dataset->size()==0)
-  {
-    te::da::ObjectIdSet* oidSet = new te::da::ObjectIdSet();
+  te::da::In* in = new te::da::In(oidPropertyNames[0]);
 
-    oidSet->add(m_feature->getId()->clone());
+  in->add(new te::da::LiteralString(m_feature->getId()->getValueAsString()));
 
-    // Get the property names that compose the object id
-    std::vector<std::string> oidPropertyNames;
-    te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
+  m_dataset = m_layer->getData(in).release();
 
-    for (std::size_t i = 0; i < oidPropertyNames.size(); i++)
-    {
-      int pType = (int)te::da::GetPropertyPos(m_layer->getSchema().get(), oidPropertyNames[i]);
-      oidSet->addProperty(oidPropertyNames[i], pType, m_dataset->getPropertyDataType(pType));
-    }
-
-    te::da::Expression* exp1 = oidSet->getExpressionByInClause();
-
-    //Retrieves the data from layer
-    m_dataset = m_layer->getData(exp1).release();
-
-    m_forceSearch = true;
-
-  }
+  if (m_dataset->size() == 0)
+    return false;
 
   getInfo(reprojectedEnvelope);
 
@@ -174,21 +178,13 @@ te::gm::Envelope te::edit::EditInfoTool::buildEnvelope(const QPointF& pos)
   return env;
 }
 
-void te::edit::EditInfoTool::reset()
-{
-  delete m_feature;
-}
-
 void te::edit::EditInfoTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
-  reset();
-
   te::gm::Envelope env = buildEnvelope(pos);
 
   try
   {
     m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
-
   }
   catch (std::exception& e)
   {
@@ -219,10 +215,10 @@ void te::edit::EditInfoTool::getInfo(const te::gm::Envelope& e)
     // Fills the QTreeWidgetItem
     while (m_dataset->moveNext())
     {
-      std::auto_ptr<te::gm::Geometry> g(dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));//m_dataset->getGeometry(gpos));
+      std::auto_ptr<te::gm::Geometry> g(dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
       g->setSRID(m_layer->getSRID());
 
-      if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()) || m_forceSearch)
+      if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
       {
         for (std::size_t i = 0; i < m_dataset->getNumProperties(); ++i)
         {
@@ -275,7 +271,7 @@ void te::edit::EditInfoTool::getInfo(const te::gm::Envelope& e)
       std::auto_ptr<te::gm::Geometry> g(m_dataset->getGeometry(gpos));
       g->setSRID(m_layer->getSRID());
 
-      if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()) || m_forceSearch)
+      if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
       {
         std::map<std::size_t, te::dt::AbstractData* > ::iterator it;
 
@@ -395,10 +391,7 @@ void te::edit::EditInfoTool::onOkPushButtonPressed()
 
 void te::edit::EditInfoTool::onCancelPushButtonPressed()
 {
-  reset();
-
   m_dialog->close();
-
 }
 
 void te::edit::EditInfoTool::draw()

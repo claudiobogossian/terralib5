@@ -34,8 +34,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/AddCommand.h"
-#include "../core/UndoStackManager.h"
 #include "CreatePolygonTool.h"
 
 // Qt
@@ -51,9 +49,8 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
-    m_addWatches(0),
-    m_currentIndex(0),
-    m_sideToClose(sideToClose)
+    m_sideToClose(sideToClose),
+    m_stack(UndoStackManager::getInstance())
 {
   setCursor(cursor);
 
@@ -62,11 +59,13 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 
 te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
-  delete m_feature;
-  te::common::FreeContents(m_addWatches);
-  m_addWatches.clear();
+  if (m_feature)
+  {
+    RepositoryManager& repo = RepositoryManager::getInstance();
 
-  UndoStackManager::getInstance().getUndoStack()->clear();
+    if (repo.hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+      storeFeature();
+  }
 }
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
@@ -158,7 +157,7 @@ bool te::edit::CreatePolygonTool::mouseReleaseEvent(QMouseEvent* e)
 
   storeFeature();
 
-  UndoStackManager::getInstance().getUndoStack()->clear();
+  m_stack.reset();
 
   return true;
 }
@@ -185,9 +184,9 @@ void te::edit::CreatePolygonTool::draw()
     // Draw the geometry being created
     if(m_coords.size() < 3)
       drawLine();
-    else if (m_currentIndex > -1)
+    else if (m_stack.m_currentIndex > -1)
       drawPolygon();
-
+    
     if(m_continuousMode == false)
       m_coords.pop_back();
   }
@@ -224,13 +223,9 @@ void te::edit::CreatePolygonTool::drawLine()
 void te::edit::CreatePolygonTool::clear()
 {
   m_feature = 0;
-  m_currentIndex = 0;
   m_coords.clear();
 
-  te::common::FreeContents(m_addWatches);
-  m_addWatches.clear();
-
-  UndoStackManager::getInstance().getUndoStack()->clear();
+  m_stack.reset();
 }
 
 te::gm::Geometry* te::edit::CreatePolygonTool::buildPolygon()
@@ -306,43 +301,36 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
   m_feature->setOperation(te::edit::GEOMETRY_CREATE);
   m_feature->setCoords(m_coords);
 
-  m_addWatches.push_back(m_feature->clone());
+  m_stack.getAddWatches()->push_back(m_feature->clone());
 
-  if (m_currentIndex < (int)(m_addWatches.size() - 2))
+  if (m_stack.m_currentIndex < (int)(m_stack.getAddWatches()->size() - 2))
   {
     std::size_t i = 0;
-    while (i < m_addWatches.size())
+    while (i < m_stack.getAddWatches()->size())
     {
-      m_addWatches.pop_back();
-      i = (m_currentIndex + 1);
+      m_stack.getAddWatches()->pop_back();
+      i = (m_stack.m_currentIndex + 1);
     }
-    m_addWatches.push_back(m_feature->clone()); 
+    m_stack.getAddWatches()->push_back(m_feature->clone());
   }
 
-  m_currentIndex = (int)(m_addWatches.size() - 1);
+  m_stack.m_currentIndex = (int)(m_stack.getAddWatches()->size() - 1);
 
-  QUndoCommand* command = new AddCommand(m_addWatches, m_currentIndex, m_layer);
-  connect(dynamic_cast<AddCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)), SLOT(onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)));
+  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature);// , /*&*/m_coords);//use &m_feature?!?!
+  connect(dynamic_cast<AddCommand*>(command), SIGNAL(undoRedo(std::vector<te::gm::Coord2D>)), SLOT(onUndoRedo(std::vector<te::gm::Coord2D>)));
 
-  UndoStackManager::getInstance().addUndoStack(command);
+  m_stack.addUndoStack(command);
 }
 
-void te::edit::CreatePolygonTool::onGeometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> coords)
+void te::edit::CreatePolygonTool::onUndoRedo(std::vector<te::gm::Coord2D> coords)
 {
-  m_feature->setGeometry(convertGeomType(m_layer, geom));
+  RepositoryManager& repo = RepositoryManager::getInstance();//
 
-  m_coords.clear();
+  if (repo.hasIdentify(m_layer->getId(), m_feature->getId()))
+    repo.removeFeature(m_layer->getId(), m_feature->getId());
+
   m_coords = coords;
 
-  if (m_isFinished)
-  {
-    if (m_currentIndex > -1)
-      RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
-    else
-      RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_feature->getId());
-  }
-
-  draw();
 }
 
 void te::edit::CreatePolygonTool::resetVisualizationTool()

@@ -35,7 +35,6 @@
 #include "../../Utils.h"
 #endif
 #include "../Config.h"
-
 #include "GeometriesUpdateTool.h"
 
 // Qt
@@ -98,8 +97,6 @@ namespace te
         //@}
 
       private:
-
-        void reset();
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
