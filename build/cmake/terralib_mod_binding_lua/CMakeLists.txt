@@ -55,13 +55,13 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_common
                                               terralib_mod_dataaccess
                                               terralib_mod_plugin
                                               terralib_mod_st
-											  terralib_mod_cellspace
-											  terralib_mod_maptools
-											  terralib_mod_attributefill_core
+                                              terralib_mod_cellspace
+                                              terralib_mod_maptools
+                                              terralib_mod_attributefill_core
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
                                               ${Boost_THREAD_LIBRARY}
-                                              ${LUA_LIBRARIES})
+                                              )
 
 install(TARGETS terralib_mod_binding_lua
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
