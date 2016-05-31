@@ -566,14 +566,15 @@ void te::qt::af::BaseApplication::onLayerInvertSelectionTriggered()
       continue;
     }
 
-    const te::da::ObjectIdSet* selected = layer->getSelected();
-
     std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
     std::auto_ptr<te::da::DataSet> ds = layer->getData();
     
     te::da::ObjectIdSet* allObjects = te::da::GenerateOIDSet(ds.get(), dt.get());
 
-    allObjects->difference(selected);
+    const te::da::ObjectIdSet* selected = layer->getSelected();
+
+    if(selected && (selected->size() < 1))
+      allObjects->difference(selected);
 
     layer->clearSelected();
 
