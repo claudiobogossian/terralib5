@@ -38,8 +38,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/AddCommand.h"
-#include "../core/UndoStackManager.h"
 #include "SubtractAreaTool.h"
 
 // Qt
@@ -56,18 +54,12 @@
 
 te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-  m_addWatches(0),
-  m_currentIndex(0)
+  m_stack(UndoStackManager::getInstance())
 {
 }
 
 te::edit::SubtractAreaTool::~SubtractAreaTool()
 {
-  delete m_feature;
-  te::common::FreeContents(m_addWatches);
-  m_addWatches.clear();
-
-  UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
 bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
@@ -288,58 +280,39 @@ void te::edit::SubtractAreaTool::storeUndoCommand()
     return;
 
   //ensures that the vector has not repeated features after several clicks on the same
-  if (m_addWatches.size())
+  if (m_stack.getAddWatches()->size())
   {
-    if (m_addWatches.at(0)->getGeometry()->equals(m_feature->getGeometry()))
+    if (m_stack.getAddWatches()->at(0)->getGeometry()->equals(m_feature->getGeometry()))
       return;
   }
 
   //If another feature is selected the stack is cleaned
-  for (std::size_t i = 0; i < m_addWatches.size(); i++)
+  for (std::size_t i = 0; i < m_stack.getAddWatches()->size(); i++)
   {
-    if (m_addWatches.at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
+    if (m_stack.getAddWatches()->at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
     {
-      te::common::FreeContents(m_addWatches);
-      m_addWatches.clear();
-      UndoStackManager::getInstance().getUndoStack()->clear();
+      m_stack.reset();
       break;
     }
   }
 
-  m_addWatches.push_back(m_feature->clone());
+  m_stack.getAddWatches()->push_back(m_feature->clone());
 
   //If a feature is changed in the middle of the stack, this change ends up being the top of the stack
-  if (m_currentIndex < (int)(m_addWatches.size() - 2))
+  if (m_stack.m_currentIndex < (int)(m_stack.getAddWatches()->size() - 2))
   {
     std::size_t i = 0;
-    while (i < m_addWatches.size())
+    while (i < m_stack.getAddWatches()->size())
     {
-      m_addWatches.pop_back();
-      i = (m_currentIndex + 1);
+      m_stack.getAddWatches()->pop_back();
+      i = (m_stack.m_currentIndex + 1);
     }
-    m_addWatches.push_back(m_feature->clone());
+    m_stack.getAddWatches()->push_back(m_feature->clone());
   }
 
-  m_currentIndex = (int)(m_addWatches.size() - 1);
+  m_stack.m_currentIndex = (int)(m_stack.getAddWatches()->size() - 1);
 
-  QUndoCommand* command = new AddCommand(m_addWatches, m_currentIndex, m_layer);
-  connect(dynamic_cast<AddCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)), SLOT(onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)));
+  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature);
 
-  UndoStackManager::getInstance().addUndoStack(command);
-}
-
-void te::edit::SubtractAreaTool::onGeometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> /*coords*/)
-{
-
-  if (m_feature == 0)
-    return;
-
-  m_feature->setGeometry(geom);
-
-  if (m_currentIndex > -1)
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
-  else
-    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_feature->getId());
-
-  draw(true);
+  m_stack.addUndoStack(command);
 }

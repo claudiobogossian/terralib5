@@ -413,8 +413,6 @@ void te::vp::PopulateItens(te::da::DataSetType* inputDataSetType, std::vector<te
     std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > summaryProps = GetSummaryProps(specificParams);
     std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::iterator summaryPropsIt = summaryProps.begin();
 
-    std::size_t number_properties = outputItemVec[0]->getNumProperties();
-
     while (summaryPropsIt != summaryProps.end())
     {
       te::dt::Property* currentProp = summaryPropsIt->first;
@@ -578,8 +576,6 @@ bool te::vp::Dissolve::executeMemory(te::vp::AlgorithmParams* mainParams)
 
   std::auto_ptr<te::da::DataSetType> dsType_input(inputParams[0].m_inputDataSetType);
 
-  te::gm::GeometryProperty* inputGeomProp = te::da::GetFirstGeomProperty(dsType_input.get());
-
 
   // Verify if the operation has DataSet.
   if (!inputParams[0].m_inputDataSet)
@@ -599,10 +595,6 @@ bool te::vp::Dissolve::executeMemory(te::vp::AlgorithmParams* mainParams)
 
   // Create output dataset in memory.
   std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
-
-  // Get the first geometry property from output datasettype.
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(outputDataSetType.get());
-
 
   //Get specific parameters.
   std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
@@ -779,8 +771,6 @@ bool te::vp::Dissolve::executeQuery(te::vp::AlgorithmParams* mainParams)
       while (itFunc != itSummaryAtt->second.end())
       {
         te::da::PropertyName* p_name = new te::da::PropertyName(itSummaryAtt->first->getName());
-        int p_type = itSummaryAtt->first->getType();
-        te::dt::Property* newProp = 0;
 
         te::da::Expression *s_exp, *e_max, *e_min;
         te::da::Field*  s_field;
@@ -980,8 +970,6 @@ bool te::vp::Dissolve::executeQuery(te::vp::AlgorithmParams* mainParams)
         while (itFunc != itInsert->second.end())
         {
           te::da::PropertyName* p_name = new te::da::PropertyName(itInsert->first->getName());
-          int p_type = itInsert->first->getType();
-          te::dt::Property* newProp = 0;
 
           te::da::Field*  s_field;
           switch (*itFunc)

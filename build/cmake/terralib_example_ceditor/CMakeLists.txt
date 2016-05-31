@@ -20,7 +20,7 @@
 #
 #  Description: Examples for TerraLib Code Editor Module.
 #
-#  Author: Frederico Bedê
+#  Author: Frederico Augusto Bedê
 #
 
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${Boost_INCLUDE_DIR} ${Qscintilla_INCLUDE_DIR})
@@ -44,6 +44,6 @@ source_group("Generated Files"  FILES ${TERRALIB_EXAMPLE_CEDITOR_GEN_HDR_FILES})
 add_executable(terralib_example_ceditor ${TERRALIB_EXAMPLE_CEDITOR_HDR_FILES} ${TERRALIB_EXAMPLE_CEDITOR_SRC_FILES}
   ${TERRALIB_EXAMPLE_CEDITOR_GEN_HDR_FILES} ${TERRALIB_EXAMPLE_CEDITOR_UI_FILES})
 
-target_link_libraries(terralib_example_ceditor terralib_mod_ceditor ${Qscintilla_LIBRARY})
+target_link_libraries(terralib_example_ceditor terralib_mod_ceditor terralib_mod_vm ${Qscintilla_LIBRARY})
 
 qt5_use_modules(terralib_example_ceditor Widgets)

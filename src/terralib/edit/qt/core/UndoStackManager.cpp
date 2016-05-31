@@ -1,20 +1,20 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
 
-TerraLib is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Lesser General Public License for more details.
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with TerraLib. See COPYING. If not, write to
-TerraLib Team at <terralib-team@terralib.org>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
@@ -24,6 +24,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
@@ -37,35 +38,61 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <QUndoCommand>
 #include <QUndoStack>
 
+te::edit::UndoStackManager::UndoStackManager()
+: m_currentIndex(0),
+  m_addWatches(0),
+  m_undoStack(0)
+{}
+
+te::edit::UndoStackManager::~UndoStackManager()
+{
+  if (m_addWatches)
+  {
+    te::common::FreeContents(*m_addWatches);
+    delete m_addWatches;
+  }
+
+  delete m_undoStack;
+}
 
 void te::edit::UndoStackManager::addUndoStack(QUndoCommand* command)
 {
   if (m_undoStack == 0)
-  {
-    m_undoStack = new QUndoStack();
+    return;
 
-    m_undoStack->push(command);
-  }
-  else
-    m_undoStack->push(command);
-
+  m_undoStack->push(command);
 }
 
 QUndoStack* te::edit::UndoStackManager::getUndoStack()
 {
   if (m_undoStack == 0)
   {
-    m_undoStack = new QUndoStack();
+    m_undoStack = new QUndoStack(); 
   }
 
   return m_undoStack;
 }
 
-te::edit::UndoStackManager::UndoStackManager()
-: m_undoStack(0)
-{}
-
-te::edit::UndoStackManager::~UndoStackManager()
+std::vector<te::edit::Feature*>* te::edit::UndoStackManager::getAddWatches()
 {
-  delete m_undoStack;
+  if (m_addWatches == 0)
+  {
+    m_addWatches = new std::vector<te::edit::Feature*>();
+  }
+
+  return m_addWatches;
+}
+
+void te::edit::UndoStackManager::reset()
+{
+  m_undoStack->clear();
+
+  if (m_addWatches)
+  {
+    te::common::FreeContents(*m_addWatches);
+
+    m_addWatches->clear();
+    m_addWatches = 0;
+  }
+
 }

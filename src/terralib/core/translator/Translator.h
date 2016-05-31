@@ -230,7 +230,7 @@ namespace te
 #ifdef TERRALIB_TRANSLATOR_ENABLED
   #define TE_ADD_TEXT_DOMAIN(domain, dir) te::core::Translator::getInstance().addTextDomain(domain, dir)
 #else
-  #define TE_ADD_TEXT_DOMAIN(domain) ((void)0)
+  #define TE_ADD_TEXT_DOMAIN(domain, dir) ((void)0)
 #endif
 
 /*!

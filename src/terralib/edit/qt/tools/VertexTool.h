@@ -30,11 +30,13 @@
 #include "../../../geometry/Envelope.h"
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
-#include "GeometriesUpdateTool.h"
 #include "../../../sam/rtree/Index.h"
 #include "../../Utils.h"
 #endif
+#include "../core/command/AddCommand.h"
+#include "../core/UndoStackManager.h"
 #include "../Config.h"
+#include "GeometriesUpdateTool.h"
 
 // STL
 #include <string>
@@ -142,7 +144,7 @@ namespace te
 
         void onExtentChanged();
 
-        void onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>);
+        void onUndoRedo(std::vector<te::gm::Coord2D> coords);
 
       protected:
 
@@ -150,8 +152,7 @@ namespace te
         VertexIndex m_currentVertexIndex;
         te::sam::rtree::Index<VertexIndex, 8> m_rtree;
         StageType m_currentStage;
-        std::vector<Feature*> m_addWatches;
-        int m_currentIndex;
+        UndoStackManager& m_stack;
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
