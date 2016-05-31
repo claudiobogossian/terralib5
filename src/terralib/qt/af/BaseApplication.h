@@ -132,6 +132,8 @@ namespace te
 
         void onLayerPropertiesTriggered();
 
+        void onLayerInvertSelectionTriggered();
+
         void onLayerRemoveSelectionTriggered();
 
         void onLayerSRSTriggered();
@@ -209,6 +211,7 @@ namespace te
         QAction* m_layerRemove;
         QAction* m_layerRename;
         QAction* m_layerRemoveItem;
+        QAction* m_layerInvertObjectSelection;
         QAction* m_layerRemoveObjectSelection;
         QAction* m_layerProperties;
         QAction* m_layerSRS;

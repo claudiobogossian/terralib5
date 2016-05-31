@@ -44,6 +44,7 @@
 #include "../geometry/MultiLineString.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
+#include "../geometry/Utils.h"
 #include "../memory/DataSet.h"
 #include "AlgorithmParams.h"
 #include "Utils.h"
@@ -62,26 +63,26 @@
 
 std::auto_ptr<te::gm::Geometry> te::vp::GetGeometryUnion(const std::vector< std::auto_ptr<te::gm::Geometry> >& geomVec)
 {
-  std::auto_ptr<te::gm::Geometry> geometry;
+  std::auto_ptr<te::gm::Geometry> geometry(0);
 
   if (geomVec.size() == 1)
   {
     te::dt::AbstractData* abs = geomVec[0]->clone();
     geometry.reset(static_cast<te::gm::Geometry*>(abs));
   }
-  else
+  else if (geomVec.size() > 1)
   {
-    const std::auto_ptr<te::gm::Geometry>& seedGeometry = geomVec[0];
+    //const std::auto_ptr<te::gm::Geometry>& seedGeometry = geomVec[0];
 
-    te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, seedGeometry->getSRID());
+    te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, geomVec[0]->getSRID());
 
-    for (std::size_t g = 1; g < geomVec.size(); ++g)
+    for (std::size_t g = 0; g < geomVec.size(); ++g)
     {
       te::dt::AbstractData* c_abs = geomVec[g]->clone();
       gc->add(static_cast<te::gm::Geometry*>(c_abs));
     }
 
-    geometry.reset(seedGeometry->Union(gc));
+    geometry.reset(te::gm::UnaryUnion(gc));
 
     delete gc;
   }

@@ -649,7 +649,6 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       return;
     }
 
-    //if (m_inputLayer->getSRID() != geomInputProp->getSRID())
     inputSRID = m_inputLayer->getSRID();
 
 // Select a strategy based on the capabilities of the input datasource
@@ -831,7 +830,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   }
 
   this->setCursor(Qt::ArrowCursor);
-
+  
   accept();
 }
 

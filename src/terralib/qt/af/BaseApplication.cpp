@@ -34,6 +34,7 @@
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../maptools/Utils.h"
 #include "../../plugin/PluginManager.h"
 
@@ -535,6 +536,48 @@ void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
     }
 
     layer->clearSelected();
+
+    ++it;
+
+    te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
+    emit triggered(&e);
+  }
+}
+
+void te::qt::af::BaseApplication::onLayerInvertSelectionTriggered()
+{
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::widgets::GetSelectedLayersOnly(getLayerExplorer());
+
+  if (layers.empty())
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), tr("There's no selected layer."));
+    return;
+  }
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+
+  while (it != layers.end())
+  {
+    te::map::AbstractLayerPtr layer = (*it);
+
+    if (!layer->isValid())
+    {
+      ++it;
+      continue;
+    }
+
+    const te::da::ObjectIdSet* selected = layer->getSelected();
+
+    std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
+    std::auto_ptr<te::da::DataSet> ds = layer->getData();
+    
+    te::da::ObjectIdSet* allObjects = te::da::GenerateOIDSet(ds.get(), dt.get());
+
+    allObjects->difference(selected);
+
+    layer->clearSelected();
+
+    layer->select(allObjects);
 
     ++it;
 
@@ -1063,6 +1106,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerRemove, "layer-remove", "Project.Remove Layer", tr("&Remove Item(s)"), tr("Remove items(s) from the project"), true, false, true, this);
   initAction(m_layerRename, "layer-rename", "Project.Rename Layer", tr("Rename Layer..."), tr("Rename layer"), true, false, true, this);
   initAction(m_layerRemoveObjectSelection, "pointer-remove-selection", "Layer.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
+  initAction(m_layerInvertObjectSelection, "pointer-invert-selection", "Layer.Invert Selection", tr("&Invert Selection"), tr(""), true, false, true, m_menubar);
   initAction(m_layerRemoveItem, "item-remove", "Layer.Remove Item", tr("&Remove Item"), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);
@@ -1118,6 +1162,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerRemove, SIGNAL(triggered()), SLOT(onLayerRemoveTriggered()));
   connect(m_layerRename, SIGNAL(triggered()), SLOT(onLayerRenameTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
+  connect(m_layerInvertObjectSelection, SIGNAL(triggered()), SLOT(onLayerInvertSelectionTriggered()));
   connect(m_layerRemoveObjectSelection, SIGNAL(triggered()), SLOT(onLayerRemoveSelectionTriggered()));
   connect(m_layerRemoveItem, SIGNAL(triggered()), SLOT(onLayerRemoveItemTriggered()));
   connect(m_layerSRS, SIGNAL(triggered()), SLOT(onLayerSRSTriggered()));

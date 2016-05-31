@@ -363,7 +363,7 @@ namespace te
         case te::dt::CHAR_TYPE :
         {
           char* vPtr = (char*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
@@ -371,14 +371,14 @@ namespace te
         case te::dt::UCHAR_TYPE :
         {
           unsigned char* vPtr = (unsigned char*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
         case te::dt::INT16_TYPE :
         {
           short int* vPtr = (short int*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
@@ -386,21 +386,21 @@ namespace te
         {
           std::complex< short int >* vPtr = (std::complex< short int >*)
             inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ].real();
           break;
         }
         case te::dt::UINT16_TYPE :
         {
           unsigned short int* vPtr = (unsigned short int*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
         case te::dt::INT32_TYPE :
         {
           int* vPtr = (int*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
@@ -408,35 +408,35 @@ namespace te
         {
           std::complex< int >* vPtr = (std::complex< int >*)
             inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ].real();
           break;
         }
         case te::dt::UINT32_TYPE :
         {
           unsigned int* vPtr = (unsigned int*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
         case te::dt::INT64_TYPE :
         {
           long int* vPtr = (long int*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
         case te::dt::UINT64_TYPE :
         {
           unsigned long int* vPtr = (unsigned long int*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
         case te::dt::FLOAT_TYPE :
         {
           float* vPtr = (float*)inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ];
           break;
         }
@@ -444,7 +444,7 @@ namespace te
         {
           std::complex< float >* vPtr = (std::complex< float >*)
             inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ].real();
           break;
         }
@@ -457,7 +457,7 @@ namespace te
         {
           std::complex< double >* vPtr = (std::complex< double >*)
             inputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             outputVector[ idx ] = (double)vPtr[ idx ].real();
           break;
         }

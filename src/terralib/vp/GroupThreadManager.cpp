@@ -22,7 +22,7 @@
  */
 
 // Terralib
-
+#include "../common/Logger.h"
 #include "../common/progress/TaskProgress.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -68,7 +68,7 @@ namespace te
     {
       boost::lock_guard<boost::mutex> lock(m_mtx);
       
-      if (hasMoreGroups() == false)
+      if (m_groupsIterator == m_groups.end())
       {
         return false;
       }
@@ -177,16 +177,10 @@ namespace te
       {
         m_warnings.push_back(warning);
       }
-    }
 
-    bool GroupThreadManager::hasMoreGroups()
-    {
-      if (m_groupsIterator == m_groups.end())
-      {
-        return false;
-      }
-
-      return true;
+#ifdef TERRALIB_LOGGER_ENABLED
+      te::common::Logger::logDebug("vp", warning.c_str());
+#endif // TERRALIB_LOGGER_ENABLED
     }
 
     GroupThreadManager::GroupThreadManager(const GroupThreadManager&)

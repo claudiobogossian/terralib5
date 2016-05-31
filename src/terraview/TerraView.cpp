@@ -528,6 +528,7 @@ void TerraView::addMenusActions()
   m_layerMenu->addAction(m_viewStyleExplorer);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerRemoveObjectSelection);
+  m_layerMenu->addAction(m_layerInvertObjectSelection);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerSRS);
   m_layerMenu->addSeparator();
@@ -638,6 +639,7 @@ void TerraView::addPopUpMenu()
 
   //// Actions for the single layer item that is not a raster layer
   treeView->addVectorLayerAction(m_layerRemoveObjectSelection);
+  treeView->addVectorLayerAction(m_layerInvertObjectSelection);
   treeView->addVectorLayerAction(m_layerRename);
 
   QAction* actionStyleSep1 = new QAction(this);
