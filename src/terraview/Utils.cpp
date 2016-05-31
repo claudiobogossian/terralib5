@@ -185,6 +185,8 @@ void CreateDefaultSettings()
   sett.setValue("action", "Map.Info");
   sett.setArrayIndex(10);
   sett.setValue("action", "Map.Selection");
+  sett.setArrayIndex(11);
+  sett.setValue("action", "Layer.Invert Selection");
   sett.endArray();
   sett.endGroup();
 

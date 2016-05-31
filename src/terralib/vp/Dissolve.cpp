@@ -413,8 +413,6 @@ void te::vp::PopulateItens(te::da::DataSetType* inputDataSetType, std::vector<te
     std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > summaryProps = GetSummaryProps(specificParams);
     std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::iterator summaryPropsIt = summaryProps.begin();
 
-    std::size_t number_properties = outputItemVec[0]->getNumProperties();
-
     while (summaryPropsIt != summaryProps.end())
     {
       te::dt::Property* currentProp = summaryPropsIt->first;
@@ -578,8 +576,6 @@ bool te::vp::Dissolve::executeMemory(te::vp::AlgorithmParams* mainParams)
 
   std::auto_ptr<te::da::DataSetType> dsType_input(inputParams[0].m_inputDataSetType);
 
-  te::gm::GeometryProperty* inputGeomProp = te::da::GetFirstGeomProperty(dsType_input.get());
-
 
   // Verify if the operation has DataSet.
   if (!inputParams[0].m_inputDataSet)
@@ -599,10 +595,6 @@ bool te::vp::Dissolve::executeMemory(te::vp::AlgorithmParams* mainParams)
 
   // Create output dataset in memory.
   std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
-
-  // Get the first geometry property from output datasettype.
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(outputDataSetType.get());
-
 
   //Get specific parameters.
   std::map<std::string, te::dt::AbstractData*> specificParams = mainParams->getSpecificParams();
@@ -670,6 +662,10 @@ bool te::vp::Dissolve::executeMemory(te::vp::AlgorithmParams* mainParams)
 #ifdef TERRALIB_LOGGER_ENABLED
   te::common::Logger::logDebug("vp", timeResult.c_str());
 #endif
+
+  te::common::TaskProgress task("Processing...", 0, (int)groups.size());
+  task.useTimer(false);
+  task.useMultiThread(true);
 
   GroupThreadManager* manager = new GroupThreadManager(groups
     , inputDataSet.get()
@@ -775,8 +771,6 @@ bool te::vp::Dissolve::executeQuery(te::vp::AlgorithmParams* mainParams)
       while (itFunc != itSummaryAtt->second.end())
       {
         te::da::PropertyName* p_name = new te::da::PropertyName(itSummaryAtt->first->getName());
-        int p_type = itSummaryAtt->first->getType();
-        te::dt::Property* newProp = 0;
 
         te::da::Expression *s_exp, *e_max, *e_min;
         te::da::Field*  s_field;
@@ -976,8 +970,6 @@ bool te::vp::Dissolve::executeQuery(te::vp::AlgorithmParams* mainParams)
         while (itFunc != itInsert->second.end())
         {
           te::da::PropertyName* p_name = new te::da::PropertyName(itInsert->first->getName());
-          int p_type = itInsert->first->getType();
-          te::dt::Property* newProp = 0;
 
           te::da::Field*  s_field;
           switch (*itFunc)
@@ -1098,17 +1090,28 @@ void te::vp::Dissolve::threadUnion(GroupThreadManager* manager)
     }
 
     // Output geometry.
-    std::auto_ptr<te::gm::Geometry> resultUnionGeometry = te::vp::GetGeometryUnion(geomVec);
+    std::auto_ptr<te::gm::Geometry> resultUnionGeometry;
+
+    try
+    {
+      resultUnionGeometry = te::vp::GetGeometryUnion(geomVec);
+    }
+    catch (...)
+    {
+      std::string message = "GEOS Exception.";
+      manager->addWarning(message);
+
+      manager->addOutput(outputItemVec);
+
+      continue;
+    }
 
     if (!resultUnionGeometry->isValid())
     {
       std::string message = "The operation generated invalid geometry.";
-
-#ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", TE_TR("Dissolve - " + *message.c_str()));
-#endif // TERRALIB_LOGGER_ENABLED
-
       manager->addWarning(message);
+
+      manager->addOutput(outputItemVec);
 
       continue;
     }
@@ -1163,18 +1166,14 @@ void te::vp::Dissolve::threadSave(GroupThreadManager* manager)
 
     if (!dataSetPrepared)
     {
-#ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", "Dissolve - Output DataSet was not prepared to save.");
-#endif // TERRALIB_LOGGER_ENABLED
-      throw te::common::Exception(TE_TR("Output DataSet was not prepared to save."));
+      std::string message = "Dissolve - Output DataSet was not prepared to save.";
+      manager->addWarning(message);
     }
 
     if (dataSetPrepared->isEmpty())
     {
-#ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", "Dissolve - The resultant layer is empty!");
-#endif // TERRALIB_LOGGER_ENABLED
-      throw te::common::Exception(TE_TR("The resultant layer is empty!"));
+      std::string message = "Dissolve - The resultant layer is empty!";
+      manager->addWarning(message);
     }
 
     Save(outputDataSource, dataSetPrepared, outputDataType);

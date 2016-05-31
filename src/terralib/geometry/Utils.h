@@ -135,6 +135,17 @@ namespace te
     */
     TEGEOMEXPORT void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);
 
+    /*!
+    \brief It will get the union of the input geometries.
+
+    \param geom   Input Geometry.
+
+    \return a Geometry containing the union.
+
+    \note If no input geometries were provided, a POINT EMPTY is returned.
+    */
+    TEGEOMEXPORT te::gm::Geometry* UnaryUnion(te::gm::Geometry* geom);
+
   } // end namespace gm
 }   // end namespace te
 

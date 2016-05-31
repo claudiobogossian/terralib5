@@ -102,8 +102,6 @@ namespace te
 
     private:
 
-      bool hasMoreGroups();
-
       GroupThreadManager(const GroupThreadManager&);
 
       const GroupThreadManager& operator=(const GroupThreadManager&);
@@ -112,14 +110,17 @@ namespace te
       std::size_t m_savedCount;
       te::da::DataSet* m_dataSet;
       te::da::DataSetType* m_dataSetType;
-      std::map<std::string, std::vector<int> >::iterator m_groupsIterator;
 
+      te::mem::DataSet* m_outputDataSet;
       te::da::DataSetType* m_outputDataSetType;
       te::da::DataSource* m_outputDataSource;
-      te::mem::DataSet* m_outputDataSet;
-      std::vector< std::vector<te::mem::DataSetItem*> > m_outputQueue;
 
       std::map<std::string, te::dt::AbstractData*> m_specificParams;
+
+      std::map<std::string, std::vector<int> >::iterator m_groupsIterator;
+
+      std::vector< std::vector<te::mem::DataSetItem*> > m_outputQueue;
+      te::common::TaskProgress m_task;
 
       std::vector<std::string> m_warnings;
 
