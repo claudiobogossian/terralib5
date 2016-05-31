@@ -1,20 +1,20 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-  This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-  TerraLib is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation, either version 3 of the License,
-  or (at your option) any later version.
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
 
-  TerraLib is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See them_initialPosition
-  GNU Lesser General Public License for more details.
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See them_initialPosition
+    GNU Lesser General Public License for more details.
 
-  You should have received a copy of the GNU Lesser General Public License
-  along with TerraLib. See COPYING. If not, write to
-  TerraLib Team at <terralib-team@terralib.org>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
@@ -25,18 +25,15 @@
 */
 
 // TerraLib
-#include "../UndoStackManager.h"
 #include "AddCommand.h"
 
-// STL
-#include <set>
-
-te::edit::AddCommand::AddCommand(std::vector<Feature*>& items, int& currentIndex,
-  const te::map::AbstractLayerPtr& layer, QUndoCommand *parent) :
+te::edit::AddCommand::AddCommand(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, te::edit::Feature* feature,
+  QUndoCommand *parent) :
   QUndoCommand(parent)
-, m_layer(layer)
-, m_addItems(items)
-, m_currentIndex(currentIndex)
+  , m_display(display)
+  , m_layer(layer)
+  , m_feature(feature)
+  , m_stack(UndoStackManager::getInstance())
 {
 }
 
@@ -46,31 +43,33 @@ te::edit::AddCommand::~AddCommand()
 
 void  te::edit::AddCommand::undo()
 {
-  int pos = 0;
-
-  if (m_addItems.empty())
+  if (m_stack.getAddWatches()->empty())
     return;
 
-  m_currentIndex--;
+  m_stack.m_currentIndex--;
 
-  if (m_currentIndex < 0)
-    m_currentIndex = -1;
+  if (m_stack.m_currentIndex < 0)
+    m_stack.m_currentIndex = -1;
 
-  pos = (m_currentIndex < 0) ? 0 : m_currentIndex;
+  std::size_t pos = (m_stack.m_currentIndex < 0) ? 0 : m_stack.m_currentIndex;
 
-  emit geometryAcquired(dynamic_cast<te::gm::Geometry*>(m_addItems[pos]->getGeometry()->clone()), m_addItems.at(pos)->clone()->getCoords());
+  m_feature->setGeometry(m_stack.getAddWatches()->at(pos)->clone()->getGeometry());
+
+  draw();
+
+  emit undoRedo(m_stack.getAddWatches()->at(pos)->getCoords());
 }
 
 void te::edit::AddCommand::redo()
 {
   bool resultFound = false;
 
-  if (!UndoStackManager::getInstance().getUndoStack())
+  if (!m_stack.getUndoStack())
     return;
 
-  for (int i = 0; i < UndoStackManager::getInstance().getUndoStack()->count(); ++i)
+  for (int i = 0; i < m_stack.getUndoStack()->count(); ++i)
   {
-    const QUndoCommand* cmd = UndoStackManager::getInstance().getUndoStack()->command(i);
+    const QUndoCommand* cmd = m_stack.getUndoStack()->command(i);
     if (cmd == this)
       resultFound = true;
   }
@@ -78,15 +77,63 @@ void te::edit::AddCommand::redo()
   //no makes redo while the command is not on the stack
   if (resultFound)
   {
-    m_currentIndex++;
+    m_stack.m_currentIndex++;
 
-    if (m_currentIndex >= (int)m_addItems.size())
+    if (m_stack.m_currentIndex >= (int)m_stack.getAddWatches()->size())
     {
-      m_currentIndex = (int)m_addItems.size() - 1;
+      m_stack.m_currentIndex = (int)m_stack.getAddWatches()->size() - 1;
       return;
     }
 
-    emit geometryAcquired(dynamic_cast<te::gm::Geometry*>(m_addItems[m_currentIndex]->getGeometry()->clone()), m_addItems.at(m_currentIndex)->clone()->getCoords());
+    m_feature->setGeometry(m_stack.getAddWatches()->at(m_stack.m_currentIndex)->clone()->getGeometry());
+
+    draw();
+
+    emit undoRedo(m_stack.getAddWatches()->at(m_stack.m_currentIndex)->getCoords());
+  }
+}
+
+void te::edit::AddCommand::draw()
+{
+  const te::gm::Envelope& env = m_display->getExtent();
+  if (!env.isValid())
+    return;
+
+  // Clear!
+  QPixmap* draft = m_display->getDraftPixmap();
+  draft->fill(Qt::transparent);
+
+  // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
+
+  RepositoryManager& repo = RepositoryManager::getInstance();
+
+  std::size_t pos = (m_stack.m_currentIndex < 0) ? 0 : m_stack.m_currentIndex;
+
+  if (m_stack.m_currentIndex > -1)
+  {
+    repo.addFeature(m_layer->getId(), m_stack.getAddWatches()->at(pos)->clone());
+  }
+  else if (repo.hasIdentify(m_layer->getId(), m_stack.getAddWatches()->at(pos)->getId()))
+  {
+    repo.removeFeature(m_layer->getId(), m_stack.getAddWatches()->at(pos)->getId());
   }
 
+  // Draw the layer edited geometries
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+
+  if (m_stack.m_currentIndex < 0)
+  {
+    renderer.end();
+    m_display->repaint();
+    return;
+  }
+
+  // Draw the geometry
+  renderer.draw(m_stack.getAddWatches()->at(m_stack.m_currentIndex)->clone()->getGeometry(), true);
+
+  renderer.end();
+
+  m_display->repaint();
 }

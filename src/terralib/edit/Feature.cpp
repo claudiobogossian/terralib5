@@ -100,6 +100,7 @@ void te::edit::Feature::setOperation(OperationType operation)
 
 void te::edit::Feature::setCoords(std::vector<te::gm::Coord2D> coords)
 {
+  m_coords.clear();
   m_coords = coords;
 }
 

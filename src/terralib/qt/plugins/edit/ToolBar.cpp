@@ -22,6 +22,7 @@
 
   \brief The main toolbar of TerraLib Edit Qt plugin.
   */
+
 // Terralib
 #include "../../../common/Exception.h"
 #include "../../../core/translator/Translator.h"
@@ -69,6 +70,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 // STL
+#include <algorithm>
 #include <cassert>
 #include <list>
 #include <memory>
@@ -568,20 +570,23 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
             break;
 
           case te::edit::GEOMETRY_UPDATE_ATTRIBUTES:
+          {
+            std::vector<std::size_t> objIdIdx;
+            te::da::GetOIDPropertyPos(layer->getSchema().get(), objIdIdx);
 
-            if (features[i]->getOperationType() == te::edit::GEOMETRY_UPDATE_ATTRIBUTES)
+            for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = features[i]->getData().begin(); it != features[i]->getData().end(); ++it)
             {
-              if (features[i]->getData().size() > 0)
+              if (std::find(objIdIdx.begin(), objIdIdx.end(), (int)it->first) == objIdIdx.end())
               {
-                for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = features[i]->getData().begin(); it != features[i]->getData().end(); ++it)
-                {
-                  item->setValue(it->first, it->second);
-                  propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES].insert((int)it->first);
-                }
+                item->setValue(it->first, it->second);
+                propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES].insert((int)it->first);
               }
             }
 
+            propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES].insert((int)gpos);
+
             operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->add(item);
+          }
             break;
 
           default:
@@ -905,7 +910,8 @@ void te::qt::plugins::edit::ToolBar::onResetVisualizationToolActivated(bool /*ch
     m_currentTool->resetVisualizationTool();
 
   // Clear the undo stack
-  te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
+  te::edit::UndoStackManager& stack = te::edit::UndoStackManager::getInstance();
+  stack.reset();
 
   // Repaint
   te::qt::af::evt::GetMapDisplay e;
