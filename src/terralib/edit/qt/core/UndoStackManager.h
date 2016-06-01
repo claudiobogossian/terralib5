@@ -1,20 +1,20 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
 
-TerraLib is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Lesser General Public License for more details.
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with TerraLib. See COPYING. If not, write to
-TerraLib Team at <terralib-team@terralib.org>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
@@ -30,6 +30,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
+#include "../../Feature.h"
 #include "../../RepositoryManager.h"
 #include "../Config.h"
 
@@ -47,9 +48,6 @@ namespace te
 
   namespace edit
   {
-    // Forward declaration
-    class Feature;
-
     /*!
     \class UndoStackManager
 
@@ -75,6 +73,12 @@ namespace te
         */
         QUndoStack* getUndoStack();
 
+        std::vector<Feature*>* getAddWatches();
+
+        void reset();
+
+        int m_currentIndex;
+
       protected:
 
         /*! \brief It initializes the singleton instance of the repository manager. */
@@ -82,6 +86,8 @@ namespace te
 
         /*! \brief Singleton destructor. */
         ~UndoStackManager();
+
+        std::vector<Feature*>* m_addWatches;
 
         QUndoStack* m_undoStack;                               //!< Undo/Redo stack
 

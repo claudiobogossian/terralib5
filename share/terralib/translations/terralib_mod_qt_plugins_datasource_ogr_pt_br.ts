@@ -223,30 +223,30 @@ Iremos fornecer em breve!</translation>
 </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="288"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="290"/>
         <source>Add Layer</source>
         <translation>Adicionar Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="294"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="312"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="318"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="325"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="296"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="314"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="320"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="327"/>
         <source>Spatial Index</source>
         <translation>Índice Espacial</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="294"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="296"/>
         <source>Do you want create spatial index to the selected ESRI ShapeFiles?</source>
         <translation>Você deseja criar índice espacial para os arquivos ShapeFiles ESRI selecionados ?</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="349"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="351"/>
         <source>Layer %1 has SRID %2 that is not recognized by TerraLib. Setting it to unknown.</source>
         <translation>Camada %1 tem SRID %2 que não é reconhecido pela Terralib. Defini-lo como desconhecido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="354"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="356"/>
         <source>Layer SRS check</source>
         <translation>SRS da Camada verificada</translation>
     </message>

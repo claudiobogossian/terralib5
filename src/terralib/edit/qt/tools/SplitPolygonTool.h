@@ -31,8 +31,8 @@
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #endif
-#include "GeometriesUpdateTool.h"
 #include "../Config.h"
+#include "GeometriesUpdateTool.h"
 
 // STL
 #include <vector>
