@@ -86,6 +86,7 @@ namespace te
         struct EnvelopeWithTimePeriod envelope;
         struct DomainSet domainSet;
         struct ServiceParameters serviceParameters;
+        std::vector< std::string > fieldNames;
         std::vector< std::string > extension;
       };
 

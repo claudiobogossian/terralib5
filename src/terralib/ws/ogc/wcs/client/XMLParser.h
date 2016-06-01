@@ -54,6 +54,7 @@ namespace te
         // Read XML file
         std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make("XERCES"));
         reader->setValidationScheme(false);
+        reader->setDoSchema(false);
         reader->setIgnoreWhiteSpaces(true);
 
         reader->read(xmlPath);
@@ -110,6 +111,7 @@ namespace te
         // Read XML file
         std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make("XERCES"));
         reader->setValidationScheme(false);
+        reader->setDoSchema(false);
         reader->setIgnoreWhiteSpaces(true);
 
         reader->read(xmlPath);
@@ -129,6 +131,7 @@ namespace te
         te::ws::ogc::EnvelopeWithTimePeriod envelope;
         te::ws::ogc::DomainSet domainSet;
         te::ws::ogc::ServiceParameters serviceParameters;
+        std::vector< std::string > fieldNames;
 
         while(reader->next())
         {
@@ -280,6 +283,20 @@ namespace te
                 domainSet.subSet.push_back(subSet);
               }
             }
+            else if(boost::iequals(reader->getElementLocalName(), "rangeType"))
+            {
+              while(reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "rangeType")))
+              {
+                if(boost::iequals(reader->getElementLocalName(), "field") && reader->hasAttrs())
+                {
+                  for(unsigned int i = 0; i < reader->getNumberOfAttrs(); i++)
+                  {
+                    if(boost::iequals(reader->getAttrLocalName(i), "name"))
+                      fieldNames.push_back(reader->getAttr(i));
+                  }
+                }
+              }
+            }
             else if(boost::iequals(reader->getElementLocalName(), "ServiceParameters"))
             {
               while(reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "ServiceParameters")))
@@ -303,6 +320,7 @@ namespace te
         coverageDescription.envelope = envelope;
         coverageDescription.domainSet = domainSet;
         coverageDescription.serviceParameters = serviceParameters;
+        coverageDescription.fieldNames = fieldNames;
 
         return coverageDescription;
       }
