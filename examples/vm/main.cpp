@@ -19,15 +19,16 @@
  */
 
 /*!
-  \file terralib/examples/core/encoding/main.cpp
+  \file terralib/examples/vm/main.cpp
 
-  \brief Examples for the Terralib Encoding Module
+  \brief Examples for the Terralib Virtual Machine Module
 
-  \author Matheus Cavassan Zaglia
+  \author Frederico Augusto Bedê Teotônio
 */
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/core/lib/Library.h>
 #include <terralib/core/utils/Platform.h>
 #include <terralib/plugin/PluginInfo.h>
 #include <terralib/plugin/PluginManager.h>
@@ -41,13 +42,17 @@ int main(int argc, char *argv[])
 
   std::string plgManifest = te::core::FindInTerraLibPath("share/terralib/plugins/te.vm.lua.teplg");
 
+  std::string teLuaLib = te::core::FindInTerraLibPath("terralib_mod_binding_lua.so");
+
+  te::core::Library lua(teLuaLib);
+
   te::plugin::PluginInfo* info;
 
   info = te::plugin::GetInstalledPlugin(plgManifest);
 
   te::plugin::PluginManager::getInstance().load(*info);
 
-  std::string luaScript = te::core::FindInTerraLibPath("share/terralib/examples/lua/teste_vm.lua");
+  std::string luaScript = te::core::FindInTerraLibPath("share/terralib/examples/lua/geometry.lua");
 
   te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get("lua");
 

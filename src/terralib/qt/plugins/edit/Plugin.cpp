@@ -129,8 +129,9 @@ void te::qt::plugins::edit::Plugin::startup()
 
   // Insert menu before plugins last action
   QAction* lastAction = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
+  /* Only use for testing!
   pluginsMenu->insertMenu(lastAction, m_menu);
-
+  */
   m_action = new QAction(m_menu);
   m_action->setText(TE_TR("Tools"));
   m_action->setIcon(QIcon::fromTheme("edit_tools"));
