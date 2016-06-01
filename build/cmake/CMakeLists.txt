@@ -113,6 +113,10 @@ if(NOT DEFINED TERRALIB_BUILD_UNITTEST_ENABLED)
   set(TERRALIB_BUILD_UNITTEST_ENABLED ON CACHE BOOL "If on, shows the list of unit-tests to be built")
 endif()
 
+if(NOT DEFINED TERRALIB_BUILD_ITEST_ENABLED)
+  set(TERRALIB_BUILD_ITEST_ENABLED OFF CACHE BOOL "If on, shows the list of integration tests to be built")
+endif()
+
 if(NOT DEFINED TERRALIB_BUILD_AS_BUNDLE)
   set(TERRALIB_BUILD_AS_BUNDLE 0 CACHE BOOL "If on, tells that the build will generate a bundle")
 endif()
@@ -286,6 +290,10 @@ endif()
 find_package(CppUnit)
 
 find_package(CURL)
+
+find_package(GTest)
+
+find_package(GMock)
 
 #
 # some variables needed in config file
@@ -702,6 +710,11 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_VP_ENABLED "Build the unit test for the
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_WS_OGC_WCS_ENABLED "Build unit-test for OGC WCS support?" ON "TERRALIB_BUILD_UNITTEST_ENABLED;TERRALIB_MOD_WS_OGC_WCS_DATAACCESS_ENABLED" OFF)
 
+#
+# build options for the TerraLib Integration Tests
+#
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_ITEST_DATAACCESS_ENABLED "Build the integration test for the Data Access module?" OFF "TERRALIB_BUILD_ITEST_ENABLED" OFF "GMOCK_FOUND" OFF)
 
 #
 # process TERRALIB configuration files
@@ -1427,6 +1440,14 @@ endif()
 
 if(TERRALIB_UNITTEST_WS_OGC_WCS_ENABLED)
   add_subdirectory(terralib_unittest_ws_ogc_wcs)
+endif()
+
+#
+# build integration test
+#
+
+if(TERRALIB_ITEST_DATAACCESS_ENABLED)
+  add_subdirectory(terralib_itest_dataaccess)
 endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
