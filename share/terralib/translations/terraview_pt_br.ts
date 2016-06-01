@@ -4,9 +4,13 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../../src/terraview/AboutDialog.cpp" line="45"/>
         <source>&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt;</source>
-        <translation>&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terraview/AboutDialog.cpp" line="45"/>
+        <source>&lt;p&gt;Copyright &amp;copy; 2010 INPE&lt;BR&gt;</source>
+        <translation type="unfinished">&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt; {2010 ?}</translation>
     </message>
     <message>
         <location filename="../../../src/terraview/AboutDialog.cpp" line="48"/>
@@ -545,121 +549,121 @@ Comentários, sugestões e feedbacks podem ser enviadas para equipe da TerraLib 
         <translation>A&amp;juda</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="843"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="844"/>
         <source>The system will be restarted.</source>
         <translation>O sistema será reiniciado.</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="844"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="845"/>
         <source>Do you want to continue?</source>
         <translation>Você deseja continuar ?</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="845"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="846"/>
         <source>Restart system</source>
         <translation>Reiniciar sistema</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="861"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="862"/>
         <source>Default Project</source>
         <translation>Projeto Padrão</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="877"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="878"/>
         <source>Open project file</source>
         <translation>Abrir arquivo de projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="888"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="889"/>
         <source>Fail to open project.</source>
         <translation>Falha ao abrir projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="903"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="904"/>
         <source>TerraView project(*.</source>
         <translation>Projeto TerraView(*.</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="905"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="906"/>
         <source>Save project</source>
         <translation>Salvar projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="945"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="946"/>
         <source>Save Project File</source>
         <translation>Salvar Arquivo de Projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="993"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1046"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1103"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1277"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="994"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1047"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1104"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1278"/>
         <source>Select a layer in the layer explorer!</source>
         <translation>Selecione uma camada no explorador de camadas !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1002"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1056"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1112"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1171"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1225"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1289"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1003"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1057"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1113"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1172"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1226"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1290"/>
         <source>There are invalid layers selected!</source>
         <translation>Há camadas inválidas selecionadas !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1033"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1498"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1537"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1034"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1499"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1538"/>
         <source>Unknown error while trying to add a layer from a queried dataset!</source>
         <translation>Erro desconhecido ao tentar adicionar uma camada de um conjunto de dados de consulta !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1072"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1128"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1182"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1073"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1129"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1183"/>
         <source>Layer</source>
         <translation>Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1079"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1080"/>
         <source>Histogram</source>
         <translation>Histograma</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1136"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1137"/>
         <source>Scatter</source>
         <translation>Gráfico de Dispersão</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1161"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1216"/>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1723"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1162"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1217"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1724"/>
         <source>Select a single layer in the layer explorer!</source>
         <translation>Selecione uma única camada no explorador de camadas !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1450"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1451"/>
         <source>Unknown error while trying to add a layer from a dataset!</source>
         <translation>Erro desconhecido ao tentar adicionar uma camada de um conjunto de dados !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1549"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1550"/>
         <source>Folder layer name:</source>
         <translation>Nome da pasta de camada:</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1550"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1551"/>
         <source>Enter folder layer name</source>
         <translation>Entre com o nome da pasta de camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1557"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1558"/>
         <source>Enter the layer name!</source>
         <translation>Entre com o nome da camada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1570"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1571"/>
         <source>There&apos;s no current project!</source>
         <translation>Não há nenhum projeto atual !</translation>
     </message>
@@ -668,17 +672,17 @@ Comentários, sugestões e feedbacks podem ser enviadas para equipe da TerraLib 
         <translation type="vanished">Erro desconhecido ao tentar alterar uma fonte de dados da camada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1635"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1636"/>
         <source>Unknown error while trying to update a layer data source!</source>
         <translation>Erro desconhecido ao tentar atualizar uma fonte de dados da camada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1817"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1818"/>
         <source>DataSetExplorer Error!</source>
         <translation>Erro no Explorador de Dados !</translation>
     </message>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="1854"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="1855"/>
         <source>The current project has unsaved changes. Do you want to save them?</source>
         <translation>O projeto atual tem alterações não salvas. Você deseja salvá-las ?</translation>
     </message>
