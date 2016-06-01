@@ -2,7 +2,7 @@
 
 %{
 // TerraLib includes
-#include "terralib/core/CharEncoding.h"
+#include "terralib/core/encoding/CharEncoding.h"
 #include "terralib/dataaccess/datasource/DataSource.h"
 #include "terralib/dataaccess/datasource/DataSourceManager.h"
 #include "terralib/maptools/DataSetLayer.h"
@@ -52,6 +52,8 @@ namespace std {
 %ignore te::da::DataSource::remove;
 %ignore te::da::DataSource::update;
 %ignore te::da::DataSource::create;
+%ignore te::da::DataSource::getEncoding;
+%ignore te::da::DataSource::getEncodings;
 
 #ifdef SWIGJAVA
 // ---------------------------------

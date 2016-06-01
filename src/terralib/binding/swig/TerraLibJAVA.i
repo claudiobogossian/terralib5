@@ -22,6 +22,7 @@
 #define TEDATAACCESSEXPORT
 #define TECOMMONEXPORT
 #define TEPLUGINEXPORT
+#define TECOREEXPORT
 
 SWIG_JAVABODY_METHODS(protected, protected, SWIGTYPE)
 %pragma(java) jniclassclassmodifiers = "class"
@@ -33,7 +34,6 @@ namespace std {
 
 %{
 // TerraLib includes
-#include "terralib/core/CharEncoding.h"
 #include "terralib/common/TerraLib.h"
 #include "terralib/plugin/PluginManager.h"
 
@@ -88,13 +88,8 @@ void Initialize() throw (te::common::Exception);
 
 void Finalize();
 
-%include "terralib/core/CharEncoding.h"
 %include "terralib/common/Enums.h"
 %include "java/QtInitializer.h"
-
-namespace std {
- %template(CharEncodingVector) vector<te::core::EncodingType>;
-}
 
 %include java/ObjectId.i
 %include java/DataSet.i
