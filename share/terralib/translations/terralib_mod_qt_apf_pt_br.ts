@@ -1317,12 +1317,12 @@
         <translation type="vanished">Ativar / desativar o Mover para operação selecionada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="403"/>
+        <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="419"/>
         <source>Error</source>
         <translation>Erro</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="403"/>
+        <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="419"/>
         <source>The layer selection cannot be drawn. Details:</source>
         <translation>A camada selecionada não pode ser desenhada. Detalhes:</translation>
     </message>

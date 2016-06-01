@@ -99,7 +99,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   // Builds the available SRS tree
   QList<QTreeWidgetItem *> items;
   
-  items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic SRS"))));
+  items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geographic SRS"))));
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Projected SRS"))));
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("User defined SRS"))));
   m_ui->m_SRSTreeWidget->insertTopLevelItems(0, items);

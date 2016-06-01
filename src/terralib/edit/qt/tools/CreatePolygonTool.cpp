@@ -316,7 +316,7 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
 
   m_stack.m_currentIndex = (int)(m_stack.getAddWatches()->size() - 1);
 
-  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature);// , /*&*/m_coords);//use &m_feature?!?!
+  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature);
   connect(dynamic_cast<AddCommand*>(command), SIGNAL(undoRedo(std::vector<te::gm::Coord2D>)), SLOT(onUndoRedo(std::vector<te::gm::Coord2D>)));
 
   m_stack.addUndoStack(command);
@@ -324,7 +324,7 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
 
 void te::edit::CreatePolygonTool::onUndoRedo(std::vector<te::gm::Coord2D> coords)
 {
-  RepositoryManager& repo = RepositoryManager::getInstance();//
+  RepositoryManager& repo = RepositoryManager::getInstance();
 
   if (repo.hasIdentify(m_layer->getId(), m_feature->getId()))
     repo.removeFeature(m_layer->getId(), m_feature->getId());
