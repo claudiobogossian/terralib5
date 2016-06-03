@@ -292,8 +292,6 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
   if (m_coords.empty())
     return;
 
-  m_coords.push_back(m_lastPos);
-
   if (m_feature == 0)
     m_feature = new Feature();
 
