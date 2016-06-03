@@ -1157,13 +1157,13 @@ valid $? "Error: could not configure googletest!"
 make
 valid $? "Error: could not make googletest!"
 
-cp libgtest.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+cp libgtest.a $TERRALIB_DEPENDENCIES_DIR/lib/
 valid $? "Error: could not copy libgtest.a!"
 
-cp libgtest_main.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+cp libgtest_main.a $TERRALIB_DEPENDENCIES_DIR/lib/
 valid $? "Error: could not copy libgtest_main.a!"
 
-cp -r include/gtest/ $TERRAMA2_DEPENDENCIES_DIR/include/
+cp -r include/gtest/ $TERRALIB_DEPENDENCIES_DIR/include/
 valid $? "Error: could not copy include dir!"
 
 cd ../googlemock
@@ -1174,13 +1174,13 @@ valid $? "Error: could not configure googlemock!"
 make
 valid $? "Error: could not make googlemock!"
 
-cp libgmock.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+cp libgmock.a $TERRALIB_DEPENDENCIES_DIR/lib/
 valid $? "Error: could not copy libgmock.a!"
 
-cp libgmock_main.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+cp libgmock_main.a $TERRALIB_DEPENDENCIES_DIR/lib/
 valid $? "Error: could not copy libgmock_main.a!"
 
-cp -r include/gmock $TERRAMA2_DEPENDENCIES_DIR/include/
+cp -r include/gmock $TERRALIB_DEPENDENCIES_DIR/include/
 valid $? "Error: could not copy include dir!"
 
 
