@@ -675,7 +675,7 @@ if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libspatialite.dylib" ]; then
   cd libspatialite-4.2.0
   valid $? "Error: could not enter libspatialite-4.2.0!"
 
-  CPPFLAGS="-I$TERRALIB_DEPENDENCIES_DIR -I$TERRALIB_DEPENDENCIES_DIR/include -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2 -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2/libxml" LDFLAGS="-L$TERRALIB_DEPENDENCIES_DIR/lib"  ./configure --prefix=$TERRALIB_DEPENDENCIES_DIR --enable-proj --enable-geos --enable-geosadvanced --enable-iconv --enable-freexl --enable-geocallbacks --enable-epsg --enable-mathsql --enable-libxml2=no --enable-geopackage --with-geosconfig=$TERRALIB_DEPENDENCIES_DIR/bin/geos-config
+  CPPFLAGS="-I$TERRALIB_DEPENDENCIES_DIR -I$TERRALIB_DEPENDENCIES_DIR/include -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2 -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2/libxml" LDFLAGS="-L$TERRALIB_DEPENDENCIES_DIR/lib"  ./configure --prefix=$TERRALIB_DEPENDENCIES_DIR --enable-proj --enable-geos --enable-geosadvanced --enable-iconv --enable-freexl --enable-geocallbacks --enable-epsg --enable-gcov --enable-mathsql --enable-libxml2=no --enable-geopackage --with-geosconfig=$TERRALIB_DEPENDENCIES_DIR/bin/geos-config
   valid $? "Error: could not configure libspatialite!"
 
   make -j 4
@@ -898,6 +898,55 @@ if [ ! -d "$TERRALIB_DEPENDENCIES_DIR/lib/qwt.framework" ]; then
   valid $? "Error: could not copy Qwt internal folder!"
 
   cd ..
+fi
+
+
+#
+# GTest and GMock
+#
+if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libgmock.a" ]; then
+echo "installing GTest and GMock..."
+sleep 1s
+
+unzip googletest-master.zip
+valid $? "Error: could not uncompress googletest-master.zip!"
+
+cd googletest-master/googletest
+valid $? "Error: could not enter googletest-master!"
+
+cmake .
+valid $? "Error: could not configure googletest!"
+
+make
+valid $? "Error: could not make googletest!"
+
+cp libgtest.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+valid $? "Error: could not copy libgtest.a!"
+
+cp libgtest_main.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+valid $? "Error: could not copy libgtest_main.a!"
+
+cp -r include/gtest $TERRAMA2_DEPENDENCIES_DIR/include/
+valid $? "Error: could not copy include dir!"
+
+cd ../googlemock
+
+cmake .
+valid $? "Error: could not configure googlemock!"
+
+make
+valid $? "Error: could not make googlemock!"
+
+cp libgmock.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+valid $? "Error: could not copy libgmock.a!"
+
+cp libgmock_main.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+valid $? "Error: could not copy libgmock_main.a!"
+
+cp -r include/gmock $TERRAMA2_DEPENDENCIES_DIR/include/
+valid $? "Error: could not copy include dir!"
+
+cd ../..
 fi
 
 #
