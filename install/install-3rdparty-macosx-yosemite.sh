@@ -675,7 +675,7 @@ if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libspatialite.dylib" ]; then
   cd libspatialite-4.2.0
   valid $? "Error: could not enter libspatialite-4.2.0!"
 
-  CPPFLAGS="-I$TERRALIB_DEPENDENCIES_DIR -I$TERRALIB_DEPENDENCIES_DIR/include -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2 -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2/libxml" LDFLAGS="-L$TERRALIB_DEPENDENCIES_DIR/lib"  ./configure --prefix=$TERRALIB_DEPENDENCIES_DIR --enable-proj --enable-geos --enable-geosadvanced --enable-iconv --enable-freexl --enable-geocallbacks --enable-epsg --enable-gcov --enable-mathsql --enable-libxml2=no --enable-geopackage --with-geosconfig=$TERRALIB_DEPENDENCIES_DIR/bin/geos-config
+  CPPFLAGS="-I$TERRALIB_DEPENDENCIES_DIR -I$TERRALIB_DEPENDENCIES_DIR/include -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2 -I$TERRALIB_DEPENDENCIES_DIR/include/libxml2/libxml" LDFLAGS="-L$TERRALIB_DEPENDENCIES_DIR/lib"  ./configure --prefix=$TERRALIB_DEPENDENCIES_DIR --enable-proj --enable-geos --enable-geosadvanced --enable-iconv --enable-freexl --enable-geocallbacks --enable-epsg --enable-mathsql --enable-libxml2=no --enable-geopackage --with-geosconfig=$TERRALIB_DEPENDENCIES_DIR/bin/geos-config
   valid $? "Error: could not configure libspatialite!"
 
   make -j 4
@@ -920,13 +920,13 @@ valid $? "Error: could not configure googletest!"
 make
 valid $? "Error: could not make googletest!"
 
-cp libgtest.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+cp libgtest.a $TERRALIB_DEPENDENCIES_DIR/lib/
 valid $? "Error: could not copy libgtest.a!"
 
-cp libgtest_main.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+cp libgtest_main.a $TERRALIB_DEPENDENCIES_DIR/lib/
 valid $? "Error: could not copy libgtest_main.a!"
 
-cp -r include/gtest $TERRAMA2_DEPENDENCIES_DIR/include/
+cp -r include/gtest $TERRALIB_DEPENDENCIES_DIR/include/
 valid $? "Error: could not copy include dir!"
 
 cd ../googlemock
@@ -937,13 +937,13 @@ valid $? "Error: could not configure googlemock!"
 make
 valid $? "Error: could not make googlemock!"
 
-cp libgmock.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+cp libgmock.a $TERRALIB_DEPENDENCIES_DIR/lib/
 valid $? "Error: could not copy libgmock.a!"
 
-cp libgmock_main.a $TERRAMA2_DEPENDENCIES_DIR/lib/
+cp libgmock_main.a $TERRALIB_DEPENDENCIES_DIR/lib/
 valid $? "Error: could not copy libgmock_main.a!"
 
-cp -r include/gmock $TERRAMA2_DEPENDENCIES_DIR/include/
+cp -r include/gmock $TERRALIB_DEPENDENCIES_DIR/include/
 valid $? "Error: could not copy include dir!"
 
 cd ../..
