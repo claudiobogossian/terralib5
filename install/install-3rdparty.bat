@@ -2212,7 +2212,7 @@ cd %ROOT_DIR%
 :lua
 
 :: Lua version 5.2.2
-set LUAC_DIR=%ROOT_DIR%\lua-5.2.2
+set LUAC_DIR=%ROOT_DIR%\lua-5.3.2
 set LUAC_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include\lua
 set LUAC_LIBRARY=%LUA%
 set LUACD_LIBRARY=%LIBS_DIR%\luad.lib
@@ -2244,9 +2244,7 @@ cd build%_X86% >nul 2>nul
 
 ( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%TERRALIB_DEPENDENCIES_DIR% ^
 -DCMAKE_DEBUG_POSTFIX=d ^
--DINSTALL_BIN=%LIBS_DIR% ^
--DREADLINE_INCLUDE_DIR=%READLINE_INCLUDE_DIR% ^
--DREADLINE_LIBRARY:STRING="debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%" %LUAC_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog lua  "configuring" && goto qscintilla
+-DINSTALL_BIN=%LIBS_DIR%  %LUAC_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog lua  "configuring" && goto qscintilla
 
 ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build release" && goto qscintilla
 

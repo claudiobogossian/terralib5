@@ -78,4 +78,4 @@ print("X = " .. pt:getX())
 pt:setY(18.0)
 print("Y = " .. pt:getY())
 
-t:finalize()
+--t:finalize()
