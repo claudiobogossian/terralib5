@@ -66,7 +66,7 @@ std::auto_ptr<te::da::DataSourceTransactor> te::ws::ogc::wcs::da::DataSource::ge
   if(!m_isOpened)
     throw Exception(TE_TR("The data source is not opened!"));
 
-  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(wcs_));
+  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_wcs));
 }
 
 void te::ws::ogc::wcs::da::DataSource::open()
@@ -78,9 +78,9 @@ void te::ws::ogc::wcs::da::DataSource::open()
 
   try
   {
-    wcs_ = te::ws::ogc::WCS(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    m_wcs = te::ws::ogc::WCS(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
 
-    wcs_.updateCapabilities();
+    m_wcs.updateCapabilities();
   }
   catch(const te::common::Exception& e)
   {

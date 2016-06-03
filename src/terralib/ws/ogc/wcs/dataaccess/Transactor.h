@@ -38,6 +38,7 @@
 #include "../client/WCS.h"
 //#include "WCSLayerInfo.h"
 #include "Config.h"
+#include "../client/DataTypes.h"
 
 
 namespace te
@@ -261,8 +262,10 @@ namespace te
 
           private:
 
-            WCS wcs_;
-            CoverageRequest coverageRequest_;
+            WCS m_wcs;
+            CoverageRequest m_coverageRequest;
+
+
           };
 
         } // end namespace da

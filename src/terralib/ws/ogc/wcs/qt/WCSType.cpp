@@ -26,6 +26,7 @@
 #include "WCSType.h"
 
 #include "WCSConnector.h"
+#include "WCSLayerSelector.h"
 #include "../../../../core/translator/Translator.h"
 
 te::ws::ogc::wcs::qt::WCSType::WCSType()
@@ -79,7 +80,8 @@ QWidget* te::ws::ogc::wcs::qt::WCSType::getWidget(int widgetType, QWidget* paren
       return new WCSConnector(parent, f);
 
     //TODO Create a WCS layer selection interface
-    //case DataSourceType::WIDGET_LAYER_SELECTOR:
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new WCSLayerSelector(parent, f);
 
     default:
       return 0;
