@@ -65,6 +65,8 @@ namespace te
 
         void setLines(std::vector<te::gm::LineString*> &l);
 
+        std::vector<te::gm::LineString*> getLines() { return m_lines; }
+
         bool mousePressEvent(QMouseEvent* e);
 
         bool mouseMoveEvent(QMouseEvent* e);

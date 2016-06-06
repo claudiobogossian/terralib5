@@ -750,6 +750,7 @@ void te::qt::widgets::RasterNavigatorWidget::onHSliderChanged(int value)
 
 void te::qt::widgets::RasterNavigatorWidget::setCurrentTool(te::qt::widgets::AbstractTool* tool)
 {
+  if (m_tool != 0)
   delete m_tool;
   m_tool = tool;
 

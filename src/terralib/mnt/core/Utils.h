@@ -45,6 +45,8 @@ namespace te
 
     double Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2);
 
+    double Distance(const double pt1x, const double pt1y, const double pt2x, const double pt2y);
+
     bool Equal(te::gm::PointZ &p1, te::gm::PointZ &p2, double &tol);
 
     //DouglasPeucker from TerraAmazon 4

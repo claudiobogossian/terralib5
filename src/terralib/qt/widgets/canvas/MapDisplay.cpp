@@ -96,6 +96,8 @@ te::qt::widgets::MapDisplay::~MapDisplay()
   delete m_displayPixmap;
   delete m_draftPixmap;
 
+ 
+  if ( m_tool != 0 )
   delete m_tool;
 
 //  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
@@ -570,10 +572,12 @@ void te::qt::widgets::MapDisplay::restoreDPI()
 void te::qt::widgets::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious)
 {
   if (m_tool != 0)
+  {
     removeEventFilter(m_tool);
 
-  if (delPrevious)
-    delete m_tool;
+    if (delPrevious)
+      delete m_tool;
+  }
 
   m_tool = tool;
 

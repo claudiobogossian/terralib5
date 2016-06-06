@@ -45,6 +45,7 @@
 
 #include "../../geometry/Geometry.h"
 #include "../../geometry/GeometryProperty.h"
+#include "../../geometry/Line.h"
 #include "../../geometry/MultiLineString.h"
 #include "../../geometry/PointZ.h"
 
@@ -174,6 +175,8 @@ bool te::mnt::Profile::runRasterProfile(std::vector<te::gm::LineString*> visadas
       col = (unsigned int)collin.getX();
       row = (unsigned int)collin.getY();
 
+      if (col >= raster->getNumberOfColumns() || row >= raster->getNumberOfRows())
+        continue;
       raster->getValue(col, row, zval);
       if (zval == m_dummy)
         continue;
@@ -228,6 +231,9 @@ bool te::mnt::Profile::runRasterProfile(std::vector<te::gm::LineString*> visadas
           col = (unsigned int)collin.getX();
           row = (unsigned int)collin.getY();
 
+          if (col >= raster->getNumberOfColumns() || row >= raster->getNumberOfRows())
+            continue;
+
           raster->getValue(col, row, zval);
           if (zval != m_dummy)
           {
@@ -253,6 +259,9 @@ bool te::mnt::Profile::runRasterProfile(std::vector<te::gm::LineString*> visadas
           col = (unsigned int)collin.getX();
           row = (unsigned int)collin.getY();
 
+          if (col >= raster->getNumberOfColumns() || row >= raster->getNumberOfRows())
+            continue;
+          
           raster->getValue(col, row, zval);
           if (zval != m_dummy)
           {
@@ -271,6 +280,8 @@ bool te::mnt::Profile::runRasterProfile(std::vector<te::gm::LineString*> visadas
       col = (unsigned int)collin.getX();
       row = (unsigned int)collin.getY();
 
+      if (col >= raster->getNumberOfColumns() || row >= raster->getNumberOfRows())
+        continue;
       raster->getValue(col, row, zval);
       if (zval != m_dummy)
       {
@@ -308,85 +319,36 @@ bool te::mnt::Profile::runRasterProfile(std::vector<te::gm::LineString*> visadas
 
 te::gm::LineString* te::mnt::Profile::calculateProfile(te::gm::MultiLineString &isolines, te::gm::LineString &trajectory)
 {
-  std::vector<double> distances, altitudes;
-  std::vector<te::gm::MultiPoint*> result;
-
-  //Calculate intersections
-  std::auto_ptr<te::gm::Geometry> resultGeom;
-  for (std::size_t i = 0; i < isolines.getNumGeometries(); i++)
-  {
-    resultGeom.reset(trajectory.intersection(isolines.getGeometryN(i)));
-    if (resultGeom.get() != 0 && resultGeom->isValid())
-    {
-
-      if (resultGeom->getGeomTypeId() == te::gm::MultiPointType ||
-        resultGeom->getGeomTypeId() == te::gm::MultiPointZType ||
-        resultGeom->getGeomTypeId() == te::gm::MultiPointMType ||
-        resultGeom->getGeomTypeId() == te::gm::MultiPointZMType)
-      {
-        te::gm::MultiPoint *pz = dynamic_cast<te::gm::MultiPoint*>(resultGeom.get());
-        for (size_t p = 0; p < pz->getNumGeometries(); p++)
-        {
-          altitudes.push_back(dynamic_cast<te::gm::PointZ*>(pz->getGeometryN(p))->getZ());
-        }
-        result.push_back(pz);
-      }
-      else if (resultGeom->getGeomTypeId() == te::gm::PointType ||
-        resultGeom->getGeomTypeId() == te::gm::PointZType || 
-        resultGeom->getGeomTypeId() == te::gm::PointMType ||
-        resultGeom->getGeomTypeId() == te::gm::PointZMType)
-      {
-        altitudes.push_back(dynamic_cast<te::gm::PointZ*>(resultGeom.get())->getZ());
-        te::gm::MultiPoint *pz = new te::gm::MultiPoint(1, te::gm::MultiPointZType, m_srid);
-        pz->setGeometryN(0, dynamic_cast<te::gm::PointZ*>(resultGeom.get()));
-        result.push_back(pz);
-      }
-      resultGeom.release();
-    }
-  }
-
-  /*For to pass through result and add the intersections distances
-  to trajectory first point in a vector (profile X values)
-  */
-  for (std::size_t j = 0; j < result.size(); j++)
-  {
-    for (std::size_t i = 0; i < result[j]->getNPoints(); i++)
-    {
-      double dist = 0.;
-      double distance;
-      te::gm::Coord2D pout;
-      for (std::size_t k = 0; k < trajectory.size() - 1; k++)
-      {
-        te::gm::Coord2D first(trajectory.getX(k), trajectory.getY(k));
-        te::gm::Coord2D last(trajectory.getX(k + 1), trajectory.getY(k + 1));
-
-        te::gm::Coord2D pin(dynamic_cast<te::gm::PointZ*>(result[j]->getGeometryN(i))->getX(), dynamic_cast<te::gm::PointZ*>(result[j]->getGeometryN(i))->getY());
-        double dist_seg = PerpendicularDistance(first, last, pin, pout);
-        if (dist_seg < 0.001)
-        {
-          distance = dist + Distance(pin, first);
-          distances.push_back(distance);
-        }
-        else
-        {
-          dist += Distance(first, last);
-        }
-      }
-    }
-  }
-
-  result.clear();
-
+  //std::auto_ptr<te::gm::Geometry> resultGeom;
+  te::gm::LineString* iso;
+  te::gm::Line seg(te::gm::LineStringType, m_srid);
+  te::gm::Line seg1(te::gm::LineStringType, m_srid);
+  double dist = 0.;
+  te::gm::LineString* profile = new te::gm::LineString(0, te::gm::LineStringType);
   std::map<double, double> line;
+  te::gm::PointZ ptinter;
 
-  size_t sizemin = MIN(altitudes.size(), distances.size());
-  if (sizemin >0)
+  for (std::size_t t = 0; t < trajectory.size() - 1; t++)
   {
-    //For to sort profile's coordinates vector
-    for (size_t i = 0; i < sizemin; i++)
-      line.insert(std::map<double, double>::value_type(distances[i], altitudes[i]));
+    seg.setCoord(0, trajectory.getX(t), trajectory.getY(t));
+    seg.setPoint(1, trajectory.getX(t + 1), trajectory.getY(t + 1));
+    for (std::size_t i = 0; i < isolines.getNumGeometries(); i++)
+    {
+      iso = dynamic_cast<te::gm::LineString*>(isolines.getGeometryN(i));
+      for (std::size_t j = 0; j < iso->getNPoints() - 1; j++)
+      {
+        seg1.setCoord(0, iso->getX(j), iso->getY(j));
+        seg1.setPoint(1, iso->getX(j + 1), iso->getY(j + 1));
+        if (seg.intersection(seg1, ptinter))
+        {
+          double dist0 = Distance(trajectory.getX(t), trajectory.getY(t), ptinter.getX(), ptinter.getY());
+          line.insert(std::map<double, double>::value_type(dist + dist0, *iso->getZ()));
+        }
+      }
+    }
+    dist += Distance(trajectory.getX(t), trajectory.getY(t), trajectory.getX(t + 1), trajectory.getY(t + 1));
+  }
 
-    te::gm::LineString* profile = new te::gm::LineString(0, te::gm::LineStringType);
     std::map<double, double>::iterator it = line.begin();
 
     while (it != line.end())
@@ -397,12 +359,6 @@ te::gm::LineString* te::mnt::Profile::calculateProfile(te::gm::MultiLineString &
     }
     line.clear();
     return profile;
-  }
-
-  line.clear();
-
-  return 0;
-
 }
 
 bool te::mnt::Profile::runIsolinesProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet)
