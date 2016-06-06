@@ -391,7 +391,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
   {
     return;
   }
-/*
+
   if(m_usingStash && !m_layerIsStashed)
   {
     std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
@@ -437,7 +437,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     return; 
   }
-*/
 
   try
   {
@@ -674,8 +673,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     m_layerIsStashed = false;
 
-    //te::qt::af::evt::LayerChanged e2(layer.get());
-    //emit triggered(&e2);
   }
   catch(te::common::Exception& ex)
   {

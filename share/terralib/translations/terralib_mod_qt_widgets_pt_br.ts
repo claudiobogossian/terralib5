@@ -13705,9 +13705,13 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
 <context>
     <name>te::qt::widgets::SRSManagerDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="102"/>
         <source>Geoographic SRS</source>
-        <translation>SRS Geográfico</translation>
+        <translation type="vanished">SRS Geográfico</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="102"/>
+        <source>Geographic SRS</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/srs/SRSManagerDialog.cpp" line="103"/>

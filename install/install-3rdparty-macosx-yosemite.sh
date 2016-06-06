@@ -900,6 +900,55 @@ if [ ! -d "$TERRALIB_DEPENDENCIES_DIR/lib/qwt.framework" ]; then
   cd ..
 fi
 
+
+#
+# GTest and GMock
+#
+if [ ! -f "$TERRALIB_DEPENDENCIES_DIR/lib/libgmock.a" ]; then
+echo "installing GTest and GMock..."
+sleep 1s
+
+unzip googletest-master.zip
+valid $? "Error: could not uncompress googletest-master.zip!"
+
+cd googletest-master/googletest
+valid $? "Error: could not enter googletest-master!"
+
+cmake .
+valid $? "Error: could not configure googletest!"
+
+make
+valid $? "Error: could not make googletest!"
+
+cp libgtest.a $TERRALIB_DEPENDENCIES_DIR/lib/
+valid $? "Error: could not copy libgtest.a!"
+
+cp libgtest_main.a $TERRALIB_DEPENDENCIES_DIR/lib/
+valid $? "Error: could not copy libgtest_main.a!"
+
+cp -r include/gtest $TERRALIB_DEPENDENCIES_DIR/include/
+valid $? "Error: could not copy include dir!"
+
+cd ../googlemock
+
+cmake .
+valid $? "Error: could not configure googlemock!"
+
+make
+valid $? "Error: could not make googlemock!"
+
+cp libgmock.a $TERRALIB_DEPENDENCIES_DIR/lib/
+valid $? "Error: could not copy libgmock.a!"
+
+cp libgmock_main.a $TERRALIB_DEPENDENCIES_DIR/lib/
+valid $? "Error: could not copy libgmock_main.a!"
+
+cp -r include/gmock $TERRALIB_DEPENDENCIES_DIR/include/
+valid $? "Error: could not copy include dir!"
+
+cd ../..
+fi
+
 #
 # Finished!
 #
