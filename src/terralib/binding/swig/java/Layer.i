@@ -1,8 +1,10 @@
 #define TEMAPEXPORT
 
 %warnfilter(401) AbstractLayer;
+%warnfilter(401) AbstractRenderer;
 
 %rename (Layer) AbstractLayer;
+%rename (Renderer) AbstractRenderer;
 
 %{
 #include "terralib/maptools/FolderLayer.h"
@@ -229,6 +231,8 @@ namespace std {
 %ignore te::map::AbstractLayer::getData;
 %ignore te::map::AbstractLayer::getType;
 %ignore te::map::AbstractLayer::draw;
+%ignore te::map::AbstractLayer::getGeometries;
+%ignore te::map::AbstractLayer::setRenderer;
 
 %newobject OpenLayers() throw (te::common::Exception);
 %newobject GetFolderLayer() throw (te::common::Exception);

@@ -37,6 +37,7 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 %rename (te_gm_SR_EQUALS) te::gm::EQUALS;
 %rename (te_gm_SR_OVERLAPS) te::gm::OVERLAPS;
 %rename (te_st_UNKNOWN) te::st::UNKNOWN;
+%rename (te_da_UNKNOWN) te::da::UNKNOWN;
 //*****************************************
 
 %feature("compactdefaultargs") te::rst::RasterSummaryManager::get;

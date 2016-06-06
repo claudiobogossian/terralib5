@@ -42,10 +42,6 @@ int main(int argc, char *argv[])
 
   std::string plgManifest = te::core::FindInTerraLibPath("share/terralib/plugins/te.vm.lua.teplg");
 
-  std::string teLuaLib = te::core::FindInTerraLibPath("terralib_mod_binding_lua.so");
-
-  te::core::Library lua(teLuaLib);
-
   te::plugin::PluginInfo* info;
 
   info = te::plugin::GetInstalledPlugin(plgManifest);
@@ -65,6 +61,8 @@ int main(int argc, char *argv[])
   te::plugin::PluginManager::getInstance().unloadAll();
 
   TerraLib::getInstance().finalize();
+
+  getchar();
 
   return EXIT_SUCCESS;
 }
