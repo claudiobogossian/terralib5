@@ -30,53 +30,60 @@
 #define __TERRALIB_LOGGER_TRANSLATOR_H__
 
 // Boost
-#include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
-#include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/severity_channel_logger.hpp>
 
 // TerraLib
 #include "../../BuildConfig.h"
 #include "Config.h"
 
-// STL
-#include <string>
-
 namespace te
 {
   namespace core
   {
-
-    class TECOREEXPORT Logger
+    class Logger
     {
 
       public:
 
-        Logger(const std::string &filename);
-        ~Logger();
-        void logInfo(const std::string& message);
-        void logTrace(const std::string& message);
-        void logWarning(const std::string& message);
-        void logError(const std::string& message);
-        void logFatal(const std::string& message);
-        void logDebug(const std::string& message);
+        static Logger& getInstance();
+
+        void log(const std::string& message, boost::log::trivial::severity_level severity);
+
+        const std::string GetFileName();
+        const std::string GetPath();
+
+        void SetupLogger(const std::string &filename, const std::string &path);
+
+      private:
+
+        /*! \brief Singleton constructor. */
+        Logger();
+
+        // No copy allowed
+        Logger(Logger const&);
+        Logger& operator=(Logger const&);
+
+      private:
+
+        std::string m_filename = "terralib";
+        std::string m_path = "logs";
 
       protected:
-          boost::log::sources::severity_channel_logger_mt<boost::log::trivial::severity_level, std::string>  m_logger;
+
+        boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level>  m_logger;
 
     };
+  }
+}
 
-  } // end namespace common
-}   // end namespace te
-#define TE_LOG_CORE_INIT(name) te::core::Logger logger(name)
-
-#define TE_LOG_CORE_TRACE(message)   logger.logTrace(message)
-#define TE_LOG_CORE_ERROR(message)   logger.logError(message)
-#define TE_LOG_CORE_FATAL(message)   logger.logFatal(message)
-#define TE_LOG_CORE_INFO(message)    logger.logInfo(message)
-#define TE_LOG_CORE_WARNING(message) logger.logWarning(message)
-#define TE_LOG_CORE_DEBUG(message)   logger.logDebug(message)
+#define TE_INIT_LOGGER(filename, path)  te::core::Logger::getInstance().SetupLogger(filename, path)
+#define TE_LOG_CORE_TRACE(message)   te::core::Logger::getInstance().log(message, boost::log::trivial::trace)
+#define TE_LOG_CORE_ERROR(message)   te::core::Logger::getInstance().log(message, boost::log::trivial::error)
+#define TE_LOG_CORE_FATAL(message)   te::core::Logger::getInstance().log(message, boost::log::trivial::fatal)
+#define TE_LOG_CORE_INFO(message)    te::core::Logger::getInstance().log(message, boost::log::trivial::info)
+#define TE_LOG_CORE_WARNING(message) te::core::Logger::getInstance().log(message, boost::log::trivial::warning)
+#define TE_LOG_CORE_DEBUG(message)   te::core::Logger::getInstance().log(message, boost::log::trivial::debug)
 
 
 #endif  // __TERRALIB_LOGGER_TRANSLATOR_H__

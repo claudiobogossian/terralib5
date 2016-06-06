@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>ProfileDialogForm</class>
  <widget class="QDialog" name="ProfileDialogForm">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>

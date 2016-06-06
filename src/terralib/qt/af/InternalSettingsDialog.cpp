@@ -33,6 +33,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../BuildConfig.h"
 
 // Qt includes
+#include <QDesktopWidget>
+
 #if (QT_VERSION >= 0x050000)
 #include <QStandardPaths>
 #else
@@ -132,6 +134,10 @@ void te::qt::af::InternalSettingsDialog::setPlugins()
 
 void te::qt::af::InternalSettingsDialog::setSystemInfo()
 {
+  m_ui->m_dpiXLineEdit->setText(QString::number(qApp->desktop()->logicalDpiX()));
+
+  m_ui->m_dpiYLineEdit->setText(QString::number(qApp->desktop()->logicalDpiY()));
+
   m_ui->m_freePhysMemLineEdit->setText(QString("%L1").arg(te::common::GetFreePhysicalMemory()));
 
   m_ui->m_totalPhysMemLineEdit->setText(QString("%L1").arg(te::common::GetTotalPhysicalMemory()));
