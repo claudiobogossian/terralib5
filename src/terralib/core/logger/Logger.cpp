@@ -28,6 +28,7 @@
 
 
 // TerraLib
+#include "../utils/Platform.h"
 #include "Logger.h"
 
 // Boost
@@ -41,66 +42,35 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/file.hpp>
-#include <boost/make_shared.hpp>
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
-BOOST_LOG_ATTRIBUTE_KEYWORD(channel, "Channel", std::string)
-BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", boost::log::trivial::severity_level)
 
-te::core::Logger::Logger(const std::string& name)
-{
-    m_logger = boost::log::sources::severity_channel_logger_mt
-               <boost::log::trivial::severity_level, std::string>(boost::log::keywords::channel = name);
 
-    boost::log::formatter formatter =
-                             boost::log::expressions::stream
-                          << boost::log::expressions::format_date_time(timestamp, "[%Y-%m-%d %H:%M:%S]") << " <"
-                          << boost::log::trivial::severity << "> : "
-                          << boost::log::expressions::smessage;
 
-    boost::log::add_file_log(boost::log::keywords::auto_flush = true,
-                             boost::log::keywords::file_name = name+"%2N.log",
-                             boost::log::keywords::target = "logs",
-                             boost::log::keywords::max_size = 10 * 1024 * 1024,
-                             boost::log::keywords::rotation_size = 10 * 1024 * 1024,
-                             boost::log::keywords::scan_method = boost::log::sinks::file::scan_matching,
-                             boost::log::keywords::open_mode = std::ios_base::app,
-                             boost::log::keywords::filter = channel == name
-                             )->set_formatter(formatter);
-    boost::log::add_common_attributes();
+BOOST_LOG_GLOBAL_LOGGER_INIT(logger, boost::log::sources::severity_logger_mt) {
+  boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level> logger;
+
+  if(te::core::Fi)
+  boost::log::formatter formatter =
+                           boost::log::expressions::stream
+                        << boost::log::expressions::format_date_time(timestamp, "[%Y-%m-%d %H:%M:%S]") << " <"
+                        << boost::log::trivial::severity << "> : "
+                        << boost::log::expressions::smessage;
+  boost::log::add_file_log(boost::log::keywords::auto_flush = true,
+                           boost::log::keywords::file_name = "terralib%2N.log",
+                           boost::log::keywords::target = "logs",
+                           boost::log::keywords::max_size = 10 * 1024 * 1024,
+                           boost::log::keywords::rotation_size = 10 * 1024 * 1024,
+                           boost::log::keywords::scan_method = boost::log::sinks::file::scan_matching,
+                           boost::log::keywords::open_mode = std::ios_base::app
+                           )->set_formatter(formatter);
+  boost::log::add_common_attributes();
+  return logger;
 }
 
-te::core::Logger::~Logger()
+void te::core::Logger::log(const std::string& message, boost::log::trivial::severity_level severity)
 {
-
+  BOOST_LOG_SEV(logger::get(), severity) << message;
 }
 
-void te::core::Logger::logTrace(const std::string &message)
-{
-  BOOST_LOG_SEV(m_logger, boost::log::trivial::trace) << message;
-}
 
-void te::core::Logger::logDebug(const std::string &message)
-{
-  BOOST_LOG_SEV(m_logger, boost::log::trivial::debug) << message;
-}
-
-void te::core::Logger::logError(const std::string &message)
-{
-  BOOST_LOG_SEV(m_logger, boost::log::trivial::error) << message;
-}
-
-void te::core::Logger::logInfo(const std::string &message)
-{
-  BOOST_LOG_SEV(m_logger, boost::log::trivial::info) << message;
-}
-
-void te::core::Logger::logFatal(const std::string &message)
-{
-  BOOST_LOG_SEV(m_logger, boost::log::trivial::fatal) << message;
-}
-
-void te::core::Logger::logWarning(const std::string &message)
-{
-  BOOST_LOG_SEV(m_logger, boost::log::trivial::warning) << message;
-}
