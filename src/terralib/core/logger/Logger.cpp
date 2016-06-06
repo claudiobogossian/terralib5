@@ -45,32 +45,49 @@
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
 
+te::core::Logger& te::core::Logger::getInstance()
+{
+  static Logger instance;
 
+  return instance;
+}
 
-BOOST_LOG_GLOBAL_LOGGER_INIT(logger, boost::log::sources::severity_logger_mt) {
-  boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level> logger;
+void te::core::Logger::SetupLogger(const std::string& filename, const std::string& path)
+{
+  m_filename = filename;
+  m_path = path;
 
-  if(te::core::Fi)
+  boost::log::core::get()->remove_all_sinks();
+
   boost::log::formatter formatter =
                            boost::log::expressions::stream
                         << boost::log::expressions::format_date_time(timestamp, "[%Y-%m-%d %H:%M:%S]") << " <"
                         << boost::log::trivial::severity << "> : "
                         << boost::log::expressions::smessage;
-  boost::log::add_file_log(boost::log::keywords::auto_flush = true,
-                           boost::log::keywords::file_name = "terralib%2N.log",
-                           boost::log::keywords::target = "logs",
-                           boost::log::keywords::max_size = 10 * 1024 * 1024,
-                           boost::log::keywords::rotation_size = 10 * 1024 * 1024,
-                           boost::log::keywords::scan_method = boost::log::sinks::file::scan_matching,
-                           boost::log::keywords::open_mode = std::ios_base::app
-                           )->set_formatter(formatter);
+
+  boost::shared_ptr<boost::log::sinks::synchronous_sink< boost::log::sinks::text_file_backend > >
+     sink = boost::log::add_file_log(boost::log::keywords::auto_flush = true,
+                                     boost::log::keywords::file_name = m_filename + "%2N.log",
+                                     boost::log::keywords::target = m_path,
+                                     boost::log::keywords::max_size = 10 * 1024 * 1024,
+                                     boost::log::keywords::rotation_size = 10 * 1024 * 1024,
+                                     boost::log::keywords::scan_method = boost::log::sinks::file::scan_matching,
+                                     boost::log::keywords::open_mode = std::ios_base::app
+                                     );
+  sink->set_formatter(formatter);
+  boost::log::core::get()->add_sink(sink);
   boost::log::add_common_attributes();
-  return logger;
+
+}
+
+te::core::Logger::Logger()
+{
+  SetupLogger(m_filename, m_path);
 }
 
 void te::core::Logger::log(const std::string& message, boost::log::trivial::severity_level severity)
 {
-  BOOST_LOG_SEV(logger::get(), severity) << message;
+  BOOST_LOG_SEV(m_logger , severity) << message;
 }
 
 

@@ -34,7 +34,7 @@
 int main(int argc, char *argv[])
 {
   TE_LOG_CORE_TRACE("mensagem");
-  {
-    TE_LOG_CORE_TRACE("log2");
-  }
+  TE_INIT_LOGGER("terraview", "logs");
+  TE_LOG_CORE_TRACE("log2");
+  TE_LOG_CORE_TRACE("log2");
 }

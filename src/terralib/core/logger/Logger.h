@@ -37,27 +37,53 @@
 #include "../../BuildConfig.h"
 #include "Config.h"
 
-BOOST_LOG_GLOBAL_LOGGER(logger, boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level>)
-
 namespace te
 {
   namespace core
   {
     class Logger
     {
+
       public:
-        static void log(const std::string& message, boost::log::trivial::severity_level severity);
+
+        static Logger& getInstance();
+
+        void log(const std::string& message, boost::log::trivial::severity_level severity);
+
+        const std::string GetFileName();
+        const std::string GetPath();
+
+        void SetupLogger(const std::string &filename, const std::string &path);
+
+      private:
+
+        /*! \brief Singleton constructor. */
+        Logger();
+
+        // No copy allowed
+        Logger(Logger const&);
+        Logger& operator=(Logger const&);
+
+      private:
+
+        std::string m_filename = "terralib";
+        std::string m_path = "logs";
+
+      protected:
+
+        boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level>  m_logger;
+
     };
   }
 }
 
-
-#define TE_LOG_CORE_TRACE(message)   te::core::Logger::log(message, boost::log::trivial::trace)
-#define TE_LOG_CORE_ERROR(message)   te::core::Logger::log(message, boost::log::trivial::error)
-#define TE_LOG_CORE_FATAL(message)   te::core::Logger::log(message, boost::log::trivial::fatal)
-#define TE_LOG_CORE_INFO(message)    te::core::Logger::log(message, boost::log::trivial::info)
-#define TE_LOG_CORE_WARNING(message) te::core::Logger::log(message, boost::log::trivial::warning)
-#define TE_LOG_CORE_DEBUG(message)   te::core::Logger::log(message, boost::log::trivial::debug)
+#define TE_INIT_LOGGER(filename, path)  te::core::Logger::getInstance().SetupLogger(filename, path)
+#define TE_LOG_CORE_TRACE(message)   te::core::Logger::getInstance().log(message, boost::log::trivial::trace)
+#define TE_LOG_CORE_ERROR(message)   te::core::Logger::getInstance().log(message, boost::log::trivial::error)
+#define TE_LOG_CORE_FATAL(message)   te::core::Logger::getInstance().log(message, boost::log::trivial::fatal)
+#define TE_LOG_CORE_INFO(message)    te::core::Logger::getInstance().log(message, boost::log::trivial::info)
+#define TE_LOG_CORE_WARNING(message) te::core::Logger::getInstance().log(message, boost::log::trivial::warning)
+#define TE_LOG_CORE_DEBUG(message)   te::core::Logger::getInstance().log(message, boost::log::trivial::debug)
 
 
 #endif  // __TERRALIB_LOGGER_TRANSLATOR_H__
