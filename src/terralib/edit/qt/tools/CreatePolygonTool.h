@@ -126,7 +126,7 @@ namespace te
 
         void onExtentChanged();
 
-        void onUndoRedo(std::vector<te::gm::Coord2D> coords);
+        void onUndoFeedback(std::vector<te::gm::Coord2D> coords);
 
       protected:
 

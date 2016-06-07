@@ -144,7 +144,7 @@ namespace te
 
         void onExtentChanged();
 
-        void onUndoRedo(std::vector<te::gm::Coord2D> coords);
+        void onUndoFeedback(std::vector<te::gm::Coord2D> coords);
 
       protected:
 
@@ -152,6 +152,7 @@ namespace te
         VertexIndex m_currentVertexIndex;
         te::sam::rtree::Index<VertexIndex, 8> m_rtree;
         StageType m_currentStage;
+        bool m_isEdited;
         UndoStackManager& m_stack;
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);

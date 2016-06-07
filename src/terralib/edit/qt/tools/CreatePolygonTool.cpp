@@ -269,6 +269,9 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 
 void te::edit::CreatePolygonTool::storeFeature()
 {
+  if (m_feature == 0)
+    return;
+
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 
   emit geometriesEdited();
@@ -286,46 +289,32 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 
 void te::edit::CreatePolygonTool::storeUndoCommand()
 {
-  if (buildPolygon()->getNPoints() < 4)
-    return;
-
-  if (m_coords.empty())
+  if (m_coords.size() < 3)
     return;
 
   if (m_feature == 0)
     m_feature = new Feature();
 
-  m_feature->setGeometry(convertGeomType(m_layer,buildPolygon()));
+  m_feature->setGeometry(buildPolygon());
   m_feature->setOperation(te::edit::GEOMETRY_CREATE);
   m_feature->setCoords(m_coords);
 
-  m_stack.getAddWatches()->push_back(m_feature->clone());
+  m_stack.addWatch(m_feature->clone());
 
-  if (m_stack.m_currentIndex < (int)(m_stack.getAddWatches()->size() - 2))
-  {
-    std::size_t i = 0;
-    while (i < m_stack.getAddWatches()->size())
-    {
-      m_stack.getAddWatches()->pop_back();
-      i = (m_stack.m_currentIndex + 1);
-    }
-    m_stack.getAddWatches()->push_back(m_feature->clone());
-  }
-
-  m_stack.m_currentIndex = (int)(m_stack.getAddWatches()->size() - 1);
-
-  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature);
-  connect(dynamic_cast<AddCommand*>(command), SIGNAL(undoRedo(std::vector<te::gm::Coord2D>)), SLOT(onUndoRedo(std::vector<te::gm::Coord2D>)));
+  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature->clone()->getId());
+  connect(dynamic_cast<AddCommand*>(command), SIGNAL(undoFeedback(std::vector<te::gm::Coord2D>)), SLOT(onUndoFeedback(std::vector<te::gm::Coord2D>)));
 
   m_stack.addUndoStack(command);
 }
 
-void te::edit::CreatePolygonTool::onUndoRedo(std::vector<te::gm::Coord2D> coords)
+void te::edit::CreatePolygonTool::onUndoFeedback(std::vector<te::gm::Coord2D> coords)
 {
   RepositoryManager& repo = RepositoryManager::getInstance();
 
-  if (repo.hasIdentify(m_layer->getId(), m_feature->getId()))
+  if (repo.hasIdentify(m_layer->getId(), m_feature->getId()) == true)
     repo.removeFeature(m_layer->getId(), m_feature->getId());
+
+  m_isFinished = false;
 
   m_coords = coords;
 

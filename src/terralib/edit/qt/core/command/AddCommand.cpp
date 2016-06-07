@@ -27,12 +27,12 @@
 // TerraLib
 #include "AddCommand.h"
 
-te::edit::AddCommand::AddCommand(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, te::edit::Feature* feature,
+te::edit::AddCommand::AddCommand(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, te::da::ObjectId* id,
   QUndoCommand *parent) :
   QUndoCommand(parent)
   , m_display(display)
   , m_layer(layer)
-  , m_feature(feature)
+  , m_id(id)
   , m_stack(UndoStackManager::getInstance())
 {
 }
@@ -43,7 +43,7 @@ te::edit::AddCommand::~AddCommand()
 
 void  te::edit::AddCommand::undo()
 {
-  if (m_stack.getAddWatches()->empty())
+  if (m_stack.getAddWatches().empty())
     return;
 
   m_stack.m_currentIndex--;
@@ -53,11 +53,9 @@ void  te::edit::AddCommand::undo()
 
   std::size_t pos = (m_stack.m_currentIndex < 0) ? 0 : m_stack.m_currentIndex;
 
-  m_feature->setGeometry(m_stack.getAddWatches()->at(pos)->clone()->getGeometry());
-
   draw();
 
-  emit undoRedo(m_stack.getAddWatches()->at(pos)->getCoords());
+  emit undoFeedback(m_stack.getAddWatches()[pos]->getCoords());
 }
 
 void te::edit::AddCommand::redo()
@@ -79,17 +77,15 @@ void te::edit::AddCommand::redo()
   {
     m_stack.m_currentIndex++;
 
-    if (m_stack.m_currentIndex >= (int)m_stack.getAddWatches()->size())
+    if (m_stack.m_currentIndex >= (int)m_stack.getAddWatches().size())
     {
-      m_stack.m_currentIndex = (int)m_stack.getAddWatches()->size() - 1;
+      m_stack.m_currentIndex = (int)m_stack.getAddWatches().size() - 1;
       return;
     }
 
-    m_feature->setGeometry(m_stack.getAddWatches()->at(m_stack.m_currentIndex)->clone()->getGeometry());
-
     draw();
 
-    emit undoRedo(m_stack.getAddWatches()->at(m_stack.m_currentIndex)->getCoords());
+    emit undoFeedback(m_stack.getAddWatches()[m_stack.m_currentIndex]->getCoords());
   }
 }
 
@@ -113,11 +109,23 @@ void te::edit::AddCommand::draw()
 
   if (m_stack.m_currentIndex > -1)
   {
-    repo.addFeature(m_layer->getId(), m_stack.getAddWatches()->at(pos)->clone());
+    repo.addFeature(m_layer->getId(), m_stack.getAddWatches()[pos]->clone());
+
+    if (pos < m_stack.getAddWatches().size() - 1)
+    {
+      if (m_stack.getAddWatches()[pos]->clone()->getId()->getValueAsString() != m_id->getValueAsString())
+      {
+        repo.removeFeature(m_layer->getId(), m_id);
+
+        if (countFeaturesById(m_id, pos) > 1 && pos < m_stack.m_currentIndex)
+          repo.addFeature(m_layer->getId(), m_stack.getAddWatches()[pos]->clone());
+      }
+    }
+
   }
-  else if (repo.hasIdentify(m_layer->getId(), m_stack.getAddWatches()->at(pos)->getId()))
+  else if (repo.hasIdentify(m_layer->getId(), m_stack.getAddWatches()[pos]->getId()))
   {
-    repo.removeFeature(m_layer->getId(), m_stack.getAddWatches()->at(pos)->getId());
+    repo.removeFeature(m_layer->getId(), m_stack.getAddWatches()[pos]->getId());
   }
 
   // Draw the layer edited geometries
@@ -131,9 +139,32 @@ void te::edit::AddCommand::draw()
   }
 
   // Draw the geometry
-  renderer.draw(m_stack.getAddWatches()->at(m_stack.m_currentIndex)->clone()->getGeometry(), true);
+  renderer.draw(m_stack.getAddWatches()[m_stack.m_currentIndex]->clone()->getGeometry(), true);
 
   renderer.end();
 
   m_display->repaint();
+}
+
+std::size_t te::edit::AddCommand::countFeaturesById(te::da::ObjectId* id, std::size_t& lastPos)
+{
+  std::size_t count = 0;
+  std::vector<std::size_t> vecPos;
+
+  if (m_stack.getAddWatches().empty())
+    return 0;
+
+  for (std::size_t i = 0; i <m_stack.getAddWatches().size(); ++i)
+  {
+    if (m_stack.getAddWatches()[i]->isEquals(id))
+    {
+      count++;
+      vecPos.push_back(i);
+    }
+  }
+
+  if (vecPos.size() > 1)
+    lastPos = vecPos.at(vecPos.size() - 2);
+
+  return count;
 }

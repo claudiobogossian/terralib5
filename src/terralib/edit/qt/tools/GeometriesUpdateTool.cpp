@@ -86,7 +86,7 @@ void te::edit::GeometriesUpdateTool::storeUndoCommand()
   return;
 }
 
-void te::edit::GeometriesUpdateTool::onUndoRedo()
+void te::edit::GeometriesUpdateTool::onUndoFeedback()
 {
   return;
 }
