@@ -47,7 +47,9 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../geometry/Line.h"
 #include "../../geometry/MultiLineString.h"
+#include "../../geometry/MultiPolygon.h"
 #include "../../geometry/PointZ.h"
+#include "../../geometry/Polygon.h"
 
 #include "../../maptools/AbstractLayer.h"
 
@@ -78,6 +80,7 @@ te::mnt::Profile::Profile()
 te::mnt::Profile::~Profile()
 {
 }
+
 void te::mnt::Profile::setInput(te::da::DataSourcePtr inDsrc, std::string inName, std::auto_ptr<te::da::DataSetType> inDsetType,  double dummy)
 {
   m_inDsrc = inDsrc;
@@ -317,7 +320,7 @@ bool te::mnt::Profile::runRasterProfile(std::vector<te::gm::LineString*> visadas
   return true;
 }
 
-te::gm::LineString* te::mnt::Profile::calculateProfile(te::gm::MultiLineString &isolines, te::gm::LineString &trajectory)
+te::gm::LineString* te::mnt::Profile::calculateProfile(std::vector<te::gm::Geometry*> &isolines, te::gm::LineString &trajectory)
 {
   //std::auto_ptr<te::gm::Geometry> resultGeom;
   te::gm::LineString* iso;
@@ -332,9 +335,9 @@ te::gm::LineString* te::mnt::Profile::calculateProfile(te::gm::MultiLineString &
   {
     seg.setCoord(0, trajectory.getX(t), trajectory.getY(t));
     seg.setPoint(1, trajectory.getX(t + 1), trajectory.getY(t + 1));
-    for (std::size_t i = 0; i < isolines.getNumGeometries(); i++)
+    for (std::size_t i = 0; i < isolines.size(); i++)
     {
-      iso = dynamic_cast<te::gm::LineString*>(isolines.getGeometryN(i));
+      iso = dynamic_cast<te::gm::LineString*>(isolines[i]);
       for (std::size_t j = 0; j < iso->getNPoints() - 1; j++)
       {
         seg1.setCoord(0, iso->getX(j), iso->getY(j));
@@ -382,12 +385,125 @@ bool te::mnt::Profile::runIsolinesProfile(std::vector<te::gm::LineString*> visad
   std::string vazio;
   size_t nsamples = ReadSamples(m_inName, m_inDsrc, vazio, 0, 0, None, mpt, isolines, geostype, env, m_srid);
 
+  te::sam::rtree::Index<te::gm::Geometry*> linetree;
+  std::vector<te::gm::Geometry*> reportline;
+
+  for (size_t i = 0; i < isolines.getNumGeometries(); i++)
+  {
+    linetree.insert(*isolines.getGeometryN(i)->getMBR(), dynamic_cast<te::gm::Geometry*>(isolines.getGeometryN(i)));
+  }
+
+
   for (std::size_t v = 0; v < visadas.size(); ++v)
   {
-    te::gm::LineString* profile = calculateProfile(isolines, *visadas[v]);
-    if (profile)
-      profileSet.push_back(profile);
+    reportline.clear();
+    linetree.search(*visadas[v]->getMBR(), reportline);
+    if (reportline.size())
+    {
+      te::gm::LineString* profile = calculateProfile(reportline, *visadas[v]);
+      if (profile)
+        profileSet.push_back(profile);
+    }
   }
+  return true;
+}
+
+bool te::mnt::Profile::runTINProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet)
+{
+  std::auto_ptr<te::da::DataSetType>dsType = m_inDsrc->getDataSetType(m_inName);
+
+  bool isll = false;
+  if (m_srid)
+  {
+    te::common::UnitOfMeasurePtr unitin = te::srs::SpatialReferenceSystemManager::getInstance().getUnit((unsigned int)m_srid);
+    if (unitin && unitin->getId() != te::common::UOM_Metre)
+      isll = true;
+  }
+  te::common::UnitOfMeasurePtr unitout = te::common::UnitsOfMeasureManager::getInstance().find("metre");
+
+  te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
+
+  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inName);
+  std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+  std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+  te::gm::GeomType gmType = geomProp->getGeometryType();
+
+  inDset->moveBeforeFirst();
+
+  std::vector<te::gm::Polygon *> vp;
+  te::gm::LineString *edge;
+  te::sam::rtree::Index<te::gm::Geometry*> linetree;
+  std::vector<te::gm::Geometry*> reportline;
+
+  try
+  {
+    while (inDset->moveNext())
+    {
+      std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+
+      if ((gin->getGeomTypeId()) % 1000 == te::gm::MultiPolygonType)
+      {
+        te::gm::MultiPolygon *mg = dynamic_cast<te::gm::MultiPolygon*>(gin.get()->clone());
+        if (!mg)
+          throw te::common::Exception(TE_TR("Isn't possible to read data!"));
+
+        std::size_t np = mg->getNumGeometries();
+        for (std::size_t i = 0; i < np; i++)
+          vp.push_back(dynamic_cast<te::gm::Polygon*>(mg->getGeometryN(i)));
+      }
+      if ((gin->getGeomTypeId()) % 1000 == te::gm::PolygonType)
+      {
+        te::gm::Polygon *pol = dynamic_cast<te::gm::Polygon*>(gin.get()->clone());
+        if (!pol)
+          throw te::common::Exception(TE_TR("Isn't possible to read data!"));
+        vp.push_back(pol);
+      }
+      for (std::size_t i = 0; i < vp.size(); ++i)
+      {
+        te::gm::Polygon *pol = vp[i];
+        te::gm::Curve* c = pol->getRingN(0);
+        te::gm::LinearRing* lr = dynamic_cast<te::gm::LinearRing*>(c);
+        for (std::size_t p = 0; p < 3; p++)
+        {
+          edge = new te::gm::LineString(2, te::gm::LineStringZType);
+          edge->setPointZ(0, lr->getPointN(p)->getX(), lr->getPointN(p)->getY(), lr->getPointN(p)->getZ());
+          edge->setPointZ(1, lr->getPointN(p + 1)->getX(), lr->getPointN(p + 1)->getY(), lr->getPointN(p)->getZ());
+          reportline.clear();
+          linetree.search(*edge->getMBR(), reportline);
+          if (reportline.size())
+            continue;
+          linetree.insert(*edge->getMBR(), dynamic_cast<te::gm::Geometry*>(edge));
+        }
+      }
+      vp.clear();
+    }
+
+    for (std::size_t v = 0; v < visadas.size(); ++v)
+    {
+      reportline.clear();
+      linetree.search(*visadas[v]->getMBR(), reportline);
+      if (reportline.size())
+      {
+        te::gm::LineString* profile = calculateProfile(reportline, *visadas[v]);
+        if (profile)
+          profileSet.push_back(profile);
+      }
+    }
+
+    reportline.clear();
+    linetree.clear();
+  }
+  catch (te::common::Exception& e)
+  {
+#ifdef TERRALIB_LOGGER_ENABLED
+    te::common::Logger::logDebug("mnt", e.what());
+#endif
+    dsType.release();
+    throw te::common::Exception(e.what());
+  }
+
+  dsType.release();
+
   return true;
 }
 

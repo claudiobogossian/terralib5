@@ -112,7 +112,6 @@ namespace te
 
         void testGeometries(); //test if geometries is valid
 
-
       private:
 
         std::auto_ptr<Ui::ProfileDialogForm> m_ui;

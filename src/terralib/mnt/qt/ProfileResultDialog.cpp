@@ -116,7 +116,6 @@ te::mnt::ProfileResultDialog::ProfileResultDialog(
 
   QGridLayout* layout = new QGridLayout(m_ui->m_profileWidget);
   layout->addWidget(displayWidget);
-  //this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
   displayWidget->show();
   displayWidget->setAttribute(Qt::WA_DeleteOnClose, true);
