@@ -19,9 +19,9 @@
  */
 
 /*!
-  \file terralib/examples/core/encoding/main.cpp
+  \file terralib/examples/core/logger/main.cpp
 
-  \brief Examples for the Terralib Encoding Module
+  \brief Examples for the Terralib Logger Module
 
   \author Matheus Cavassan Zaglia
 */
