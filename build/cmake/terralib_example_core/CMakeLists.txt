@@ -83,16 +83,15 @@ TERRALIB_REGISTER_TRANSLATION("terralib_example_core_translator" "pt_BR"
                               "${CMAKE_BINARY_DIR}/share/terralib/translations")
 
 #Examples of logger
-#file(GLOB TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/logger/*.cpp)
+file(GLOB TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/logger/*.cpp)
 
-#source_group("Source Files\\logger"  FILES ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+source_group("Source Files\\logger"  FILES ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
 
-#add_executable(terralib_example_core_logger ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+add_executable(terralib_example_core_logger ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
 
-#target_link_libraries(terralib_example_core_logger terralib_mod_core)
+target_link_libraries(terralib_example_core_logger terralib_mod_core)
 
 # Library of functions to example lib
-
 if(WIN32)
   add_definitions(-DTECOREEXEMPDLL)
 endif()

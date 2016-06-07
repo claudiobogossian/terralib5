@@ -27,7 +27,8 @@
 
 
 te::mnt::ProfileTools::ProfileTools(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: te::edit::VertexTool(display, layer)
+: te::edit::VertexTool(display, layer),
+m_type(NONE)
 {
   te::edit::VertexTool::pickFeature(layer, layer->getExtent());
 }
@@ -55,8 +56,10 @@ void te::mnt::ProfileTools::setType(EditType t)
 void te::mnt::ProfileTools::setLines(std::vector<te::gm::LineString*> &l)
 { 
   m_lines = l;
+  if (m_rtree.size())
   updateRTree();
 
+  te::edit::RepositoryManager::getInstance().removeAll();
   for (size_t i = 0; i < m_lines.size(); i++)
    te::edit::RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_lines[i], te::edit::GEOMETRY_CREATE);
 
@@ -75,9 +78,12 @@ bool te::mnt::ProfileTools::mousePressEvent(QMouseEvent* e)
 
 bool te::mnt::ProfileTools::mouseMoveEvent(QMouseEvent* e)
 {
-  //if (m_type == LINE_INVERT)
     m_feature = 0;
-  return (te::edit::VertexTool::mouseMoveEvent(e));
+  if (m_type == LINE_INVERT || m_type == LINE_DELETE)
+    return true;
+
+  bool ret = (te::edit::VertexTool::mouseMoveEvent(e));
+  return ret;
 }
 
 bool te::mnt::ProfileTools::mouseReleaseEvent(QMouseEvent* e)
@@ -136,13 +142,38 @@ bool te::mnt::ProfileTools::mouseReleaseEvent(QMouseEvent* e)
     }
   }
 
-  //if (m_type == VERTEX_DELETE || m_type == VERTEX_MOVE)
-  //{
-  //  if (m_lines.size() && m_feature)
-  //    m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(m_lines[0]->clone()));
-  //  else
-  //    te::edit::VertexTool::pickFeature(m_layer, m_layer->getExtent());
-  //}
+  if (m_type == LINE_DELETE)
+  {
+    te::gm::Envelope env = buildEnvelope(te::edit::GetPosition(e));
+
+    te::gm::LineString env_line(5, te::gm::LineStringType, m_layer->getSRID());
+    env_line.setPoint(0, env.getLowerLeftX(), env.getLowerLeftY());
+    env_line.setPoint(1, env.getLowerLeftX(), env.getUpperRightY());
+    env_line.setPoint(2, env.getUpperRightX(), env.getUpperRightY());
+    env_line.setPoint(3, env.getUpperRightX(), env.getLowerLeftY());
+    env_line.setPoint(4, env.getLowerLeftX(), env.getLowerLeftY());
+
+    te::color::RGBAColor red(255, 0, 0, 255);
+    for (size_t i = 0; i < m_lines.size(); i++)
+    {
+      if (m_lines[i]->intersects(&env_line))
+      {
+        const te::gm::Envelope& displayExtent = m_display->getExtent();
+        te::qt::widgets::Canvas canvas(m_display->getDisplayPixmap());
+        canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
+        canvas.setLineColor(red);
+        canvas.setLineWidth(3);
+        canvas.setLineDashStyle(te::map::SolidLine);
+        canvas.draw(m_lines[i]);
+
+        if (QMessageBox::question(0, tr("Profile"), tr("Delete this trajectory?")) == QMessageBox::Yes)
+        {
+          m_lines.erase(m_lines.begin() + i);
+        }
+        break;
+      }
+    }
+  }
 
   bool ret = te::edit::VertexTool::mouseReleaseEvent(e);
 

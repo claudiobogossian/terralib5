@@ -28,7 +28,7 @@ set(TERRALIB_CEDITOR_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qsci)
 include_directories(${Qscintilla_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
 if (WIN32)
-  add_definitions(-DTECEDITOR)
+  add_definitions(-DTECEDITORDLL)
 endif()
 
 set(CMAKE_AUTOMOC ON)

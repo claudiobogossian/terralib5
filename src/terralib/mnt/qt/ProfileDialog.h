@@ -98,13 +98,17 @@ namespace te
         void ondeletePathToggled(bool checked);
         void oninvertToggled(bool checked);
 
+        void onToolDeleted();
+
         void onGeometriesChanged();
+
+        void onDrawTrajectories(const QMap<QString, QString>&);
 
         void onOkPushButtonClicked();
 
-        void DrawSelected(const std::vector<te::gm::LineString*> visadas, int width = 1, bool vertex = true); // Draws trajectories
+        void DrawSelected(const std::vector<te::gm::LineString*> visadas, int width = 1, bool vertex = true, bool draw = true); // Draws trajectories
 
-        void setVertexEdition(); //sets parameters to edition of vertexes
+        bool setVertexEdition(); //sets parameters to edition of vertexes
 
         void testGeometries(); //test if geometries is valid
 

@@ -312,10 +312,13 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   }
 
   // Draw the vertexes
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
-    renderer.draw(m_feature->getGeometry(), true);
-  else
-    renderer.drawVertexes(m_feature->getGeometry());
+  if (m_feature != 0)
+  {
+    if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+      renderer.draw(m_feature->getGeometry(), true);
+    else
+      renderer.drawVertexes(m_feature->getGeometry());
+  }
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())

@@ -24,9 +24,9 @@
 */
 //TerraLib
 
+#include "../../common/Logger.h"
 #include "../../edit/qt/Renderer.h"
 #include "../../edit/qt/tools/CreateLineTool.h"
-#include "../../edit/qt/tools/DeleteGeometryTool.h"
 #include "../../edit/qt/tools/VertexTool.h"
 #include "../../edit/Feature.h"
 #include "../../edit/Repository.h"
@@ -44,6 +44,7 @@
 #include "../../qt/af/connectors/MapDisplay.h"
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/layer/explorer/LayerItemView.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/canvas/MapDisplay.h"
 #include "../../raster.h"
@@ -149,16 +150,28 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
           {
             std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
             te::gm::GeomType gmType = geomProp->getGeometryType();
-            if (gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType ||
-              gmType == te::gm::LineStringZType || gmType == te::gm::MultiLineStringZType ||
-              gmType == te::gm::LineStringMType || gmType == te::gm::MultiLineStringMType ||
-              gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringZMType)
+            switch (gmType)
             {
+              case te::gm::LineStringType:
+              case te::gm::MultiLineStringType:
               m_ui->m_vectorlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+                break;
+              case te::gm::LineStringZType:
+              case te::gm::MultiLineStringZType:
+              case te::gm::LineStringMType:
+              case te::gm::MultiLineStringMType:
+              case te::gm::LineStringZMType:
+              case te::gm::MultiLineStringZMType:
+                m_ui->m_vectorlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+                m_ui->m_inputLayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+                break;
+              default:
+                break;
             }
 
             geomProp.release();
           }
+          if (dsType->hasRaster())
           m_ui->m_inputLayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
           dsType.release();
         }
@@ -182,8 +195,7 @@ void te::mnt::ProfileDialog::release()
   DrawSelected(m_visadas, 1, false);
   if (m_tool)
   {
-    m_app->getMapDisplay()->removeEventFilter(m_tool);
-    delete m_tool;
+    m_app->getMapDisplay()->setCurrentTool(0);
     m_tool = 0;
   }
   m_tooltype = ToolNone;
@@ -194,6 +206,8 @@ void te::mnt::ProfileDialog::release()
     if (repository)
       repository->clear();
   }
+
+  connect(m_app->getMapDisplay(), SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
 
   te::qt::af::BaseApplication* window = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
   window->onDrawTriggered();
@@ -241,7 +255,12 @@ void  te::mnt::ProfileDialog::oneditionEnabled(bool checked)
   m_ui->m_trajectorystackedWidget->setCurrentIndex(0);
 
   m_app = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
-  m_srid = m_app->getMapDisplay()->getSRID();
+  m_app->onSelectionToggled(false);
+  m_app->onPanToggled(false);
+  m_app->onZoomInToggled(false);
+  m_app->onZoomOutToggled(false);
+
+  connect(m_app->getMapDisplay(), SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawTrajectories(const QMap<QString, QString>&)));
 
   m_ui->m_addPointMousePushButton->setChecked(true);
   m_ui->m_addPointMousePushButton->toggled(true);
@@ -279,9 +298,6 @@ void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
         m_trajectoryLayer = 0;
         throw te::common::Exception(TE_TR("Trajectory layer must be different from input layer!"));
       }
-      //std::auto_ptr<te::da::DataSetType> dsType = m_trajectoryLayer->getSchema();
-      //std::vector<te::dt::Property*> props = dsType->getProperties();
-      //dsType.release();
     }
     ++it;
   }
@@ -289,7 +305,7 @@ void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
 
 void te::mnt::ProfileDialog::onaddPointMouseToggled(bool checked)
 {
-  if (!checked)
+  if (!checked && m_tool)
     return;
 
   if (!m_app)
@@ -298,16 +314,18 @@ void te::mnt::ProfileDialog::onaddPointMouseToggled(bool checked)
   if (!m_inputLayer)
     return;
 
-  if (m_tooltype != CreateLine)
+  m_app->getLayerExplorer()->clearSelection();
+
+  if (m_tooltype != CreateLine || !m_tool)
   {
     m_tooltype = CreateLine;
-    if (m_tool)
-      delete m_tool;
+    m_app->getMapDisplay()->setCurrentTool(0);
 
     m_tool = new te::edit::CreateLineTool(m_app->getMapDisplay(), m_inputLayer, Qt::ArrowCursor, 0);
-    m_app->getMapDisplay()->installEventFilter(m_tool);
+    m_app->getMapDisplay()->setCurrentTool(m_tool);
 
     connect(m_tool, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
+    connect(m_tool, SIGNAL(toolDeleted()), SLOT(onToolDeleted()));
 
     m_vertex = true;
   }
@@ -317,13 +335,14 @@ void te::mnt::ProfileDialog::onaddPointMouseToggled(bool checked)
 
 void te::mnt::ProfileDialog::onchangePointToggled(bool checked)
 {
-  if (!checked)
+  if (!checked && m_tool)
     return;
 
   if (!m_inputLayer)
     return;
 
-  setVertexEdition();
+  if (!setVertexEdition())
+    return;
 
   ((te::mnt::ProfileTools*)m_tool)->setType(VERTEX_MOVE);
 
@@ -334,13 +353,14 @@ void te::mnt::ProfileDialog::onchangePointToggled(bool checked)
 
 void te::mnt::ProfileDialog::onaddPointToggled(bool checked)
 {
-  if (!checked)
+  if (!checked && m_tool)
     return;
 
   if (!m_inputLayer)
     return;
 
-  setVertexEdition();
+  if (!setVertexEdition())
+    return;
 
   ((te::mnt::ProfileTools*)m_tool)->setType(VERTEX_ADD);
 
@@ -350,13 +370,14 @@ void te::mnt::ProfileDialog::onaddPointToggled(bool checked)
 
 void te::mnt::ProfileDialog::ondeletePointToggled(bool checked)
 {
-  if (!checked)
+  if (!checked && m_tool)
     return;
 
   if (!m_inputLayer)
     return;
 
-  setVertexEdition();
+  if (!setVertexEdition())
+    return;
 
   ((te::mnt::ProfileTools*)m_tool)->setType(VERTEX_DELETE);
 
@@ -366,35 +387,20 @@ void te::mnt::ProfileDialog::ondeletePointToggled(bool checked)
 
 void te::mnt::ProfileDialog::ondeletePathToggled(bool checked)
 {
-  if (!checked)
+  if (!checked && m_tool)
     return;
 
   if (!m_inputLayer)
     return;
 
+  if (!setVertexEdition())
+    return;
+
   ((te::mnt::ProfileTools*)m_tool)->setType(LINE_DELETE);
+  connect(m_tool, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
+  connect(m_tool, SIGNAL(toolDeleted()), SLOT(onToolDeleted()));
 
-  if (m_tooltype != DeleteLine)
-  {
-    m_tooltype = DeleteLine;
-    if (m_tool)
-      delete m_tool;
-
-    m_tool = new te::edit::DeleteGeometryTool(m_app->getMapDisplay(), m_inputLayer, 0);
-    m_app->getMapDisplay()->installEventFilter(m_tool);
-    te::edit::Repository *rep = te::edit::RepositoryManager::getInstance().getRepository(m_inputLayer->getId());
-    if (rep)
-    {
-      rep->clear();
-      for (size_t i = 0; i < m_visadas.size(); i++)
-      {
-        rep->add(m_visadas[i], te::edit::GEOMETRY_DELETE);
-      }
-    }
-
-    connect(m_tool, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
-  }
-
+  m_app->getMapDisplay()->setCursor(Qt::ArrowCursor);
   m_vertex = false;
   DrawSelected(m_visadas, 1, m_vertex);
 
@@ -402,19 +408,31 @@ void te::mnt::ProfileDialog::ondeletePathToggled(bool checked)
 
 void te::mnt::ProfileDialog::oninvertToggled(bool checked)
 {
-  if (!checked)
+  if (!checked && m_tool)
     return;
  
   if (!m_inputLayer)
     return;
 
-  setVertexEdition();
+  if (!setVertexEdition())
+    return;
   
   ((te::mnt::ProfileTools*)m_tool)->setType(LINE_INVERT);
   connect(m_tool, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
 
   m_vertex = false;
   DrawSelected(m_visadas, 1, m_vertex);
+}
+
+void te::mnt::ProfileDialog::onDrawTrajectories(const QMap<QString, QString>&)
+{
+  DrawSelected(m_visadas, 1, m_vertex, false);
+
+}
+
+void te::mnt::ProfileDialog::onToolDeleted()
+{
+  m_tool = 0;
 }
 
 void te::mnt::ProfileDialog::onGeometriesChanged()
@@ -426,42 +444,13 @@ void te::mnt::ProfileDialog::onGeometriesChanged()
   {
     te::edit::CreateLineTool *ct = dynamic_cast<te::edit::CreateLineTool*>(m_tool);
     te::gm::LineString *ls = dynamic_cast<te::gm::LineString*>(ct->buildLine());
+    if (ls->getNPoints() < 2)
+  {
+      delete ls;
+      return;
+        }
 
     m_visadas.push_back(ls);
-  }
-  else if (m_tooltype == DeleteLine)
-  {
-    std::vector<te::edit::Feature*> features = te::edit::RepositoryManager::getInstance().getFeatures(m_inputLayer->getId(), m_inputLayer->getExtent(), m_inputLayer->getSRID());
-    for (size_t i = 0; i < features.size(); i++)
-    { 
-      if (features[i]->getOperationType() == te::edit::GEOMETRY_UPDATE)
-      {
-        std::vector<te::gm::LineString*> ld;
-        ld.push_back(dynamic_cast<te::gm::LineString*>(features[i]->getGeometry()));
-        DrawSelected(ld, 3, false);
-        if (QMessageBox::question(0, tr("Profile"), tr("Remove this trajectory?")) == QMessageBox::Yes)
-        {
-          for (size_t j = 0; j < m_visadas.size(); j++)
-          {
-            if (m_visadas[j]->equals(ld[0]))
-            {
-              m_visadas.erase(m_visadas.begin() + j);
-              break;
-            }
-          }
-        }
-
-        te::edit::Repository* repository = te::edit::RepositoryManager::getInstance().getRepository(m_inputLayer->getId());
-        if (repository)
-          repository->clear();
-        for (size_t j = 0; j < m_visadas.size(); j++)
-        {
-          repository->add(m_visadas[j], te::edit::GEOMETRY_DELETE);
-        }
-
-        break;
-      }
-    }
   }
   else
   {
@@ -470,6 +459,10 @@ void te::mnt::ProfileDialog::onGeometriesChanged()
       te::edit::Repository* repository = te::edit::RepositoryManager::getInstance().getRepository(m_inputLayer->getId());
       if (repository)
         repository->clear();
+
+      if (((te::mnt::ProfileTools*)m_tool)->getType() == te::mnt::LINE_DELETE)
+        m_visadas = ((te::mnt::ProfileTools*)m_tool)->getLines();
+      else
       ((te::mnt::ProfileTools*)m_tool)->setLines(m_visadas);
     }
   }
@@ -525,8 +518,6 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
         throw te::common::Exception(TE_TR("Select an vector layer!"));
       std::auto_ptr<te::da::DataSet> inDset;
 
-      m_srid = m_trajectoryLayer->getSRID();
-
       if (m_ui->m_selectCheckBox->isChecked())
       {
         const te::da::ObjectIdSet* objSet = m_trajectoryLayer->getSelected();
@@ -575,6 +566,10 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     }
     //end vector
 
+    std::string msg = "Profile - Start.";
+#ifdef TERRALIB_LOGGER_ENABLED
+    te::common::Logger::logDebug("mnt", msg.c_str());
+#endif
     // Principal function calling
     std::vector<te::gm::LineString*> profileSet;
     std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
@@ -602,6 +597,11 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
         throw te::common::Exception(TE_TR("Input layer type is invalid!"));
 
     }
+
+    msg = "Profile - End.";
+#ifdef TERRALIB_LOGGER_ENABLED
+    te::common::Logger::logDebug("mnt", msg.c_str());
+#endif
 
     DrawSelected(m_visadas, 2, false);
 
@@ -639,22 +639,22 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     m_trajectoryLayer->setVisibility(visibility);
   release();
 
-  if (m_tool)
-    delete m_tool;
-  m_tool = 0;
-
   QApplication::restoreOverrideCursor();
   accept();
 
 }
 
-void te::mnt::ProfileDialog::DrawSelected(const std::vector<te::gm::LineString*> visadas, int width, bool vertex)
+void te::mnt::ProfileDialog::DrawSelected(const std::vector<te::gm::LineString*> visadas, int width, bool vertex, bool draw)
 {
   te::qt::af::BaseApplication* window = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  if (draw)
   window->onDrawTriggered();
 
   const te::gm::Envelope& displayExtent = window->getMapDisplay()->getExtent();
   te::qt::widgets::Canvas canvas(window->getMapDisplay()->getDisplayPixmap());
+  if (!canvas.getDevice())
+    return;
+
   canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
   canvas.setLineWidth(width);
   canvas.setLineDashStyle(te::map::SolidLine);
@@ -686,6 +686,9 @@ void te::mnt::ProfileDialog::DrawSelected(const std::vector<te::gm::LineString*>
 
   }
   window->getMapDisplay()->repaint();
+  if (m_app)
+    m_app->getMapDisplay()->setCursor(Qt::ArrowCursor);
+
 }
 
 void  te::mnt::ProfileDialog::testGeometries()
@@ -705,21 +708,28 @@ void  te::mnt::ProfileDialog::testGeometries()
 
 }
 
-void te::mnt::ProfileDialog::setVertexEdition()
+bool te::mnt::ProfileDialog::setVertexEdition()
 {
-  if (m_tooltype != EditVertex)
+  if (!m_visadas.size()){
+    QMessageBox::information(this, tr("Profile "), TE_TR("No trajectories!"));
+    return false;
+  }
+
+  if (m_tooltype != EditVertex || !m_tool)
   {
     m_tooltype = EditVertex;
 
-    if (m_tool)
-      delete m_tool;
+    m_app->getMapDisplay()->setCurrentTool(0);
 
     m_tool = new te::mnt::ProfileTools(m_app->getMapDisplay(), m_inputLayer);
     connect(m_tool, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
+    connect(m_tool, SIGNAL(toolDeleted()), SLOT(onToolDeleted()));
 
-    m_app->getMapDisplay()->installEventFilter(m_tool);
+    m_app->getMapDisplay()->setCurrentTool(m_tool);
+    ((te::mnt::ProfileTools*)m_tool)->setLines(m_visadas);
   }
 
-  ((te::mnt::ProfileTools*)m_tool)->setLines(m_visadas);
+  m_app->getMapDisplay()->setCursor(Qt::ArrowCursor);
+  return true;
 }
 

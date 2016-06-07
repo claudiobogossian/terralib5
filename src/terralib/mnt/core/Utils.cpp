@@ -137,7 +137,10 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
     {
       te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(gin.get());
       if (atrZ.empty())
+      {
+        if (l->is3D())
         value = *l->getZ();
+      }
       else
         value = inDset->getDouble(atrZ);
 
@@ -168,7 +171,7 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
       {
         te::gm::LineString *l = dynamic_cast<te::gm::LineString*>(g->getGeometryN(i));
         te::gm::LineString *lz = new te::gm::LineString(l->size(), te::gm::LineStringZType, isolines.getSRID());
-        if (atrZ.empty())
+        if (atrZ.empty() && l->is3D())
           value = *l->getZ();
 
         for (std::size_t il = 0; il < l->size(); il++)
@@ -205,13 +208,18 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
 double te::mnt::Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2)
 {
-  double       dx,          /* Diferenca dos X's do ponto a e b        */
-    dy,          /* Diferenca dos Y's do ponto a e b        */
-    dist;        /* Distancia dos pontos                    */
+  return(Distance(pt1.getX(), pt2.getX(), pt1.getY(), pt2.getY()));
+}
 
-  dx = pt1.getX() - pt2.getX();
+double te::mnt::Distance(const double pt1x, const double pt1y, const double pt2x, const double pt2y)
+{
+  double  dx,
+          dy,
+          dist; 
+
+  dx = pt1x - pt2x;
   dx = dx * dx;
-  dy = pt1.getY() - pt2.getY();
+  dy = pt1y - pt2y;
   dy = dy * dy;
   dist = sqrt(dy + dx);
   return(dist);
