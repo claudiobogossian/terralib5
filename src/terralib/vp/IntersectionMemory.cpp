@@ -206,45 +206,58 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
         if(fiGeomProp->getGeometryType() == te::gm::MultiPolygonType)
         {
-          if(resultGeom->getGeomTypeId() == te::gm::MultiPolygonType)
+          if((resultGeom->getGeomTypeId() == te::gm::MultiPolygonType)
+            || (resultGeom->getGeomTypeId() == te::gm::MultiPolygonMType)
+            || (resultGeom->getGeomTypeId() == te::gm::MultiPolygonZMType)
+            || (resultGeom->getGeomTypeId() == te::gm::MultiPolygonZType))
           {
             item->setGeometry("geom", resultGeom.release());
           }
-          else if(resultGeom->getGeomTypeId() == te::gm::PolygonType)
+          else if((resultGeom->getGeomTypeId() == te::gm::PolygonType)
+                  || (resultGeom->getGeomTypeId() == te::gm::PolygonMType)
+                  || (resultGeom->getGeomTypeId() == te::gm::PolygonZMType)
+                  || (resultGeom->getGeomTypeId() == te::gm::PolygonZType))
           {
-            te::gm::MultiPolygon* newGeom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, resultGeom->getSRID());
+            te::gm::MultiPolygon* newGeom = new te::gm::MultiPolygon(0, te::gm::GeomType(resultGeom->getGeomTypeId()+3), resultGeom->getSRID());
             newGeom->add(resultGeom.release());
             item->setGeometry("geom", newGeom);
           }
         }
         else if(fiGeomProp->getGeometryType() == te::gm::MultiLineStringType)
         {
-          if (resultGeom->getGeomTypeId() == te::gm::MultiPointType ||
-            resultGeom->getGeomTypeId() == te::gm::MultiPointZType ||
-            resultGeom->getGeomTypeId() == te::gm::MultiPointMType ||
-            resultGeom->getGeomTypeId() == te::gm::MultiPointZMType)
+          if ((resultGeom->getGeomTypeId() == te::gm::MultiLineStringType)
+            || (resultGeom->getGeomTypeId() == te::gm::MultiLineStringZType)
+            || (resultGeom->getGeomTypeId() == te::gm::MultiLineStringMType)
+            || (resultGeom->getGeomTypeId() == te::gm::MultiLineStringZMType))
           {
             item->setGeometry("geom", resultGeom.release());
           }
-          else if (resultGeom->getGeomTypeId() == te::gm::PointType ||
-            resultGeom->getGeomTypeId() == te::gm::PointZType ||
-            resultGeom->getGeomTypeId() == te::gm::PointMType ||
-            resultGeom->getGeomTypeId() == te::gm::PointZMType)
+          else if ((resultGeom->getGeomTypeId() == te::gm::LineStringType)
+                   || (resultGeom->getGeomTypeId() == te::gm::LineStringZType)
+                   || (resultGeom->getGeomTypeId() == te::gm::LineStringMType)
+                   || (resultGeom->getGeomTypeId() == te::gm::LineStringZMType))
           {
-            te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::GeomType(resultGeom->getGeomTypeId()+3), resultGeom->getSRID());
+            te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::GeomType(resultGeom->getGeomTypeId()+3), resultGeom->getSRID());
             newGeom->add(resultGeom.release());
             item->setGeometry("geom", newGeom);
           }
         }
         else if(fiGeomProp->getGeometryType() == te::gm::MultiPointType)
         {
-          if(resultGeom->getGeomTypeId() == te::gm::MultiPointType)
+          if((resultGeom->getGeomTypeId() == te::gm::MultiPointType)
+             || (resultGeom->getGeomTypeId() == te::gm::MultiPointMType)
+             || (resultGeom->getGeomTypeId() == te::gm::MultiPointZMType)
+             || (resultGeom->getGeomTypeId() == te::gm::MultiPointZType))
           {
             item->setGeometry("geom", resultGeom.release());
           }
-          else if(resultGeom->getGeomTypeId() == te::gm::PointType)
+          else if((resultGeom->getGeomTypeId() == te::gm::PointType)
+                  || (resultGeom->getGeomTypeId() == te::gm::PointKdType)
+                  || (resultGeom->getGeomTypeId() == te::gm::PointMType)
+                  || (resultGeom->getGeomTypeId() == te::gm::PointZMType)
+                  || (resultGeom->getGeomTypeId() == te::gm::PointZType))
           {
-            te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::MultiPointType, resultGeom->getSRID());
+            te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::GeomType(resultGeom->getGeomTypeId()+3), resultGeom->getSRID());
             newGeom->add(resultGeom.release());
             item->setGeometry("geom", newGeom);
           }
