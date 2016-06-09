@@ -250,8 +250,7 @@ bool InterpolateIn(te::rst::Raster const * const rin, te::rst::Raster* rout, te:
   {
     for (i = x1; i <= x2; ++i)
     {
-      if (rin->getGrid()->isPointInGrid((unsigned int)(x+0.5), (unsigned int)(y+0.5)) &&
-          rout->getGrid()->isPointInGrid(i, j))
+      if( rout->getGrid()->isPointInGrid(i, j) )
       {
         for (std::size_t b = 0; b < rin->getNumberOfBands(); ++b)
         {
