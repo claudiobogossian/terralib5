@@ -288,7 +288,6 @@ void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, c
 
 void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -444,9 +443,6 @@ void te::edit::VertexTool::storeUndoCommand()
 
 void te::edit::VertexTool::onUndoFeedback(std::vector<te::gm::Coord2D> coords)
 {
-  if (m_feature == 0)
-    return;
-
   m_lines.clear();
 
   if (m_stack.m_currentIndex < 0)
