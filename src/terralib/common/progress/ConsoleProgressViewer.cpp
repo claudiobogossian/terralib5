@@ -52,6 +52,8 @@ void te::common::ConsoleProgressViewer::addTask(TaskProgress* t, int id)
 
 void te::common::ConsoleProgressViewer::removeTask(int taskId)
 {
+  cancelTask(taskId);
+
   std::map<int, TaskProgress*>::iterator it = m_tasks.find(taskId);
 
   if(it != m_tasks.end())
@@ -86,14 +88,19 @@ void te::common::ConsoleProgressViewer::cancelTask(int taskId)
 
 void te::common::ConsoleProgressViewer::setTotalValues(int taskId)
 {
-  m_totalSteps = m_tasks[taskId]->getTotalSteps();
+  m_totalSteps += m_tasks[taskId]->getTotalSteps();
 }
 
 void te::common::ConsoleProgressViewer::updateValue(int taskId)
 {
-  m_currentStep = m_tasks[taskId]->getCurrentStep();
+  double currentStep = 0;
 
-  double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
+  std::map<int, te::common::TaskProgress*>::iterator it;
+
+  for (it = m_tasks.begin(); it != m_tasks.end(); ++it)
+    currentStep += it->second->getCurrentStep();
+
+  double aux = static_cast<double>(currentStep) / static_cast<double>(m_totalSteps);
 
   int val = static_cast<int>(100.0 * aux);
 

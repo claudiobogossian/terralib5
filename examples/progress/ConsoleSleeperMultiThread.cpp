@@ -31,7 +31,7 @@ void ConsoleSleeperMultiThread()
   task.useTimer(true);
 
   #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-    omp_set_num_threads( 4 );
+    omp_set_num_threads(omp_get_num_procs());
     #pragma omp parallel for
   #endif
   for(int i = 0; i < TOTAL_STEPS; ++i)

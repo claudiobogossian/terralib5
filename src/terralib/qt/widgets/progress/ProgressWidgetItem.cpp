@@ -34,9 +34,12 @@
 #include <QSizePolicy>
 #include <QStyle>
 
-te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int taskId, int totalSteps)
+te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int taskId, int totalSteps, QString label)
   : QWidget(parent),
-    m_taskId(taskId)
+  m_taskId(taskId),
+  m_totalSteps(0),
+  m_currentStep(0),
+  m_propStep(0)
 {
   // build custom widget
   m_mainGridLayout = new QGridLayout(this);
@@ -54,7 +57,7 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   m_frameGridLayout->setVerticalSpacing(1);
 
   m_label = new QLabel(m_frame);
-  m_label->setText("");
+  m_label->setText(label);
 
   m_progressBar = new QProgressBar(m_frame);
 
@@ -68,7 +71,7 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   m_frameGridLayout->addWidget(m_button, 1, 0);
 
   // set default range
-  totalSteps == 0 ? m_progressBar->setRange(0, 0) : m_progressBar->setRange(0, 100);
+  m_progressBar->setRange(0, 100);
 
   // connect signal cancel
   connect(m_button, SIGNAL(released()), this, SLOT(cancel()));
@@ -82,9 +85,22 @@ te::qt::widgets::ProgressWidgetItem::~ProgressWidgetItem()
 
 void te::qt::widgets::ProgressWidgetItem::setValue(int step)
 {
-  QCoreApplication::postEvent(this, new te::qt::widgets::ProgressSetValueEvent(step));
+  m_currentStep = step;
 
-  QCoreApplication::processEvents();
+  if (m_currentStep != m_propStep && m_currentStep >= 0.0)
+  {
+    m_propStep = m_currentStep;
+
+    QCoreApplication::postEvent(this, new ProgressSetValueEvent(m_propStep));
+
+    QCoreApplication::processEvents();
+
+  }
+}
+
+void te::qt::widgets::ProgressWidgetItem::setTotalValues(int values)
+{
+  m_totalSteps = values;
 }
 
 void te::qt::widgets::ProgressWidgetItem::setLabel(const std::string& message)
