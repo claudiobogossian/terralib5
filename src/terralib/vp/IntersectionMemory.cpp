@@ -256,32 +256,42 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       {
         std::string name = firstMember.props[j]->getName();
 
+        std::size_t inputPropPos = firstMember.dt->getPropertyPosition(name);
+
         if (!m_inFirstDsetName.empty())
           name = te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + name;
 
-        std::size_t propPos = outputDt->getPropertyPosition(name);
+        std::size_t outputPropPos = outputDt->getPropertyPosition(name);
 
-        if (propPos >= outputDt->size())
+        if (outputPropPos >= outputDt->size())
           continue;
 
-        te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
-        item->setValue(name, ad);
+        if (!firstMember.ds->isNull(inputPropPos))
+        {
+          te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
+          item->setValue(name, ad);
+        }
       }
 
       for(size_t j = 0; j < secondMember.props.size(); ++j)
       {
         std::string name = secondMember.props[j]->getName();
-        
+
+        std::size_t inputPropPos = secondMember.dt->getPropertyPosition(name);
+
         if (!m_inSecondDsetName.empty())
           name = te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + name;
 
-        std::size_t propPos = outputDt->getPropertyPosition(name);
+        std::size_t outputPropPos = outputDt->getPropertyPosition(name);
 
-        if (propPos >= outputDt->size())
+        if (outputPropPos >= outputDt->size())
           continue;
 
-        te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
-        item->setValue(name, ad);
+        if (!secondMember.ds->isNull(inputPropPos))
+        {
+          te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
+          item->setValue(name, ad);
+        }
       }
 
       item->setInt32(newName + "_id", pk);
