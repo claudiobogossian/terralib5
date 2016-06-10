@@ -31,6 +31,7 @@
 #define __TERRALIB_LOGGER_LOGGER_H__
 
 // Boost
+#define  BOOST_LOG_DYN_LINK
 #include <boost/log/trivial.hpp>
 #include <boost/log/sinks/text_ostream_backend.hpp>
 #include <boost/log/utility/setup/file.hpp>

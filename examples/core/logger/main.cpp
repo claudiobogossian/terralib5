@@ -27,14 +27,21 @@
 */
 
 // TerraLib
+#include <terralib/core/utils/Platform.h>
 #include <terralib/core/logger/Logger.h>
-
-// STL
 
 int main(int argc, char *argv[])
 {
-  TE_LOG_CORE_TRACE("mensagem");
-  TE_INIT_LOGGER("terraview", "logs");
-  TE_LOG_CORE_TRACE("log2");
-  TE_LOG_CORE_TRACE("log2");
+  //Starting a logger from a configuration file.
+  TE_INIT_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/terralib/config/te-log.ini"));
+  TE_LOG_CORE_TRACE("This is a trace log.");
+  TE_LOG_CORE_INFO("This is a info log");
+  TE_LOG_CORE_ERROR("This is a error log");
+
+  //Initializing a log using a default configuration.
+  //When initializing a new log, the previous one will not log anymore.
+  TE_INIT_LOGGER("logs/mylogs.log");
+  TE_LOG_CORE_WARN("This is a warning log.");
+  TE_LOG_CORE_FATAL("This is a fatal log.");
+  TE_LOG_CORE_DEBUG("This is a debug log.");
 }

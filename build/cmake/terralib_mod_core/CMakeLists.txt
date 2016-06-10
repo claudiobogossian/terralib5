@@ -27,7 +27,6 @@
 
 set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
-add_definitions(-DBOOST_LOG_DYN_LINK)
 
 if (WIN32)
   add_definitions(-DTECOREDLL -DBOOST_LOCALE_DYN_LINK)
@@ -66,8 +65,8 @@ source_group("Source Files\\translator"       FILES ${TERRALIB_CORE_TRANSLATOR_S
 source_group("Header Files\\translator"       FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES})
 source_group("Source Files\\utils"       FILES ${TERRALIB_CORE_UTILS_SRC_FILES})
 source_group("Header Files\\utils"       FILES ${TERRALIB_CORE_UTILS_HDR_FILES})
-#source_group("Source Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_SRC_FILES})
-#source_group("Header Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_HDR_FILES})
+source_group("Source Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_SRC_FILES})
+source_group("Header Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_HDR_FILES})
 
 
 add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}

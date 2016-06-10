@@ -62,7 +62,7 @@ void te::core::Logger::setupLogger(const std::string& filename)
 
   boost::log::add_file_log(boost::log::keywords::auto_flush = true,
                            boost::log::keywords::format = "[%TimeStamp%] <%Severity%> : %Message%",
-                           boost::log::keywords::file_name = m_filename + ".log",
+                           boost::log::keywords::file_name = m_filename,
                            boost::log:: keywords::open_mode = std::ios_base::app
                           );
   boost::log::add_common_attributes();
