@@ -29,15 +29,19 @@
 
 // TerraLib
 #include "Logger.h"
+#include "../Exception.h"
+#include "../translator/Translator.h"
 
 // Boost
+#include <boost/format.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/log/attributes/current_process_name.hpp>
+#include <boost/log/attributes/current_thread_id.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/sinks/text_ostream_backend.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/from_stream.hpp>
-
 typedef boost::log::sinks::synchronous_sink< boost::log::sinks::text_file_backend > text_sink;
 
 te::core::Logger& te::core::Logger::getInstance()
@@ -49,29 +53,51 @@ te::core::Logger& te::core::Logger::getInstance()
 
 void te::core::Logger::setupFromFile(const std::string& filename)
 {
+  m_fromfile = true;
   boost::log::core::get()->remove_all_sinks();
   boost::filesystem::ifstream settings(filename);
   boost::log::init_from_stream(settings);
 }
 
+void te::core::Logger::setFormat(const std::string& format)
+{
+  if(!m_fromfile)
+  {
+    m_format = format;
+    setupLogger(m_filename);
+  }
+  else
+  {
+    boost::format err_msg(TE_TR("Format can't be changed when using a logger from a configuration file."));
+    throw Exception() << te::ErrorDescription((err_msg).str());
+  }
+}
+
 void te::core::Logger::setupLogger(const std::string& filename)
 {
+  m_fromfile = false;
   m_filename = filename;
-
   boost::log::core::get()->remove_all_sinks();
 
   boost::log::add_file_log(boost::log::keywords::auto_flush = true,
-                           boost::log::keywords::format = "[%TimeStamp%] <%Severity%> : %Message%",
+                           boost::log::keywords::format = m_format,
                            boost::log::keywords::file_name = m_filename,
                            boost::log:: keywords::open_mode = std::ios_base::app
                           );
   boost::log::add_common_attributes();
-
 }
 
 te::core::Logger::Logger()
 {
   boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >("Severity");
+
+  boost::log::core::get()->add_global_attribute("Process",
+                                                boost::log::attributes::current_process_name());
+  boost::log::core::get()->add_global_attribute("ProcessID",
+                                                boost::log::attributes::current_process_id());
+  boost::log::core::get()->add_global_attribute("ThreadID",
+                                                boost::log::attributes::current_thread_id());
+
   setupLogger(m_filename);
 }
 

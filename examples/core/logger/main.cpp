@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
   //When initializing a new log, the previous one will not log anymore.
   TE_INIT_LOGGER("logs/mylogs.log");
   TE_LOG_CORE_WARN("This is a warning log.");
+  TE_LOGGER_FORMAT("[%TimeStamp%]{%ThreadID%} %Process%(%ProcessID%) <%Severity%>: %Message%");
   TE_LOG_CORE_FATAL("This is a fatal log.");
   TE_LOG_CORE_DEBUG("This is a debug log.");
 }

@@ -45,8 +45,14 @@
 
   \brief The default name of the log file if none is informed.
   */
-
 #define TERRALIB_DEFAULT_LOGGER "terralib"
+
+/*!
+  \def TERRALIB_DEFAULT_LOGGER_FORMAT
+
+  \brief The default message format if none is informed.
+  */
+#define TERRALIB_DEFAULT_LOGGER_FORMAT "[%TimeStamp%] <%Severity%> '%Process%': %Message%"
 
 namespace te
 {
@@ -69,26 +75,36 @@ namespace te
 
           \param message The string message to be logged
           \param severity The severity of the logged message
-
         */
         void log(const std::string& message, boost::log::trivial::severity_level severity);
 
         /*!
           \brief It sets the logger configuration from a given file
 
-          \param filename The file name of the configuration file
+          \param filename The name of the configuration file
+
+          \exception std::exception If the configuration file is doesn't load.
         */
         void setupFromFile(const std::string &filename);
 
         /*!
           \brief It sets the logger using a default implementation
 
-          \param filename The file name of the log.
+          \param filename The name of the log file.
 
           The logs will be stored in the given file name without any filters. If the file already
           exists, the logs will be appended to the end of the file.
         */
         void setupLogger(const std::string &filename);
+
+        /*!
+          \brief It sets a message format for the logger.
+
+          \param format The string format for the logger
+
+          \exception te::Exception If the logger was initialized from a configuration file
+        */
+        void setFormat(const std::string &format);
 
       private:
 
@@ -111,6 +127,12 @@ namespace te
 
         /*! \brief Logger file name */
         std::string m_filename = TERRALIB_DEFAULT_LOGGER;
+
+        /*! \brief Logger message format */
+        std::string m_format = TERRALIB_DEFAULT_LOGGER_FORMAT;
+
+        /*! \brief Logger type status */
+        bool m_fromfile = false;
 
     };
   }
@@ -136,11 +158,26 @@ namespace te
   \brief Use this tag to init a logger using a configuration file.
 
   \param filename The name of the configuration file.
+
+  \exception std::exception If the configuration file is doesn't load.
   */
 #ifdef TERRALIB_LOGGER_ENABLED
   #define TE_INIT_LOGGER_FROM_FILE(filename) te::core::Logger::getInstance().setupFromFile(filename)
 #else
   #define TE_INIT_LOGGER_FROM_FILE(filename) ((void)0)
+#endif
+
+/*!
+  \def TE_LOGGER_FORMAT
+
+  \brief Use this tag to change the message format of the default logger.
+
+  \param format The string format for the logger.
+  */
+#ifdef TERRALIB_LOGGER_ENABLED
+  #define TE_LOGGER_FORMAT(format) te::core::Logger::getInstance().setFormat(format)
+#else
+  #define TE_INIT_LOGGER(format) ((void)0)
 #endif
 
 /*!
