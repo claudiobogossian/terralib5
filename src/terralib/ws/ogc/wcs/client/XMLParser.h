@@ -41,6 +41,8 @@
 #include "../../../../xml.h"
 #include "XMLParser.h"
 #include "DataTypes.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../common/StringUtils.h"
 
 namespace te
 {
@@ -158,7 +160,26 @@ namespace te
                   for(unsigned int i = 0; i < reader->getNumberOfAttrs(); i++)
                   {
                     if(boost::iequals(reader->getAttrLocalName(i), "srsName"))
+                    {
                       envelope.srsName = reader->getAttr(i);
+
+                      te::core::URI url (envelope.srsName);
+
+                      if (url.isValid())
+                      {
+                        std::string path = url.path();
+                        std::vector<std::string> elements = te::common::SplitString(path, '/');
+
+                        std::string code = elements.back(); // getting SRS code.
+                        elements.pop_back(); // removing code.
+                        elements.pop_back(); // removing version.
+                        std::string auth = elements.back(); // getting authority eg.: EPSG
+
+                        envelope.srsName = auth + ":" + code;
+                      }
+
+                    }
+
                     else if(boost::iequals(reader->getAttrLocalName(i), "axisLabels"))
                       axis.str(reader->getAttr(i));
                     else if(boost::iequals(reader->getAttrLocalName(i), "uomLabels"))
@@ -215,12 +236,12 @@ namespace te
                   {
                     std::string part;
                     lower >> part;
-                    envelope.lowerCorner_X = part;
+                    envelope.lowerCorner_Y = part;
 
                     if(lower.good())
                     {
                       lower >> part;
-                      envelope.lowerCorner_Y = part;
+                      envelope.lowerCorner_X = part;
                     }
                   }
 
@@ -228,12 +249,12 @@ namespace te
                   {
                     std::string part;
                     upper >> part;
-                    envelope.upperCorner_X= part;
+                    envelope.upperCorner_Y = part;
 
                     if(upper.good())
                     {
                       upper >> part;
-                      envelope.upperCorner_Y = part;
+                      envelope.upperCorner_X = part;
                     }
                   }
                 }
@@ -324,7 +345,6 @@ namespace te
 
         return coverageDescription;
       }
-
 
     } // end namespace ogc
   } // end namespace ws

@@ -31,6 +31,8 @@
 // STL
 #include <memory>
 #include <vector>
+#include <map>
+#include <string>
 
 // Qt
 #include <QXmlStreamReader>
@@ -85,7 +87,7 @@ namespace te
 
           \return Return the information of the coverage in the WCS
         */
-        CoverageDescription describeCoverage(const std::string coverage) const;
+        struct CoverageDescription describeCoverage(const std::string coverage) const;
 
         /*!
           \brief Method to get the coverage from the WCS server

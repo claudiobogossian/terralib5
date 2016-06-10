@@ -31,7 +31,10 @@
 // TerraLib
 #include "../../../../core/translator/Translator.h"
 #include "WCS.h"
+
+
 #include <iostream>
+#include <string>
 
 te::ws::ogc::WCS::WCS(const std::string uri, const std::string version)
   : m_uri(uri + "?SERVICE=WCS"), m_version(version)
@@ -42,13 +45,12 @@ te::ws::ogc::WCS::WCS(const std::string uri, const std::string version)
 
 te::ws::ogc::WCS::~WCS()
 {
-
 }
 
 
 void te::ws::ogc::WCS::updateCapabilities()
 {
-  std::string url;
+  std::string url ("");
 
   if(m_version == "2.0.1")
   {
@@ -69,6 +71,7 @@ void te::ws::ogc::WCS::updateCapabilities()
 
 te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::string coverage) const
 {
+
   te::ws::ogc::CoverageDescription describeCoverage;
 
   std::string url;

@@ -41,6 +41,9 @@
 #include "../../../../ws/ogc/wcs/client/WCS.h"
 #include "../../../../datatype.h"
 #include "../../../../raster/RasterProperty.h"
+#include "../../../../raster/Grid.h"
+#include "../../../../raster/BandProperty.h"
+#include "../../../../common/StringUtils.h"
 
 te::ws::ogc::wcs::da::Transactor::Transactor(WCS wcs)
   : te::da::DataSourceTransactor(),
@@ -94,14 +97,35 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,
-                                                               const std::string& /*propertyName*/,
+                                                               const std::string& propertyName,
                                                                const te::gm::Envelope* e,
-                                                               te::gm::SpatialRelation /*r*/,
-                                                               te::common::TraverseType /*travType*/,
-                                                               bool /*connected*/,
-                                                               const te::common::AccessPolicy /*accessPolicy*/)
+                                                               te::gm::SpatialRelation r,
+                                                               te::common::TraverseType travType,
+                                                               bool connected,
+                                                               const te::common::AccessPolicy accessPolicy)
 {
-  throw Exception(TE_TR("This operations is not supported by the WCS driver!"));
+  if(!dataSetExists(name))
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
+
+
+  te::ws::ogc::CoverageDescription description = m_wcs.describeCoverage(name);
+
+  m_coverageRequest = te::ws::ogc::CoverageRequest();
+  m_coverageRequest.coverageID = name;
+
+  std::string coveragePath = m_wcs.getCoverage(m_coverageRequest);
+
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = coveragePath;
+
+  std::auto_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL");
+  dataSource->setConnectionInfo(connInfo);
+  dataSource->open();
+
+  if (!dataSource->isOpened() || !dataSource->isValid())
+    throw Exception(TE_TR("Fail to build Data Set. Data Source isn't valid or open!"));
+
+  return dataSource->getDataSet(name, propertyName, e, r, travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,
@@ -160,12 +184,49 @@ std::auto_ptr<te::da::DataSetType> te::ws::ogc::wcs::da::Transactor::getDataSetT
   te::da::DataSetType* type = new te::da::DataSetType(description.coverageId, 0);
   type->setTitle(description.coverageId);
 
+  te::ws::ogc::EnvelopeWithTimePeriod boundedBy = description.envelope;
+
+  double llx = atof(boundedBy.lowerCorner_X.c_str());
+  double lly = atof(boundedBy.lowerCorner_Y.c_str());
+  double urx = atof(boundedBy.upperCorner_X.c_str());
+  double ury = atof(boundedBy.upperCorner_Y.c_str());
+
+  int srid = TE_UNKNOWN_SRS;
+
+  if (!boundedBy.srsName.empty())
+  {
+    int pos = boundedBy.srsName.find(":");
+    std::string sridStr = boundedBy.srsName.substr(pos + 1);
+
+    srid = atoi(sridStr.c_str());
+  }
+
+  te::gm::Envelope* env = new te::gm::Envelope(llx, lly, urx, ury);
+
+  unsigned int width = 0;
+  unsigned int height = 0;
+
+  if (description.domainSet.subSet.size() == 2)
+  {
+    const SubSet& subSetX = description.domainSet.subSet[0];
+    const SubSet& subSetY = description.domainSet.subSet[1];
+
+    width = atoi(subSetX.max.c_str());
+    height = atoi(subSetY.max.c_str());
+  }
+
+  te::rst::Grid* grid = new te::rst::Grid(width, height, env, srid);
+
+  te::rst::RasterProperty* rp = new te::rst::RasterProperty("raster");
+  rp->set(grid);
 
   for(std::size_t i = 0; i < description.fieldNames.size(); ++i)
   {
-    te::dt::SimpleProperty* prop = new te::dt::SimpleProperty(description.fieldNames[i], te::dt::DOUBLE_TYPE);
-    type->add(prop);
+    te::rst::BandProperty* prop = new te::rst::BandProperty(i,  te::dt::UCHAR_TYPE, description.fieldNames[i]);
+    rp->add(prop);
   }
+
+  type->add(rp);
 
   return std::auto_ptr<te::da::DataSetType>(type);
 }
