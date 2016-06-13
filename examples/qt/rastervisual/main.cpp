@@ -27,7 +27,7 @@
 #include "MainWindow.h"
 
 // TerraLib
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
@@ -45,7 +45,7 @@ void LoadGDALModule()
 {
   try
   {
-    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+    std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_GDAL_ENABLED
     te::plugin::PluginInfo* info;
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
     // Adjusting icons theme
     QStringList ithemes = QIcon::themeSearchPaths();
-    ithemes.push_back(te::common::FindInTerraLibPath("share/terralib/icons").c_str());
+    ithemes.push_back(te::core::FindInTerraLibPath("share/terralib/icons").c_str());
     QIcon::setThemeName("terralib");
     QIcon::setThemeSearchPaths(ithemes);
 

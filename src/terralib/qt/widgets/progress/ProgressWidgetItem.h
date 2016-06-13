@@ -60,7 +60,7 @@ namespace te
         public:
 
           /*! \brief Default constructor. */
-          ProgressWidgetItem(QWidget* parent, int taskId, int totalSteps);
+          ProgressWidgetItem(QWidget* parent, int taskId, int totalSteps, QString label);
 
           /*! \brief Virtual destructor. */
           ~ProgressWidgetItem();
@@ -71,6 +71,11 @@ namespace te
             \param step Step value as integer.
           */
           virtual void setValue(int step);
+
+          /*!
+          \brief Set task total steps
+          */
+          void setTotalValues(int values);
 
           /*!
             \brief Set the progress label information.
@@ -108,6 +113,9 @@ namespace te
         protected:
 
           int m_taskId;                   //!< Task Identifier.
+          int m_totalSteps;               //!< Attribute used to define the total steps of all tasks.
+          int m_currentStep;              //!< Attribute used to define the current steps of all task.
+          int m_propStep;                 //!< Attribute used to define the proportional step (0-100).
           QLabel* m_label;                //!< GUI Objects used to build the custom widget.
           QProgressBar* m_progressBar;    //!< GUI Objects used to build the custom widget.
           QCommandLinkButton* m_button;   //!< GUI Objects used to build the custom widget.

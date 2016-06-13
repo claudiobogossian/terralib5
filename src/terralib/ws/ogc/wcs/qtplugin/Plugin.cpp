@@ -60,8 +60,8 @@ void te::ws::ogc::wcs::qtplugin::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::da::DataSourceInfoManager::getInstance().removeByType("WCS 2");
-  te::qt::widgets::DataSourceTypeManager::getInstance().remove("WCS 2");
+  te::da::DataSourceInfoManager::getInstance().removeByType("WCS2");
+  te::qt::widgets::DataSourceTypeManager::getInstance().remove("WCS2");
 
   TE_LOG_TRACE(TE_TR("TerraLib Qt OGC Web Coverage Service (WCS) widget shutdown!"));
 

@@ -28,8 +28,6 @@
 
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
-add_definitions(-DBOOST_LOG_DYN_LINK)
-
 # Examples of core/uri
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.cpp)
 file(GLOB TERRALIB_EXAMPLE_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.h)

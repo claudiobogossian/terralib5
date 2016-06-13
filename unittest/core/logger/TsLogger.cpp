@@ -1,4 +1,5 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*
+  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
   This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,7 +26,43 @@
   \author Matheus Cavassan Zaglia.
  */
 
-// STL
 // TerraLib
+#include <terralib/core/logger/Logger.h>
+#include <terralib/core/utils/Platform.h>
+#include <terralib/core/Exception.h>
 
+// Boost
+#include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
+
+BOOST_AUTO_TEST_SUITE(logger_test_case)
+
+BOOST_AUTO_TEST_CASE(default_logger_test)
+{
+  BOOST_CHECK_NO_THROW(TE_INIT_LOGGER("logs/mylogs.log"));
+  BOOST_CHECK(boost::filesystem::file_size(te::core::FindInTerraLibPath("logs/mylogs.log")) > 0);
+  BOOST_CHECK_NO_THROW(TE_LOGGER_FORMAT("[%TimeStamp%]{%ThreadID%} %Process%(%ProcessID%) <%Severity%>: %Message%"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_WARN("Warning log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_INFO("Info log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_ERROR("Error log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_TRACE("Trace log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_FATAL("Fatal log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_DEBUG("Debug log"));
+}
+
+BOOST_AUTO_TEST_CASE(configuration_file_logger_test)
+{
+  BOOST_CHECK_THROW(TE_INIT_LOGGER_FROM_FILE("mylogger.ini"), std::exception);
+  BOOST_CHECK_NO_THROW(TE_INIT_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/terralib/config/te-log-unittest.ini")));
+  BOOST_CHECK_THROW(TE_LOGGER_FORMAT("[%TimeStamp%]{%ThreadID%} %Process%(%ProcessID%) <%Severity%>: %Message%"), te::Exception);
+  BOOST_CHECK(boost::filesystem::file_size(te::core::FindInTerraLibPath("logs/terralib_unittest_core.log")) > 0);
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_WARN("Warning log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_INFO("Info log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_ERROR("Error log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_TRACE("Trace log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_FATAL("Fatal log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_CORE_DEBUG("Debug log"));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 

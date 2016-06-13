@@ -2,7 +2,7 @@
 #include "MapToolsExamples.h"
 
 // TerraLib
-#include <terralib/common.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/plugin.h>
 
 // STL
@@ -10,7 +10,7 @@
 
 void LoadModules()
 {
-  std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+  std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
   te::plugin::PluginInfo* info;
   

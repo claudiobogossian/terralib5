@@ -400,6 +400,8 @@ namespace te
     */
     TECOMMONEXPORT std::string ReplaceSpecialChars(const std::string& str, bool& changed);
 
+    TECOMMONEXPORT std::vector<std::string> SplitString(const std::string& str, const char& delimiter);
+
   } // end namespace common
 }   // end namespace te
 

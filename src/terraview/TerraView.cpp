@@ -34,9 +34,9 @@
 
 // TerraLib
 #include <terralib/common/Exception.h>
-#include <terralib/common/PlatformUtils.h>
-#include <terralib/core/translator/Translator.h>
 #include <terralib/common/progress/ProgressManager.h>
+#include <terralib/core/utils/Platform.h>
+#include <terralib/core/translator/Translator.h>
 #include <terralib/dataaccess/datasource/DataSourceInfoManager.h>
 #include <terralib/maptools/Utils.h>
 #include <terralib/qt/af/ApplicationController.h>
@@ -273,7 +273,7 @@ TerraView::~TerraView()
 void TerraView::init()
 {
   //init base application
-  BaseApplication::init(te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
+  BaseApplication::init(te::core::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
   //check user settings file
   QSettings user_settings(QSettings::IniFormat,
@@ -286,7 +286,7 @@ void TerraView::init()
   if (!info.exists())
     CreateDefaultSettings();
 
-  m_tvController = new TerraViewController(m_app, te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
+  m_tvController = new TerraViewController(m_app, te::core::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
   m_tvController->initializeProjectMenus();
 

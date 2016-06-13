@@ -25,6 +25,8 @@
 
 #include "WCSType.h"
 
+#include "WCSConnector.h"
+#include "WCSLayerSelector.h"
 #include "../../../../core/translator/Translator.h"
 
 te::ws::ogc::wcs::qt::WCSType::WCSType()
@@ -57,7 +59,7 @@ bool te::ws::ogc::wcs::qt::WCSType::hasVectorialSupport() const
 
 std::string te::ws::ogc::wcs::qt::WCSType::getName() const
 {
-  return "WCS 2";
+  return "WCS2";
 }
 
 std::string te::ws::ogc::wcs::qt::WCSType::getTitle() const
@@ -74,11 +76,12 @@ QWidget* te::ws::ogc::wcs::qt::WCSType::getWidget(int widgetType, QWidget* paren
 {
   switch(widgetType)
   {
-    //TODO Create a connector interface
-    //case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+      return new WCSConnector(parent, f);
 
     //TODO Create a WCS layer selection interface
-    //case DataSourceType::WIDGET_LAYER_SELECTOR:
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new WCSLayerSelector(parent, f);
 
     default:
       return 0;

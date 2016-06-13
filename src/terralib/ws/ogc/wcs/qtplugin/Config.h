@@ -29,6 +29,8 @@
  #ifndef __TERRALIB_WS_OGC_WCS_QTPLUGIN_CONFIG_H
  #define __TERRALIB_WS_OGC_WCS_QTPLUGIN_CONFIG_H
 
+#define TE_OGC_WCS_QTPLUGIN_NAME "te.ogc.wcs.qtplugin"
+
 // TerraLib
 #include "../../../../Defines.h"
 

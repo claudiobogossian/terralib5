@@ -31,6 +31,8 @@
 // STL
 #include <memory>
 #include <vector>
+#include <map>
+#include <string>
 
 // Qt
 #include <QXmlStreamReader>
@@ -38,6 +40,7 @@
 // TerraLib
 #include "../../../../dataaccess/dataset/DataSet.h"
 #include "XMLParser.h"
+#include "DataTypes.h"
 
 
 namespace te
@@ -46,18 +49,6 @@ namespace te
   {
     namespace ogc
     {
-
-      /*! \brief A struct to set the parameters of wanted coverage */
-      struct CoverageRequest
-      {
-        std::string coverageID;
-        std::string format;
-        std::string mediaType;
-        EnvelopeWithTimePeriod envelope;
-        std::string time;
-        std::vector< SubSet > subSet;
-        std::map< std::string, std::string > additionalParameters;
-      };
 
       /*!
         \class ClientWCS
@@ -96,7 +87,7 @@ namespace te
 
           \return Return the information of the coverage in the WCS
         */
-        CoverageDescription describeCoverage(const std::string coverage) const;
+        struct CoverageDescription describeCoverage(const std::string coverage) const;
 
         /*!
           \brief Method to get the coverage from the WCS server
@@ -136,9 +127,9 @@ namespace te
         const struct Capabilities& getCapabilities() const;
 
       private:
-        std::string uri_;
-        std::string version_;
-        struct Capabilities capabilities_;
+        std::string m_uri;
+        std::string m_version;
+        struct Capabilities m_capabilities;
       };
     }
   }

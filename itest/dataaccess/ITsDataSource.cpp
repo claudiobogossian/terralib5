@@ -26,14 +26,14 @@
 */
 
 // TerraLib
-#include "terralib/dataaccess.h"
+#include <terralib/dataaccess.h>
 
 // STL
 #include <string>
 
 // GTest and GMock
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using ::testing::AtLeast;
 using ::testing::_;

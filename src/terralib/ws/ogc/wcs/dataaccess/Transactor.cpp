@@ -40,10 +40,14 @@
 #include "../../../../dataaccess/dataset/DataSet.h"
 #include "../../../../ws/ogc/wcs/client/WCS.h"
 #include "../../../../datatype.h"
+#include "../../../../raster/RasterProperty.h"
+#include "../../../../raster/Grid.h"
+#include "../../../../raster/BandProperty.h"
+#include "../../../../common/StringUtils.h"
 
 te::ws::ogc::wcs::da::Transactor::Transactor(WCS wcs)
   : te::da::DataSourceTransactor(),
-    wcs_(wcs)
+    m_wcs(wcs)
 {
 }
 
@@ -53,12 +57,12 @@ te::ws::ogc::wcs::da::Transactor::~Transactor()
 
 te::ws::ogc::CoverageDescription te::ws::ogc::wcs::da::Transactor::coverageDescription(const std::string coverageName) const
 {
-  return wcs_.describeCoverage(coverageName);
+  return m_wcs.describeCoverage(coverageName);
 }
 
 void te::ws::ogc::wcs::da::Transactor::setCoverageRequest(const te::ws::ogc::CoverageRequest coverageRequest)
 {
-  coverageRequest_ = coverageRequest;
+  m_coverageRequest = coverageRequest;
 }
 
 te::da::DataSource* te::ws::ogc::wcs::da::Transactor::getDataSource() const
@@ -74,7 +78,10 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  std::string coveragePath = wcs_.getCoverage(coverageRequest_);
+  m_coverageRequest = te::ws::ogc::CoverageRequest();
+  m_coverageRequest.coverageID = name;
+  
+  std::string coveragePath = m_wcs.getCoverage(m_coverageRequest);
 
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = coveragePath;
@@ -90,14 +97,35 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,
-                                                               const std::string& /*propertyName*/,
+                                                               const std::string& propertyName,
                                                                const te::gm::Envelope* e,
-                                                               te::gm::SpatialRelation /*r*/,
-                                                               te::common::TraverseType /*travType*/,
-                                                               bool /*connected*/,
-                                                               const te::common::AccessPolicy /*accessPolicy*/)
+                                                               te::gm::SpatialRelation r,
+                                                               te::common::TraverseType travType,
+                                                               bool connected,
+                                                               const te::common::AccessPolicy accessPolicy)
 {
-  throw Exception(TE_TR("This operations is not supported by the WCS driver!"));
+  if(!dataSetExists(name))
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
+
+
+  te::ws::ogc::CoverageDescription description = m_wcs.describeCoverage(name);
+
+  m_coverageRequest = te::ws::ogc::CoverageRequest();
+  m_coverageRequest.coverageID = name;
+
+  std::string coveragePath = m_wcs.getCoverage(m_coverageRequest);
+
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = coveragePath;
+
+  std::auto_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL");
+  dataSource->setConnectionInfo(connInfo);
+  dataSource->open();
+
+  if (!dataSource->isOpened() || !dataSource->isValid())
+    throw Exception(TE_TR("Fail to build Data Set. Data Source isn't valid or open!"));
+
+  return dataSource->getDataSet(name, propertyName, e, r, travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,
@@ -138,12 +166,12 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::query(const std
 
 std::vector<std::string> te::ws::ogc::wcs::da::Transactor::getDataSetNames()
 {
-  return wcs_.getCapabilities().coverages;
+  return m_wcs.getCapabilities().coverages;
 }
 
 std::size_t te::ws::ogc::wcs::da::Transactor::getNumberOfDataSets()
 {
-  return wcs_.getCapabilities().coverages.size();
+  return m_wcs.getCapabilities().coverages.size();
 }
 
 std::auto_ptr<te::da::DataSetType> te::ws::ogc::wcs::da::Transactor::getDataSetType(const std::string& name)
@@ -151,19 +179,56 @@ std::auto_ptr<te::da::DataSetType> te::ws::ogc::wcs::da::Transactor::getDataSetT
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  std::string coveragePath = wcs_.getCoverage(coverageRequest_);
+  te::ws::ogc::CoverageDescription description =  this->coverageDescription(name);
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = coveragePath;
+  te::da::DataSetType* type = new te::da::DataSetType(description.coverageId, 0);
+  type->setTitle(description.coverageId);
 
-  std::auto_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL");
-  dataSource->setConnectionInfo(connInfo);
-  dataSource->open();
+  te::ws::ogc::EnvelopeWithTimePeriod boundedBy = description.envelope;
 
-  if (!dataSource->isOpened() || !dataSource->isValid())
-    throw Exception(TE_TR("Fail to build Data Set. Data Source isn't valid or open!"));
+  double llx = atof(boundedBy.lowerCorner_X.c_str());
+  double lly = atof(boundedBy.lowerCorner_Y.c_str());
+  double urx = atof(boundedBy.upperCorner_X.c_str());
+  double ury = atof(boundedBy.upperCorner_Y.c_str());
 
-  return dataSource->getDataSetType(name);
+  int srid = TE_UNKNOWN_SRS;
+
+  if (!boundedBy.srsName.empty())
+  {
+    int pos = boundedBy.srsName.find(":");
+    std::string sridStr = boundedBy.srsName.substr(pos + 1);
+
+    srid = atoi(sridStr.c_str());
+  }
+
+  te::gm::Envelope* env = new te::gm::Envelope(llx, lly, urx, ury);
+
+  unsigned int width = 0;
+  unsigned int height = 0;
+
+  if (description.domainSet.subSet.size() == 2)
+  {
+    const SubSet& subSetX = description.domainSet.subSet[0];
+    const SubSet& subSetY = description.domainSet.subSet[1];
+
+    width = atoi(subSetX.max.c_str());
+    height = atoi(subSetY.max.c_str());
+  }
+
+  te::rst::Grid* grid = new te::rst::Grid(width, height, env, srid);
+
+  te::rst::RasterProperty* rp = new te::rst::RasterProperty("raster");
+  rp->set(grid);
+
+  for(std::size_t i = 0; i < description.fieldNames.size(); ++i)
+  {
+    te::rst::BandProperty* prop = new te::rst::BandProperty(i,  te::dt::UCHAR_TYPE, description.fieldNames[i]);
+    rp->add(prop);
+  }
+
+  type->add(rp);
+
+  return std::auto_ptr<te::da::DataSetType>(type);
 }
 
 boost::ptr_vector<te::dt::Property> te::ws::ogc::wcs::da::Transactor::getProperties(const std::string& datasetName)
@@ -273,7 +338,7 @@ std::size_t te::ws::ogc::wcs::da::Transactor::getNumberOfItems(const std::string
 
 bool te::ws::ogc::wcs::da::Transactor::hasDataSets()
 {
-  if(wcs_.getCapabilities().coverages.size() > 0)
+  if(m_wcs.getCapabilities().coverages.size() > 0)
     return true;
 
   return false;
@@ -281,7 +346,7 @@ bool te::ws::ogc::wcs::da::Transactor::hasDataSets()
 
 bool te::ws::ogc::wcs::da::Transactor::dataSetExists(const std::string& name)
 {
-  std::vector< std::string > coverages = wcs_.getCapabilities().coverages;
+  std::vector< std::string > coverages = m_wcs.getCapabilities().coverages;
 
   for(int i = 0; i < coverages.size(); i ++)
   {

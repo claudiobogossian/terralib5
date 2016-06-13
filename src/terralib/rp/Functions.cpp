@@ -948,7 +948,11 @@ namespace te
       
       const te::rst::Band& redBand = *inputRGBRaster.getBand( redBandIdx );
       const te::rst::Band& greenBand = *inputRGBRaster.getBand( greenBandIdx );
-      const te::rst::Band& blueBand = *inputRGBRaster.getBand( blueBandIdx );      
+      const te::rst::Band& blueBand = *inputRGBRaster.getBand( blueBandIdx ); 
+      
+      te::rst::Band& iBand = *outputIHSRaster.getBand( 0 );
+      te::rst::Band& hBand = *outputIHSRaster.getBand( 1 );
+      te::rst::Band& sBand = *outputIHSRaster.getBand( 2 );
       
       const unsigned int outNCols = outputIHSRaster.getNumberOfColumns();
       const unsigned int outNRows = outputIHSRaster.getNumberOfRows();
@@ -956,6 +960,9 @@ namespace te
       const double greenNoData = greenBand.getProperty()->m_noDataValue;
       const double blueNoData = inputRGBRaster.getBand( 
         blueBandIdx )->getProperty()->m_noDataValue;
+      const double iNoData = iBand.getProperty()->m_noDataValue;
+      const double hNoData = hBand.getProperty()->m_noDataValue;
+      const double sNoData = sBand.getProperty()->m_noDataValue;
       
       unsigned int outRow = 0;
       unsigned int outCol = 0;
@@ -986,9 +993,9 @@ namespace te
           if( ( red == redNoData ) || ( green == greenNoData ) ||
             ( blue == blueNoData ) )
           {
-            intensity = 0.0;
-            hue = 0.0;
-            saturation = 0.0;
+            iBand.setValue( outCol, outRow, iNoData );
+            hBand.setValue( outCol, outRow, hNoData );
+            sBand.setValue( outCol, outRow, sNoData );
           }            
           else
           {
@@ -1045,11 +1052,11 @@ namespace te
                 
               intensity = ( rgbSum / 3.0 );            
             }
+            
+            iBand.setValue( outCol, outRow, intensity );
+            hBand.setValue( outCol, outRow, hue );
+            sBand.setValue( outCol, outRow, saturation );            
           }
-          
-          outputIHSRaster.setValue( outCol, outRow, intensity, 0 );
-          outputIHSRaster.setValue( outCol, outRow, hue, 1 );
-          outputIHSRaster.setValue( outCol, outRow, saturation, 2 );          
         }
       }      
       
@@ -1074,14 +1081,23 @@ namespace te
       if( inputIHSRaster.getNumberOfRows() != outputRGBRaster.getNumberOfRows() )
         return false;      
       
+      const te::rst::Band& intensityBand = *inputIHSRaster.getBand( intensityBandIdx );
+      const te::rst::Band& hueBand = *inputIHSRaster.getBand( hueBandIdx );
+      const te::rst::Band& saturationBand = *inputIHSRaster.getBand( saturationBandIdx );      
+      te::rst::Band& redBand = *outputRGBRaster.getBand( 0 );
+      te::rst::Band& greenBand = *outputRGBRaster.getBand( 1 );
+      te::rst::Band& blueBand = *outputRGBRaster.getBand( 2 );      
+      
       const unsigned int nCols = outputRGBRaster.getNumberOfColumns();
       const unsigned int nRows = outputRGBRaster.getNumberOfRows();
-      const double intensityNoData = inputIHSRaster.getBand( 
-        intensityBandIdx )->getProperty()->m_noDataValue;
-      const double hueNoData = inputIHSRaster.getBand( 
-        hueBandIdx )->getProperty()->m_noDataValue;
-      const double saturationNoData = inputIHSRaster.getBand( 
-        saturationBandIdx )->getProperty()->m_noDataValue;
+      
+      const double intensityNoData = intensityBand.getProperty()->m_noDataValue;
+      const double hueNoData = hueBand.getProperty()->m_noDataValue;
+      const double saturationNoData = saturationBand.getProperty()->m_noDataValue;
+        
+      const double rNoData = redBand.getProperty()->m_noDataValue;
+      const double gNoData = greenBand.getProperty()->m_noDataValue;
+      const double bNoData = blueBand.getProperty()->m_noDataValue;
         
       const double rgbNormFac = ( rgbRangeMax == rgbRangeMin ) ? 0.0 :
         ( rgbRangeMax - rgbRangeMin ); 
@@ -1096,12 +1112,7 @@ namespace te
       double red = 0;
       double green = 0;
       double blue = 0;  
-      const te::rst::Band& intensityBand = *inputIHSRaster.getBand( intensityBandIdx );
-      const te::rst::Band& hueBand = *inputIHSRaster.getBand( hueBandIdx );
-      const te::rst::Band& saturationBand = *inputIHSRaster.getBand( saturationBandIdx );      
-      te::rst::Band& redBand = *outputRGBRaster.getBand( 0 );
-      te::rst::Band& greenBand = *outputRGBRaster.getBand( 1 );
-      te::rst::Band& blueBand = *outputRGBRaster.getBand( 2 );
+
       
       for( row = 0 ; row < nRows ; ++row )
       {
@@ -1114,7 +1125,9 @@ namespace te
           if( ( lig == intensityNoData ) || ( hue == hueNoData ) || 
             ( sat == saturationNoData ) )
           {
-            red = green = blue = 0;
+            redBand.setValue( col, row, rNoData );
+            greenBand.setValue( col, row, gNoData );
+            blueBand.setValue( col, row, bNoData );            
           }
           else
           {
@@ -1157,19 +1170,19 @@ namespace te
               green = ( green * rgbNormFac ) + rgbRangeMin;
               blue = ( blue * rgbNormFac ) + rgbRangeMin;
             }
+            
+            red = MIN( red, rgbRangeMax );
+            green = MIN( green, rgbRangeMax );
+            blue = MIN( blue, rgbRangeMax );
+            
+            red = MAX( red, rgbRangeMin );
+            green = MAX( green, rgbRangeMin );
+            blue = MAX( blue, rgbRangeMin );           
+            
+            redBand.setValue( col, row, red );
+            greenBand.setValue( col, row, green );
+            blueBand.setValue( col, row, blue );            
           }
-          
-          red = MIN( red, rgbRangeMax );
-          green = MIN( green, rgbRangeMax );
-          blue = MIN( blue, rgbRangeMax );
-          
-          red = MAX( red, rgbRangeMin );
-          green = MAX( green, rgbRangeMin );
-          blue = MAX( blue, rgbRangeMin );           
-          
-          redBand.setValue( col, row, red );
-          greenBand.setValue( col, row, green );
-          blueBand.setValue( col, row, blue );
         }
       }        
       

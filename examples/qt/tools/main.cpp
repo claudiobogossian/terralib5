@@ -27,6 +27,7 @@
 #include "MainWindow.h"
 
 // TerraLib
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
@@ -43,19 +44,19 @@ void LoadModules()
 {
     te::plugin::PluginInfo* info;
 
-    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
-  
+    std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
+
 #ifdef TERRALIB_MOD_OGR_ENABLED
     info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
-    te::plugin::PluginManager::getInstance().add(info); 
+    te::plugin::PluginManager::getInstance().add(info);
 #endif
-  
+
 #ifdef TERRALIB_MOD_GDAL_ENABLED
     info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
     te::plugin::PluginManager::getInstance().add(info);
 #endif
-  
-    te::plugin::PluginManager::getInstance().loadAll();  
+
+    te::plugin::PluginManager::getInstance().loadAll();
 }
 
 
@@ -72,7 +73,7 @@ int main(int argc, char** argv)
 
     // Adjusting icons theme
     QStringList ithemes = QIcon::themeSearchPaths();
-    ithemes.push_back(te::common::FindInTerraLibPath("share/terralib/icons").c_str());
+    ithemes.push_back(te::core::FindInTerraLibPath("share/terralib/icons").c_str());
     QIcon::setThemeName("terralib");
     QIcon::setThemeSearchPaths(ithemes);
 
@@ -121,8 +122,8 @@ int main(int argc, char** argv)
 
     return EXIT_FAILURE;
   }
-  
-  te::plugin::PluginManager::getInstance().unloadAll();  
+
+  te::plugin::PluginManager::getInstance().unloadAll();
 
 // finalize Terralib support
   TerraLib::getInstance().finalize();

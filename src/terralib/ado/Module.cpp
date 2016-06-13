@@ -19,7 +19,7 @@
 
 // TerraLib
 #include "../common/Logger.h"
-#include "../common/PlatformUtils.h"
+#include "../core/utils/Platform.h"
 #include "../core/translator/Translator.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
@@ -57,7 +57,7 @@ void te::ado::Module::startup()
   te::da::DataSourceFactory::add("ADO", te::ado::Build);
 
 // retrieve the Capabilities
-  std::string capabilitiesFile = te::common::FindInTerraLibPath("share/terralib/plugins/ado-capabilities.xml");
+  std::string capabilitiesFile = te::core::FindInTerraLibPath("share/terralib/plugins/ado-capabilities.xml");
 
   te::ado::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
   te::ado::Globals::sm_queryDialect = new te::da::SQLDialect();

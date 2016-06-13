@@ -2,6 +2,7 @@
 #include "STExamples.h"
 
 // TerraLib
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
@@ -12,7 +13,7 @@ void LoadModules()
 {
   try
   {
-    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+    std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
     te::plugin::PluginInfo* info;
   

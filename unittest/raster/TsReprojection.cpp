@@ -34,6 +34,21 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsReprojection );
 
 void TsReprojection::tcReprojection1()
 {
+  // openning input raster
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtr ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtr.get() );
+
+  // Reprojecting
+  
+  auxRasterInfo["URI"] = "TsReprojection_tcReprojection1.tif";
+  boost::shared_ptr< te::rst::Raster > outputRasterPtr( 
+    inputRasterPtr->transform( 32621, auxRasterInfo, 1 ) );
+  CPPUNIT_ASSERT( outputRasterPtr.get() );
 }
 
 void TsReprojection::tcReprojection2()
