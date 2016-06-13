@@ -32,7 +32,7 @@
 
 int main(int argc, char *argv[])
 {
-  //Starting a logger from a configuration file.
+//Starting a logger from a configuration file.
   TE_INIT_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/terralib/config/te-log.ini"));
   TE_LOG_CORE_TRACE("This is a trace log.");
   TE_LOG_CORE_INFO("This is a info log");

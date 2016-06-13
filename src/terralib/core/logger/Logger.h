@@ -176,7 +176,7 @@ namespace te
 #ifdef TERRALIB_LOGGER_ENABLED
   #define TE_LOGGER_FORMAT(format) te::core::Logger::getInstance().setFormat(format)
 #else
-  #define TE_INIT_LOGGER(format) ((void)0)
+  #define TE_LOGGER_FORMAT(format) ((void)0)
 #endif
 
 /*!
