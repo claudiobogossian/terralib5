@@ -69,6 +69,11 @@ te::mnt::CreateIsolinesDialog::CreateIsolinesDialog(QWidget* parent, Qt::WindowF
 {
   m_ui->setupUi(this);
 
+  // add icons
+  m_ui->m_insertpushButton->setIcon(QIcon::fromTheme("mnt-isolines-right"));
+  m_ui->m_deletepushButton->setIcon(QIcon::fromTheme("mnt-isolines-left"));
+  m_ui->m_deleteallpushButton->setIcon(QIcon::fromTheme("mnt-isolines-left_all"));
+
   //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
 
@@ -440,7 +445,9 @@ void te::mnt::CreateIsolinesDialog::oninsertpushButtonClicked()
 
     for (double val = min; val <= max; val += step)
     {
-      m_ui->m_isolineslistWidget->addItem(QString::number(val));
+      QListWidgetItem *item = new QListWidgetItem();
+      item->setData(Qt::DisplayRole, val);
+      m_ui->m_isolineslistWidget->addItem(item);
     }
   }
   else
@@ -451,12 +458,17 @@ void te::mnt::CreateIsolinesDialog::oninsertpushButtonClicked()
       QMessageBox::information(this, tr("Create Isolines"), tr("Value is invalid!"));
       return;
     }
-    m_ui->m_isolineslistWidget->addItem(m_ui->m_valuelineEdit->text());
+    QListWidgetItem *item = new QListWidgetItem();
+    item->setData(Qt::DisplayRole, val);
+    m_ui->m_isolineslistWidget->addItem(item);
   }
 }
 
 void te::mnt::CreateIsolinesDialog::ondeletepushButtonClicked()
 {
+  QListWidgetItem *rem = m_ui->m_isolineslistWidget->takeItem(m_ui->m_isolineslistWidget->currentRow());
+  if (rem)
+    delete rem;
 }
 
 void te::mnt::CreateIsolinesDialog::ondeleteallpushButtonClicked()
