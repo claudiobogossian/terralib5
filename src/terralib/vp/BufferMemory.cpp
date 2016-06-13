@@ -384,7 +384,7 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
   for (std::size_t i = 0; i < vecSize; ++i)
   {
     std::vector<te::gm::Geometry*> currentVec = vecGeom[i];
-    std::size_t c_vecSize = currentVec.size();
+    int c_vecSize = (int)currentVec.size();
 
     for(int j = 0; j < c_vecSize; ++j)
     {

@@ -140,13 +140,20 @@ te::da::Select* te::vp::GetSelectQueryFromLayer(te::map::AbstractLayerPtr layer,
         }
         else
         {
-          te::da::LiteralInt32* litSRID = new te::da::LiteralInt32(srid);
+          te::gm::GeometryProperty* sourceGeomProp = te::da::GetFirstGeomProperty(dsType.get());
+          int sourceSRID = sourceGeomProp->getSRID();
+          te::da::LiteralInt32* sourceLiteralSRID = new te::da::LiteralInt32(sourceSRID);
 
-          te::da::Expression* eSetSRID = new te::da::ST_SetSRID(new te::da::PropertyName(properties[i]->getName()), litSRID);
+          te::da::LiteralInt32* literalSRID = new te::da::LiteralInt32(srid);
 
-          te::da::Expression* eTransform = new te::da::ST_Transform(eSetSRID, srid);
+          te::da::Expression* eGeom;
 
-          te::da::Field* geomField = new te::da::Field(*eTransform, properties[i]->getName());
+          if (sourceSRID != srid)
+            eGeom = new te::da::ST_SetSRID(new te::da::PropertyName(properties[i]->getName()), literalSRID);
+          else
+            eGeom = new te::da::PropertyName(properties[i]->getName());
+
+          te::da::Field* geomField = new te::da::Field(*eGeom, properties[i]->getName());
           fields->push_back(geomField);
         }
       }
@@ -193,13 +200,20 @@ te::da::Select* te::vp::GetSelectQueryFromLayer(te::map::AbstractLayerPtr layer,
         }
         else
         {
-          te::da::LiteralInt32* litSRID = new te::da::LiteralInt32(srid);
+          te::gm::GeometryProperty* sourceGeomProp = te::da::GetFirstGeomProperty(dsType.get());
+          int sourceSRID = sourceGeomProp->getSRID();
+          te::da::LiteralInt32* sourceLiteralSRID = new te::da::LiteralInt32(sourceSRID);
 
-          te::da::Expression* eSetSRID = new te::da::ST_SetSRID(new te::da::PropertyName(properties[i]->getName()), litSRID);
+          te::da::LiteralInt32* literalSRID = new te::da::LiteralInt32(srid);
 
-          te::da::Expression* eTransform = new te::da::ST_Transform(eSetSRID, srid);
+          te::da::Expression* eGeom;
 
-          te::da::Field* geomField = new te::da::Field(*eTransform, properties[i]->getName());
+          if (sourceSRID != srid)
+            eGeom = new te::da::ST_SetSRID(new te::da::PropertyName(properties[i]->getName()), literalSRID);
+          else
+            eGeom = new te::da::PropertyName(properties[i]->getName());
+
+          te::da::Field* geomField = new te::da::Field(*eGeom, properties[i]->getName());
           fields->push_back(geomField);
         }
       }
@@ -260,7 +274,9 @@ te::vp::DataStruct te::vp::GetDataStructFromLayer(te::map::AbstractLayerPtr laye
         return data;
     }
 
-    if (srid != 0)
+    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dataSetType.get());
+
+    if (srid != 0 && srid != geomProp->getSRID())
     {
       std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dataSetType.get(), dataSource->getCapabilities(), dataSource->getEncoding()));
       te::da::AssociateDataSetTypeConverterSRID(converter.get(), srid);

@@ -88,6 +88,7 @@ const std::string te::da::FunctionNames::sm_Min("min");
 const std::string te::da::FunctionNames::sm_StdDev("stddev");
 const std::string te::da::FunctionNames::sm_Variance("variance");
 
+const std::string te::da::FunctionNames::sm_Cast("cast");
 const std::string te::da::FunctionNames::sm_Coalesce("coalesce");
 const std::string te::da::FunctionNames::sm_IsNull("isnull");
 const std::string te::da::FunctionNames::sm_In("in");

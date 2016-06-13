@@ -1095,18 +1095,33 @@ QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Graphic* graphic)
     it can be either from a mark or from an external graphic, whichever is valid. 
   */
   te::color::RGBAColor** image;
+  QImage* qimg;
+  QPixmap pixmap;
 
-  if(!graphic->getMarks().empty())
+  if (!graphic->getMarks().empty())
   {
     image = te::map::MarkRendererManager::getInstance().render(graphic->getMarks()[0], height);
+    qimg = te::qt::widgets::GetImage(image, (int)height, (int)width);
   }
   else
   {
     image = te::map::ExternalGraphicRendererManager::getInstance().render(graphic->getExternalGraphics()[0], height, width);
+    qimg = new QImage(width, height, QImage::Format_ARGB32);
+
+    for (int i = 0; i < height; ++i)
+    {
+      unsigned char* u = qimg->scanLine(i);
+
+      for (int j = 0; j < width; ++j)
+      {
+        te::color::RGBAColor c = image[i][j];
+        QRgb val = qRgba(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
+        QRgb* v = (QRgb*)(u + j * 4);
+        *v = val;
+      }
+    }
   }
 
-  QImage* qimg = te::qt::widgets::GetImage(image, (int)height, (int)width);
-  QPixmap pixmap;
   pixmap = QPixmap::fromImage(*qimg);
 
   //Adjusting the symbol

@@ -169,36 +169,56 @@ MACRO(GetTerraLibModules _modules)
   endforeach()
 ENDMACRO(GetTerraLibModules)
 
-IF(XGETTEXT_FOUND)
-  macro(TERRALIB_REGISTER_TRANSLATION proj_name locale)
-    set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
-    set(_mo_file "${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/${proj_name}.mo")
-    if(EXISTS ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po)
+#
+# Macro: TERRALIB_REGISTER_TRANSLATION
+#
+# Description: Register the ".mo" file for a given ".po" file
+#
+# param proj_name The module to be translated. This will be your text domain.
+#
+# param locale The locale of the ".po" file
+#
+# param po_dir Where the ".po" file is located. The ".po" file named must be: "proj_name"_"locale".po
+#
+# param mo_dir Output directory for the ".mo" file
+#
+
+MACRO(TERRALIB_REGISTER_TRANSLATION proj_name locale po_dir mo_dir)
+  if(XGETTEXT_FOUND)
+    if(TERRALIB_TRANSLATOR_ENABLED)
+      set(_po_file "${po_dir}/${proj_name}_${locale}.po")
+      set(_mo_file "${mo_dir}/${locale}/LC_MESSAGES/${proj_name}.mo")
+      if(EXISTS ${po_dir}/${proj_name}_${locale}.po)
+        add_custom_command(
+          TARGET ${proj_name}
+          PRE_BUILD
+          COMMAND ${CMAKE_COMMAND} -E make_directory ${mo_dir}/${locale}/LC_MESSAGES/
+          COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_mo_file} ${_po_file}
+          COMMENT "Generating translation binary file for ${proj_name}...")
+      endif()
+    endif(TERRALIB_TRANSLATOR_ENABLED)
+  endif(XGETTEXT_FOUND)
+ENDMACRO(TERRALIB_REGISTER_TRANSLATION)
+
+MACRO(TERRALIB_CREATE_TRANSLATION proj_name keyword_s keyword_p locale directory po_dir)
+  if(XGETTEXT_FOUND)
+    if(TERRALIB_TRANSLATOR_ENABLED)
+      get_filename_component(_absDir ${directory} ABSOLUTE)
+      set(_pot_file ${CMAKE_CURRENT_BINARY_DIR}/${proj_name}.pot)
+      set(_po_file "${po_dir}/${proj_name}_${locale}.po")
+      file(GLOB_RECURSE _srcs RELATIVE ${_absDir} ${_absDir}/*.cpp)
+      set(encoding "UTF-8")
+      if(NOT EXISTS "${po_dir}/${proj_name}_${locale}.po")
+        configure_file(${po_dir}/template_translation.po.in
+                       ${po_dir}/${proj_name}_${locale}.po @ONLY)
+      endif()
       add_custom_command(
         TARGET ${proj_name}
         PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/share/terralib/translations/${locale}/LC_MESSAGES/
-        COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_mo_file} ${_po_file}
-        COMMENT "Generating translation binary file for ${proj_name}...")
-    endif()
-  endmacro(TERRALIB_REGISTER_TRANSLATION)
-
-  macro(TERRALIB_CREATE_TRANSLATION proj_name keyword_s keyword_p locale directory)
-    get_filename_component(_absDir ${directory} ABSOLUTE)
-    set(_pot_file ${CMAKE_CURRENT_BINARY_DIR}/${proj_name}.pot)
-    set(_po_file "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
-    file(GLOB_RECURSE _srcs RELATIVE ${_absDir} ${_absDir}/*.cpp)
-    set(encoding "UTF-8")
-    if(NOT EXISTS "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po")
-      configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/template_translation.po.in
-                     ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj_name}_${locale}.po @ONLY)
-    endif()
-    add_custom_command(
-      TARGET ${proj_name}
-      PRE_BUILD
-      COMMAND ${XGETTEXT_EXECUTABLE} --from-code=${encoding} --no-wrap --c++ --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -o ${_pot_file} ${_srcs}
-      COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_po_file} ${_pot_file}
-      COMMENT "Generating translation source file for ${proj_name}...")
-  endmacro(TERRALIB_CREATE_TRANSLATION)
-ENDIF(XGETTEXT_FOUND)
+        COMMAND ${XGETTEXT_EXECUTABLE} --from-code=${encoding} --no-wrap --c++ --keyword=${keyword_s} --keyword=${keyword_p}:1,2 -o ${_pot_file} ${_srcs}
+        COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} -U --backup=none -q --lang=${locale} ${_po_file} ${_pot_file}
+        COMMENT "Generating translation source file for ${proj_name}...")
+    endif(TERRALIB_TRANSLATOR_ENABLED)
+  endif(XGETTEXT_FOUND)
+ENDMACRO(TERRALIB_CREATE_TRANSLATION)
 

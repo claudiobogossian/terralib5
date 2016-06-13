@@ -30,7 +30,9 @@ TerraLib Team at <terralib - team@terralib.org>.
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include <fstream>
+// BOOST
+#include <boost/property_tree/json_parser.hpp>
+
 
 
 
@@ -106,32 +108,22 @@ void te::mnt::VolumeResultDialog::saveVolume(const std::string& path)
   if (path.empty())
     return;
 
-  std::ofstream result(path.c_str(), std::ofstream::out);
-  if (!result.is_open())
-  {
-    QMessageBox::warning(this, tr("Volume"), tr("File was not create!"));
-    return;
-  }
-
-  for (int i = 0; i < colCount; i++)
-  {
-    QTableWidgetItem *item = m_ui->m_resultTableWidget->horizontalHeaderItem(i);
-    if (item)
-      result << item->text().toStdString() << '\t';
-  }
-
-  result << std::endl;
-
+  boost::property_tree::ptree itens;
   for (int r = 0; r < rowCount; r++)
   {
+    boost::property_tree::ptree item;
     for (int i = 0; i < colCount; i++)
     {
-      result << m_ui->m_resultTableWidget->item(r, i)->text().toStdString() << '\t';
+      QTableWidgetItem *res = m_ui->m_resultTableWidget->horizontalHeaderItem(i);
+      if (res)
+        item.add(res->text().toStdString(), m_ui->m_resultTableWidget->item(r, i)->text().toStdString());
     }
-    result << std::endl;
+    itens.add_child("Polygon", item);
   }
 
-  result.close();
+  boost::property_tree::ptree pt;
+  pt.add_child("Volume", itens);
+  boost::property_tree::write_json(path, pt);
 
   QMessageBox::warning(this, tr("Volume"), tr("File was saved succesfully!"));
 

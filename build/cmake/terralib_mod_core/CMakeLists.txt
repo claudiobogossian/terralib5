@@ -27,9 +27,6 @@
 
 set(TERRALIB_CORE_DIR ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/core)
 
-include_directories(${Boost_INCLUDE_DIR})
-
-add_definitions(-DBOOST_LOG_DYN_LINK)
 
 if (WIN32)
   add_definitions(-DTECOREDLL -DBOOST_LOCALE_DYN_LINK)
@@ -68,8 +65,8 @@ source_group("Source Files\\translator"       FILES ${TERRALIB_CORE_TRANSLATOR_S
 source_group("Header Files\\translator"       FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES})
 source_group("Source Files\\utils"       FILES ${TERRALIB_CORE_UTILS_SRC_FILES})
 source_group("Header Files\\utils"       FILES ${TERRALIB_CORE_UTILS_HDR_FILES})
-#source_group("Source Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_SRC_FILES})
-#source_group("Header Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_HDR_FILES})
+source_group("Source Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_SRC_FILES})
+source_group("Header Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_HDR_FILES})
 
 
 add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}
@@ -77,20 +74,25 @@ add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_
                                      ${TERRALIB_CORE_ENCODING_SRC_FILES} ${TERRALIB_CORE_ENCODING_HDR_FILES}
                                      ${TERRALIB_CORE_LIB_SRC_FILES} ${TERRALIB_CORE_LIB_HDR_FILES}
                                      ${TERRALIB_CORE_TRANSLATOR_SRC_FILES} ${TERRALIB_CORE_TRANSLATOR_HDR_FILES}
-                                     ${TERRALIB_CORE_UTILS_SRC_FILES} ${TERRALIB_CORE_UTILS_HDR_FILES})
-#                                     ${TERRALIB_CORE_LOGGER_SRC_FILES} ${TERRALIB_CORE_LOGGER_HDR_FILES})
+                                     ${TERRALIB_CORE_UTILS_SRC_FILES} ${TERRALIB_CORE_UTILS_HDR_FILES}
+                                     ${TERRALIB_CORE_LOGGER_SRC_FILES} ${TERRALIB_CORE_LOGGER_HDR_FILES})
 
-target_link_libraries(terralib_mod_core ${Boost_LOCALE_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_LOG_LIBRARY} ${Boost_LOG_SETUP_LIBRARY})
+target_link_libraries(terralib_mod_core ${Boost_LOCALE_LIBRARY}
+                                        ${Boost_REGEX_LIBRARY}
+                                        ${Boost_FILESYSTEM_LIBRARY}
+                                        ${Boost_SYSTEM_LIBRARY}
+                                        ${Boost_LOG_LIBRARY}
+                                        ${Boost_LOG_SETUP_LIBRARY}
+                                        ${Boost_THREAD_LIBRARY})
 
 set_target_properties(terralib_mod_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
-if(GETTEXT_FOUND)
-  if(TERRALIB_TRANSLATOR_ENABLED)
-    TERRALIB_REGISTER_TRANSLATION("terralib_mod_core" "pt_BR")
-  endif()
-endif()
+
+TERRALIB_REGISTER_TRANSLATION("terralib_mod_core" "pt_BR"
+                              "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                              "${CMAKE_BINARY_DIR}/share/terralib/translations")
 
 install(TARGETS terralib_mod_core
         EXPORT terralib-targets
@@ -114,7 +116,7 @@ install(FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES}
 install(FILES ${TERRALIB_CORE_UTILS_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/utils COMPONENT devel)
 
-#install(FILES ${TERRALIB_CORE_LOGGER_HDR_FILES}
-#        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/logger COMPONENT devel)
+install(FILES ${TERRALIB_CORE_LOGGER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/logger COMPONENT devel)
 
 

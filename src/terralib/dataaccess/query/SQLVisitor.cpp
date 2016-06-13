@@ -27,7 +27,10 @@
 #include "../../common/StringUtils.h"
 #include "../../core/translator/Translator.h"
 #include "../../datatype/AbstractData.h"
+#include "../../datatype/SimpleData.h"
+#include "../../datatype/Enums.h"
 #include "../Exception.h"
+#include "Cast.h"
 #include "DataSetName.h"
 #include "Distinct.h"
 #include "Expression.h"
@@ -65,6 +68,9 @@
 
 // STL
 #include <cassert>
+
+// Boost
+#include <boost/lexical_cast.hpp>
 
 void te::da::SQLVisitor::visit(const Expression& /*visited*/)
 {
@@ -368,6 +374,59 @@ void te::da::SQLVisitor::visit(const In& visited)
   }
 
   m_sql += ")";
+}
+
+void te::da::SQLVisitor::visit(const Cast& visited)
+{
+  for (std::size_t i = 0; i < visited.getNumArgs(); ++i)
+    assert(visited[i]);
+
+  int type = 0;
+
+  te::da::LiteralInt32* literalInt = dynamic_cast<te::da::LiteralInt32*>(visited[1]);
+  if (literalInt)
+  {
+    te::dt::SimpleData<int, te::dt::INT32_TYPE>* sdIntType = dynamic_cast<te::dt::SimpleData<int, te::dt::INT32_TYPE>*>(literalInt->getValue());
+ 
+    if (sdIntType)
+      type = sdIntType->getValue();
+  }
+
+  std::string s_type;
+
+  switch (type)
+  {
+  case te::dt::INT32_TYPE:
+    s_type += "INTEGER";
+    break;
+
+  case te::dt::STRING_TYPE:
+    s_type += "VARCHAR";
+    break;
+
+  case te::dt::DATETIME_TYPE:
+    s_type += "DATE";
+    break;
+
+  case te::dt::DOUBLE_TYPE:
+    s_type += "DOUBLE";
+    break;
+
+  default:
+    s_type = "";
+    break;
+  }
+
+  if (!s_type.empty())
+  {
+    m_sql += "CAST( ";
+    visited[0]->accept(*this);
+    m_sql += " AS " + s_type + " )";
+  }
+  else
+  {
+    visited[0]->accept(*this);
+  }
 }
 
 void te::da::SQLVisitor::visitDistinct(const te::da::Distinct& visited)

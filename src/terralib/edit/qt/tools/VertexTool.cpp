@@ -39,8 +39,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/AddCommand.h"
-#include "../core/UndoStackManager.h"
 #include "VertexTool.h"
 
 // Qt
@@ -55,10 +53,10 @@
 #include <string>
 
 te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: GeometriesUpdateTool(display, layer.get(), parent),
+  : GeometriesUpdateTool(display, layer.get(), parent),
   m_currentStage(FEATURE_SELECTION),
-  m_addWatches(0),
-  m_currentIndex(0)
+  m_isEdited(false),
+  m_stack(UndoStackManager::getInstance())
 {
   m_currentVertexIndex.makeInvalid();
 
@@ -69,11 +67,6 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
 
 te::edit::VertexTool::~VertexTool()
 {
-  delete m_feature;
-  te::common::FreeContents(m_addWatches);
-  m_addWatches.clear();
-
-  UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
 bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
@@ -89,6 +82,9 @@ bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
     if(keys == Qt::NoModifier)
     {
       setStage(VERTEX_MOVING);
+
+      m_isEdited = true;
+
       return true;
     }
 
@@ -100,6 +96,8 @@ bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
       m_currentVertexIndex.makeInvalid();
 
       setStage(VERTEX_SEARCH);
+
+      m_isEdited = true;
 
       updateRTree();
 
@@ -232,6 +230,8 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     setStage(VERTEX_SEARCH);
 
+    m_isEdited = true;
+
     updateRTree();
 
     draw();
@@ -253,6 +253,8 @@ void te::edit::VertexTool::reset()
   m_currentVertexIndex.makeInvalid();
 
   m_rtree.clear();
+
+  m_isEdited = false;
 }
 
 void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
@@ -286,7 +288,6 @@ void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, c
 
 void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -310,10 +311,13 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   }
 
   // Draw the vertexes
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
-    renderer.draw(m_feature->getGeometry(), true);
-  else
-    renderer.drawVertexes(m_feature->getGeometry());
+  if (m_feature != 0)
+  {
+    if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+      renderer.draw(m_feature->getGeometry(), true);
+    else
+      renderer.drawVertexes(m_feature->getGeometry());
+  }
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
@@ -418,7 +422,6 @@ void te::edit::VertexTool::storeFeature()
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 
   emit geometriesEdited();
-
 }
 
 void te::edit::VertexTool::storeUndoCommand()
@@ -426,69 +429,35 @@ void te::edit::VertexTool::storeUndoCommand()
   if (m_feature == 0)
     return;
 
-  //ensures that the vector has not repeated features after several clicks on the same
-  if (m_addWatches.size()) 
-  {
-    if (m_addWatches.at(0)->getGeometry()->equals(m_feature->getGeometry()))
-      return;
-  }
-
-  //If another feature is selected the stack is cleaned
-  for (std::size_t i = 0; i < m_addWatches.size(); i++)
-  {
-    if (m_addWatches.at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
-    {
-      te::common::FreeContents(m_addWatches);
-      m_addWatches.clear();
-      UndoStackManager::getInstance().getUndoStack()->clear();
-      break;
-    }
-  }
-
-  m_addWatches.push_back(m_feature->clone());
-
-  //If a feature is changed in the middle of the stack, this change ends up being the top of the stack
-  if (m_currentIndex < (int)(m_addWatches.size() - 2))
-  {
-    std::size_t i = 0;
-    while (i < m_addWatches.size())
-    {
-      m_addWatches.pop_back();
-      i = (m_currentIndex + 1);
-    }
-    m_addWatches.push_back(m_feature->clone());
-  }
-
-  m_currentIndex = (int)(m_addWatches.size() - 1);
-
-  if (m_addWatches.size() < 2)
+  if (!m_isEdited)
     return;
 
-  QUndoCommand* command = new AddCommand(m_addWatches, m_currentIndex, m_layer);
-  connect(dynamic_cast<AddCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)), SLOT(onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)));
+  m_stack.addWatch(m_feature->clone());
 
-  UndoStackManager::getInstance().addUndoStack(command);
+  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature->clone()->getId());
+  connect(dynamic_cast<AddCommand*>(command), SIGNAL(undoFeedback(std::vector<te::gm::Coord2D>)), SLOT(onUndoFeedback(std::vector<te::gm::Coord2D>)));
+  
+  m_stack.addUndoStack(command);
+
 }
 
-void te::edit::VertexTool::onGeometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> /*coords*/)
+void te::edit::VertexTool::onUndoFeedback(std::vector<te::gm::Coord2D> coords)
 {
-  if (m_feature == 0)
-    return;
-
   m_lines.clear();
 
-  m_feature->setGeometry(geom);
+  if (m_stack.m_currentIndex < 0)
+  {
+    m_feature = 0;
+    return;
+  }
+
+  std::size_t pos = (m_stack.m_currentIndex < 0) ? 0 : m_stack.m_currentIndex;
+
+  m_feature = m_stack.getAddWatches()[pos]->clone();
 
   GetLines(m_feature->getGeometry(), m_lines);
 
   updateRTree();
-
-  if (m_currentIndex > -1)
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
-  else
-    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_feature->getId());
-
-  draw();
 }
 
 void te::edit::VertexTool::resetVisualizationTool()

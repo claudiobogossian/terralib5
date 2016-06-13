@@ -149,19 +149,89 @@ set LUA=%LIBS_DIR%\lua.lib
 set TERRALIB4=%LIBS_DIR%\terralib.lib
 set CURL=%LIBS_DIR%\libcurl.lib
 set GETTEXT=%LIBS_DIR%\intl.lib
+set QSCINTILLA=%LIBS_DIR%\qscintilla2.lib
 
 del %ROOT_DIR%\..\*.log /S /Q >nul 2>nul
 
 IF NOT EXIST %LIBS_DIR% (
   mkdir %TERRALIB_DEPENDENCIES_DIR%\include >nul 2>nul 
   mkdir %TERRALIB_DEPENDENCIES_DIR%\lib >nul 2>nul 
-
   goto begin_build
 )
 
 goto cppunit_deps
 
 :begin_build
+
+:: ====
+:: GTest and GMock
+set GTEST_DIR=%ROOT_DIR%\googletest-master\googletest
+set GMOCK_DIR=%ROOT_DIR%\googletest-master\googlemock
+set GTEST_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
+set GTEST_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\gtest.lib
+
+:: No dependencies.
+
+echo | set /p="Installing gtest and gmock... "<nul
+
+IF EXIST %LIBS_DIR%\gtest.lib call :skip_build && goto cppunit 
+
+call :append_log_begin gtest
+
+:begin_gtest
+
+cd %GTEST_DIR% >nul 2>nul
+
+IF EXIST building%_X86% del /s /Q building%_X86% >nul 2>nul
+
+mkdir building%_X86% >nul 2>nul
+
+cd building%_X86% >nul 2>nul
+
+( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%GTEST_DIR% %GTEST_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog gtest "configuring gtest" && goto cppunit 
+
+( msbuild /m gtest.sln /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog gtest "build release gtest" && goto cppunit
+
+( msbuild /m gtest.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog gtest "build debug gtest" && goto cppunit
+
+xcopy %GTEST_DIR%\include %GTEST_INCLUDE_DIR% /S /Y >nul 2>nul
+
+xcopy %GTEST_DIR%\building%_X86%\Release\*.lib %LIBS_DIR% /Y >nul 2>nul
+
+xcopy %GTEST_DIR%\building%_X86%\Debug\*.lib %LIBS_DIR% /Y >nul 2>nul
+
+IF EXIST %LIBS_DIR%\gmock.lib call :skip_build && goto cppunit
+
+cd ..\..\googlemock >nul 2>nul
+
+IF EXIST building%_X86% del /s /Q building%_X86% >nul 2>nul
+
+mkdir building%_X86% >nul 2>nul
+
+cd building%_X86% >nul 2>nul
+
+( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%GMOCK_DIR% %GMOCK_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog gtest "configuring gmock" && goto cppunit 
+
+( msbuild /m gmock.sln /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog gtest "build release gmock" && goto cppunit
+
+( msbuild /m gmock.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog gtest "build debug gmock" && goto cppunit
+
+xcopy %GMOCK_DIR%\include %GTEST_INCLUDE_DIR% /S /Y >nul 2>nul
+
+xcopy %GMOCK_DIR%\building%_X86%\Release\*.lib %LIBS_DIR% /Y >nul 2>nul
+
+xcopy %GMOCK_DIR%\building%_X86%\Debug\*.lib %LIBS_DIR% /Y >nul 2>nul
+
+call :append_log_end gtest
+
+:end_gtest  
+
+echo done.
+
+cd %ROOT_DIR%
+:: ====
+
+:cppunit
 
 :: CppUnit version 1.12.1
 set CPPUNIT_DIR=%ROOT_DIR%\cppunit-1.12.1
@@ -1630,7 +1700,7 @@ set "_bzip_bin=BZIP2_BINARY=libbz2"
 set "_zlib_bin=ZLIB_BINARY=zlib"
 set "_zlib_path=ZLIB_LIBPATH=%ZL_DIR%\build%_X86%\Release"
 
-( b2 --reconfigure -a toolset=msvc-12.0 %_am% variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --with-log --layout=tagged -sICU_PATH=%ICU_DIR% -s%_bzip_bin% -s BZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -s BZIP2_LIBPATH=%BZIP2_DIR%\lib%_X86% -s %_zlib_bin% -s ZLIB_INCLUDE=%ZL_DIR% -s ZLIB_LIBPATH=%_zlib_path% install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
+( b2 --reconfigure toolset=msvc-12.0 %_am% variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --with-log --layout=tagged -sICU_PATH=%ICU_DIR% -s%_bzip_bin% -s BZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -s BZIP2_LIBPATH=%BZIP2_DIR%\lib%_X86% -s %_zlib_bin% -s ZLIB_INCLUDE=%ZL_DIR% -s ZLIB_LIBPATH=%_zlib_path% install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
 
 echo done.
 
@@ -2184,7 +2254,7 @@ goto lua_deps
 
 echo | set /p="Installing qwt... "<nul
 
-IF EXIST %QWT% call :skip_build && goto lualib 
+IF EXIST %QWT% call :skip_build && goto lua 
 
 call :append_log_begin qwt
 
@@ -2209,10 +2279,10 @@ call :append_log_end qwt
 cd %ROOT_DIR%
 :: ====
 
-:lualib
+:lua
 
 :: Lua version 5.2.2
-set LUAC_DIR=%ROOT_DIR%\lua-5.2.2
+set LUAC_DIR=%ROOT_DIR%\lua-5.3.2
 set LUAC_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include\lua
 set LUAC_LIBRARY=%LUA%
 set LUACD_LIBRARY=%LIBS_DIR%\luad.lib
@@ -2220,13 +2290,13 @@ set LUACD_LIBRARY=%LIBS_DIR%\luad.lib
 :: Check dependencies
 goto end_lua_deps
 :lua_deps
-IF NOT EXIST %READLINE% call :remove_lib lua && goto terralib4_deps
-goto terralib4_deps
+IF NOT EXIST %READLINE% call :remove_lib lua && goto qscintilla_deps
+goto qscintilla_deps
 :end_lua_deps
 
 echo | set /p="Installing lua... "<nul
 
-IF EXIST %LUA% call :skip_build && goto terralib4 
+IF EXIST %LUA% call :skip_build && goto qscintilla 
 
 call :append_log_begin lua
 
@@ -2244,13 +2314,11 @@ cd build%_X86% >nul 2>nul
 
 ( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%TERRALIB_DEPENDENCIES_DIR% ^
 -DCMAKE_DEBUG_POSTFIX=d ^
--DINSTALL_BIN=%LIBS_DIR% ^
--DREADLINE_INCLUDE_DIR=%READLINE_INCLUDE_DIR% ^
--DREADLINE_LIBRARY:STRING="debug;%READLINED_LIBRARY%;optimized;%READLINE_LIBRARY%" %LUAC_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog lua  "configuring" && goto terralib4
+-DINSTALL_BIN=%LIBS_DIR%  %LUAC_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog lua  "configuring" && goto qscintilla
 
-( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build release" && goto terralib4
+( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build release" && goto qscintilla
 
-( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build debug" && goto terralib4
+( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build debug" && goto qscintilla
 
 xcopy %LUAC_DIR%\src\lua.h %LUAC_INCLUDE_DIR% /Y >nul 2>nul
 
@@ -2267,6 +2335,44 @@ echo done.
 call :append_log_end lua
 
 :end_lua
+
+cd %ROOT_DIR%
+:: ====
+
+:qscintilla
+
+:: Qscintilla
+set QSCINTILLA_PATH=%ROOT_DIR%\QScintilla-gpl-2.8
+
+:: Check dependencies
+goto end_qscintilla_deps
+:qscintilla_deps
+goto terralib4_deps
+:end_qscintilla_deps
+
+echo | set /p="Installing qscintilla... "<nul
+
+IF EXIST %QSCINTILLA% call :skip_build && goto terralib4 
+
+call :append_log_begin qscintilla
+
+:begin_qscintilla
+
+cd %QSCINTILLA_PATH%\Qt4Qt5 >nul 2>nul
+
+( qmake qscintilla.pro -r "TERRALIB_DIR=%TERRALIB_DEPENDENCIES_DIR%" >>%CONFIG_LOG% 2>nul ) || call :buildFailLog qscintilla "configuring" && goto terralib4 
+
+( nmake clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog  qscintilla "cleaning" && goto terralib4
+
+( nmake install >>%BUILD_LOG% 2>nul ) || call :buildFailLog qscintilla "building" && goto terralib4 
+
+::( nmake release-install >>%BUILD_LOG% 2>nul ) || call :buildFailLog qscintilla "building release" && goto terralib4 
+
+echo done.
+
+call :append_log_end qscintilla
+
+:end_qscintilla
 
 cd %ROOT_DIR%
 :: ====
@@ -2333,9 +2439,15 @@ echo done.
 call :append_log_end terralib4
 
 :end_terralib4
+
+cd %ROOT_DIR%
 :: ====
 
 :clean_third_directory
+
+mkdir -p %TERRALIB_DEPENDENCIES_DIR%\bin >nul 2>nul 
+
+xcopy bin %TERRALIB_DEPENDENCIES_DIR%\bin /S /Y >nul 2>nul
 
 cd %TERRALIB_DEPENDENCIES_DIR% >nul 2>nul
 
@@ -2345,7 +2457,7 @@ RD /S /Q features >nul 2>nul
 
 RD /S /Q plugins >nul 2>nul
 
-del lib/*.exe /S /Q >nul 2>nul
+del lib\*.exe /S /Q >nul 2>nul
 
 del *.pdb /S /Q >nul 2>nul
 

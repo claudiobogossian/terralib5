@@ -113,7 +113,7 @@ static std::string te_get_os_error()
 #endif
 }
 
-te::core::Library::Library(const std::string& slib_file_name, bool delay_load)
+te::core::Library::Library(const std::string& slib_file_name, const bool& delay_load)
   : m_pimpl(nullptr)
 {
   if(slib_file_name.empty() || std::all_of(slib_file_name.begin(), slib_file_name.end(), isspace))

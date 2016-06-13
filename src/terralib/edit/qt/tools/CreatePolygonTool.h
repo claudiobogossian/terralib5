@@ -31,6 +31,8 @@
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #endif
+#include "../core/command/AddCommand.h"
+#include "../core/UndoStackManager.h"
 #include "../Config.h"
 #include "GeometriesUpdateTool.h"
 
@@ -124,7 +126,7 @@ namespace te
 
         void onExtentChanged();
 
-        void onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>);
+        void onUndoFeedback(std::vector<te::gm::Coord2D> coords);
 
       protected:
 
@@ -132,10 +134,8 @@ namespace te
         te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
-        std::vector<Feature*> m_addWatches;
-        int m_currentIndex;
         Qt::MouseButton m_sideToClose;
-
+        UndoStackManager& m_stack;
 
     };
 

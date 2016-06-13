@@ -23,9 +23,9 @@
 #  Author: Vinicius Campanha
 #          Matheus Cavassan Zaglia
 #          Frederico Bedê
+#          Gilberto Ribeiro de Queiroz
 #
 
-include_directories(${Boost_INCLUDE_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
@@ -71,21 +71,31 @@ add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES} ${TERR
                                       ${TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES}
                                       ${TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES})
 
-target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+target_link_libraries(terralib_unittest_core terralib_mod_core ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                                                               ${Boost_FILESYSTEM_LIBRARY}
+                                                               ${Boost_SYSTEM_LIBRARY})
+
+
+TERRALIB_REGISTER_TRANSLATION("terralib_unittest_core" "pt_BR"
+                              "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
+                              "${CMAKE_BINARY_DIR}/share/terralib/translations")
+
+add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(WIN32)
-  add_definitions(-DTECOREDLL)
-  set(terralib_unittest_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(terralib_unittest_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-  set(terralib_unittest_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
-else()
-  set(terralib_unittest_core_lib_function_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(terralib_unittest_core_lib_function_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
-  set(terralib_unittest_core_lib_function_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/example)
+  add_definitions(-DTECOREEXEMPDLL)
 endif()
 
-file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.h)
-file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/corelib_lib_example/*.cpp)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/example)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/example)
+
+file(GLOB HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.h)
+file(GLOB SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/lib_example/*.cpp)
 
 add_library(terralib_unittest_core_lib_function SHARED ${HDR_FILES} ${SRC_FILES})
 
@@ -94,11 +104,3 @@ set_target_properties(terralib_unittest_core_lib_function
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
 add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)
-
-if(GETTEXT_FOUND)
-  if(TERRALIB_TRANSLATOR_ENABLED)
-    TERRALIB_REGISTER_TRANSLATION("terralib_unittest_core" "pt_BR")
-  endif()
-endif()
-add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core
-         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

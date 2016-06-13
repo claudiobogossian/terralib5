@@ -41,6 +41,8 @@
 
 #include <stdio.h>
 
+const int BLOCKSIZE = 10000;
+
 te::cellspace::CellularSpacesOperations::CellularSpacesOperations()
 {
 }
@@ -68,6 +70,11 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
   {
     refDs = layerBase->getData();
     useMask=true;
+
+    if (layerBase->getSchema()->hasRaster())
+    {
+      throw te::common::Exception(TE_TR("Can not generate cellspace based on Raster with mask!"));
+    }
   }
 
   std::auto_ptr<te::da::DataSetType> outputDataSetType(createCellularDataSetType(name, srid, type));
@@ -80,9 +87,16 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
   task.setTotalSteps(maxrows);
   task.useTimer(true);
 
-  std::auto_ptr<te::da::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
-  
-  std::auto_ptr<te::mem::DataSet> ds(dynamic_cast<te::mem::DataSet*>(outputDataSet.release()));
+  te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType.get());
+
+  // Output
+  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(outputSource->getAccessDriver());
+  source->setConnectionInfo(outputSource->getConnInfo());
+  source->open();
+
+  std::map<std::string, std::string> options;
+
+  std::size_t count = 0;
 
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
@@ -129,7 +143,7 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
 
             if(geom->intersects(g.get()))
             {
-              addCell(ds.get(), col, lin, geom.release());
+              addCell(outputDataSet, col, lin, geom.release());
               break;
             }
           }
@@ -137,25 +151,42 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
       }
       else
       {
-        addCell(ds.get(), col, lin, geom.release());
+        addCell(outputDataSet, col, lin, geom.release());
       }
+
+      if (count == 0)
+      {
+        source->createDataSet(outputDataSetType.get(), options);
+        source->add(outputDataSetType->getName(), outputDataSet, options);
+
+        delete outputDataSet;
+
+        outputDataSet = new te::mem::DataSet(outputDataSetType.get());
+      }
+
+      if ((count / BLOCKSIZE) >= 1)
+      {
+        source->add(outputDataSetType->getName(), outputDataSet, options);
+
+        delete outputDataSet;
+
+        outputDataSet = new te::mem::DataSet(outputDataSetType.get());
+      }
+
+      ++count;
     }
 
     task.pulse();
   }
 
-  // Output
-  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(outputSource->getAccessDriver());
-  source->setConnectionInfo(outputSource->getConnInfo());
-  source->open();
+  if (outputDataSet)
+  {
+    source->add(outputDataSetType->getName(), outputDataSet, options);
 
-  std::map<std::string, std::string> options;
-  // create the dataset
-  source->createDataSet(outputDataSetType.get(), options);
+    delete outputDataSet;
+  }
 
-  // copy from memory to output datasource
-  ds->moveBeforeFirst();
-  source->add(outputDataSetType->getName(),ds.get(), options);
+  source->close();
 }
 
 void te::cellspace::CellularSpacesOperations::addCell(te::mem::DataSet* ds, int col, int row, te::gm::Geometry* geom)

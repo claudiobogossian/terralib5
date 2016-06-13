@@ -82,6 +82,10 @@ namespace te
 
       void endSelectCell(const std::string&, const std::size_t&, std::size_t&);
 
+    private slots:
+
+      void onUndoFeedback();
+
     protected:
 
       virtual void saveGeometry(te::gm::Geometry* gm, const int& op);

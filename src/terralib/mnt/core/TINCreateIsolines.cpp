@@ -33,8 +33,7 @@ bool te::mnt::TINCreateIsolines::run()
 
   std::size_t ntri = m_triang.size();
   te::common::TaskProgress task("Creating Isolines...");
-  task.setTotalSteps((int)m_values.size()*ntri);
-  //task.useTimer(true);
+  task.setTotalSteps((int)(m_values.size()*ntri));
 
   for (size_t v = 0; v < m_values.size(); v++)
   {

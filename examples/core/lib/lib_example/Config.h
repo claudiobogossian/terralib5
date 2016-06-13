@@ -22,6 +22,16 @@
 #define __TERRALIB_EXAMPLE_CORE_LIB_CONFIG_H__
 
 // TerraLib
-#include <terralib/core/Config.h>
+#include <terralib/Defines.h>
+
+#ifdef WIN32
+#ifdef TECOREEXEMPDLL
+#define TECOREEXEMPEXPORT TE_DLL_EXPORT
+#else
+#define TECOREEXEMPEXPORT TE_DLL_IMPORT
+#endif 
+#else
+#define TECOREEXEMPEXPORT
+#endif
 
 #endif  // __TERRALIB_EXAMPLE_CORE_LIB_CONFIG_H__

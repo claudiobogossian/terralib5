@@ -135,6 +135,7 @@ namespace te
 ....\param coord the Coordinate to write the result into
 ....\return true if an intersection was found, false otherwise
 ....*/
+    using LineString::intersection;
     bool intersection(const Line& line, Point& coord) const;
 
     /*!
@@ -157,6 +158,7 @@ namespace te
     /*!
     \ Point line distance formula by calculating the coefficients A, B, C of the line Ax + By + C = 0 from points p1, p2
     */
+    using LineString::distance;
     double distance(te::gm::Point p);
       //@}
     };

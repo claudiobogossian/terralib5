@@ -42,7 +42,7 @@ int main(int /*argc*/, char** /*argv*/)
   luaL_openlibs(L); /* Load Lua libraries */
 
   /* Load the file containing the script we are going to run */
-  std::string f = te::common::FindInTerraLibPath("share/terralib/examples/lua/dataset.lua");
+  std::string f = te::common::FindInTerraLibPath("share/terralib/examples/lua/geometry.lua");
 
   int status = luaL_loadfile(L, f.c_str());
   if (status)
@@ -55,9 +55,11 @@ int main(int /*argc*/, char** /*argv*/)
   /* Ask Lua to run our little script */
   int result = lua_pcall(L, 0, 0, 0);
 
-  if (result)
+  if(result)
   {
     std::cout <<std::endl <<"Failed to run script: " <<lua_tostring(L, -1);
+    getchar();
+
     return EXIT_FAILURE;
   }
 

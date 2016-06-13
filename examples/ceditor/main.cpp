@@ -29,13 +29,26 @@ TerraLib Team at <terralib-team@terralib.org>.
 // TerraLib
 #include "MainWindow.h"
 
+#include <terralib/core/utils/Platform.h>
+
 // Qt
 #include <QApplication>
+#include <QIcon>
 
 
 // Main program
 int main(int argc, char *argv[])
 {
+  std::string iconThemePath = te::core::FindInTerraLibPath("share/terralib/icons");
+
+  QStringList pts = QIcon::themeSearchPaths();
+
+  pts <<QString::fromStdString(iconThemePath);
+
+  QIcon::setThemeSearchPaths(pts);
+
+  QIcon::setThemeName("terralib");
+
   QApplication app(argc, argv);
 
   MainWindow win;

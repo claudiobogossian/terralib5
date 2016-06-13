@@ -28,20 +28,24 @@
 
 // TerraLib
 #include <terralib/core/translator/Translator.h>
-#include <terralib/common/PlatformUtils.h>
-
-#include <boost/locale.hpp>
+#include <terralib/core/utils/Platform.h>
 
 // STL
 #include <cstdlib>
-#include <fstream>
 #include <iostream>
 
 int main(int argc, char *argv[])
 {
   // Add your your text domain, will throw and error if was already added
-  TE_ADD_TEXT_DOMAIN("terralib_example_core");
+  TE_ADD_TEXT_DOMAIN("terralib_example_core_translator", te::core::FindInTerraLibPath("share/terralib/translations"));
+
+  TE_TR_LANGUAGE("pt_BR");
   std::cout << TE_TR("This text will be in portuguese if your system locale is pt_BR") << "\n";
+
+  TE_TR_LANGUAGE("en_US");
+  std::cout << TE_TR("This text will be in portuguese if your system locale is pt_BR") << "\n";
+
   std::cout << TE_TR("This text will remain the same, because there is no translation for it.") << "\n";
+
   return EXIT_SUCCESS;
 }

@@ -514,14 +514,9 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
 
     case PG_DATE_TYPE:
       {
-        char* val = PQgetvalue(m_result, m_i, i);
-        lval = *((long int*)val);
-    
-#if TE_MACHINE_BYTE_ORDER == TE_NDR
-        te::common::SwapBytes(lval);
-#endif
+        ival = getInt32(i);
 
-        return std::auto_ptr<te::dt::DateTime>(Internal2Date(lval));
+        return std::auto_ptr<te::dt::DateTime>(Internal2Date(ival));
       }
 
     case PG_TIMESTAMP_TYPE:

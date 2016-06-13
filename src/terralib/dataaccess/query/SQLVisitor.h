@@ -93,6 +93,7 @@ namespace te
         virtual void visit(const SelectExpression& visited);
         virtual void visit(const SubSelect& visited);
         virtual void visit(const In& visited);
+        virtual void visit(const Cast& visited);
 
 
 // these methods are not true visitors... but let's keep the idea!

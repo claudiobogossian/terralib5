@@ -86,8 +86,19 @@ void te::qt::widgets::ProgressViewerWidget::cancelTask(int taskId)
   removeTask(taskId);
 }
 
-void te::qt::widgets::ProgressViewerWidget::setTotalValues(int /*taskId*/)
+void te::qt::widgets::ProgressViewerWidget::setTotalValues(int taskId)
 {
+  std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
+
+  if (it != m_tasks.end())
+  {
+    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_items.find(taskId);
+
+    if (itItem != m_items.end())
+    {
+      itItem->second->setTotalValues(it->second->getTotalSteps());
+    }
+  }
 }
 
 void te::qt::widgets::ProgressViewerWidget::updateValue(int taskId)
@@ -126,9 +137,7 @@ void te::qt::widgets::ProgressViewerWidget::customEvent(QEvent* e)
   {
     CreateProgressWidgetItemEvent* createEvent = static_cast<CreateProgressWidgetItemEvent*>(e);
     
-    ProgressWidgetItem* item = new ProgressWidgetItem(m_widget, createEvent->m_taskId, createEvent->m_totalSteps);
-
-    item->setLabel(createEvent->m_label.toStdString());
+    ProgressWidgetItem* item = new ProgressWidgetItem(m_widget, createEvent->m_taskId, createEvent->m_totalSteps, createEvent->m_label);
 
     m_items.insert(std::map<int, ProgressWidgetItem*>::value_type(createEvent->m_taskId, item));
 

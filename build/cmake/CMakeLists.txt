@@ -113,6 +113,10 @@ if(NOT DEFINED TERRALIB_BUILD_UNITTEST_ENABLED)
   set(TERRALIB_BUILD_UNITTEST_ENABLED ON CACHE BOOL "If on, shows the list of unit-tests to be built")
 endif()
 
+if(NOT DEFINED TERRALIB_BUILD_ITEST_ENABLED)
+  set(TERRALIB_BUILD_ITEST_ENABLED OFF CACHE BOOL "If on, shows the list of integration tests to be built")
+endif()
+
 if(NOT DEFINED TERRALIB_BUILD_AS_BUNDLE)
   set(TERRALIB_BUILD_AS_BUNDLE 0 CACHE BOOL "If on, tells that the build will generate a bundle")
 endif()
@@ -131,7 +135,10 @@ endif()
 # global definitions and includes
 #
 
-add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_UBLAS_TYPE_CHECK=0)
+add_definitions(-DBOOST_ALL_NO_LIB)
+add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
+add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
+add_definitions(-DBOOST_LOG_DYN_LINK)
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -287,12 +294,17 @@ find_package(CppUnit)
 
 find_package(CURL)
 
+find_package(GTest)
+
+find_package(GMock)
+
 #
 # some variables needed in config file
 #
 
 if(Boost_FOUND)
   set(TERRALIB_BOOST_ENABLED ON)
+  include_directories(${Boost_INCLUDE_DIR})
 endif()
 
 if(GDAL_FOUND)
@@ -301,10 +313,6 @@ endif()
 
 if(GEOS_FOUND)
   set(TERRALIB_GEOS_ENABLED ON)
-endif()
-
-if(GEOSC_FOUND)
-  set(TERRALIB_GEOSC_ENABLED ON)
 endif()
 
 if(GETTEXT_FOUND)
@@ -398,7 +406,9 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" OFF)
 endif()
 
-option(TERRALIB_MOD_CORE_ENABLED "Build Core Runtime Library?" ON)
+option(TERRALIB_MOD_CORE_ENABLED "Build TerraLib Core Runtime Library?" ON)
+
+option(TERRALIB_MOD_VM_ENABLED "Build TerraLib Virtual Machine Library?" OFF)
 
 option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
@@ -426,7 +436,7 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_PLUGIN_ENABLED "Build Plugin module?" ON "TE
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_XERCES_ENABLED "Build Xerces support?" ON "TERRALIB_XERCES_ENABLED;TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
 
-CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_CEDITOR_ENABLED "Build CEditor support?" ON "Qt5_FOUND;QSCINTILLA_FOUND" OFF)
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_CEDITOR_ENABLED "Build CEditor support?" OFF "Qt5_FOUND;QSCINTILLA_FOUND" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_POSTGIS_ENABLED "Build PostGIS support?" ON "TERRALIB_LIBPQ_ENABLED;TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
 
@@ -556,6 +566,8 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_MNT_QT_ENABLED "Build MNT Processing Qt modu
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_MNT_ENABLED "Build MNT Processing Driver Qt plugin?" ON "TERRALIB_MOD_MNT_QT_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VM_LUA_ENABLED "Build TerraLib Lua Virtual Machine Library?" ON "TERRALIB_LUA_ENABLED;TERRALIB_MOD_VM_ENABLED" OFF)
+
 if(QT_QCOLLECTIONGENERATOR_EXECUTABLE)
   CMAKE_DEPENDENT_OPTION(TERRALIB_QHELP_ENABLED  "Enable Qt-Help build?" ON "TERRALIB_QT_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 endif()
@@ -638,6 +650,8 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_TIN_ENABLED "Build the TIN Processing ex
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_WS_OGC_WCS_ENABLED "Build OGC WCS examples?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_WS_OGC_WCS_QT_ENABLED" OFF)
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_VM_ENABLED "Build Virtual Machine examples?" ON "TERRALIB_MOD_VM_ENABLED" OFF)
+
 
 #
 # build options for the TerraLib Unit Test
@@ -699,6 +713,11 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_VP_ENABLED "Build the unit test for the
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_WS_OGC_WCS_ENABLED "Build unit-test for OGC WCS support?" ON "TERRALIB_BUILD_UNITTEST_ENABLED;TERRALIB_MOD_WS_OGC_WCS_DATAACCESS_ENABLED" OFF)
 
+#
+# build options for the TerraLib Integration Tests
+#
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_ITEST_DATAACCESS_ENABLED "Build the integration test for the Data Access module?" OFF "TERRALIB_BUILD_ITEST_ENABLED" OFF "GMOCK_FOUND" OFF)
 
 #
 # process TERRALIB configuration files
@@ -757,6 +776,11 @@ endif()
 
 add_subdirectory(terralib_mod_core)
 list(APPEND TERRALIB_MODULES core)
+
+if(TERRALIB_MOD_VM_ENABLED)
+  add_subdirectory(terralib_mod_vm)
+  list(APPEND TERRALIB_MODULES vm)
+endif()
 
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
   add_subdirectory(terralib_mod_annotationtext)
@@ -1136,6 +1160,10 @@ if(TERRALIB_MOD_WS_OGC_WCS_QT_PLUGIN_ENABLED)
   add_subdirectory(terralib_mod_ws_ogc_wcs_qt_plugin)
 endif()
 
+if(TERRALIB_MOD_VM_LUA_ENABLED)
+  add_subdirectory(terralib_mod_vm_lua)
+endif()
+
 
 #
 # build examples
@@ -1285,6 +1313,10 @@ if(TERRALIB_EXAMPLE_TIN_ENABLED)
   add_subdirectory(terralib_example_TIN)
 endif()
 
+if(TERRALIB_EXAMPLE_VM_ENABLED)
+  add_subdirectory(terralib_example_vm)
+endif()
+
 #
 # build unit test
 #
@@ -1411,6 +1443,14 @@ endif()
 
 if(TERRALIB_UNITTEST_WS_OGC_WCS_ENABLED)
   add_subdirectory(terralib_unittest_ws_ogc_wcs)
+endif()
+
+#
+# build integration test
+#
+
+if(TERRALIB_ITEST_DATAACCESS_ENABLED)
+  add_subdirectory(terralib_itest_dataaccess)
 endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in

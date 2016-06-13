@@ -123,7 +123,6 @@ bool te::vp::Difference::executeMemory(te::vp::AlgorithmParams* mainParams)
 
   bool isCollection = this->isCollection(specificParams);
 
-
 // Create output dataset in memory.
   std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
   
@@ -383,16 +382,16 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
   std::auto_ptr<te::da::DataSourceTransactor> t = outputDataSource->getTransactor();
   std::map<std::string, std::string> options;
 
-  std::auto_ptr<te::da::DataSetType> outDataSetType(this->getOutputDataSetType(mainParams));
+  std::auto_ptr<te::da::DataSetType> outputDataSetType(this->getOutputDataSetType(mainParams));
 
   if (outputDataSource->getType() == "OGR")
   {
-    outputDataSource->createDataSet(outDataSetType.get(), options);
+    outputDataSource->createDataSet(outputDataSetType.get(), options);
   }
   else
   {
     t->begin();
-    t->createDataSet(outDataSetType.get(), options);
+    t->createDataSet(outputDataSetType.get(), options);
     t->commit();
 
     if (!inDataSourceInfoPtr)
@@ -426,7 +425,7 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
     insertFields->push_back(f_insert);
 
     te::da::Insert* insert = new te::da::Insert(new te::da::DataSetName(mainParams->getOutputDataSetName()), insertFields, outerSelect);
-    inputParams[0].m_inputDataSource->execute(*insert);
+    outputDataSource->execute(*insert);
   }
   else
   {
@@ -457,6 +456,10 @@ bool te::vp::Difference::executeQuery(te::vp::AlgorithmParams* mainParams)
 std::vector<std::string> te::vp::Difference::getPropNames(const std::map<std::string, te::dt::AbstractData*>& specificParams)
 {
   std::vector<std::string> propNames;
+
+  if (specificParams.empty())
+    return propNames;
+
   std::map<std::string, te::dt::AbstractData*>::const_iterator it = specificParams.begin();
 
   while (it != specificParams.end())
@@ -561,7 +564,7 @@ te::da::DataSetType* te::vp::Difference::getOutputDataSetType(te::vp::AlgorithmP
 
   bool isCollection = this->isCollection(specificParams);
 
-  te::gm::GeomType type = setGeomResultType(te::da::GetFirstGeomProperty(dsType)->getGeometryType(), isCollection);
+  te::gm::GeomType type = setGeomResultType(intputGeomProp->getGeometryType(), isCollection);
   newGeomProp->setGeometryType(type);
 
   newGeomProp->setSRID(intputGeomProp->getSRID());

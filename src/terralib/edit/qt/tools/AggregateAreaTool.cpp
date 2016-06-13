@@ -37,8 +37,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/AddCommand.h"
-#include "../core/UndoStackManager.h"
 #include "AggregateAreaTool.h"
 
 // Qt
@@ -55,18 +53,12 @@
 
 te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-  m_addWatches(0),
-  m_currentIndex(0)
+  m_stack(UndoStackManager::getInstance())
 {
 }
 
 te::edit::AggregateAreaTool::~AggregateAreaTool()
 {
-  delete m_feature;
-  te::common::FreeContents(m_addWatches);
-  m_addWatches.clear();
-
-  UndoStackManager::getInstance().getUndoStack()->clear();
 }
 
 bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
@@ -196,7 +188,10 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
       m_feature->getGeometry()->transform(polygon->getSRID());
 
     if (!polygon->intersects(m_feature->getGeometry()))
+    { 
+      m_isFinished = false;
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
+    }
 
     geoUnion = convertGeomType(m_layer, unionGeometry(polygon, m_feature->getGeometry()));
 
@@ -288,61 +283,11 @@ void te::edit::AggregateAreaTool::storeUndoCommand()
   if (m_feature == 0)
     return;
 
-  //ensures that the vector has not repeated features after several clicks on the same
-  if (m_addWatches.size())
-  {
-    if (m_addWatches.at(0)->getGeometry()->equals(m_feature->getGeometry()))
-      return;
-  }
-
-  //If another feature is selected the stack is cleaned
-  for (std::size_t i = 0; i < m_addWatches.size(); i++)
-  {
-    if (m_addWatches.at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
-    {
-      te::common::FreeContents(m_addWatches);
-      m_addWatches.clear();
-      UndoStackManager::getInstance().getUndoStack()->clear();
-      break;
-    }
-  }
-
-  m_addWatches.push_back(m_feature->clone());
-
-  //If a feature is changed in the middle of the stack, this change ends up being the top of the stack
-  if (m_currentIndex < (int)(m_addWatches.size() - 2))
-  {
-    std::size_t i = 0;
-    while (i < m_addWatches.size())
-    {
-      m_addWatches.pop_back();
-      i = (m_currentIndex + 1);
-    }
-    m_addWatches.push_back(m_feature->clone());
-  }
-
-  m_currentIndex = (int)(m_addWatches.size() - 1);
-
-  if (m_addWatches.size() < 2)
+  if (!m_isFinished)
     return;
 
-  QUndoCommand* command = new AddCommand(m_addWatches, m_currentIndex, m_layer);
-  connect(dynamic_cast<AddCommand*>(command), SIGNAL(geometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)), SLOT(onGeometryAcquired(te::gm::Geometry*, std::vector<te::gm::Coord2D>)));
+  m_stack.addWatch(m_feature->clone());
 
-  UndoStackManager::getInstance().addUndoStack(command);
-}
-
-void te::edit::AggregateAreaTool::onGeometryAcquired(te::gm::Geometry* geom, std::vector<te::gm::Coord2D> /*coords*/)
-{
-  if (m_feature == 0)
-    return;
-
-  m_feature->setGeometry(geom);
-
-  if (m_currentIndex > -1)
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
-  else
-    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_feature->getId());
-
-  draw(true);
+  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature->clone()->getId());
+  m_stack.addUndoStack(command);
 }

@@ -18,7 +18,11 @@
   #include <omp.h>
 #endif
 
-#define TOTAL_STEPS 15000
+#define TOTAL_STEPS 3000
+#define PART_1 1000
+#define PART_2 2000
+
+#define TOTAL_STEPS_INTERNAL 500
 
 DummyWindow::DummyWindow(QWidget* parent) : QWidget(parent)
 {
@@ -50,6 +54,10 @@ DummyWindow::DummyWindow(QWidget* parent) : QWidget(parent)
   connect(m_barViewer, SIGNAL(clicked()), this, SLOT(showWidgetViewer()));
 
   m_widgetViewer = 0;
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  omp_set_num_threads(omp_get_num_procs());
+#endif
 }
 
 DummyWindow::~DummyWindow()
@@ -92,27 +100,43 @@ void DummyWindow::showProgressBar()
 
 void DummyWindow::showThreadProgressBar()
 {
-  te::common::TaskProgress task;
-  task.setTotalSteps(TOTAL_STEPS);
-  task.setMessage("Qt Thread Progress Test");
-  task.useTimer(false);
-  task.useMultiThread(true);
+  te::common::TaskProgress task("Qt Progress Test", 0, TOTAL_STEPS);
+  task.useTimer(true);
 
-  #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-    omp_set_num_threads( 4 );
-    #pragma omp parallel for
-  #endif
-  for(int i = 0; i < TOTAL_STEPS; ++i)
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#pragma omp parallel for
+#endif
+  for (int i = 0; i < TOTAL_STEPS; ++i)
   {
-    if(task.isActive())
+    if (task.isActive())
     {
-      #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-        Sleep(5);
-      #endif
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      Sleep(5);
+      std::cout << "Thread: " << omp_get_thread_num() << " i: " << i << " total: " << TOTAL_STEPS << std::endl;
+#endif
 
       task.pulse();
     }
+
+    if (i == PART_1 || i == PART_2)
+    {
+      te::common::TaskProgress taskInternal("Qt Progress Internal Task", 0, TOTAL_STEPS_INTERNAL);
+
+      for (int j = 0; j < TOTAL_STEPS_INTERNAL; ++j)
+      {
+        if (taskInternal.isActive())
+        {
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+          Sleep(5);
+          std::cout << "Thread: " << omp_get_thread_num() << " j: " << j << " total: " << TOTAL_STEPS_INTERNAL << std::endl;
+#endif
+
+          taskInternal.pulse();
+        }
+      }
+    }
   }
+  return;
 }
 
 void DummyWindow::showWidgetViewer()

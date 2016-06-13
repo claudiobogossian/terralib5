@@ -193,7 +193,7 @@
         break;
     }
 	
-	$self->setParams(bands, stats, texture);
+	$self->setParams(bands, stats, texture, true);
   }
   
   te::da::DataSource* createAndSetOutput(const std::string& dsName, const std::string& dsType, 

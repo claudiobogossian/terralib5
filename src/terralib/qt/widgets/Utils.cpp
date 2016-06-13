@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/STLUtils.h"
+#include "../../common/StringUtils.h"
 #include "../../maptools/MarkRendererManager.h"
 #include "../../maptools/Canvas.h"
 #include "../../se/Fill.h"
@@ -52,6 +53,9 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidgetItemIterator>
 #include <QString>
+
+//Boost
+#include <boost/lexical_cast.hpp>
 
 void te::qt::widgets::SetChildrenCheckState(QTreeWidgetItem* item, int column, Qt::CheckState state)
 {
@@ -546,4 +550,27 @@ void te::qt::widgets::GetChangedAndVisibleLayers(const QModelIndexList& idxs, st
       }
     }
   }
+}
+
+bool te::qt::widgets::isValidSRIDs(const int& firstSRID, const int& secondSRID, std::string& msg)
+{
+  if (firstSRID == 0 && secondSRID != 0)
+  {
+    msg = "The first SRID(0). It is not possible to convert the SRID to a valid Projection (";
+    msg += te::common::Convert2String(secondSRID);
+    msg += "). Please, inform the fisrt SRID!";
+
+    return false;
+  }
+
+  if (firstSRID != 0 && secondSRID == 0)
+  {
+    msg = "The second SRID(0). It is not possible to convert the SRID to a valid Projection (";
+    msg += te::common::Convert2String(firstSRID);
+    msg += "). Please, inform the second SRID!";
+
+    return false;
+  }
+
+  return true;
 }

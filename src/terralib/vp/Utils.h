@@ -50,6 +50,8 @@ namespace te
       QUERY
     };
 
+    std::auto_ptr<te::gm::Geometry> GetGeometryUnion(const std::vector<std::auto_ptr<te::gm::Geometry> >& geomVec);
+
     /*!
       \brief It returns the union of a geometry vector.
 
@@ -62,8 +64,6 @@ namespace te
     te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
 
     void SplitGeometryCollection(te::gm::GeometryCollection* geomIn, te::gm::GeometryCollection* gcOut);
-
-    bool VerifyGeometryRepresentation(te::gm::Geometry* geom, te::gm::GeomType type);
 
     std::string GetSimpleTableName(std::string fullName);
 
@@ -86,6 +86,12 @@ namespace te
     te::gm::Geometry* SetGeomAsMulti(te::gm::Geometry* geom);
 
     std::string GetDistinctName(const std::string& name, std::vector<std::string> names, std::size_t maxSize = 0);
+
+    bool IsPointType(const te::gm::GeomType& geomType);
+
+    bool IsLineStringType(const te::gm::GeomType& geomType);
+
+    bool IsPolygonType(const te::gm::GeomType& geomType);
 
   } // end namespace vp
 }   // end namespace te

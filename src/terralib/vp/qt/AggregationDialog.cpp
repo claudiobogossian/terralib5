@@ -25,42 +25,47 @@
 
 // TerraLib
 #include "../../common/Logger.h"
-#include "../../common/progress/ProgressManager.h"
-#include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
+#include "../../common/StringUtils.h"
+#include "../../core/translator/Translator.h"
+
+
+#include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
-#include "../../dataaccess/dataset/ObjectIdSet.h"
+
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
+
 #include "../../dataaccess/utils/Utils.h"
-#include "../../datatype/Enums.h"
+
 #include "../../datatype/Property.h"
-#include "../../maptools/AbstractLayer.h"
-#include "../../qt/af/Utils.h"
+#include "../../datatype/SimpleData.h"
+
+#include "../../geometry/GeometryProperty.h"
+
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
+
 #include "../../statistics/core/Utils.h"
+
 #include "../Config.h"
 #include "../Exception.h"
+#include "../ComplexData.h"
+#include "../Dissolve.h"
+#include "../Utils.h"
+
 #include "AggregationDialog.h"
-#include "../AggregationMemory.h"
-#include "../AggregationOp.h"
-#include "../AggregationQuery.h"
 #include "ui_AggregationDialogForm.h"
 #include "Utils.h"
 
 // Qt
 #include <QFileDialog>
-#include <QList>
-#include <QListWidget>
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QString>
-#include <QTreeWidget>
 
 // Boost
 #include <boost/algorithm/string.hpp>
@@ -72,24 +77,35 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::AggregationDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
-    m_selectedLayer(0),
+    m_inputLayer(0),
     m_toFile(false)
 {
 // add controls
   m_ui->setupUi(this);
 
-  m_ui->m_outputStatisticsGroupBox->setVisible(false);
+  m_ui->m_objectTypeGroupBox->setVisible(false);
+  m_ui->m_statisticalSummatyGroupBox->setVisible(false);
+  this->onMultiGeometryChecked(false);
 
 // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
-  setStatisticalSummary();
-  setStatisticalSummaryMap();
+  QSize iconSize(96, 48);
+
+  m_ui->m_singleRadioButton->setIconSize(iconSize);
+  m_ui->m_singleRadioButton->setIcon(QIcon::fromTheme("vp-single-objects"));
+
+  m_ui->m_multiRadioButton->setIconSize(iconSize);
+  m_ui->m_multiRadioButton->setIcon(QIcon::fromTheme("vp-multi-objects"));
+
+  this->setStatisticalSummary();
+  this->setStatisticalSummaryMap();
 
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
-  connect(m_ui->m_calcStatCheckBox, SIGNAL(toggled(bool)), this, SLOT(onCalculateStatistics(bool)));
+  connect(m_ui->m_calcStatCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAdvanced(bool)));
+  connect(m_ui->m_multiRadioButton, SIGNAL(toggled(bool)), this, SLOT(onMultiGeometryChecked(bool)));
   connect(m_ui->m_outputListWidget, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(onOutputListWidgetClicked(QListWidgetItem *)));
   connect(m_ui->m_selectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectAllComboBoxChanged(int)));
   connect(m_ui->m_rejectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRejectAllComboBoxChanged(int)));
@@ -186,9 +202,9 @@ te::dt::Property* te::vp::AggregationDialog::getSelectedPropertyByName(std::stri
   return 0;
 }
 
-std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties()
+std::vector<std::string> te::vp::AggregationDialog::getSelectedPropertyNames()
 {
-  std::vector<te::dt::Property*> selProperties;
+  std::vector<std::string> selectedPropertyNames;
 
   for(int i = 0; i != m_ui->m_propertieslistWidget->count(); ++i)
   {
@@ -197,16 +213,19 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
     if(m_ui->m_propertieslistWidget->isItemSelected(item))
     {
       std::string name = item->text().toStdString();
-
-      for(std::size_t j = 0; j < m_properties.size(); ++j)
-      {
-        if(name == m_properties[j]->getName())
-          selProperties.push_back(m_properties[j]);
-      }
+      selectedPropertyNames.push_back(name);
     }
   }
 
-  return selProperties;
+  return selectedPropertyNames;
+}
+
+bool te::vp::AggregationDialog::isCollection()
+{
+  if (m_ui->m_multiRadioButton->isChecked())
+    return true;
+
+  return false;
 }
 
 te::map::AbstractLayerPtr te::vp::AggregationDialog::getLayer()
@@ -281,174 +300,104 @@ void te::vp::AggregationDialog::setFunctionsByLayer(std::vector<te::dt::Property
   m_ui->m_rejectAllComboBox->setCurrentIndex(0);
   m_ui->m_outputListWidget->clear();
 
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
   te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
   const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
 
-  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+  for(size_t i=0; i < properties.size(); ++i)
   {
-    for(size_t i=0; i < properties.size(); ++i)
-    {
-      propertyType = properties[i]->getType();
-      if(propertyType != te::dt::GEOMETRY_TYPE)
-      {
-        if(propertyType == te::dt::STRING_TYPE)
-        {  
-          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-          m_ui->m_outputListWidget->addItem(item);
+    propertyType = properties[i]->getType();
+    if (propertyType == te::dt::GEOMETRY_TYPE)
+      continue;
+    
+    if(propertyType == te::dt::STRING_TYPE)
+    {  
+      QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
+      m_ui->m_outputListWidget->addItem(item);
         
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem("");
-          m_ui->m_outputListWidget->addItem(item);
-        }
-        else
-        {
-          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem("");
+      m_ui->m_outputListWidget->addItem(item);
+    }
+    else
+    {
+      QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEAN].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEAN].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SUM].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::SUM));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SUM].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::SUM));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VARIANCE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VARIANCE].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::AMPLITUDE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
-          m_ui->m_outputListWidget->addItem(item);
+      item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::AMPLITUDE].c_str());
+      item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
+      m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem("");
-          m_ui->m_outputListWidget->addItem(item);
-        }
+// Does not implemented for Query Operation.
+      if (!dsCapabilities.supportsPreparedQueryAPI())
+      {
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SKEWNESS].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::SKEWNESS));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::KURTOSIS].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::KURTOSIS));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEDIAN].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MEDIAN));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VAR_COEFF].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VAR_COEFF));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MODE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MODE));
+        m_ui->m_outputListWidget->addItem(item);
       }
+
+      item = new QListWidgetItem("");
+      m_ui->m_outputListWidget->addItem(item);
     }
   }
-  else
-  {
-    for(size_t i=0; i < properties.size(); ++i)
-    {
-      propertyType = properties[i]->getType();
-      if(propertyType != te::dt::GEOMETRY_TYPE)
-      {
-        if(propertyType == te::dt::STRING_TYPE)
-        {  
-          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-          m_ui->m_outputListWidget->addItem(item);
 
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-          m_ui->m_outputListWidget->addItem(item);
-        
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem("");
-          m_ui->m_outputListWidget->addItem(item);
-        }
-        else
-        {
-          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEAN].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SUM].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::SUM));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VARIANCE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SKEWNESS].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::SKEWNESS));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::KURTOSIS].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::KURTOSIS));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::AMPLITUDE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEDIAN].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MEDIAN));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VAR_COEFF].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VAR_COEFF));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MODE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MODE));
-          m_ui->m_outputListWidget->addItem(item);
-
-          item = new QListWidgetItem("");
-          m_ui->m_outputListWidget->addItem(item);
-        }
-      }
-    }
-  }
   int lastRow = m_ui->m_outputListWidget->count() - 1;
   delete m_ui->m_outputListWidget->item(lastRow);
 }
@@ -467,7 +416,7 @@ void te::vp::AggregationDialog::onLayerComboBoxChanged(int index)
     {
       std::size_t type;
       te::map::AbstractLayerPtr selectedLayer = it->get();
-      m_selectedLayer = selectedLayer;
+      m_inputLayer = selectedLayer;
       std::auto_ptr<const te::map::LayerSchema> schema(selectedLayer->getSchema());
 
       if(schema->size() == 0)
@@ -496,10 +445,26 @@ void te::vp::AggregationDialog::onLayerComboBoxChanged(int index)
   }
 }
 
-void te::vp::AggregationDialog::onCalculateStatistics(bool visible)
+void te::vp::AggregationDialog::onAdvanced(bool visible)
 {
   m_ui->m_outputListWidget->reset();
-  m_ui->m_outputStatisticsGroupBox->setVisible(visible);
+  m_ui->m_objectTypeGroupBox->setVisible(visible);
+  m_ui->m_statisticalSummatyGroupBox->setVisible(visible);
+}
+
+void te::vp::AggregationDialog::onMultiGeometryChecked(bool checked)
+{
+  m_ui->m_statisticalSummatyGroupBox->setEnabled(checked);
+  m_ui->m_selectAllComboBox->setEnabled(checked);
+  m_ui->m_rejectAllComboBox->setEnabled(checked);
+  m_ui->m_outputListWidget->setEnabled(checked);
+
+  if (!checked)
+  {
+    m_ui->m_selectAllComboBox->setCurrentIndex(0);
+    m_ui->m_rejectAllComboBox->setCurrentIndex(0);
+    m_ui->m_outputListWidget->clearSelection();
+  }
 }
 
 void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
@@ -609,219 +574,243 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
 
 void te::vp::AggregationDialog::onOkPushButtonClicked()
 {
-  if(m_ui->m_layersComboBox->count() == 0)
+// Validate Input Layer.
+  if (m_ui->m_layersComboBox->count() == 0)
   {
-    QMessageBox::information(this, "Aggregation", "Select an input layer.");
-    return;
-  }
-  
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-
-  if(!dsLayer)
-  {
-    QMessageBox::information(this, "Aggregation", "Can not execute this operation on this type of layer.");
+    QMessageBox::information(this, tr("Dissolve"), tr("Select an input layer."));
     return;
   }
 
-  const te::da::ObjectIdSet* oidSet = 0;
-
-  if(m_ui->m_onlySelectedCheckBox->isChecked())
+// Validate DataSource.
+  te::da::DataSourcePtr inputDataSource = te::da::GetDataSource(m_inputLayer->getDataSourceId(), true);
+  if (!inputDataSource.get())
   {
-    oidSet = m_selectedLayer->getSelected();
-    if(!oidSet)
-    {
-      QMessageBox::information(this, "Aggregation", "Select the layer objects to perform the aggregation operation.");
-      return;
-    }
-  }
-
-  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-  if (!inDataSource.get())
-  {
-    QMessageBox::information(this, "Aggregation", "The selected input data source can not be accessed.");
+    QMessageBox::information(this, tr("Dissolve"), tr("The selected input data source can not be accessed."));
     return;
   }
-  
-  std::vector<te::dt::Property*> selProperties = getSelectedProperties();
-  if(selProperties.empty())
+
+// Verify selected properties to do Dissolve.
+  std::vector<std::string> selProperties = getSelectedPropertyNames();
+  if (selProperties.empty())
   {
-    QMessageBox::information(this, "Aggregation", "Select at least one grouping attribute.");
+    QMessageBox::information(this, tr("Dissolve"), tr("Select at least one grouping attribute."));
     return;
   }
-  
+
+// Set specific parameters.
+  std::map<std::string, te::dt::AbstractData*> specificParams;
+  specificParams["DISSOLVE"] = new te::vp::ComplexData<std::vector<std::string> >(selProperties);
+
+  specificParams["IS_COLLECTION"] = new te::dt::SimpleData<bool, te::dt::BOOLEAN_TYPE>(this->isCollection());
+
+
+  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary = getStatisticalSummary();
+  specificParams["SUMMARY"] = new te::vp::ComplexData<std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > >(outputStatisticalSummary);
+
+
+// Validade output repository.
+  if (m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Dissolve"), tr("Define a repository for the result."));
+    return;
+  }
+
   std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-  
-  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+
+  if (outputdataset.empty())
   {
-    QMessageBox::information(this, "Aggregation", "Define a repository for the result.");
-    return;
-  }
-       
-  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
-  {
-    QMessageBox::information(this, "Aggregation", "Define a name for the resulting layer.");
+    QMessageBox::information(this, tr("Dissolve"), tr("Define a name for the resulting layer."));
     return;
   }
 
-  //progress
-  te::qt::widgets::ProgressViewerDialog v(this);
-  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+// Verify if "Input Only Selected objects" is checked.
+  bool inputIsChecked = false;
+
+  if (m_ui->m_onlySelectedCheckBox->isChecked())
+    inputIsChecked = true;
 
   try
   {
-    std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary = getStatisticalSummary();
+// Declare the input parameters
+    te::vp::InputParams structInputParams;
+
+// Set the inputLayer parameters
+    structInputParams.m_inputDataSource = inputDataSource;
+    structInputParams.m_inputDataSetType = m_inputLayer->getSchema().release();
+
+    te::gm::GeometryProperty* geomInputProp = te::da::GetFirstGeomProperty(structInputParams.m_inputDataSetType);
+
+    int inputSRID = 0;
+
+    if (!geomInputProp)
+    {
+      QMessageBox::information(this, tr("Dissolve"), tr("Problem to get geometry property of input layer."));
+
+      return;
+    }
+
+    inputSRID = m_inputLayer->getSRID();
+
+// Select a strategy based on the capabilities of the input datasource
+    const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
+
+    bool isQuery = false;
+
+    te::da::Select* inputSelect = 0;
+    te::da::DataSet* inputDataSet = 0;
+
+    if (inputDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+    {
+      isQuery = true;
+
+// Get Select Query using AbstractLayerPtr to process by spatial database. 
+      inputSelect = te::vp::GetSelectQueryFromLayer(m_inputLayer, inputIsChecked, inputSRID);
+
+      if (inputSelect)
+        structInputParams.m_inputQuery = inputSelect;
+    }
+    else
+    {
+// Get DataSet and DataSetType using AbstractLayerPtr to process by memory, using GEOS.
+      te::vp::DataStruct inputData = te::vp::GetDataStructFromLayer(m_inputLayer, inputIsChecked, inputSRID);
+
+      if (inputData.m_dataSet)
+        structInputParams.m_inputDataSet = inputData.m_dataSet;
+
+      if (inputData.m_dataSetType)
+        structInputParams.m_inputDataSetType = inputData.m_dataSetType;
+    }
     
-    bool res;
-    
+    m_inputParams.push_back(structInputParams);
+
+
+// Return of operation result.
+    bool res = true;
+
     if (m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
-      
+
       if (boost::filesystem::exists(uri))
       {
-        QMessageBox::information(this, "Aggregation", "Output file already exists. Remove it or select a new name and try again.");
+        QMessageBox::information(this, tr("Dissolve"), tr("Output file already exists. Remove it and try again. "));
+
         return;
       }
-      
+
       std::size_t idx = outputdataset.find(".");
       if (idx != std::string::npos)
-        outputdataset=outputdataset.substr(0,idx);
+        outputdataset = outputdataset.substr(0, idx);
 
-      std::map<std::string, std::string> dsinfo;
-      dsinfo["URI"] = uri.string();
-      
-      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-      dsOGR->setConnectionInfo(dsinfo);
+      te::da::DataSourcePtr dsOGR = te::vp::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
+
       dsOGR->open();
-      if (dsOGR->dataSetExists(outputdataset))
-      {
-        QMessageBox::information(this, "Aggregation", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
-        return;
-      }
 
-      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
-
-      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
-      
       this->setCursor(Qt::WaitCursor);
 
-      te::vp::AggregationOp* aggregOp = 0;
+// Set parameters (Input/Output).
+      m_params = new te::vp::AlgorithmParams();
+      m_params->setInputParams(m_inputParams);
+      m_params->setOutputDataSource(dsOGR);
+      m_params->setOutputDataSetName(outputdataset);
+      m_params->setOutputSRID(inputSRID);
+      m_params->setSpecificParams(specificParams);
 
-      // select a strategy based on the capabilities of the input datasource
-      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+      te::vp::Dissolve dissolve;
 
-      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
+
+      if (isQuery)
       {
-        aggregOp = new te::vp::AggregationQuery();
+        res = dissolve.executeQuery(m_params);
       }
       else
       {
-        aggregOp = new te::vp::AggregationMemory();
+        res = dissolve.executeMemory(m_params);
       }
-
-      aggregOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
-      aggregOp->setOutput(dsOGR, outputdataset);
-      aggregOp->setParams(selProperties, outputStatisticalSummary);
-
-      if (!aggregOp->paramsAreValid())
-        res = false;
-      else
-        res = aggregOp->run();
 
       if (!res)
       {
-        this->setCursor(Qt::ArrowCursor);
         dsOGR->close();
-        QMessageBox::information(this, "Aggregation", "Error: could not generate the aggregation.");
+
+        QMessageBox::information(this, tr("Dissolve"), tr("Error: could not generate the dissolve."));
+
         reject();
       }
-      dsOGR->close();
 
-      m_warnings = aggregOp->getWarnings();
+      m_outputDatasource = te::da::DataSourceInfoManager::getInstance().get(dsOGR->getId());
 
-      delete aggregOp;
-      
-      // let's include the new datasource in the managers
-      boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string id_ds = boost::uuids::to_string(u);
-      
-      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-      ds->setConnInfo(dsinfo);
-      ds->setTitle(uri.stem().string());
-      ds->setAccessDriver("OGR");
-      ds->setType("OGR");
-      ds->setDescription(uri.string());
-      ds->setId(id_ds);
-      
-      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ds->getConnInfo());
-      newds->open();
-      te::da::DataSourceInfoManager::getInstance().add(ds);
-      m_outputDatasource = ds;
+      if (!m_outputDatasource)
+      {
+        QMessageBox::information(this, tr("Dissolve"), tr("The output data source can not be accessed."));
+
+        return;
+      }
+
+      m_warnings = m_params->getWarnings();
+
+      delete m_params;
     }
     else
     {
       te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
-      if (!aux)
+      if (!aux.get())
       {
-        QMessageBox::information(this, "Aggregation", "The selected output datasource can not be accessed.");
+        QMessageBox::information(this, tr("Dissolve"), tr("The output data source can not be accessed."));
+
         return;
       }
-      
-      if (aux->dataSetExists(outputdataset))
+
+      std::string name = te::common::Convert2LCase(outputdataset);
+
+      if (aux->dataSetExists(name))
       {
-        QMessageBox::information(this, "Aggregation", "Dataset already exists. Remove it or select a new name and try again.");
+        QMessageBox::information(this, tr("Dissolve"), tr("Dataset already exists. Remove it or select a new name and try again."));
+
         return;
       }
+
       this->setCursor(Qt::WaitCursor);
 
-      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
+// Set parameters (Input/Output).
+      m_params = new te::vp::AlgorithmParams();
+      m_params->setInputParams(m_inputParams);
+      m_params->setOutputDataSource(aux);
+      m_params->setOutputDataSetName(outputdataset);
+      m_params->setOutputSRID(inputSRID);
+      m_params->setSpecificParams(specificParams);
 
-      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+      te::vp::Dissolve dissolve;
 
-      te::vp::AggregationOp* aggregOp = 0;
+// Select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
 
-      // select a strategy based on the capabilities of the input datasource
-      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
-
-      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      if (isQuery)
       {
-        aggregOp = new te::vp::AggregationQuery();
+        res = dissolve.executeQuery(m_params);
       }
       else
       {
-        aggregOp = new te::vp::AggregationMemory();
+        res = dissolve.executeMemory(m_params);
       }
 
-      aggregOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
-      aggregOp->setOutput(aux, outputdataset);
-      aggregOp->setParams(selProperties, outputStatisticalSummary);
+      m_warnings = m_params->getWarnings();
 
-      if (!aggregOp->paramsAreValid())
-        res = false;
-      else
-        res = aggregOp->run();
-
-      m_warnings = aggregOp->getWarnings();
-
-      delete aggregOp;
+      delete m_params;
 
       if (!res)
       {
-        te::common::ProgressManager::getInstance().removeViewer(id);
-
         this->setCursor(Qt::ArrowCursor);
-        QMessageBox::information(this, "Aggregation", "Error: could not generate the aggregation.");
-        
+        QMessageBox::information(this, tr("Dissolve"), tr("Error: could not generate the dissolve."));
         reject();
       }
     }
-    
-    // creating a layer for the result
+
+// creating a layer for the result
     te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
-    
+
     te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
-      
+
     te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
     m_layer = converter(dt);
   }
@@ -837,13 +826,11 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     te::common::Logger::logDebug("vp", str.c_str());
 #endif // TERRALIB_LOGGER_ENABLED
 
-    te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }
 
-  te::common::ProgressManager::getInstance().removeViewer(id);
   this->setCursor(Qt::ArrowCursor);
-
+  
   accept();
 }
 

@@ -425,6 +425,11 @@ bool te::vp::GeometricOpWizard::execute()
 
 // creating a layer for the result
     te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+    
+    //force to close database connection to refresh dataSets.
+    outDataSource->close();
+    outDataSource->open();
+
     te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
 
     for(std::size_t i = 0; i < outputDSetNames.size(); ++i)

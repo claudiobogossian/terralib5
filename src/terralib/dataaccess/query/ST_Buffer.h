@@ -69,7 +69,6 @@ namespace te
           \param d    Distance.
         */
         ST_Buffer(const te::da::PropertyName& prop, const double& d);
-
         /*!
           \brief Constructor.
 
