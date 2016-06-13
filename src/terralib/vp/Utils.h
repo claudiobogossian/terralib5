@@ -50,7 +50,7 @@ namespace te
       QUERY
     };
 
-    std::auto_ptr<te::gm::Geometry> GetGeometryUnion(const std::vector<std::auto_ptr<te::gm::Geometry> >& geomVec);
+    TEVPEXPORT std::auto_ptr<te::gm::Geometry> GetGeometryUnion(const std::vector<te::gm::Geometry*>& geomVec);
 
     /*!
       \brief It returns the union of a geometry vector.
@@ -59,39 +59,39 @@ namespace te
 
       \return Union of the geometry.
     */
-    te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType);
+    TEVPEXPORT te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType);
 
-    te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
+    TEVPEXPORT te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
 
-    void SplitGeometryCollection(te::gm::GeometryCollection* geomIn, te::gm::GeometryCollection* gcOut);
+    TEVPEXPORT void SplitGeometryCollection(te::gm::GeometryCollection* geomIn, te::gm::GeometryCollection* gcOut);
 
-    std::string GetSimpleTableName(std::string fullName);
+    TEVPEXPORT std::string GetSimpleTableName(std::string fullName);
 
-    std::auto_ptr<te::da::DataSet> PrepareAdd(te::da::DataSet* ds, te::da::DataSetType* dt);
+    TEVPEXPORT std::auto_ptr<te::da::DataSet> PrepareAdd(te::da::DataSet* ds, te::da::DataSetType* dt);
 
-    void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
+    TEVPEXPORT void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
 
-    bool IsMultiType(te::gm::GeomType geomType);
+    TEVPEXPORT bool IsMultiType(te::gm::GeomType geomType);
 
-    te::gm::GeomType GetSimpleType(te::gm::GeomType geomType);
-    
-    te::gm::GeomType GetMultiType(te::gm::GeomType geomType);
+    TEVPEXPORT te::gm::GeomType GetSimpleType(te::gm::GeomType geomType);
+
+    TEVPEXPORT te::gm::GeomType GetMultiType(te::gm::GeomType geomType);
 
     TEVPEXPORT te::da::DataSourcePtr CreateOGRDataSource(std::string repository);
 
-    void ValidateAlgorithmParams(AlgorithmParams* mainParams, Strategy st);
+    TEVPEXPORT void ValidateAlgorithmParams(AlgorithmParams* mainParams, Strategy st);
 
-    te::sam::rtree::Index<size_t, 8>* GetRtree(te::da::DataSet* data);
+    TEVPEXPORT te::sam::rtree::Index<size_t, 8>* GetRtree(te::da::DataSet* data);
 
-    te::gm::Geometry* SetGeomAsMulti(te::gm::Geometry* geom);
+    TEVPEXPORT te::gm::Geometry* SetGeomAsMulti(te::gm::Geometry* geom);
 
-    std::string GetDistinctName(const std::string& name, std::vector<std::string> names, std::size_t maxSize = 0);
+    TEVPEXPORT std::string GetDistinctName(const std::string& name, std::vector<std::string> names, std::size_t maxSize = 0);
 
-    bool IsPointType(const te::gm::GeomType& geomType);
+    TEVPEXPORT bool IsPointType(const te::gm::GeomType& geomType);
 
-    bool IsLineStringType(const te::gm::GeomType& geomType);
+    TEVPEXPORT bool IsLineStringType(const te::gm::GeomType& geomType);
 
-    bool IsPolygonType(const te::gm::GeomType& geomType);
+    TEVPEXPORT bool IsPolygonType(const te::gm::GeomType& geomType);
 
   } // end namespace vp
 }   // end namespace te

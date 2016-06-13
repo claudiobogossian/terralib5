@@ -61,7 +61,7 @@
 #include <boost/uuid/uuid_io.hpp>
 
 
-std::auto_ptr<te::gm::Geometry> te::vp::GetGeometryUnion(const std::vector< std::auto_ptr<te::gm::Geometry> >& geomVec)
+std::auto_ptr<te::gm::Geometry> te::vp::GetGeometryUnion(const std::vector<gm::Geometry*> &geomVec)
 {
   std::auto_ptr<te::gm::Geometry> geometry(0);
 
@@ -72,8 +72,6 @@ std::auto_ptr<te::gm::Geometry> te::vp::GetGeometryUnion(const std::vector< std:
   }
   else if (geomVec.size() > 1)
   {
-    //const std::auto_ptr<te::gm::Geometry>& seedGeometry = geomVec[0];
-
     te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, geomVec[0]->getSRID());
 
     for (std::size_t g = 0; g < geomVec.size(); ++g)
