@@ -135,7 +135,10 @@ endif()
 # global definitions and includes
 #
 
-add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_UBLAS_TYPE_CHECK=0)
+add_definitions(-DBOOST_ALL_NO_LIB)
+add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
+add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
+add_definitions(-DBOOST_LOG_DYN_LINK)
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
