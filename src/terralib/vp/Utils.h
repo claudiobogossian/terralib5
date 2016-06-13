@@ -27,11 +27,21 @@
 #define __TERRALIB_VP_INTERNAL_UTILS_H
 
 // Terralib
+#include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/datasource/DataSource.h"
+
 #include "../geometry/Geometry.h"
+#include "../geometry/GeometryCollection.h"
+#include "../geometry/Utils.h"
+
 #include "../maptools/AbstractLayer.h"
+
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
+
 #include "../sam/rtree.h"
+
 #include "Config.h"
 
 //STL

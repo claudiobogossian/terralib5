@@ -26,26 +26,24 @@
 // TerraLib
 
 #include "../common/StringUtils.h"
+
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/DataSetTypeCapabilities.h"
-#include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
-#include "../geometry/Geometry.h"
-#include "../geometry/GeometryCollection.h"
+
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/MultiPoint.h"
 #include "../geometry/MultiLineString.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
-#include "../geometry/Utils.h"
-#include "../memory/DataSet.h"
+
 #include "AlgorithmParams.h"
 #include "Utils.h"
 
