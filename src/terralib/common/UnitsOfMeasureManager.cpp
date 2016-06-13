@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/UnitsOfMeasureManager.cpp
 
-  \brief A singleton class for dealing with units-of-measurement.  
+  \brief A singleton class for dealing with units-of-measurement.
 */
 
 // TerraLib
@@ -29,6 +29,7 @@
 #include "STLUtils.h"
 #include "StringUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/utils/Platform.h"
 #include "UnitOfMeasure.h"
 #include "UnitsOfMeasureManager.h"
 
@@ -64,7 +65,7 @@ void te::common::UnitsOfMeasureManager::insert(UnitOfMeasurePtr& uom)
   const_iterator it = m_uoms.find(uom->getId());
   if(it != m_uoms.end())
     return;
-  
+
   m_uoms.insert(std::pair<unsigned int, UnitOfMeasurePtr>(uom->getId(),uom));
 
   std::string upstr = boost::to_upper_copy(uom->getName());
@@ -74,7 +75,7 @@ void te::common::UnitsOfMeasureManager::insert(UnitOfMeasurePtr& uom)
 void te::common::UnitsOfMeasureManager::insert(UnitOfMeasurePtr& uom, const std::vector<std::string>& alternativeNames)
 {
   insert(uom);
-  
+
   for(std::size_t i=0; i<alternativeNames.size(); ++i)
   {
     std::string upstr = boost::to_upper_copy(alternativeNames[i]);
@@ -89,9 +90,9 @@ void te::common::UnitsOfMeasureManager::remove(UnitOfMeasurePtr& uom)
   iterator it = m_uoms.find(uom->getId());
   if (it == m_uoms.end())
     return;
-  
+
   m_uoms.erase(it);
-  
+
   for (std::map<std::string, unsigned int>::iterator itn = m_uomsIdxByName.begin(); itn != m_uomsIdxByName.end();)
   {
     if (itn->second == uom->getId())
@@ -103,11 +104,11 @@ void te::common::UnitsOfMeasureManager::remove(UnitOfMeasurePtr& uom)
 
 te::common::UnitOfMeasurePtr
 te::common::UnitsOfMeasureManager::find(unsigned int id) const
-{ 
+{
   const_iterator it = m_uoms.find(id);
   if (it == m_uoms.end())
     return UnitOfMeasurePtr();
-  
+
   return it->second;
 }
 
@@ -115,16 +116,16 @@ te::common::UnitOfMeasurePtr
 te::common::UnitsOfMeasureManager::find(const std::string& name) const
 {
   std::string upstr = boost::to_upper_copy(name);
-  
+
   std::map<std::string, unsigned int>::const_iterator it = m_uomsIdxByName.find(upstr);
-  
+
   if(it != m_uomsIdxByName.end())
   {
     const_iterator it2 = m_uoms.find(it->second);
     if (it2 != m_uoms.end())
       return it2->second;
   }
-  
+
   return UnitOfMeasurePtr();
 }
 
@@ -144,7 +145,7 @@ te::common::UnitsOfMeasureManager::findBySymbol(const std::string& symbol) const
 void te::common::UnitsOfMeasureManager::getNames(UnitOfMeasurePtr& uom, std::vector<std::string>& names) const
 {
   std::map<std::string, unsigned int>::const_iterator it = m_uomsIdxByName.begin();
-  while (it != m_uomsIdxByName.end()) 
+  while (it != m_uomsIdxByName.end())
   {
     if (it->second == uom->getId())
       names.push_back(it->first);
@@ -167,7 +168,7 @@ double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitF
   else if (uTo->getBaseUnitId() == uFrom->getId())  // converting from base to derived
   {
     double a, b, c, d;
-    
+
     uTo->getConversionFactors(a,b,c,d);
     return ((b-d)/(c-a));
   }
@@ -178,14 +179,14 @@ bool te::common::UnitsOfMeasureManager::areConvertible(const std::string& unitFr
 {
   UnitOfMeasurePtr uFrom = this->find(unitFromName);
   UnitOfMeasurePtr uTo = this->find(unitToName);
-  
+
   if (uFrom->getType() != uTo->getType())
     return false;
-  
+
   if ((uFrom->getBaseUnitId() == uTo->getId()) ||
       (uTo->getBaseUnitId() == uFrom->getId()))
     return true;
-  
+
   return false;
 }
 
@@ -193,9 +194,9 @@ void te::common::UnitsOfMeasureManager::init()
 {
   if(!m_uoms.empty())
     throw Exception(TE_TR("The unit of measure manager is already initialized!"));
-  
-  std::string uom_file = FindInTerraLibPath("share/terralib/json/uom.json");
-  
+
+  std::string uom_file = te::core::FindInTerraLibPath("share/terralib/json/uom.json");
+
   if(uom_file.empty())
     throw Exception(TE_TR("The unit of measure JSON file could not be found!"));
 
@@ -215,7 +216,7 @@ void te::common::UnitsOfMeasureManager::init()
     double b = v.second.get<double>("factor_b");
     double c = v.second.get<double>("factor_c");
     double d = v.second.get<double>("factor_d");
-    
+
     MeasureType t = Length;
 
     if(stype == "length")

@@ -24,9 +24,9 @@
 */
 
 // TerraLib
-#include "../../../common/PlatformUtils.h"
 #include "../../../common/SystemApplicationSettings.h"
 #include "../../../common/UserApplicationSettings.h"
+#include "../../../core/utils/Platform.h"
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../../qt/widgets/utils/ColorPickerToolButton.h"
 #include "../../../srs/Config.h"
@@ -135,7 +135,7 @@ void te::qt::af::GeneralConfigWidget::initialize()
   m_ui->m_toolBarIconSizeSpinBox->setValue(iconSize);
 
   // Icon Theme
-  std::string iconThemesDirPath = te::common::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
+  std::string iconThemesDirPath = te::core::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
   QDir iconThemesDir(iconThemesDirPath.c_str());
 
   // Find themes

@@ -29,7 +29,7 @@
 // TerraLib
 #include <terralib/Version.h>
 #include <terralib/common/BoostUtils.h>
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/xml/AbstractWriter.h>
 #include <terralib/xml/AbstractWriterFactory.h>
 #include <terralib/xml/Reader.h>
@@ -97,7 +97,7 @@ void WriteDefaultProjectFile(const QString& fileName)
 {
   boost::property_tree::ptree p;
 
-  std::string schema_location = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
+  std::string schema_location = te::core::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
   //Header
   p.add("Project.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");

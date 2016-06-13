@@ -24,7 +24,7 @@
  */
 
 // TerraLib
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 #include "SymbologyWidgets.h"
@@ -51,7 +51,7 @@ void LoadGDALModule()
     //te::plugin::PluginManager::getInstance().load(info);
     //te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
     
-    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+    std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_GDAL_ENABLED
     te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");

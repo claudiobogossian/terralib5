@@ -2,8 +2,7 @@
 #include "CanvasExamples.h"
 
 // TerraLib
-#include "../../../src/terralib/common/PlatformUtils.h"
-#include <terralib/common.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/plugin.h>
 
 // STL
@@ -13,7 +12,7 @@ void LoadModules()
 {
   te::plugin::PluginInfo* info;
   
-  std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+  std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_POSTGIS_ENABLED
   info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");

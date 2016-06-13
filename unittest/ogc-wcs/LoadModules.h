@@ -28,6 +28,7 @@
 #ifndef __TERRALIB_UNITTEST_DATAACCESS_LOADMODULES_H
 #define __TERRALIB_UNITTEST_DATAACCESS_LOADMODULES_H
 
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 #include "Config.h"
@@ -42,7 +43,7 @@ void LoadModules()
   {
     te::plugin::PluginInfo* info;
 
-    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+    std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
     info = te::plugin::GetInstalledPlugin(plugins_path + "/te.ogc.wcs.teplg");
     te::plugin::PluginManager::getInstance().add(info);

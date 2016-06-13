@@ -24,8 +24,8 @@
 */
 
 // TerraLib
-#include "../common/PlatformUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/utils/Platform.h"
 #include "../common/UnitsOfMeasureManager.h"
 #include "Exception.h"
 #include "SpatialReferenceSystemManager.h"
@@ -97,9 +97,9 @@ void te::srs::SpatialReferenceSystemManager::init()
     throw Exception(TE_TR("The spatial reference system manager is already initialized!"));
   
 #ifdef NDEBUG
-  std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/srs.json");
+  std::string jsonf = te::core::FindInTerraLibPath("share/terralib/json/srs.json");
 #else
-  std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/srs_incomplete.json");
+  std::string jsonf = te::core::FindInTerraLibPath("share/terralib/json/srs_incomplete.json");
 #endif
   if(jsonf.empty())
     throw Exception(TE_TR("Could not find srs.json!"));

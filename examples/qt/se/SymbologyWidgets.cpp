@@ -1,7 +1,7 @@
 #include "SymbologyWidgets.h"
 
 // TerraLib
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/se.h>
 #include <terralib/qt/widgets/se/Symbol.h>
@@ -41,7 +41,7 @@ void SymbolSelector()
  
   //te::serialize::ReadSymbolLibrary("E:/TerraLib/terralib5_develop/schemas/terralib/qt/se/symbol.xml");
 
-  std::string slib_path= te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/se");
+  std::string slib_path= te::core::FindInTerraLibPath("share/terralib/schemas/terralib/qt/se");
   
   te::qt::widgets::ReadSymbolLibrary(slib_path + "symbol.xml");
   
@@ -203,7 +203,7 @@ void BasicWidgets()
 
   // Adjusting icons theme
   QStringList ithemes = QIcon::themeSearchPaths();
-  ithemes.push_back(te::common::FindInTerraLibPath("share/terralib/icons").c_str());
+  ithemes.push_back(te::core::FindInTerraLibPath("share/terralib/icons").c_str());
   QIcon::setThemeName("terralib");
   QIcon::setThemeSearchPaths(ithemes);
 

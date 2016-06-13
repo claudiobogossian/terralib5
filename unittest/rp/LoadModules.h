@@ -26,6 +26,7 @@
 #ifndef __TERRALIB_UNITTEST_RP_LOADMODULES_H
 #define __TERRALIB_UNITTEST_RP_LOADMODULES_H
 
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 #include <terralib/BuildConfig.h>
@@ -36,7 +37,7 @@
 
 void LoadModules()
 {
-  std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+  std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
   te::plugin::PluginInfo* info;
   

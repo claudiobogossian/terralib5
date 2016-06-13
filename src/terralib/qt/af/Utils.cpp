@@ -28,9 +28,9 @@
 
 // TerraLib
 #include "../../common/BoostUtils.h"
-#include "../../common/PlatformUtils.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
+#include "../../core/utils/Platform.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
@@ -467,7 +467,7 @@ std::vector<std::string> te::qt::af::GetPluginsFiles()
 
   filters << "*.teplg";
 
-  QDir d(te::common::FindInTerraLibPath("share/terralib/plugins").c_str());
+  QDir d(te::core::FindInTerraLibPath("share/terralib/plugins").c_str());
 
   QFileInfoList files = d.entryInfoList(filters, QDir::Files);
 
@@ -578,7 +578,7 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
 //{
 //  boost::property_tree::ptree p;
 //
-//  std::string schema_location = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
+//  std::string schema_location = te::core::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 //
 //  //Header
 //  p.add("Project.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");

@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../Config.h"
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/plugin.h>
@@ -55,7 +55,7 @@ void LoadOGRModule()
   {
     te::plugin::PluginInfo* info;
   
-    std::string plugin_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+    std::string plugin_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_OGR_ENABLED
     info = te::plugin::GetInstalledPlugin(plugin_path + "/te.da.ogr.teplg");

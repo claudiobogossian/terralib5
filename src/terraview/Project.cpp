@@ -27,7 +27,7 @@
 #include "Project.h"
 
 #include "../terralib/common/BoostUtils.h"
-#include "../terralib/common/PlatformUtils.h"
+#include "../terralib/core/utils/Platform.h"
 #include "../terralib/dataaccess/datasource/DataSourceInfoManager.h"
 #include "../terralib/dataaccess/serialization/xml/Serializer.h"
 #include "../terralib/maptools/serialization/xml/Layer.h"
@@ -50,7 +50,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
 
   writer->setURI(proj.m_fileName.toStdString());
 
-  std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
+  std::string schema_loc = te::core::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
   writer->writeStartDocument("UTF-8", "no");
 
