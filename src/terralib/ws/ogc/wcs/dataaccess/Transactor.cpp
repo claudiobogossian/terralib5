@@ -38,14 +38,14 @@
 #include "../../../../raster/Grid.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/dataset/DataSet.h"
-#include "../../../../ws/ogc/wcs/client/WCS.h"
+#include "../../../../ws/ogc/wcs/client/WCSClient.h"
 #include "../../../../datatype.h"
 #include "../../../../raster/RasterProperty.h"
 #include "../../../../raster/Grid.h"
 #include "../../../../raster/BandProperty.h"
 #include "../../../../common/StringUtils.h"
 
-te::ws::ogc::wcs::da::Transactor::Transactor(WCS wcs)
+te::ws::ogc::wcs::da::Transactor::Transactor(WCSClient wcs)
   : te::da::DataSourceTransactor(),
     m_wcs(wcs)
 {

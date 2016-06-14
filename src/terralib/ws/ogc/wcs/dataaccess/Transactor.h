@@ -35,7 +35,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
-#include "../client/WCS.h"
+#include "../client/WCSClient.h"
 //#include "WCSLayerInfo.h"
 #include "Config.h"
 #include "../client/DataTypes.h"
@@ -63,7 +63,7 @@ namespace te
           {
           public:
 
-            Transactor(WCS wcs);
+            Transactor(WCSClient wcs);
 
             ~Transactor();
 
@@ -262,7 +262,7 @@ namespace te
 
           private:
 
-            WCS m_wcs;
+            WCSClient m_wcs;
             CoverageRequest m_coverageRequest;
 
 

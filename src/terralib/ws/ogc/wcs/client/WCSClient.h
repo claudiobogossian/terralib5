@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/client/WCS.h
+  \file terralib/ws/ogc/wcs/client/WCSClient.h
 
   \brief WS Client for OGC WCS
 
@@ -51,11 +51,11 @@ namespace te
     {
 
       /*!
-        \class ClientWCS
+        \class WCSClient
 
         \brief A class to retrieve information and data from a Web Coverage Service.
       */
-      class WCS
+      class WCSClient
       {
       public:
 
@@ -65,12 +65,12 @@ namespace te
           \param uri      The adress of WCS server.
           \param version  The WCS version.
         */
-        WCS(const std::string uri = "", const std::string version = "2.0.1");
+        WCSClient(const std::string uri = "", const std::string version = "2.0.1");
 
         /*!
           \brief Default destructor.
         */
-        ~WCS();
+        ~WCSClient();
 
         /*!
           \brief Method to get the capabilities from a WCS server and store in capabilities_ member

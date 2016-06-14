@@ -78,7 +78,7 @@ void te::ws::ogc::wcs::da::DataSource::open()
 
   try
   {
-    m_wcs = te::ws::ogc::WCS(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    m_wcs = te::ws::ogc::WCSClient(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
 
     m_wcs.updateCapabilities();
   }
@@ -113,7 +113,7 @@ bool te::ws::ogc::wcs::da::DataSource::isValid() const
   {
     verifyConnectionInfo();
 
-    te::ws::ogc::WCS wcs(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    te::ws::ogc::WCSClient wcs(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
 
     wcs.updateCapabilities();
   }
@@ -167,7 +167,7 @@ bool te::ws::ogc::wcs::da::DataSource::exists(const std::map<std::string, std::s
   {
     verifyConnectionInfo();
 
-    te::ws::ogc::WCS wcs(uri->second, version->second);
+    te::ws::ogc::WCSClient wcs(uri->second, version->second);
 
     wcs.updateCapabilities();
   }

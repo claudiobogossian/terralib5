@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/client/WCS.cpp
+  \file terralib/ws/ogc/wcs/client/WCSClient.cpp
 
   \brief WS Client for OGC WCS
 
@@ -30,25 +30,25 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
-#include "WCS.h"
+#include "WCSClient.h"
 
 
 #include <iostream>
 #include <string>
 
-te::ws::ogc::WCS::WCS(const std::string uri, const std::string version)
+te::ws::ogc::WCSClient::WCSClient(const std::string uri, const std::string version)
   : m_uri(uri + "?SERVICE=WCS"), m_version(version)
 {
 
 }
 
 
-te::ws::ogc::WCS::~WCS()
+te::ws::ogc::WCSClient::~WCSClient()
 {
 }
 
 
-void te::ws::ogc::WCS::updateCapabilities()
+void te::ws::ogc::WCSClient::updateCapabilities()
 {
   std::string url ("");
 
@@ -62,14 +62,14 @@ void te::ws::ogc::WCS::updateCapabilities()
   }
 
   // Request the WCS Capabilities XML file
-  std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url, "capabilities.xml");
+  std::string xmlPath = te::ws::ogc::WCSClient::makeFileRequest(url, "capabilities.xml");
 
   // Parse the XML file into a struct
   m_capabilities = parseCapabilities(xmlPath);
 }
 
 
-te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::string coverage) const
+te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const std::string coverage) const
 {
 
   te::ws::ogc::CoverageDescription describeCoverage;
@@ -86,7 +86,7 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::s
   }
 
   // Request the WCS Describe Coverage XML file
-  std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url, "describeCoverage.xml");
+  std::string xmlPath = te::ws::ogc::WCSClient::makeFileRequest(url, "describeCoverage.xml");
 
   // Parse the XML file into a struct
   describeCoverage = parseDescribeCoverage(xmlPath);
@@ -95,7 +95,7 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::s
 }
 
 
-std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest) const
+std::string te::ws::ogc::WCSClient::getCoverage(const CoverageRequest coverageRequest) const
 {
   std::string coveragePath;
 
@@ -167,7 +167,7 @@ size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data)
 }
 
 
-std::string te::ws::ogc::WCS::makeRequest(const std::string url) const
+std::string te::ws::ogc::WCSClient::makeRequest(const std::string url) const
 {
   CURL* curl;
   std::string callback;
@@ -204,7 +204,7 @@ size_t write_file_callback(void *ptr, size_t size, size_t nmemb, void *data)
   return fwrite(ptr, size, nmemb, writehere);
 }
 
-std::string te::ws::ogc::WCS::makeFileRequest(const std::string url, const std::string fileName) const
+std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const std::string fileName) const
 {
   CURL* curl;
   std::FILE* file;
@@ -245,7 +245,7 @@ std::string te::ws::ogc::WCS::makeFileRequest(const std::string url, const std::
 }
 
 
-const struct te::ws::ogc::Capabilities& te::ws::ogc::WCS::getCapabilities() const
+const struct te::ws::ogc::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
 {
   return m_capabilities;
 }
