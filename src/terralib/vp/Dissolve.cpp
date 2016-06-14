@@ -24,6 +24,7 @@
 #include "../common/Logger.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/StringUtils.h"
+#include "../common/STLUtils.h"
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -1080,13 +1081,13 @@ void te::vp::Dissolve::threadUnion(GroupThreadManager* manager)
   {
     std::vector<te::mem::DataSetItem*> outputItemVec;
 
-    std::vector<std::auto_ptr<te::gm::Geometry> > geomVec;
+    std::vector<te::gm::Geometry*> geomVec;
     for (std::size_t i = 0; i < dsItemVec.size(); ++i)
     {
       std::auto_ptr<te::gm::Geometry> geom = dsItemVec[i]->getGeometry(geomPos);
 
       if (geom->getGeomTypeId() == geomProp->getGeometryType())
-        geomVec.push_back(dsItemVec[i]->getGeometry(geomPos));
+        geomVec.push_back(geom.release());
     }
 
     // Output geometry.
@@ -1095,9 +1096,14 @@ void te::vp::Dissolve::threadUnion(GroupThreadManager* manager)
     try
     {
       resultUnionGeometry = te::vp::GetGeometryUnion(geomVec);
+      te::common::FreeContents(geomVec);
+      geomVec.clear();
     }
     catch (...)
     {
+      te::common::FreeContents(geomVec);
+      geomVec.clear();
+
       std::string message = "GEOS Exception.";
       manager->addWarning(message);
 

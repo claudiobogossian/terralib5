@@ -26,26 +26,24 @@
 // TerraLib
 
 #include "../common/StringUtils.h"
+
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/DataSetTypeCapabilities.h"
-#include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
-#include "../geometry/Geometry.h"
-#include "../geometry/GeometryCollection.h"
+
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/MultiPoint.h"
 #include "../geometry/MultiLineString.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
-#include "../geometry/Utils.h"
-#include "../memory/DataSet.h"
+
 #include "AlgorithmParams.h"
 #include "Utils.h"
 
@@ -61,7 +59,7 @@
 #include <boost/uuid/uuid_io.hpp>
 
 
-std::auto_ptr<te::gm::Geometry> te::vp::GetGeometryUnion(const std::vector< std::auto_ptr<te::gm::Geometry> >& geomVec)
+std::auto_ptr<te::gm::Geometry> te::vp::GetGeometryUnion(const std::vector<gm::Geometry*> &geomVec)
 {
   std::auto_ptr<te::gm::Geometry> geometry(0);
 
@@ -72,8 +70,6 @@ std::auto_ptr<te::gm::Geometry> te::vp::GetGeometryUnion(const std::vector< std:
   }
   else if (geomVec.size() > 1)
   {
-    //const std::auto_ptr<te::gm::Geometry>& seedGeometry = geomVec[0];
-
     te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, geomVec[0]->getSRID());
 
     for (std::size_t g = 0; g < geomVec.size(); ++g)
