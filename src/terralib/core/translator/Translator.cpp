@@ -29,7 +29,6 @@
 // Boost
 #include <boost/locale.hpp>
 #include <boost/format.hpp>
-#include <boost/filesystem.hpp>
 
 // TerraLib
 #include "Translator.h"
