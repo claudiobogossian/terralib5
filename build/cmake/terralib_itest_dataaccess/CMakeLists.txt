@@ -34,13 +34,15 @@ source_group("Header Files" FILES ${TERRALIB_ITEST_DATAACCESS_HDR_FILES})
 
 add_executable(terralib_itest_dataaccess ${TERRALIB_ITEST_DATAACCESS_SRC_FILES} ${TERRALIB_ITEST_DATAACCESS_HDR_FILES})
 
-target_link_libraries(terralib_itest_dataaccess terralib_mod_dataaccess ${GTEST_BOTH_LIBRARIES}
-                                                                        ${GMOCK_BOTH_LIBRARIES})
+target_link_libraries(terralib_itest_dataaccess terralib_mod_dataaccess
+                                                terralib_mod_plugin
+                                                ${GTEST_BOTH_LIBRARIES}
+                                                ${GMOCK_BOTH_LIBRARIES})
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
 
-#add_test(NAME terralib_itest_dataaccess
-#         COMMAND terralib_itest_dataaccess
-#         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+add_test(NAME terralib_itest_dataaccess
+         COMMAND terralib_itest_dataaccess
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
