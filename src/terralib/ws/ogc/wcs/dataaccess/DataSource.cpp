@@ -34,6 +34,9 @@
 #include "Exception.h"
 #include "Transactor.h"
 
+// Boost
+#include <boost/filesystem.hpp>
+
 
 te::da::DataSourceCapabilities te::ws::ogc::wcs::da::DataSource::sm_capabilities;
 
@@ -78,7 +81,7 @@ void te::ws::ogc::wcs::da::DataSource::open()
 
   try
   {
-    m_wcs = te::ws::ogc::WCSClient(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    m_wcs = te::ws::ogc::WCSClient(m_connectionInfo.find("USERDATADIR")->second, m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
 
     m_wcs.updateCapabilities();
   }
@@ -113,7 +116,7 @@ bool te::ws::ogc::wcs::da::DataSource::isValid() const
   {
     verifyConnectionInfo();
 
-    te::ws::ogc::WCSClient wcs(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    te::ws::ogc::WCSClient wcs(m_connectionInfo.find("USERDATADIR")->second, m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
 
     wcs.updateCapabilities();
   }
@@ -201,4 +204,14 @@ void te::ws::ogc::wcs::da::DataSource::verifyConnectionInfo() const
   std::map<std::string, std::string>::const_iterator version = m_connectionInfo.find("VERSION");
   if(version == m_connectionInfo.end())
     throw Exception(TE_TR("The connection information is invalid. Missing VERSION parameter!"));
+
+  std::map<std::string, std::string>::const_iterator usrDataDir = m_connectionInfo.find("USERDATADIR");
+  if(usrDataDir == m_connectionInfo.end())
+    throw Exception(TE_TR("The connection information is invalid. Missing USERDATADIR parameter!"));
+
+  std::string dataDir = usrDataDir->second + "/wcs/";
+
+  if(!boost::filesystem::exists(dataDir))
+    boost::filesystem::create_directories(dataDir);
+
 }

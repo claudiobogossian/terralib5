@@ -32,14 +32,14 @@
 #include "../../../../core/translator/Translator.h"
 #include "WCSClient.h"
 
-
+//STL
 #include <iostream>
 #include <string>
 
-te::ws::ogc::WCSClient::WCSClient(const std::string uri, const std::string version)
+te::ws::ogc::WCSClient::WCSClient(const std::string usrDataDir, const std::string uri, const std::string version)
   : m_uri(uri + "?SERVICE=WCS"), m_version(version)
 {
-
+  m_dataDir = usrDataDir + "/wcs/";
 }
 
 
@@ -208,8 +208,8 @@ std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const
 {
   CURL* curl;
   std::FILE* file;
-  // VINICIUS: work with temp directory and filename
-  std::string path = "/tmp/" + fileName;
+
+  std::string path = m_dataDir + fileName;
 
   curl = curl_easy_init();
   curl_easy_cleanup(curl);

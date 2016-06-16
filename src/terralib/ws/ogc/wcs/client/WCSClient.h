@@ -60,12 +60,13 @@ namespace te
       public:
 
         /*!
-          \brief Class constructor. It initializes the uri_ and version_ class members
+          \brief Class constructor. It initializes the m_uri and m_version class members
 
-          \param uri      The adress of WCS server.
-          \param version  The WCS version.
+          \param usrDataDir  Directory to store used temporary XML and images from WCS server.
+          \param uri         The adress of WCS server.
+          \param version     The WCS version.
         */
-        WCSClient(const std::string uri = "", const std::string version = "2.0.1");
+        WCSClient(const std::string usrDataDir = "",const std::string uri = "", const std::string version = "2.0.1");
 
         /*!
           \brief Default destructor.
@@ -75,7 +76,7 @@ namespace te
         /*!
           \brief Method to get the capabilities from a WCS server and store in capabilities_ member
 
-                 To access the information contained in the capabilities_, use the getCapabilities() method.
+                 To access the information contained in the m_capabilities, use the getCapabilities() method.
 
         */
         void updateCapabilities();
@@ -120,7 +121,7 @@ namespace te
         /*!
           \brief Return the capabilities_ member.
 
-                 The capabilities_ will be empty until the updateCapabilities() method its called.
+                 The m_capabilities will be empty until the updateCapabilities() method its called.
 
           \return Returns a path to a file
         */
@@ -129,6 +130,7 @@ namespace te
       private:
         std::string m_uri;
         std::string m_version;
+        std::string m_dataDir;
         struct Capabilities m_capabilities;
       };
     }
