@@ -97,6 +97,7 @@
 // Qt
 #include <QAction>
 #include <QApplication>
+#include <QCloseEvent>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMenu>
@@ -1891,7 +1892,7 @@ void TerraView::openProject(const QString& prjFileName)
     ResetProject(m_project);
   }
 }
-#include <QCloseEvent>
+
 void TerraView::closeEvent(QCloseEvent* event)
 {
   if(checkAndSaveProject())
