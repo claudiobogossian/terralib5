@@ -88,7 +88,7 @@ te::core::Logger::Logger()
                                                 boost::log::attributes::current_process_id());
   boost::log::core::get()->add_global_attribute("ThreadID",
                                                 boost::log::attributes::current_thread_id());
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   addLogger(TERRALIB_DEFAULT_LOGGER, TERRALIB_DEFAULT_LOGGER, TERRALIB_DEFAULT_LOGGER_FORMAT);
 #endif
 }

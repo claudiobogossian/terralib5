@@ -47,7 +47,7 @@
 
   \brief The default name of the log file if none is informed.
   */
-#define TERRALIB_DEFAULT_LOGGER "logs/terralib.log"
+#define TERRALIB_DEFAULT_LOGGER "log/terralib.log"
 
 /*!
   \def TERRALIB_DEFAULT_LOGGER_FORMAT
@@ -145,7 +145,7 @@ namespace te
 
   \param filename The name of the log file.
   */
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   #define TE_ADD_LOGGER(name, filename, format) te::core::Logger::getInstance().addLogger(name, filename, format)
 #else
   #define TE_ADD_LOGGER(filename) ((void)0)
@@ -160,7 +160,7 @@ namespace te
 
   \exception std::exception If the configuration file is doesn't load.
   */
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   #define TE_ADD_LOGGER_FROM_FILE(filename) te::core::Logger::getInstance().addLoggerFromFile(filename)
 #else
   #define TE_ADD  _LOGGER_FROM_FILE(filename) ((void)0)
@@ -175,7 +175,7 @@ namespace te
 
   \note The TRACE Level designates finer-grained informational events than the DEBUG.
 */
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   #define TE_LOG_CORE_TRACE(message) LOG_TRACE(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_TRACE(message) ((void)0)
@@ -190,7 +190,7 @@ namespace te
 
   \note The ERROR level designates error events that might still allow the application to continue running.
 */
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   #define TE_LOG_CORE_ERROR(message) LOG_ERROR(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_ERROR(message) ((void)0)
@@ -205,7 +205,7 @@ namespace te
 
   \note The FATAL level designates very severe error events that will presumably lead the application to abort.
 */
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   #define TE_LOG_CORE_FATAL(message) LOG_FATAL(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_FATAL(message) ((void)0)
@@ -220,7 +220,7 @@ namespace te
 
   \note The INFO level designates informational messages that highlight the progress of the application at coarse-grained level.
 */
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   #define TE_LOG_CORE_INFO(message) LOG_INFO(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_INFO(message) ((void)0)
@@ -235,7 +235,7 @@ namespace te
 
   \note The WARN level designates potentially harmful situations.
 */
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   #define TE_LOG_CORE_WARN(message) LOG_WARN(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_WARN(message) ((void)0)
@@ -250,7 +250,7 @@ namespace te
 
   \note The DEBUG Level designates fine-grained informational events that are most useful to debug an application.
 */
-#ifdef TERRALIB_LOGGER_ENABLED
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
   #define TE_LOG_CORE_DEBUG(message) LOG_DEBUG(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_DEBUG(message) ((void)0)
