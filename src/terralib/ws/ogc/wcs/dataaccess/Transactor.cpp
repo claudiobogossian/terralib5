@@ -107,9 +107,6 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-
-  te::ws::ogc::CoverageDescription description = m_wcs.describeCoverage(name);
-
   m_coverageRequest = te::ws::ogc::CoverageRequest();
   m_coverageRequest.coverageID = name;
 
