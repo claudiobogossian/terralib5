@@ -73,6 +73,11 @@ void te::core::Logger::addLogger(const std::string& name, const std::string& fil
   boost::log::add_common_attributes();
 }
 
+void te::core::Logger::removeAllLoggers()
+{
+  boost::log::core::get()->remove_all_sinks();
+}
+
 te::core::Logger::Logger()
 {
   boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >("Severity");
