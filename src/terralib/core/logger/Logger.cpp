@@ -44,6 +44,10 @@
 #include <boost/log/utility/setup/from_stream.hpp>
 typedef boost::log::sinks::synchronous_sink< boost::log::sinks::text_file_backend > text_sink;
 
+
+BOOST_LOG_ATTRIBUTE_KEYWORD(channel, "Channel", std::string)
+
+
 te::core::Logger& te::core::Logger::getInstance()
 {
   static Logger instance;
@@ -51,38 +55,20 @@ te::core::Logger& te::core::Logger::getInstance()
   return instance;
 }
 
-void te::core::Logger::setupFromFile(const std::string& filename)
+void te::core::Logger::addLoggerFromFile(const std::string& filename)
 {
-  m_fromfile = true;
-  boost::log::core::get()->remove_all_sinks();
   boost::filesystem::ifstream settings(filename);
   boost::log::init_from_stream(settings);
 }
 
-void te::core::Logger::setFormat(const std::string& format)
+void te::core::Logger::addLogger(const std::string& name, const std::string& filename, const std::string& format)
 {
-  if(!m_fromfile)
-  {
-    m_format = format;
-    setupLogger(m_filename);
-  }
-  else
-  {
-    boost::format err_msg(TE_TR("Format can't be changed when using a logger from a configuration file."));
-    throw Exception() << te::ErrorDescription((err_msg).str());
-  }
-}
-
-void te::core::Logger::setupLogger(const std::string& filename)
-{
-  m_fromfile = false;
-  m_filename = filename;
-  boost::log::core::get()->remove_all_sinks();
-
   boost::log::add_file_log(boost::log::keywords::auto_flush = true,
-                           boost::log::keywords::format = m_format,
-                           boost::log::keywords::file_name = m_filename,
-                           boost::log:: keywords::open_mode = std::ios_base::app
+                           boost::log::keywords::format = format,
+                           boost::log::keywords::file_name = filename,
+                           boost::log::keywords::channel = name,
+                           boost::log::keywords::open_mode = std::ios_base::app,
+                           boost::log::keywords::filter = (channel == name)
                           );
   boost::log::add_common_attributes();
 }
@@ -97,13 +83,14 @@ te::core::Logger::Logger()
                                                 boost::log::attributes::current_process_id());
   boost::log::core::get()->add_global_attribute("ThreadID",
                                                 boost::log::attributes::current_thread_id());
-
-  setupLogger(m_filename);
+#ifdef TERRALIB_LOGGER_ENABLED
+  addLogger(TERRALIB_DEFAULT_LOGGER, TERRALIB_DEFAULT_LOGGER, TERRALIB_DEFAULT_LOGGER_FORMAT);
+#endif
 }
 
-void te::core::Logger::log(const std::string& message, boost::log::trivial::severity_level severity)
+void te::core::Logger::log(const std::string& message, const std::string& channel, boost::log::trivial::severity_level severity)
 {
-  BOOST_LOG_SEV(m_logger , severity) << message;
+  BOOST_LOG_CHANNEL_SEV(m_logger, channel, severity) << message;
 }
 
 

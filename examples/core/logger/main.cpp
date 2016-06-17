@@ -30,19 +30,28 @@
 #include <terralib/core/utils/Platform.h>
 #include <terralib/core/logger/Logger.h>
 
+//Boost
+#include <boost/log/trivial.hpp>
+
+
+#define MY_LOG_WARN(message) LOG_WARN(message, "mylogger")
+#define MY_LOG_FATAL(message) LOG_FATAL(message, "mylogger")
+#define MY_LOG_DEBUG(message) LOG_DEBUG(message, "mylogger")
+
 int main(int argc, char *argv[])
 {
 //Starting a logger from a configuration file.
-  TE_INIT_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/terralib/config/te-log.ini"));
+  TE_ADD_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/terralib/config/te-log.ini"));
   TE_LOG_CORE_TRACE("This is a trace log.");
   TE_LOG_CORE_INFO("This is a info log");
   TE_LOG_CORE_ERROR("This is a error log");
 
   //Initializing a log using a default configuration.
   //When initializing a new log, the previous one will not log anymore.
-  TE_INIT_LOGGER("logs/mylogs.log");
-  TE_LOG_CORE_WARN("This is a warning log.");
-  TE_LOGGER_FORMAT("[%TimeStamp%]{%ThreadID%} %Process%(%ProcessID%) <%Severity%>: %Message%");
-  TE_LOG_CORE_FATAL("This is a fatal log.");
-  TE_LOG_CORE_DEBUG("This is a debug log.");
+  TE_ADD_LOGGER("mylogger", "logs/mylogs.log", "[%TimeStamp%]{%ThreadID%} %Process%(%ProcessID%) <%Severity%>: %Message%");
+  MY_LOG_WARN("This is a warning log.");
+  MY_LOG_FATAL("This is a fatal log.");
+  TE_LOG_CORE_INFO("This is a info log");
+  TE_LOG_CORE_ERROR("This is a error log");
+  MY_LOG_DEBUG("This is a debug log.");
 }

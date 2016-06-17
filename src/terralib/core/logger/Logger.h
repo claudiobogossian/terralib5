@@ -33,6 +33,9 @@
 // Boost
 #include <boost/log/trivial.hpp>
 #include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sources/severity_channel_logger.hpp>
+#include <boost/log/sources/channel_feature.hpp>
+#include <boost/log/sources/channel_logger.hpp>
 #include <boost/log/utility/setup/file.hpp>
 
 // TerraLib
@@ -44,7 +47,7 @@
 
   \brief The default name of the log file if none is informed.
   */
-#define TERRALIB_DEFAULT_LOGGER "terralib"
+#define TERRALIB_DEFAULT_LOGGER "logs/terralib.log"
 
 /*!
   \def TERRALIB_DEFAULT_LOGGER_FORMAT
@@ -75,7 +78,7 @@ namespace te
           \param message The string message to be logged
           \param severity The severity of the logged message
         */
-        void log(const std::string& message, boost::log::trivial::severity_level severity);
+        void log(const std::string& message, const std::string &channel, boost::log::trivial::severity_level severity);
 
         /*!
           \brief It sets the logger configuration from a given file
@@ -84,7 +87,7 @@ namespace te
 
           \exception std::exception If the configuration file is doesn't load.
         */
-        void setupFromFile(const std::string &filename);
+        void addLoggerFromFile(const std::string &filename);
 
         /*!
           \brief It sets the logger using a default implementation
@@ -94,16 +97,12 @@ namespace te
           The logs will be stored in the given file name without any filters. If the file already
           exists, the logs will be appended to the end of the file.
         */
-        void setupLogger(const std::string &filename);
+        void addLogger(const std::string &name, const std::string &filename, const std::string& format);
 
         /*!
-          \brief It sets a message format for the logger.
-
-          \param format The string format for the logger
-
-          \exception te::Exception If the logger was initialized from a configuration file
-        */
-        void setFormat(const std::string &format);
+          \brief It removes all added loggers.
+         */
+        void removeAllLoggers();
 
       private:
 
@@ -122,7 +121,7 @@ namespace te
       private:
 
         /*! \brief Multi-Thread severity logger*/
-        boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level>  m_logger;
+        boost::log::sources::severity_channel_logger_mt<boost::log::trivial::severity_level, std::string>  m_logger;
 
         /*! \brief Logger file name */
         std::string m_filename = TERRALIB_DEFAULT_LOGGER;
@@ -133,22 +132,23 @@ namespace te
         /*! \brief Logger type status */
         bool m_fromfile = false;
 
+
     };
   }
 }
 
 
 /*!
-  \def TE_INIT_LOGGER
+  \def TE_ADD_LOGGER
 
   \brief Use this tag to init a logger using a default implementation without a configuration file.
 
   \param filename The name of the log file.
   */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_INIT_LOGGER(filename) te::core::Logger::getInstance().setupLogger(filename)
+  #define TE_ADD_LOGGER(name, filename, format) te::core::Logger::getInstance().addLogger(name, filename, format)
 #else
-  #define TE_INIT_LOGGER(filename) ((void)0)
+  #define TE_ADD_LOGGER(filename) ((void)0)
 #endif
 
 /*!
@@ -161,22 +161,9 @@ namespace te
   \exception std::exception If the configuration file is doesn't load.
   */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_INIT_LOGGER_FROM_FILE(filename) te::core::Logger::getInstance().setupFromFile(filename)
+  #define TE_ADD_LOGGER_FROM_FILE(filename) te::core::Logger::getInstance().addLoggerFromFile(filename)
 #else
-  #define TE_INIT_LOGGER_FROM_FILE(filename) ((void)0)
-#endif
-
-/*!
-  \def TE_LOGGER_FORMAT
-
-  \brief Use this tag to change the message format of the default logger.
-
-  \param format The string format for the logger.
-  */
-#ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_LOGGER_FORMAT(format) te::core::Logger::getInstance().setFormat(format)
-#else
-  #define TE_LOGGER_FORMAT(format) ((void)0)
+  #define TE_ADD  _LOGGER_FROM_FILE(filename) ((void)0)
 #endif
 
 /*!
@@ -189,7 +176,7 @@ namespace te
   \note The TRACE Level designates finer-grained informational events than the DEBUG.
 */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_LOG_CORE_TRACE(message) te::core::Logger::getInstance().log(message, boost::log::trivial::trace)
+  #define TE_LOG_CORE_TRACE(message) LOG_TRACE(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_TRACE(message) ((void)0)
 #endif
@@ -204,7 +191,7 @@ namespace te
   \note The ERROR level designates error events that might still allow the application to continue running.
 */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_LOG_CORE_ERROR(message) te::core::Logger::getInstance().log(message, boost::log::trivial::error)
+  #define TE_LOG_CORE_ERROR(message) LOG_ERROR(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_ERROR(message) ((void)0)
 #endif
@@ -219,7 +206,7 @@ namespace te
   \note The FATAL level designates very severe error events that will presumably lead the application to abort.
 */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_LOG_CORE_FATAL(message) te::core::Logger::getInstance().log(message, boost::log::trivial::fatal)
+  #define TE_LOG_CORE_FATAL(message) LOG_FATAL(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_FATAL(message) ((void)0)
 #endif
@@ -234,7 +221,7 @@ namespace te
   \note The INFO level designates informational messages that highlight the progress of the application at coarse-grained level.
 */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_LOG_CORE_INFO(message) te::core::Logger::getInstance().log(message, boost::log::trivial::info)
+  #define TE_LOG_CORE_INFO(message) LOG_INFO(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_INFO(message) ((void)0)
 #endif
@@ -249,7 +236,7 @@ namespace te
   \note The WARN level designates potentially harmful situations.
 */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_LOG_CORE_WARN(message) te::core::Logger::getInstance().log(message, boost::log::trivial::warning)
+  #define TE_LOG_CORE_WARN(message) LOG_WARN(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_WARN(message) ((void)0)
 #endif
@@ -264,11 +251,21 @@ namespace te
   \note The DEBUG Level designates fine-grained informational events that are most useful to debug an application.
 */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_LOG_CORE_DEBUG(message) te::core::Logger::getInstance().log(message, boost::log::trivial::debug)
+  #define TE_LOG_CORE_DEBUG(message) LOG_DEBUG(message, TERRALIB_DEFAULT_LOGGER)
 #else
   #define TE_LOG_CORE_DEBUG(message) ((void)0)
 #endif
 
+#define LOG_TRACE(message, channel) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::trace)
 
+#define LOG_DEBUG(message, channel) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::debug)
+
+#define LOG_INFO(message, channel) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::info)
+
+#define LOG_WARN(message, channel) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::warning)
+
+#define LOG_ERROR(message, channel) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::error)
+
+#define LOG_FATAL(message, channel) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::fatal)
 
 #endif  // __TERRALIB_LOGGER_LOGGER_H__
