@@ -83,7 +83,7 @@ void te::mnt::LayerSearchDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   size_t nrows = layers.size();
 
-  size_t i = 1; //to starts from 1 in interface, but real index is 0
+  int i = 1; //to starts from 1 in interface, but real index is 0
 
   while (it != m_layers.end())
   {
