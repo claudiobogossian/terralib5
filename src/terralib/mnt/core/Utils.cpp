@@ -1777,3 +1777,36 @@ double te::mnt::PerpendicularDistance(te::gm::Coord2D& first, te::gm::Coord2D& l
   pinter.y = ymin;
   return (sqrt(d12));
 }
+
+
+te::mnt::mntType te::mnt::getMNTType(const te::da::DataSetType* dt)
+{
+  if (dt->hasGeom())
+  {
+    std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dt));
+    te::gm::GeomType gmType = geomProp->getGeometryType();
+
+    if (gmType == te::gm::PointType || gmType == te::gm::MultiPointType ||
+      gmType == te::gm::PointZType || gmType == te::gm::MultiPointZType ||
+      gmType == te::gm::PointMType || gmType == te::gm::MultiPointMType ||
+      gmType == te::gm::PointZMType || gmType == te::gm::MultiPointZMType) //samples
+      return SAMPLE;
+
+    if (gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType ||
+      gmType == te::gm::LineStringZType || gmType == te::gm::MultiLineStringZType ||
+      gmType == te::gm::LineStringMType || gmType == te::gm::MultiLineStringMType ||
+      gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringZMType) //isolines
+      return ISOLINE;
+
+    if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType || gmType == te::gm::PolygonType ||
+      gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType || gmType == te::gm::PolygonZType ||
+      gmType == te::gm::GeometryType)//TIN
+      return TIN;
+
+  }
+  if (dt->hasRaster()) //GRID
+    return GRID;
+
+  return OTHER;
+
+}

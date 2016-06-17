@@ -50,6 +50,7 @@
 #include "../../raster.h"
 #include "../../statistics/core/Utils.h"
 
+#include "LayerSearchDialog.h"
 #include "ProfileDialog.h"
 #include "ProfileResultDialog.h"
 #include "ui_ProfileDialogForm.h"
@@ -89,6 +90,7 @@ te::mnt::ProfileDialog::ProfileDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_invertPushButton->setIcon(QIcon::fromTheme("mnt-profile-invert"));
 
 // connectors
+  connect(m_ui->m_layerSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputLayerToolButtonClicked()));
   connect(m_ui->m_inputLayersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
   
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
@@ -224,6 +226,10 @@ void te::mnt::ProfileDialog::release()
  
   setDefaultInterface();
 
+}
+
+void te::mnt::ProfileDialog::onInputLayerToolButtonClicked()
+{
 }
 
 void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)

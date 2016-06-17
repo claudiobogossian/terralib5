@@ -69,6 +69,7 @@ namespace te
       protected slots:
 
       void onInputComboBoxChanged(int index);
+      void onlayerSearchToolButtonClicked();
       void oninterpolatorComboBoxChanged(int index);
       void onResXLineEditEditingFinished();
       void onResYLineEditEditingFinished();
