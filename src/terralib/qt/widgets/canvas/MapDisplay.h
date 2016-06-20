@@ -226,6 +226,11 @@ namespace te
           */
           virtual void setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious = true);
 
+          /*!
+            \brief Defines the min scale and max scale.
+          */
+          virtual void setLimitScale(double minScale, double maxScale);
+
         protected:
 
           /*!
@@ -335,8 +340,10 @@ namespace te
           bool m_isDrawing;            //!< A flag that indicates if the map display is drawing.
 //          std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*> m_layerCanvasMap; //!< A map that associates a layer to a canvas.
           mutable double m_scale;      //!< Current calculated scale
-          int m_overridedDpiX;          //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
-          int m_overridedDpiY;          //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
+          int m_overridedDpiX;         //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
+          int m_overridedDpiY;         //!< Overrided value of the DPI in the X-axis, so the scale can be correctly computed.
+          double m_minScale;           //!< The minimun scale.
+          double m_maxScale;           //!< The maximum scale.
 
           te::qt::widgets::AbstractTool* m_tool;                     //!< Pointer to the current tool being used.
       };
