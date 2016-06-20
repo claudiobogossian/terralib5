@@ -89,19 +89,19 @@ void te::qt::widgets::MultiThreadMapDisplay::setExtent(te::gm::Envelope& e, bool
 
   m_extent = e;
 
+  updateTransform();
+  
   if (m_minScale != 0.0 || m_maxScale != 0.0)
   {
     double scale = getScale();
 
-    if (m_minScale > scale || m_maxScale < scale)
+    if ((m_minScale > scale || m_maxScale < scale) && scale != 0.)
     { 
       m_minScale > scale ? scale = m_minScale : scale = m_maxScale;
 
       setScale(scale);
     }
   }
-
-  updateTransform();
 
   e = m_extent;
 
