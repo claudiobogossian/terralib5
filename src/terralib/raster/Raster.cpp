@@ -677,13 +677,13 @@ te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, do
   return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo, m);
 }
 
-void te::rst::Raster::vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp)
+void te::rst::Raster::vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp, std::vector< double > * const polygonsValues)
 {
   g.clear();
 
-  te::rst::Vectorizer vectorizer(this, b, mp);
+  te::rst::Vectorizer vectorizer(this, b, mp );
 
-  vectorizer.run(g);
+  vectorizer.run(g, polygonsValues);
 }
 
 void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<double> vp, std::size_t b)
