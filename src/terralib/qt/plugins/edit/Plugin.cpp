@@ -27,6 +27,7 @@
 #include "../../../common/Config.h"
 #include "../../../core/translator/Translator.h"
 #include "../../../common/Logger.h"
+#include "../../../edit/SnapManager.h"
 #include "../../../edit/qt/Renderer.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../af/ApplicationController.h"
@@ -248,6 +249,9 @@ void te::qt::plugins::edit::Plugin::drawStashed()
   
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
+
+  const te::gm::Envelope& env = e.m_display->getDisplay()->getExtent();
+  te::edit::SnapManager::getInstance().setWorld(env.m_llx, env.m_lly, env.m_urx, env.m_ury, e.m_display->getDisplay()->getWidth(), e.m_display->getDisplay()->getHeight());
 
   // Initialize the renderer
   te::qt::widgets::MapDisplay* display = e.m_display->getDisplay();
