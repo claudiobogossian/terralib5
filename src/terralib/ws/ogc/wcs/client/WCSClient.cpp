@@ -36,10 +36,16 @@
 #include <iostream>
 #include <string>
 
+// Boost
+#include <boost/filesystem.hpp>
+
 te::ws::ogc::WCSClient::WCSClient(const std::string usrDataDir, const std::string uri, const std::string version)
   : m_uri(uri + "?SERVICE=WCS"), m_version(version)
 {
   m_dataDir = usrDataDir + "/wcs/";
+
+  if (boost::filesystem::is_directory(usrDataDir) && !boost::filesystem::exists(m_dataDir))
+    boost::filesystem::create_directories(m_dataDir);
 }
 
 
