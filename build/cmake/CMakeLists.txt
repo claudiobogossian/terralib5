@@ -1319,6 +1319,10 @@ if(TERRALIB_EXAMPLE_VM_ENABLED)
   add_subdirectory(terralib_example_vm)
 endif()
 
+if(TERRALIB_EXAMPLE_WS_OGC_WCS_ENABLED)
+  add_subdirectory(terralib_example_ws_ogc_wcs)
+endif()
+
 #
 # build unit test
 #
@@ -1599,4 +1603,3 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-

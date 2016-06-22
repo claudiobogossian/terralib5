@@ -23,10 +23,16 @@
 #  Author: Vinicius Campanha <vinicius.campanha@funcate.org.br>
 #
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ogc-wcs/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ogc-wcs/*.h)
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
-add_executable(terralib_example_ws_ogc_wcs ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+file(GLOB TERRALIB_EXAMPLE_OGC_WCS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ogc-wcs/*.cpp)
+file(GLOB TERRALIB_EXAMPLE_OGC_WCS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ogc-wcs/*.h)
 
-install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
+add_executable(terralib_example_ws_ogc_wcs ${TERRALIB_EXAMPLE_OGC_WCS_SRC_FILES} ${TERRALIB_EXAMPLE_OGC_WCS_HDR_FILES})
+
+target_link_libraries(terralib_example_ws_ogc_wcs terralib_mod_ws_ogc_wcs_client
+                                                   terralib_mod_ws_ogc_wcs_dataaccess
+                                                   terralib_mod_plugin)
+
+install(FILES ${TERRALIB_EXAMPLE_OGC_WCS_SRC_FILES} ${TERRALIB_EXAMPLE_OGC_WCS_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/ogc-wcs COMPONENT devel)
