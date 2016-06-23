@@ -31,7 +31,7 @@
 #define __TERRALIB_CORE_ENCODING_CHARENCODING_H__
 
 // TerraLib
-#include "Config.h"
+#include "../Config.h"
 
 // STL
 #include <map>
@@ -43,7 +43,7 @@ namespace te
   {
 
     /*!
-      \enum Encoding
+      \enum EncodingType
 
       \brief Supported character encodings.
     */
@@ -113,7 +113,7 @@ namespace te
         /*!
           \brief Retrive an EncodingType from a given character encoding name.
 
-          \param et Encoding name to be retrieved as enum.
+          \param name Encoding name to be retrieved as enum.
 
           \return Encoding as enum.
          */
@@ -121,10 +121,17 @@ namespace te
 
       private:
 
-// Not instantiable
+        /*! \brief Singleton constructor must be private or protected. */
         CharEncoding();
 
+        /*! \brief Singleton destructor must be private or protected. */
         ~CharEncoding();
+
+        /*! \brief Singleton copy constructor must be private or protected. */
+        CharEncoding(CharEncoding const&);
+
+        /*! \brief Singleton copy assignment operator must be private or protected. */
+        CharEncoding& operator=(CharEncoding const&);
 
         static const std::map<EncodingType, std::string> EncodingString; //!< An index over character encoding types.
     };

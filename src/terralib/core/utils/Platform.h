@@ -31,7 +31,7 @@
 #define __TERRALIB_CORE_UTILS_PLATFORM_H__
 
 // TerraLib
-#include "Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>

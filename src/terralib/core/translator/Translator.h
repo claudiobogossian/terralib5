@@ -31,8 +31,8 @@
 #define __TERRALIB_CORE_TRANSLATOR_TRANSLATOR_H__
 
 // TerraLib
+#include "../Config.h"
 #include "../../BuildConfig.h"
-#include "Config.h"
 
 // STL
 #include <string>
@@ -87,12 +87,6 @@ namespace te
     {
 
       public:
-
-
-        /** @name Translation Methods#define TE_ADD_TEXT_DOMAIN(domain) te::core::Translator::getInstance().addTextDomain(domain)
-         *  Methods that can be used to tranlate texts.
-         */
-        //@{
 
         static Translator& getInstance();
 
@@ -186,16 +180,19 @@ namespace te
          */
         bool exist(const std::string& textDomain);
 
-        //@}
-
       private:
 
-        /*! \brief Singleton constructor. */
+        /*! \brief Singleton constructor must be private or protected. */
         Translator(){}
 
-// No copy allowed
-        Translator(Translator const&);
-        Translator& operator=(Translator const&);
+        /*! \brief Singleton destructor must be private or protected. */
+        ~Translator(){}
+
+        /*! \brief Singleton copy constructor must be private or protected. */
+        Translator(Translator const&); //No copy allowed
+
+        /*! \brief Singleton copy assignment operator must be private or protected. */
+        Translator& operator=(Translator const&); //No copy allowed
 
       private:
 
@@ -205,13 +202,6 @@ namespace te
 
   } // end namespace core
 }   // end namespace te
-
-
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
 
 // Check if the TR macro has already been defined
 // by another application... if so, it will output
@@ -226,7 +216,10 @@ namespace te
   \def TE_ADD_TEXT_DOMAIN
 
   \brief It adds the given text domain and its directory to the multilingual system.
- */
+
+  \param domain    A given message domain (just a name). A text domain is the name of the catalog used to translate the message.
+  \param dir Where the text domain is located.
+*/
 #ifdef TERRALIB_TRANSLATOR_ENABLED
   #define TE_ADD_TEXT_DOMAIN(domain, dir) te::core::Translator::getInstance().addTextDomain(domain, dir)
 #else
@@ -237,6 +230,8 @@ namespace te
   \def TE_TR
 
   \brief It marks a string in order to get translated.
+
+  \param message The text to be translated.
 
   Example of usage:
   \code
@@ -251,6 +246,10 @@ namespace te
   \def TE_TR_PLURAL
 
   \brief It marks a string in order to get translated according to plural form.
+
+  \param message1 The singular form of the text to be translated.
+  \param message2 The plural form of the text to be translated.
+  \param n This parameter is used to determine the plural form.
 
   Example of usage:
   \code
@@ -274,10 +273,9 @@ namespace te
   \def TE_TR_LANGUAGE
 
   \brief It sets the locale for the Translator.
- */
-#define TE_TR_LANGUAGE(message) te::core::Translator::getInstance().setLocale(message)
 
-//@}
+  \param locale A string of the new locale.
+ */
+#define TE_TR_LANGUAGE(locale) te::core::Translator::getInstance().setLocale(locale)
 
 #endif  // __TERRALIB_CORE_TRANSLATOR_TRANSLATOR_H__
-
