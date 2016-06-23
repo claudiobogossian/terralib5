@@ -1,6 +1,7 @@
 // STL
 #include <cstdlib>
 #include <string>
+#include <iostream>
 
 // TerraLib
 #include "../../src/terralib/ws/ogc/wcs/client/WCSClient.h"
