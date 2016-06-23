@@ -37,16 +37,10 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/log/attributes/current_process_name.hpp>
 #include <boost/log/attributes/current_thread_id.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_ostream_backend.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/from_stream.hpp>
-typedef boost::log::sinks::synchronous_sink< boost::log::sinks::text_file_backend > text_sink;
-
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(channel, "Channel", std::string)
-
 
 te::core::Logger& te::core::Logger::getInstance()
 {
