@@ -137,7 +137,8 @@ std::string te::core::GetUserDataPath()
 
   CoTaskMemFree(wszPath);
 
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
+
   char* homePtr = getenv( "HOME" );
   if( homePtr && boost::filesystem::is_directory(homePtr))
   {
@@ -146,7 +147,16 @@ std::string te::core::GetUserDataPath()
 
     dataPath = path.string();
   }
+#elif (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
+   char* homePtr = getenv( "HOME" );
+   if( homePtr && boost::filesystem::is_directory(homePtr))
+   {
+     boost::filesystem::path path(homePtr);
+     path /="Library/Application Support";
+
+     dataPath = path.string();
+   }
 #else
   #error "Platform not supported! Contact TerraLib Team"
 #endif
@@ -170,11 +180,15 @@ std::string te::core::GetAllUsersDataPath()
 
   CoTaskMemFree(wszPath);
 
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
 
   if(boost::filesystem::is_directory("/etc/xdg"))
     dataPath = "/etc/xdg";
 
+#elif  (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+
+  if(boost::filesystem::is_directory("/Library/Application Support"))
+    dataPath = "/Library/Application Support";
 #else
 #error "Platform not supported! Contact TerraLib Team"
 #endif
