@@ -34,9 +34,6 @@
 #include "Exception.h"
 #include "Transactor.h"
 
-// Boost
-#include <boost/filesystem.hpp>
-
 
 te::da::DataSourceCapabilities te::ws::ogc::wcs::da::DataSource::sm_capabilities;
 
@@ -158,6 +155,10 @@ bool te::ws::ogc::wcs::da::DataSource::exists(const std::map<std::string, std::s
   if(dsInfo.empty())
     return false;
 
+  std::map<std::string, std::string>::const_iterator usrDataDir = dsInfo.find("USERDATADIR");
+  if(usrDataDir == dsInfo.end())
+    return false;
+
   std::map<std::string, std::string>::const_iterator uri = dsInfo.find("URI");
   if(uri == dsInfo.end())
     return false;
@@ -170,7 +171,7 @@ bool te::ws::ogc::wcs::da::DataSource::exists(const std::map<std::string, std::s
   {
     verifyConnectionInfo();
 
-    te::ws::ogc::WCSClient wcs(uri->second, version->second);
+    te::ws::ogc::WCSClient wcs(usrDataDir->second, uri->second, version->second);
 
     wcs.updateCapabilities();
   }
@@ -210,8 +211,5 @@ void te::ws::ogc::wcs::da::DataSource::verifyConnectionInfo() const
     throw Exception(TE_TR("The connection information is invalid. Missing USERDATADIR parameter!"));
 
   std::string dataDir = usrDataDir->second + "/wcs/";
-
-  if(!boost::filesystem::exists(dataDir))
-    boost::filesystem::create_directories(dataDir);
 
 }
