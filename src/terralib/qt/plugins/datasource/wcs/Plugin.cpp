@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../../common/Config.h"
 #include "../../../../core/translator/Translator.h"
-#include "../../../../common/Logger.h"
+#include "../../../../core/logger/Logger.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "WCSType.h"

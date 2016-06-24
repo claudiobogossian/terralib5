@@ -21,7 +21,7 @@
  \file Dissolve.cpp
  */
 
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/StringUtils.h"
 #include "../common/STLUtils.h"
@@ -334,7 +334,7 @@ std::vector<te::gm::Geometry* > te::vp::ExtractGeometry(te::gm::Geometry* inputG
       if (!gcIn->isValid())
       {
 #ifdef TERRALIB_LOGGER_ENABLED
-        te::common::Logger::logDebug("vp", "Dissolve - The operation generated invalid geometry.");
+        TE_CORE_LOG_DEBUG("vp", "Dissolve - The operation generated invalid geometry.");
 #endif // TERRALIB_LOGGER_ENABLED
 
         extractGeometryVec.clear();
@@ -661,7 +661,7 @@ bool te::vp::Dissolve::executeMemory(te::vp::AlgorithmParams* mainParams)
 
   std::string timeResult = "Dissolve - Start.";
 #ifdef TERRALIB_LOGGER_ENABLED
-  te::common::Logger::logDebug("vp", timeResult.c_str());
+  TE_CORE_LOG_DEBUG("vp", timeResult.c_str());
 #endif
 
   te::common::TaskProgress task("Processing...", 0, (int)groups.size());
@@ -696,7 +696,7 @@ bool te::vp::Dissolve::executeMemory(te::vp::AlgorithmParams* mainParams)
 
   timeResult = "Dissolve - Finish.";
 #ifdef TERRALIB_LOGGER_ENABLED
-  te::common::Logger::logDebug("vp", timeResult.c_str());
+  TE_CORE_LOG_DEBUG("vp", timeResult.c_str());
 #endif
 
   return true;
@@ -877,7 +877,7 @@ bool te::vp::Dissolve::executeQuery(te::vp::AlgorithmParams* mainParams)
   if (!subSelectInput)
   {
 #ifdef TERRALIB_LOGGER_ENABLED
-    te::common::Logger::logDebug("vp", "Dissolve - A problem was found. SubSelect Input with problem.");
+    TE_CORE_LOG_DEBUG("vp", "Dissolve - A problem was found. SubSelect Input with problem.");
 #endif // TERRALIB_LOGGER_ENABLED
     throw te::common::Exception(TE_TR("A problem was found. SubSelect Input with problem."));
   }
@@ -925,7 +925,7 @@ bool te::vp::Dissolve::executeQuery(te::vp::AlgorithmParams* mainParams)
     if (!inDataSourceInfoPtr)
     {
 #ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", "Dissolve - Input DataSource ID not found.");
+      TE_CORE_LOG_DEBUG("vp", "Dissolve - Input DataSource ID not found.");
 #endif // TERRALIB_LOGGER_ENABLED
       t->rollBack();
       throw te::common::Exception(TE_TR("Input DataSource ID not found."));
@@ -934,7 +934,7 @@ bool te::vp::Dissolve::executeQuery(te::vp::AlgorithmParams* mainParams)
     if (!outDataSourceInfoPtr)
     {
 #ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", "Dissolve - Output DataSource ID not found.");
+      TE_CORE_LOG_DEBUG("vp", "Dissolve - Output DataSource ID not found.");
 #endif // TERRALIB_LOGGER_ENABLED
       t->rollBack();
       throw te::common::Exception(TE_TR("Output DataSource ID not found."));
@@ -1038,7 +1038,7 @@ bool te::vp::Dissolve::executeQuery(te::vp::AlgorithmParams* mainParams)
     if (dsQuery->size() == 0)
     {
 #ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", "Dissolve - The resultant layer is empty!");
+      TE_CORE_LOG_DEBUG("vp", "Dissolve - The resultant layer is empty!");
 #endif // TERRALIB_LOGGER_ENABLED
       throw te::common::Exception(TE_TR("The resultant layer is empty!"));
     }

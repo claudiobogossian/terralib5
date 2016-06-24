@@ -25,7 +25,7 @@
 
 // TerraLib 
 #include "../Enums.h"
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -447,7 +447,7 @@ bool te::vp::GeometricOpWizard::execute()
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string str = "Greographic Operation - ";
     str += e.what();
-    te::common::Logger::logDebug("vp", str.c_str());
+    TE_CORE_LOG_DEBUG("vp", str.c_str());
 #endif
 
     te::common::ProgressManager::getInstance().removeViewer(id);

@@ -32,7 +32,7 @@
 #include "../../common/TerraLib.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../common/Version.h"
 #include "../../core/translator/Translator.h"
 #include "../../core/utils/Platform.h"

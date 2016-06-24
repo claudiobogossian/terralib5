@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../core/translator/Translator.h"
-#include "../../../common/Logger.h"
+#include "../../../core/logger/Logger.h"
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"

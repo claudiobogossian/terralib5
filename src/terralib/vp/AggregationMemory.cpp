@@ -27,7 +27,7 @@
 
 #include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -335,7 +335,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   
   std::string timeResult = "Aggregation - Start.";
 #ifdef TERRALIB_LOGGER_ENABLED
-  te::common::Logger::logDebug("vp", timeResult.c_str());
+  TE_CORE_LOG_DEBUG("vp", timeResult.c_str());
 #endif
   itg = groups.begin();
   while(itg != groups.end())
@@ -351,7 +351,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
       if (!itg->second[i]->getGeometry(geomIdx)->isValid())
       {
 #ifdef TERRALIB_LOGGER_ENABLED
-        te::common::Logger::logDebug("vp", "Aggregation - The input layer has invalid geometry.");
+        TE_CORE_LOG_DEBUG("vp", "Aggregation - The input layer has invalid geometry.");
 #endif // TERRALIB_LOGGER_ENABLED
       }
     }
@@ -401,7 +401,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
     else
     {
 #ifdef TERRALIB_LOGGER_ENABLED
-        te::common::Logger::logDebug("vp", "Aggregation - The operation generated invalid geometry.");
+        TE_CORE_LOG_DEBUG("vp", "Aggregation - The operation generated invalid geometry.");
 #endif // TERRALIB_LOGGER_ENABLED
     }
     ++itg;
@@ -412,7 +412,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
 
   timeResult = "Aggregation - End.";
 #ifdef TERRALIB_LOGGER_ENABLED
-  te::common::Logger::logDebug("vp", timeResult.c_str());
+  TE_CORE_LOG_DEBUG("vp", timeResult.c_str());
 #endif
   te::vp::Save(m_outDsrc.get(), outDataset.get(), outDsType.get());
   return true;

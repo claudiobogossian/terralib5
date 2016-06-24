@@ -27,7 +27,7 @@
 #include "../common/Exception.h"
 #include "../core/lib/Library.h"
 #include "../core/lib/LibraryManager.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 #include "../common/PlatformUtils.h"
 #include "../Defines.h"
@@ -78,9 +78,9 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 // if not loaded yet, load it!
 
 // the plugin library file may be in a special dir informed by pInfo.m_folder
-    
+
     std::string errorMessage;
-    
+
     boost::filesystem::path pluginFile(libName);
 
     slib.reset(new te::core::Library(pluginFile.string(), true));
@@ -98,7 +98,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
     {
 // search for alternative paths
       std::vector<std::string> alternative_paths;
-      
+
 #if TE_PLATFORM == TE_PLATFORMCODE_APPLE
       alternative_paths.push_back("./");
 #endif
@@ -186,8 +186,8 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
         if (!errorMessage.empty())
           m = m + "\n" + errorMessage.c_str();
         else
-          m = m + ' '+ TE_TR("descried in ") + pInfo.m_name + '.';
-        
+          m = m + ' '+ TE_TR("described in ") + pInfo.m_name + '.';
+
         throw te::common::Exception(m);
       }
     }
@@ -198,7 +198,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
     std::string m  = TE_TR("Could not find shared library described in ");
                 m += pInfo.m_name;
     throw te::common::Exception(m);
-  }  
+  }
 
 // now we need to get the plugin constructor function address
   GetPluginFPtr getPluginFptr = (GetPluginFPtr) (slib->getAddress("CppPluginGetInstance"));

@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../common/Exception.h"
-#include "../../../common/Logger.h"
+#include "../../../core/logger/Logger.h"
 #include "../../../core/translator/Translator.h"
 #include "../common/JsContext.h"
 #include "../common/JsContextManager.h"

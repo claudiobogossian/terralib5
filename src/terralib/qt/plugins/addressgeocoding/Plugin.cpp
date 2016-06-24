@@ -28,7 +28,7 @@
 #include "../../../addressgeocoding/qt/MainWindowDialog.h"
 #include "../../../common/Config.h"
 #include "../../../core/translator/Translator.h"
-#include "../../../common/Logger.h"
+#include "../../../core/logger/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/Utils.h"

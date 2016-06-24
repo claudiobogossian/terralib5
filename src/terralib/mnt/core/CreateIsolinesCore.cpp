@@ -28,7 +28,7 @@
 
 #include "../../../../src/terralib/core/translator/Translator.h"
 #include "../../../../src/terralib/common/progress/TaskProgress.h"
-#include "../../../../src/terralib/common/Logger.h"
+#include "../../../../src/terralib/core/logger/Logger.h"
 
 #include "../../../../src/terralib/dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../../src/terralib/dataaccess/dataset/DataSetTypeCapabilities.h"
@@ -147,7 +147,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
 {
   std::string timeResult = "Create Isolines Grid - Start.";
 #ifdef TERRALIB_LOGGER_ENABLED
-  te::common::Logger::logDebug("mnt", timeResult.c_str());
+  TE_CORE_LOG_DEBUG("mnt", timeResult.c_str());
 #endif
 
   te::rst::RasterProperty* rstProp = te::da::GetFirstRasterProperty(m_inRasterDsType.get());
@@ -221,7 +221,7 @@ bool te::mnt::CreateIsolines::run(std::auto_ptr<te::rst::Raster> raster)
 
   timeResult = "Create Isolines Grid - End.";
 #ifdef TERRALIB_LOGGER_ENABLED
-  te::common::Logger::logDebug("mnt", timeResult.c_str());
+  TE_CORE_LOG_DEBUG("mnt", timeResult.c_str());
 #endif
  
   std::vector<double> guidevalues;
