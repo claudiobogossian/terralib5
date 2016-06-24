@@ -133,6 +133,49 @@ namespace te
         FeederConstRasterInfo();
     };    
     
+    /*!
+      \class FeederConstRasterFileNames
+      \brief A feeder from a mix of a vector of input rasters and a vector of rasters infos.
+     */
+    class TERPEXPORT FeederConstRasterInfoAndVector : public FeederConstRaster
+    {
+      public :
+        
+        /*!
+          \brief Constructor from a vector of input rasters infos;
+          \param rTypes The name of the specific drivers to instantiate each raster. 
+          \param rInfos The necessary information to instantiate each raster. 
+          \param rastersPtrsVec Input vector of rasters pointers.
+          \note The given rasters must always be avaliable.
+        */        
+        FeederConstRasterInfoAndVector( 
+          const std::vector< const te::rst::Raster* > rastersPtrsVec,
+          const std::vector< std::string >& rTypes,
+          const std::vector< std::map< std::string, std::string > >& rInfos );
+        
+        ~FeederConstRasterInfoAndVector();
+        
+        //overloads
+        te::rst::Raster const* getCurrentObj() const;
+        bool moveNext();
+        bool moveTo( const unsigned int index );
+        void reset();
+        unsigned int getObjsCount() const;
+        unsigned int getCurrentOffset() const;
+        
+      protected :
+        
+        std::vector< const te::rst::Raster* >::size_type m_CurrentRasterOffset;
+        te::rst::Raster const* m_currentRasterNakedPtr;
+        
+        std::vector< const te::rst::Raster* > m_rasters;
+        std::vector< std::string > m_rTypes;
+        std::vector< std::map< std::string, std::string > > m_rInfos;
+        std::auto_ptr< te::rst::Raster > m_currentRasterHandler;
+        
+        FeederConstRasterInfoAndVector();
+    };      
+    
     
     /*!
       \class FeederConstRasterDirectory
