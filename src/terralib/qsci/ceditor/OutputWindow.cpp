@@ -28,8 +28,13 @@
 #include "OutputWindow.h"
 
 // Qt
+#include <QProcess>
 #include <QTextEdit>
-#include <QVBoxLayout>
+#include <QLayout>
+
+// STL
+#include <iostream>
+
 
 te::ce::OutputWindow::OutputWindow(QWidget* parent)
   : QDockWidget(parent)
@@ -38,17 +43,35 @@ te::ce::OutputWindow::OutputWindow(QWidget* parent)
 
   m_txt = new QTextEdit(this);
 
-  m_txt->setWordWrapMode(QTextOption::NoWrap);
+//  m_txt->setWordWrapMode(QTextOption::NoWrap);
 
-  m_txt->setFontPointSize(4.0 * m_txt->fontPointSize());
+ // m_txt->setFontPointSize(4.0 * m_txt->fontPointSize());
 
-  m_txt->setReadOnly(true);
+//  m_txt->setReadOnly(true);
 
   setWidget(m_txt);
+
+//  new QGridLayout(this);
+
+  m_proc = new QProcess(this);
+  m_proc->waitForStarted();
+
+  // make connections
+  connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(redirectOutput()));
+
+  connect(m_proc, SIGNAL(readyRead()), SLOT(redirectOutput()));
+
+//  m_out = new OutPutStream(std::cout, m_txt);
+
+
+  m_txt->repaint();
+
+//  m_txt->setTextFormat(Qt::LogText);
 }
 
 te::ce::OutputWindow::~OutputWindow()
 {
+  delete m_out;
 }
 
 const QTextEdit* te::ce::OutputWindow::getText() const
@@ -59,4 +82,14 @@ const QTextEdit* te::ce::OutputWindow::getText() const
 QTextEdit* te::ce::OutputWindow::getText()
 {
   return m_txt;
+}
+
+void te::ce::OutputWindow::redirectOutput()
+{
+  m_txt->append(m_proc->readAll());
+  m_txt->append(m_proc->readAllStandardOutput());
+
+  std::cout << "OK!";
+
+  m_txt->repaint();
 }
