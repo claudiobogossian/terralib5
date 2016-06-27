@@ -120,15 +120,16 @@ void te::common::TaskProgress::setCurrentStep(int value)
     }
 
     if(m_timer)
-    {
       m_timer->tick();
-
-      setMessage(m_timer->getMessage());
-    }
 
     // inform the progress manager singleton that the current value has changed
     if (m_hasToUpdate)
+    {
       te::common::ProgressManager::getInstance().updateValue(m_id);
+
+      if (m_timer)
+        setMessage(m_timer->getMessage());
+    }
   }
 }
 

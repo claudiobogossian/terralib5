@@ -45,7 +45,18 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="m_rasterlayersComboBox"/>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QComboBox" name="m_rasterlayersComboBox"/>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_rasterSearchToolButton">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -73,7 +84,18 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="m_vectorlayersComboBox"/>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QComboBox" name="m_vectorlayersComboBox"/>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_vectorSearchToolButton">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QLabel" name="m_attributeLabel">

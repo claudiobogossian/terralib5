@@ -84,7 +84,7 @@ namespace te
 
     private slots:
 
-      void onUndoRedo();
+      void onUndoFeedback();
 
     protected:
 

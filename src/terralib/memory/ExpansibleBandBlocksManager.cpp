@@ -24,8 +24,8 @@
 */
 
 // TerraLib
-#include "../common/PlatformUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/utils/Platform.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
 #include "Exception.h"
@@ -764,7 +764,7 @@ bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int 
   FILE** fileptr, std::string& fullFileName ) const
 {
   fullFileName = boost::filesystem::unique_path( 
-    boost::filesystem::path( te::common::GetUserHomeDirPath() ) /= 
+    boost::filesystem::path( te::core::GetUserDirectory() ) /= 
     boost::filesystem::path( "TerralibExpansibleBandBlocksManager_%%%%-%%%%-%%%%-%%%%" ) ).string();
   if( fullFileName.empty() )
   {

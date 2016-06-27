@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../Version.h"
 #include "../../../common/BoostUtils.h"
-#include "../../../common/PlatformUtils.h"
+#include "../../../core/utils/Platform.h"
 #include "../../../datatype/AbstractData.h"
 #include "../../../datatype/Enums.h"
 #include "../../../datatype/serialization/xml/Serializer.h"
@@ -217,7 +217,7 @@ void te::serialize::xml::Save(const std::string& fileName)
 
 void te::serialize::xml::Save(te::xml::AbstractWriter& writer)
 {
-  std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/dataaccess/dataaccess.xsd");
+  std::string schema_loc = te::core::FindInTerraLibPath("share/terralib/schemas/terralib/dataaccess/dataaccess.xsd");
 
   boost::replace_all(schema_loc, " ", "%20");
 

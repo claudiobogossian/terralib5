@@ -23,7 +23,7 @@
   \brief 
 */
 
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/common/Exception.h>
 
 // Qt
@@ -50,7 +50,7 @@ inline void QtInitializer::begin() throw (te::common::Exception)
 
   QApplication* app = new QApplication(argc, argv);
 
-  std::string th_path = te::common::FindInTerraLibPath("share/terralib/icons");
+  std::string th_path = te::core::FindInTerraLibPath("share/terralib/icons");
 
   Q_INIT_RESOURCE(tlib);
 

@@ -33,10 +33,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
-#include "../../mnt/core/CalculateGrid.h"
-#include "../../mnt/core/SplineGrass.h"
-#include "../../mnt/core/SplineGrassMitasova.h"
-#include "../../mnt/core/TINCalculateGrid.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
@@ -46,6 +42,13 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../raster/RasterFactory.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
+#include "../core/CalculateGrid.h"
+#include "../core/SplineGrass.h"
+#include "../core/SplineGrassMitasova.h"
+#include "../core/TINCalculateGrid.h"
+#include "../core/Utils.h"
+
+#include "LayerSearchDialog.h"
 #include "MNTGenerationDialog.h"
 #include "ui_MNTGenerationDialogForm.h"
 
@@ -70,6 +73,7 @@ te::mnt::MNTGenerationDialog::MNTGenerationDialog(QWidget* parent , Qt::WindowFl
 
   //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
+  connect(m_ui->m_layerSearchToolButton, SIGNAL(clicked()), this, SLOT(onlayerSearchToolButtonClicked()));
   
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
 
@@ -132,6 +136,7 @@ te::map::AbstractLayerPtr te::mnt::MNTGenerationDialog::getLayer()
   return m_outputLayer;
 }
 
+
 void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 {
   m_ui->m_interpolatorComboBox->clear();
@@ -152,21 +157,16 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
       setSRID(m_inputLayer->getSRID());
 
       std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
-      if (dsType->hasGeom())
+
+      m_inputType = getMNTType(dsType.get());
+
+      if (m_inputType != GRID)
       {
         std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
 
         m_ui->m_inputstackedWidget->setCurrentIndex(1);
 
-        te::gm::GeomType gmType = geomProp->getGeometryType();
-        if (gmType == te::gm::PointType || gmType == te::gm::MultiPointType ||
-          gmType == te::gm::PointZType || gmType == te::gm::MultiPointZType ||
-          gmType == te::gm::PointMType || gmType == te::gm::MultiPointMType ||
-          gmType == te::gm::PointZMType || gmType == te::gm::MultiPointZMType ||
-          gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType ||
-          gmType == te::gm::LineStringZType || gmType == te::gm::MultiLineStringZType ||
-          gmType == te::gm::LineStringMType || gmType == te::gm::MultiLineStringMType ||
-          gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringZMType) //samples
+        if (m_inputType == SAMPLE || m_inputType == ISOLINE)
         {
           m_inputType = SAMPLE;
           m_ui->m_interpolatorComboBox->addItem("Weighted Avg./Z Value/Quadrant");
@@ -218,11 +218,8 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           }
 
         }
-        if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType || gmType == te::gm::PolygonType ||
-          gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType || gmType == te::gm::PolygonZType ||
-          gmType == te::gm::GeometryType)//TIN
+        if (m_inputType == TIN)
         {
-          m_inputType = TIN;
           std::auto_ptr<te::da::DataSet> dataquery;
           te::da::DataSourcePtr ds = te::da::GetDataSource(m_inputLayer->getDataSourceId());
           m_ui->m_interpolatorComboBox->addItem("Linear");
@@ -249,7 +246,7 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           }
         }
       }
-      if (dsType->hasRaster()) //GRID
+      if (m_inputType == GRID)
       {
         m_ui->m_inputstackedWidget->setCurrentIndex(0);
         m_inputType = GRID;
@@ -264,6 +261,18 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
   }
 }
 
+void te::mnt::MNTGenerationDialog::onlayerSearchToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_layersComboBox->setCurrentIndex(search.getLayerIndex());
+}
 
 void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
 {

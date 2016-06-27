@@ -77,8 +77,9 @@ namespace te
 
       bool runRasterProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
       bool runIsolinesProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
+      bool runTINProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
 
-      te::gm::LineString* calculateProfile(te::gm::MultiLineString &isolines, te::gm::LineString &trajectory);
+      te::gm::LineString* calculateProfile(std::vector<te::gm::Geometry*> &isolines, te::gm::LineString &trajectory);
 
       std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType);
       std::auto_ptr<te::rst::Raster> getPrepareRaster();

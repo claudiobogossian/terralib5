@@ -55,6 +55,8 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_scale(0),
     m_overridedDpiX(-1),
     m_overridedDpiY(-1),
+    m_minScale(0.0),
+    m_maxScale(0.0),
     m_tool(0)
 {
   m_timer->setSingleShot(true);
@@ -80,6 +82,8 @@ m_isDrawing(false),
 m_scale(0),
 m_overridedDpiX(-1),
 m_overridedDpiY(-1),
+m_minScale(0.0),
+m_maxScale(0.0),
 m_tool(0)
 {
   m_timer->setSingleShot(true);
@@ -583,4 +587,17 @@ void te::qt::widgets::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* 
 
   if (m_tool != 0)
     installEventFilter(m_tool);
+}
+
+void te::qt::widgets::MapDisplay::setLimitScale(double minScale, double maxScale)
+{
+  if ((minScale > maxScale) || (minScale < 1 || maxScale < 1))
+  {
+    m_minScale = 0.0;
+    m_maxScale = 0.0;
+    return;
+  }
+
+  m_minScale = minScale;
+  m_maxScale = maxScale;
 }

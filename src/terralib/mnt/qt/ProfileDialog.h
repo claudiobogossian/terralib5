@@ -84,6 +84,7 @@ namespace te
 
       protected slots:
 
+      void onInputLayerToolButtonClicked();
         void onInputComboBoxChanged(int index);
 
         void oneditionEnabled(bool);
@@ -111,7 +112,6 @@ namespace te
         bool setVertexEdition(); //sets parameters to edition of vertexes
 
         void testGeometries(); //test if geometries is valid
-
 
       private:
 

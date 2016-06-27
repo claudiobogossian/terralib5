@@ -25,8 +25,8 @@
 
 #include "MainWindow.h"
 
-#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/plugin.h>
 #include <terralib/plugin/Utils.h>
 
@@ -40,10 +40,10 @@
 void LoadDrivers()
 {
   try
-  {   
+  {
     te::plugin::PluginInfo* info;
-    
-    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+
+    std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_OGR_ENABLED
     info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
@@ -72,18 +72,18 @@ void LoadDrivers()
 int main(int argc, char** argv)
 {
   try
-  {  
-    TerraLib::getInstance().initialize();  
+  {
+    TerraLib::getInstance().initialize();
 
     LoadDrivers();
-    
+
     QApplication app(argc, argv);
-    
+
     MainWindow window;
     window.show();
-    
+
     app.exec();
-    
+
   }
   catch(const te::common::Exception& e)
   {
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
     std::cout << e.what() << std::endl;
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();
-    
+
     return EXIT_FAILURE;
   }
   catch(const std::exception& e)
@@ -99,17 +99,17 @@ int main(int argc, char** argv)
     std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();
-    
+
     return EXIT_FAILURE;
   }
-  
+
   te::plugin::PluginManager::getInstance().unloadAll();
-  
+
   // finalize Terralib support
   TerraLib::getInstance().finalize();
-  
+
   std::cout << "Press Enter to exit..." << std::endl;
   std::cin.get();
-  
+
   return EXIT_SUCCESS;
 }

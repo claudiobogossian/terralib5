@@ -29,13 +29,13 @@
 // TerraLib
 #include "../../BuildConfig.h"
 #include "../../common/Exception.h"
-#include "../../common/PlatformUtils.h"
-#include "../../core/translator/Translator.h"
 #include "../../common/TerraLib.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../common/Logger.h"
 #include "../../common/Version.h"
+#include "../../core/translator/Translator.h"
+#include "../../core/utils/Platform.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
@@ -337,22 +337,22 @@ void  te::qt::af::ApplicationController::initialize()
   m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
   
   if(!boost::filesystem::exists(m_appIconName.toStdString()))
-    m_appIconName = te::common::FindInTerraLibPath(m_appIconName.toStdString()).c_str();
+    m_appIconName = te::core::FindInTerraLibPath(m_appIconName.toStdString()).c_str();
 
   m_appPluginsPath = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Plugins.<xmlattr>.xlink:href"));
 
   if (!boost::filesystem::exists(m_appPluginsPath.toStdString()))
-    m_appPluginsPath = te::common::FindInTerraLibPath(m_appPluginsPath.toStdString()).c_str();
+    m_appPluginsPath = te::core::FindInTerraLibPath(m_appPluginsPath.toStdString()).c_str();
 
   m_aboutLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href"));
   
   if(!boost::filesystem::exists(m_aboutLogo.toStdString()))
-    m_aboutLogo = te::common::FindInTerraLibPath(m_aboutLogo.toStdString()).c_str();
+    m_aboutLogo = te::core::FindInTerraLibPath(m_aboutLogo.toStdString()).c_str();
   
   m_tLibLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href"));
   
   if(!boost::filesystem::exists(m_tLibLogo.toStdString()))
-    m_tLibLogo = te::common::FindInTerraLibPath(m_tLibLogo.toStdString()).c_str();
+    m_tLibLogo = te::core::FindInTerraLibPath(m_tLibLogo.toStdString()).c_str();
 
   QString fullAppName = m_appName + "-" + QString(te::common::Version::asString().c_str());
   qApp->setApplicationName(fullAppName);
@@ -364,7 +364,7 @@ void  te::qt::af::ApplicationController::initialize()
 // load help system
   try
   {
-    std::string help_file = te::common::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.HelpFile.<xmlattr>.xlink:href"));
+    std::string help_file = te::core::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.HelpFile.<xmlattr>.xlink:href"));
 
     m_appHelpFile = QString::fromStdString(help_file);
 
@@ -403,7 +403,7 @@ void  te::qt::af::ApplicationController::initialize()
   {
     SplashScreenManager::getInstance().showMessage(tr("Loading application icon theme..."));
 
-    std::string icon_dir = te::common::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
+    std::string icon_dir = te::core::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
     
     m_appIconThemeDir = QString::fromStdString(icon_dir);
 

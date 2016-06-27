@@ -42,6 +42,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../raster.h"
 
 
+#include "LayerSearchDialog.h"
 #include "VolumeDialog.h"
 #include "VolumeResultDialog.h"
 #include "ui_VolumeDialogForm.h"
@@ -59,11 +60,13 @@ te::mnt::VolumeDialog::VolumeDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->setupUi(this);
 
   //signals
+  connect(m_ui->m_rasterSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputRasterToolButtonClicked()));
   connect(m_ui->m_rasterlayersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRasterInputComboBoxChanged(int)));
 
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
   connect(m_ui->m_dummylineEdit, SIGNAL(editingFinished()), this, SLOT(onDummyLineEditEditingFinished()));
 
+  connect(m_ui->m_vectorSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputVectorToolButtonClicked()));
   connect(m_ui->m_vectorlayersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onVectorInputComboBoxChanged(int)));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
@@ -90,32 +93,35 @@ void te::mnt::VolumeDialog::setLayers(std::list<te::map::AbstractLayerPtr> layer
       if (it->get()->isValid())
       {
         std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-        if (dsType.get())
-        {
-          if (dsType->hasGeom())
-          {
-            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            te::gm::GeomType gmType = geomProp->getGeometryType();
-            if (gmType == te::gm::PolygonType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-              gmType == te::gm::PolygonZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType ||
-              gmType == te::gm::PolygonMType || gmType == te::gm::MultiPolygonMType || gmType == te::gm::PolyhedralSurfaceMType ||
-              gmType == te::gm::PolygonZMType || gmType == te::gm::MultiPolygonZMType || gmType == te::gm::PolyhedralSurfaceZMType
-              )
-            {
-              m_ui->m_vectorlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-            }
-            geomProp.release();
-          }
-          if (dsType->hasRaster())
-          {
+        mntType type = getMNTType(dsType.get());
+
+        if (type == TIN)
+          m_ui->m_vectorlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+
+        if (type == GRID)
             m_ui->m_rasterlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-          }
-          dsType.release();
-        }
+
+        dsType.release();
       }
     }
     ++it;
   }
+}
+
+void te::mnt::VolumeDialog::onInputRasterToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types.append(GRID);
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+  m_ui->m_rasterlayersComboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
 }
 
 void te::mnt::VolumeDialog::onRasterInputComboBoxChanged(int index)
@@ -145,6 +151,23 @@ void te::mnt::VolumeDialog::onRasterInputComboBoxChanged(int index)
 
 void te::mnt::VolumeDialog::onDummyLineEditEditingFinished()
 {
+}
+
+void te::mnt::VolumeDialog::onInputVectorToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget(), 0, false);
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types.append(TIN);
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_vectorlayersComboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
 }
 
 void te::mnt::VolumeDialog::onVectorInputComboBoxChanged(int index)

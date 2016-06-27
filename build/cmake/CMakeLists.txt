@@ -135,7 +135,10 @@ endif()
 # global definitions and includes
 #
 
-add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_UBLAS_TYPE_CHECK=0)
+add_definitions(-DBOOST_ALL_NO_LIB)
+add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
+add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
+add_definitions(-DBOOST_LOG_DYN_LINK)
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -323,6 +326,8 @@ endif()
 if(PYTHONLIBS_FOUND)
   set(TERRALIB_PYTHON_ENABLED ON)
 endif()
+
+set(TERRALIB_CORE_LOGGER_ENABLED 1 CACHE BOOL "Enable logger?")
 
 if(LOG4CXX_FOUND)
   set(TERRALIB_APACHE_LOG4CXX_ENABLED ON)
@@ -1314,6 +1319,10 @@ if(TERRALIB_EXAMPLE_VM_ENABLED)
   add_subdirectory(terralib_example_vm)
 endif()
 
+if(TERRALIB_EXAMPLE_WS_OGC_WCS_ENABLED)
+  add_subdirectory(terralib_example_ws_ogc_wcs)
+endif()
+
 #
 # build unit test
 #
@@ -1594,4 +1603,3 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-

@@ -1,6 +1,6 @@
 ﻿#include "EditedDelegate.h"
 
-#include "../../../common/PlatformUtils.h"
+#include "../../../core/utils/Platform.h"
 #include "../../widgets/layer/explorer/LayerItem.h"
 
 #include <QPainter>
@@ -61,9 +61,9 @@ QIcon GetIcon(const bool& stash)
   QPixmap p2;
 
   if(stash)
-    p2 = QPixmap(te::common::FindInTerraLibPath("resources/images/png/stash.png").c_str()).scaled(15, 15, Qt::KeepAspectRatio);
+    p2 = QPixmap(te::core::FindInTerraLibPath("resources/images/png/stash.png").c_str()).scaled(15, 15, Qt::KeepAspectRatio);
   else
-    p2 = QPixmap(te::common::FindInTerraLibPath("resources/images/png/mem_edit.png").c_str()).scaled(15, 15, Qt::KeepAspectRatio);
+    p2 = QPixmap(te::core::FindInTerraLibPath("resources/images/png/mem_edit.png").c_str()).scaled(15, 15, Qt::KeepAspectRatio);
 
   QPainter pt(&p1);
 

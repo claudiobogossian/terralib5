@@ -71,6 +71,8 @@ void te::qt::widgets::ProgressViewerBar::addTask(te::common::TaskProgress* t, in
 
 void te::qt::widgets::ProgressViewerBar::removeTask(int taskId)
 {
+  cancelTask(taskId);
+
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
   if(it != m_tasks.end())
@@ -110,11 +112,18 @@ void te::qt::widgets::ProgressViewerBar::setTotalValues(int taskId)
   m_totalSteps += m_tasks[taskId]->getTotalSteps();
 }
 
-void te::qt::widgets::ProgressViewerBar::updateValue(int /*taskId*/)
+void te::qt::widgets::ProgressViewerBar::updateValue(int taskId)
 {
-  m_currentStep++;
+  double currentStep = 0;
 
-  double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
+  std::map<int, te::common::TaskProgress*>::iterator it;
+
+  for (it = m_tasks.begin(); it != m_tasks.end(); ++it)
+    currentStep += it->second->getCurrentStep();
+
+  it = m_tasks.find(taskId);
+
+  double aux = static_cast<double>(currentStep) / static_cast<double>(m_totalSteps);
 
   int val = static_cast<int>(100.0 * aux);
 

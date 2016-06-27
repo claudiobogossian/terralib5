@@ -27,7 +27,7 @@
 
 // TerraLib
 #include <terralib/common/Exception.h>
-#include <terralib/ws/ogc/wcs/client/WCS.h>
+#include <terralib/ws/ogc/wcs/client/WCSClient.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/ws/ogc/wcs/dataaccess/Transactor.h>
@@ -44,14 +44,14 @@ void TsWCS::tsGetCapabilities()
   //  te::ws::ogc::WCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
 
   // http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=GetCapabilities&version=2.0.1
-  te::ws::ogc::WCS clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
+  te::ws::ogc::WCSClient clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
 
   CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at getCapabilities().", clientWCS.updateCapabilities());
 }
 
 void TsWCS::tsGetCapabilitiesException()
 {
-  te::ws::ogc::WCS clientWCS("http://wrongadress.net:9090", "2.0.1");
+  te::ws::ogc::WCSClient clientWCS("http://wrongadress.net:9090", "2.0.1");
 
   CPPUNIT_ASSERT_THROW(clientWCS.updateCapabilities(), te::common::Exception);
 }
@@ -65,7 +65,7 @@ void TsWCS::tsDescribeCoverage()
     //    QXmlStreamReader* coverageDescribe = clientWCS.describeCoverage("NIR");
 
     // http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=DescribeCoverage&coverageid=other__wcmc-world-database-of-protected-areas&version=2.0.1
-    te::ws::ogc::WCS clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
+    te::ws::ogc::WCSClient clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
     std::string coverage = "anthromes__anthromes-anthropogenic-biomes-world-v2-1800";
     te::ws::ogc::CoverageDescription coverageDescription;
 
@@ -85,7 +85,7 @@ void TsWCS::tsDescribeCoverage()
 
 void TsWCS::tsDescribeCoverageException()
 {
-  te::ws::ogc::WCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
+  te::ws::ogc::WCSClient clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
 
   // Requiring the description of a non-existent coverage
   CPPUNIT_ASSERT_THROW(clientWCS.describeCoverage("NONE"), te::common::Exception);

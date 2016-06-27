@@ -19,8 +19,8 @@
 
 // TerraLib
 #include "../common/Logger.h"
-#include "../common/PlatformUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/utils/Platform.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
@@ -57,7 +57,7 @@ void te::pgis::Module::startup()
   te::da::DataSourceFactory::add("POSTGIS", te::pgis::Build);
   
 // retrieve the Capabilities
-  std::string capabilitiesFile = te::common::FindInTerraLibPath("share/terralib/plugins/postgis-capabilities.xml");
+  std::string capabilitiesFile = te::core::FindInTerraLibPath("share/terralib/plugins/postgis-capabilities.xml");
 
   te::pgis::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
   te::pgis::Globals::sm_queryDialect = new te::da::SQLDialect();

@@ -218,6 +218,102 @@ namespace te
     }
     
     // -----------------------------------------------------------------------
+
+    FeederConstRasterInfoAndVector::FeederConstRasterInfoAndVector(
+      const std::vector< const te::rst::Raster* > rastersPtrsVec,
+      const std::vector< std::string >& rTypes,
+      const std::vector< std::map< std::string, std::string > >& rInfos )
+      : 
+      m_CurrentRasterOffset( 0 ), 
+      m_currentRasterNakedPtr( 0 ),
+      m_rasters( rastersPtrsVec ),
+      m_rTypes( rTypes ), 
+      m_rInfos( rInfos )
+    {
+      TERP_TRUE_OR_THROW( rTypes.size() == rInfos.size(),
+        "Invalid rasters info" )
+      reset();
+    }
+    
+    FeederConstRasterInfoAndVector::FeederConstRasterInfoAndVector()
+      :
+      m_CurrentRasterOffset( 0 ), 
+      m_currentRasterNakedPtr( 0 )
+    {
+    }
+    
+    FeederConstRasterInfoAndVector::~FeederConstRasterInfoAndVector()
+    {
+    }
+    
+    te::rst::Raster const* FeederConstRasterInfoAndVector::getCurrentObj() const
+    {
+      return m_currentRasterNakedPtr;
+    }
+    
+    bool FeederConstRasterInfoAndVector::moveNext()
+    {
+      return moveTo( m_CurrentRasterOffset + 1 );
+    }
+    
+    bool FeederConstRasterInfoAndVector::moveTo( const unsigned int index )
+    {
+      if( index < m_rasters.size() )
+      {
+        m_CurrentRasterOffset = index;
+        m_currentRasterNakedPtr = m_rasters[ index ];
+        m_currentRasterHandler.reset();
+        return true;
+      }
+      else
+      {
+        if( ( index - m_rasters.size() ) < m_rTypes.size() )
+        {
+          try
+          {
+            m_currentRasterHandler.reset( te::rst::RasterFactory::open( 
+              m_rTypes[ index - m_rasters.size() ], m_rInfos[ index - m_rasters.size() ], 
+              te::common::RAccess ) );                      
+          }
+          catch(...)
+          {
+            return false;
+          }
+          
+          m_CurrentRasterOffset = index;
+          m_currentRasterNakedPtr = m_currentRasterHandler.get();
+          return true;
+        }
+        else
+        {
+          m_CurrentRasterOffset = 0;
+          m_currentRasterNakedPtr = 0;
+          m_currentRasterHandler.reset();          
+          return false;
+        }
+      }
+    }
+    
+    void FeederConstRasterInfoAndVector::reset()
+    {
+      m_currentRasterHandler.reset();
+      m_CurrentRasterOffset = 0;
+      m_currentRasterNakedPtr = 0;      
+      
+      moveTo( 0 );
+    }
+    
+    unsigned int FeederConstRasterInfoAndVector::getObjsCount() const
+    {
+      return (unsigned int)( m_rasters.size() + m_rTypes.size() );
+    }
+    
+    unsigned int FeederConstRasterInfoAndVector::getCurrentOffset() const
+    {
+      return m_CurrentRasterOffset;
+    }    
+    
+    // -----------------------------------------------------------------------
     
     FeederConstRasterDirectory::FeederConstRasterDirectory(
       const std::string& directoryName,

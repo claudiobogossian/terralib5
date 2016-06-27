@@ -26,8 +26,8 @@
 // TerraLib
 #include "../BuildConfig.h"
 #include "../common/Logger.h"
-#include "../common/PlatformUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/utils/Platform.h"
 #include "../Defines.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
@@ -75,11 +75,11 @@ void te::ogr::Module::startup()
 // note: each SO will look in a different folder
 #if defined(TE_PLATFORM) && defined(TE_PLATFORMCODE_MSWINDOWS)
   #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-    gdal_data_dir = te::common::FindInTerraLibPath("/share/data");
+    gdal_data_dir = te::core::FindInTerraLibPath("/share/data");
   #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
-    gdal_data_dir = te::common::FindInTerraLibPath("/share/gdal");
+    gdal_data_dir = te::core::FindInTerraLibPath("/share/gdal");
   #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-    gdal_data_dir= te::common::FindInTerraLibPath("/share/gdal");
+    gdal_data_dir = te::core::FindInTerraLibPath("/share/gdal");
   #else
     #error "unsupported plataform: please, contact terralib-team@terralib.org"
   #endif

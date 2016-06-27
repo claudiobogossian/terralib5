@@ -34,6 +34,14 @@
 // Boost
 #include <boost/filesystem.hpp>
 
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  // Windows
+  #include <Shlobj.h>
+  #include <comutil.h>
+  #include <winerror.h>
+  #pragma comment(lib, "comsuppw")
+#endif
+
 std::string te::core::FindInTerraLibPath(const std::string& path)
 {
 // 1st: look in the neighborhood of the executable
@@ -83,4 +91,92 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
 
 
   return "";
+}
+
+std::string te::core::GetUserDirectory()
+{
+  std::string returnString;
+
+  #if (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+    char* homePtr = getenv( "HOME" );
+    if( homePtr )
+    {
+      returnString = std::string( homePtr );
+    }
+  #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    char* homePathPtr = getenv( "HOMEPATH" );
+    char* homeDrivePtr = getenv( "HOMEDRIVE" );
+
+    if( ( homePathPtr!= 0 ) && ( homeDrivePtr != 0 ) )
+    {
+      returnString = std::string( homeDrivePtr ) +
+        std::string( homePathPtr );
+    }
+  #else
+    #error "Platform not supported! Contact TerraLib Team"
+  #endif
+
+  return returnString;
+}
+
+
+std::string te::core::GetUserDataPath()
+{
+  std::string dataPath;
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  LPWSTR wszPath = NULL;
+  HRESULT hr;
+
+  hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &wszPath);
+
+  if (SUCCEEDED(hr))
+  {
+    _bstr_t bstrPath(wszPath);
+    dataPath = ((char*)bstrPath);
+  }
+
+  CoTaskMemFree(wszPath);
+
+#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+  char* homePtr = getenv( "HOME" );
+  if( homePtr && boost::filesystem::is_directory(homePtr))
+  {
+    boost::filesystem::path path(homePtr);
+    path /=".config";
+
+    dataPath = path.string();
+  }
+
+#else
+  #error "Platform not supported! Contact TerraLib Team"
+#endif
+  return dataPath;
+}
+
+std::string te::core::GetAllUsersDataPath()
+{
+  std::string dataPath;
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  LPWSTR wszPath = NULL;
+  HRESULT hr;
+
+  hr = SHGetKnownFolderPath(FOLDERID_ProgramData, 0, NULL, &wszPath);
+
+  if (SUCCEEDED(hr))
+  {
+    _bstr_t bstrPath(wszPath);
+    dataPath = ((char*)bstrPath);
+  }
+
+  CoTaskMemFree(wszPath);
+
+#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+
+  if(boost::filesystem::is_directory("/etc/xdg"))
+    dataPath = "/etc/xdg";
+
+#else
+#error "Platform not supported! Contact TerraLib Team"
+#endif
+  return dataPath;
 }

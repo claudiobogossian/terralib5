@@ -54,16 +54,16 @@
      <property name="flat">
       <bool>false</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>DTM Layer Name:</string>
-          </property>
-         </widget>
-        </item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>DTM Layer Name:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
          <widget class="QComboBox" name="m_inputLayersComboBox">
           <property name="sizePolicy">
@@ -87,28 +87,35 @@
          </widget>
         </item>
         <item>
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="m_dummycheckBox">
-            <property name="text">
-             <string>Dummy Value</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="m_dummylineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QToolButton" name="m_layerSearchToolButton">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="m_dummycheckBox">
+          <property name="text">
+           <string>Dummy Value</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="m_dummylineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -166,7 +173,7 @@
                    <bool>true</bool>
                   </property>
                   <property name="autoExclusive">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -179,7 +186,7 @@
                    <bool>true</bool>
                   </property>
                   <property name="autoExclusive">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -192,7 +199,7 @@
                    <bool>true</bool>
                   </property>
                   <property name="autoExclusive">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -205,7 +212,7 @@
                    <bool>true</bool>
                   </property>
                   <property name="autoExclusive">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -218,7 +225,7 @@
                    <bool>true</bool>
                   </property>
                   <property name="autoExclusive">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -231,7 +238,7 @@
                    <bool>true</bool>
                   </property>
                   <property name="autoExclusive">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>

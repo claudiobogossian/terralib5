@@ -35,6 +35,7 @@
 #include "../statistics/core/Utils.h"
 
 #include "IntersectionOp.h"
+#include "Utils.h"
 
 te::vp::IntersectionOp::IntersectionOp()
   : m_firstOidSet(0),
@@ -106,54 +107,25 @@ void te::vp::IntersectionOp::setOutput(te::da::DataSourcePtr outDsrc, std::strin
 
 te::gm::GeomType te::vp::IntersectionOp::setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom)
 {
-  if ((firstGeom == te::gm::PointType) ||
-    (firstGeom == te::gm::PointZType) ||
-    (firstGeom == te::gm::PointMType) ||
-    (firstGeom == te::gm::PointZMType) ||
-    (firstGeom == te::gm::PointKdType) ||
-
-    (secondGeom == te::gm::PointType) ||
-    (secondGeom == te::gm::PointZType) ||
-    (secondGeom == te::gm::PointMType) ||
-    (secondGeom == te::gm::PointZMType) ||
-    (secondGeom == te::gm::PointKdType) ||
-
-    (firstGeom == te::gm::MultiPointType) ||
-    (firstGeom == te::gm::MultiPointZType) ||
-    (firstGeom == te::gm::MultiPointMType) ||
-    (firstGeom == te::gm::MultiPointZMType) ||
-
-    (secondGeom == te::gm::MultiPointType) ||
-    (secondGeom == te::gm::MultiPointZType) ||
-    (secondGeom == te::gm::MultiPointMType) ||
-    (secondGeom == te::gm::MultiPointZMType))
-
+  if ((IsPointType(firstGeom)) || (IsPointType(secondGeom)))
+  {
     return te::gm::MultiPointType;
-
-  else if ((firstGeom == te::gm::LineStringType) ||
-    (firstGeom == te::gm::LineStringZType) ||
-    (firstGeom == te::gm::LineStringMType) ||
-    (firstGeom == te::gm::LineStringZMType) ||
-
-    (secondGeom == te::gm::LineStringType) ||
-    (secondGeom == te::gm::LineStringZType) ||
-    (secondGeom == te::gm::LineStringMType) ||
-    (secondGeom == te::gm::LineStringZMType) ||
-
-    (firstGeom == te::gm::MultiLineStringType) ||
-    (firstGeom == te::gm::MultiLineStringZType) ||
-    (firstGeom == te::gm::MultiLineStringMType) ||
-    (firstGeom == te::gm::MultiLineStringZMType) ||
-
-    (secondGeom == te::gm::MultiLineStringType) ||
-    (secondGeom == te::gm::MultiLineStringZType) ||
-    (secondGeom == te::gm::MultiLineStringMType) ||
-    (secondGeom == te::gm::MultiLineStringZMType))
-
-    return te::gm::MultiPointType;
-
+  }
+  else if ((IsLineStringType(firstGeom)) || (IsLineStringType(secondGeom)))
+  {
+    // Temporary solution for MNT.
+    // Result can generate lines and points.
+    // Possible solution , create a layer for each geometric type.
+    if(((IsLineStringType(firstGeom)) && (IsLineStringType(secondGeom))))
+    {
+      return te::gm::MultiPointType;
+    }
+    return te::gm::MultiLineStringType;
+  }
   else
+  {
     return te::gm::MultiPolygonType;
+  }
 }
 
 bool te::vp::IntersectionOp::paramsAreValid()

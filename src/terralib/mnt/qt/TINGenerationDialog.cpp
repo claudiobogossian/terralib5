@@ -43,6 +43,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
+#include "LayerSearchDialog.h"
 #include "TINGenerationDialog.h"
 #include "ui_TINGenerationDialogForm.h"
 
@@ -66,7 +67,9 @@ te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFla
   m_ui->setupUi(this);
 
   //signals
+  connect(m_ui->m_isolinesSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputIsolinesToolButtonClicked()));
   connect(m_ui->m_isolinescomboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onIsolinesComboBoxChanged(int)));
+  connect(m_ui->m_sampleSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputSamplesToolButtonClicked()));
   connect(m_ui->m_samplescomboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSamplesComboBoxChanged(int)));
 
   connect(m_ui->m_scalepushButton, SIGNAL(clicked()), this, SLOT(onScalePushButtonClicked()));
@@ -74,6 +77,7 @@ te::mnt::TINGenerationDialog::TINGenerationDialog(QWidget* parent, Qt::WindowFla
   connect(m_ui->m_yesradioButton, SIGNAL(toggled(bool)), this, SLOT(onYesToggled()));
   connect(m_ui->m_noradioButton, SIGNAL(toggled(bool)), this, SLOT(onNoToggled()));
   connect(m_ui->m_breaklinecomboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onBreakLinesComboBoxChanged(int)));
+  connect(m_ui->m_breaklineSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputBreaklineToolButtonClicked()));
 
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
@@ -115,47 +119,40 @@ void te::mnt::TINGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
       if (it->get()->isValid())
       {
         std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-        if (dsType.get())
+        mntType type = getMNTType(dsType.get());
+
+        if (type == SAMPLE)
+          m_ui->m_samplescomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+
+        if (type == ISOLINE)
         {
-          if (dsType->hasGeom())
-          {
-            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            te::gm::GeomType gmType = geomProp->getGeometryType();
-            switch (gmType)
-            {
-            case te::gm::PointType:
-            case te::gm::PointZType:
-            case te::gm::PointMType:
-            case te::gm::PointZMType:
-            case te::gm::MultiPointType:
-            case te::gm::MultiPointZType:
-            case te::gm::MultiPointMType:
-            case te::gm::MultiPointZMType:
-              m_ui->m_samplescomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-              break;
-            case te::gm::LineStringType:
-            case te::gm::LineStringZType:
-            case te::gm::LineStringMType:
-            case te::gm::LineStringZMType:
-            case te::gm::MultiLineStringType:
-            case te::gm::MultiLineStringZType:
-            case te::gm::MultiLineStringMType:
-            case te::gm::MultiLineStringZMType:
-              m_ui->m_isolinescomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-              m_ui->m_breaklinecomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-              break;
-            default:
-              break;
-            }
-          }
-          dsType.release();
+          m_ui->m_isolinescomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+          m_ui->m_breaklinecomboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
         }
+
+        dsType.release();
       }
     }
     ++it;
   }
 }
 
+void te::mnt::TINGenerationDialog::onInputIsolinesToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types.append(ISOLINE);
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_isolinescomboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
+}
 
 void te::mnt::TINGenerationDialog::onIsolinesComboBoxChanged(int index)
 {
@@ -227,6 +224,23 @@ void te::mnt::TINGenerationDialog::onIsolinesComboBoxChanged(int index)
     QMessageBox::information(this, tr("TIN Generation"), e.what());
     return;
   }
+}
+
+void te::mnt::TINGenerationDialog::onInputSamplesToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types.append(SAMPLE);
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_samplescomboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
 }
 
 void te::mnt::TINGenerationDialog::onSamplesComboBoxChanged(int index)
@@ -344,6 +358,23 @@ void te::mnt::TINGenerationDialog::onBreakLinesComboBoxChanged(int index)
     }
     it++;
   }
+}
+
+void te::mnt::TINGenerationDialog::onInputBreaklineToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget(), 0, false);
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types.append(ISOLINE);
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_breaklinecomboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
 }
 
 void te::mnt::TINGenerationDialog::onTargetDatasourceToolButtonPressed()

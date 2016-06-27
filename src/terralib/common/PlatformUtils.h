@@ -84,39 +84,20 @@ namespace te
       \return The number of physical processors.
     */
     TECOMMONEXPORT unsigned int GetPhysProcNumber();
-    
+
     /*!
       \brief Returns the system PATH enviroment variable, decomposed into directory names, or an empty vector if no values were found.
 
       \param paths The decomposed PATH.
     */
-    TECOMMONEXPORT void GetDecompostedPathEnvVar( std::vector< std::string >& paths );    
-    
+    TECOMMONEXPORT void GetDecompostedPathEnvVar( std::vector< std::string >& paths );
+
     /*!
       \brief Returns the system LD_LIBRARY_PATH enviroment variable, decomposed into directory names, or an empty vector if no values were found.
 
       \param paths The decomposed PATH.
     */
     TECOMMONEXPORT void GetDecompostedLDPathEnvVar( std::vector< std::string >& paths );
-
-    /*!
-      \brief Returns the path relative to a directory or file in the context of TerraLib.
-     
-      \param p A path to be searched in the TerraLib context.
-     
-      \return A complete path to the file or directory if it is found, otherwise returns an empty string.
-    */
-    TECOMMONEXPORT std::string FindInTerraLibPath(const std::string& p);
-    
-    /*!
-      \brief Returns the system user home dir path.
-
-      \return Returns the system user home dir path.
-      
-      \note An empty estring will be returned on errors.
-    */
-    TECOMMONEXPORT std::string GetUserHomeDirPath();
-    
 
   }     // end namespace common
 }       // end namespace te

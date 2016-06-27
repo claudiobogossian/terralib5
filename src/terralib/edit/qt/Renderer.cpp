@@ -42,8 +42,8 @@
 
 te::edit::Renderer::Renderer()
 : m_canvas(0),
-m_srid(TE_UNKNOWN_SRS),
-m_currentGeomType(te::gm::UnknownGeometryType)
+  m_srid(TE_UNKNOWN_SRS),
+  m_currentGeomType(te::gm::UnknownGeometryType)
 {
   setupDefaultStyle();
 }

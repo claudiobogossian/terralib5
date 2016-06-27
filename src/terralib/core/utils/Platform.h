@@ -50,6 +50,28 @@ namespace te
         */
         TECOREEXPORT std::string FindInTerraLibPath(const std::string& path);
 
+        /*!
+          \brief Returns the system user home dir path.
+
+          \return Returns the system user home dir path.
+
+          \note An empty string will be returned on errors.
+        */
+        TECOREEXPORT std::string GetUserDirectory();
+
+        /*!
+          \brief It returns the folder location to store per user data.
+
+          \return The folder location to store per user data.
+         */
+        TECOREEXPORT std::string GetUserDataPath();
+
+        /*!
+          \brief It returns the folder location to store application data applied to all users.
+
+          \return The folder location to store application data applied to all users.
+         */
+        TECOREEXPORT std::string GetAllUsersDataPath();
 
   }  // end namespace core
 }    // end namespace te

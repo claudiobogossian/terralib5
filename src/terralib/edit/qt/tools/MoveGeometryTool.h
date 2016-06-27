@@ -126,7 +126,6 @@ namespace te
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
-        QPointF m_deltaSum;                 //!< Sum of all delta
         UndoStackManager& m_stack;
 
     };

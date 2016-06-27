@@ -45,6 +45,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../mnt/core/Utils.h"
 
 #include "CreateIsolinesDialog.h"
+#include "LayerSearchDialog.h"
 #include "ui_CreateIsolinesDialogForm.h"
 
 // Qt
@@ -69,7 +70,13 @@ te::mnt::CreateIsolinesDialog::CreateIsolinesDialog(QWidget* parent, Qt::WindowF
 {
   m_ui->setupUi(this);
 
+  // add icons
+  m_ui->m_insertpushButton->setIcon(QIcon::fromTheme("mnt-isolines-right"));
+  m_ui->m_deletepushButton->setIcon(QIcon::fromTheme("mnt-isolines-left"));
+  m_ui->m_deleteallpushButton->setIcon(QIcon::fromTheme("mnt-isolines-left_all"));
+
   //signals
+  connect(m_ui->m_layerSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputLayerToolButtonClicked()));
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
 
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
@@ -121,47 +128,11 @@ void te::mnt::CreateIsolinesDialog::setLayers(std::list<te::map::AbstractLayerPt
         if (dsType.get())
         {
           std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-          if (dsType->hasGeom())
-          {
-            std::vector<te::dt::Property*> props = dsType->getProperties();
-            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            te::gm::GeomType gmType = geomProp->getGeometryType();
-            switch (gmType)
-            {
-              case te::gm::GeometryType:
-              case te::gm::PolygonType:
-              case te::gm::PolygonZType:
-              case te::gm::PolygonMType:
-              case te::gm::PolygonZMType:
-              case te::gm::MultiPolygonType:
-              case te::gm::MultiPolygonZType:
-              case te::gm::MultiPolygonMType:
-              case te::gm::MultiPolygonZMType:
-              case te::gm::MultiSurfaceType:
-              case te::gm::MultiSurfaceZType:
-              case te::gm::MultiSurfaceMType:
-              case te::gm::MultiSurfaceZMType:
-              case te::gm::PolyhedralSurfaceType:
-              case te::gm::PolyhedralSurfaceZType:
-              case te::gm::PolyhedralSurfaceMType:
-              case te::gm::PolyhedralSurfaceZMType:
-              case te::gm::TINType:
-              case te::gm::TINZType:
-              case te::gm::TINMType:
-              case te::gm::TINZMType:
-              case te::gm::TriangleType:
-              case te::gm::TriangleZType:
-              case te::gm::TriangleMType:
-              case te::gm::TriangleZMType:
-                m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-              default: break;
-            }
-            geomProp.release();
-          }
-          if (dsType->hasRaster()) //GRID
-          {
+          mntType type = getMNTType(dsType.get());
+
+          if (type == TIN || type == GRID)
             m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-          }
+
           dsType.release();
         }
       }
@@ -326,6 +297,23 @@ void te::mnt::CreateIsolinesDialog::getMinMax(te::map::AbstractLayerPtr inputLay
   inDset.release();
 }
 
+void te::mnt::CreateIsolinesDialog::onInputLayerToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types << TIN << GRID;
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_layersComboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
+}
+
 void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
 {
   try{
@@ -440,7 +428,9 @@ void te::mnt::CreateIsolinesDialog::oninsertpushButtonClicked()
 
     for (double val = min; val <= max; val += step)
     {
-      m_ui->m_isolineslistWidget->addItem(QString::number(val));
+      QListWidgetItem *item = new QListWidgetItem();
+      item->setData(Qt::DisplayRole, val);
+      m_ui->m_isolineslistWidget->addItem(item);
     }
   }
   else
@@ -451,12 +441,17 @@ void te::mnt::CreateIsolinesDialog::oninsertpushButtonClicked()
       QMessageBox::information(this, tr("Create Isolines"), tr("Value is invalid!"));
       return;
     }
-    m_ui->m_isolineslistWidget->addItem(m_ui->m_valuelineEdit->text());
+    QListWidgetItem *item = new QListWidgetItem();
+    item->setData(Qt::DisplayRole, val);
+    m_ui->m_isolineslistWidget->addItem(item);
   }
 }
 
 void te::mnt::CreateIsolinesDialog::ondeletepushButtonClicked()
 {
+  QListWidgetItem *rem = m_ui->m_isolineslistWidget->takeItem(m_ui->m_isolineslistWidget->currentRow());
+  if (rem)
+    delete rem;
 }
 
 void te::mnt::CreateIsolinesDialog::ondeleteallpushButtonClicked()

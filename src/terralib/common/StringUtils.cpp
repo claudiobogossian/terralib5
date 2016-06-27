@@ -27,6 +27,8 @@
 
 #include "StringUtils.h"
 
+#include <sstream>
+
 void te::common::GetAccentuatedUpperVector(std::vector<std::string> & vecUpperIn, std::vector<std::string> & vecUpperOut)
 {
   static std::vector<std::string> upperIn;
@@ -228,4 +230,19 @@ std::string te::common::ReplaceSpecialChars(const std::string& str, bool& change
 
   return outputStr;
 
+}
+
+std::vector<std::string> te::common::SplitString(const std::string& str, const char& delimiter)
+{
+  std::stringstream ss (str);
+  std::string item;
+
+  std::vector<std::string> elements;
+
+  while (std::getline(ss, item, delimiter))
+  {
+    elements.push_back(item);
+  }
+
+  return elements;
 }

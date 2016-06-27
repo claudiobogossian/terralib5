@@ -40,17 +40,13 @@
 
 te::edit::UndoStackManager::UndoStackManager()
 : m_currentIndex(0),
-  m_addWatches(0),
   m_undoStack(0)
 {}
 
 te::edit::UndoStackManager::~UndoStackManager()
 {
-  if (m_addWatches)
-  {
-    te::common::FreeContents(*m_addWatches);
-    delete m_addWatches;
-  }
+  te::common::FreeContents(m_addWatches);
+  m_addWatches.clear();
 
   delete m_undoStack;
 }
@@ -73,26 +69,35 @@ QUndoStack* te::edit::UndoStackManager::getUndoStack()
   return m_undoStack;
 }
 
-std::vector<te::edit::Feature*>* te::edit::UndoStackManager::getAddWatches()
+const std::vector<te::edit::Feature*>& te::edit::UndoStackManager::getAddWatches() const
 {
-  if (m_addWatches == 0)
+  return m_addWatches;
+}
+
+void te::edit::UndoStackManager::addWatch(te::edit::Feature* feature)
+{
+  m_addWatches.push_back(feature);
+
+  //If a feature is changed in the middle of the stack, this change ends up being the top of the stack
+  if (m_currentIndex < (int)(m_addWatches.size() - 2))
   {
-    m_addWatches = new std::vector<te::edit::Feature*>();
+    std::size_t i = 0;
+    while (i < m_addWatches.size())
+    {
+      m_addWatches.pop_back();
+      i = (m_currentIndex + 1);
+    }
+    m_addWatches.push_back(feature);
   }
 
-  return m_addWatches;
+  m_currentIndex = (int)(m_addWatches.size() - 1);
 }
 
 void te::edit::UndoStackManager::reset()
 {
+  te::common::FreeContents(m_addWatches);
+
+  m_addWatches.clear();
+
   m_undoStack->clear();
-
-  if (m_addWatches)
-  {
-    te::common::FreeContents(*m_addWatches);
-
-    m_addWatches->clear();
-    m_addWatches = 0;
-  }
-
 }

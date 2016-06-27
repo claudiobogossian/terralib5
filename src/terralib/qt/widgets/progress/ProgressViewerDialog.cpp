@@ -63,6 +63,8 @@ void te::qt::widgets::ProgressViewerDialog::addTask(te::common::TaskProgress* t,
 
 void te::qt::widgets::ProgressViewerDialog::removeTask(int taskId)
 {
+  cancelTask(taskId);
+
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
   if(it != m_tasks.end())
@@ -104,13 +106,18 @@ void te::qt::widgets::ProgressViewerDialog::setTotalValues(int taskId)
   m_totalSteps += m_tasks[taskId]->getTotalSteps();
 }
 
-void te::qt::widgets::ProgressViewerDialog::updateValue(int /*taskId*/)
+void te::qt::widgets::ProgressViewerDialog::updateValue(int taskId)
 {
-  m_dlgProgress->show();
+  std::map<int, te::common::TaskProgress*>::iterator it;
 
-  m_currentStep++;
+  double currentStep = 0;
 
-  double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
+  for (it = m_tasks.begin(); it != m_tasks.end(); ++it)
+    currentStep += it->second->getCurrentStep();
+
+  it = m_tasks.find(taskId);
+
+  double aux = static_cast<double>(currentStep) / static_cast<double>(m_totalSteps);
 
   int val = static_cast<int>(100.0 * aux);
 
@@ -143,10 +150,14 @@ void te::qt::widgets::ProgressViewerDialog::customEvent(QEvent* e)
   if(e->type() == ProgressSetValueEvent::type())
   {
     m_dlgProgress->setValue(static_cast<ProgressSetValueEvent*>(e)->m_value);
+
+    m_dlgProgress->show();
   }
   else if(e->type() == ProgressSetMessageEvent::type())
   {
     m_dlgProgress->setLabelText(static_cast<ProgressSetMessageEvent*>(e)->m_value.c_str());
+
+    m_dlgProgress->show();
   }
   else if(e->type() == ProgressResetEvent::type())
   {

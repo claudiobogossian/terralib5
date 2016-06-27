@@ -30,7 +30,7 @@
 #include "TerraViewApp.h"
 
 // TerraLib
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/qt/af/Utils.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
   {
     do 
     {
-      std::string splash_pix = te::common::FindInTerraLibPath(TVIEW_SPLASH_SCREEN_PIXMAP);
+      std::string splash_pix = te::core::FindInTerraLibPath(TVIEW_SPLASH_SCREEN_PIXMAP);
 
       QPixmap pixmap(splash_pix.c_str());
 

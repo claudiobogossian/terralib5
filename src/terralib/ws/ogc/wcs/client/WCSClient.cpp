@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/client/WCS.cpp
+  \file terralib/ws/ogc/wcs/client/WCSClient.cpp
 
   \brief WS Client for OGC WCS
 
@@ -30,29 +30,37 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
-#include "WCS.h"
+#include "WCSClient.h"
+
+//STL
 #include <iostream>
+#include <string>
 
-te::ws::ogc::WCS::WCS(const std::string uri, const std::string version)
-  : uri_(uri + "?SERVICE=WCS"), version_(version)
+// Boost
+#include <boost/filesystem.hpp>
+
+te::ws::ogc::WCSClient::WCSClient(const std::string usrDataDir, const std::string uri, const std::string version)
+  : m_uri(uri + "?SERVICE=WCS"), m_version(version)
 {
+  m_dataDir = usrDataDir + "/wcs/";
 
+  if (boost::filesystem::is_directory(usrDataDir) && !boost::filesystem::exists(m_dataDir))
+    boost::filesystem::create_directories(m_dataDir);
 }
 
 
-te::ws::ogc::WCS::~WCS()
+te::ws::ogc::WCSClient::~WCSClient()
 {
-
 }
 
 
-void te::ws::ogc::WCS::updateCapabilities()
+void te::ws::ogc::WCSClient::updateCapabilities()
 {
-  std::string url;
+  std::string url ("");
 
-  if(version_ == "2.0.1")
+  if(m_version == "2.0.1")
   {
-    url = uri_ + "&VERSION=" + version_ + "&REQUEST=GetCapabilities";
+    url = m_uri + "&VERSION=" + m_version + "&REQUEST=GetCapabilities";
   }
   else
   {
@@ -60,22 +68,23 @@ void te::ws::ogc::WCS::updateCapabilities()
   }
 
   // Request the WCS Capabilities XML file
-  std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url, "capabilities.xml");
+  std::string xmlPath = te::ws::ogc::WCSClient::makeFileRequest(url, "capabilities.xml");
 
   // Parse the XML file into a struct
-  capabilities_ = parseCapabilities(xmlPath);
+  m_capabilities = parseCapabilities(xmlPath);
 }
 
 
-te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::string coverage) const
+te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const std::string coverage) const
 {
+
   te::ws::ogc::CoverageDescription describeCoverage;
 
   std::string url;
 
-  if(version_ == "2.0.1")
+  if(m_version == "2.0.1")
   {
-    url = uri_ + "&VERSION=" + version_ + "&REQUEST=DescribeCoverage&CoverageID=" + coverage;
+    url = m_uri + "&VERSION=" + m_version + "&REQUEST=DescribeCoverage&CoverageID=" + coverage;
   }
   else
   {
@@ -83,7 +92,7 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::s
   }
 
   // Request the WCS Describe Coverage XML file
-  std::string xmlPath = te::ws::ogc::WCS::makeFileRequest(url, "describeCoverage.xml");
+  std::string xmlPath = te::ws::ogc::WCSClient::makeFileRequest(url, "describeCoverage.xml");
 
   // Parse the XML file into a struct
   describeCoverage = parseDescribeCoverage(xmlPath);
@@ -92,15 +101,15 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCS::describeCoverage(const std::s
 }
 
 
-std::string te::ws::ogc::WCS::getCoverage(const CoverageRequest coverageRequest) const
+std::string te::ws::ogc::WCSClient::getCoverage(const CoverageRequest coverageRequest) const
 {
   std::string coveragePath;
 
   std::string url;
 
-  if(version_ == "2.0.1")
+  if(m_version == "2.0.1")
   {
-    url = uri_ + "&VERSION=" + version_ + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
+    url = m_uri + "&VERSION=" + m_version + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
 
     if(!coverageRequest.format.empty())
       url += "&FORMAT=" + coverageRequest.format;
@@ -164,7 +173,7 @@ size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data)
 }
 
 
-std::string te::ws::ogc::WCS::makeRequest(const std::string url) const
+std::string te::ws::ogc::WCSClient::makeRequest(const std::string url) const
 {
   CURL* curl;
   std::string callback;
@@ -201,12 +210,12 @@ size_t write_file_callback(void *ptr, size_t size, size_t nmemb, void *data)
   return fwrite(ptr, size, nmemb, writehere);
 }
 
-std::string te::ws::ogc::WCS::makeFileRequest(const std::string url, const std::string fileName) const
+std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const std::string fileName) const
 {
   CURL* curl;
   std::FILE* file;
-  // VINICIUS: work with temp directory and filename
-  std::string path = "/tmp/" + fileName;
+
+  std::string path = m_dataDir + fileName;
 
   curl = curl_easy_init();
   curl_easy_cleanup(curl);
@@ -242,7 +251,7 @@ std::string te::ws::ogc::WCS::makeFileRequest(const std::string url, const std::
 }
 
 
-const struct te::ws::ogc::Capabilities& te::ws::ogc::WCS::getCapabilities() const
+const struct te::ws::ogc::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
 {
-  return capabilities_;
+  return m_capabilities;
 }

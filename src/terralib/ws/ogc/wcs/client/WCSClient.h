@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/client/WCS.h
+  \file terralib/ws/ogc/wcs/client/WCSClient.h
 
   \brief WS Client for OGC WCS
 
@@ -31,6 +31,8 @@
 // STL
 #include <memory>
 #include <vector>
+#include <map>
+#include <string>
 
 // Qt
 #include <QXmlStreamReader>
@@ -38,6 +40,7 @@
 // TerraLib
 #include "../../../../dataaccess/dataset/DataSet.h"
 #include "XMLParser.h"
+#include "DataTypes.h"
 
 
 namespace te
@@ -47,44 +50,33 @@ namespace te
     namespace ogc
     {
 
-      /*! \brief A struct to set the parameters of wanted coverage */
-      struct CoverageRequest
-      {
-        std::string coverageID;
-        std::string format;
-        std::string mediaType;
-        EnvelopeWithTimePeriod envelope;
-        std::string time;
-        std::vector< SubSet > subSet;
-        std::map< std::string, std::string > additionalParameters;
-      };
-
       /*!
-        \class ClientWCS
+        \class WCSClient
 
         \brief A class to retrieve information and data from a Web Coverage Service.
       */
-      class WCS
+      class WCSClient
       {
       public:
 
         /*!
-          \brief Class constructor. It initializes the uri_ and version_ class members
+          \brief Class constructor. It initializes the m_uri and m_version class members
 
-          \param uri      The adress of WCS server.
-          \param version  The WCS version.
+          \param usrDataDir  Directory to store used temporary XML and images from WCS server.
+          \param uri         The adress of WCS server.
+          \param version     The WCS version.
         */
-        WCS(const std::string uri = "", const std::string version = "2.0.1");
+        WCSClient(const std::string usrDataDir = "",const std::string uri = "", const std::string version = "2.0.1");
 
         /*!
           \brief Default destructor.
         */
-        ~WCS();
+        ~WCSClient();
 
         /*!
           \brief Method to get the capabilities from a WCS server and store in capabilities_ member
 
-                 To access the information contained in the capabilities_, use the getCapabilities() method.
+                 To access the information contained in the m_capabilities, use the getCapabilities() method.
 
         */
         void updateCapabilities();
@@ -96,7 +88,7 @@ namespace te
 
           \return Return the information of the coverage in the WCS
         */
-        CoverageDescription describeCoverage(const std::string coverage) const;
+        struct CoverageDescription describeCoverage(const std::string coverage) const;
 
         /*!
           \brief Method to get the coverage from the WCS server
@@ -129,16 +121,17 @@ namespace te
         /*!
           \brief Return the capabilities_ member.
 
-                 The capabilities_ will be empty until the updateCapabilities() method its called.
+                 The m_capabilities will be empty until the updateCapabilities() method its called.
 
           \return Returns a path to a file
         */
         const struct Capabilities& getCapabilities() const;
 
       private:
-        std::string uri_;
-        std::string version_;
-        struct Capabilities capabilities_;
+        std::string m_uri;
+        std::string m_version;
+        std::string m_dataDir;
+        struct Capabilities m_capabilities;
       };
     }
   }

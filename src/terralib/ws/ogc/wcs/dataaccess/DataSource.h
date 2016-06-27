@@ -36,7 +36,7 @@
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../client/WCS.h"
+#include "../client/WCSClient.h"
 #include "Config.h"
 #include "Exception.h"
 
@@ -104,7 +104,7 @@ namespace te
 
           private:
 
-            WCS wcs_;
+            WCSClient m_wcs;
             std::map<std::string, std::string> m_connectionInfo;
             bool m_isOpened;
             static te::da::DataSourceCapabilities sm_capabilities;

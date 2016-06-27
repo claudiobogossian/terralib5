@@ -33,6 +33,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../mnt/core/Slope.h"
+#include "../../mnt/core/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
@@ -41,6 +42,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../raster.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
+#include "LayerSearchDialog.h"
 #include "SlopeDialog.h"
 #include "ui_SlopeDialogForm.h"
 
@@ -69,6 +71,7 @@ te::mnt::SlopeDialog::SlopeDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_resYLineEdit->setValidator(new QDoubleValidator(0, 100, 4, this));
 
   //signals
+  connect(m_ui->m_layerSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputLayerToolButtonClicked()));
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
 
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
@@ -114,27 +117,35 @@ void te::mnt::SlopeDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers
         std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
         if (dsType.get())
         {
-          if (dsType->hasGeom())
-          {
-            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            te::gm::GeomType gmType = geomProp->getGeometryType();
-            if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType ||
-              gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType ||
-              gmType == te::gm::GeometryType)//TIN
-            {
-              m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-            }
-          }
-          if (dsType->hasRaster()) //GRID
-          {
+          std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+          mntType type = getMNTType(dsType.get());
+
+          if (type == TIN || type == GRID)
             m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-          }
+
           dsType.release();
         }
       }
     }
     ++it;
   }
+}
+
+void te::mnt::SlopeDialog::onInputLayerToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types << TIN << GRID;
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_layersComboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
 }
 
 void te::mnt::SlopeDialog::onInputComboBoxChanged(int index)

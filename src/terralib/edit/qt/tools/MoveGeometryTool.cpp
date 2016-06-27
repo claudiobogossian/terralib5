@@ -73,7 +73,6 @@ bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
   m_origin = m_display->transform(GetPosition(e));
 
   m_delta *= 0;
-  m_deltaSum *= 0;
 
   return true;
 }
@@ -95,8 +94,6 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
 
   m_origin = currentPosition;
 
-  m_deltaSum = m_deltaSum - m_delta;
-
   return false;
 }
 
@@ -107,15 +104,11 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 
   m_moveStarted = false;
 
-  if(m_feature == 0)
-    return false;
-
   storeFeature();
 
   storeUndoCommand();
 
   return false;
-
 }
 
 void te::edit::MoveGeometryTool::reset()
@@ -210,6 +203,9 @@ void te::edit::MoveGeometryTool::onExtentChanged()
 
 void te::edit::MoveGeometryTool::storeFeature()
 {
+  if(m_feature == 0)
+    return;
+
   m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
   
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
@@ -221,40 +217,12 @@ void te::edit::MoveGeometryTool::storeUndoCommand()
   if (m_feature == 0)
     return;
 
-  //ensures that the vector has not repeated features after several clicks on the same
-  if (m_stack.getAddWatches()->size())
-  {
-    if (m_stack.getAddWatches()->at(0)->getGeometry()->equals(m_feature->getGeometry()))
-      return;
-  }
+  if (m_delta == QPointF(0., 0.))
+    return;
 
-  //If another feature is selected the stack is cleaned
-  for (std::size_t i = 0; i < m_stack.getAddWatches()->size(); i++)
-  {
-    if (m_stack.getAddWatches()->at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
-    {
-      m_stack.reset();
-      break;
-    }
-  }
+  m_stack.addWatch(m_feature->clone());
 
-  m_stack.getAddWatches()->push_back(m_feature->clone());
-
-  //If a feature is changed in the middle of the stack, this change ends up being the top of the stack
-  if (m_stack.m_currentIndex < (int)(m_stack.getAddWatches()->size() - 2))
-  {
-    std::size_t i = 0;
-    while (i < m_stack.getAddWatches()->size())
-    {
-      m_stack.getAddWatches()->pop_back();
-      i = (m_stack.m_currentIndex + 1);
-    }
-    m_stack.getAddWatches()->push_back(m_feature->clone());
-  }
-
-  m_stack.m_currentIndex = ((int)(m_stack.getAddWatches()->size() - 1));
-
-  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature);
+  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature->clone()->getId());
   m_stack.addUndoStack(command);
 
 }

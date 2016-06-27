@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../common/Exception.h"
-#include "../common/PlatformUtils.h"
 #include "../common/STLUtils.h"
+#include "../core/utils/Platform.h"
 #include "../core/translator/Translator.h"
 #include "ColorScheme.h"
 #include "ColorSchemeCatalog.h"
@@ -54,7 +54,7 @@ void te::color::ColorSchemeCatalogManager::init()
   {
     std::ifstream f;
 
-    std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/color_ramps.json");
+    std::string jsonf = te::core::FindInTerraLibPath("share/terralib/json/color_ramps.json");
     
     if(jsonf.empty())
       throw te::common::Exception(TE_TR("Could not find color_ramps.json file!"));

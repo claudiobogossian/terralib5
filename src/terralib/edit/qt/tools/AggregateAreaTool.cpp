@@ -188,7 +188,10 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
       m_feature->getGeometry()->transform(polygon->getSRID());
 
     if (!polygon->intersects(m_feature->getGeometry()))
+    { 
+      m_isFinished = false;
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
+    }
 
     geoUnion = convertGeomType(m_layer, unionGeometry(polygon, m_feature->getGeometry()));
 
@@ -280,40 +283,11 @@ void te::edit::AggregateAreaTool::storeUndoCommand()
   if (m_feature == 0)
     return;
 
-  //ensures that the vector has not repeated features after several clicks on the same
-  if (m_stack.getAddWatches()->size())
-  {
-    if (m_stack.getAddWatches()->at(0)->getGeometry()->equals(m_feature->getGeometry()))
-      return;
-  }
+  if (!m_isFinished)
+    return;
 
-  //If another feature is selected the stack is cleaned
-  for (std::size_t i = 0; i < m_stack.getAddWatches()->size(); i++)
-  {
-    if (m_stack.getAddWatches()->at(i)->getId()->getValueAsString() != m_feature->getId()->getValueAsString())
-    {
-      m_stack.reset();
-      break;
-    }
-  }
+  m_stack.addWatch(m_feature->clone());
 
-  m_stack.getAddWatches()->push_back(m_feature->clone());
-
-  //If a feature is changed in the middle of the stack, this change ends up being the top of the stack
-  if (m_stack.m_currentIndex < (int)(m_stack.getAddWatches()->size() - 2))
-  {
-    std::size_t i = 0;
-    while (i < m_stack.getAddWatches()->size())
-    {
-      m_stack.getAddWatches()->pop_back();
-      i = (m_stack.m_currentIndex + 1);
-    }
-    m_stack.getAddWatches()->push_back(m_feature->clone());
-  }
-
-  m_stack.m_currentIndex = (int)(m_stack.getAddWatches()->size() - 1);
-
-  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature);
-
+  QUndoCommand* command = new AddCommand(m_display, m_layer, m_feature->clone()->getId());
   m_stack.addUndoStack(command);
 }

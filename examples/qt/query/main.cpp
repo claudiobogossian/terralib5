@@ -29,6 +29,7 @@
 #include "LoadModules.h"
 #include "QueryExamples.h"
 #include <terralib/common.h>
+#include <terralib/core/utils/Platform.h>
 #include <terralib/dataaccess/dataset/DataSet.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/query/Select.h>
@@ -60,7 +61,7 @@ int main(int argc, char** argv)
 
     // Adjusting icons theme
     QStringList ithemes = QIcon::themeSearchPaths();
-    ithemes.push_back(te::common::FindInTerraLibPath("share/terralib/icons").c_str());
+    ithemes.push_back(te::core::FindInTerraLibPath("share/terralib/icons").c_str());
     QIcon::setThemeName("terralib");
     QIcon::setThemeSearchPaths(ithemes);
 

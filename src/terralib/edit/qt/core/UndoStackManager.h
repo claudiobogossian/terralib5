@@ -27,15 +27,9 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_UNDOSTACKMANAGER_H
 
 // TerraLib
-#include "../../../geometry/Envelope.h"
-#include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../Feature.h"
 #include "../../RepositoryManager.h"
 #include "../Config.h"
-
-// Qt
-#include <QPointF>
 
 class QUndoCommand;
 class QUndoStack;
@@ -45,7 +39,6 @@ class QUndoStack;
 
 namespace te
 {
-
   namespace edit
   {
     /*!
@@ -73,7 +66,9 @@ namespace te
         */
         QUndoStack* getUndoStack();
 
-        std::vector<Feature*>* getAddWatches();
+        const std::vector<Feature*>& getAddWatches() const;
+
+        void addWatch(Feature* feature);
 
         void reset();
 
@@ -87,7 +82,7 @@ namespace te
         /*! \brief Singleton destructor. */
         ~UndoStackManager();
 
-        std::vector<Feature*>* m_addWatches;
+        std::vector<Feature*> m_addWatches;
 
         QUndoStack* m_undoStack;                               //!< Undo/Redo stack
 

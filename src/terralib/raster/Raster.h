@@ -614,9 +614,11 @@ namespace te
                              Will be filled with geometries found in band.
           \param b           The band index to vectorize.
           
+          \param polygonsValues A pointer to a valid vector where the raster pixel values related to each polygon will be stored, or a NULL pointer.
+          
           \note The caller of this method must take the ownership of the returned geometries and must delete them when necessary.
         */
-        virtual void vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp = 0);
+        virtual void vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp = 0, std::vector< double > * const polygonsValues = 0);
 
         /*!
           \brief Rasterizes a given vector of geometries.

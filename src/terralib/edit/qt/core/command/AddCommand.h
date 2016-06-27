@@ -30,7 +30,8 @@
 
 // TerraLib
 #include "../../../../qt/widgets/canvas/MapDisplay.h"
-#include "../../../Feature.h"
+#include "../../../../dataaccess/dataset/ObjectId.h"
+//#include "../../../Feature.h"
 #include "../../../RepositoryManager.h"
 #include "../../../Utils.h"
 #include "../../Config.h"
@@ -55,7 +56,7 @@ namespace te
 
       public:
         // Pass all parameters that the command need to fulfill its task in the constructor
-        AddCommand(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, te::edit::Feature* feature, QUndoCommand *parent = 0);
+        AddCommand(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, te::da::ObjectId* id, QUndoCommand *parent = 0);
 
         /*!
         \brief Destructor
@@ -74,16 +75,18 @@ namespace te
 
       signals:
 
-        void undoRedo(std::vector<te::gm::Coord2D> coords);
+        void undoFeedback(std::vector<te::gm::Coord2D> coords);
 
       private:
 
         te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
-        Feature* m_feature;
+        te::da::ObjectId* m_id;
         UndoStackManager& m_stack;
 
         void draw();
+
+        std::size_t countFeaturesById(te::da::ObjectId* id, std::size_t& lastPos);
 
     };
   }

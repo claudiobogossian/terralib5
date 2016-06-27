@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../core/translator/Translator.h"
-#include "../common/PlatformUtils.h"
+#include "../core/utils/Platform.h"
 #include "DefaultFinder.h"
 #include "PluginInfo.h"
 #include "Utils.h"
@@ -65,7 +65,7 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
 
 // if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
 
-  std::string plgDir = te::common::FindInTerraLibPath(TE_DEFAULT_PLUGINS_DIR);
+  std::string plgDir = te::core::FindInTerraLibPath(TE_DEFAULT_PLUGINS_DIR);
 
   if(!plgDir.empty())
   {

@@ -677,13 +677,13 @@ te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, do
   return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo, m);
 }
 
-void te::rst::Raster::vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp)
+void te::rst::Raster::vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp, std::vector< double > * const polygonsValues)
 {
   g.clear();
 
-  te::rst::Vectorizer vectorizer(this, b, mp);
+  te::rst::Vectorizer vectorizer(this, b, mp );
 
-  vectorizer.run(g);
+  vectorizer.run(g, polygonsValues);
 }
 
 void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<double> vp, std::size_t b)
@@ -710,17 +710,26 @@ void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<do
 
   for (unsigned int i = 0; i < g.size(); i++)
   {
-    te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (g[i]);
+    std::vector<te::gm::Geometry*> geoms;
 
-    te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(band->getRaster(), polygon);
-    te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(band->getRaster(), polygon);
+    te::gm::Multi2Single(g[i], geoms);
 
-    while (it != itend)
+    for (std::size_t j = 0; j < geoms.size(); ++j)
     {
-      setValue(it.getColumn(), it.getRow(), vp[i], b);
+      te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (geoms[j]);
 
-      ++it;
+      te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(band->getRaster(), polygon);
+      te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(band->getRaster(), polygon);
+
+      while (it != itend)
+      {
+        setValue(it.getColumn(), it.getRow(), vp[i], b);
+
+        ++it;
+      }
     }
+
+    
 
     if (!task.isActive())
       throw te::common::Exception(TE_TR("Rasterize operation canceled!"));

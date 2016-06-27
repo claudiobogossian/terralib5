@@ -79,7 +79,9 @@ namespace te
      {
        SAMPLE,
        TIN,
-       GRID
+       GRID,
+       ISOLINE,
+       OTHER
      };
 
      enum Simplify
