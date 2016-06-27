@@ -22,7 +22,7 @@
 
   \brief A test suit for the WS OGC WCS.
 
-  \author Vinicius campanha
+  \author Emerson Moraes
  */
 
 // TerraLib
@@ -31,133 +31,140 @@
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/ws/ogc/wcs/dataaccess/Transactor.h>
+#include <terralib/qt/af/ApplicationController.h>
 
-// TerraLib Test
-#include "TsWCS.h"
+// Boost
+#include <boost/test/unit_test.hpp>
 
-
-CPPUNIT_TEST_SUITE_REGISTRATION( TsWCS );
-
-void TsWCS::tsGetCapabilities()
+BOOST_AUTO_TEST_CASE(getcapabilities_test)
 {
-  // http://flanche.net:9090/rasdaman/ows?SERVICE=WCS&VERSION=2.0.1&REQUEST=GetCapabilities
-  //  te::ws::ogc::WCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
+  te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  // http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=GetCapabilities&version=2.0.1
-  te::ws::ogc::WCSClient clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
+  // Directory where temporary WCS data will be stored.
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
 
-  CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at getCapabilities().", clientWCS.updateCapabilities());
+  // WCS server URL.
+  std::string url = "http://demo.opengeo.org/geoserver/ows";
+
+  // Version that will be used on WCS Requests.
+  std::string version = "2.0.1";
+
+  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+
+  // Makes GetCapabilities Request.
+  BOOST_CHECK_NO_THROW(client.updateCapabilities());
+
+  te::ws::ogc::Capabilities capabilities = client.getCapabilities();
+
+  std::vector<std::string> coverages = capabilities.coverages;
+
+  BOOST_CHECK(coverages.size() > 0);
+
+  return;
 }
 
-void TsWCS::tsGetCapabilitiesException()
+BOOST_AUTO_TEST_CASE(getcapabilities_exception_test)
 {
-  te::ws::ogc::WCSClient clientWCS("http://wrongadress.net:9090", "2.0.1");
 
-  CPPUNIT_ASSERT_THROW(clientWCS.updateCapabilities(), te::common::Exception);
+  te::qt::af::AppCtrlSingleton::getInstance().initialize();
+
+  // Directory where temporary WCS data will be stored.
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+
+  // A wrong WCS server URL.
+  std::string url = "http://wrongaddress.org/geoserver/ows";
+
+  // Version that will be used on WCS Requests.
+  std::string version = "2.0.1";
+
+  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+
+  // Makes GetCapabilities Request.
+  BOOST_CHECK_THROW(client.updateCapabilities(), te::common::Exception);
+
+  return;
 }
 
-void TsWCS::tsDescribeCoverage()
+BOOST_AUTO_TEST_CASE(not_supported_version_test)
 {
-  try
-  {
-    // http://flanche.net:9090/rasdaman/ows?SERVICE=WCS&VERSION=2.0.1&REQUEST=DescribeCoverage&COVERAGEID=NIR
-    //    te::ws::ogc::WCS clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
-    //    QXmlStreamReader* coverageDescribe = clientWCS.describeCoverage("NIR");
+  te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-    // http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=DescribeCoverage&coverageid=other__wcmc-world-database-of-protected-areas&version=2.0.1
-    te::ws::ogc::WCSClient clientWCS("http://sedac.ciesin.columbia.edu/geoserver/wcs", "2.0.1");
-    std::string coverage = "anthromes__anthromes-anthropogenic-biomes-world-v2-1800";
-    te::ws::ogc::CoverageDescription coverageDescription;
+  // Directory where temporary WCS data will be stored.
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
 
-    CPPUNIT_ASSERT_NO_THROW_MESSAGE("Error at describeCoverage().", coverageDescription = clientWCS.describeCoverage(coverage));
+  // WCS server URL.
+  std::string url = "http://demo.opengeo.org/geoserver/ows";
 
-    if(coverageDescription.coverageId.compare(coverage) != 0)
-    {
-      CPPUNIT_FAIL("Error: Is not the requested coverage!");
-    }
+  // Version not supported yet.
+  std::string version = "1.0.0";
 
-  }
-  catch(...)
-  {
-    CPPUNIT_FAIL("Error in describeCoverage()!");
-  }
+  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+
+  BOOST_CHECK_THROW(client.updateCapabilities(), te::common::Exception);
+
+  // Version not supported yet.
+  version = "1.1.0";
+
+  client = te::ws::ogc::WCSClient (usrDataDir, url, version);
+
+  BOOST_CHECK_THROW(client.updateCapabilities(), te::common::Exception);
+
+  return;
 }
 
-void TsWCS::tsDescribeCoverageException()
+BOOST_AUTO_TEST_CASE(describecoverage_test)
 {
-  te::ws::ogc::WCSClient clientWCS("http://flanche.net:9090/rasdaman/ows", "2.0.1");
+  te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  // Requiring the description of a non-existent coverage
-  CPPUNIT_ASSERT_THROW(clientWCS.describeCoverage("NONE"), te::common::Exception);
+  // Directory where temporary WCS data will be stored.
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+
+  // WCS server URL.
+  std::string url = "http://demo.opengeo.org/geoserver/ows";
+
+  // Version that will be used on WCS Requests.
+  std::string version = "2.0.1";
+
+  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+
+  std::string coverageName = "nasa__bluemarble";
+
+  BOOST_CHECK_NO_THROW(client.describeCoverage(coverageName));
+
+  te::ws::ogc::CoverageDescription description = client.describeCoverage(coverageName);
+
+  BOOST_CHECK(description.coverageId == coverageName);
+
+  return;
 }
 
-
-void TsWCS::tsDataSource()
+BOOST_AUTO_TEST_CASE(getcoverage_test)
 {
-  try
-  {
-    te::da::DataSourcePtr ds(te::da::DataSourceFactory::make("OGC_WCS").release());
+  te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = "http://sedac.ciesin.columbia.edu/geoserver/wcs";
-    connInfo["VERSION"] = "2.0.1";
+  // Directory where temporary WCS data will be stored.
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
 
-    ds->setConnectionInfo(connInfo);
+  // WCS server URL.
+  std::string url = "http://demo.opengeo.org/geoserver/ows";
 
-    ds->open();
+  // Version that will be used on WCS Requests.
+  std::string version = "2.0.1";
 
-    if(!ds->isOpened())
-      CPPUNIT_FAIL("Error!");
+  te::ws::ogc::WCSClient client (usrDataDir, url, version);
 
-    if(!ds->isValid())
-      CPPUNIT_FAIL("Error!");
+  // Coverage ID that could be retrieved on DescribeCoverage.
+  std::string coverageId = "nasa__bluemarble";
 
-    te::ws::ogc::wcs::da::Transactor* transactor = dynamic_cast< te::ws::ogc::wcs::da::Transactor* > (ds->getTransactor().release());
+  // Simple image request by id.
+  te::ws::ogc::CoverageRequest request;
+  request.coverageID = coverageId;
 
-    transactor->getNumberOfDataSets();
+  std::string coverageDiskPath = client.getCoverage(request);
 
-    std::vector<std::string> dataSetNames = transactor ->getDataSetNames();
+  std::string expectedResult = usrDataDir + std::string("/wcs/") + coverageId;
 
-    if(dataSetNames.empty())
-      CPPUNIT_FAIL("Error!");
+  BOOST_CHECK(coverageDiskPath == expectedResult);
 
-    std::string coverageName = "anthromes__anthromes-anthropogenic-biomes-world-v2-1800";
-    std::string dataSetName = coverageName;
-
-    if(!transactor->dataSetExists(dataSetName))
-      CPPUNIT_FAIL("Error!");
-
-    te::ws::ogc::CoverageDescription coverageDescription = transactor->coverageDescription(dataSetName);
-    te::ws::ogc::CoverageRequest coverageRequest;
-    coverageRequest.coverageID = dataSetName;
-    coverageRequest.format = coverageDescription.serviceParameters.nativeFormat;
-    coverageRequest.subSet = coverageDescription.domainSet.subSet;
-    coverageRequest.envelope = coverageDescription.envelope;
-
-    coverageRequest.envelope.lowerCorner_X = "0";
-    coverageRequest.envelope.lowerCorner_Y = "0";
-
-    coverageRequest.envelope.upperCorner_X = "100";
-    coverageRequest.envelope.upperCorner_Y = "100";
-
-    transactor->setCoverageRequest(coverageRequest);
-
-    std::auto_ptr<te::da::DataSet> dataSet = transactor->getDataSet(dataSetName);
-
-    if(!dataSet.get())
-      CPPUNIT_FAIL("Error!");
-
-    std::auto_ptr<te::da::DataSetType> dataSetType = transactor->getDataSetType(dataSetName);
-
-    if(!dataSetType.get())
-      CPPUNIT_FAIL("Error!");
-  }
-  catch(te::common::Exception& e)
-  {
-    CPPUNIT_FAIL(e.what());
-  }
-  catch(...)
-  {
-    CPPUNIT_FAIL("Unknow error!");
-  }
+  return;
 }
