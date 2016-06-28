@@ -240,6 +240,12 @@ void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillCo
   m_styleChanged = true;
 }
 
+void te::edit::Renderer::setLineStyle(const QColor& lineColor, const std::size_t& lineWidth)
+{
+  m_lineColor = lineColor;
+  m_lineWidth = lineWidth;
+}
+
 void te::edit::Renderer::setupDefaultStyle()
 {
   m_polygonFillColor = QColor(0, 255, 0, 15);

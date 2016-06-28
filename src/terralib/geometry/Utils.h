@@ -41,6 +41,7 @@ namespace te
     class Envelope;
     class Geometry;
     class Point;
+    class Polygon;
     struct Coord2D;
     class LineString;
     
@@ -145,6 +146,14 @@ namespace te
     \note If no input geometries were provided, a POINT EMPTY is returned.
     */
     TEGEOMEXPORT te::gm::Geometry* UnaryUnion(te::gm::Geometry* geom);
+
+    /*!
+    \brief It will get a list of polygons formed by the polygonization.
+
+    \param g      Input Polygon.
+    \param pols   Output Polygon Vector.
+    */
+    TEGEOMEXPORT void Polygonizer(te::gm::Geometry* g, std::vector<te::gm::Polygon*>& pols);
 
   } // end namespace gm
 }   // end namespace te

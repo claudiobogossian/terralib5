@@ -29,7 +29,13 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #ifndef Q_MOC_RUN
+#include "../../../geometry/GeometryCollection.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../geometry/MultiPolygon.h"
+#include "../../../geometry/Utils.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/canvas/Canvas.h"
+#include "CreateLineTool.h"
 #endif
 #include "../Config.h"
 #include "GeometriesUpdateTool.h"
@@ -59,7 +65,7 @@ namespace te
 
       \brief This class implements a concrete tool to split polygons.
     */
-    class TEEDITQTEXPORT SplitPolygonTool : public GeometriesUpdateTool
+    class TEEDITQTEXPORT SplitPolygonTool : public CreateLineTool
     {
       Q_OBJECT
 
@@ -90,17 +96,23 @@ namespace te
           */
         //@{
 
-        //bool mousePressEvent(QMouseEvent* e);
+        bool mousePressEvent(QMouseEvent* e);
 
-        //bool mouseMoveEvent(QMouseEvent* e);
+        bool mouseMoveEvent(QMouseEvent* e);
 
-        //bool mouseDoubleClickEvent(QMouseEvent* e);
+        bool mouseDoubleClickEvent(QMouseEvent* e);
+
+        void resetVisualizationTool();
 
         //@}
+      private:
 
-      private slots:
+        std::vector<te::gm::Polygon*> m_inputPolygons;
 
-        void onExtentChanged();
+        void splitPolygon();
+
+        void draw();
+
     };
 
   }   // end namespace edit

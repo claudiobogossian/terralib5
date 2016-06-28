@@ -262,7 +262,6 @@ te::gm::Geometry* te::edit::MergeGeometriesTool::Union(te::gm::Geometry& g1, te:
 
 void te::edit::MergeGeometriesTool::draw()
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
     return;
@@ -284,7 +283,6 @@ void te::edit::MergeGeometriesTool::draw()
   renderer.end();
 
   m_display->repaint();
-
 }
 
 void te::edit::MergeGeometriesTool::storeFeature()
