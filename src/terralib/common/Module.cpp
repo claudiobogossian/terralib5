@@ -49,7 +49,7 @@ te::common::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-  TE_ADD_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/config/terralib/te-log.ini"));
+
 // let's start all singletons in the right order and other stuffs that must be in the static initialization!
 
 // initialize the translator singleton and the common runtime multilanguage support

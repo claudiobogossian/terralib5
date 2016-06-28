@@ -45,7 +45,7 @@
 /*!
    \brief The default name of the log file if none is informed.
   */
-const std::string TERRALIB_DEFAULT_LOGGER("log/terralib.log");
+const std::string TERRALIB_DEFAULT_LOGGER("terralib");
 
 /*!
    \brief The default message format if none is informed.
@@ -172,6 +172,79 @@ namespace te
 #endif
 
 /*!
+  \def TE_INIT_DEFAULT_LOGGER
+
+  \brief Use this tag in order to initialize the default TerraLib logger.
+
+  \param  filename The name of the log file.
+ */
+#ifdef TERRALIB_CORE_LOGGER_ENABLED
+  #define TE_INIT_DEFAULT_LOGGER(filename) te::core::Logger::getInstance().addLogger(TERRALIB_DEFAULT_LOGGER, filename, TERRALIB_DEFAULT_LOGGER_FORMAT)
+#else
+  #define TE_INIT_DEFAULT_LOGGER(filename) ((void)0)
+#endif
+
+/*!
+  \def TE_CORE_LOG_TRACE
+
+  \brief Use this tag in order to log a message to a specified logger with the TRACE level.
+
+  \param channel The name of your logger.
+  \param message The message to be logged.
+ */
+#define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::trace)
+
+/*!
+  \def TE_CORE_LOG_DEBUG
+
+  \brief Use this tag in order to log a message to a specified logger with the DEBUG level.
+
+  \param channel The name of your logger.
+  \param message The message to be logged.
+ */
+#define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::debug)
+
+/*!
+  \def TE_CORE_LOG_INFO
+
+  \brief Use this tag in order to log a message to a specified logger with the INFO level.
+
+  \param channel The name of your logger.
+  \param message The message to be logged.
+ */
+#define TE_CORE_LOG_INFO(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::info)
+
+/*!
+  \def TE_CORE_LOG_WARN
+
+  \brief Use this tag in order to log a message to a specified logger with the WARN level.
+
+  \param channel The name of your logger.
+  \param message The message to be logged.
+ */
+#define TE_CORE_LOG_WARN(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::warning)
+
+/*!
+  \def TE_CORE_LOG_ERROR
+
+  \brief Use this tag in order to log a message to a specified logger with the ERROR level.
+
+  \param channel The name of your logger.
+  \param message The message to be logged.
+ */
+#define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::error)
+
+/*!
+  \def TE_CORE_LOG_FATAL
+
+  \brief Use this tag in order to log a message to a specified logger with the FATAL level.
+
+  \param channel The name of your logger.
+  \param message The message to be logged.
+ */
+#define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::fatal)
+
+/*!
   \def TE_LOG_TRACE
 
   \brief Use this tag in order to log a message to the TerraLib default logger with the TRACE level.
@@ -260,65 +333,5 @@ namespace te
 #else
   #define TE_LOG_DEBUG(message) ((void)0)
 #endif
-
-/*!
-  \def TE_CORE_LOG_TRACE
-
-  \brief Use this tag in order to log a message to a specified logger with the TRACE level.
-
-  \param channel The name of your logger.
-  \param message The message to be logged.
- */
-#define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::trace)
-
-/*!
-  \def TE_CORE_LOG_DEBUG
-
-  \brief Use this tag in order to log a message to a specified logger with the DEBUG level.
-
-  \param channel The name of your logger.
-  \param message The message to be logged.
- */
-#define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::debug)
-
-/*!
-  \def TE_CORE_LOG_INFO
-
-  \brief Use this tag in order to log a message to a specified logger with the INFO level.
-
-  \param channel The name of your logger.
-  \param message The message to be logged.
- */
-#define TE_CORE_LOG_INFO(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::info)
-
-/*!
-  \def TE_CORE_LOG_WARN
-
-  \brief Use this tag in order to log a message to a specified logger with the WARN level.
-
-  \param channel The name of your logger.
-  \param message The message to be logged.
- */
-#define TE_CORE_LOG_WARN(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::warning)
-
-/*!
-  \def TE_CORE_LOG_ERROR
-
-  \brief Use this tag in order to log a message to a specified logger with the ERROR level.
-
-  \param channel The name of your logger.
-  \param message The message to be logged.
- */
-#define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::error)
-
-/*!
-  \def TE_CORE_LOG_FATAL
-
-  \brief Use this tag in order to log a message to a specified logger with the FATAL level.
-
-  \param channel The name of your logger.
-  \param message The message to be logged.
- */
-#define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::fatal)
 
 #endif  // __TERRALIB_CORE_LOGGER_LOGGER_H__

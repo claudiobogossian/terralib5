@@ -64,7 +64,6 @@ void te::core::Logger::addLogger(const std::string& name, const std::string& fil
                            boost::log::keywords::open_mode = std::ios_base::app,
                            boost::log::keywords::filter = (channel == name)
                           );
-  boost::log::add_common_attributes();
 }
 
 void te::core::Logger::removeAllLoggers()
@@ -82,9 +81,7 @@ te::core::Logger::Logger()
                                                 boost::log::attributes::current_process_id());
   boost::log::core::get()->add_global_attribute("ThreadID",
                                                 boost::log::attributes::current_thread_id());
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
-  addLogger(TERRALIB_DEFAULT_LOGGER, TERRALIB_DEFAULT_LOGGER, TERRALIB_DEFAULT_LOGGER_FORMAT);
-#endif
+  boost::log::add_common_attributes();
 }
 
 void te::core::Logger::log(const std::string& message, const std::string& channel, boost::log::trivial::severity_level severity)
