@@ -98,7 +98,6 @@ namespace te
           te::qt::widgets::LayerItemView* getLayerExplorer();
 
           ToolBar* m_toolbar; //!< Main toolbar of TerraLib Edit Qt Plugin.
-          QMenu* m_menu;      //!< Main menu of TerraLib Edit Qt Plugin.
           QAction* m_action;    //!< Action used to call the process
 
           EditDelegate* m_delegate;

@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #ifndef Q_MOC_RUN
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../geometry/GeometryCollection.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/MultiPolygon.h"
@@ -107,7 +108,9 @@ namespace te
         //@}
       private:
 
-        std::vector<te::gm::Polygon*> m_inputPolygons;
+        std::vector<te::gm::Polygon*> m_outputPolygons;
+
+        te::da::ObjectIdSet* m_oidSet;
 
         void splitPolygon();
 

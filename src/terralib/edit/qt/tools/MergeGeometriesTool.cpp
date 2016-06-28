@@ -104,7 +104,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   if (m_feature == 0)
   {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Merge not possible"));
+    QMessageBox::information(m_display, tr("TerraLib Edit Qt Plugin"), tr("Pick Feature Failed."));
     return;
   }
 
