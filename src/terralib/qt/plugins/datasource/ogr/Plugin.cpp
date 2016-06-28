@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Config.h"
-#include "../../../../common/Logger.h"
+#include "../../../../core/logger/Logger.h"
 #include "../../../../core/translator/Translator.h"
 #include "../../../../srs/Config.h"
 #include "../../../../srs/SpatialReferenceSystemManager.h"

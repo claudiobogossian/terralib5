@@ -28,7 +28,7 @@
 #include <iostream>
 
 #include "../../../../core/translator/Translator.h"
-#include "../../../../common/Logger.h"
+#include "../../../../core/logger/Logger.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../qt/widgets/datasource/core/DataSourceTypeManager.h"
 #include "../qt/WCSType.h"

@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"

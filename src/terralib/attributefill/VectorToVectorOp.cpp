@@ -21,7 +21,7 @@
  \file VectorToVectorOp.cpp
  */
 
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -125,7 +125,7 @@ bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> 
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string ex = e.what();
     ex += " | Ref: Error while persisting in the DataSource";
-    te::common::Logger::logDebug("attributefill", ex.c_str());
+    TE_CORE_LOG_DEBUG("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
     t->rollBack();
     m_hasErrors = true;
@@ -135,7 +135,7 @@ bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> 
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string ex = e.what();
     ex += " | Ref: Error while persisting in the DataSource";
-    te::common::Logger::logDebug("attributefill", ex.c_str());
+    TE_CORE_LOG_DEBUG("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
     
     t->rollBack();

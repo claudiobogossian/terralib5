@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
@@ -587,7 +587,7 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
 
     QMessageBox::information(this, "Address Geocoding", e.what());
     
-    //te::common::Logger::logDebug("addressgeocoding", e.what());
+    //TE_CORE_LOG_DEBUG("addressgeocoding", e.what());
     //te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

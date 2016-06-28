@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../common/Config.h"
 #include "../../../core/translator/Translator.h"
-#include "../../../common/Logger.h"
+#include "../../../core/logger/Logger.h"
 #include "../../../edit/SnapManager.h"
 #include "../../../edit/qt/Renderer.h"
 #include "../../../maptools/AbstractLayer.h"

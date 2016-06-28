@@ -26,7 +26,7 @@
 #ifndef __TERRALIB_RP_INTERNAL_MACROS_H
 #define __TERRALIB_RP_INTERNAL_MACROS_H
 
-  #include "../common/Logger.h"
+  #include "../core/logger/Logger.h"
   #include "../common/Config.h"
   #include "../common/MathUtils.h"
   #include "Module.h"

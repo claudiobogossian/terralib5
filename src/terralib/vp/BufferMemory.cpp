@@ -27,7 +27,7 @@
 
 #include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -132,7 +132,7 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
                 else
                 {
 #ifdef TERRALIB_LOGGER_ENABLED
-                  te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
+                  TE_CORE_LOG_DEBUG("vp", "Buffer - Invalid geometry found");
 #endif //TERRALIB_LOGGER_ENABLED
                 }
 
@@ -157,7 +157,7 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
             default:
               {
 #ifdef TERRALIB_LOGGER_ENABLED
-                te::common::Logger::logDebug("vp", "Buffer - Type not found.");
+                TE_CORE_LOG_DEBUG("vp", "Buffer - Type not found.");
 #endif //TERRALIB_LOGGER_ENABLED
               }
           }
@@ -181,7 +181,7 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
             else
             {
 #ifdef TERRALIB_LOGGER_ENABLED
-              te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
+              TE_CORE_LOG_DEBUG("vp", "Buffer - Invalid geometry found");
 #endif //TERRALIB_LOGGER_ENABLED
             }
 
@@ -274,7 +274,7 @@ te::gm::Geometry* te::vp::BufferMemory::setBuffer(te::gm::Geometry* geom,
     default:
     {
 #ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", "Buffer - Polygon rule not found.");
+      TE_CORE_LOG_DEBUG("vp", "Buffer - Polygon rule not found.");
 #endif //TERRALIB_LOGGER_ENABLED
     }
   }

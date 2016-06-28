@@ -27,7 +27,7 @@
 
 #include "../../core/translator/Translator.h"
 
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/StringUtils.h"
 

@@ -22,7 +22,7 @@
  */
 
 // Terralib
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../common/progress/TaskProgress.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -179,7 +179,7 @@ namespace te
       }
 
 #ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("vp", warning.c_str());
+      TE_CORE_LOG_DEBUG("vp", warning.c_str());
 #endif // TERRALIB_LOGGER_ENABLED
     }
 

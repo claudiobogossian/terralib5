@@ -113,72 +113,77 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="118"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="121"/>
         <source>GDAL Data Dir:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="146"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="152"/>
         <source>TerraLib Home</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="163"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="169"/>
         <source>Current Path:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="192"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="201"/>
         <source>Current Path\..:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="221"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="233"/>
         <source>TerraLib Home:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="250"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="265"/>
         <source>Install Prefix:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="279"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="297"/>
         <source>Codebase Path:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="323"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="344"/>
         <source>Modules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="340"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="361"/>
         <source>Plugins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="357"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="378"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="367"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="388"/>
+        <source>Monitor DPI Y:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="513"/>
         <source>Free Physical Memory:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="387"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="480"/>
         <source>Total Physical Memory:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="407"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="490"/>
         <source>Used Virtual Memory:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="427"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="470"/>
         <source>Total Virtual Memory:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -188,12 +193,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="482"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="523"/>
+        <source>Monitor DPI X:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="561"/>
         <source>* Informations about memory is presented in Bytes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="510"/>
+        <location filename="../../../src/terralib/qt/af/ui/InternalSettingsDialogForm.ui" line="589"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -539,7 +549,7 @@
         <translation type="vanished">Erro ao carregar o projeto: %1!</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="178"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="175"/>
         <source>Selected rows: </source>
         <translation>Linhas selecionadas: </translation>
     </message>
@@ -580,22 +590,22 @@
         <translation type="vanished">Erro desconhecido ao tentar atualizar uma fonte de dados de uma camada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="450"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="447"/>
         <source>Select only one layer to be renamed!</source>
         <translation>Escolha apenas uma camada a ser renomeada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="451"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="448"/>
         <source>Rename Layer</source>
         <translation>Renomeie Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="460"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="457"/>
         <source>Rename Layer:</source>
         <translation>Renomeie camada:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="468"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="465"/>
         <source>Enter the new name!</source>
         <translation>Digite o novo nome !</translation>
     </message>
@@ -648,34 +658,35 @@
         <translation type="vanished">Digite o o nome da camada !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="502"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="525"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="556"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="822"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="499"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="522"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="553"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="596"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="862"/>
         <source>There&apos;s no selected layer.</source>
         <translation>Não há camada selecionada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="321"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="560"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="318"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="600"/>
         <source>Choose the SRS</source>
         <translation>Escolha o SRS</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="596"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="661"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="699"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="831"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="636"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="701"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="739"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="871"/>
         <source>There are invalid layers selected!</source>
         <translation>Existem camadas inválidas selecionadas !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="584"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="624"/>
         <source>Select a layer in the layer explorer!</source>
         <translation>Selecione uma camada no explorador de camadas !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="757"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="797"/>
         <source>Layer</source>
         <translation>Camada</translation>
     </message>
@@ -688,13 +699,13 @@
         <translation type="vanished">Dispersão (Scatter)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="648"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="686"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="688"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="726"/>
         <source>Select at least a layer to accomplish this operation!</source>
         <translation>Seleccionar pelo menos uma camada para realizar esta operação !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="673"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="713"/>
         <source>Select object(s) in the selected layer(s) to accomplish this operation!</source>
         <translation>Selecione objeto(s) na(s) camada(s) selecionada(s) para realizar esta operação !</translation>
     </message>
@@ -719,37 +730,37 @@
         <translation type="vanished">Andamento de Tarefas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1061"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1101"/>
         <source>&amp;Layer Explorer</source>
         <translation>Explorador de &amp;Camadas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1061"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1101"/>
         <source>Show or hide the layer explorer</source>
         <translation>Mostrar ou ocultar o explorador de camadas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1062"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1102"/>
         <source>&amp;Data Table</source>
         <translation>&amp;Tabela de Dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1062"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1102"/>
         <source>Show or hide the data table</source>
         <translation>Mostrar ou ocultar a tabela de dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1063"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1103"/>
         <source>&amp;Style Explorer</source>
         <translation>Explorador de &amp;Estilo</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1063"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1103"/>
         <source>Show or hide the style explorer</source>
         <translation>Mostrar ou ocultar o explorador de estilo</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1064"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1104"/>
         <source>F&amp;ull Screen</source>
         <translation>&amp;Tela Cheia</translation>
     </message>
@@ -866,12 +877,12 @@
         <translation type="vanished">Remove camada(s) de um projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1068"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1108"/>
         <source>Rename Layer...</source>
         <translation>Remove Camada...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1068"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1108"/>
         <source>Rename layer</source>
         <translation>Renomear camada</translation>
     </message>
@@ -892,7 +903,7 @@
         <translation type="vanished">Atualizar fonte de dados da Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1071"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1112"/>
         <source>&amp;Properties...</source>
         <translation>&amp;Propriedades...</translation>
     </message>
@@ -901,13 +912,13 @@
         <translation type="vanished">Mostra as propriedades do projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1069"/>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1086"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1109"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1127"/>
         <source>&amp;Remove Selection</source>
         <translation>&amp;Remover Seleção</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1070"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1111"/>
         <source>&amp;Remove Item</source>
         <translation>&amp;Remover Item</translation>
     </message>
@@ -916,12 +927,12 @@
         <translation type="vanished">&amp;Editar Legenda...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1072"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1113"/>
         <source>&amp;Inform SRS...</source>
         <translation>&amp;Informar SRS...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1066"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1106"/>
         <source>S&amp;how Table</source>
         <translation>&amp;Mostra Tabela</translation>
     </message>
@@ -938,32 +949,32 @@
         <translation type="vanished">&amp;Gráfico Pizza/Barra</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1073"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1114"/>
         <source>Fit Layer</source>
         <translation>Ajustar Camada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1073"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1114"/>
         <source>Fit the current layer on the Map Display</source>
         <translation>Ajustar a camada corrente na Área de Visualização</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1074"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1115"/>
         <source>Fit Selected Features</source>
         <translation>Ajustar Feições Selecionadas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1074"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1115"/>
         <source>Fit the selected features on the Map Display</source>
         <translation>Ajustar feições selecionadas na Área de Visualização</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1075"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1116"/>
         <source>Pan to Selected Features</source>
         <translation>Panorâmica para Feições Selecionadas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1075"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1116"/>
         <source>Pan to the selected features on the Map Display</source>
         <translation>Panorâmica para feições selecionadas na Área de Visualização</translation>
     </message>
@@ -1020,152 +1031,157 @@
         <translation type="vanished">&amp;Imprimir...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1089"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1130"/>
         <source>&amp;SRS...</source>
         <translation>&amp;SRS...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1089"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1130"/>
         <source>Config the Map SRS</source>
         <translation>Configurar o SRS do mapa</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1090"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1131"/>
         <source>&amp;Set Unknown SRS</source>
         <translation>&amp;Definir o SRS desconhecido</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1090"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1131"/>
         <source>Set the Map SRS to unknown</source>
         <translation>Definir o SRS do mapa para desconhecido</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1078"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1119"/>
         <source>&amp;Draw</source>
         <translation>&amp;Desenhar</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="392"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="389"/>
         <source>Select at least one item to be removed!</source>
         <translation>Selecione pelo menos um item a ser removido !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="393"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="390"/>
         <source>Remove item</source>
         <translation>Remove item</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="403"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="400"/>
         <source>Do you really want to remove the selected item?</source>
         <translation>Você realmente deseja remover o item selecionado ?</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="404"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="401"/>
         <source>Remove Item</source>
         <translation>Remove Item</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="408"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="405"/>
         <source>Do you really want to remove the selected items?</source>
         <translation>Você realmente deseja remover os itens selecionados ?</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="409"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="406"/>
         <source>Remove Items</source>
         <translation>Remove Itens</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="627"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="667"/>
         <source>The spatial reference system of the map display and the layer are not compatible!</source>
         <translation>O sistema de referência espacial da área de desenho e da camada não são compativeis !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="737"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="777"/>
         <source>Select one layer to accomplish this operation!</source>
         <translation>Selecione uma camada para realizar esta operação !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="748"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="788"/>
         <source>This is a invalid layer selected!</source>
         <translation>Esta é uma camada selecionada inválida !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1014"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1054"/>
         <source>Scale Information</source>
         <translation>Informação de Escala</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1067"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1107"/>
         <source>&amp;Remove Item(s)</source>
         <translation>&amp;Remove Item(s)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1067"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1107"/>
         <source>Remove items(s) from the project</source>
         <translation>Remove item(s) do projeto</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1076"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1110"/>
+        <source>&amp;Invert Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1117"/>
         <source>Save Selected Objects...</source>
         <translation>Salva Objetos Selecionados...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1076"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1117"/>
         <source>Save a new layer based on the selected objects from this layer</source>
         <translation>Salve uma nova camada com base nos objetos selecionados a partir desta camada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1078"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1119"/>
         <source>Draw the visible layers</source>
         <translation>Desenhar a camada visível</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1079"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1120"/>
         <source>Zoom &amp;In</source>
         <translation>Zoom &amp;In</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1080"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1121"/>
         <source>Zoom &amp;Out</source>
         <translation>Zoom &amp;Out</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1081"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1122"/>
         <source>&amp;Pan</source>
         <translation>&amp;Panorâmica</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1082"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1123"/>
         <source>Zoom &amp;Extent</source>
         <translation>Zoom &amp;Toda área</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1083"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1124"/>
         <source>&amp;Previous Extent</source>
         <translation>Tela &amp;Anterrior</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1084"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1125"/>
         <source>&amp;Next Extent</source>
         <translation>&amp;Próxima Tela</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1085"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1126"/>
         <source>&amp;Info</source>
         <translation>&amp;Informação</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1087"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1128"/>
         <source>&amp;Selection</source>
         <translation>&amp;Seleção</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1092"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1133"/>
         <source>&amp;Internal Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1092"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1133"/>
         <source>Application Internal Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1182,12 +1198,12 @@
         <translation type="vanished">Medida de &amp;Ángulo</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1091"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1132"/>
         <source>&amp;Stop Drawing</source>
         <translation>&amp;Parar Desenho</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1091"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1132"/>
         <source>Stop all drawing tasks</source>
         <translation>Parar todas as tarefas de desenho</translation>
     </message>
@@ -1240,17 +1256,17 @@
         <translation type="vanished">A&amp;juda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="975"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1015"/>
         <source>Selected rows: 0</source>
         <translation>Linhas selecionadas: 0</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="995"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1035"/>
         <source>Unknown SRS</source>
         <translation>SRS desconhecido</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1004"/>
+        <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1044"/>
         <source>Coordinates</source>
         <translation>Coordenadas</translation>
     </message>
@@ -1317,12 +1333,12 @@
         <translation type="vanished">Ativar / desativar o Mover para operação selecionada</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="419"/>
+        <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="403"/>
         <source>Error</source>
         <translation>Erro</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="419"/>
+        <location filename="../../../src/terralib/qt/af/connectors/MapDisplay.cpp" line="403"/>
         <source>The layer selection cannot be drawn. Details:</source>
         <translation>A camada selecionada não pode ser desenhada. Detalhes:</translation>
     </message>

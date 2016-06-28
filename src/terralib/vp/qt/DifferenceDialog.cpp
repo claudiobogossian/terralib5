@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/StringUtils.h"
 #include "../../core/translator/Translator.h"
@@ -638,7 +638,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string str = "Difference - ";
     str += e.what();
-    te::common::Logger::logDebug("vp", str.c_str());
+    TE_CORE_LOG_DEBUG("vp", str.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
 
     te::common::ProgressManager::getInstance().removeViewer(id);

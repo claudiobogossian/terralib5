@@ -26,7 +26,7 @@
 // TerraLib
 #include "Enums.h"
 #include "../core/lib/LibraryManager.h"
-#include "Logger.h"
+#include "../core/logger/Logger.h"
 #include "Module.h"
 #include "PlatformUtils.h"
 #include "TerraLib.h"
