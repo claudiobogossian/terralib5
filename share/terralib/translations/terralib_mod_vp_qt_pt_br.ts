@@ -9,87 +9,110 @@
         <translation>Operação de Agregação</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="50"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="69"/>
         <source>Agreggates objects of a layer based on specified attributes</source>
         <translation>Objetos agregados de uma camada com base em atributos especificados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="69"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="55"/>
         <source>Imagem</source>
         <translation>Imagem</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="83"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="81"/>
         <source>Input layer and the group attribute(s)</source>
         <translation>Camada de entrada e grupo de atributo(s)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="110"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="108"/>
         <source>Filter:</source>
         <translation>Filtragem:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="124"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="122"/>
         <source>Only Selected</source>
         <translation>Somente Selecionados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="131"/>
         <source>Calculate Statistics</source>
-        <translation>Cálculos Estatísticos</translation>
+        <translation type="vanished">Cálculos Estatísticos</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="164"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="129"/>
+        <source>Advanced settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="162"/>
         <source>Output</source>
         <translation>Saída</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="170"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="168"/>
         <source>Repository:</source>
         <translation>Repositório:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="190"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="188"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="203"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="201"/>
         <source>BD</source>
         <translation>BD</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="210"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="208"/>
         <source>Layer Name:</source>
         <translation>Nome da Camada:</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="229"/>
-        <source>Output Statistics</source>
-        <translation>Estatísticas de Saída</translation>
+        <source>Output object type</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="239"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="253"/>
+        <source>Single Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="280"/>
+        <source>Multi Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="295"/>
+        <source>Statistical summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Statistics</source>
+        <translation type="vanished">Estatísticas de Saída</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="305"/>
         <source>Select all:</source>
         <translation>Selecionar todas:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="246"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="312"/>
         <source>Reject all:</source>
         <translation>Rejeitar todas:</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="304"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="370"/>
         <source>Help</source>
         <translation>Ajuda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="324"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="390"/>
         <source>&amp;Ok</source>
         <translation>&amp;Ok</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="331"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="397"/>
         <source>Cancel</source>
         <translation>Cancela</translation>
     </message>
@@ -1100,16 +1123,178 @@
     </message>
 </context>
 <context>
+    <name>UnionDialogForm</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="14"/>
+        <source>Union Operation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="45"/>
+        <source>Computes a geometric union of the objects in two distinct layers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="64"/>
+        <source>Imagem</source>
+        <translation type="unfinished">Imagem</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="74"/>
+        <source>Input Layer</source>
+        <translation type="unfinished">Camada de Entrada</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="93"/>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="122"/>
+        <source>Only selected objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="103"/>
+        <source>Overlay Layer</source>
+        <translation type="unfinished">Sobreposição de Camada</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="136"/>
+        <source>Attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="141"/>
+        <source>Output object type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="204"/>
+        <source>Multi Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="233"/>
+        <source>Single Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="296"/>
+        <source>Output</source>
+        <translation type="unfinished">Saída</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="302"/>
+        <source>Repository:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="312"/>
+        <source>Layer Name:</source>
+        <translation type="unfinished">Nome da Camada:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="325"/>
+        <source>...</source>
+        <translation type="unfinished">...</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="341"/>
+        <source>BD</source>
+        <translation type="unfinished">BD</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="360"/>
+        <source>Help</source>
+        <translation type="unfinished">Ajuda</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="380"/>
+        <source>&amp;Ok</source>
+        <translation type="unfinished">&amp;Ok</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/UnionDialogForm.ui" line="387"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Cancela</translation>
+    </message>
+</context>
+<context>
     <name>te::vp::AggregationDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="594"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="559"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="595"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="560"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="580"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="588"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="596"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="614"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="622"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="647"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="696"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="736"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="745"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="759"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="768"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="804"/>
+        <source>Dissolve</source>
+        <translation type="unfinished">Dissolver</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="580"/>
+        <source>Select an input layer.</source>
+        <translation type="unfinished">Selecione uma camada de entrada.</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="588"/>
+        <source>The selected input data source can not be accessed.</source>
+        <translation type="unfinished">A fonte de dados de entrada selecionadoa não pode ser acessada.</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="596"/>
+        <source>Select at least one grouping attribute.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="614"/>
+        <source>Define a repository for the result.</source>
+        <translation type="unfinished">Definir um repositório para o resultado.</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="622"/>
+        <source>Define a name for the resulting layer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="647"/>
+        <source>Problem to get geometry property of input layer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="696"/>
+        <source>Output file already exists. Remove it and try again. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="736"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="804"/>
+        <source>Error: could not generate the dissolve.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="745"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="759"/>
+        <source>The output data source can not be accessed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="768"/>
+        <source>Dataset already exists. Remove it or select a new name and try again.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1180,12 +1365,12 @@
 <context>
     <name>te::vp::IntersectionDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="657"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="652"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="658"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="653"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -1206,72 +1391,72 @@
 <context>
     <name>te::vp::MergeDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="189"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="187"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="190"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="188"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished">Shapefile (*.shp *.SHP);;</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="211"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="218"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="225"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="234"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="301"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="317"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="328"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="333"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="398"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="404"/>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="582"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="209"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="216"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="223"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="232"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="299"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="315"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="326"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="331"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="396"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="401"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="579"/>
         <source>Merge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="211"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="209"/>
         <source>It is necessary at least two layer to operat!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="218"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="216"/>
         <source>Select a repository for the resulting layer!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="225"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="223"/>
         <source>Define a name for the resulting layer!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="234"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="232"/>
         <source>All layers must have SRID!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="301"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="299"/>
         <source>Output file already exists. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="317"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="315"/>
         <source>There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="328"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="326"/>
         <source>The selected output datasource can not be accessed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="333"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="331"/>
         <source>Dataset already exists. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="582"/>
+        <location filename="../../../src/terralib/vp/qt/MergeDialog.cpp" line="579"/>
         <source>To use first layer as output (update), it must be a DataSet Layer!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1279,60 +1464,60 @@
 <context>
     <name>te::vp::MultipartToSinglepartDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="158"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="156"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="159"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="157"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="178"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="186"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="197"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="205"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="213"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="219"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="237"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="253"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="270"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="300"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="306"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="323"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="340"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="176"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="184"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="195"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="203"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="211"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="217"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="235"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="251"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="268"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="298"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="304"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="321"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="338"/>
         <source>Multipart To Singlepart</source>
         <translation>Multi parte para Única parte</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="178"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="176"/>
         <source>Select an input layer.</source>
         <translation>Selecione uma camada de entrada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="186"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="184"/>
         <source>Can not execute this operation on this type of layer.</source>
         <translation>Não é possível executar esta operação neste tipo de camada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="197"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="195"/>
         <source>None selected object!</source>
         <translation>Nenhum objeto selecionado !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="205"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="203"/>
         <source>The selected input data source can not be accessed.</source>
         <translation>A fonte de dados de entrada selecionadoa não pode ser acessada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="213"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="211"/>
         <source>Define a repository for the result.</source>
         <translation>Definir um repositório para o resultado.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="270"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="323"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="268"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="321"/>
         <source>Error: could not operate.</source>
         <translation>Erro: não pode operar.</translation>
     </message>
@@ -1348,6 +1533,77 @@
         <location filename="../../../src/terralib/vp/qt/PolygonToLineDialog.cpp" line="177"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
+    </message>
+</context>
+<context>
+    <name>te::vp::UnionDialog</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="533"/>
+        <source>Save as...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="534"/>
+        <source>Shapefile (*.shp *.SHP);;</source>
+        <translation type="unfinished">Shapefile (*.shp *.SHP);;</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="553"/>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="560"/>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="567"/>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="576"/>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="641"/>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="657"/>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="666"/>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="671"/>
+        <source>Merge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="553"/>
+        <source>It is necessary at least two layer to operat!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="560"/>
+        <source>Select a repository for the resulting layer!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="567"/>
+        <source>Define a name for the resulting layer!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="576"/>
+        <source>All layers must have SRID!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="641"/>
+        <source>Output file already exists. Remove it or select a new name and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="657"/>
+        <source>There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="666"/>
+        <source>The selected output datasource can not be accessed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="671"/>
+        <source>Dataset already exists. Remove it or select a new name and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="714"/>
+        <location filename="../../../src/terralib/vp/qt/UnionDialog.cpp" line="720"/>
+        <source>Union</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
