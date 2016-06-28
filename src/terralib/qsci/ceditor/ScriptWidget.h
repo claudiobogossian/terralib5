@@ -105,7 +105,7 @@ namespace te
 
           \return Returns true or false.
          */
-        bool hasChanged() const { return m_hasChanged; }
+        bool hasChanged() const;
 
       public slots:
 
@@ -140,6 +140,10 @@ namespace te
         /*! \brief Sets to true the textChanged flag. */
         void setTextChanged();
 
+        signals:
+
+        void codeChanged();
+
       protected:
 
         /*!
@@ -152,12 +156,14 @@ namespace te
         /*! \brief setLexer. */
         void setLexer();
 
+        void setUnsaved(bool unsaved);
+
       private:
         
         QsciScintilla* m_txtEditor;   //!< The editor with grammatical highlighted marks.
         QsciLexer* m_lexer;           //!< The text editor owns the lexer.
         QString m_fileName;           //!< File name.
-        bool m_hasChanged;            //!< Code has changed?
+        bool m_unsaved;            //!< Code has changed?
     };
   
   } // end namespace ce

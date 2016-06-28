@@ -26,19 +26,50 @@ TerraLib Team at <terralib-team@terralib.org>.
 \author Frederico Augusto Bedê
 */
 
-// TerraLib
 #include "MainWindow.h"
 
+// TerraLib
+#include <terralib/common/TerraLib.h>
 #include <terralib/core/utils/Platform.h>
+#include <terralib/plugin/PluginInfo.h>
+#include <terralib/plugin/PluginManager.h>
+#include <terralib/plugin/Utils.h>
 
 // Qt
 #include <QApplication>
 #include <QIcon>
 
+void LoadModule(std::string m)
+{
+  std::string mod_name = "share/terralib/plugins/" + m + ".teplg";
+  std::string plgManifest = te::core::FindInTerraLibPath(mod_name);
+  std::unique_ptr<te::plugin::PluginInfo> i(te::plugin::GetInstalledPlugin(plgManifest));
+  te::plugin::PluginManager::getInstance().load(*i.get());
+}
+
+void Initialize()
+{
+  TerraLib::getInstance().initialize();
+
+  LoadModule("te.da.gdal");
+  LoadModule("te.da.ogr");
+  LoadModule("te.da.pgis");
+  LoadModule("te.vm.lua");
+}
+
+void Finalize()
+{
+  te::plugin::PluginManager::getInstance().shutdownAll();
+  te::plugin::PluginManager::getInstance().unloadAll();
+
+  TerraLib::getInstance().finalize();
+}
 
 // Main program
 int main(int argc, char *argv[])
 {
+  Initialize();
+
   std::string iconThemePath = te::core::FindInTerraLibPath("share/terralib/icons");
 
   QStringList pts = QIcon::themeSearchPaths();
@@ -55,5 +86,9 @@ int main(int argc, char *argv[])
 
   win.showMaximized();
 
-  return app.exec();
+  int r = app.exec();
+
+  Finalize();
+
+  return r;
 }

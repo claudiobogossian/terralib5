@@ -21,11 +21,13 @@
 #  Description: Build the Unit Test for the WS OGC Web Coverage Service.
 #
 #  Author: Vinicius Campanha <vinicius.campanha@funcate.org.br>
+#  Author: Emerson Moraes <emerson.moraes@funcate.org.br>
 #
 
 include_directories(${Boost_INCLUDE_DIR}
-                    ${CPPUNIT_INCLUDE_DIR}
                     ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
+
+add_definitions(-DBOOST_TEST_DYN_LINK)
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/ogc-wcs/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/ogc-wcs/*.h)
@@ -34,11 +36,13 @@ add_executable(terralib_unittest_ws_ogc_wcs ${TERRALIB_SRC_FILES} ${TERRALIB_HDR
 
 target_link_libraries(terralib_unittest_ws_ogc_wcs terralib_mod_ws_ogc_wcs_client
                                                     terralib_mod_ws_ogc_wcs_dataaccess
+                                                    terralib_mod_qt_apf
+                                                    terralib_mod_qt_widgets
                                                     terralib_mod_plugin
-                                                    ${CPPUNIT_LIBRARY})
+                                                    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/ogc-wcs COMPONENT devel)
 
-
-
+add_test(NAME terralib_unittest_ws_ogc_wcs COMMAND terralib_unittest_ws_ogc_wcs
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

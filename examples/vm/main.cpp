@@ -36,17 +36,33 @@
 #include <terralib/vm/core/VirtualMachine.h>
 #include <terralib/vm/core/VirtualMachineManager.h>
 
-int main(int argc, char *argv[])
+#include <memory>
+
+
+void LoadModule(std::string m)
+{
+  std::string mod_name = "share/terralib/plugins/" + m + ".teplg";
+  std::string plgManifest = te::core::FindInTerraLibPath(mod_name);
+
+  std::unique_ptr<te::plugin::PluginInfo> i(te::plugin::GetInstalledPlugin(plgManifest));
+
+  te::plugin::PluginManager::getInstance().load(*i.get());
+}
+
+void LoadModules()
 {
   TerraLib::getInstance().initialize();
 
-  std::string plgManifest = te::core::FindInTerraLibPath("share/terralib/plugins/te.vm.lua.teplg");
+  LoadModule("te.da.gdal");
+  LoadModule("te.da.ogr");
+  LoadModule("te.da.pgis");
+  LoadModule("te.vm.lua");
+}
 
-  te::plugin::PluginInfo* info;
 
-  info = te::plugin::GetInstalledPlugin(plgManifest);
-
-  te::plugin::PluginManager::getInstance().load(*info);
+int main(int argc, char *argv[])
+{
+  LoadModules();
 
   std::string luaScript = te::core::FindInTerraLibPath("share/terralib/examples/lua/geometry.lua");
 
@@ -55,8 +71,6 @@ int main(int argc, char *argv[])
   vm->build(luaScript);
 
   vm->execute();
-
-  delete info;
 
   te::plugin::PluginManager::getInstance().unloadAll();
 

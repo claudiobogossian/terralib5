@@ -2,14 +2,14 @@
 -- import TerraLib module and do some initialization --
 -------------------------------------------------------
 require ( "terralib_mod_binding_lua" )
-
+ 
 ---------------------------
--- using Geometry module --
+-- using Geometry module --       
 ---------------------------
 
-t = terralib_mod_binding_lua.TeSingleton.getInstance()
+--t = terralib_mod_binding_lua.TeSingleton.getInstance()
 
-t:initialize()
+--t:initialize() 
 
 pt = terralib_mod_binding_lua.te.gm.Point(74.2, 23.5, 4326)
 

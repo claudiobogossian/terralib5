@@ -16,7 +16,7 @@
   You should have received a copy of the GNU Lesser General Public License
   along with TerraLib. See COPYING. If not, write to
   TerraLib Team at <terralib-team@terralib.org>.
- */
+  */
 
 /*!
   \file terralib/vm/lua/VirtualMachine.cpp
@@ -25,7 +25,7 @@
 
   \author Frederico Augusto Bedê
   \author Gilberto Ribeiro de Queiroz
-*/
+  */
 
 // TerraLib
 #include "VirtualMachine.h"
@@ -33,7 +33,7 @@
 #include "../core/Exception.h"
 
 // STL
-#include <cassert>
+#include <iostream>
 
 // Boost
 #include <boost/format.hpp>
@@ -41,26 +41,67 @@
 // Lua
 #include <lua.hpp>
 
+//extern "C"
+//{
+//#include <lua.h>
+//#include <lualib.h>
+//#include <lauxlib.h>
+//}
+//
+static int l_print(lua_State* L)
+{
+  int nargs = lua_gettop(L);
+
+  for(int i = 1; i <= nargs; i++)
+  {
+    int t = lua_type(L, i);
+    switch(t)
+    {
+      case LUA_TSTRING: { /* strings */
+                          std::cout << lua_tostring(L, i);
+                          break;
+      }
+      case LUA_TBOOLEAN: { /* booleans */
+                           std::cout << (lua_toboolean(L, i) ? "true" : "false");
+                           break;
+      }
+      case LUA_TNUMBER: { /* numbers */
+                          std::cout << lua_tonumber(L, i);
+                          break;
+      }
+      default: { /* other values */
+                 std::cout << lua_typename(L, t);
+                 break;
+      }
+    }
+    if(i != nargs)
+    {
+      std::cout << "\t";
+    }
+  }
+
+  std::cout << std::endl;
+
+  return 0;
+}
+
 struct te::vm::lua::VirtualMachine::Impl
 {
   lua_State* state;   //!< The Lua environment (or state).
-  
+
   Impl()
     : state(nullptr)
   {
-// creates a new Lua environment (or state) without any pre-defined functions
+    // creates a new Lua environment (or state) without any pre-defined functions
     state = luaL_newstate();
 
     if(state == nullptr)
       throw te::vm::core::CreationException() << te::ErrorDescription(TE_TR("Could not start a new Lua environment: not enough memory!"));
 
-// opens all standard libraries
+    // opens all standard libraries
     luaL_openlibs(state);
-
-// TODO: register TerraLib binding
-    //te::lua::i::RegisterLuaBinding(m_state);
   }
-  
+
   ~Impl()
   {
     lua_close(state);
@@ -68,7 +109,7 @@ struct te::vm::lua::VirtualMachine::Impl
 };
 
 te::vm::lua::VirtualMachine::VirtualMachine()
-  : pimpl_(nullptr)
+: pimpl_(nullptr)
 {
   pimpl_ = new Impl;
 }
@@ -88,7 +129,7 @@ std::string
 te::vm::lua::VirtualMachine::getTitle() const
 {
   std::string msg(TE_TR("TerraLib Virtual Machine for the Lua Programming Language"));
-  
+
   return msg;
 }
 
@@ -96,8 +137,8 @@ std::string
 te::vm::lua::VirtualMachine::getDescription() const
 {
   std::string msg(TE_TR("This Virtual Machine allows applications to execute lua scripts."
-                        "\nAll the TerraLib API will be available for TerraLib programmers "
-                        "in the Lua environment"));
+    "\nAll the TerraLib API will be available for TerraLib programmers "
+    "in the Lua environment"));
 
   return msg;
 }
@@ -105,30 +146,33 @@ te::vm::lua::VirtualMachine::getDescription() const
 void
 te::vm::lua::VirtualMachine::build(const std::string& file)
 {
-// TODO: checar se o arquivo existe!
-  
-// just load the lua file as a chunk: doesn't execute it!
+  // TODO: checar se o arquivo existe!
+
+  // just load the lua file as a chunk: doesn't execute it!
   int result = luaL_loadfile(pimpl_->state, file.c_str());
+
+  lua_pushcfunction(pimpl_->state, l_print);
+  lua_setglobal(pimpl_->state, "print");
 
   if(result != LUA_OK)
   {
     const char* lerrmsg = lua_tostring(pimpl_->state, -1);
-    
+
     boost::format errmsg(TE_TR("Error parsing Lua script '%1%': %2%."));
-    
+
     throw te::vm::core::BuildException() << te::ErrorDescription((errmsg % file % lerrmsg).str());
   }
 }
 
 void te::vm::lua::VirtualMachine::execute()
 {
-// run the loaded chunk
+  // run the loaded chunk
   int result = lua_pcall(pimpl_->state, 0, 0, 0);
 
   if(result != LUA_OK)
   {
     const char* lerrmsg = lua_tostring(pimpl_->state, -1);
-    
+
     boost::format errmsg(TE_TR("Error executing Lua script: %1%."));
 
     throw te::vm::core::RunException() << te::ErrorDescription((errmsg % lerrmsg).str());
