@@ -125,7 +125,25 @@ void te::mnt::MNTGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
     if (it->get())
     {
       if (it->get()->isValid())
+      {
+        std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+        m_inputType = getMNTType(dsType.get());
+        if (m_inputType == GRID)
+        {
+          std::auto_ptr<te::da::DataSet> inds = it->get()->getData();
+          std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
+          if (inds->getRaster(rpos)->getNumberOfBands() > 1)
+          {
+            inds.release();
+            dsType.release();
+            ++it;
+            continue;
+          }
+          inds.release();
+        }
+        dsType.release();
         m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+      }
     }
     ++it;
   }
@@ -229,11 +247,25 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           std::vector<te::dt::Property*> props = dsType->getProperties();
           for (std::size_t i = 0; i < props.size(); ++i)
           {
-            if (boost::iequals(props[i]->getName(), "type1"))
+            switch (props[i]->getType())
             {
-              hastype = true;
-              break;
+            case te::dt::FLOAT_TYPE:
+            case te::dt::DOUBLE_TYPE:
+            case te::dt::INT16_TYPE:
+            case te::dt::INT32_TYPE:
+            case te::dt::INT64_TYPE:
+            case te::dt::UINT16_TYPE:
+            case te::dt::UINT32_TYPE:
+            case te::dt::UINT64_TYPE:
+            case te::dt::NUMERIC_TYPE:
+              if (boost::iequals(props[i]->getName(), "type1"))
+              {
+                hastype = true;
+                break;
+              }
             }
+            if (hastype)
+              break;
           }
           if (hastype)
           {
@@ -600,6 +632,10 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
         std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
         std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
         std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
+        if (inputRst->getNumberOfBands() > 1)
+        {
+          throw te::common::Exception(TE_TR("Layer isn't Regular Grid."));
+        }
 
         std::vector< std::complex<double> > dummy;
         if (m_ui->m_dummycheckBox->isChecked())

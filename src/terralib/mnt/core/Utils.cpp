@@ -1805,7 +1805,9 @@ te::mnt::mntType te::mnt::getMNTType(const te::da::DataSetType* dt)
 
   }
   if (dt->hasRaster()) //GRID
+  {
     return GRID;
+  }
 
   return OTHER;
 
