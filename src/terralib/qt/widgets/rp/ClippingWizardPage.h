@@ -115,6 +115,10 @@ namespace te
 
           void onEnvelopeAcquired(te::gm::Envelope env);
 
+          void onEnvelopeExtentAcquired();
+
+          void onEnvelopeDimensionAcquired();
+
           void drawGeom();
 
         protected:
