@@ -112,7 +112,7 @@ namespace te
 
         te::da::ObjectIdSet* m_oidSet;
 
-        void splitPolygon();
+        void splitPolygon(te::gm::Geometry* geom);
 
         void draw();
 

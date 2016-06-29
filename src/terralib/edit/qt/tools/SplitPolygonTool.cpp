@@ -93,14 +93,19 @@ bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     m_isFinished = true;
 
-    splitPolygon();
+    m_oidSet = new te::da::ObjectIdSet();
+    std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
+    std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
+
+    while(ds->moveNext())
+      splitPolygon(ds->getGeometry(gpos).get());
 
     draw();
 
     te::edit::CreateLineTool::clear();
 
     std::string msg("Split done!\n\nSelected polygons : " + QString::number(m_layer->getSelected()->size()).toStdString() + " \n");
-                msg += "Polygons split successfully : " + QString::number(m_outputPolygons.size()).toStdString() + " \n";
+    msg += "Polygons split successfully : " + QString::number(m_oidSet->size()).toStdString() + " \n";
     QMessageBox::information(m_display, tr("Polygon Split"), tr(msg.c_str()));
 
     return true;
@@ -112,16 +117,9 @@ bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
   }
 }
 
-void te::edit::SplitPolygonTool::splitPolygon()
+void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
 {
-  std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
-
-  std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
-
-  if (!ds->moveNext())
-    return;
-
-  m_feature = te::edit::PickFeature(m_layer, *ds->getGeometry(gpos)->getMBR(), m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+  m_feature = te::edit::PickFeature(m_layer, *geom->getMBR(), m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
   if (m_feature == 0)
   {
@@ -145,10 +143,7 @@ void te::edit::SplitPolygonTool::splitPolygon()
 
   RepositoryManager& repository = RepositoryManager::getInstance();
 
-  m_oidSet = new te::da::ObjectIdSet();
-
   std::size_t i = 0;
-
   while (i < m_outputPolygons.size())
   {
     if (m_outputPolygons.at(i)->getSRID() != m_feature->getGeometry()->getSRID())
@@ -157,7 +152,6 @@ void te::edit::SplitPolygonTool::splitPolygon()
     if (m_outputPolygons.at(i)->coveredBy(m_feature->getGeometry()->buffer(0.001)))
     {
       m_outputPolygons.at(i)->setSRID(m_layer->getSRID());
-
       if (i > 0)
       {
         Feature* f = new Feature();
@@ -174,7 +168,6 @@ void te::edit::SplitPolygonTool::splitPolygon()
       m_outputPolygons.erase(m_outputPolygons.begin() + i);
       i--;
     }
-
     i++;
   }
 
