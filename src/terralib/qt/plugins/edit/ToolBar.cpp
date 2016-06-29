@@ -909,10 +909,7 @@ void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::SplitPolygonTool(e.m_display->getDisplay(), layer, 0), e.m_display);
-
-  return;
-
+  setCurrentTool(new te::edit::SplitPolygonTool(e.m_display->getDisplay(), layer, Qt::LeftButton, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onResetVisualizationToolActivated(bool /*checked*/)

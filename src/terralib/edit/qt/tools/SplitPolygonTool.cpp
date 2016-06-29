@@ -47,10 +47,11 @@
 #include <cassert>
 #include <memory>
 
-te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, Qt::MouseButton sideToClose, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
   m_outputPolygons(0),
-  m_oidSet(0)
+  m_oidSet(0),
+  m_sideToClose(sideToClose)
 {
 }
 
@@ -85,28 +86,13 @@ bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   try
   {
+    if (m_sideToClose != Qt::LeftButton)
+      return false;
+
     if (e->button() != Qt::LeftButton)
       return false;
 
-    if (m_coords.size() < 2) // Can not stop yet...
-      return false;
-
-    m_isFinished = true;
-
-    m_oidSet = new te::da::ObjectIdSet();
-    std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
-    std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
-
-    while(ds->moveNext())
-      splitPolygon(ds->getGeometry(gpos).get());
-
-    draw();
-
-    te::edit::CreateLineTool::clear();
-
-    std::string msg("Split done!\n\nSelected polygons : " + QString::number(m_layer->getSelected()->size()).toStdString() + " \n");
-    msg += "Polygons split successfully : " + QString::number(m_oidSet->size()).toStdString() + " \n";
-    QMessageBox::information(m_display, tr("Polygon Split"), tr(msg.c_str()));
+    startSplit();
 
     return true;
   }
@@ -115,6 +101,51 @@ bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
     QMessageBox::critical(m_display, tr("Error"), QString(tr("Could not split.") + " %1.").arg(e.what()));
     return false;
   }
+}
+
+bool te::edit::SplitPolygonTool::mouseReleaseEvent(QMouseEvent* e)
+{
+  try
+  {
+    if (m_sideToClose != Qt::RightButton)
+      return false;
+
+    if (e->button() != Qt::RightButton)
+      return false;
+
+    startSplit();
+
+    return true;
+  }
+  catch (std::exception& e)
+  {
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("Could not split.") + " %1.").arg(e.what()));
+    return false;
+  }
+}
+
+void te::edit::SplitPolygonTool::startSplit()
+{
+  if (m_coords.size() < 2) // Can not stop yet...
+    return;
+
+  m_isFinished = true;
+
+  m_oidSet = new te::da::ObjectIdSet();
+  std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
+  std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
+
+  while (ds->moveNext())
+    splitPolygon(ds->getGeometry(gpos).get());
+
+  draw();
+
+  te::edit::CreateLineTool::clear();
+
+  std::string msg("Split done!\n\nSelected polygons : " + QString::number(m_layer->getSelected()->size()).toStdString() + " \n");
+  msg += "Polygons split successfully : " + QString::number(m_oidSet->size()).toStdString() + " \n";
+
+  QMessageBox::information(m_display, tr("Polygon Split"), tr(msg.c_str()));
 }
 
 void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
