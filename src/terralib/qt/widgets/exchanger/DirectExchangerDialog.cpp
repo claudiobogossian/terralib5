@@ -367,6 +367,12 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
         for (size_t t = 0; t < props.size(); ++t)
         {
+          std::vector<std::string> tokens;
+          te::common::Tokenize(props[t]->getName(), tokens, ".");
+
+          size_t tkSize = tokens.size();
+          props[t]->setName(tokens[tkSize - 1]);
+
           te::dt::SimpleProperty* p = dynamic_cast<te::dt::SimpleProperty*>(props[t]);
 
           if (p)
