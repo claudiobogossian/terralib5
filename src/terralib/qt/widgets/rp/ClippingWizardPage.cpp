@@ -261,7 +261,14 @@ void te::qt::widgets::ClippingWizardPage::getLayerClipping(
     
     while(ds->moveNext())
     {
-      geomColl->add(static_cast<te::gm::Geometry*>(ds->getGeometry(name)->clone()));
+      std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(name);
+
+      if (geom.get())
+      {
+        te::dt::AbstractData* adCloned = geom->clone();
+
+        geomColl->add(static_cast<te::gm::Geometry*>(adCloned));
+      }
     }
   }
   if(m_ui->m_selectedGeomRadioButton->isChecked())
