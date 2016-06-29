@@ -388,7 +388,10 @@ bool te::attributefill::VectorToVectorMemory::run()
   }
 
   if (!outDs->isEmpty())
+  {
     save(outDs, outDst);
+    m_outDsrc->close();
+  }
 
   if(rtree)
     delete rtree;

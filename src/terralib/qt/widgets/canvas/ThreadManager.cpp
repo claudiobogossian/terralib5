@@ -9,8 +9,8 @@
 te::qt::widgets::ThreadManager::ThreadManager(const std::vector<QRunnable*>& threads, int interval):
 QObject(),
 m_threads(threads),
-m_interval(interval),
-m_pool(0)
+m_pool(0),
+m_interval(interval)
 {
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), SIGNAL(showFeedback()));
