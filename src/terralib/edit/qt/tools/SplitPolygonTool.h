@@ -108,9 +108,13 @@ namespace te
         void resetVisualizationTool();
 
         //@}
+
+      signals:
+
+        void splitFinished(te::da::ObjectIdSet& objIdResultingPolygons);
+
       private:
 
-        std::vector<te::gm::Polygon*> m_outputPolygons;
         te::da::ObjectIdSet* m_oidSet;
         Qt::MouseButton m_sideToClose;
 

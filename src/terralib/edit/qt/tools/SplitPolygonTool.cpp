@@ -49,7 +49,6 @@
 
 te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, Qt::MouseButton sideToClose, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-  m_outputPolygons(0),
   m_oidSet(0),
   m_sideToClose(sideToClose)
 {
@@ -58,9 +57,6 @@ te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* displa
 te::edit::SplitPolygonTool::~SplitPolygonTool()
 {
   delete m_oidSet;
-
-  te::common::FreeContents(m_outputPolygons);
-  m_outputPolygons.clear();
 }
 
 bool te::edit::SplitPolygonTool::mousePressEvent(QMouseEvent* e)
@@ -86,10 +82,7 @@ bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   try
   {
-    if (m_sideToClose != Qt::LeftButton)
-      return false;
-
-    if (e->button() != Qt::LeftButton)
+    if (m_sideToClose != Qt::LeftButton || Qt::LeftButton != e->button())
       return false;
 
     startSplit();
@@ -107,10 +100,7 @@ bool te::edit::SplitPolygonTool::mouseReleaseEvent(QMouseEvent* e)
 {
   try
   {
-    if (m_sideToClose != Qt::RightButton)
-      return false;
-
-    if (e->button() != Qt::RightButton)
+    if (m_sideToClose != Qt::RightButton || Qt::RightButton != e->button())
       return false;
 
     startSplit();
@@ -138,14 +128,14 @@ void te::edit::SplitPolygonTool::startSplit()
   while (ds->moveNext())
     splitPolygon(ds->getGeometry(gpos).get());
 
+  if(m_oidSet->size() == 0)
+    return;
+
   draw();
 
   te::edit::CreateLineTool::clear();
 
-  std::string msg("Split done!\n\nSelected polygons : " + QString::number(m_layer->getSelected()->size()).toStdString() + " \n");
-  msg += "Polygons split successfully : " + QString::number(m_oidSet->size()).toStdString() + " \n";
-
-  QMessageBox::information(m_display, tr("Polygon Split"), tr(msg.c_str()));
+  emit splitFinished(*m_oidSet);
 }
 
 void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
@@ -164,49 +154,49 @@ void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
   std::auto_ptr<te::gm::Geometry> blade_in;
   blade_in.reset(te::edit::CreateLineTool::buildLine());
 
-  if (blade_in->getSRID() != feature_bounds->getSRID())
-    blade_in->setSRID(feature_bounds->getSRID());
+  feature_bounds->setSRID(m_feature->getGeometry()->getSRID());
+  blade_in->setSRID(m_feature->getGeometry()->getSRID());
 
   std::auto_ptr<te::gm::Geometry> vgeoms;
   vgeoms.reset(feature_bounds->Union(blade_in.get()));
 
-  te::gm::Polygonizer(vgeoms.get(), m_outputPolygons);
+  std::vector<te::gm::Polygon*> outputPolygons;
+  te::gm::Polygonizer(vgeoms.get(), outputPolygons);
 
   RepositoryManager& repository = RepositoryManager::getInstance();
 
   std::size_t i = 0;
-  while (i < m_outputPolygons.size())
+  while (i < outputPolygons.size())
   {
-    if (m_outputPolygons.at(i)->getSRID() != m_feature->getGeometry()->getSRID())
-      m_outputPolygons.at(i)->setSRID(m_feature->getGeometry()->getSRID());
+    if (outputPolygons.at(i)->getSRID() != m_feature->getGeometry()->getSRID())
+      outputPolygons.at(i)->setSRID(m_feature->getGeometry()->getSRID());
 
-    if (m_outputPolygons.at(i)->coveredBy(m_feature->getGeometry()->buffer(0.001)))
+    if (!outputPolygons.at(i)->equals(m_feature->getGeometry()) &&
+         outputPolygons.at(i)->coveredBy(m_feature->getGeometry()->buffer(0.00001)))
     {
-      m_outputPolygons.at(i)->setSRID(m_layer->getSRID());
       if (i > 0)
       {
         Feature* f = new Feature();
-        f->setGeometry(m_outputPolygons.at(i));
+        f->setGeometry(outputPolygons.at(i));
         f->setOperation(te::edit::GEOMETRY_CREATE);
+        repository.addFeature(m_layer->getId(), f->clone());
 
         m_oidSet->add(f->getId());
-
-        repository.addFeature(m_layer->getId(), f->clone());
       }
     }
     else
     { 
-      m_outputPolygons.erase(m_outputPolygons.begin() + i);
+      outputPolygons.erase(outputPolygons.begin() + i);
       i--;
     }
     i++;
   }
 
-  if (m_outputPolygons.size())
+  if (outputPolygons.size())
   {
-    if (m_outputPolygons.at(0)->coveredBy(m_feature->getGeometry()->buffer(0.001)))
+    if (outputPolygons.at(0)->coveredBy(m_feature->getGeometry()->buffer(0.00001)))
     {
-      m_feature->setGeometry(m_outputPolygons.at(0));
+      m_feature->setGeometry(outputPolygons.at(0));
       repository.addFeature(m_layer->getId(), m_feature->clone());
 
       m_oidSet->add(m_feature->getId());
@@ -240,16 +230,20 @@ void te::edit::SplitPolygonTool::draw()
 
 void te::edit::SplitPolygonTool::resetVisualizationTool()
 {
-  // Clear the repository
   te::edit::Repository* repo = te::edit::RepositoryManager::getInstance().getRepository(m_layer->getId());
 
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
-  for (it = m_oidSet->begin(); it != m_oidSet->end(); ++it)
-    repo->remove((*it));
+  if (m_oidSet)
+  {
+    std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+    for (it = m_oidSet->begin(); it != m_oidSet->end(); ++it)
+    {
+      if (repo->hasIdentifier(*it))
+        repo->remove((*it));
+    }
+  }
+
+  te::edit::CreateLineTool::clear();
 
   m_feature = 0;
   m_oidSet = 0;
-
-  te::common::FreeContents(m_outputPolygons);
-  m_outputPolygons.clear();
 }
