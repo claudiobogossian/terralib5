@@ -26,6 +26,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 //terralib
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
+#include "../../core/logger/Logger.h"
 #include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -126,11 +127,12 @@ void te::mnt::MNTGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
     {
       if (it->get()->isValid())
       {
-        std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+        te::map::AbstractLayerPtr layer = it->get();
+        std::auto_ptr<te::da::DataSetType> dsType(layer->getSchema());
         m_inputType = getMNTType(dsType.get());
         if (m_inputType == GRID)
         {
-          std::auto_ptr<te::da::DataSet> inds = it->get()->getData();
+          std::auto_ptr<te::da::DataSet> inds(layer->getData());
           std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
           if (inds->getRaster(rpos)->getNumberOfBands() > 1)
           {
@@ -142,7 +144,7 @@ void te::mnt::MNTGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
           inds.release();
         }
         dsType.release();
-        m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+        m_ui->m_layersComboBox->addItem(QString(layer->getTitle().c_str()), QVariant(layer->getId().c_str()));
       }
     }
     ++it;
@@ -166,6 +168,7 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+
   while (it != m_layers.end())
   {
     if (layerID == it->get()->getId().c_str())
@@ -174,14 +177,12 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 
       setSRID(m_inputLayer->getSRID());
 
-      std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
+      std::auto_ptr<te::da::DataSetType> dsType (m_inputLayer->getSchema());
 
       m_inputType = getMNTType(dsType.get());
 
       if (m_inputType != GRID)
       {
-        std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-
         m_ui->m_inputstackedWidget->setCurrentIndex(1);
 
         if (m_inputType == SAMPLE || m_inputType == ISOLINE)
@@ -202,10 +203,10 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 
           m_inSetName = m_inputLayer->getDataSetName();
 
-          std::auto_ptr<te::da::DataSet> inDset = m_inDataSource->getDataSet(m_inSetName);
+          std::auto_ptr<te::da::DataSet> inDset(m_inDataSource->getDataSet(m_inSetName));
           std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
           inDset->moveFirst();
-          std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+          std::auto_ptr<te::gm::Geometry> gin(inDset->getGeometry(geo_pos));
           if (gin->is3D())
           {
             m_ui->m_ZcomboBox->hide();
@@ -221,60 +222,39 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           {
             switch (props[i]->getType())
             {
-            case te::dt::FLOAT_TYPE:
-            case te::dt::DOUBLE_TYPE:
-            case te::dt::INT16_TYPE:
-            case te::dt::INT32_TYPE:
-            case te::dt::INT64_TYPE:
-            case te::dt::UINT16_TYPE:
-            case te::dt::UINT32_TYPE:
-            case te::dt::UINT64_TYPE:
-            case te::dt::NUMERIC_TYPE:
-              m_ui->m_ZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
-              break;
+              case te::dt::FLOAT_TYPE:
+              case te::dt::DOUBLE_TYPE:
+              case te::dt::INT16_TYPE:
+              case te::dt::INT32_TYPE:
+              case te::dt::INT64_TYPE:
+              case te::dt::UINT16_TYPE:
+              case te::dt::UINT32_TYPE:
+              case te::dt::UINT64_TYPE:
+              case te::dt::NUMERIC_TYPE:
+                m_ui->m_ZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
+                break;
+              default:
+                break;
             }
           }
 
         }
         if (m_inputType == TIN)
         {
-          std::auto_ptr<te::da::DataSet> dataquery;
           te::da::DataSourcePtr ds = te::da::GetDataSource(m_inputLayer->getDataSourceId());
           m_ui->m_interpolatorComboBox->addItem("Linear");
           m_ui->m_interpolatorComboBox->addItem("Quintic without breaklines");
 
-          bool hastype = false;
-          std::vector<te::dt::Property*> props = dsType->getProperties();
-          for (std::size_t i = 0; i < props.size(); ++i)
-          {
-            switch (props[i]->getType())
-            {
-            case te::dt::FLOAT_TYPE:
-            case te::dt::DOUBLE_TYPE:
-            case te::dt::INT16_TYPE:
-            case te::dt::INT32_TYPE:
-            case te::dt::INT64_TYPE:
-            case te::dt::UINT16_TYPE:
-            case te::dt::UINT32_TYPE:
-            case te::dt::UINT64_TYPE:
-            case te::dt::NUMERIC_TYPE:
-              if (boost::iequals(props[i]->getName(), "type1"))
-              {
-                hastype = true;
-                break;
-              }
-            }
-            if (hastype)
-              break;
-          }
-          if (hastype)
-          {
+          std::string tname("type1");
+         if (ds->propertyExists(m_inputLayer->getDataSetName(), tname))
+         {
             std::string qry("Select type1, type2, type3 from ");
             qry += m_inputLayer->getTitle();
             qry += " where (type1 > 3 and type1 < 7) or (type2 > 3 and type2 < 7) or (type3 > 3 and type3 < 7)";
-            dataquery = ds->query(qry);
+            std::auto_ptr<te::da::DataSet> dataquery(ds->query(qry));
             if (!dataquery->isEmpty())
               m_ui->m_interpolatorComboBox->addItem("Quintic with breaklines");
+            dataquery.release();
           }
         }
       }
@@ -314,44 +294,48 @@ void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
 
   switch (m_inputType)
   {
-  case SAMPLE:
-  {
-    m_ui->m_interparamStackedWidget->show();
-    double raio = std::sqrt(m_inputLayer->getExtent().getWidth() * m_inputLayer->getExtent().getWidth() +
-      m_inputLayer->getExtent().getHeight() * m_inputLayer->getExtent().getHeight()) / 5.;
-    m_ui->m_radiusLineEdit->setText(QString::number(raio, 'f', 4));
-
-    switch (index)
+    case SAMPLE:
     {
-    case 0: //Weighted Average/Z Value/Quadrant
-    case 1: //Weighted Average/Quadrant
-    case 2: //Weighted Average
-      m_ui->m_interparamStackedWidget->setCurrentIndex(0);
-      m_ui->m_powerLabel->show();
-      m_ui->m_powerComboBox->show();
-      break;
-    case 3: //Simple Average
-    case 4: //Nearest Neighbor
-      m_ui->m_interparamStackedWidget->setCurrentIndex(0);
-      m_ui->m_powerLabel->hide();
-      m_ui->m_powerComboBox->hide();
-      break;
-    case 5: //Bilinear Spline
-    case 6: //Bicubic Spline
-      m_ui->m_interparamStackedWidget->setCurrentIndex(1);
-      break;
-    case 7: //Mitasova Spline
-      m_ui->m_interparamStackedWidget->setCurrentIndex(2);
+      m_ui->m_interparamStackedWidget->show();
+      double raio = std::sqrt(m_inputLayer->getExtent().getWidth() * m_inputLayer->getExtent().getWidth() +
+        m_inputLayer->getExtent().getHeight() * m_inputLayer->getExtent().getHeight()) / 5.;
+      m_ui->m_radiusLineEdit->setText(QString::number(raio, 'f', 4));
+
+      switch (index)
+      {
+      case 0: //Weighted Average/Z Value/Quadrant
+      case 1: //Weighted Average/Quadrant
+      case 2: //Weighted Average
+        m_ui->m_interparamStackedWidget->setCurrentIndex(0);
+        m_ui->m_powerLabel->show();
+        m_ui->m_powerComboBox->show();
+        break;
+      case 3: //Simple Average
+      case 4: //Nearest Neighbor
+        m_ui->m_interparamStackedWidget->setCurrentIndex(0);
+        m_ui->m_powerLabel->hide();
+        m_ui->m_powerComboBox->hide();
+        break;
+      case 5: //Bilinear Spline
+      case 6: //Bicubic Spline
+        m_ui->m_interparamStackedWidget->setCurrentIndex(1);
+        break;
+      case 7: //Mitasova Spline
+        m_ui->m_interparamStackedWidget->setCurrentIndex(2);
+        break;
+      default:
+        break;
+      }
       break;
     }
-    break;
-  }
     case TIN:
       switch (index)
       {
       case 0:
       case 1:
       case 2:
+        break;
+      default:
         break;
       }
       break;
@@ -361,7 +345,13 @@ void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
       case 0:
       case 1:
         break;
+      default:
+        break;
       }
+    case OTHER:
+    case ISOLINE:
+    default:
+      break;
   }
 }
 
@@ -546,6 +536,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
           m_inter = Mitasova;
           spline = true;
           break;
+        default:
+          break;
         }
 
         if (!spline)
@@ -629,7 +621,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
       case GRID:
       {
         //get input raster
-        std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
+        std::auto_ptr<te::da::DataSet> inds(m_inputLayer->getData());
         std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
         std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
         if (inputRst->getNumberOfBands() > 1)
@@ -716,6 +708,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
         break;
       }
+      case ISOLINE:
+      case OTHER:
       default:
         break;
     }
@@ -764,7 +758,7 @@ void te::mnt::MNTGenerationDialog::setSRID(int newSRID)
   }
   else
   {
-    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName((unsigned int)newSRID);
     if (name.size())
       m_ui->m_resSRIDLabel->setText(name.c_str());
     else
