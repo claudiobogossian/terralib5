@@ -125,8 +125,14 @@ void te::edit::SplitPolygonTool::startSplit()
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
   std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
 
+  std::vector<std::string> oidPropertyNames;
+  te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
+
   while (ds->moveNext())
+  {
+    m_feature = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), ds->getGeometry(gpos).release(), te::edit::GEOMETRY_CREATE);
     splitPolygon(ds->getGeometry(gpos).get());
+  }
 
   if(m_oidSet->size() == 0)
     return;
@@ -140,8 +146,6 @@ void te::edit::SplitPolygonTool::startSplit()
 
 void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
 {
-  m_feature = te::edit::PickFeature(m_layer, *geom->getMBR(), m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
-
   if (m_feature == 0)
   {
     QMessageBox::critical(m_display, tr("TerraLib Edit Qt Plugin"), tr("Pick Feature Failed."));
@@ -149,18 +153,18 @@ void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
   }
 
   std::auto_ptr<te::gm::Geometry> feature_bounds;
-  feature_bounds.reset(m_feature->getGeometry()->getBoundary());
-
   std::auto_ptr<te::gm::Geometry> blade_in;
-  blade_in.reset(te::edit::CreateLineTool::buildLine());
+  std::auto_ptr<te::gm::Geometry> vgeoms;
+  std::vector<te::gm::Polygon*> outputPolygons;
 
+  feature_bounds.reset(m_feature->getGeometry()->getBoundary());
+  blade_in.reset(te::edit::CreateLineTool::buildLine());
+  
   feature_bounds->setSRID(m_feature->getGeometry()->getSRID());
   blade_in->setSRID(m_feature->getGeometry()->getSRID());
 
-  std::auto_ptr<te::gm::Geometry> vgeoms;
   vgeoms.reset(feature_bounds->Union(blade_in.get()));
 
-  std::vector<te::gm::Polygon*> outputPolygons;
   te::gm::Polygonizer(vgeoms.get(), outputPolygons);
 
   RepositoryManager& repository = RepositoryManager::getInstance();
