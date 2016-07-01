@@ -279,6 +279,9 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
+  if (inputRst->getSRID() != layer->getSRID())
+    inputRst->getGrid()->setSRID(layer->getSRID());
+
   //get parameters
   std::auto_ptr< te::gm::GeometryCollection > geomColl;
   m_clippingPage->getLayerClipping(geomColl);
