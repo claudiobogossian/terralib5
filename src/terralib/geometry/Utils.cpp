@@ -286,7 +286,10 @@ void te::gm::Polygonizer(te::gm::Geometry* g, std::vector<te::gm::Polygon*>& pol
   std::vector <geos::geom::Polygon*>* vecpolGeos = polygonizer.getPolygons();
 
   for (std::size_t i = 0; i < vecpolGeos->size(); i++)
+  { 
+    vecpolGeos->at(i)->setSRID(g->getSRID());
     pols.push_back(GEOSReader::read(vecpolGeos->at(i)));
+  }
 
 #else
   throw te::common::Exception(TE_TR("Polygonizer routine is supported by GEOS! Please, enable the GEOS support."));

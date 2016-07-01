@@ -117,6 +117,7 @@ namespace te
 
         te::da::ObjectIdSet* m_oidSet;
         Qt::MouseButton m_sideToClose;
+        double m_tol;
 
         void splitPolygon(te::gm::Geometry* geom);
         void draw();
