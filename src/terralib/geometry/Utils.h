@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "Coord2D.h"
 #include "Enums.h"
 
 // STL
@@ -42,9 +43,21 @@ namespace te
     class Geometry;
     class Point;
     class Polygon;
-    struct Coord2D;
     class LineString;
     
+    /*!
+    \struct TopologyValidationError
+
+    \brief This struct contains informations about GEOS TopologyValidationError
+    */
+    struct TopologyValidationError
+    {
+      public:
+
+        Coord2D     m_coordinate;
+        std::string m_message;
+    };
+
     /*!
       \brief It returns the number of measurements or axes needed to describe a position in a coordinate system.
 
@@ -154,6 +167,16 @@ namespace te
     \param pols   Output Polygon Vector.
     */
     TEGEOMEXPORT void Polygonizer(te::gm::Geometry* g, std::vector<te::gm::Polygon*>& pols);
+
+    /*!
+    \brief It check geometry validity using GEOS.
+
+    \param geom  Geometry that will be verified.
+    \param error TopologyValidationError struct.
+
+    \return True if geometry is valid.
+    */
+    TEGEOMEXPORT bool CheckValidity(const te::gm::Geometry* geom, te::gm::TopologyValidationError& error);
 
   } // end namespace gm
 }   // end namespace te

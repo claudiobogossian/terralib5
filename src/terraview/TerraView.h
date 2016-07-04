@@ -153,6 +153,7 @@ class TerraView : public te::qt::af::BaseApplication
 
     void onPluginsManagerTriggered();
 
+    void onToolsCheckGeometryValidityTriggered();
 
     void onToolsCustomizeTriggered();
 
@@ -222,6 +223,7 @@ class TerraView : public te::qt::af::BaseApplication
     QAction* m_projectUpdateLayerDataSource;
     QAction* m_projectProperties;
 
+    QAction* m_toolsCheckGeometryValidity;
     QAction* m_toolsCustomize;
     QAction* m_toolsDataExchanger;
     QAction* m_toolsDataExchangerDirect;
