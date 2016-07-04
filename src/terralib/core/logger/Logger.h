@@ -150,7 +150,7 @@ namespace te
   \param filename The name of the log file.
   \param format The format string of the logger.
   */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_ADD_LOGGER(name, filename, format) te::core::Logger::getInstance().addLogger(name, filename, format)
 #else
   #define TE_ADD_LOGGER(name, filename, format) ((void)0)
@@ -165,7 +165,7 @@ namespace te
 
   \exception std::exception If the configuration file is doesn't load.
   */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_ADD_LOGGER_FROM_FILE(filename) te::core::Logger::getInstance().addLoggerFromFile(filename)
 #else
   #define TE_ADD_LOGGER_FROM_FILE(filename) ((void)0)
@@ -178,7 +178,7 @@ namespace te
 
   \param  filename The name of the log file.
  */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_INIT_DEFAULT_LOGGER(filename) te::core::Logger::getInstance().addLogger(TERRALIB_DEFAULT_LOGGER, filename, TERRALIB_DEFAULT_LOGGER_FORMAT)
 #else
   #define TE_INIT_DEFAULT_LOGGER(filename) ((void)0)
@@ -253,7 +253,7 @@ namespace te
 
   \note The TRACE Level designates finer-grained informational events than the DEBUG.
 */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_LOG_TRACE(message) TE_CORE_LOG_TRACE(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
 #else
   #define TE_LOG_TRACE(message) ((void)0)
@@ -268,7 +268,7 @@ namespace te
 
   \note The ERROR level designates error events that might still allow the application to continue running.
 */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_LOG_ERROR(message) TE_CORE_LOG_ERROR(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
 #else
   #define TE_LOG_ERROR(message) ((void)0)
@@ -283,7 +283,7 @@ namespace te
 
   \note The FATAL level designates very severe error events that will presumably lead the application to abort.
 */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_LOG_FATAL(message) TE_CORE_LOG_FATAL(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
 #else
   #define TE_LOG_FATAL(message) ((void)0)
@@ -313,7 +313,7 @@ namespace te
 
   \note The WARN level designates potentially harmful situations.
 */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_LOG_WARN(message)TE_CORE_LOG_WARN(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
 #else
   #define TE_LOG_WARN(message) ((void)0)
@@ -328,7 +328,7 @@ namespace te
 
   \note The DEBUG Level designates fine-grained informational events that are most useful to debug an application.
 */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_LOG_DEBUG(message) TE_CORE_LOG_DEBUG(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
 #else
   #define TE_LOG_DEBUG(message) ((void)0)
