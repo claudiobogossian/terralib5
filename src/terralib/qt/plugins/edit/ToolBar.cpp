@@ -664,6 +664,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
     }
 
+    layer->clearSelected();
+
     // repaint and clear
     te::qt::af::evt::GetMapDisplay e;
     emit triggered(&e);

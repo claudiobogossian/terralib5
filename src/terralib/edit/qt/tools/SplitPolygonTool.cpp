@@ -50,7 +50,8 @@
 te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, Qt::MouseButton sideToClose, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
   m_oidSet(0),
-  m_sideToClose(sideToClose)
+  m_sideToClose(sideToClose),
+  m_tol(0.000001)
 {
 }
 
@@ -130,8 +131,8 @@ void te::edit::SplitPolygonTool::startSplit()
 
   while (ds->moveNext())
   {
-    m_feature = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), ds->getGeometry(gpos).release(), te::edit::GEOMETRY_CREATE);
-    splitPolygon(ds->getGeometry(gpos).get());
+    m_feature = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), ds->getGeometry(gpos).release(), te::edit::GEOMETRY_UPDATE);
+    splitPolygon(ds->getGeometry(gpos).release());
   }
 
   if(m_oidSet->size() == 0)
@@ -147,64 +148,51 @@ void te::edit::SplitPolygonTool::startSplit()
 void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
 {
   if (m_feature == 0)
-  {
-    QMessageBox::critical(m_display, tr("TerraLib Edit Qt Plugin"), tr("Pick Feature Failed."));
     return;
-  }
 
   std::auto_ptr<te::gm::Geometry> feature_bounds;
   std::auto_ptr<te::gm::Geometry> blade_in;
   std::auto_ptr<te::gm::Geometry> vgeoms;
   std::vector<te::gm::Polygon*> outputPolygons;
 
+  int SRID = m_feature->getGeometry()->getSRID();
+
   feature_bounds.reset(m_feature->getGeometry()->getBoundary());
+  feature_bounds->setSRID(SRID);
+
   blade_in.reset(te::edit::CreateLineTool::buildLine());
-  
-  feature_bounds->setSRID(m_feature->getGeometry()->getSRID());
-  blade_in->setSRID(m_feature->getGeometry()->getSRID());
+  blade_in->setSRID(SRID);
 
   vgeoms.reset(feature_bounds->Union(blade_in.get()));
+  vgeoms->setSRID(SRID);
 
   te::gm::Polygonizer(vgeoms.get(), outputPolygons);
 
   RepositoryManager& repository = RepositoryManager::getInstance();
 
-  std::size_t i = 0;
+  std::size_t i = 1;
   while (i < outputPolygons.size())
   {
     if (outputPolygons.at(i)->getSRID() != m_feature->getGeometry()->getSRID())
       outputPolygons.at(i)->setSRID(m_feature->getGeometry()->getSRID());
 
     if (!outputPolygons.at(i)->equals(m_feature->getGeometry()) &&
-         outputPolygons.at(i)->coveredBy(m_feature->getGeometry()->buffer(0.00001)))
+         outputPolygons.at(i)->coveredBy(m_feature->getGeometry()->buffer(m_tol)))
     {
-      if (i > 0)
-      {
-        Feature* f = new Feature();
-        f->setGeometry(outputPolygons.at(i));
-        f->setOperation(te::edit::GEOMETRY_CREATE);
+        Feature* f = new Feature(GenerateId(), outputPolygons.at(i), te::edit::GEOMETRY_CREATE);
         repository.addFeature(m_layer->getId(), f->clone());
 
         m_oidSet->add(f->getId());
-      }
-    }
-    else
-    { 
-      outputPolygons.erase(outputPolygons.begin() + i);
-      i--;
     }
     i++;
   }
 
-  if (outputPolygons.size())
+  if(m_oidSet->size() && outputPolygons.at(0)->coveredBy(m_feature->getGeometry()->buffer(m_tol)))
   {
-    if (outputPolygons.at(0)->coveredBy(m_feature->getGeometry()->buffer(0.00001)))
-    {
-      m_feature->setGeometry(outputPolygons.at(0));
-      repository.addFeature(m_layer->getId(), m_feature->clone());
+    m_feature->setGeometry(outputPolygons.at(0));
+    repository.addFeature(m_layer->getId(), m_feature->clone());
 
-      m_oidSet->add(m_feature->getId());
-    }
+    m_oidSet->add(m_feature->getId());
   }
 
   emit geometriesEdited();
