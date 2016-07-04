@@ -195,7 +195,7 @@ namespace te
 #ifdef TERRALIB_LOGGER_TRACE_ENABLED
   #define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::trace)
 #else
-  #define TE_CORE_LOG_TRACE(message) ((void)0)
+  #define TE_CORE_LOG_TRACE(channel, message) ((void)0)
 #endif
 
 /*!
@@ -209,7 +209,7 @@ namespace te
 #ifdef TERRALIB_LOGGER_DEBUG_ENABLED
   #define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::debug)
 #else
-  #define TE_CORE_LOG_DEBUG(message) ((void)0)
+  #define TE_CORE_LOG_DEBUG(channel, message) ((void)0)
 #endif
 
 /*!
@@ -223,7 +223,7 @@ namespace te
 #ifdef TERRALIB_LOGGER_INFO_ENABLED
   #define TE_CORE_LOG_INFO(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::info)
 #else
-  #define TE_CORE_LOG_INFO(message) ((void)0)
+  #define TE_CORE_LOG_INFO(channel, message) ((void)0)
 #endif
 
 /*!
@@ -237,7 +237,7 @@ namespace te
 #ifdef TERRALIB_LOGGER_WARN_ENABLED
   #define TE_CORE_LOG_WARN(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::warning)
 #else
-  #define TE_CORE_LOG_WARN(message) ((void)0)
+  #define TE_CORE_LOG_WARN(channel, message) ((void)0)
 #endif
 
 /*!
@@ -251,7 +251,7 @@ namespace te
 #ifdef TERRALIB_LOGGER_ERROR_ENABLED
   #define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::error)
 #else
-  #define TE_CORE_LOG_ERROR(message) ((void)0)
+  #define TE_CORE_LOG_ERROR(channel, message) ((void)0)
 #endif
 
 /*!
@@ -265,7 +265,7 @@ namespace te
 #ifdef TERRALIB_LOGGER_FATAL_ENABLED
   #define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::fatal)
 #else
-  #define TE_CORE_LOG_FATAL(message) ((void)0)
+  #define TE_CORE_LOG_FATAL(channel, message) ((void)0)
 #endif
 
 /*!
