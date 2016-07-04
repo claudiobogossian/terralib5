@@ -2281,7 +2281,7 @@ cd %ROOT_DIR%
 
 :lua
 
-:: Lua version 5.2.2
+:: Lua version 5.3.2
 set LUAC_DIR=%ROOT_DIR%\lua-5.3.2
 set LUAC_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include\lua
 set LUAC_LIBRARY=%LUA%
@@ -2319,16 +2319,6 @@ cd build%_X86% >nul 2>nul
 ( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build release" && goto qscintilla
 
 ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog lua "build debug" && goto qscintilla
-
-xcopy %LUAC_DIR%\src\lua.h %LUAC_INCLUDE_DIR% /Y >nul 2>nul
-
-xcopy %LUAC_DIR%\src\lualib.h %LUAC_INCLUDE_DIR% /Y >nul 2>nul
-
-xcopy %LUAC_DIR%\src\lauxlib.h %LUAC_INCLUDE_DIR% /Y >nul 2>nul
-
-xcopy %LUAC_DIR%\src\lua.hpp %LUAC_INCLUDE_DIR% /Y >nul 2>nul
-
-xcopy %LUAC_DIR%\build\luaconf.h %LUAC_INCLUDE_DIR% /Y >nul 2>nul
 
 echo done.
 

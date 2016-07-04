@@ -16,13 +16,13 @@
   You should have received a copy of the GNU Lesser General Public License
   along with TerraLib. See COPYING. If not, write to
   TerraLib Team at <terralib-team@terralib.org>.
- */
+  */
 
 /*!
   \file terralib/qsci/ceditor/OutputWindow.h
 
   \brief A widget to output the script execution.
-*/
+  */
 
 #ifndef __TERRALIB_QSCI_CEDITOR_OUTPUTWINDOW_H__
 #define __TERRALIB_QSCI_CEDITOR_OUTPUTWINDOW_H__
@@ -36,6 +36,10 @@
 // Forward declaration
 class QTextEdit;
 
+class QProcess;
+
+class OutPutStream;
+
 namespace te
 {
   namespace ce
@@ -44,27 +48,33 @@ namespace te
       \class OutputWindow
 
       \brief A widget to output the script execution.
-     */
-    class TECEDITOREXPORT OutputWindow : public QDockWidget
+      */
+    class TECEDITOREXPORT OutputWindow: public QDockWidget
     {
       Q_OBJECT
 
-      public:
+    public:
 
-        OutputWindow(QWidget* parent = 0);
+      OutputWindow(QWidget* parent = 0);
 
-        ~OutputWindow();
+      ~OutputWindow();
 
-        const QTextEdit* getText() const;
+      const QTextEdit* getText() const;
 
-        QTextEdit* getText();
+      QTextEdit* getText();
 
-      private:
+    protected slots :
 
-        QTextEdit* m_txt;
+      void redirectOutput();
 
+    private:
+
+      QTextEdit* m_txt;
+
+      QProcess* m_proc;
+
+      OutPutStream* m_out;
     };
-
   } // end namespace tce
 }
 

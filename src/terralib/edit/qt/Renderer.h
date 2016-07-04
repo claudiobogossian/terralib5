@@ -93,6 +93,8 @@ namespace te
       void setPointStyle(const QString& mark, const QColor& fillColor, const QColor& contourColor,
         const std::size_t& contourWidth, const std::size_t& size);
 
+      void setLineStyle(const QColor& lineColor, const std::size_t& lineWidth);
+
     protected:
 
       /*! \brief It initializes the singleton instance of the renderer. */

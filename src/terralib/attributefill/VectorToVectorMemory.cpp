@@ -27,7 +27,7 @@
 
 //Terralib
 #include "../BuildConfig.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
@@ -177,7 +177,7 @@ bool te::attributefill::VectorToVectorMemory::run()
           value = toDs->getValue(pkProp->getName())->toString();
 
         std::string ex = "The \"To\" layer geometry (" + pkProp->getName() + ": " + value + ") has intersection candidate invalid!";
-        te::common::Logger::logDebug("attributefill", ex.c_str());
+        TE_CORE_LOG_DEBUG("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
 
         m_hasErrors = true;
@@ -371,7 +371,7 @@ bool te::attributefill::VectorToVectorMemory::run()
 #ifdef TERRALIB_LOGGER_ENABLED
       std::string ex = e.what();
       ex += " | Ref: " + logInfo1 + " : " + logInfo2;
-      te::common::Logger::logDebug("attributefill", ex.c_str());
+      TE_CORE_LOG_DEBUG("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
 
       m_hasErrors = true;
@@ -381,7 +381,7 @@ bool te::attributefill::VectorToVectorMemory::run()
 #ifdef TERRALIB_LOGGER_ENABLED
       std::string ex = e.what();
       ex += " | Ref: " + logInfo1 + " : " + logInfo2;
-      te::common::Logger::logDebug("attributefill", ex.c_str());
+      TE_CORE_LOG_DEBUG("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
       m_hasErrors = true;
     }
@@ -972,7 +972,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
     {
 #ifdef TERRALIB_LOGGER_ENABLED
       std::string ex = e.what();
-      te::common::Logger::logDebug("attributefill", ex.c_str());
+      TE_CORE_LOG_DEBUG("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
       m_hasErrors = true;
       continue;
@@ -1656,7 +1656,7 @@ bool te::attributefill::VectorToVectorMemory::checkGeometries(te::gm::Geometry* 
     std::string ex = TE_TR("\"From\" layer geometry at position ");
     ex += boost::lexical_cast<std::string>(fromPos);
     ex += TE_TR(" is invalid.");
-    te::common::Logger::logDebug("attributefill", ex.c_str());
+    TE_CORE_LOG_DEBUG("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
     
     return false;
@@ -1665,7 +1665,7 @@ bool te::attributefill::VectorToVectorMemory::checkGeometries(te::gm::Geometry* 
   {
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string ex = TE_TR("\"To\" layer geometry is invalid.");
-    te::common::Logger::logDebug("attributefill", ex.c_str());
+    TE_CORE_LOG_DEBUG("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
 
     return false;

@@ -148,8 +148,11 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
     p->setId(i);
     output->add(p);
 
-    if(input->getPrimaryKey()->has(pRef))
-      outKey->add(output->getProperty(p->getId()));
+    if (input->getPrimaryKey()->has(pRef))
+    {
+      p->setName(tokens[0] + "." + pRef->getName());
+      outKey->add(p);
+    }
   }
 
   if(!outKey->getProperties().empty())

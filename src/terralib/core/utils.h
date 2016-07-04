@@ -1,4 +1,4 @@
-/* 
+/*
   Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
   This file is part of the TerraLib - a Framework for building GIS enabled applications.
@@ -19,14 +19,15 @@
  */
 
 /*!
-  \file terralib/core/translator/Config.h
+  \file terralib/core/utils.h
 
-  \brief Configuration flags for Logger support.
- */
+  \brief Include files for Core Utility Library.
+*/
 
-#ifndef __TERRALIB_CORE_LOGGER_CONFIG_H__
-#define __TERRALIB_CORE_LOGGER_CONFIG_H__
+#ifndef __TERRALIB_CORE_UTILS_H__
+#define __TERRALIB_CORE_UTILS_H__
 
-#include "../Config.h"
+// TerraLIb
+#include "utils/Platform.h"
 
-#endif  // __TERRALIB_CORE_LOGGER_CONFIG_H__
+#endif // __TERRALIB_CORE_UTILS_H__

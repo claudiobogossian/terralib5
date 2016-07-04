@@ -43,7 +43,7 @@
      <x>0</x>
      <y>0</y>
      <width>870</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -85,7 +85,7 @@
    <addaction name="m_actionNew"/>
    <addaction name="m_actionRun"/>
   </widget>
-  <widget class="te::ce::OutputWindow" name="dockWidget">
+  <widget class="QDockWidget" name="m_output">
    <property name="features">
     <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
@@ -98,7 +98,13 @@
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2"/>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QTextEdit" name="m_txt"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="m_actionOpen">
    <property name="icon">
@@ -149,21 +155,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>te::ce::OutputWindow</class>
-   <extends>QDockWidget</extends>
-   <header>terralib/qsci/ceditor/OutputWindow.h</header>
-   <container>1</container>
-   <slots>
-    <slot>open()</slot>
-    <slot>load()</slot>
-    <slot>save()</slot>
-    <slot>run()</slot>
-    <slot>newScript()</slot>
-   </slots>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

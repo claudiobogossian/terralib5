@@ -41,6 +41,7 @@
 #ifdef TERRALIB_GEOS_ENABLED
 // GEOS
 #include <geos/geom/Geometry.h>
+#include <geos/operation/polygonize/Polygonizer.h>
 #include <geos/operation/union/UnaryUnionOp.h>
 #include <geos/util/GEOSException.h>
 #endif
@@ -270,5 +271,27 @@ te::gm::Geometry* te::gm::UnaryUnion(te::gm::Geometry* geom)
 
 #else
   throw te::common::Exception(TE_TR("Union routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+}
+
+void te::gm::Polygonizer(te::gm::Geometry* g, std::vector<te::gm::Polygon*>& pols)
+{
+#ifdef TERRALIB_GEOS_ENABLED
+
+  geos::operation::polygonize::Polygonizer polygonizer;
+
+  std::auto_ptr<geos::geom::Geometry> geomGeos(GEOSWriter::write(g));
+  polygonizer.add(geomGeos.get());
+
+  std::vector <geos::geom::Polygon*>* vecpolGeos = polygonizer.getPolygons();
+
+  for (std::size_t i = 0; i < vecpolGeos->size(); i++)
+  { 
+    vecpolGeos->at(i)->setSRID(g->getSRID());
+    pols.push_back(GEOSReader::read(vecpolGeos->at(i)));
+  }
+
+#else
+  throw te::common::Exception(TE_TR("Polygonizer routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }

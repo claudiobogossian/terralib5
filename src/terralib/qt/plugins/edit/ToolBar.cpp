@@ -36,18 +36,18 @@
 #include "../../../edit/Repository.h"
 #include "../../../edit/RepositoryManager.h"
 #include "../../../edit/qt/core/UndoStackManager.h"
+#include "../../../edit/qt/tools/AggregateAreaTool.h"
 #include "../../../edit/qt/tools/CreateLineTool.h"
 #include "../../../edit/qt/tools/CreatePolygonTool.h"
-#include "../../../edit/qt/tools/MoveGeometryTool.h"
-#include "../../../edit/qt/tools/VertexTool.h"
-#include "../../../edit/qt/tools/AggregateAreaTool.h"
-#include "../../../edit/qt/tools/SubtractAreaTool.h"
 #include "../../../edit/qt/tools/DeleteGeometryTool.h"
-#include "../../../edit/qt/tools/MergeGeometriesTool.h"
 #include "../../../edit/qt/tools/EditInfoTool.h"
+#include "../../../edit/qt/tools/MergeGeometriesTool.h"
+#include "../../../edit/qt/tools/MoveGeometryTool.h"
+#include "../../../edit/qt/tools/SplitPolygonTool.h"
+#include "../../../edit/qt/tools/SubtractAreaTool.h"
+#include "../../../edit/qt/tools/VertexTool.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
 #include "../../../geometry/GeometryProperty.h"
-#include "../../../geometry/GeometryCollection.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../memory/DataSet.h"
 #include "../../../memory/DataSetItem.h"
@@ -91,6 +91,7 @@ QObject(parent),
   m_aggregateAreaToolAction(0),
   m_subtractAreaToolAction(0),
   m_featureAttributesAction(0),
+  m_splitPolygonToolAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),
@@ -287,6 +288,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "edit-subtractGeometry", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit-deletetool", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
   createAction(m_featureAttributesAction, tr("Feature Attributes"), "edit-Info", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
+  createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, true, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
@@ -301,6 +303,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_subtractAreaToolAction);
   toolsGroup->addAction(m_deleteGeometryToolAction);
   toolsGroup->addAction(m_featureAttributesAction);
+  toolsGroup->addAction(m_splitPolygonToolAction);
 
   // Grouping...
   m_tools.push_back(m_saveAction);
@@ -313,6 +316,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_subtractAreaToolAction);
   m_tools.push_back(m_deleteGeometryToolAction);
   m_tools.push_back(m_featureAttributesAction);
+  m_tools.push_back(m_splitPolygonToolAction);
 
   // Adding tools to toolbar
   for (int i = 0; i < m_tools.size(); ++i)
@@ -660,6 +664,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
     }
 
+    layer->clearSelected();
+
     // repaint and clear
     te::qt::af::evt::GetMapDisplay e;
     emit triggered(&e);
@@ -867,7 +873,7 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 
   if(layer->getSelected()->size() < 2)
   {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To use this tool, you must select at least two geometry!"));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To use this tool, you must select at least two geometries!"));
     return;
   }
 
@@ -881,10 +887,31 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 
 void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool)
 {
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if (layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
 
-  QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Under Development!"));
-  return;
+  if (layer->getSelected() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
+    return;
+  }
 
+  if (!layer->getSelected()->size())
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To use this tool, you must select at least one geometry!"));
+    return;
+  }
+
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  assert(e.m_display);
+
+  setCurrentTool(new te::edit::SplitPolygonTool(e.m_display->getDisplay(), layer, Qt::LeftButton, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onResetVisualizationToolActivated(bool /*checked*/)

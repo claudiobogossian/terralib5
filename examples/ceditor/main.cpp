@@ -1,49 +1,79 @@
 /*
-Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-TerraLib is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Lesser General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with TerraLib. See COPYING. If not, write to
-TerraLib Team at <terralib-team@terralib.org>.
-*/
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
+ */
 
 /*!
-\file terralib/examples/core/lib/main.cpp
+  \file terralib/examples/ceditor/main.cpp
 
-\brief Examples for the TerraLib Library Module
+  \brief Examples for the TerraLib Code Editor Module
 
-\author Frederico Augusto Bedê
-*/
+  \author Frederico Augusto Bedê
+ */
 
 // TerraLib
-#include "MainWindow.h"
-
-#include <terralib/core/utils/Platform.h>
+#include <terralib/common.h>
+#include <terralib/core.h>
+#include <terralib/plugin.h>
 
 // Qt
 #include <QApplication>
 #include <QIcon>
 
+// Example
+#include "MainWindow.h"
+
+void LoadModule(std::string m)
+{
+  std::string mod_name = "share/terralib/plugins/" + m + ".teplg";
+  std::string plgManifest = te::core::FindInTerraLibPath(mod_name);
+  std::unique_ptr<te::plugin::PluginInfo> i(te::plugin::GetInstalledPlugin(plgManifest));
+  te::plugin::PluginManager::getInstance().load(*i.get());
+}
+
+void Initialize()
+{
+  TerraLib::getInstance().initialize();
+
+  LoadModule("te.da.gdal");
+  LoadModule("te.da.ogr");
+  LoadModule("te.da.pgis");
+  LoadModule("te.vm.lua");
+}
+
+void Finalize()
+{
+  te::plugin::PluginManager::getInstance().shutdownAll();
+  te::plugin::PluginManager::getInstance().unloadAll();
+
+  TerraLib::getInstance().finalize();
+}
 
 // Main program
 int main(int argc, char *argv[])
 {
+  Initialize();
+
   std::string iconThemePath = te::core::FindInTerraLibPath("share/terralib/icons");
 
   QStringList pts = QIcon::themeSearchPaths();
 
-  pts <<QString::fromStdString(iconThemePath);
+  pts << QString::fromStdString(iconThemePath);
 
   QIcon::setThemeSearchPaths(pts);
 
@@ -55,5 +85,9 @@ int main(int argc, char *argv[])
 
   win.showMaximized();
 
-  return app.exec();
+  int r = app.exec();
+
+  Finalize();
+
+  return r;
 }

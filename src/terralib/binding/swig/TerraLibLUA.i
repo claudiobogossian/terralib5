@@ -80,23 +80,5 @@ static std::string GetRandomicId()
 /* Include Plugin module to the bind. */
 %include common/Plugin.i 
 
-/* Include Spatial Temporal module to the bind. */   
-%include common/ST.i
-
-%include common/CellSpace.i
-%include lua/CellSpace.i
-
-%include common/Maptools.i
-%include lua/Maptools.i
-
-%include common/Xml.i
-%include lua/Xml.i
-
-%include common/AttributeFill.i
-%include lua/AttributeFill.i
-
-%include common/Memory.i
-%include lua/Memory.i
-
 // Wrap function
 std::string GetRandomicId();

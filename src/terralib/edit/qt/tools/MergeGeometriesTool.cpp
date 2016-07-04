@@ -104,7 +104,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   if (m_feature == 0)
   {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Merge not possible"));
+    QMessageBox::information(m_display, tr("TerraLib Edit Qt Plugin"), tr("Pick Feature Failed."));
     return;
   }
 
@@ -262,7 +262,6 @@ te::gm::Geometry* te::edit::MergeGeometriesTool::Union(te::gm::Geometry& g1, te:
 
 void te::edit::MergeGeometriesTool::draw()
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
     return;
@@ -284,7 +283,6 @@ void te::edit::MergeGeometriesTool::draw()
   renderer.end();
 
   m_display->repaint();
-
 }
 
 void te::edit::MergeGeometriesTool::storeFeature()

@@ -8,47 +8,61 @@ namespace Ui
   class MainWindow;
 }
 
+class OutPutStream;
+
 /*!
  * \brief
  */
-class MainWindow : public QMainWindow
+class MainWindow: public QMainWindow
 {
   Q_OBJECT
 
-  public:
+public:
 
-    /*!
-     * \brief Constructor.
-     */
-    explicit MainWindow(QWidget *parent = 0);
+  /*!
+   * \brief Constructor.
+   */
+  explicit MainWindow(QWidget *parent = 0);
+
+  ~MainWindow();
 
   signals:
 
-  public slots:
+  public slots :
 
     /*!
      * \brief .
      */
-    void open();
+     void open();
 
-    /*!
-     * \brief .
-     */
-    void newScript();
+  /*!
+   * \brief .
+   */
+  void newScript();
 
-    /*!
-     * \brief .
-     */
-    void save();
+  /*!
+   * \brief .
+   */
+  void save();
 
-    /*!
-     * \brief .
-     */
-    void run();
+  /*!
+   * \brief .
+   */
+  void run();
 
-  private:
+  void codeChanged();
 
-    Ui::MainWindow* m_ui;   //!<
+protected:
+
+  QString m_fileName;
+
+  OutPutStream* m_out;
+
+//  QTextStream* m_stream;
+
+private:
+
+  Ui::MainWindow* m_ui;   //!<
 };
 
 #endif // MAINWINDOW_H

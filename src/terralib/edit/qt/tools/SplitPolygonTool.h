@@ -29,7 +29,14 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #ifndef Q_MOC_RUN
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../geometry/GeometryCollection.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../geometry/MultiPolygon.h"
+#include "../../../geometry/Utils.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/canvas/Canvas.h"
+#include "CreateLineTool.h"
 #endif
 #include "../Config.h"
 #include "GeometriesUpdateTool.h"
@@ -59,7 +66,7 @@ namespace te
 
       \brief This class implements a concrete tool to split polygons.
     */
-    class TEEDITQTEXPORT SplitPolygonTool : public GeometriesUpdateTool
+    class TEEDITQTEXPORT SplitPolygonTool : public CreateLineTool
     {
       Q_OBJECT
 
@@ -78,7 +85,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+        SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, Qt::MouseButton sideToClose, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~SplitPolygonTool();
@@ -90,17 +97,32 @@ namespace te
           */
         //@{
 
-        //bool mousePressEvent(QMouseEvent* e);
+        bool mousePressEvent(QMouseEvent* e);
 
-        //bool mouseMoveEvent(QMouseEvent* e);
+        bool mouseMoveEvent(QMouseEvent* e);
 
-        //bool mouseDoubleClickEvent(QMouseEvent* e);
+        bool mouseDoubleClickEvent(QMouseEvent* e);
+
+        bool mouseReleaseEvent(QMouseEvent* e);
+
+        void resetVisualizationTool();
 
         //@}
 
-      private slots:
+      signals:
 
-        void onExtentChanged();
+        void splitFinished(te::da::ObjectIdSet& objIdResultingPolygons);
+
+      private:
+
+        te::da::ObjectIdSet* m_oidSet;
+        Qt::MouseButton m_sideToClose;
+        double m_tol;
+
+        void splitPolygon(te::gm::Geometry* geom);
+        void draw();
+        void startSplit();
+
     };
 
   }   // end namespace edit

@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
@@ -576,7 +576,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string str = "Buffer - ";
     str += e.what();
-    te::common::Logger::logDebug("vp", str.c_str());
+    TE_CORE_LOG_DEBUG("vp", str.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
 
     te::common::ProgressManager::getInstance().removeViewer(id);

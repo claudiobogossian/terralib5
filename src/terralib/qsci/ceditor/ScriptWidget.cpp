@@ -24,15 +24,12 @@
   \brief A widget that can be used to show and control he execution of a script.
 */
 
-// TerraLib
 #include "ScriptWidget.h"
 #include "Utils.h"
 
-//// TerraLib
-//#include <terralib/binding/vm/VirtualMachine.h>
-//#include <terralib/binding/vm/VirtualMachineFactory.h>
-//#include <terralib/binding/vm/VirtualMachineManager.h>
-
+// TerraLib
+#include "../../vm/core/VirtualMachine.h"
+#include "../../vm/core/VirtualMachineManager.h"
 
 // Qt
 #include <QFileDialog>
@@ -50,7 +47,7 @@ te::ce::ScriptWidget::ScriptWidget(QWidget* parent)
   : QWidget(parent),
     m_txtEditor(nullptr),
     m_lexer(nullptr),
-    m_hasChanged(false)
+    m_unsaved(false)
 {
   m_txtEditor = new QsciScintilla(this);
   
@@ -66,7 +63,7 @@ te::ce::ScriptWidget::ScriptWidget(QWidget* parent)
   
   setLayout(mainLayout);
 
-  connect(m_txtEditor, SIGNAL(textChanged()), this, SLOT(setTextChanged()));
+  connect(m_txtEditor, SIGNAL(textChanged()), SLOT(setTextChanged()));
 }
 
 te::ce::ScriptWidget::~ScriptWidget()
@@ -91,7 +88,7 @@ QString te::ce::ScriptWidget::getScriptName() const
 void te::ce::ScriptWidget::open(const QString& fileName)
 {
 // close any previous opened script
-  close();
+//  close();
 
   QFile file(fileName);
 
@@ -114,8 +111,6 @@ void te::ce::ScriptWidget::open(const QString& fileName)
   m_fileName = fileName;
 
   setLexer();
-
-  m_hasChanged = false;
 }
 
 void te::ce::ScriptWidget::save(const QString& fileName)
@@ -125,6 +120,11 @@ void te::ce::ScriptWidget::save(const QString& fileName)
   save();
 }
 
+bool te::ce::ScriptWidget::hasChanged() const
+{
+  return m_unsaved;
+}
+
 void te::ce::ScriptWidget::save()
 {
   if(m_fileName == 0)
@@ -132,7 +132,7 @@ void te::ce::ScriptWidget::save()
   else
     saveFile(m_fileName);
 
-  m_hasChanged = false;
+  setUnsaved(false);
 }
 
 void te::ce::ScriptWidget::saveAs()
@@ -148,14 +148,13 @@ void te::ce::ScriptWidget::saveAs()
 
   setLexer();
 
-  m_hasChanged = false;
+  setUnsaved(false);
 }
 
 void te::ce::ScriptWidget::close()
 {
 // save changes
-  if(m_hasChanged)
-    save();
+  save();
 
 // clear text editor
   m_txtEditor->clear();
@@ -163,43 +162,43 @@ void te::ce::ScriptWidget::close()
   m_fileName = "";
 
 // set to no-changes state
-  m_hasChanged = false;
+  setUnsaved(false);
 }
 
 void te::ce::ScriptWidget::execute()
 {
 // save changes before executing
-  if(m_hasChanged)
-    save();
-  else if(!m_hasChanged && (m_fileName == 0)) // don't execute if text editor is empty!
-    return;
+  //if(m_hasChanged)
+  //  save();
+  //else if(!m_hasChanged && (m_fileName.isEmpty())) // don't execute if text editor is empty!
+  //  return;
 
-  //try
-  //{
-  //  te::vm::VirtualMachine* vm = te::vm::VirtualMachineFactory::make("LUA_VM");
+  try
+  {
+    te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get("lua");
 
-  //  vm->build(m_fileName->toStdString());
-  //  
-  //  vm->execute();
-  //}
-  //catch(const std::exception& e)
-  //{
-  //  QMessageBox m(QMessageBox::Critical,
-  //                tr("TerraLib Code Editor"),
-  //                tr("Could not execute the script due to the following problem: %1.").arg(e.what()),
-  //                QMessageBox::Ok,
-  //                this);
-  //  m.exec();
-  //}
-  //catch(...)
-  //{
-  //  QMessageBox m(QMessageBox::Critical,
-  //                tr("TerraLib Code Editor"),
-  //                tr("Could not execute the script due to an unknown error!"),
-  //                QMessageBox::Ok,
-  //                this);
-  //  m.exec();
-  //}
+    vm->build(m_fileName.toStdString());
+
+    vm->execute();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox m(QMessageBox::Critical,
+                  tr("TerraLib Code Editor"),
+                  tr("Could not execute the script due to the following problem: %1.").arg(e.what()),
+                  QMessageBox::Ok,
+                  this);
+    m.exec();
+  }
+  catch(...)
+  {
+    QMessageBox m(QMessageBox::Critical,
+                  tr("TerraLib Code Editor"),
+                  tr("Could not execute the script due to an unknown error!"),
+                  QMessageBox::Ok,
+                  this);
+    m.exec();
+  }
 }
 
 
@@ -226,7 +225,7 @@ void te::ce::ScriptWidget::zoomOut()
 
 void te::ce::ScriptWidget::setTextChanged()
 {
-  m_hasChanged = true;
+  setUnsaved(true);
 }
 
 void te::ce::ScriptWidget::saveFile(const QString& fileName)
@@ -248,18 +247,17 @@ void te::ce::ScriptWidget::saveFile(const QString& fileName)
   ofile << m_txtEditor->text();
 
   QApplication::restoreOverrideCursor();
-
-  //statusBar()->showMessage(tr("File saved"), 2000);
 }
 
 void te::ce::ScriptWidget::setLexer()
 {
-  //if(m_lexer || (m_fileName == 0))
-  //{
-    //m_txtEditor->setLexer(0);
-    //delete m_lexer;
-    //m_lexer = 0;
-  //}
+  if(m_lexer || (m_fileName.isEmpty()))
+  {
+    m_txtEditor->setLexer(0);
+
+    delete m_lexer;
+    m_lexer = 0;
+  }
 
   if(m_fileName.isEmpty())
     return;
@@ -271,3 +269,13 @@ void te::ce::ScriptWidget::setLexer()
   m_txtEditor->setLexer(m_lexer);
 }
 
+void te::ce::ScriptWidget::setUnsaved(bool unsaved)
+{
+  if(m_unsaved == unsaved)
+    return;
+
+  m_unsaved = unsaved;
+  m_txtEditor->setModified(m_unsaved);
+
+  emit codeChanged();
+}

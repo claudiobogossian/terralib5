@@ -24,7 +24,7 @@
 */
 //TerraLib
 
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../edit/qt/Renderer.h"
 #include "../../edit/qt/tools/CreateLineTool.h"
 #include "../../edit/qt/tools/VertexTool.h"
@@ -535,7 +535,7 @@ void te::mnt::ProfileDialog::onGeometriesChanged()
 
 void te::mnt::ProfileDialog::onOkPushButtonClicked()
 {
-  te::map::Visibility visibility;
+  te::map::Visibility visibility = te::map::NOT_VISIBLE;
   if (m_trajectoryLayer)
     visibility = m_trajectoryLayer->getVisibility();
 
@@ -641,7 +641,7 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
 
     std::string msg = "Profile - Start.";
 #ifdef TERRALIB_LOGGER_ENABLED
-    te::common::Logger::logDebug("mnt", msg.c_str());
+    TE_CORE_LOG_DEBUG("mnt", msg.c_str());
 #endif
     // Principal function calling
     std::vector<te::gm::LineString*> profileSet;
@@ -673,7 +673,7 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
 
     msg = "Profile - End.";
 #ifdef TERRALIB_LOGGER_ENABLED
-    te::common::Logger::logDebug("mnt", msg.c_str());
+    TE_CORE_LOG_DEBUG("mnt", msg.c_str());
 #endif
 
     DrawSelected(m_visadas, 2, false);
@@ -743,7 +743,7 @@ void te::mnt::ProfileDialog::DrawSelected(const std::vector<te::gm::LineString*>
     if (visadas[v]->getSRID() != window->getMapDisplay()->getSRID())
     {
 #ifdef TERRALIB_LOGGER_ENABLED
-      te::common::Logger::logDebug("mnt", tr("SRID InputLayer different from SRID Display").toLatin1().data());
+      TE_CORE_LOG_DEBUG("mnt", tr("SRID InputLayer different from SRID Display").toLatin1().data());
 #endif
      }
     canvas.draw(visadas[v]);

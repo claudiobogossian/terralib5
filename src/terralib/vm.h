@@ -1,4 +1,4 @@
-/* 
+/*
   Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
   This file is part of the TerraLib - a Framework for building GIS enabled applications.
@@ -19,14 +19,15 @@
  */
 
 /*!
-  \file terralib/core/translator/Config.h
+  \file terralib/vm.h
 
-  \brief Configuration flags for Translation support.
- */
+  \brief Include files for Virtual Machine Library.
+*/
 
-#ifndef __TERRALIB_CORE_TRANSLATOR_CONFIG_H__
-#define __TERRALIB_CORE_TRANSLATOR_CONFIG_H__
+#ifndef __TERRALIB_VM_H__
+#define __TERRALIB_VM_H__
 
-#include "../Config.h"
+// TerraLIb
+#include "vm/core.h"
 
-#endif  // __TERRALIB_CORE_TRANSLATOR_CONFIG_H__
+#endif // __TERRALIB_VM_CORE_H__

@@ -27,7 +27,7 @@
 #include "../BuildConfig.h"
 
 #include "../common/progress/TaskProgress.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -105,7 +105,7 @@ bool te::vp::GeometricOpMemory::run() throw(te::common::Exception)
     default:
       {
 #ifdef TERRALIB_LOGGER_ENABLED
-        te::common::Logger::logDebug("vp", "Geometric Operation - The operation is not valid.");
+        TE_CORE_LOG_DEBUG("vp", "Geometric Operation - The operation is not valid.");
 #endif //TERRALIB_LOGGER_ENABLED
       }
     }
@@ -225,7 +225,7 @@ bool te::vp::GeometricOpMemory::run() throw(te::common::Exception)
       default:
         {
 #ifdef TERRALIB_LOGGER_ENABLED
-          te::common::Logger::logDebug("vp", "Geometric Operation - Strategy Not found!");
+          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Strategy Not found!");
 #endif //TERRALIB_LOGGER_ENABLED
         }
         return false;
@@ -309,7 +309,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
           default:
             {
 #ifdef TERRALIB_LOGGER_ENABLED
-              te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the tabular value.");
+              TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the tabular value.");
 #endif //TERRALIB_LOGGER_ENABLED
             }
         }
@@ -369,7 +369,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
           default:
             {
   #ifdef TERRALIB_LOGGER_ENABLED
-              te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometric value.");
+              TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the geometric value.");
   #endif //TERRALIB_LOGGER_ENABLED
             }
         }
@@ -394,7 +394,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometry in collection.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the geometry in collection.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -484,7 +484,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the tabular value.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the tabular value.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -535,7 +535,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometry in collection.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the geometry in collection.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -570,7 +570,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
       default:
         {
 #ifdef TERRALIB_LOGGER_ENABLED
-          te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometry in collection.");
+          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the geometry in collection.");
 #endif //TERRALIB_LOGGER_ENABLED
         }
     }
@@ -685,7 +685,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
           break;
       default:
 #ifdef TERRALIB_LOGGER_ENABLED
-        te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the aggregated value.");
+        TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the aggregated value.");
 #endif //TERRALIB_LOGGER_ENABLED
         break;
     }
@@ -721,7 +721,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
           default:
             {
 #ifdef TERRALIB_LOGGER_ENABLED
-              te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the tabular value.");
+              TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the tabular value.");
 #endif //TERRALIB_LOGGER_ENABLED
             }
         }
@@ -772,7 +772,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
           default:
             {
 #ifdef TERRALIB_LOGGER_ENABLED
-              te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometric value.");
+              TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the geometric value.");
 #endif //TERRALIB_LOGGER_ENABLED
             }
         }
@@ -805,7 +805,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometry in collection.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not insert the geometry in collection.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -946,7 +946,7 @@ double te::vp::GeometricOpMemory::CalculateTabularOp( int tabOperation,
     default:
       {
 #ifdef TERRALIB_LOGGER_ENABLED
-        te::common::Logger::logDebug("vp", "Geometric Operation - Could not calculate the operation.");
+        TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Could not calculate the operation.");
 #endif //TERRALIB_LOGGER_ENABLED
       }
   }

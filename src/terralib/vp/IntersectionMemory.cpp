@@ -27,7 +27,7 @@
 
 #include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -266,7 +266,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       else
       {
 #ifdef TERRALIB_LOGGER_ENABLED
-        te::common::Logger::logDebug("vp", "Intersection - Invalid geometry found");
+        TE_CORE_LOG_DEBUG("vp", "Intersection - Invalid geometry found");
 #endif //TERRALIB_LOGGER_ENABLED
         continue;
       }

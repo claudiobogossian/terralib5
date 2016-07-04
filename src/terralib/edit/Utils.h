@@ -91,7 +91,7 @@ namespace te
       GEOMETRY_UPDATE,                  /*!< Features to update. */
       GEOMETRY_DELETE,                  /*!< Features to delete. */
       GEOMETRY_UPDATE_ATTRIBUTES,       /*!< Features to update attributes. */
-      NumberOfOperationTypes /*!< Size of Enum */
+      NumberOfOperationTypes            /*!< Size of Enum */
     };
 
     TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, OperationType operation);

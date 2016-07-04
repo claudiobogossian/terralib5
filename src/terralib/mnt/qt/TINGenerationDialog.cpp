@@ -409,6 +409,33 @@ void te::mnt::TINGenerationDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
+  QFile qf(fileName);
+  if (qf.exists())
+  {
+    QString msg(tr("File already exists. Subscript?"));
+    int reply = QMessageBox::question(this, tr("TIN Generation"), msg, QMessageBox::No, QMessageBox::Yes);
+    if (reply == QMessageBox::Yes)
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+
+      while (it != m_layers.end())
+      {
+        if (it->get())
+        {
+          std::string title = it->get()->getTitle();
+        }
+        it++;
+      }
+
+      qf.close();
+      qf.remove();
+    }
+    else
+    {
+      onTargetFileToolButtonPressed();
+    }
+  }
+
   boost::filesystem::path outfile(fileName.toStdString());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());

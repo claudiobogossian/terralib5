@@ -26,7 +26,7 @@
 //Terralib
 
 #include "../common/progress/TaskProgress.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -337,7 +337,7 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*,
             break;
           default:
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Buffer - Type not found.");
+            TE_CORE_LOG_DEBUG("vp", "Buffer - Type not found.");
 #endif //TERRALIB_LOGGER_ENABLED
             break;
         }

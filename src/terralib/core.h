@@ -19,14 +19,20 @@
  */
 
 /*!
-  \file terralib/core/utils/Config.h
+  \file terralib/core.h
 
-  \brief Configuration flags for utils support.
- */
+  \brief Include files for Core Library.
+*/
 
-#ifndef __TERRALIB_CORE_UTILS_CONFIG_H__
-#define __TERRALIB_CORE_UTILS_CONFIG_H__
+#ifndef __TERRALIB_CORE_H__
+#define __TERRALIB_CORE_H__
 
-#include "../Config.h"
+// TerraLIb
+//#include "core/encoding.h"
+//#include "core/lib.h"
+//#include "core/logger.h"
+//#include "core/translator.h"
+//#include "core/uri.h"
+#include "core/utils.h"
 
-#endif  // __TERRALIB_CORE_UTILS_CONFIG_H__
+#endif // __TERRALIB_CORE_H__

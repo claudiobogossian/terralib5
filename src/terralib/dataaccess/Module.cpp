@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../common/TerraLib.h"
 #include "../core/translator/Translator.h"
 #include "dataset/AttributeConverterManager.h"
