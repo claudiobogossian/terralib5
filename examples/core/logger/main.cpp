@@ -36,8 +36,13 @@
 
 int main(int argc, char *argv[])
 {
-//Starting a logger from a configuration file.
+
+  //Initializing terralib default logger
+  TE_INIT_DEFAULT_LOGGER("logs/terralib.log");
+
+  //Adding a logger from a configuration file.
   TE_ADD_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/terralib/config/te-log.ini"));
+
   TE_LOG_TRACE("This is a trace log.");
   TE_CORE_LOG_DEBUG("vp", "Logging config file");
   TE_LOG_INFO("This is a info log");
@@ -46,9 +51,9 @@ int main(int argc, char *argv[])
   TE_LOG_ERROR("This is a error log");
   TE_CORE_LOG_DEBUG("attributefill", "Logging config file");
 
-  //Initializing a log using a default configuration.
-  //When initializing a new log, the previous one will not log anymore.
+  //Adding a new logger without configuration file.
   TE_ADD_LOGGER("mylogger", "log/mylogs.log", "[%TimeStamp%]{%ThreadID%} %Process%(%ProcessID%) <%Severity%>: %Message%");
+
   MY_LOG_WARN("This is a warning log.");
   MY_LOG_FATAL("This is a fatal log.");
   TE_LOG_INFO("This is a info log");
