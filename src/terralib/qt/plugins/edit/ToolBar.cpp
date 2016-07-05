@@ -92,6 +92,7 @@ QObject(parent),
   m_subtractAreaToolAction(0),
   m_featureAttributesAction(0),
   m_splitPolygonToolAction(0),
+  m_mergeGeometriesToolAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),
@@ -289,6 +290,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit-deletetool", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
   createAction(m_featureAttributesAction, tr("Feature Attributes"), "edit-Info", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
   createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, true, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
+  createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, true, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
@@ -304,6 +306,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_deleteGeometryToolAction);
   toolsGroup->addAction(m_featureAttributesAction);
   toolsGroup->addAction(m_splitPolygonToolAction);
+  toolsGroup->addAction(m_mergeGeometriesToolAction);
 
   // Grouping...
   m_tools.push_back(m_saveAction);
@@ -317,6 +320,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_deleteGeometryToolAction);
   m_tools.push_back(m_featureAttributesAction);
   m_tools.push_back(m_splitPolygonToolAction);
+  m_tools.push_back(m_mergeGeometriesToolAction);
 
   // Adding tools to toolbar
   for (int i = 0; i < m_tools.size(); ++i)
@@ -678,6 +682,11 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       e.m_display->getDisplay()->refresh(true);
 
     m_layerIsStashed = false;
+
+    for (int i = 0; i < m_tools.size(); ++i)
+      m_tools[i]->setChecked(false);
+
+    enableCurrentTool(false);
 
   }
   catch(te::common::Exception& ex)

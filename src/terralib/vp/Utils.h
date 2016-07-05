@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/vp/qt/Utils.h
+  \file terralib/vp/Utils.h
 
   \brief Utility functions for Vector Processing.  
 */

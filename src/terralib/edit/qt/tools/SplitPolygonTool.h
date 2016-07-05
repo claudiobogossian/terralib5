@@ -119,7 +119,7 @@ namespace te
         Qt::MouseButton m_sideToClose;
         double m_tol;
 
-        void splitPolygon(te::gm::Geometry* geom);
+        void splitPolygon();
         void draw();
         void startSplit();
 
