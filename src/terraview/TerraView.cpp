@@ -86,6 +86,7 @@
 #include <terralib/qt/widgets/se/StyleDockWidget.h>
 #include <terralib/qt/widgets/srs/SRSManagerDialog.h>
 #include <terralib/qt/widgets/tools/Measure.h>
+#include <terralib/qt/widgets/utils/CheckGeomValidityDialog.h>
 #include <terralib/qt/widgets/vector/FixGeometryDialog.h>
 
 #include "events/ProjectEvents.h"
@@ -357,6 +358,7 @@ void TerraView::initActions()
   te::qt::af::BaseApplication::initActions();
 
   // Menu -Tools- actions
+  initAction(m_toolsCheckGeometryValidity, "tools-check-geom-validity", "Tools.Check Geometry Validity", tr("&Check Geometry Validity..."), tr("Check Geometry Validity"), true, false, true, m_menubar);
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
   initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&Advanced..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
   initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Layer..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
@@ -441,6 +443,7 @@ void TerraView::initSlotsConnections()
 
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
 
+  connect(m_toolsCheckGeometryValidity, SIGNAL(triggered()), SLOT(onToolsCheckGeometryValidityTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_toolsDataExchangerDirect, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectTriggered()));
@@ -586,6 +589,8 @@ void TerraView::addMenusActions()
 
   m_toolsMenu->addAction(m_toolsDataSourceExplorer);
   m_toolsMenu->addAction(m_toolsQueryDataSource);
+  m_toolsMenu->addSeparator();
+  m_toolsMenu->addAction(m_toolsCheckGeometryValidity);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsRasterMultiResolution);
   m_toolsMenu->addSeparator();
@@ -1661,6 +1666,28 @@ void TerraView::onPluginsManagerTriggered()
   }
 }
 
+void TerraView::onToolsCheckGeometryValidityTriggered()
+{
+  te::qt::af::evt::GetAvailableLayers e;
+  te::qt::af::evt::GetLayerSelected ed;
+
+  emit triggered(&e);
+  emit triggered(&ed);
+
+  std::list<te::map::AbstractLayerPtr> layers = e.m_layers;
+  te::map::AbstractLayerPtr selectedlayer = ed.m_layer;
+
+  te::qt::widgets::CheckGeomValidityDialog* dlg = new te::qt::widgets::CheckGeomValidityDialog(this);
+
+  dlg->setAttribute(Qt::WA_DeleteOnClose);
+
+  dlg->setLayers(layers, selectedlayer);
+
+  dlg->setMapDisplay(m_display->getDisplay());
+
+  dlg->show();
+
+}
 
 void TerraView::onToolsCustomizeTriggered()
 {

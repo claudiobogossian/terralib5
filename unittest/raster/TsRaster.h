@@ -27,10 +27,14 @@
 #define __TERRALIB_UNITTEST_RASTER_INTERNAL_H
 
 #include <terralib/raster.h>
+#include <terralib/geometry.h>
 #include <boost/shared_ptr.hpp>
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <string>
+#include <vector>
 
 /*!
   \class TsRaster
@@ -51,6 +55,8 @@ class TsRaster : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(tcRasterGrid );
 
   CPPUNIT_TEST(tcRasterCopyConstructor );
+  
+  CPPUNIT_TEST(tcRasterize );
 
   // add other tests (tcXxxx)
 
@@ -58,11 +64,16 @@ class TsRaster : public CPPUNIT_NS::TestFixture
 
   protected :
     
+    bool loadSHPFile( const std::string& shpFileName, 
+      std::vector< te::gm::Geometry* >& geomPtrs );
+    
     void tcRasterConstructor();
 
     void tcRasterGrid();
     
     void tcRasterCopyConstructor();
+    
+    void tcRasterize();
 
     // add other tests...
 };
