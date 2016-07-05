@@ -18,40 +18,27 @@
  */
 
 /*!
-  \file terralib/unittest/ogc-wcs/main.cpp
+  \file terralib/unittest/ogc-wcs/MockCurlWrapper.h
 
-  \brief Main file of test suit for the WCS Client Plugin.
+  \brief A mock class to simulate the use of Lib Curl.
 
   \author Emerson Moraes
  */
 
-// TerraLib
-#include <terralib/Defines.h>
-
-// STL
-#include <cstdlib>
-#include <iostream>
-
-// QT
-#include <QApplication>
-
-// Boost
-#define BOOST_TEST_NO_MAIN
-#include <boost/test/unit_test.hpp>
+#include <terralib/ws/core/CurlWrapper.h>
 
 // GMock
 #include <gmock/gmock.h>
 
-bool init_unit_test()
+class MockCurlWrapper : public te::ws::core::CurlWrapper
 {
-  return true;
-}
+public:
 
-int main(int argc, char *argv[])
-{
-  QApplication app(argc, argv);
+  MockCurlWrapper() = default;
 
-  ::testing::InitGoogleMock(&argc, argv);
+  virtual ~MockCurlWrapper() = default;
 
-  return boost::unit_test::unit_test_main(init_unit_test, argc, argv);
-}
+  MOCK_METHOD2(downloadFile, void(const std::string&, const std::string&));
+
+  MOCK_METHOD2(downloadFile, void(const std::string&, std::FILE*));
+};
