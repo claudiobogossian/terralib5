@@ -32,6 +32,7 @@
 #include "GeometryCollection.h"
 #include "LinearRing.h"
 #include "LineString.h"
+#include "MultiPolygon.h"
 #include "Point.h"
 #include "Polygon.h"
 #include "Utils.h"
@@ -239,4 +240,39 @@ void te::gm::Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& g
   }
   else
     geoms.push_back(g);
+}
+
+std::vector<te::gm::Geometry*> te::gm::FixSelfIntersection(const te::gm::Geometry* g)
+{
+  std::vector<te::gm::Geometry*> result;
+
+  std::auto_ptr<te::gm::Geometry> geomBuffer(g->buffer(0.0));
+
+  std::vector<te::gm::Geometry*> vecSingleGeoms;
+  te::gm::Multi2Single(geomBuffer.get(), vecSingleGeoms);
+
+  if (g->getGeomTypeId() == te::gm::MultiPolygonType)
+  {
+    for (std::size_t j = 0; j < vecSingleGeoms.size(); ++j)
+    {
+      te::gm::MultiPolygon* pol = new te::gm::MultiPolygon(vecSingleGeoms.size(), te::gm::MultiPolygonType, g->getSRID());
+
+      pol->add((te::gm::Geometry*)vecSingleGeoms[j]->clone());
+
+      result.push_back(pol);
+    }
+  }
+  else if (g->getGeomTypeId() == te::gm::PolygonType)
+  {
+    for (std::size_t j = 0; j < vecSingleGeoms.size(); ++j)
+    {
+      result.push_back((te::gm::Geometry*)vecSingleGeoms[j]->clone());
+    }
+  }
+  else
+  {
+    throw te::common::Exception(TE_TR("Unexpected geometry type!"));
+  }
+
+  return result;
 }
