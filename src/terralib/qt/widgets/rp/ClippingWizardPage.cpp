@@ -107,6 +107,16 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   connect(m_ui->m_startColumnLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
   connect(m_ui->m_widthLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
   connect(m_ui->m_heightLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
+
+  connect(m_ui->m_llxLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeExtentAcquired()));
+  connect(m_ui->m_llyLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeExtentAcquired()));
+  connect(m_ui->m_urxLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeExtentAcquired()));
+  connect(m_ui->m_uryLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeExtentAcquired()));
+
+  connect(m_ui->m_startRowLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeDimensionAcquired()));
+  connect(m_ui->m_startColumnLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeDimensionAcquired()));
+  connect(m_ui->m_widthLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeDimensionAcquired()));
+  connect(m_ui->m_heightLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeDimensionAcquired()));
 }
 
 te::qt::widgets::ClippingWizardPage::~ClippingWizardPage()
@@ -137,7 +147,7 @@ bool te::qt::widgets::ClippingWizardPage::isComplete() const
        m_ui->m_heightLineEdit->text().isEmpty()
       )
       return false;
-    
+
     return true;
   }
   else if(type == CLIPPING_LAYER)
@@ -261,7 +271,14 @@ void te::qt::widgets::ClippingWizardPage::getLayerClipping(
     
     while(ds->moveNext())
     {
-      geomColl->add(static_cast<te::gm::Geometry*>(ds->getGeometry(name)->clone()));
+      std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(name);
+
+      if (geom.get())
+      {
+        te::dt::AbstractData* adCloned = geom->clone();
+
+        geomColl->add(static_cast<te::gm::Geometry*>(adCloned));
+      }
     }
   }
   if(m_ui->m_selectedGeomRadioButton->isChecked())
@@ -447,6 +464,58 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope en
   drawGeom();
 
   emit completeChanged();
+}
+
+void te::qt::widgets::ClippingWizardPage::onEnvelopeExtentAcquired()
+{
+  if (m_ui->m_llxLineEdit->text().isEmpty() ||
+      m_ui->m_llyLineEdit->text().isEmpty() ||
+      m_ui->m_urxLineEdit->text().isEmpty() ||
+      m_ui->m_uryLineEdit->text().isEmpty())
+    return;
+
+  te::gm::Envelope env;
+
+  env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
+  env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
+  env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
+  env.m_ury = m_ui->m_uryLineEdit->text().toDouble();
+
+  m_envExt = env;
+
+  drawGeom();
+}
+
+void te::qt::widgets::ClippingWizardPage::onEnvelopeDimensionAcquired()
+{
+  if (m_ui->m_startRowLineEdit->text().isEmpty() ||
+      m_ui->m_startColumnLineEdit->text().isEmpty() ||
+      m_ui->m_widthLineEdit->text().isEmpty() ||
+      m_ui->m_heightLineEdit->text().isEmpty())
+    return;
+
+  int x = m_ui->m_startColumnLineEdit->text().toInt();
+  int y = m_ui->m_startRowLineEdit->text().toInt();
+  int width = m_ui->m_widthLineEdit->text().toInt();
+  int height = m_ui->m_heightLineEdit->text().toInt();
+
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
+
+  if (ds.get())
+  {
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+    if (inputRst.get())
+    {
+      te::gm::Coord2D ulc = inputRst->getGrid()->gridToGeo(((double)x) - 0.5, ((double)y) - 0.5);
+      te::gm::Coord2D lrc = inputRst->getGrid()->gridToGeo(((double)(x + width)) - 0.5, ((double)(y + height)) - 0.5);
+
+      m_envDim = te::gm::Envelope(ulc.x, lrc.y, lrc.x, ulc.y);
+    }
+  }
+
+  drawGeom();
 }
 
 void te::qt::widgets::ClippingWizardPage::fillClippingTypes()

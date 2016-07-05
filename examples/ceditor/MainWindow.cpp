@@ -1,6 +1,25 @@
+/*
+ Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+ 
+ This file is part of the TerraLib - a Framework for building GIS enabled applications.
+ 
+ TerraLib is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License,
+ or (at your option) any later version.
+ 
+ TerraLib is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with TerraLib. See COPYING. If not, write to
+ TerraLib Team at <terralib-team@terralib.org>.
+ */
 
+// Example
 #include "MainWindow.h"
-
 #include <ui_CodeEditorForm.h>
 
 // TerraLib
@@ -11,41 +30,44 @@
 // Qt
 #include <QFileDialog>
 
+// STL
 #include <iostream>
 
-class OutPutStream: public std::basic_streambuf<char>
+class OutPutStream : public std::basic_streambuf<char>
 {
-public:
-  OutPutStream(std::ostream &stream, QTextEdit* text_edit): m_stream(stream)
-  {
-    log_window = text_edit;
-    m_old_buf = stream.rdbuf();
-    stream.rdbuf(this);
-  }
-  ~OutPutStream()
-  {
-    // output anything that is left
-    if(!m_string.empty())
-      log_window->append(m_string.c_str());
+  public:
 
-    m_stream.rdbuf(m_old_buf);
-  }
-
-  static void registerQDebugMessageHandler()
-  {
-    qInstallMessageHandler(myQDebugMessageHandler);
-  }
-
-protected:
-  virtual int_type overflow(int_type v)
-  {
-    if(v == '\n')
+    OutPutStream(std::ostream &stream, QTextEdit* text_edit): m_stream(stream)
     {
-      log_window->append("");
+      log_window = text_edit;
+      m_old_buf = stream.rdbuf();
+      stream.rdbuf(this);
     }
-    return v;
-  }
+  
+    ~OutPutStream()
+    {
+// output anything that is left
+      if(!m_string.empty())
+        log_window->append(m_string.c_str());
 
+      m_stream.rdbuf(m_old_buf);
+    }
+
+    static void registerQDebugMessageHandler()
+    {
+      qInstallMessageHandler(myQDebugMessageHandler);
+    }
+
+  protected:
+
+    virtual int_type overflow(int_type v)
+    {
+      if(v == '\n')
+      {
+        log_window->append("");
+      }
+      return v;
+    }
 
   virtual std::streamsize xsputn(const char *p, std::streamsize n)
   {
@@ -82,7 +104,6 @@ private:
   std::string m_string;
 
   QTextEdit* log_window;
-  QTextStream* m_txtStream;
 };
 
 MainWindow::MainWindow(QWidget *parent):

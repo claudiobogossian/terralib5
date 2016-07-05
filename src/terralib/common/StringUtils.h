@@ -32,6 +32,7 @@
 #include "Config.h"
 
 // STL
+#include <cinttypes>
 #include <cstdio>
 #include <cstring>
 #include <limits>
@@ -41,6 +42,7 @@
 
 // Boost
 #include <boost/cstdint.hpp>
+
 
 namespace te
 {
@@ -57,7 +59,7 @@ namespace te
       sprintf(name, "%hd", value);
       return name;
     }
-    
+
     /*!
       \brief It converts a unsigned short integer value to a string.
 
@@ -68,8 +70,8 @@ namespace te
       char name[std::numeric_limits<boost::uint16_t>::digits10 + 2];
       sprintf(name, "%hu", value);
       return name;
-    }        
-    
+    }
+
     /*!
       \brief It converts an integer value to a string.
 
@@ -93,7 +95,7 @@ namespace te
       sprintf(name, "%u", value);
       return name;
     }
-    
+
     /*!
       \brief It converts a long value to a string.
 
@@ -102,9 +104,9 @@ namespace te
     inline std::string Convert2String(boost::int64_t value)
     {
       char name[std::numeric_limits<boost::int64_t>::digits10 + 2];
-      sprintf(name, "%lli", value);
+      sprintf(name, "%" PRId64 "", value);
       return name;
-    }    
+    }
 
     /*!
       \brief It converts a unsigned long value to a string.
@@ -114,7 +116,7 @@ namespace te
     inline std::string Convert2String(boost::uint64_t value)
     {
       char name[std::numeric_limits<boost::uint64_t>::digits10 + 2];
-      sprintf(name, "%llu", value);
+      sprintf(name, "%" PRIu64 "", value);
       return name;
     }
 
@@ -162,7 +164,7 @@ namespace te
       \param value The string value to be converted.
 
       \return The converted string.
-     */  
+     */
     inline std::string Convert2UCase(const std::string& value)
     {
       size_t size = value.size();
@@ -173,7 +175,7 @@ namespace te
         aux[i] = ((value[i] >= 97) && (value[i] <= 122)) ? (value[i] - 32) : value[i];
 
       return aux;
-    }  
+    }
 
     /*!
       \brief It converts a string to upper case in place (it doesn't allocate an auxiliar buffer).
@@ -181,7 +183,7 @@ namespace te
       \param value The string value to be converted.
 
       \return The converted string.
-     */  
+     */
     inline void Convert2UCaseInPlace(std::string& value)
     {
       size_t size = value.size();
@@ -196,7 +198,7 @@ namespace te
       \param value The string value to be converted.
 
       \return The converted string.
-     */  
+     */
     inline std::string Convert2LCase(const std::string& value)
     {
       size_t size = value.size();
@@ -207,7 +209,7 @@ namespace te
         aux[i] = ((value[i] >= 65) && (value[i] <= 90)) ? (value[i] + 32) : value[i];
 
       return aux;
-    }  
+    }
 
     /*!
       \brief It tokenizes a given string with a delimiter of your own choice.
@@ -242,7 +244,7 @@ namespace te
 
     /*!
       \brief It extracts a key-value map from a string.
-      
+
       \param kvpStr       A string with key-value-pairs to be splitted.
       \param kvp          A map to output the pairs: (parameter-name, parameter-value).
       \param kvpDelimiter The character used to delimit the key-value-pairs.
@@ -267,7 +269,7 @@ namespace te
 
 // for each token let's find a kvp
       size_t size = tokens.size();
-  
+
       for(size_t i = 0; i < size; ++i)
       {
         std::vector<std::string> kv;
@@ -335,7 +337,7 @@ namespace te
 
         strncpy(as[i], vs[i]->c_str(), vs[i]->length() + 1);
       }
-      
+
       return as;
     }
 
@@ -360,7 +362,7 @@ namespace te
 
         strncpy(as[i], vs[i].c_str(), vs[i].length() + 1);
       }
-      
+
       return as;
     }
 

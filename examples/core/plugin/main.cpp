@@ -1,4 +1,4 @@
-/* 
+/*
   Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
   This file is part of the TerraLib - a Framework for building GIS enabled applications.
@@ -19,14 +19,15 @@
  */
 
 /*!
-  \file terralib/core/encoding/Config.h
+  \file terralib/examples/core/plugin/main.cpp
 
-  \brief Configuration flags for Encoding/Decoding support.
- */
+  \brief Examples for the Terralib Plugin Module
 
-#ifndef __TERRALIB_CORE_ENCODING_CONFIG_H__
-#define __TERRALIB_CORE_ENCODING_CONFIG_H__
+  \author Matheus Cavassan Zaglia
+*/
 
-#include "../Config.h"
+// TerraLib
+int main(int argc, char *argv[])
+{
+}
 
-#endif  // __TERRALIB_CORE_ENCODING_CONFIG_H__

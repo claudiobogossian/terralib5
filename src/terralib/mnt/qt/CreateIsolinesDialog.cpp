@@ -130,8 +130,15 @@ void te::mnt::CreateIsolinesDialog::setLayers(std::list<te::map::AbstractLayerPt
           std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
           mntType type = getMNTType(dsType.get());
 
-          if (type == TIN || type == GRID)
+          if (type == TIN)
             m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+          if (type == GRID)
+          {
+            std::auto_ptr<te::da::DataSet> inds = it->get()->getData();
+            std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
+            if (inds->getRaster(rpos)->getNumberOfBands() == 1)
+              m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+          }
 
           dsType.release();
         }
@@ -343,6 +350,7 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
           m_inputType = GRID;
           std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
           std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
+
           te::mnt::getMinMax(inputRst.get(), m_min, m_max);
           m_ui->m_dummycheckBox->setVisible(true);
           m_ui->m_dummylineEdit->setVisible(true);

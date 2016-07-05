@@ -28,46 +28,43 @@
 
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
-# Examples of core/uri
-file(GLOB TERRALIB_EXAMPLE_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.cpp)
-file(GLOB TERRALIB_EXAMPLE_CORE_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.h)
-
-source_group("Source Files\\uri"  FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES})
-source_group("Header Files\\uri"  FILES ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES})
-
-add_executable(terralib_example_core_uri ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES})
-
-target_link_libraries(terralib_example_core_uri terralib_mod_core)
-
-install(FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_URI_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/core COMPONENT devel)
-
-
 # Examples of core/encoding
+
 file(GLOB TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/encoding/*.cpp)
-file(GLOB TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/encoding/*.h)
 
 source_group("Source Files\\encoding"  FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES})
-source_group("Header Files\\encoding"  FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES})
 
-add_executable(terralib_example_core_encoding ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES})
+add_executable(terralib_example_core_encoding ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES})
 
 target_link_libraries(terralib_example_core_encoding terralib_mod_core)
 
-install(FILES ${TERRALIB_EXAMPLE_CORE_ENCODING_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_ENCODING_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/encoding COMPONENT devel)
+
+#Examples of core/lib
 
 file(GLOB TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/*.cpp)
 
-add_executable(terralib_example_core_lib ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
+source_group("Source Files\\lib"  FILES ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
 
+add_executable(terralib_example_core_lib ${TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES})
 
 target_link_libraries(terralib_example_core_lib terralib_mod_core
                                                 ${Boost_FILESYSTEM_LIBRARY}
                                                 ${Boost_SYSTEM_LIBRARY})
 
 
-#Examples of translator
+#Examples of core/logger
+
+file(GLOB TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/logger/*.cpp)
+
+source_group("Source Files\\logger"  FILES ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+
+add_executable(terralib_example_core_logger ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+
+target_link_libraries(terralib_example_core_logger terralib_mod_core)
+
+
+#Examples of core/translator
+
 file(GLOB TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/translator/*.cpp)
 
 source_group("Source Files\\translator"  FILES ${TERRALIB_EXAMPLE_CORE_TRANSLATOR_SRC_FILES})
@@ -80,14 +77,27 @@ TERRALIB_REGISTER_TRANSLATION("terralib_example_core_translator" "pt_BR"
                               "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations"
                               "${CMAKE_BINARY_DIR}/share/terralib/translations")
 
-#Examples of logger
-file(GLOB TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/logger/*.cpp)
 
-source_group("Source Files\\logger"  FILES ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+#Examples of core/plugin
 
-add_executable(terralib_example_core_logger ${TERRALIB_EXAMPLE_CORE_LOGGER_SRC_FILES})
+file(GLOB TERRALIB_EXAMPLE_CORE_PLUGIN_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/*.cpp)
 
-target_link_libraries(terralib_example_core_logger terralib_mod_core)
+source_group("Source Files\\plugin"  FILES ${TERRALIB_EXAMPLE_CORE_PLUGIN_SRC_FILES})
+
+add_executable(terralib_example_core_plugin ${TERRALIB_EXAMPLE_CORE_PLUGIN_SRC_FILES})
+
+target_link_libraries(terralib_example_core_plugin terralib_mod_core)
+
+
+# Examples of core/uri
+
+file(GLOB TERRALIB_EXAMPLE_CORE_URI_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/uri/*.cpp)
+
+source_group("Source Files\\uri"  FILES ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES})
+
+add_executable(terralib_example_core_uri ${TERRALIB_EXAMPLE_CORE_URI_SRC_FILES})
+
+target_link_libraries(terralib_example_core_uri terralib_mod_core)
 
 # Library of functions to example lib
 if(WIN32)

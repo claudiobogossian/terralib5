@@ -61,7 +61,7 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_common
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
                                               ${Boost_THREAD_LIBRARY}
-											  ${LUA_LIBRARIES}
+                                              ${LUA_LIBRARIES}
                                               )
 
 install(TARGETS terralib_mod_binding_lua

@@ -27,7 +27,7 @@
 
 #include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -128,7 +128,7 @@ bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
       default:
         {
 #ifdef TERRALIB_LOGGER_ENABLED
-          te::common::Logger::logDebug("vp", "Geometric Operation - The operation is not valid.");
+          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - The operation is not valid.");
 #endif //TERRALIB_LOGGER_ENABLED
         }
     }
@@ -256,7 +256,7 @@ bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
       default:
         {
 #ifdef TERRALIB_LOGGER_ENABLED
-          te::common::Logger::logDebug("vp", "Geometric Operation - Strategy Not found!");
+          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Strategy Not found!");
 #endif //TERRALIB_LOGGER_ENABLED
         }
         return false;
@@ -328,7 +328,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -417,7 +417,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -505,7 +505,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -597,7 +597,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -687,7 +687,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
         default:
         {
 #ifdef TERRALIB_LOGGER_ENABLED
-          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
 #endif //TERRALIB_LOGGER_ENABLED
         }
       }
@@ -779,7 +779,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }
@@ -943,7 +943,7 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
         default:
           {
 #ifdef TERRALIB_LOGGER_ENABLED
-            te::common::Logger::logDebug("vp", "Geometric Operation - Property type not found.");
+            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Property type not found.");
 #endif //TERRALIB_LOGGER_ENABLED
           }
       }

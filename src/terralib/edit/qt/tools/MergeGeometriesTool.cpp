@@ -104,16 +104,14 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   if (m_feature == 0)
   {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Merge not possible"));
+    QMessageBox::information(m_display, tr("Merge Geometries"), tr("Pick Feature Failed."));
     return;
   }
 
   mergeGeo = dynamic_cast<te::gm::Geometry*>(m_geocollection->getGeometryN(0)->clone());
 
   for (std::size_t i = 1; i < m_geocollection->getNumGeometries(); i++)
-  {
     mergeGeo = Union(*mergeGeo, *m_geocollection->getGeometryN(i));
-  }
 
   mergeGeo = convertGeomType(m_layer, mergeGeo);
 
@@ -183,7 +181,7 @@ void te::edit::MergeGeometriesTool::getBaseOID(const te::da::ObjectIdSet& objSet
   for (it = objSet.begin(); it != objSet.end(); ++it)
     qValues.append((*it)->getValueAsString().c_str());
 
-  QString qValue = QInputDialog::getItem(NULL, QString(tr("TerraLib Edit Qt Plugin")), QObject::tr(msg.toLatin1()), qValues, 0, false, &ok);
+  QString qValue = QInputDialog::getItem(m_display, QString(tr("Merge Geometries")), QObject::tr(msg.toLatin1()), qValues, 0, false, &ok);
 
   if (qValue.isEmpty() || !ok)
   {
@@ -262,7 +260,6 @@ te::gm::Geometry* te::edit::MergeGeometriesTool::Union(te::gm::Geometry& g1, te:
 
 void te::edit::MergeGeometriesTool::draw()
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
     return;
@@ -284,7 +281,6 @@ void te::edit::MergeGeometriesTool::draw()
   renderer.end();
 
   m_display->repaint();
-
 }
 
 void te::edit::MergeGeometriesTool::storeFeature()

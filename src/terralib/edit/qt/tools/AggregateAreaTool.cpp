@@ -107,6 +107,8 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     storeUndoCommand();
 
+    te::edit::CreateLineTool::clear();
+
     return true;
   }
   catch (std::exception& e)

@@ -123,7 +123,10 @@ bool te::mnt::Smooth::AdjustCatmullRom(te::gm::LineString &iso)
         xyD = xyC;
     }
     else
+    {
       getNext = 1;
+      //ipts++;
+    }
 
     double a3 = (-xyA.getX() + 3 * (xyB.getX() - xyC.getX()) + xyD.getX()) / 2;
     double a2 = (2 * xyA.getX() - 5 * xyB.getX() + 4 * xyC.getX() - xyD.getX()) / 2;

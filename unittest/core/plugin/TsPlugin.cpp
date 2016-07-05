@@ -19,14 +19,17 @@
  */
 
 /*!
-  \file terralib/core/utils/Config.h
+  \file terralib/unittest/core/plugin/TsPlugin.cpp
 
-  \brief Configuration flags for utils support.
+  \brief A test suit for the TerraLib Core Plugin Module.
+
+  \author Matheus Cavassan Zaglia.
  */
 
-#ifndef __TERRALIB_CORE_UTILS_CONFIG_H__
-#define __TERRALIB_CORE_UTILS_CONFIG_H__
+// Boost
+#include <boost/test/unit_test.hpp>
 
-#include "../Config.h"
+BOOST_AUTO_TEST_SUITE(plugin_test_case)
 
-#endif  // __TERRALIB_CORE_UTILS_CONFIG_H__
+BOOST_AUTO_TEST_SUITE_END()
+

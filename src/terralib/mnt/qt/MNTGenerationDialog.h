@@ -97,7 +97,6 @@ namespace te
       Interpolator m_inter;
 
       int m_outsrid;
-
     }; //class MNTGenerationDialog
   } //mnt
 } //te

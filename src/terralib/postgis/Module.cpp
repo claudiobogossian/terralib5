@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 #include "../core/utils/Platform.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
