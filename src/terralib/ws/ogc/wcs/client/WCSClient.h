@@ -39,6 +39,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/dataset/DataSet.h"
+#include "../../../core/CurlWrapper.h"
 #include "XMLParser.h"
 #include "DataTypes.h"
 
@@ -127,11 +128,15 @@ namespace te
         */
         const struct Capabilities& getCapabilities() const;
 
+
+        void setCurlWrapper(te::ws::core::CurlWrapper* curlWrapper);
+
       private:
         std::string m_uri;
         std::string m_version;
         std::string m_dataDir;
         struct Capabilities m_capabilities;
+        std::shared_ptr<te::ws::core::CurlWrapper> m_curl;
       };
     }
   }

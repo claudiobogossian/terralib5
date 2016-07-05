@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../core/CurlWrapper.h"
 #include "WCSClient.h"
 
 //STL
@@ -43,6 +44,8 @@ te::ws::ogc::WCSClient::WCSClient(const std::string usrDataDir, const std::strin
   : m_uri(uri + "?SERVICE=WCS"), m_version(version)
 {
   m_dataDir = usrDataDir + "/wcs/";
+
+  m_curl = std::shared_ptr<te::ws::core::CurlWrapper>(new te::ws::core::CurlWrapper());
 
   if (boost::filesystem::is_directory(usrDataDir) && !boost::filesystem::exists(m_dataDir))
     boost::filesystem::create_directories(m_dataDir);
@@ -200,58 +203,23 @@ std::string te::ws::ogc::WCSClient::makeRequest(const std::string url) const
   if(curl) curl_easy_cleanup(curl);
 
   return callback;
-
-  return callback;
-}
-
-size_t write_file_callback(void *ptr, size_t size, size_t nmemb, void *data)
-{
-  FILE *writehere = (FILE *)data;
-  return fwrite(ptr, size, nmemb, writehere);
 }
 
 std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const std::string fileName) const
 {
-  CURL* curl;
-  std::FILE* file;
-
   std::string path = m_dataDir + fileName;
 
-  curl = curl_easy_init();
-  curl_easy_cleanup(curl);
-  curl = curl_easy_init();
-
-  CURLcode status;
-  file = std::fopen(path .c_str(), "wb");
-
-  if(!file)
-    throw te::common::Exception(TE_TR("Could not open file to write!"));
-
-  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
-  // Get data to be written
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_file_callback);
-  // Set a pointer to our file
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
-  /* Perform the request, status will get the return code */
-  status = curl_easy_perform(curl);
-
-  // Check for errors
-  if(status != CURLE_OK)
-    throw te::common::Exception(curl_easy_strerror(status));
-
-  if (!file)
-    throw te::common::Exception(TE_TR("Error at received file!"));
-  else
-    std::fclose(file);
-
-  if(curl) curl_easy_cleanup(curl);
+  m_curl->downloadFile(url, path);
 
   return path;
 }
 
-
 const struct te::ws::ogc::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
 {
   return m_capabilities;
+}
+
+void te::ws::ogc::WCSClient::setCurlWrapper(te::ws::core::CurlWrapper* curlWrapper)
+{
+  m_curl.reset(curlWrapper);
 }
