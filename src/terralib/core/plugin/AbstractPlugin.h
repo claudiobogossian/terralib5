@@ -74,6 +74,12 @@ namespace te
           \exception PluginShutdownException It may throws an exception.
          */
         virtual void shutdown() = 0;
+      
+      private:
+      
+// no copy allowed
+        AbstractPlugin(const AbstractPlugin&);
+        AbstractPlugin& operator=(const AbstractPlugin&);
     };
 
   }  // end namespace core
