@@ -27,56 +27,47 @@
 */
 
 // TerraLib
-#include <terralib/common/TerraLib.h>
-#include <terralib/core/lib/Library.h>
-#include <terralib/core/utils/Platform.h>
-#include <terralib/plugin/PluginInfo.h>
-#include <terralib/plugin/PluginManager.h>
-#include <terralib/plugin/Utils.h>
-#include <terralib/vm/core/VirtualMachine.h>
-#include <terralib/vm/core/VirtualMachineManager.h>
+#include <terralib/common.h>
+#include <terralib/core.h>
+#include <terralib/plugin.h>
+#include <terralib/vm.h>
 
+// STL
 #include <memory>
-
-
-void LoadModule(std::string m)
-{
-  std::string mod_name = "share/terralib/plugins/" + m + ".teplg";
-  std::string plgManifest = te::core::FindInTerraLibPath(mod_name);
-
-  std::unique_ptr<te::plugin::PluginInfo> i(te::plugin::GetInstalledPlugin(plgManifest));
-
-  te::plugin::PluginManager::getInstance().load(*i.get());
-}
-
-void LoadModules()
-{
-  TerraLib::getInstance().initialize();
-
-  LoadModule("te.da.gdal");
-  LoadModule("te.da.ogr");
-  LoadModule("te.da.pgis");
-  LoadModule("te.vm.lua");
-}
-
+#include <string>
 
 int main(int argc, char *argv[])
 {
-  LoadModules();
+  TerraLib::getInstance().initialize();
+  
+  try
+  {
+// load Lua Virtual Machine
+    std::string lvm_lua_manifest = te::core::FindInTerraLibPath("share/terralib/plugins/te.vm.lua.teplg");
+    
+    std::unique_ptr<te::plugin::PluginInfo> lvm_lua_info(te::plugin::GetInstalledPlugin(lvm_lua_manifest));
 
-  std::string luaScript = te::core::FindInTerraLibPath("share/terralib/examples/lua/geometry.lua");
+    te::plugin::PluginManager::getInstance().load(*lvm_lua_info);
 
-  te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get("lua");
+    std::string lua_script = te::core::FindInTerraLibPath("examples/vm/vm_example.lua");
 
-  vm->build(luaScript);
+    te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get("lua");
 
-  vm->execute();
+    vm->build(lua_script);
 
-  te::plugin::PluginManager::getInstance().unloadAll();
+    vm->execute();
+
+    te::plugin::PluginManager::getInstance().unloadAll();
+  }
+  catch(const te::vm::core::Exception& e)
+  {
+    if(const std::string* d = boost::get_error_info<te::ErrorDescription>(e))
+    {
+      std::cerr << *d << std::endl;
+    }
+  }
 
   TerraLib::getInstance().finalize();
-
-  getchar();
 
   return EXIT_SUCCESS;
 }

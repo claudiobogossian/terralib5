@@ -81,38 +81,22 @@ bool te::edit::SplitPolygonTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  try
-  {
-    if (m_sideToClose != Qt::LeftButton || Qt::LeftButton != e->button())
-      return false;
-
-    startSplit();
-
-    return true;
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(m_display, tr("Error"), QString(tr("Could not split.") + " %1.").arg(e.what()));
+  if (m_sideToClose != Qt::LeftButton || Qt::LeftButton != e->button())
     return false;
-  }
+
+  startSplit();
+
+  return true;
 }
 
 bool te::edit::SplitPolygonTool::mouseReleaseEvent(QMouseEvent* e)
 {
-  try
-  {
-    if (m_sideToClose != Qt::RightButton || Qt::RightButton != e->button())
-      return false;
-
-    startSplit();
-
-    return true;
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(m_display, tr("Error"), QString(tr("Could not split.") + " %1.").arg(e.what()));
+  if (m_sideToClose != Qt::RightButton || Qt::RightButton != e->button())
     return false;
-  }
+
+  startSplit();
+
+  return true;
 }
 
 void te::edit::SplitPolygonTool::startSplit()
@@ -123,6 +107,7 @@ void te::edit::SplitPolygonTool::startSplit()
   m_isFinished = true;
 
   m_oidSet = new te::da::ObjectIdSet();
+
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
   std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
 
@@ -132,7 +117,7 @@ void te::edit::SplitPolygonTool::startSplit()
   while (ds->moveNext())
   {
     m_feature = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), ds->getGeometry(gpos).release(), te::edit::GEOMETRY_UPDATE);
-    splitPolygon(ds->getGeometry(gpos).release());
+    splitPolygon();
   }
 
   if(m_oidSet->size() == 0)
@@ -145,7 +130,7 @@ void te::edit::SplitPolygonTool::startSplit()
   emit splitFinished(*m_oidSet);
 }
 
-void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
+void te::edit::SplitPolygonTool::splitPolygon()
 {
   if (m_feature == 0)
     return;
@@ -155,16 +140,16 @@ void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
   std::auto_ptr<te::gm::Geometry> vgeoms;
   std::vector<te::gm::Polygon*> outputPolygons;
 
-  int SRID = m_feature->getGeometry()->getSRID();
+  int srid = m_feature->getGeometry()->getSRID();
 
   feature_bounds.reset(m_feature->getGeometry()->getBoundary());
-  feature_bounds->setSRID(SRID);
+  feature_bounds->setSRID(srid);
 
   blade_in.reset(te::edit::CreateLineTool::buildLine());
-  blade_in->setSRID(SRID);
+  blade_in->setSRID(srid);
 
   vgeoms.reset(feature_bounds->Union(blade_in.get()));
-  vgeoms->setSRID(SRID);
+  vgeoms->setSRID(srid);
 
   te::gm::Polygonizer(vgeoms.get(), outputPolygons);
 
@@ -173,16 +158,17 @@ void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
   std::size_t i = 1;
   while (i < outputPolygons.size())
   {
-    if (outputPolygons.at(i)->getSRID() != m_feature->getGeometry()->getSRID())
-      outputPolygons.at(i)->setSRID(m_feature->getGeometry()->getSRID());
-
     if (!outputPolygons.at(i)->equals(m_feature->getGeometry()) &&
          outputPolygons.at(i)->coveredBy(m_feature->getGeometry()->buffer(m_tol)))
     {
-        Feature* f = new Feature(GenerateId(), outputPolygons.at(i), te::edit::GEOMETRY_CREATE);
-        repository.addFeature(m_layer->getId(), f->clone());
+      Feature* f = new Feature(GenerateId(), outputPolygons.at(i), te::edit::GEOMETRY_CREATE);
 
-        m_oidSet->add(f->getId());
+      if (outputPolygons.at(i)->getSRID() != m_display->getSRID())
+        outputPolygons.at(i)->setSRID(m_display->getSRID());
+
+      repository.addFeature(m_layer->getId(), f->clone());
+
+      m_oidSet->add(f->getId());
     }
     i++;
   }
@@ -190,6 +176,10 @@ void te::edit::SplitPolygonTool::splitPolygon(te::gm::Geometry* geom)
   if(m_oidSet->size() && outputPolygons.at(0)->coveredBy(m_feature->getGeometry()->buffer(m_tol)))
   {
     m_feature->setGeometry(outputPolygons.at(0));
+
+    if (outputPolygons.at(0)->getSRID() != m_display->getSRID())
+      outputPolygons.at(0)->setSRID(m_display->getSRID());
+
     repository.addFeature(m_layer->getId(), m_feature->clone());
 
     m_oidSet->add(m_feature->getId());

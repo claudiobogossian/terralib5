@@ -150,7 +150,7 @@ namespace te
   \param filename The name of the log file.
   \param format The format string of the logger.
   */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_ADD_LOGGER(name, filename, format) te::core::Logger::getInstance().addLogger(name, filename, format)
 #else
   #define TE_ADD_LOGGER(name, filename, format) ((void)0)
@@ -165,7 +165,7 @@ namespace te
 
   \exception std::exception If the configuration file is doesn't load.
   */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_ADD_LOGGER_FROM_FILE(filename) te::core::Logger::getInstance().addLoggerFromFile(filename)
 #else
   #define TE_ADD_LOGGER_FROM_FILE(filename) ((void)0)
@@ -178,7 +178,7 @@ namespace te
 
   \param  filename The name of the log file.
  */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
   #define TE_INIT_DEFAULT_LOGGER(filename) te::core::Logger::getInstance().addLogger(TERRALIB_DEFAULT_LOGGER, filename, TERRALIB_DEFAULT_LOGGER_FORMAT)
 #else
   #define TE_INIT_DEFAULT_LOGGER(filename) ((void)0)
@@ -192,7 +192,11 @@ namespace te
   \param channel The name of your logger.
   \param message The message to be logged.
  */
-#define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::trace)
+#ifdef TERRALIB_LOGGER_TRACE_ENABLED
+  #define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::trace)
+#else
+  #define TE_CORE_LOG_TRACE(channel, message) ((void)0)
+#endif
 
 /*!
   \def TE_CORE_LOG_DEBUG
@@ -202,7 +206,11 @@ namespace te
   \param channel The name of your logger.
   \param message The message to be logged.
  */
-#define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::debug)
+#ifdef TERRALIB_LOGGER_DEBUG_ENABLED
+  #define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::debug)
+#else
+  #define TE_CORE_LOG_DEBUG(channel, message) ((void)0)
+#endif
 
 /*!
   \def TE_CORE_LOG_INFO
@@ -212,7 +220,11 @@ namespace te
   \param channel The name of your logger.
   \param message The message to be logged.
  */
-#define TE_CORE_LOG_INFO(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::info)
+#ifdef TERRALIB_LOGGER_INFO_ENABLED
+  #define TE_CORE_LOG_INFO(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::info)
+#else
+  #define TE_CORE_LOG_INFO(channel, message) ((void)0)
+#endif
 
 /*!
   \def TE_CORE_LOG_WARN
@@ -222,7 +234,11 @@ namespace te
   \param channel The name of your logger.
   \param message The message to be logged.
  */
-#define TE_CORE_LOG_WARN(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::warning)
+#ifdef TERRALIB_LOGGER_WARN_ENABLED
+  #define TE_CORE_LOG_WARN(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::warning)
+#else
+  #define TE_CORE_LOG_WARN(channel, message) ((void)0)
+#endif
 
 /*!
   \def TE_CORE_LOG_ERROR
@@ -232,7 +248,11 @@ namespace te
   \param channel The name of your logger.
   \param message The message to be logged.
  */
-#define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::error)
+#ifdef TERRALIB_LOGGER_ERROR_ENABLED
+  #define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::error)
+#else
+  #define TE_CORE_LOG_ERROR(channel, message) ((void)0)
+#endif
 
 /*!
   \def TE_CORE_LOG_FATAL
@@ -242,7 +262,11 @@ namespace te
   \param channel The name of your logger.
   \param message The message to be logged.
  */
-#define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::fatal)
+#ifdef TERRALIB_LOGGER_FATAL_ENABLED
+  #define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::fatal)
+#else
+  #define TE_CORE_LOG_FATAL(channel, message) ((void)0)
+#endif
 
 /*!
   \def TE_LOG_TRACE
@@ -253,71 +277,7 @@ namespace te
 
   \note The TRACE Level designates finer-grained informational events than the DEBUG.
 */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
-  #define TE_LOG_TRACE(message) TE_CORE_LOG_TRACE(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
-#else
-  #define TE_LOG_TRACE(message) ((void)0)
-#endif
-
-/*!
-  \def TE_LOG_FATAL
-
-  \brief Use this tag in order to log a message to the TerraLib default logger with the ERROR level.
-
-  \param message The message to be logged.
-
-  \note The ERROR level designates error events that might still allow the application to continue running.
-*/
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
-  #define TE_LOG_ERROR(message) TE_CORE_LOG_ERROR(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
-#else
-  #define TE_LOG_ERROR(message) ((void)0)
-#endif
-
-/*!
-  \def TE_LOG_FATAL
-
-  \brief Use this tag in order to log a message to the TerraLib default logger with the FATAL level.
-
-  \param message The message to be logged.
-
-  \note The FATAL level designates very severe error events that will presumably lead the application to abort.
-*/
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
-  #define TE_LOG_FATAL(message) TE_CORE_LOG_FATAL(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
-#else
-  #define TE_LOG_FATAL(message) ((void)0)
-#endif
-
-/*!
-  \def TE_LOG_INFO
-
-  \brief Use this tag in order to log a message to the TerraLib default logger with the INFO level.
-
-  \param message The message to be logged.
-
-  \note The INFO level designates informational messages that highlight the progress of the application at coarse-grained level.
-*/
-#ifdef TERRALIB_CORE_LOGGER_ENAB
-  #define TE_LOG_INFO(message) TE_CORE_LOG_INFO(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
-#else
-  #define TE_LOG_INFO(message) ((void)0)
-#endif
-
-/*!
-  \def TE_LOG_WARN
-
-  \brief Use this tag in order to log a message to the TerraLib default logger with the WARN level.
-
-  \param message The message to be logged.
-
-  \note The WARN level designates potentially harmful situations.
-*/
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
-  #define TE_LOG_WARN(message)TE_CORE_LOG_WARN(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
-#else
-  #define TE_LOG_WARN(message) ((void)0)
-#endif
+#define TE_LOG_TRACE(message) TE_CORE_LOG_TRACE(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
 
 /*!
   \def TE_LOG_DEBUG
@@ -328,10 +288,50 @@ namespace te
 
   \note The DEBUG Level designates fine-grained informational events that are most useful to debug an application.
 */
-#ifdef TERRALIB_CORE_LOGGER_ENABLED
-  #define TE_LOG_DEBUG(message) TE_CORE_LOG_DEBUG(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
-#else
-  #define TE_LOG_DEBUG(message) ((void)0)
-#endif
+#define TE_LOG_DEBUG(message) TE_CORE_LOG_DEBUG(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+
+/*!
+  \def TE_LOG_INFO
+
+  \brief Use this tag in order to log a message to the TerraLib default logger with the INFO level.
+
+  \param message The message to be logged.
+
+  \note The INFO level designates informational messages that highlight the progress of the application at coarse-grained level.
+*/
+#define TE_LOG_INFO(message) TE_CORE_LOG_INFO(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+
+/*!
+  \def TE_LOG_WARN
+
+  \brief Use this tag in order to log a message to the TerraLib default logger with the WARN level.
+
+  \param message The message to be logged.
+
+  \note The WARN level designates potentially harmful situations.
+*/
+#define TE_LOG_WARN(message)TE_CORE_LOG_WARN(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+
+/*!
+  \def TE_LOG_ERROR
+
+  \brief Use this tag in order to log a message to the TerraLib default logger with the ERROR level.
+
+  \param message The message to be logged.
+
+  \note The ERROR level designates error events that might still allow the application to continue running.
+*/
+#define TE_LOG_ERROR(message) TE_CORE_LOG_ERROR(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+
+/*!
+  \def TE_LOG_FATAL
+
+  \brief Use this tag in order to log a message to the TerraLib default logger with the FATAL level.
+
+  \param message The message to be logged.
+
+  \note The FATAL level designates very severe error events that will presumably lead the application to abort.
+*/
+#define TE_LOG_FATAL(message) TE_CORE_LOG_FATAL(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
 
 #endif  // __TERRALIB_CORE_LOGGER_LOGGER_H__

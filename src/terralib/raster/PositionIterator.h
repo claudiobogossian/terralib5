@@ -576,54 +576,130 @@ namespace te
           // Sort the intersection points through its Y coordinates (column)
           std::sort(intersectionPoints.begin(), intersectionPoints.end(),
                     te::rst::StdSortPointPointerComparison);
-
+          
+          // Removing duplicated points
+          
+          int positionBegin = 0;
+          int positionEnd = 0;
+          
+          while (positionBegin < ((int)intersectionPoints.size() - 1))  
+          {
+            if( intersectionPoints[positionBegin] )
+            {
+              positionEnd = positionBegin + 1;
+              
+              while (
+                      ( positionEnd < ((int)intersectionPoints.size() - 1) )
+                      &&
+                      ( intersectionPoints[positionEnd] != 0 )
+                      &&
+                      intersectionPoints[positionBegin]->equals(
+                        intersectionPoints[positionEnd], true)
+                    )
+              {
+                delete intersectionPoints[positionEnd];
+                intersectionPoints[positionEnd] = 0;
+                
+                positionEnd++;
+              }
+            }
+            
+            ++positionBegin;
+          }
+    
           // Using the intersection points, build a vector of coordinates (columns) with the start and
           // end column of the current line for each stretch
-          int positionBegin = 0, positionEnd = 1;
-          int startingCol = 0, endingCol = 0;
-          double startingX, startingY, endingX, endingY;
-          while (positionBegin < ((int)intersectionPoints.size() - 1))  {
-            // Ignoring duplicated points
-            while (positionEnd < ((int)intersectionPoints.size() - 1) &&
-              intersectionPoints[positionBegin]->equals(intersectionPoints[positionEnd], true)) {
-              delete intersectionPoints[positionEnd];
-              positionEnd++;
-            }
-
-            startingX = intersectionPoints[positionBegin]->getX();
-            startingY = intersectionPoints[positionBegin]->getY();
-            endingX = intersectionPoints[positionEnd]->getX();
-            endingY = intersectionPoints[positionEnd]->getY();
-
-            // Build the vector of coordinates with the folowing structure: vector<pair<startcolumn, endcolumn>>;
-            // where each pair represents a stretch to be transversed
-
-            if (m_tileIndexer->within_or_touches(te::gm::Point((startingX + (endingX - startingX) / 2), (startingY + (endingY - startingY) / 2), m_polygon->getSRID()))) {
-              startingCol = te::common::Round< double, int >(this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
-              endingCol = te::common::Round< double, int >(this->m_raster->getGrid()->geoToGrid(endingX, endingY).x);
-
-              if (m_columns.size() >= 1) {
-                if (startingCol == m_columns[m_columns.size() - 1].second)
-                  startingCol++;
+          
+          positionBegin = 0;
+          positionEnd = 0;
+          int startingCol = 0;
+          int endingCol = 0;
+          double startingX = 0;
+          double startingY = 0;
+          double endingX = 0;
+          double endingY = 0;          
+          
+          while (positionBegin < ((int)intersectionPoints.size() - 1))  
+          {
+            if( intersectionPoints[positionBegin] )
+            {
+              positionEnd = positionBegin + 1;
+              while (
+                      ( positionEnd < ((int)intersectionPoints.size()) ) 
+                      &&
+                      ( intersectionPoints[positionEnd] == 0 )
+                    )
+              {
+                ++positionEnd;
               }
-              if (startingCol <= m_endingcolumn)
-                m_columns.push_back(std::pair<int, int>(startingCol, endingCol));
-            } else {
-              startingCol = te::common::Round< double, int >(this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
-              if (m_columns.size() >= 1) {
-                if (m_columns[m_columns.size() - 1].second != startingCol)
-                  m_columns.push_back(std::pair<int, int>(startingCol, startingCol));
-              } else
+              
+              startingX = intersectionPoints[positionBegin]->getX();
+              startingY = intersectionPoints[positionBegin]->getY();
+              endingX = intersectionPoints[positionEnd]->getX();
+              endingY = intersectionPoints[positionEnd]->getY();
+
+              // Build the vector of coordinates with the folowing structure: 
+              // vector<pair<startcolumn, endcolumn>>;
+              // where each pair represents a stretch to be transversed
+              
+              startingCol = te::common::Round< double, int >(
+                this->m_raster->getGrid()->geoToGrid(startingX, startingY).x);
+              // Fixing the overlap with the stretch at left (if there
+              // is overlap )
+              if ( !m_columns.empty() ) 
+              {
+                startingCol = std::max( startingCol, 
+                  m_columns[m_columns.size() - 1].second + 1 );
+              }                            
+              startingCol = std::max( 0, startingCol );
+              startingCol = std::min( m_maxcolumns - 1, startingCol );
+              
+              endingCol = te::common::Round< double, int >(
+                this->m_raster->getGrid()->geoToGrid(endingX, endingY).x);
+              endingCol = std::max( 0, endingCol );
+              endingCol = std::min( m_maxcolumns - 1, endingCol );                  
+
+              // Is the middle-point (between the start end end point)
+              // inside the current polygon ??
+              if (  m_tileIndexer->within_or_touches(te::gm::Point(
+                (startingX + (endingX - startingX) / 2.0 ), (startingY + 
+                (endingY - startingY) / 2.0 ), m_polygon->getSRID()))) 
+              {
+                if( startingCol <= endingCol )
+                {
+                  m_columns.push_back(std::pair<int, int>(startingCol, endingCol));
+                }
+              } 
+              else 
+              { 
+                // The middle-point (between the start end end point)
+                // is outside the current polygon
+                
                 m_columns.push_back(std::pair<int, int>(startingCol, startingCol));
+                
+                if( endingCol > startingCol )
+                {
+                  m_columns.push_back(std::pair<int, int>(endingCol, endingCol));
+                }
+              }
+
+              positionBegin = positionEnd + 1;
             }
-
-            delete intersectionPoints[positionBegin];
-            positionBegin = positionEnd;
-            positionEnd++;
+            else
+            {
+              ++positionBegin;
+            }
           }
-
-          if (intersectionPoints.size() > 0)
-            delete intersectionPoints[positionEnd - 1];
+          
+          // deleting the intersections points
+          
+          positionBegin = 0;
+          
+          while ( positionBegin < ((int)intersectionPoints.size()) )  
+          {
+            delete intersectionPoints[positionBegin];
+            ++positionBegin;
+          }
 
           if (m_columns.empty())
           {
@@ -672,12 +748,12 @@ namespace te
         m_endingcolumn = tmp;
       }
 
-// avoiding bad access
-      m_startingcolumn = m_startingcolumn < 0? 0: m_startingcolumn;
-      m_startingcolumn = m_startingcolumn >= m_maxcolumns? m_maxcolumns - 1: m_startingcolumn;
-
-      m_endingcolumn = m_endingcolumn < 0? 0: m_endingcolumn;
-      m_endingcolumn = m_endingcolumn >= m_maxcolumns? m_maxcolumns - 1: m_endingcolumn;
+// // avoiding bad access
+//       m_startingcolumn = m_startingcolumn < 0? 0: m_startingcolumn;
+//       m_startingcolumn = m_startingcolumn >= m_maxcolumns? m_maxcolumns - 1: m_startingcolumn;
+// 
+//       m_endingcolumn = m_endingcolumn < 0? 0: m_endingcolumn;
+//       m_endingcolumn = m_endingcolumn >= m_maxcolumns? m_maxcolumns - 1: m_endingcolumn;
     }
 
     template<class T> const std::vector<T> te::rst::PolygonIterator<T>::operator*() const
