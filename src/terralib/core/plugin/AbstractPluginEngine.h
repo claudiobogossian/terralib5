@@ -85,6 +85,12 @@ namespace te
           \exception PluginEngineUnloadException It may throws an exception.
          */
         virtual void unload(std::unique_ptr<AbstractPlugin> plugin) = 0;
+
+      private:
+
+// no copy allowed
+        AbstractPluginEngine(const AbstractPluginEngine&);
+        AbstractPluginEngine& operator=(const AbstractPluginEngine&);
     };
 
   }  // end namespace core
