@@ -396,9 +396,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if (layer.get() == 0)
-  {
     return;
-  }
 
   if(m_usingStash && !m_layerIsStashed)
   {
@@ -489,7 +487,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       const std::vector<te::edit::Feature*>& features = repo->getAllFeatures();
 
       // Build the DataSet that will be used to update
-      std::map<te::edit::OperationType, te::mem::DataSet* > operationds ;
+      std::map<te::edit::OperationType, te::mem::DataSet* > operationds;
 
       for (std::size_t i = 0; i < te::edit::NumberOfOperationTypes; i++)
         operationds[te::edit::OperationType(i)] = new te::mem::DataSet(schema.get());
@@ -528,7 +526,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         te::gm::Geometry* geom = features[i]->getGeometry();
         assert(geom);
 
-        if (geom->getSRID() != layer->getSRID())
+        if (geom->getSRID() == TE_UNKNOWN_SRS || geom->getSRID() != layer->getSRID())
           geom->transform(layer->getSRID());
 
         // Set the geometry type
