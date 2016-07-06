@@ -88,7 +88,9 @@ namespace te
 
           te::qt::widgets::MapDisplay* m_mapDisplay;
 
-          te::gm::Coord2D m_currentCoord;
+          te::map::AbstractLayerPtr m_currentLayer;
+
+          std::unique_ptr<te::gm::Point> m_currentCoord;
         
       };
 

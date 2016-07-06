@@ -38,6 +38,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <boost/lexical_cast.hpp>
 
 // Qt
+#include <QMessageBox>
 #include <QPointF>
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -47,10 +48,9 @@ Q_DECLARE_METATYPE(te::gm::TopologyValidationError);
 
 te::qt::widgets::CheckGeomValidityDialog::CheckGeomValidityDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-  m_ui(new Ui::CheckGeomValidityDialogForm)
+  m_ui(new Ui::CheckGeomValidityDialogForm),
+  m_mapDisplay(0)
 {
-  m_mapDisplay = 0;
-
   m_ui->setupUi(this);
   
   m_ui->m_invalidTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -89,10 +89,10 @@ void te::qt::widgets::CheckGeomValidityDialog::onVerifyPushButtonClicked()
   m_ui->m_invalidTableWidget->setRowCount(0);
 
   QVariant var = m_ui->m_layersComboBox->currentData(Qt::UserRole);
-  te::map::AbstractLayerPtr layer =  var.value<te::map::AbstractLayerPtr>();
+  m_currentLayer =  var.value<te::map::AbstractLayerPtr>();
 
-  std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
-  std::auto_ptr<te::da::DataSet> data = layer->getData();
+  std::auto_ptr<te::da::DataSetType> schema = m_currentLayer->getSchema();
+  std::auto_ptr<te::da::DataSet> data = m_currentLayer->getData();
 
   te::da::PrimaryKey* pk = schema->getPrimaryKey();
 
@@ -185,13 +185,28 @@ void te::qt::widgets::CheckGeomValidityDialog::onTableWidgetItemDoubleClicked(QT
 
   te::gm::TopologyValidationError err = var.value<te::gm::TopologyValidationError>();
 
-  m_currentCoord = err.m_coordinate;
+  m_currentCoord.reset(new te::gm::Point(err.m_coordinate.x, err.m_coordinate.y, m_currentLayer->getSRID()));
+
+  if (m_mapDisplay->getSRID() == 0)
+    m_mapDisplay->setSRID(m_currentLayer->getSRID());
+
+  try
+  {
+    if (m_currentLayer->getSRID() != m_mapDisplay->getSRID())
+      m_currentCoord->transform(m_mapDisplay->getSRID());
+  }
+  catch (const std::exception & e)
+  {
+    m_currentCoord.reset(0);
+    QMessageBox::warning(this, tr("Check Geometry Validity"), e.what());
+    return;
+  }
 
   te::gm::Envelope env;
-  env.m_llx = m_currentCoord.x - auxX;
-  env.m_lly = m_currentCoord.y - auxY;
-  env.m_urx = m_currentCoord.x + auxX;
-  env.m_ury = m_currentCoord.y + auxY;
+  env.m_llx = m_currentCoord->getX() - auxX;
+  env.m_lly = m_currentCoord->getY() - auxY;
+  env.m_urx = m_currentCoord->getX() + auxX;
+  env.m_ury = m_currentCoord->getY() + auxY;
 
   m_mapDisplay->setExtent(env, true);
 
@@ -212,17 +227,17 @@ void te::qt::widgets::CheckGeomValidityDialog::onExtentChanged()
 
 void te::qt::widgets::CheckGeomValidityDialog::drawMark()
 {
+  if (!m_currentCoord)
+    return;
+
   const te::gm::Envelope& env = m_mapDisplay->getExtent();
 
   te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(m_mapDisplay->getDraftPixmap()->width(), m_mapDisplay->getDraftPixmap()->height());
   canvas->setDevice(m_mapDisplay->getDraftPixmap(), false);
   canvas->setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
 
-  QVariant var = m_ui->m_layersComboBox->currentData(Qt::UserRole);
-  te::map::AbstractLayerPtr layer = var.value<te::map::AbstractLayerPtr>();
-
   QMatrix matrix = canvas->getMatrix();
-  QPointF pointCanvas = matrix.map(QPointF(m_currentCoord.x, m_currentCoord.y));
+  QPointF pointCanvas = matrix.map(QPointF(m_currentCoord->getX(), m_currentCoord->getY()));
 
   QPointF llCanvas;
   llCanvas.setX(pointCanvas.x() - 10);
@@ -237,7 +252,7 @@ void te::qt::widgets::CheckGeomValidityDialog::drawMark()
 
   te::gm::Envelope mark(llGeo.x(), llGeo.y(), urGeo.x(), urGeo.y());
 
-  te::gm::Geometry* newGeom = te::gm::GetGeomFromEnvelope(&mark, layer->getSRID());
+  te::gm::Geometry* newGeom = te::gm::GetGeomFromEnvelope(&mark, m_currentLayer->getSRID());
 
   te::qt::widgets::Config2DrawPolygons(canvas, QColor(0, 0, 0, 0), QColor(0, 255, 0, 255), 4);
 
