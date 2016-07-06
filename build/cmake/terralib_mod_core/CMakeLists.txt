@@ -44,8 +44,8 @@ file(GLOB TERRALIB_CORE_LIB_HDR_FILES ${TERRALIB_CORE_DIR}/lib/*.h)
 file(GLOB TERRALIB_CORE_LOGGER_SRC_FILES ${TERRALIB_CORE_DIR}/logger/*.cpp)
 file(GLOB TERRALIB_CORE_LOGGER_HDR_FILES ${TERRALIB_CORE_DIR}/logger/*.h)
 
-#file(GLOB TERRALIB_CORE_PLUGIN_SRC_FILES ${TERRALIB_CORE_DIR}/plugin/*.cpp)
-#file(GLOB TERRALIB_CORE_PLUGIN_HDR_FILES ${TERRALIB_CORE_DIR}/plugin/*.h)
+file(GLOB TERRALIB_CORE_PLUGIN_SRC_FILES ${TERRALIB_CORE_DIR}/plugin/*.cpp)
+file(GLOB TERRALIB_CORE_PLUGIN_HDR_FILES ${TERRALIB_CORE_DIR}/plugin/*.h)
 
 file(GLOB TERRALIB_CORE_TRANSLATOR_SRC_FILES ${TERRALIB_CORE_DIR}/translator/*.cpp)
 file(GLOB TERRALIB_CORE_TRANSLATOR_HDR_FILES ${TERRALIB_CORE_DIR}/translator/*.h)
@@ -65,8 +65,8 @@ source_group("Source Files\\lib"          FILES ${TERRALIB_CORE_LIB_SRC_FILES})
 source_group("Header Files\\lib"          FILES ${TERRALIB_CORE_LIB_HDR_FILES})
 source_group("Source Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_SRC_FILES})
 source_group("Header Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_HDR_FILES})
-#source_group("Source Files\\plugin"       FILES ${TERRALIB_CORE_PLUGIN_SRC_FILES})
-#source_group("Header Files\\plugin"       FILES ${TERRALIB_CORE_PLUGIN_HDR_FILES})
+source_group("Source Files\\plugin"       FILES ${TERRALIB_CORE_PLUGIN_SRC_FILES})
+source_group("Header Files\\plugin"       FILES ${TERRALIB_CORE_PLUGIN_HDR_FILES})
 source_group("Source Files\\translator"   FILES ${TERRALIB_CORE_TRANSLATOR_SRC_FILES})
 source_group("Header Files\\translator"   FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES})
 source_group("Source Files\\uri"          FILES ${TERRALIB_CORE_URI_SRC_FILES})
@@ -80,7 +80,7 @@ add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_
                                      ${TERRALIB_CORE_ENCODING_SRC_FILES} ${TERRALIB_CORE_ENCODING_HDR_FILES}
                                      ${TERRALIB_CORE_LIB_SRC_FILES} ${TERRALIB_CORE_LIB_HDR_FILES}
                                      ${TERRALIB_CORE_LOGGER_SRC_FILES} ${TERRALIB_CORE_LOGGER_HDR_FILES}
-#                                     ${TERRALIB_CORE_PLUGIN_SRC_FILES} ${TERRALIB_CORE_PLUGIN_HDR_FILES}
+                                     ${TERRALIB_CORE_PLUGIN_SRC_FILES} ${TERRALIB_CORE_PLUGIN_HDR_FILES}
                                      ${TERRALIB_CORE_TRANSLATOR_SRC_FILES} ${TERRALIB_CORE_TRANSLATOR_HDR_FILES}
                                      ${TERRALIB_CORE_URI_SRC_FILES} ${TERRALIB_CORE_URI_HDR_FILES}
                                      ${TERRALIB_CORE_UTILS_SRC_FILES} ${TERRALIB_CORE_UTILS_HDR_FILES}
@@ -122,8 +122,8 @@ install(FILES ${TERRALIB_CORE_LIB_HDR_FILES}
 install(FILES ${TERRALIB_CORE_LOGGER_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/logger COMPONENT devel)
 
-#install(FILES ${TERRALIB_CORE_PLUGIN_HDR_FILES}
-#        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/plugin COMPONENT devel)
+install(FILES ${TERRALIB_CORE_PLUGIN_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/plugin COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_TRANSLATOR_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/translator COMPONENT devel)
