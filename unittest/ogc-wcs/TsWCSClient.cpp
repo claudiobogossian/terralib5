@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/unittest/ogc-wcs/TsWCS.h
+  \file terralib/unittest/ogc-wcs/TsWCSClient.cpp
 
-  \brief A test suit for the WS OGC WCS.
+  \brief A test suit for the WS OGC WCSClient.
 
   \author Emerson Moraes
  */
@@ -28,30 +28,40 @@
 // TerraLib
 #include <terralib/common/Exception.h>
 #include <terralib/ws/ogc/wcs/client/WCSClient.h>
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/ws/ogc/wcs/dataaccess/Transactor.h>
+#include <terralib/ws/core/CurlWrapper.h>
 #include <terralib/qt/af/ApplicationController.h>
+#include "MockCurlWrapper.h"
 
 // Boost
 #include <boost/test/unit_test.hpp>
+
+// LibCurl
+#include <curl/curl.h>
+
+#include <memory>
+#include <utility>
+
 
 BOOST_AUTO_TEST_CASE(getcapabilities_test)
 {
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  // Directory where test WCS test data is stored.
+  std::string dataDir = TERRALIB_DATA_DIR;
 
   // WCS server URL.
   std::string url = "http://demo.opengeo.org/geoserver/ows";
 
+  MockCurlWrapper* mock = new MockCurlWrapper();
+
   // Version that will be used on WCS Requests.
   std::string version = "2.0.1";
 
-  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+  te::ws::ogc::WCSClient client (dataDir, url, version);
 
-  // Makes GetCapabilities Request.
+  client.setCurlWrapper(mock);
+
+  // Makes GetCapabilities Test Request.
   BOOST_CHECK_NO_THROW(client.updateCapabilities());
 
   te::ws::ogc::Capabilities capabilities = client.getCapabilities();
@@ -68,8 +78,8 @@ BOOST_AUTO_TEST_CASE(getcapabilities_exception_test)
 
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  // Directory where test WCS test data is stored.
+  std::string dataDir = TERRALIB_DATA_DIR;
 
   // A wrong WCS server URL.
   std::string url = "http://wrongaddress.org/geoserver/ows";
@@ -77,7 +87,7 @@ BOOST_AUTO_TEST_CASE(getcapabilities_exception_test)
   // Version that will be used on WCS Requests.
   std::string version = "2.0.1";
 
-  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+  te::ws::ogc::WCSClient client (dataDir, url, version);
 
   // Makes GetCapabilities Request.
   BOOST_CHECK_THROW(client.updateCapabilities(), te::common::Exception);
@@ -89,8 +99,8 @@ BOOST_AUTO_TEST_CASE(not_supported_version_test)
 {
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  // Directory where test WCS test data is stored.
+  std::string dataDir = TERRALIB_DATA_DIR;
 
   // WCS server URL.
   std::string url = "http://demo.opengeo.org/geoserver/ows";
@@ -98,14 +108,14 @@ BOOST_AUTO_TEST_CASE(not_supported_version_test)
   // Version not supported yet.
   std::string version = "1.0.0";
 
-  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+  te::ws::ogc::WCSClient client (dataDir, url, version);
 
   BOOST_CHECK_THROW(client.updateCapabilities(), te::common::Exception);
 
   // Version not supported yet.
   version = "1.1.0";
 
-  client = te::ws::ogc::WCSClient (usrDataDir, url, version);
+  client = te::ws::ogc::WCSClient (dataDir, url, version);
 
   BOOST_CHECK_THROW(client.updateCapabilities(), te::common::Exception);
 
@@ -116,8 +126,8 @@ BOOST_AUTO_TEST_CASE(describecoverage_test)
 {
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  // Directory where test WCS test data is stored.
+  std::string dataDir = TERRALIB_DATA_DIR;
 
   // WCS server URL.
   std::string url = "http://demo.opengeo.org/geoserver/ows";
@@ -125,7 +135,7 @@ BOOST_AUTO_TEST_CASE(describecoverage_test)
   // Version that will be used on WCS Requests.
   std::string version = "2.0.1";
 
-  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+  te::ws::ogc::WCSClient client (dataDir, url, version);
 
   std::string coverageName = "nasa__bluemarble";
 
@@ -142,8 +152,8 @@ BOOST_AUTO_TEST_CASE(getcoverage_test)
 {
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  // Directory where test WCS test data is stored.
+  std::string dataDir = TERRALIB_DATA_DIR;
 
   // WCS server URL.
   std::string url = "http://demo.opengeo.org/geoserver/ows";
@@ -151,7 +161,7 @@ BOOST_AUTO_TEST_CASE(getcoverage_test)
   // Version that will be used on WCS Requests.
   std::string version = "2.0.1";
 
-  te::ws::ogc::WCSClient client (usrDataDir, url, version);
+  te::ws::ogc::WCSClient client (dataDir, url, version);
 
   // Coverage ID that could be retrieved on DescribeCoverage.
   std::string coverageId = "nasa__bluemarble";
@@ -162,7 +172,7 @@ BOOST_AUTO_TEST_CASE(getcoverage_test)
 
   std::string coverageDiskPath = client.getCoverage(request);
 
-  std::string expectedResult = usrDataDir + std::string("/wcs/") + coverageId;
+  std::string expectedResult = dataDir + std::string("/wcs/") + coverageId;
 
   BOOST_CHECK(coverageDiskPath == expectedResult);
 

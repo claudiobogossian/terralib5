@@ -18,41 +18,32 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for OGC WCS Client Support.
+#  Description: Build configuration for WS Core.
 #
-#  Author: Vinicius Campanha
+#  Author: Emerson Moraes
 #
 
 include_directories(${Boost_INCLUDE_DIR}
                     ${CURL_INCLUDE_DIRS})
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/client/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/client/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/core/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/core/*.h)
 
 source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
 source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_library(terralib_mod_ws_ogc_wcs_client SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+add_library(terralib_mod_ws_core SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-qt5_use_modules(terralib_mod_ws_ogc_wcs_client Core)
+target_link_libraries(terralib_mod_ws_core    terralib_mod_common
+                                              ${CURL_LIBRARIES})
 
-target_link_libraries(terralib_mod_ws_ogc_wcs_client terralib_mod_dataaccess
-                                                      terralib_mod_xml
-                                                      terralib_mod_common
-                                                      terralib_mod_ws_core
-                                                      ${CURL_LIBRARIES})
-
-install(TARGETS terralib_mod_ws_ogc_wcs_client
+install(TARGETS terralib_mod_ws_core
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ogc/wcs/client COMPONENT devel)
-
-
-
-
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ws/core COMPONENT devel)

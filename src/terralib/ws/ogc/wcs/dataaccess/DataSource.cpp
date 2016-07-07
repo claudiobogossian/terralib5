@@ -78,9 +78,9 @@ void te::ws::ogc::wcs::da::DataSource::open()
 
   try
   {
-    m_wcs = te::ws::ogc::WCSClient(m_connectionInfo.find("USERDATADIR")->second, m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    m_wcs = std::shared_ptr<te::ws::ogc::WCSClient>(new te::ws::ogc::WCSClient(m_connectionInfo.find("USERDATADIR")->second, m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second));
 
-    m_wcs.updateCapabilities();
+    m_wcs->updateCapabilities();
   }
   catch(const te::common::Exception& e)
   {
