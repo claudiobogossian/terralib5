@@ -48,10 +48,7 @@ void te::qt::widgets::ThreadManager::stopProccess()
 void te::qt::widgets::ThreadManager::onThreadFinished()
 {
   if(m_pool == 0)
-  {
-    emit finished();
     return;
-  }
 
   if(m_pool->activeThreadCount() == 0)
   {
