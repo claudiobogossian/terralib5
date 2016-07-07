@@ -289,8 +289,7 @@ bool GAP::run()
     std::cout << "A dataset with the same requested output dataset name already exists: " << outDS << std::endl;
     return false;
   }
-
-
+  
   std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(outDS));
 
   te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("FID", te::dt::INT32_TYPE);
@@ -341,24 +340,33 @@ bool GAP::run()
         line->getMBR()->getUpperRightX() + m_dist_min, line->getMBR()->getUpperRightY() + m_dist_min);
 
       m_nodetree->search(ept, reportsnode);
+      std::map<double, te::gm::Coord2D*> map_dist;
+
       for (size_t j = 0; j < reportsnode.size(); j++)
       {
         te::gm::Coord2D pint;
         te::gm::Coord2D *coords = line->getCoordinates();
         te::gm::Coord2D c = reportsnode[j]->getKey();
+        //double dist01 = Distance(coords[0], coords[1]);
         double dist = coordToSegmentDistance(coords[0], coords[1], c, &pint);
         if (dist < m_dist_min)
         {
-          //pt_out.push_back(new te::gm::Point(c.getX(), c.getX()));
-          te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
-          dataSetItem->setInt32("FID", id++);
-          dataSetItem->setInt32("POLID", it->first);
-          dataSetItem->setDouble("distance", Distance(coords[0], c));
-          dataSetItem->setDouble("xc", c.getX());
-          dataSetItem->setDouble("yc", c.getY());
-          dataSetItem->setGeometry("pt", new te::gm::Point(c.getX(), c.getY(), m_srid));
-          ds->add(dataSetItem);
+          double dist0 = Distance(coords[0], c);
+          map_dist.insert(std::pair<double, te::gm::Coord2D*>(dist0, new te::gm::Coord2D(c)));
         }
+      }
+      for (std::map<double, te::gm::Coord2D*>::iterator itm = map_dist.begin(); itm != map_dist.end(); itm++)
+      {
+          //pt_out.push_back(new te::gm::Point(c.getX(), c.getX()));
+        te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
+        dataSetItem->setInt32("FID", id++);
+        dataSetItem->setInt32("POLID", it->first);
+        dataSetItem->setDouble("distance", itm->first);
+        dataSetItem->setDouble("xc", itm->second->getX());
+        dataSetItem->setDouble("yc", itm->second->getY());
+        dataSetItem->setGeometry("pt", new te::gm::Point(itm->second->getX(), itm->second->getY(), m_srid));
+        ds->add(dataSetItem);
+
       }
       reportsnode.clear();
       delete line;
@@ -544,112 +552,112 @@ bool GAP::run2()
 
 bool GAP::run1()
 {
-  //te::sam::rtree::Index<te::gm::Line*> agregado;
-  std::vector<te::gm::Polygon*> agregado;
-  te::sam::rtree::Index<te::gm::Line*> desfl;
-  std::vector<te::gm::Line*> reportline;
-  std::vector<te::gm::Point*> pts_result;
+  ////te::sam::rtree::Index<te::gm::Line*> agregado;
+  //std::vector<te::gm::Polygon*> agregado;
+  //te::sam::rtree::Index<te::gm::Line*> desfl;
+  //std::vector<te::gm::Line*> reportline;
+  //std::vector<te::gm::Point*> pts_result;
 
-  for (size_t i1 = 0; i1 < agregado.size(); i1++)
-  {
-    te::gm::Polygon *p1 = agregado[i1];
-    te::gm::LinearRing *lr = dynamic_cast<te::gm::LinearRing*>(p1->getExteriorRing());
-    te::gm::Envelope e(*lr->getMBR());
-    desfl.search(e, reportline);
-    for (size_t i2 = 0; i2 < reportline.size(); i2++)
-    {
-      te::gm::Line *l2 = reportline[i2];
-      l2->setSRID(m_srid);
-      double dist;
-      //double dist = dynamic_cast<te::gm::Geometry*>(p1)->distance(dynamic_cast<te::gm::Geometry*>(l2));
-      std::auto_ptr<geos::geom::Geometry> Geom1(te::gm::GEOSWriter::write(dynamic_cast<te::gm::Geometry*>(p1)));
-      std::auto_ptr<geos::geom::Geometry> Geom2(te::gm::GEOSWriter::write(dynamic_cast<te::gm::Geometry*>(l2)));
-      geos::operation::distance::DistanceOp distop(Geom1.get(), Geom2.get());
-      dist = distop.distance();
-      if (dist < m_dist_min)
-      {
-        geos::geom::CoordinateSequence *pts = distop.closestPoints();
-        for (size_t ipt = 0; ipt < pts->getSize(); ipt++)
-        {
-          geos::geom::Coordinate c = pts->getAt(ipt);
-          std::cout << c.x << " " << c.y << std::endl;
-          te::gm::Point *cp = new te::gm::Point(c.x, c.y);
-          pts_result.push_back(cp);
-        }
-      }
-      Geom1.release();
-      Geom2.release();
-    }
-
-  }
-  //for (size_t i2 = 0; i2 < desfl.size(); i2++)
+  //for (size_t i1 = 0; i1 < agregado.size(); i1++)
   //{
-  //  te::gm::Polygon *p2 = desfl[i2];
-  //  double dist = p1->distance(p2);
-  //  if (dist < dist_min)
+  //  te::gm::Polygon *p1 = agregado[i1];
+  //  te::gm::LinearRing *lr = dynamic_cast<te::gm::LinearRing*>(p1->getExteriorRing());
+  //  te::gm::Envelope e(*lr->getMBR());
+  //  desfl.search(e, reportline);
+  //  for (size_t i2 = 0; i2 < reportline.size(); i2++)
   //  {
+  //    te::gm::Line *l2 = reportline[i2];
+  //    l2->setSRID(m_srid);
+  //    double dist;
+  //    //double dist = dynamic_cast<te::gm::Geometry*>(p1)->distance(dynamic_cast<te::gm::Geometry*>(l2));
+  //    std::auto_ptr<geos::geom::Geometry> Geom1(te::gm::GEOSWriter::write(dynamic_cast<te::gm::Geometry*>(p1)));
+  //    std::auto_ptr<geos::geom::Geometry> Geom2(te::gm::GEOSWriter::write(dynamic_cast<te::gm::Geometry*>(l2)));
+  //    geos::operation::distance::DistanceOp distop(Geom1.get(), Geom2.get());
+  //    dist = distop.distance();
+  //    if (dist < m_dist_min)
+  //    {
+  //      geos::geom::CoordinateSequence *pts = distop.closestPoints();
+  //      for (size_t ipt = 0; ipt < pts->getSize(); ipt++)
+  //      {
+  //        geos::geom::Coordinate c = pts->getAt(ipt);
+  //        std::cout << c.x << " " << c.y << std::endl;
+  //        te::gm::Point *cp = new te::gm::Point(c.x, c.y);
+  //        pts_result.push_back(cp);
+  //      }
+  //    }
+  //    Geom1.release();
+  //    Geom2.release();
   //  }
 
   //}
+  ////for (size_t i2 = 0; i2 < desfl.size(); i2++)
+  ////{
+  ////  te::gm::Polygon *p2 = desfl[i2];
+  ////  double dist = p1->distance(p2);
+  ////  if (dist < dist_min)
+  ////  {
+  ////  }
+
+  ////}
 
 
 
-  std::string filenameResult("D:/Dados_GAP/resultpt.shp");
+  //std::string filenameResult("D:/Dados_GAP/resultpt.shp");
 
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = filenameResult;
-  tgrInfo["DRIVER"] = "ESRI Shapefile";
+  //std::map<std::string, std::string> tgrInfo;
+  //tgrInfo["URI"] = filenameResult;
+  //tgrInfo["DRIVER"] = "ESRI Shapefile";
 
-  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
-  trgDs->setConnectionInfo(tgrInfo);
-  trgDs->open();
+  ////std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  //te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
+  //trgDs->setConnectionInfo(tgrInfo);
+  //trgDs->open();
 
-  std::string outDS = "resultpt";
+  //std::string outDS = "resultpt";
 
-  if (trgDs->dataSetExists(outDS))
-  {
-    std::cout << "A dataset with the same requested output dataset name already exists: " << outDS << std::endl;
-    return false;
-  }
+  //if (trgDs->dataSetExists(outDS))
+  //{
+  //  std::cout << "A dataset with the same requested output dataset name already exists: " << outDS << std::endl;
+  //  return false;
+  //}
 
-  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(outDS));
+  //std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(outDS));
 
-  te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("FID", te::dt::INT32_TYPE);
-  prop0->setAutoNumber(true);
-  te::dt::SimpleProperty* prop0x = new te::dt::SimpleProperty("x", te::dt::DOUBLE_TYPE);
-  te::dt::SimpleProperty* prop0y = new te::dt::SimpleProperty("y", te::dt::DOUBLE_TYPE);
-  te::gm::GeometryProperty* prop1 = new te::gm::GeometryProperty("pt", 0, te::gm::PointType, true);
-  prop1->setSRID(m_srid);
-  dt->add(prop0);
-  dt->add(prop0x);
-  dt->add(prop0y);
-  dt->add(prop1);
-  te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
+  //te::dt::SimpleProperty* prop0 = new te::dt::SimpleProperty("FID", te::dt::INT32_TYPE);
+  //prop0->setAutoNumber(true);
+  //te::dt::SimpleProperty* prop0x = new te::dt::SimpleProperty("x", te::dt::DOUBLE_TYPE);
+  //te::dt::SimpleProperty* prop0y = new te::dt::SimpleProperty("y", te::dt::DOUBLE_TYPE);
+  //te::gm::GeometryProperty* prop1 = new te::gm::GeometryProperty("pt", 0, te::gm::PointType, true);
+  //prop1->setSRID(m_srid);
+  //dt->add(prop0);
+  //dt->add(prop0x);
+  //dt->add(prop0y);
+  //dt->add(prop1);
+  //te::mem::DataSet* ds = new te::mem::DataSet(dt.get());
 
-  int id = 0;
-  for (size_t pp = 0; pp < pts_result.size(); pp++)
-  {
-    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
-    dataSetItem->setInt32("FID", id++);
-    dataSetItem->setDouble("x", pts_result[pp]->getX());
-    dataSetItem->setDouble("y", pts_result[pp]->getY());
-    dataSetItem->setGeometry("pt", (te::gm::Geometry*)pts_result[pp]->clone());
-    ds->add(dataSetItem);
-  }
+  //int id = 0;
+  //for (size_t pp = 0; pp < pts_result.size(); pp++)
+  //{
+  //  te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(ds);
+  //  dataSetItem->setInt32("FID", id++);
+  //  dataSetItem->setDouble("x", pts_result[pp]->getX());
+  //  dataSetItem->setDouble("y", pts_result[pp]->getY());
+  //  dataSetItem->setGeometry("pt", (te::gm::Geometry*)pts_result[pp]->clone());
+  //  ds->add(dataSetItem);
+  //}
 
-  Save(trgDs.get(), ds, dt.get());
+  //Save(trgDs.get(), ds, dt.get());
 
-  bool result = true;
+  //bool result = true;
 
-  //if (!intersectionOp->paramsAreValid())
-  //  result = false;
-  //else
-  //  result = intersectionOp->run();
+  ////if (!intersectionOp->paramsAreValid())
+  ////  result = false;
+  ////else
+  ////  result = intersectionOp->run();
 
-  //delete intersectionOp;
+  ////delete intersectionOp;
 
-  return true;
+  //return true;
 
   return false;
 }
