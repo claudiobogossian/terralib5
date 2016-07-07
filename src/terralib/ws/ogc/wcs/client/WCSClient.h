@@ -75,7 +75,7 @@ namespace te
         ~WCSClient();
 
         /*!
-          \brief Method to get the capabilities from a WCS server and store in capabilities_ member
+          \brief Method to get the capabilities from a WCS server and store in m_capabilities member
 
                  To access the information contained in the m_capabilities, use the getCapabilities() method.
 
@@ -89,7 +89,7 @@ namespace te
 
           \return Return the information of the coverage in the WCS
         */
-        struct CoverageDescription describeCoverage(const std::string coverage) const;
+        CoverageDescription describeCoverage(const std::string coverage);
 
         /*!
           \brief Method to get the coverage from the WCS server
@@ -120,15 +120,21 @@ namespace te
 
 
         /*!
-          \brief Return the capabilities_ member.
+          \brief Return the m_capabilities member.
 
                  The m_capabilities will be empty until the updateCapabilities() method its called.
 
           \return Returns a path to a file
         */
-        const struct Capabilities& getCapabilities() const;
+        const Capabilities& getCapabilities() const;
 
-
+        /*!
+         * \brief Sets the TerraLib CurlWrapper to be used internally.
+         *
+         *        By default it is an instance of te::ws::core::CurlWrapper class.
+         *
+         * \param curlWrapper Wrapper to be used.
+         */
         void setCurlWrapper(te::ws::core::CurlWrapper* curlWrapper);
 
       private:
@@ -137,6 +143,7 @@ namespace te
         std::string m_dataDir;
         struct Capabilities m_capabilities;
         std::shared_ptr<te::ws::core::CurlWrapper> m_curl;
+        std::map<std::string, CoverageDescription> m_descriptionMap;
       };
     }
   }

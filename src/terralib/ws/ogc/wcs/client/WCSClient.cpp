@@ -78,8 +78,13 @@ void te::ws::ogc::WCSClient::updateCapabilities()
 }
 
 
-te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const std::string coverage) const
+te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const std::string coverage)
 {
+
+  if(m_descriptionMap.find(coverage) != m_descriptionMap.end())
+  {
+    return m_descriptionMap[coverage];
+  }
 
   te::ws::ogc::CoverageDescription describeCoverage;
 
@@ -99,6 +104,8 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const 
 
   // Parse the XML file into a struct
   describeCoverage = parseDescribeCoverage(xmlPath);
+
+  m_descriptionMap[coverage] = describeCoverage;
 
   return describeCoverage;
 }
@@ -214,7 +221,7 @@ std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const
   return path;
 }
 
-const struct te::ws::ogc::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
+const te::ws::ogc::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
 {
   return m_capabilities;
 }
