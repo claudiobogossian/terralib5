@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../core/translator/Translator.h"
-#include "Coord2D.h"
 #include "Envelope.h"
 #include "Exception.h"
 #include "Geometry.h"
@@ -40,9 +39,11 @@
 
 #ifdef TERRALIB_GEOS_ENABLED
 // GEOS
+#include <geos/geom/Coordinate.h>
 #include <geos/geom/Geometry.h>
 #include <geos/operation/polygonize/Polygonizer.h>
 #include <geos/operation/union/UnaryUnionOp.h>
+#include <geos/operation/valid/IsValidOp.h>
 #include <geos/util/GEOSException.h>
 #endif
 
@@ -293,5 +294,32 @@ void te::gm::Polygonizer(te::gm::Geometry* g, std::vector<te::gm::Polygon*>& pol
 
 #else
   throw te::common::Exception(TE_TR("Polygonizer routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+}
+
+bool te::gm::CheckValidity(const te::gm::Geometry* geom, te::gm::TopologyValidationError& error)
+{
+#ifdef TERRALIB_GEOS_ENABLED
+
+  std::unique_ptr<geos::geom::Geometry> g(GEOSWriter::write(geom));
+
+  geos::operation::valid::IsValidOp vop(g.get());
+
+  geos::operation::valid::TopologyValidationError* err = vop.getValidationError();
+
+  te::gm::TopologyValidationError validationError;
+
+  if (err)
+  {
+    error.m_coordinate = Coord2D(err->getCoordinate().x, err->getCoordinate().y);
+    error.m_message = err->getMessage();
+
+    return false;
+  }
+
+  return true;
+
+#else
+  throw Exception(TE_TR("isValid routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }

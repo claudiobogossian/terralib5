@@ -39,13 +39,14 @@ BOOST_AUTO_TEST_SUITE(logger_test_case)
 
 BOOST_AUTO_TEST_CASE(default_logger_test)
 {
+  BOOST_CHECK_NO_THROW(TE_INIT_DEFAULT_LOGGER("log/unit_test_terralib.log"));
   BOOST_CHECK_NO_THROW(TE_LOG_WARN("Warning log"));
   BOOST_CHECK_NO_THROW(TE_LOG_INFO("Info log"));
   BOOST_CHECK_NO_THROW(TE_LOG_ERROR("Error log"));
   BOOST_CHECK_NO_THROW(TE_LOG_TRACE("Trace log"));
   BOOST_CHECK_NO_THROW(TE_LOG_FATAL("Fatal log"));
   BOOST_CHECK_NO_THROW(TE_LOG_DEBUG("Debug log"));
-  BOOST_CHECK(boost::filesystem::file_size(TERRALIB_DEFAULT_LOGGER) > 0);
+  BOOST_CHECK(boost::filesystem::file_size("log/unit_test_terralib.log") > 0);
 
   return;
 }

@@ -111,16 +111,18 @@ namespace te
 
       signals:
 
-        void splitFinished(te::da::ObjectIdSet& objIdResultingPolygons);
+        void splitFinished(te::da::ObjectIdSet& objIdResultingPolygons, const std::string& layerId);
 
       private:
 
-        te::da::ObjectIdSet* m_oidSet;
-        Qt::MouseButton m_sideToClose;
         double m_tol;
+        Qt::MouseButton m_sideToClose;
+        te::da::ObjectIdSet* m_oidSet;
+        std::vector<te::edit::Feature*> m_vecFeature;
 
-        void splitPolygon(te::gm::Geometry* geom);
         void draw();
+        void pickFeatures();
+        void splitPolygon(std::size_t index);
         void startSplit();
 
     };
