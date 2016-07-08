@@ -18,40 +18,32 @@
  */
 
 /*!
-  \file terralib/unittest/ogc-wcs/main.cpp
+  \file Config.h
 
-  \brief Main file of test suit for the WCS Client Plugin.
-
-  \author Emerson Moraes
+  \brief Global configuration flags for the TerraLib GAP Examples.
  */
 
+#ifndef __TERRALIB_EXAMPLES_GAP_INTERNAL_CONFIG_H
+#define __TERRALIB_EXAMPLES_GAP_INTERNAL_CONFIG_H
+
 // TerraLib
-#include <terralib/Defines.h>
+#include "../Config.h"
 
-// STL
-#include <cstdlib>
-#include <iostream>
+/*!
+  \def TE_EXAMPLE_USE_GDAL, TE_EXAMPLE_USE_OGR, TE_EXAMPLE_USE_PGIS and eventually other defines to specify another supported driver.
 
-// QT
-#include <QApplication>
+  \brief Flags for TerraLib SRS Examples.
+         The set of flags below controls which data source driver examples will be executed.
+         If you want to disable the examples for a specific data source driver
+         just set the flag to 0 (this will turn of the test).
+*/
 
-// Boost
-#define BOOST_TEST_NO_MAIN
-#include <boost/test/unit_test.hpp>
+#if TE_USE_OGR
+#define TE_EXAMPLE_USE_OGR 1
+#endif
 
-// GMock
-#include <gmock/gmock.h>
+#if TE_USE_PROJ4
+#define TE_EXAMPLE_USE_PROJ4 1
+#endif
 
-bool init_unit_test()
-{
-  return true;
-}
-
-int main(int argc, char *argv[])
-{
-  QApplication app(argc, argv);
-
-  ::testing::InitGoogleMock(&argc, argv);
-
-  return boost::unit_test::unit_test_main(init_unit_test, argc, argv);
-}
+#endif  // __TERRALIB_EXAMPLES_VP_INTERNAL_CONFIG_H
