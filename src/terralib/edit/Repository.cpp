@@ -247,6 +247,17 @@ te::edit::Feature* te::edit::Repository::getFeature(const te::gm::Envelope& e, i
   return 0;
 }
 
+te::edit::Feature* te::edit::Repository::getFeature(te::da::ObjectId* id) const
+{
+  assert(id);
+
+  for (std::size_t i = 0; i < m_features.size(); ++i)
+    if (m_features[i]->isEquals(id))
+      return m_features[i];
+
+  return 0;
+}
+
 void te::edit::Repository::clear()
 {
   te::common::FreeContents(m_features);
