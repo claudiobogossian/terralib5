@@ -196,7 +196,7 @@ void te::qt::widgets::RasterHistogramWidget::updateMinimumValueLine(int value, b
   if(!m_minValueLine)
   {
     m_minValueLine = new QwtPlotMarker();
-    m_minValueLine->setLabel(QString::fromLatin1("Minimum"));
+    m_minValueLine->setLabel(QString::fromUtf8("Minimum"));
     m_minValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_minValueLine->setLabelOrientation(Qt::Vertical);
     m_minValueLine->setLineStyle(QwtPlotMarker::VLine);
@@ -236,7 +236,7 @@ void te::qt::widgets::RasterHistogramWidget::updateMaximumValueLine(int value, b
   if(!m_maxValueLine)
   {
     m_maxValueLine = new QwtPlotMarker();
-    m_maxValueLine->setLabel(QString::fromLatin1("Maximum"));
+    m_maxValueLine->setLabel(QString::fromUtf8("Maximum"));
     m_maxValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_maxValueLine->setLabelOrientation(Qt::Vertical);
     m_maxValueLine->setLineStyle(QwtPlotMarker::VLine);
