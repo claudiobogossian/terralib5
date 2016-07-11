@@ -1,0 +1,24 @@
+{
+	"name":"plugin1",
+	"display_name":"Plugin 1",
+	"description":"This is an example C++ Plugin",
+	"version":"0.0.1",
+	"release":"01/07/2016",
+	"engine":"C++",
+	"license_description":"",
+	"license_URL":"",
+	"site":"www.example.com/plugin1",
+	"dependencies":[],
+	"linked_libraries":[],
+	"resources":{"shared_library_name":"terralib_example_core_plugin1"},
+	"parameters":[],
+	"provider":{
+		"name":"example",
+		"site":"www.example.com",
+		"email":"example@example.com"
+	},
+	"host_application":{
+		"name":"TerraLib",
+		"version":"5.2.0"
+	}
+}

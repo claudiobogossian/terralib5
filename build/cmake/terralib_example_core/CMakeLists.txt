@@ -88,6 +88,24 @@ add_executable(terralib_example_core_plugin ${TERRALIB_EXAMPLE_CORE_PLUGIN_SRC_F
 
 target_link_libraries(terralib_example_core_plugin terralib_mod_core)
 
+#Plugin1 example
+file(GLOB TERRALIB_EXAMPLE_CORE_PLUGIN1_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin1/*.cpp)
+file(GLOB TERRALIB_EXAMPLE_CORE_PLUGIN1_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin1/*.h)
+
+add_library(terralib_example_core_plugin1 SHARED ${TERRALIB_EXAMPLE_CORE_PLUGIN1_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_PLUGIN1_HDR_FILES})
+
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin1/plugin1.teplg.json
+     DESTINATION ${CMAKE_BINARY_DIR}/share/terralib/plugins)
+
+#Plugin2 example
+file(GLOB TERRALIB_EXAMPLE_CORE_PLUGIN2_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin2/*.cpp)
+file(GLOB TERRALIB_EXAMPLE_CORE_PLUGIN2_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin2/*.h)
+
+add_library(terralib_example_core_plugin2 SHARED ${TERRALIB_EXAMPLE_CORE_PLUGIN2_SRC_FILES} ${TERRALIB_EXAMPLE_CORE_PLUGIN2_HDR_FILES})
+
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin2/plugin2.teplg.json
+     DESTINATION ${CMAKE_BINARY_DIR}/share/terralib/plugins)
+
 
 # Examples of core/uri
 
