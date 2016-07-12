@@ -553,7 +553,7 @@
     </message>
     <message>
         <source>Select at least one layer to be removed!</source>
-        <translation type="vanished">Seleccionar pelo menos uma camada a ser removida !</translation>
+        <translation type="vanished">Selecionar pelo menos uma camada a ser removida !</translation>
     </message>
     <message>
         <source>Remove Layer</source>
@@ -868,12 +868,12 @@
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1068"/>
         <source>Rename Layer...</source>
-        <translation>Remove Camada...</translation>
+        <translation>Renomear Camada...</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="1068"/>
         <source>Rename layer</source>
-        <translation>Renomear camada</translation>
+        <translation>Renomear Camada</translation>
     </message>
     <message>
         <source>&amp;Change Layer Data Source</source>
