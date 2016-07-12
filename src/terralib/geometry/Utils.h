@@ -150,6 +150,19 @@ namespace te
     TEGEOMEXPORT void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);
 
     /*!
+    \brief It will fix geometries with self-intersection.
+
+    \param g Input Geometry to fix.
+    
+    \return a vector of geometries.
+
+    \note It will not check if the geometry is invalid.
+
+    \exception Exception It throws an exception if the geometry is not Polygon or MultiPolygon.
+    */
+    TEGEOMEXPORT std::vector<te::gm::Geometry*> FixSelfIntersection(const te::gm::Geometry* g);
+
+    /*!
     \brief It will get the union of the input geometries.
 
     \param geom   Input Geometry.
