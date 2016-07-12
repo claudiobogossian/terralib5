@@ -208,7 +208,7 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
 
 double te::mnt::Distance(const te::gm::Coord2D &pt1, const te::gm::Coord2D &pt2)
 {
-  return(Distance(pt1.getX(), pt2.getX(), pt1.getY(), pt2.getY()));
+  return(Distance(pt1.getX(), pt1.getY(), pt2.getX(), pt2.getY()));
 }
 
 double te::mnt::Distance(const double pt1x, const double pt1y, const double pt2x, const double pt2y)
@@ -584,7 +584,7 @@ double te::mnt::SegmentDistance(double fx, double fy, double lx, double ly, doub
     ux = fx - lx;
     uy = fy - ly;
     vx = ptx - lx;
-    vy = pty - lx;
+    vy = pty - ly;
     uv = (ux*vx + uy*vy);
     if (uv < 0.)
     {

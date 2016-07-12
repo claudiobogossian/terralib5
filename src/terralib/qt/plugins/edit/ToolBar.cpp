@@ -523,7 +523,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
           item->setValue(oidPropertyNames[j], values[j].clone());
 
         // Get the edited geometry
-        te::gm::Geometry* geom = features[i]->getGeometry();
+        te::gm::Geometry* geom = te::gm::Validate(features[i]->getGeometry());
         assert(geom);
 
         if (geom->getSRID() == TE_UNKNOWN_SRS || geom->getSRID() != layer->getSRID())
