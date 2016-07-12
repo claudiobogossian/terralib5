@@ -39,6 +39,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/dataset/DataSet.h"
+#include "../../../../core/uri/URI.h"
 #include "../../../core/CurlWrapper.h"
 #include "XMLParser.h"
 #include "DataTypes.h"
@@ -105,15 +106,6 @@ namespace te
 
           \param url The complete url of request
 
-          \return Returns a XML with info requested
-        */
-        std::string makeRequest(const std::string url) const;
-
-        /*!
-          \brief Executes a request on a WCS server
-
-          \param url The complete url of request
-
           \return Returns a path to a file
         */
         std::string makeFileRequest(const std::string url, const std::string fileName) const;
@@ -138,9 +130,9 @@ namespace te
         void setCurlWrapper(te::ws::core::CurlWrapper* curlWrapper);
 
       private:
-        std::string m_uri;
         std::string m_version;
         std::string m_dataDir;
+        te::core::URI m_uri;
         struct Capabilities m_capabilities;
         std::shared_ptr<te::ws::core::CurlWrapper> m_curl;
         std::map<std::string, CoverageDescription> m_descriptionMap;
