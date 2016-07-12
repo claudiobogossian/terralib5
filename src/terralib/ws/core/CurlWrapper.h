@@ -35,12 +35,22 @@
 #include <iostream>
 #include <memory>
 
+#include "../../common/progress/TaskProgress.h"
+
 namespace te
 {
   namespace ws
   {
     namespace core
     {
+
+    struct CurlProgress
+    {
+      std::shared_ptr<te::common::TaskProgress> m_task;
+      std::shared_ptr<CURL> m_curl;
+      std::string m_baseMessage;
+    };
+
     /*!
       \class CurlWrapper
 
@@ -52,14 +62,6 @@ namespace te
       CurlWrapper();
 
       virtual ~CurlWrapper();
-
-
-//      CurlWrapper(CurlWrapper&& other) = delete;
-
-//      CurlWrapper& operator=(CurlWrapper&& other) = delete;
-
-//      CurlWrapper(CurlWrapper& curl) = delete;
-//      CurlWrapper& operator=(const CurlWrapper& other) = delete;
 
       /*!
         \brief Method to download a file retrieved from given URL and save into the specified file path.
@@ -77,8 +79,24 @@ namespace te
       */
       virtual void downloadFile(const std::string& url, std::FILE* file) const;
 
+
+      /*!
+        \brief This method gets the message that will be used on Progress Bar when
+        this object is downloading some file.
+      */
+      virtual std::string getTaskMessage() const;
+
+      /*!
+        \brief This method sets the message that will be used on Progress Bar when
+        this object is downloading some file.
+
+        \param taskMessage new message.
+      */
+      virtual void setTaskMessage(const std::string& taskMessage);
+
     private:
       std::shared_ptr<CURL>  m_curl;
+      std::string            m_taskMessage;
     };
 
     }
