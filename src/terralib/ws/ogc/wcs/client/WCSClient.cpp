@@ -53,14 +53,23 @@ te::ws::ogc::WCSClient::WCSClient(const std::string usrDataDir, const std::strin
     baseUrl = baseUrl + ":" + m_uri.port();
   }
 
-  baseUrl = baseUrl + m_uri.path(); //+ "?";
+  baseUrl = baseUrl + m_uri.path() + "?";
+
+  if (!m_uri.query().empty())
+  {
+    std::string query = m_uri.query();
+
+    size_t endsWith = query.rfind("&");
+
+    if (endsWith != (query.size() - 1))
+    {
+      query.append("&");
+    }
+
+    baseUrl = baseUrl + query;
+  }
 
   m_uri = te::core::URI(baseUrl);
-
-  if(!m_uri.isValid())
-  {
-    throw te::common::Exception(TE_TR("Invalid WCS Server URL!"));
-  }
 
   m_curl = std::shared_ptr<te::ws::core::CurlWrapper>(new te::ws::core::CurlWrapper());
 
@@ -80,7 +89,7 @@ void te::ws::ogc::WCSClient::updateCapabilities()
 
   if(m_version == "2.0.1")
   {
-    url = url + "?SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=GetCapabilities";
+    url = url + "SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=GetCapabilities";
   }
   else
   {
@@ -111,7 +120,7 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const 
 
   if(m_version == "2.0.1")
   {
-    url = url + "?SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=DescribeCoverage&CoverageID=" + coverage;
+    url = url + "SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=DescribeCoverage&CoverageID=" + coverage;
   }
   else
   {
@@ -140,7 +149,7 @@ std::string te::ws::ogc::WCSClient::getCoverage(const CoverageRequest coverageRe
 
   if(m_version == "2.0.1")
   {
-    url = url + "?SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
+    url = url + "SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
 
     if(!coverageRequest.format.empty())
       url += "&FORMAT=" + coverageRequest.format;
