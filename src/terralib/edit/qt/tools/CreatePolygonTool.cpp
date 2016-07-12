@@ -45,10 +45,11 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, QObject* parent)
+te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, bool validatePolygon, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
+    m_validatePolygon(validatePolygon),
     m_sideToClose(sideToClose),
     m_stack(UndoStackManager::getInstance())
 {
@@ -87,6 +88,9 @@ bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
 
   m_coords.push_back(coord);
 
+  if (!validPolygon())
+    return false;
+
   storeUndoCommand();
 
   return true;
@@ -113,6 +117,9 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
   if (e->buttons() & Qt::LeftButton)
   {
     m_continuousMode = true;
+
+    if (!validPolygon())
+      return false;
 
     storeUndoCommand();
   }
@@ -317,4 +324,21 @@ void te::edit::CreatePolygonTool::onUndoFeedback(std::vector<te::gm::Coord2D> co
 void te::edit::CreatePolygonTool::resetVisualizationTool()
 {
   clear();
+}
+
+bool te::edit::CreatePolygonTool::validPolygon()
+{
+  if (!m_validatePolygon)
+    return true;
+
+  if (m_coords.size() > 3)
+  {
+    if (!buildPolygon()->isValid())
+    {
+      m_coords.pop_back();
+      return false;
+    }
+  }
+
+  return true;
 }

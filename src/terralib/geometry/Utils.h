@@ -178,6 +178,31 @@ namespace te
     */
     TEGEOMEXPORT bool CheckValidity(const te::gm::Geometry* geom, te::gm::TopologyValidationError& error);
 
+    /*!
+    \brief Get/create a valid version of the geometry given. If the geometry is a polygon or multi polygon, self intersections /
+           inconsistencies are fixed. Otherwise the geometry is returned.
+
+    \param geom
+    \return a geometry
+    */
+    TEGEOMEXPORT te::gm::Geometry* validate(te::gm::Geometry* geom);
+
+    /*!
+    \brief Add all line strings from the polygon given to the vector given.
+
+    \param polygon polygon from which to extract line strings
+    \param pAdd A reference to a vector of geometries.
+    */
+    TEGEOMEXPORT void addPolygon(te::gm::Polygon* polygon, std::vector<te::gm::Geometry*>& pAdd);
+
+    /*!
+    \brief Add the linestring given to the vector.
+
+    \param linestring line string
+    \param pAdd A reference to a vector of geometries.
+    */
+    TEGEOMEXPORT void addLineString(te::gm::LineString* lineString, std::vector<te::gm::Geometry*>& pAdd);
+
   } // end namespace gm
 }   // end namespace te
 

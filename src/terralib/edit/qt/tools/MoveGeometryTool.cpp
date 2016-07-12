@@ -206,8 +206,6 @@ void te::edit::MoveGeometryTool::storeFeature()
   if(m_feature == 0)
     return;
 
-  m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
-  
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
   emit geometriesEdited();
 }

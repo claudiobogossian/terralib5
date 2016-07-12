@@ -29,6 +29,7 @@
 #include "Exception.h"
 #include "Geometry.h"
 #include "GeometryCollection.h"
+#include "GEOSGeometryFactory.h"
 #include "GEOSReader.h"
 #include "GEOSWriter.h"
 #include "LinearRing.h"
@@ -321,5 +322,108 @@ bool te::gm::CheckValidity(const te::gm::Geometry* geom, te::gm::TopologyValidat
 
 #else
   throw Exception(TE_TR("isValid routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+}
+
+te::gm::Geometry* te::gm::validate(te::gm::Geometry* geom)
+{
+#ifdef TERRALIB_GEOS_ENABLED
+
+  std::unique_ptr<geos::geom::Geometry> g(GEOSWriter::write(geom));
+
+  std::vector<te::gm::Geometry*> pAdd;
+  geos::operation::polygonize::Polygonizer polygonizer;
+
+  switch (g->getGeometryTypeId())
+  {
+    case geos::geom::GEOS_POLYGON:
+    {
+      if (g->isValid())
+      {
+        g->normalize(); // validate does not pick up rings in the wrong order - this will fix that
+        return GEOSReader::read(g.get()); // If the polygon is valid just return it
+      }
+
+      addPolygon(dynamic_cast<te::gm::Polygon*>(GEOSReader::read(g.get())), pAdd);
+    }
+    break;
+
+    case geos::geom::GEOS_MULTIPOLYGON:
+    {
+      if (g->isValid()){
+        g->normalize(); // validate does not pick up rings in the wrong order - this will fix that
+        return GEOSReader::read(g.get()); // If the multipolygon is valid just return it
+      }
+
+      for (std::size_t n = g->getNumGeometries(); n-- > 0;)
+        addPolygon(dynamic_cast<te::gm::Polygon*>(GEOSReader::read(g->getGeometryN(n))), pAdd);
+
+    }
+    break;
+
+    default:
+      return geom;
+  }
+
+  for (std::size_t i = 0; i < pAdd.size(); i++)
+    polygonizer.add(GEOSWriter::write(pAdd[i]));
+
+  std::vector <geos::geom::Polygon*>* vecpolGeos = polygonizer.getPolygons();
+
+  switch (vecpolGeos->size())
+  {
+    case 1:
+      vecpolGeos->at(0)->setSRID(geom->getSRID());
+      return GEOSReader::read(vecpolGeos->at(0)); // single polygon - no need to wrap
+    default:
+    {
+      //polygons may still overlap! Need to sym difference them
+      vecpolGeos->at(0)->setSRID(geom->getSRID());
+      te::gm::Geometry* ret = GEOSReader::read(vecpolGeos->at(0));
+
+      for (std::size_t i = 1; i < vecpolGeos->size(); i++)
+      {
+        vecpolGeos->at(i)->setSRID(geom->getSRID());
+        ret = ret->symDifference(GEOSReader::read(vecpolGeos->at(i)));
+      }
+      return ret;
+    }
+  }
+
+#else
+  throw Exception(TE_TR("validate routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+}
+
+void te::gm::addPolygon(te::gm::Polygon* polygon, std::vector<te::gm::Geometry*>& pAdd)
+{
+#ifdef TERRALIB_GEOS_ENABLED
+
+  addLineString(dynamic_cast<te::gm::LineString*>(polygon->getExteriorRing()), pAdd);
+
+  for (std::size_t n = polygon->getNumInteriorRings(); n-- > 0;){
+    addLineString(dynamic_cast<te::gm::LineString*>(polygon->getInteriorRingN(n)), pAdd);
+  }
+
+#else
+  throw Exception(TE_TR("addPolygon routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+}
+
+void te::gm::addLineString(te::gm::LineString* lineString, std::vector<te::gm::Geometry*>& pAdd)
+{
+#ifdef TERRALIB_GEOS_ENABLED
+
+  std::unique_ptr<geos::geom::LineString> ls(GEOSWriter::write(lineString));
+
+  // unioning the linestring with the point makes any self intersections explicit.
+  geos::geom::Point* point = GEOSGeometryFactory::getGeomFactory()->createPoint(ls->getCoordinateN(0)); 
+
+  geos::geom::Geometry* toAdd = ls->Union(point);
+
+  pAdd.push_back(GEOSReader::read(toAdd));
+
+#else
+  throw Exception(TE_TR("addLineString routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
