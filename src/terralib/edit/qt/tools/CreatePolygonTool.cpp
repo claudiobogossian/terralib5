@@ -60,13 +60,6 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 
 te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
-  if (m_feature)
-  {
-    RepositoryManager& repo = RepositoryManager::getInstance();
-
-    if (repo.hasIdentify(m_layer->getId(), m_feature->getId()) == false)
-      storeFeature();
-  }
 }
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
