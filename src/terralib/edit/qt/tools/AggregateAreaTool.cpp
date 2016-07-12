@@ -109,6 +109,8 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     te::edit::CreateLineTool::clear();
 
+    emit geometriesEdited();
+
     return true;
   }
   catch (std::exception& e)

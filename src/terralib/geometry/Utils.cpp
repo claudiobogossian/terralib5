@@ -360,7 +360,7 @@ bool te::gm::CheckValidity(const te::gm::Geometry* geom, te::gm::TopologyValidat
 #endif
 }
 
-te::gm::Geometry* te::gm::validate(te::gm::Geometry* geom)
+te::gm::Geometry* te::gm::Validate(te::gm::Geometry* geom)
 {
 #ifdef TERRALIB_GEOS_ENABLED
 
@@ -379,7 +379,7 @@ te::gm::Geometry* te::gm::validate(te::gm::Geometry* geom)
         return GEOSReader::read(g.get()); // If the polygon is valid just return it
       }
 
-      addPolygon(dynamic_cast<te::gm::Polygon*>(GEOSReader::read(g.get())), pAdd);
+      AddPolygon(dynamic_cast<te::gm::Polygon*>(GEOSReader::read(g.get())), pAdd);
     }
     break;
 
@@ -391,7 +391,7 @@ te::gm::Geometry* te::gm::validate(te::gm::Geometry* geom)
       }
 
       for (std::size_t n = g->getNumGeometries(); n-- > 0;)
-        addPolygon(dynamic_cast<te::gm::Polygon*>(GEOSReader::read(g->getGeometryN(n))), pAdd);
+        AddPolygon(dynamic_cast<te::gm::Polygon*>(GEOSReader::read(g->getGeometryN(n))), pAdd);
 
     }
     break;
@@ -430,14 +430,14 @@ te::gm::Geometry* te::gm::validate(te::gm::Geometry* geom)
 #endif
 }
 
-void te::gm::addPolygon(te::gm::Polygon* polygon, std::vector<te::gm::Geometry*>& pAdd)
+void te::gm::AddPolygon(te::gm::Polygon* polygon, std::vector<te::gm::Geometry*>& pAdd)
 {
 #ifdef TERRALIB_GEOS_ENABLED
 
-  addLineString(dynamic_cast<te::gm::LineString*>(polygon->getExteriorRing()), pAdd);
+  AddLineString(dynamic_cast<te::gm::LineString*>(polygon->getExteriorRing()), pAdd);
 
   for (std::size_t n = polygon->getNumInteriorRings(); n-- > 0;){
-    addLineString(dynamic_cast<te::gm::LineString*>(polygon->getInteriorRingN(n)), pAdd);
+    AddLineString(dynamic_cast<te::gm::LineString*>(polygon->getInteriorRingN(n)), pAdd);
   }
 
 #else
@@ -445,7 +445,7 @@ void te::gm::addPolygon(te::gm::Polygon* polygon, std::vector<te::gm::Geometry*>
 #endif
 }
 
-void te::gm::addLineString(te::gm::LineString* lineString, std::vector<te::gm::Geometry*>& pAdd)
+void te::gm::AddLineString(te::gm::LineString* lineString, std::vector<te::gm::Geometry*>& pAdd)
 {
 #ifdef TERRALIB_GEOS_ENABLED
 
