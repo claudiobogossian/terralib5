@@ -197,7 +197,7 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
   }
 
-  geoSubtract = convertGeomType(m_layer, differenceGeometry(m_feature->getGeometry(), pHole));
+  geoSubtract = ConvertGeomType(m_layer, differenceGeometry(m_feature->getGeometry(), pHole));
 
   geoSubtract->setSRID(m_display->getSRID());
 
