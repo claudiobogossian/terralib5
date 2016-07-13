@@ -27,12 +27,16 @@
 
 #include "CurlWrapper.h"
 
+
+
 // Terralib
 #include "../../../terralib/common/Exception.h"
 #include "../../../terralib/core/translator/Translator.h"
 
 // LibCurl
 #include <curl/curl.h>
+
+#include <sstream>
 
 te::ws::core::CurlWrapper::CurlWrapper()
 {
@@ -43,10 +47,33 @@ te::ws::core::CurlWrapper::~CurlWrapper()
 {
 }
 
-size_t write_file_callback(void *ptr, size_t size, size_t nmemb, void *data)
+size_t WriteFileCallback(void *ptr, size_t size, size_t nmemb, void *data)
 {
   std::FILE *writehere = (std::FILE *)data;
   return fwrite(ptr, size, nmemb, writehere);
+}
+
+int DownloadProgress(void *p,
+                     curl_off_t dltotal, curl_off_t dlnow,
+                     curl_off_t ultotal, curl_off_t ulnow)
+{
+  te::ws::core::CurlProgress* progress = (te::ws::core::CurlProgress*) p;
+
+  std::stringstream ss;
+
+  progress->m_task->setTotalSteps((int) dlnow);
+  progress->m_task->setCurrentStep((int) dlnow);
+
+  ss << dlnow;
+
+  std::string::size_type sz;
+  long numBytes = std::stol(ss.str(), &sz);
+
+  long numKBytes = numBytes / 1000;
+
+  progress->m_task->setMessage(progress->m_baseMessage + " " + std::to_string(numKBytes) + TE_TR(" KBytes received."));
+
+  return 0;
 }
 
 void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::string& filePath) const
@@ -72,10 +99,27 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
   curl_easy_setopt(m_curl.get(), CURLOPT_URL, url.c_str());
 
   // Get data to be written
-  curl_easy_setopt(m_curl.get(), CURLOPT_WRITEFUNCTION, write_file_callback);
+  curl_easy_setopt(m_curl.get(), CURLOPT_WRITEFUNCTION, WriteFileCallback);
 
   // Set a pointer to our file
   curl_easy_setopt(m_curl.get(), CURLOPT_WRITEDATA, file);
+
+  std::shared_ptr<te::common::TaskProgress> task;
+
+  task.reset( new te::common::TaskProgress(m_taskMessage,
+    te::common::TaskProgress::UNDEFINED, 100 ) );
+
+  CurlProgress progress;
+
+  progress.m_curl = this->m_curl;
+  progress.m_task = task;
+  progress.m_baseMessage = m_taskMessage;
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_XFERINFOFUNCTION, DownloadProgress);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_XFERINFODATA, &progress);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_NOPROGRESS, 0L);
 
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_curl.get());
@@ -83,4 +127,14 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
   // Check for errors
   if(status != CURLE_OK)
     throw te::common::Exception(curl_easy_strerror(status));
+}
+
+std::string te::ws::core::CurlWrapper::getTaskMessage() const
+{
+  return m_taskMessage;
+}
+
+void te::ws::core::CurlWrapper::setTaskMessage(const std::string &taskMessage)
+{
+  m_taskMessage = taskMessage;
 }
