@@ -101,6 +101,8 @@ namespace te
 
         //@}
 
+        void resetVisualizationTool();
+
       private:
 
         void reset();
@@ -123,9 +125,11 @@ namespace te
 
       protected:
 
+        bool m_selected;
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
+        std::vector<te::edit::Feature*> m_vecFeature;
         UndoStackManager& m_stack;
 
     };

@@ -1010,7 +1010,10 @@ void te::qt::plugins::edit::ToolBar::enableCurrentTool(const bool& enable)
   if(enable)
     e.m_display->getDisplay()->setCurrentTool(m_currentTool);
   else
+  {
+    e.m_display->getDisplay()->setCursor(Qt::ArrowCursor);
     e.m_display->getDisplay()->setCurrentTool(0, false);
+  }
 
   m_currentTool->setInUse(enable);
 }
