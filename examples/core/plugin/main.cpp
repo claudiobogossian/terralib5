@@ -29,40 +29,39 @@
 // TerraLib
 #include <terralib/core/plugin/DefaultFinders.h>
 #include <terralib/core/plugin/CppPluginEngine.h>
-#include <terralib/core/plugin/CppPlugin.h>
+#include <terralib/core/plugin/PluginEngineManager.h>
+#include <terralib/core/plugin/PluginManager.h>
 
 int main(int argc, char *argv[])
 {
   // Load all the config files for the plugins that are in the default path.
   std::vector< te::core::PluginInfo > v_pinfo = te::core::DefaultPluginFinder();
-  // Create a vector to store the loaded plugins
-  std::vector< std::unique_ptr<te::core::AbstractPlugin> >  v_cpp_plugins;
 
-  // CppPluginEngine to manage cpp plugins
-  te::core::CppPluginEngine cpp_engine;
+  // Create unique_ptr for a AbstractPluginEngine. In this case is a CppPluginEngine
+  std::unique_ptr < te::core::AbstractPluginEngine > cppengine(new te::core::CppPluginEngine());
 
+  // Insert the CppPluginEngine to the PluginEngineManager
+  te::core::PluginEngineManager::instance().insert(std::move(cppengine));
+
+  // Insert all the plugins stored in the vector from a given PluginInfo.
   for(const te::core::PluginInfo& pinfo: v_pinfo)
   {
-    //Load all the plugins stored in the vector from a given PluginInfo.
-    v_cpp_plugins.push_back(cpp_engine.load(pinfo));
+    te::core::PluginManager::instance().insert(pinfo);
   }
 
-  for(const std::unique_ptr<te::core::AbstractPlugin>& plugin: v_cpp_plugins)
+  // Get all the names for the available plugins
+  std::vector< std::string > v_plugins = te::core::PluginManager::instance().getPlugins();
+
+  // Load all the plugins
+  for(const std::string& plugin: v_plugins)
   {
-    //Start all loaded plugins.
-    plugin->startup();
+    te::core::PluginManager::instance().load(plugin);
   }
 
-  for(const std::unique_ptr<te::core::AbstractPlugin>& plugin: v_cpp_plugins)
+  // Unload all the plugins
+  for(const std::string& plugin: v_plugins)
   {
-    //Shutdown all loaded plugins.
-    plugin->shutdown();
-  }
-
-  for(std::unique_ptr<te::core::AbstractPlugin>& plugin: v_cpp_plugins)
-  {
-    //Unload all plugins.
-    cpp_engine.unload(std::move(plugin));
+    te::core::PluginManager::instance().unload(plugin);
   }
 
   return EXIT_SUCCESS;
