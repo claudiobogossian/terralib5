@@ -19,34 +19,23 @@
  */
 
 /*!
-  \file terralib/core/plugin/DefaultFinders.h
+  \file terralib/examples/core/plugin/Plugin1.cpp
 
-  \brief General utilities for searching for plugins.
+  \brief Examples for the Terralib Plugin Module
 
-  \author Gilberto Ribeiro de Queiroz
   \author Matheus Cavassan Zaglia
- */
+*/
+#include "Plugin2.h"
 
-#ifndef __TERRALIB_CORE_PLUGIN_DEFAULTFINDERS_H__
-#define __TERRALIB_CORE_PLUGIN_DEFAULTFINDERS_H__
-
-// TerraLib
-#include "../Config.h"
-#include "PluginInfo.h"
-
-// STL
-#include <string>
-#include <vector>
-
-namespace te
+void Plugin2::startup()
 {
-  namespace core
-  {
+  std::cout << "Plugin2 startup" << std::endl;
+}
 
-    /*! A plugin finder that search for plugins in some special directories defined by compile time macros. */
-    TECOREEXPORT std::vector<PluginInfo> DefaultPluginFinder();
+void Plugin2::shutdown()
+{
+  std::cout << "Plugin2 shutdown" << std::endl;
+}
 
-  } // end namespace core
-}   // end namespace te
 
-#endif  // __TERRALIB_CORE_PLUGIN_DEFAULTFINDERS_H__
+TERRALIB_PLUGIN_CALL_BACK_IMPL(Plugin2)

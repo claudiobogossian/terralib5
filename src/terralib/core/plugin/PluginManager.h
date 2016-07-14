@@ -39,24 +39,28 @@ namespace te
   namespace core
   {
 
-    //! A singleton for managing plugins.
     /*!
+      \class PluginManager
+      \brief A singleton for managing plugins.
+
       \note Methods in this class are not thread-safe.
      */
     class TECOREEXPORT PluginManager
     {
       public:
 
-        //! Return the list of plugins managed by PluginManager.
         /*!
+          \brief Return the list of plugins managed by PluginManager.
+
           \param plugins A vector to output the name of plugins managed by this singleton.
 
           \note The list will contain: loaded, not-loaded and broken plugins.
          */
         std::vector<std::string> getPlugins() const;
 
-        //! Return information about a plugin identified by the given name.
         /*!
+          \brief Return information about a plugin identified by the given name.
+
           \param name The plugin name.
 
           \return A plugin identified by the given name.
@@ -65,33 +69,35 @@ namespace te
          */
         const PluginInfo& getPluginInfo(const std::string& name) const;
 
-        //! Return the list of plugins that were not loaded.
+        /*! \brief Return the list of plugins that were not loaded. */
         std::vector<PluginInfo> getUnloadedPlugins() const;
 
-        //! Return the list of plugins that could not be loaded.
+        /*! \brief Return the list of plugins that could not be loaded. */
         std::vector<PluginInfo> getBrokenPlugins() const;
 
-        //! Returns true if the plugin is in the broken list of plugins.
+        /*! \brief Returns true if the plugin is in the broken list of plugins. */
         bool isBroken(const std::string& plugin_name) const;
 
-        //! Returns true if the plugin is in the not-loaded list of plugins.
+        /*! \brief Returns true if the plugin is in the not-loaded list of plugins. */
         bool isUnloaded(const std::string& plugin_name) const;
 
-        //! Returns true if the plugin is loaded otherwise returns false.
+        /*! \brief Returns true if the plugin is loaded otherwise returns false. */
         bool isLoaded(const std::string& plugin_name) const;
-      
-        //! Tells if a given plugin is registered or not.
+
+        /*! \brief Tells if a given plugin is registered or not. */
         bool exists(const std::string& plugin_name) const;
 
-        //! Adds plugin with its plugin information to the list of unloaded plugins.
         /*!
+          \brief Adds plugin with its plugin information to the list of unloaded plugins.
+
           \exception plugin_already_registered_error Throw an exception if a plugin with the same
                      name already exists and it is registered in the manager.
          */
         void insert(const PluginInfo& pinfo);
 
-        //! Remove plugin from the manager.
         /*!
+          \brief Remove plugin from the manager.
+
           This method removes the plugin from the manager.
           If the plugin was loaded, unload it and remove it from the manager.
           If it was unloaded or broked, just removes it from the correct list.
@@ -128,20 +134,23 @@ namespace te
          */
         void load(const std::string& plugin_name, const bool start = true);
 
-        //! Start a loaded plugin.
         /*!
+          \brief Start a loaded plugin.
+
           \exception tws::exception It throws an exception if any plugin can not be started.
          */
         void start(const std::string& plugin_name);
 
-        //! Stop a loaded plugin.
         /*!
+          \brief Stop a loaded plugin.
+
           \exception tws::exception It throws an exception if any plugin can not be stoped.
          */
         void stop(const std::string& plugin_name);
 
-        //! Try to unload a given plugin.
         /*!
+         \brief Try to unload a given plugin.
+
          This method will call plugin's shutdown method if needed.
 
          \param plugin_name The plugin to be unloaded.
@@ -150,18 +159,18 @@ namespace te
          */
         void unload(const std::string& plugin_name);
 
-        //! Stop and unload all plugins, then clear the internal list of plugins.
+        /*! \brief  Stop and unload all plugins, then clear the internal list of plugins. */
         void clear();
 
-        //! Access the singleton.
+        /*! \brief  Access the singleton. */
         static PluginManager& instance();
 
       private:
 
-        //! Constructor
+         /*! \brief Constructor */
         PluginManager();
 
-        //! Destructor.
+         /*! \brief Destructor. */
         ~PluginManager();
 
 // no copy allowed

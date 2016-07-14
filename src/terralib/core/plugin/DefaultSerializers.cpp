@@ -33,7 +33,6 @@
 
 // Boost
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -58,13 +57,13 @@ te::core::JSONPluginInfoSerializer(const std::string& file_name)
   plugin.site = doc.get<std::string>("site");
   //plugin.description = doc.get<std::string>("provider");
   //plugin.description = doc.get<std::string>("dependencies");
-  
-  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, doc.get_child("resources"))
+
+  for(const boost::property_tree::ptree::value_type& v: doc.get_child("resources"))
   {
     Resource r;
 
-    r.first = v.second.get<std::string>("name");
-    r.second = v.second.get<std::string>("value");
+    r.first = v.first;
+    r.second = v.second.get_value<std::string>();
 
     plugin.resources.push_back(r);
   }

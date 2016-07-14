@@ -29,6 +29,7 @@
 
 // TerraLib
 #include "PluginManager.h"
+#include "../translator/Translator.h"
 #include "AbstractPlugin.h"
 #include "AbstractPluginEngine.h"
 #include "Exception.h"
@@ -56,19 +57,19 @@ te::core::PluginManager::getPlugins() const
   std::vector<std::string> plugins;
 
 // retrieve the list of loaded plugins
-  BOOST_FOREACH(std::shared_ptr<AbstractPlugin>  p, m_pimpl->plugins)
+  for(std::shared_ptr<AbstractPlugin>  p: m_pimpl->plugins)
   {
     plugins.push_back(p->info().name);
   }
 
 // retrieve the list of unloaded plugins
-  BOOST_FOREACH(const PluginInfo& p, m_pimpl->unloaded_plugins)
+  for(const PluginInfo& p: m_pimpl->unloaded_plugins)
   {
     plugins.push_back(p.name);
   }
 
 // retrieve the list of broken plugins
-  BOOST_FOREACH(const PluginInfo& p, m_pimpl->broken_plugins)
+  for(const PluginInfo& p: m_pimpl->broken_plugins)
   {
     plugins.push_back(p.name);
   }
@@ -80,21 +81,21 @@ const te::core::PluginInfo&
 te::core::PluginManager::getPluginInfo(const std::string& name) const
 {
 // check in the possible list of loaded plugins first
-  BOOST_FOREACH(const std::shared_ptr<AbstractPlugin> & p, m_pimpl->plugins)
+  for(const std::shared_ptr<AbstractPlugin> & p: m_pimpl->plugins)
   {
     if(p->info().name == name)
       return p->info();
   }
 
 // check in the list of plugins not loaded yet
-  BOOST_FOREACH(const PluginInfo& p, m_pimpl->unloaded_plugins)
+  for(const PluginInfo& p: m_pimpl->unloaded_plugins)
   {
     if(p.name == name)
       return p;
   }
 
 // check in the list of "problematic"(or broken) plugins
-  BOOST_FOREACH(const PluginInfo& p, m_pimpl->broken_plugins)
+  for(const PluginInfo& p: m_pimpl->broken_plugins)
   {
     if(p.name == name)
       return p;
@@ -150,25 +151,25 @@ te::core::PluginManager::insert(const PluginInfo& pinfo)
 {
   if(isLoaded(pinfo.name))
   {
-    boost::format err_msg("there is already a plugin registered with name: '%1%', already loaded.");
+    boost::format err_msg(TE_TR("There is already a plugin registered with name: '%1%', already loaded."));
 
     throw InvalidArgumentException() << ErrorDescription((err_msg % pinfo.name).str());
   }
-  
+
   if(isUnloaded(pinfo.name))
   {
-    boost::format err_msg("there is already a plugin registered with name: '%1%', but not loaded yet.");
-    
+    boost::format err_msg(TE_TR("There is already a plugin registered with name: '%1%', but not loaded yet."));
+
     throw InvalidArgumentException() << ErrorDescription((err_msg % pinfo.name).str());
   }
-  
+
   if(isBroken(pinfo.name))
   {
-    boost::format err_msg("there is already a plugin registered with the name: '%1%', but presenting some problems to load or startup.");
-    
+    boost::format err_msg(TE_TR("There is already a plugin registered with the name: '%1%', but presenting some problems to load or startup."));
+
     throw InvalidArgumentException() << ErrorDescription((err_msg % pinfo.name).str());
   }
-  
+
   m_pimpl->unloaded_plugins.push_back(pinfo);
 }
 
@@ -181,7 +182,7 @@ te::core::PluginManager::remove(const std::string& plugin_name)
     unload(plugin_name);
 // now plugin belongs to the unloaded list!
   }
-  
+
   if(isUnloaded(plugin_name))
   {
     for(std::vector<PluginInfo>::iterator it = m_pimpl->unloaded_plugins.begin();
@@ -194,7 +195,7 @@ te::core::PluginManager::remove(const std::string& plugin_name)
       }
     }
   }
-  
+
   if(isBroken(plugin_name))
   {
     for(std::vector<PluginInfo>::iterator it = m_pimpl->broken_plugins.begin();
@@ -207,8 +208,9 @@ te::core::PluginManager::remove(const std::string& plugin_name)
       }
     }
   }
-  
-  throw OutOfRangeException() << ErrorDescription((boost::format("could not find plugin: '%1%'.") % plugin_name).str());
+  boost::format err_msg(TE_TR("Could not find plugin: '%1%'."));
+
+  throw OutOfRangeException() << ErrorDescription((err_msg % plugin_name).str());
 }
 
 void
@@ -218,7 +220,7 @@ te::core::PluginManager::load(const std::string& plugin_name,
 // if plugin is already loaded raise an exception
   if(isLoaded(plugin_name))
   {
-    boost::format err_msg("the plugin '%1%' is already loaded.");
+    boost::format err_msg(TE_TR("The plugin '%1%' is already loaded."));
 
     throw InvalidArgumentException() << ErrorDescription((err_msg % plugin_name).str());
   }
@@ -226,11 +228,11 @@ te::core::PluginManager::load(const std::string& plugin_name,
 // if plugin is not in the broken list nor in the unloaded list raise an exception
   if(!isBroken(plugin_name) && !isUnloaded(plugin_name))
   {
-    boost::format err_msg("the plugin '%1%' is not registered in the manager.");
-    
+    boost::format err_msg(TE_TR("The plugin '%1%' is not registered in the manager."));
+
     throw InvalidArgumentException() << ErrorDescription((err_msg % plugin_name).str());
   }
-  
+
 // in which list and position is the plugin_info?
   bool found_in_unloaded_list = false;
   bool found_in_broken_list = false;
@@ -245,7 +247,7 @@ te::core::PluginManager::load(const std::string& plugin_name,
       break;
     }
   }
-  
+
   if(!found_in_unloaded_list)
   {
     for(plugin_pos = 0; plugin_pos != m_pimpl->broken_plugins.size(); ++plugin_pos)
@@ -256,31 +258,33 @@ te::core::PluginManager::load(const std::string& plugin_name,
         break;
       }
     }
-    
+
     if(!found_in_broken_list)
     {
-      //throw item_not_found_error() << ErrorDescription((boost::format("could not find plugin: '%1%'.") % plugin_name).str());
+      boost::format err_msg(TE_TR("Could not find plugin: '%1%'."));
+
+      throw OutOfRangeException() << ErrorDescription((err_msg % plugin_name).str());
     }
   }
-  
+
 // get plugin_info (make a temp copy to avoid loose references!)
   PluginInfo pinfo = found_in_unloaded_list ? m_pimpl->unloaded_plugins[plugin_pos] :
                                               m_pimpl->broken_plugins[plugin_pos];
 
 // check if required plugins is already loaded
-  BOOST_FOREACH(const std::string& plugin_dependency, pinfo.dependencies)
+  for(const std::string& plugin_dependency: pinfo.dependencies)
   {
     if(!isLoaded(plugin_dependency))
     {
       if(found_in_unloaded_list)
         m_pimpl->move_from_unload_to_broken_list(plugin_pos);
-      
-      boost::format err_msg("plugin '%1%' has the following dependency: '%2%'.");
-      
-      //throw plugin_load_error() << ErrorDescription((err_msg % plugin_name % plugin_dependency).str());
+
+      boost::format err_msg(TE_TR("Plugin '%1%' has the following dependency: '%2%'."));
+
+      throw PluginLoadException() << ErrorDescription((err_msg % plugin_name % plugin_dependency).str());
     }
   }
-  
+
   std::unique_ptr<AbstractPlugin> plugin(nullptr);
 
   try
@@ -289,12 +293,12 @@ te::core::PluginManager::load(const std::string& plugin_name,
     AbstractPluginEngine& engine = PluginEngineManager::instance().get(pinfo.engine);
 
     plugin = engine.load(pinfo);
-    
+
     if(plugin.get() == nullptr)
     {
-      boost::format err_msg("could not load plugin: '%1%'.");
+      boost::format err_msg(TE_TR("Could not load plugin: '%1%'."));
 
-      //throw plugin_load_error() << ErrorDescription((err_msg % plugin_name).str());
+      throw PluginLoadException() << ErrorDescription((err_msg % plugin_name).str());
     }
 
     if(start)
@@ -312,8 +316,8 @@ te::core::PluginManager::load(const std::string& plugin_name,
     }
     else
     {
-      boost::format err_msg("unexpected error after loading plugin: '%1%'.");
-      //throw plugin_load_error() << ErrorDescription((err_msg % plugin_name).str());
+      boost::format err_msg(TE_TR("Unexpected error after loading plugin: '%1%'."));
+      throw PluginLoadException() << ErrorDescription((err_msg % plugin_name).str());
     }
   }
   catch(const boost::exception& e)
@@ -322,28 +326,28 @@ te::core::PluginManager::load(const std::string& plugin_name,
 //          this is why we make a copy here
     if(found_in_unloaded_list)
       m_pimpl->move_from_unload_to_broken_list(plugin_pos);
-    
-    //if(const std::string* d = boost::get_error_info<ErrorDescription>(e))
-    //{
-      //throw plugin::plugin_load_error() << ErrorDescription(*d);
-    //}
-    //else
-    //{
-      //boost::format err_msg("unknown error loading plugin: %1%.");
-      //throw plugin::plugin_load_error() << ErrorDescription((err_msg % pinfo.name).str());
-    //}
+
+    if(const std::string* d = boost::get_error_info<ErrorDescription>(e))
+    {
+      throw PluginLoadException() << ErrorDescription(*d);
+    }
+    else
+    {
+      boost::format err_msg(TE_TR("Unknown error loading plugin: %1%."));
+      throw PluginLoadException() << ErrorDescription((err_msg % pinfo.name).str());
+    }
   }
   catch(...)
   {
-    //boost::format err_msg("unknown error loading plugin: %1%.");
-    //throw plugin_load_error() << ErrorDescription((err_msg % pinfo.name).str());
+    boost::format err_msg(TE_TR("Unknown error loading plugin: %1%."));
+    throw PluginLoadException() << ErrorDescription((err_msg % pinfo.name).str());
   }
 }
 
 void
 te::core::PluginManager::start(const std::string& plugin_name)
 {
-  BOOST_FOREACH(std::shared_ptr<AbstractPlugin>  p, m_pimpl->plugins)
+  for(std::shared_ptr<AbstractPlugin>  p: m_pimpl->plugins)
   {
     if(p->info().name == plugin_name)
     {
@@ -352,15 +356,15 @@ te::core::PluginManager::start(const std::string& plugin_name)
     }
   }
 
-  boost::format err_msg("the plugin '%1%' is not load, load it before starting it.");
+  boost::format err_msg(TE_TR("The plugin '%1%' is not loaded, load it before starting it."));
 
-  //throw plugin_startup_error() << ErrorDescription((err_msg % plugin_name).str());
+  throw PluginStartupException() << ErrorDescription((err_msg % plugin_name).str());
 }
 
 void
 te::core::PluginManager::stop(const std::string& plugin_name)
 {
-  BOOST_FOREACH(std::shared_ptr<AbstractPlugin>  p, m_pimpl->plugins)
+  for(std::shared_ptr<AbstractPlugin>  p: m_pimpl->plugins)
   {
     if(p->info().name == plugin_name)
     {
@@ -368,10 +372,10 @@ te::core::PluginManager::stop(const std::string& plugin_name)
       return;
     }
   }
-  
-  boost::format err_msg("the plugin '%1%' is not load, load it before trying to stop it.");
 
-  //throw plugin_shutdown_error() << ErrorDescription((err_msg % plugin_name).str());
+  boost::format err_msg(TE_TR("The plugin '%1%' is not loaded, load it before trying to stop it."));
+
+  throw PluginShutdownException() << ErrorDescription((err_msg % plugin_name).str());
 }
 
 void

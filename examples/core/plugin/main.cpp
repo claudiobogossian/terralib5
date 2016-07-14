@@ -27,7 +27,43 @@
 */
 
 // TerraLib
+#include <terralib/core/plugin/DefaultFinders.h>
+#include <terralib/core/plugin/CppPluginEngine.h>
+#include <terralib/core/plugin/PluginEngineManager.h>
+#include <terralib/core/plugin/PluginManager.h>
+
 int main(int argc, char *argv[])
 {
+  // Load all the config files for the plugins that are in the default path.
+  std::vector< te::core::PluginInfo > v_pinfo = te::core::DefaultPluginFinder();
+
+  // Create unique_ptr for a AbstractPluginEngine. In this case is a CppPluginEngine
+  std::unique_ptr < te::core::AbstractPluginEngine > cppengine(new te::core::CppPluginEngine());
+
+  // Insert the CppPluginEngine to the PluginEngineManager
+  te::core::PluginEngineManager::instance().insert(std::move(cppengine));
+
+  // Insert all the plugins stored in the vector from a given PluginInfo.
+  for(const te::core::PluginInfo& pinfo: v_pinfo)
+  {
+    te::core::PluginManager::instance().insert(pinfo);
+  }
+
+  // Get all the names for the available plugins
+  std::vector< std::string > v_plugins = te::core::PluginManager::instance().getPlugins();
+
+  // Load all the plugins
+  for(const std::string& plugin: v_plugins)
+  {
+    te::core::PluginManager::instance().load(plugin);
+  }
+
+  // Unload all the plugins
+  for(const std::string& plugin: v_plugins)
+  {
+    te::core::PluginManager::instance().unload(plugin);
+  }
+
+  return EXIT_SUCCESS;
 }
 

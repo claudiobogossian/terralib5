@@ -26,7 +26,7 @@
   \author Gilberto Ribeiro de Queiroz
   \author Matheus Cavassan Zaglia
  */
- 
+
 #ifndef __TERRALIB_CORE_PLUGIN_PLUGINFINDERMANAGER_H__
 #define __TERRALIB_CORE_PLUGIN_PLUGINFINDERMANAGER_H__
 
@@ -42,41 +42,48 @@ namespace te
   namespace core
   {
 
-    //! Finders allow applications to extend how to search for plugins.
+    /*! \brief Finders allow applications to extend how to search for plugins. */
     typedef boost::function0<std::vector<PluginInfo> > PluginFinderFnct;
 
-    //! A singleton that can be used to register plugin finders.
+    /*!
+      \class PluginFinderManager
+
+      \brief A singleton that can be used to register plugin finders.
+     */
     class TECOREEXPORT PluginFinderManager
     {
       public:
 
-        //! Return the list of registered plugin finders.
+        //! Return the list of registered plugin finders. */
         std::vector<std::string> getFinders() const;
 
-        //! Return a specific plugin finder.
         /*!
-          \exception te::item_not_found_error If a finder with the given name is not found.
+          \brief Return a specific plugin finder.
+
+          \exception OutOfRangeException If a finder with the given name is not found.
          */
         PluginFinderFnct& get(const std::string& finder_name);
 
-        //! Registers a new plugin finder
         /*!
-         \exception plugin_finder_already_registered_error Throw an exception if
+          \brief Registers a new plugin finder
+
+          \exception InvalidArgumentException Throw an exception if
                     a finder with the same name already exists.
          */
         void insert(const std::string& finder_name,
                     PluginFinderFnct finder);
 
-        //! Remove a plugin finder from the manager.
         /*!
-          \exception te::item_not_found_error If a finder with the given name is not found.
+          \brief Remove a plugin finder from the manager.
+
+          \exception OutOfRangeException If a finder with the given name is not found.
          */
         void remove(const std::string& finder_name);
 
-        //! Return true if a finder with the given name is registered.
+        /*! \brief Return true if a finder with the given name is registered. */
         bool exists(const std::string& finder_name) const;
 
-        //! Access the singleton.
+        /*! \brief Access the singleton. */
         static PluginFinderManager& instance();
 
       protected:
