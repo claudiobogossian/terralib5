@@ -47,6 +47,7 @@
 #include "../../../edit/qt/tools/SubtractAreaTool.h"
 #include "../../../edit/qt/tools/VertexTool.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
+#include "../../../edit/qt/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../memory/DataSet.h"
@@ -523,7 +524,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
           item->setValue(oidPropertyNames[j], values[j].clone());
 
         // Get the edited geometry
-        te::gm::Geometry* geom = te::gm::Validate(features[i]->getGeometry());
+        te::gm::Geometry* geom = te::edit::ConvertGeomType(layer, te::gm::Validate(features[i]->getGeometry()));
         assert(geom);
 
         if (geom->getSRID() == TE_UNKNOWN_SRS || geom->getSRID() != layer->getSRID())
