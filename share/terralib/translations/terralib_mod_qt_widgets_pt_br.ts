@@ -9006,17 +9006,17 @@ p, li { white-space: pre-wrap; }
         <translation>Selecione o tipo de recorte e os parâmetros específicos.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="456"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="525"/>
         <source>Extent</source>
         <translation>Extensão</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="457"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="526"/>
         <source>Dimension</source>
         <translation>Dimensão</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="458"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="527"/>
         <source>Layer</source>
         <translation>Camada</translation>
     </message>
@@ -10415,10 +10415,10 @@ Pode ser um erro no conector da aplicação !</translation>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="325"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="334"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="340"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="648"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="696"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="705"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="654"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="702"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="711"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="717"/>
         <source>Warning</source>
         <translation>Aviso</translation>
     </message>
@@ -10431,7 +10431,7 @@ Pode ser um erro no conector da aplicação !</translation>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="168"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="317"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="648"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="654"/>
         <source>Error getting selected layer.</source>
         <translation>Erro na obtenção da camada selecionada.</translation>
     </message>
@@ -10445,34 +10445,34 @@ Pode ser um erro no conector da aplicação !</translation>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="238"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="286"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="294"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="399"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="426"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="567"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="579"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="405"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="432"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="573"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="585"/>
         <source>Exchanger</source>
         <translation>Intercambiar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="211"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="399"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="405"/>
         <source>Layer name invalid for output datasource. Would you like to normalize the name?</source>
         <translation>O arquivo não pôde ser lido !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="221"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="409"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="415"/>
         <source>Layer name invalid for output datasource!</source>
         <translation>Nome da camada inválido para a fonte de dados de saída !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="238"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="426"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="432"/>
         <source>Some property name is invalid for output datasource. Would you like to normalize the name?</source>
         <translation>Alguma propriedade inválida no nome da fonte de dados de saída. Gostaria de normalizar o nome ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="256"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="444"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="450"/>
         <source>Some property name is invalid for output datasource:
 
 </source>
@@ -10480,13 +10480,13 @@ Pode ser um erro no conector da aplicação !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="286"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="567"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="573"/>
         <source>Layer exported successfully.</source>
         <translation>Camada exportada com sucesso.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="290"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="575"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="581"/>
         <source>Error during exchanger. The reported error is: %1</source>
         <translation>Erro durante a troca de dados. O erro relatado é:%1</translation>
     </message>
@@ -10506,32 +10506,32 @@ Pode ser um erro no conector da aplicação !</translation>
         <translation>Nome do conjunto de dados não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="671"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="677"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="672"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="678"/>
         <source>Shapefile (*.shp *.SHP);;Mapinfo File (*.mif *.MIF);;KML (*.kml *.KML);;GeoJSON (*.geojson *.GEOJSON);;GML (*.gml *.GML);;DXF (*.dxf *.DXF);;DGN (*.dgn *.DGN);;</source>
         <translation>Shapefile (*.shp *.SHP);;Mapinfo File (*.mif *.MIF);;KML (*.kml *.KML);;GeoJSON (*.geojson *.GEOJSON);;GML (*.gml *.GML);;DXF (*.dxf *.DXF);;DGN (*.dgn *.DGN);;</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="696"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="702"/>
         <source>Output Layer SRID not defined.</source>
         <translation>SRID da camada de saída não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="705"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="711"/>
         <source>Invalid output Layer SRID.</source>
         <translation>SRID da camada de saída inválido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="711"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="717"/>
         <source>Invalid input Layer SRID.</source>
         <translation>SRID da camada de entrada inválido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="753"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="759"/>
         <source>Choose the SRS</source>
         <translation>Escolha o SRS</translation>
     </message>
