@@ -38,13 +38,13 @@ namespace te
   namespace core
   {
     //! An exception indicating an error when loading a plugin.
-    //struct PluginLoadException: virtual Exception { };
+    struct PluginLoadException: virtual Exception { };
 
     //! An exception indicating an error when trying to start a plugin.
-    //struct PluginStartupException: virtual Exception { };
+    struct PluginStartupException: virtual Exception { };
 
     //! An exception indicating an error when shutting down a plugin.
-    //struct PluginShutdownException: virtual Exception { };
+    struct PluginShutdownException: virtual Exception { };
 
     //! An exception indicating an error when loading a plugin.
     struct PluginEngineLoadException: virtual Exception { };

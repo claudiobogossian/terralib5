@@ -26,7 +26,7 @@
   \author Gilberto Ribeiro de Queiroz
   \author Matheus Cavassan Zaglia
  */
- 
+
 #ifndef __TERRALIB_CORE_PLUGIN_DEFAULTSERIALIZERS_H__
 #define __TERRALIB_CORE_PLUGIN_DEFAULTSERIALIZERS_H__
 
@@ -39,7 +39,7 @@ namespace te
   namespace core
   {
 
-    //! A plugin finder that search for plugins in some special directories defined by compile time macros.
+    /*! A plugin finder that search for plugins in some special directories defined by compile time macros. */
     TECOREEXPORT PluginInfo JSONPluginInfoSerializer(const std::string& file_name);
 
   } // end namespace core

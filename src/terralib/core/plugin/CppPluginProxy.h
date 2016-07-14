@@ -61,12 +61,32 @@ namespace te
         /*! \brief Destructor. */
         ~CppPluginProxy();
 
+        /*!
+          \brief It returns the PluginInfo of the CppPlugin
+
+          \return The CppPlugin information
+         */
         const PluginInfo& info() const;
 
+        /*!
+          \brief It returns true or false if the CppPlugin was initialized
+
+          \return The current state of the CppPlugin
+         */
         bool initialized() const;
 
+        /*!
+          \brief It starts the CppPlugin
+
+          \exception PluginStartupException It may throws an exception if the CppPlugin cannot be started.
+         */
         void startup();
 
+        /*!
+          \brief It shuts down the CppPlugin
+
+          \exception PluginShutdownException It may throws an exception if the CppPlugin cannot be shutdown.
+         */
         void shutdown();
 
       private:

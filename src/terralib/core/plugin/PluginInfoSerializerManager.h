@@ -41,39 +41,46 @@ namespace te
 {
   namespace core
   {
-    //! Serializers allow applications to extend how to parse plugin data.
+    /*! \brief Serializers allow applications to extend how to parse plugin data. */
     typedef boost::function1<PluginInfo, const std::string&> PluginInfoSerializerFnct;
 
-    //! A singleton that can be used to register plugin serializers.
-    class TECOREEXPORT PluginInfoSerializerManager 
+    /*!
+      \class PluginInfoSerializerManager
+
+      \brief A singleton that can be used to register plugin serializers.
+     */
+    class TECOREEXPORT PluginInfoSerializerManager
     {
       public:
 
-        //! Return the list of registered serializers.
+        /*! Return the list of registered serializers. */
         std::vector<std::string> getSerializers() const;
 
-        //! Return a specific serializer.
         /*!
+          \brief Return a specific serializer.
+
           \exception OutOfRangeException If a finder with the given name is not found.
          */
         PluginInfoSerializerFnct& get(const std::string& serializer_name);
 
-        //! Registers a new serializer.
         /*!
+          \brief Registers a new serializer.
+
           \exception InvalidArgumentException Throw an exception if a finder with the same name already exists.
          */
         void insert(const std::string& serializer_name, PluginInfoSerializerFnct serializer);
 
-        //! Remove a serializer from the manager.
         /*!
+          \brief Remove a serializer from the manager.
+
           \exception OutOfRangeException If a serializer with the given name is not found.
          */
         void remove(const std::string& serializer_name);
 
-        //! Return true if a serializer with the given name is registered.
+        /*! \brief Return true if a serializer with the given name is registered. */
         bool exists(const std::string& serializer_name) const;
 
-        //! Access the singleton.
+        /*! \brief Access the singleton. */
         static PluginInfoSerializerManager& instance();
 
       protected:
