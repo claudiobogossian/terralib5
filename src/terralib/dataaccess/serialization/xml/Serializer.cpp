@@ -242,8 +242,6 @@ void te::serialize::xml::Save(te::xml::AbstractWriter& writer)
 
   for(it=itBegin; it!=itEnd; ++it)
   {
-    bool ogrDsrc = it->second->getAccessDriver() == "OGR";
-
     writer.writeStartElement("te_da:DataSource");
 
     writer.writeAttribute("id", it->second->getId());
@@ -251,11 +249,11 @@ void te::serialize::xml::Save(te::xml::AbstractWriter& writer)
     writer.writeAttribute("access_driver", it->second->getAccessDriver());
 
     writer.writeStartElement("te_da:Title");
-    writer.writeValue((!ogrDsrc) ? it->second->getTitle() : te::common::ConvertLatin1UTFString(it->second->getTitle()));
+    writer.writeValue(it->second->getTitle());
     writer.writeEndElement("te_da:Title");
 
     writer.writeStartElement("te_da:Description");
-    writer.writeValue((!ogrDsrc) ? it->second->getDescription() : te::common::ConvertLatin1UTFString(it->second->getDescription()));
+    writer.writeValue(it->second->getDescription());
     writer.writeEndElement("te_da:Description");
 
     writer.writeStartElement("te_da:ConnectionInfo");
@@ -271,7 +269,7 @@ void te::serialize::xml::Save(te::xml::AbstractWriter& writer)
       writer.writeEndElement("te_common:Name");
 
       writer.writeStartElement("te_common:Value");
-      writer.writeValue((ogrDsrc && (conIt->first == "URI" || conIt->first == "SOURCE")) ? te::common::ConvertLatin1UTFString(conIt->second) : conIt->second);
+      writer.writeValue(conIt->second);
       writer.writeEndElement("te_common:Value");
 
       writer.writeEndElement("te_common:Parameter");
