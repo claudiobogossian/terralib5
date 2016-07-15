@@ -31,27 +31,17 @@
 #include "../../core/translator/Translator.h"
 #include "../core/Exception.h"
 
-
-struct te::vm::python::VirtualMachine::Impl
-{
-  Impl()
-  {
-  }
-
-  ~Impl()
-  {
-  }
-};
+// Python
+#include <Python.h>
 
 te::vm::python::VirtualMachine::VirtualMachine()
-: pimpl_(nullptr)
 {
-  pimpl_ = new Impl;
+  Py_Initialize();
 }
 
 te::vm::python::VirtualMachine::~VirtualMachine()
 {
-  delete pimpl_;
+  Py_Finalize();
 }
 
 std::string
@@ -85,6 +75,8 @@ te::vm::python::VirtualMachine::build(const std::string& file)
 
 void te::vm::python::VirtualMachine::execute()
 {
+  PyRun_SimpleString("from time import time,ctime\n"
+                      "print 'Today is',ctime(time())\n");
 }
 
 void

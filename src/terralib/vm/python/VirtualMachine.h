@@ -61,13 +61,7 @@ namespace te
           void stop();
 
           void reset();
-
-        private:
-
-          struct Impl;
-          Impl* pimpl_;
       };
-
     } // end namespace python
   }   // end namespace vm
 }     // end namespace te

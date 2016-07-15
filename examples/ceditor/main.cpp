@@ -54,6 +54,7 @@ void Initialize()
   LoadModule("te.da.ogr");
   LoadModule("te.da.pgis");
   LoadModule("te.vm.lua");
+  LoadModule("te.vm.python");
 }
 
 void Finalize()
