@@ -138,6 +138,9 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 
   m_moveStarted = false;
 
+  if (m_delta == QPointF(0., 0.))
+    return false;
+
   storeFeature();
 
   storeUndoCommand();
@@ -219,6 +222,9 @@ void te::edit::MoveGeometryTool::draw()
     return;
   }
 
+  if (m_delta == QPointF(0., 0.))
+    return;
+
   for (std::size_t i = 0; i < m_vecFeature.size(); i++)
   { 
     // Draw the vertexes
@@ -259,9 +265,6 @@ void te::edit::MoveGeometryTool::storeUndoCommand()
   if (!m_vecFeature.size())
     return;
 
-  if (m_delta == QPointF(0., 0.))
-    return;
-
   for (std::size_t i = 0; i < m_vecFeature.size(); i++)
   {
     m_stack.addWatch(m_vecFeature[i]->clone());
@@ -273,7 +276,7 @@ void te::edit::MoveGeometryTool::storeUndoCommand()
 
 void te::edit::MoveGeometryTool::resetVisualizationTool()
 {
-  delete m_feature;
+  m_feature = 0;
 
   te::common::FreeContents(m_vecFeature);
   m_vecFeature.clear();
