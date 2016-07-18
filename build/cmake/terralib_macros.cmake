@@ -31,9 +31,9 @@ MACRO(TeInstallPlugins plugins location)
 
   foreach(plugin ${plugins})
     get_target_property(_loc ${plugin} LOCATION)
-	if(EXISTS _loc)	
-		list(APPEND _files ${_loc})
-	endif()
+    if(EXISTS ${_loc})
+        list(APPEND _files ${_loc})
+    endif()
   endforeach()
 
   install(FILES ${_files}

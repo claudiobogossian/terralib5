@@ -877,6 +877,14 @@ void TerraView::onNewProjectTriggered()
   getLayerExplorer()->setLayers(ls);
 
   getMapDisplay()->setLayerList(ls);
+
+  getMapDisplay()->refresh(true);
+
+  // Set map srid 0
+  te::qt::af::evt::MapSRIDChanged mapSRIDChagned(std::pair<int, std::string>(0, ""));
+  m_app->trigger(&mapSRIDChagned);
+
+  m_display->getDisplay()->setSRID(0);
 }
 
 void TerraView::onOpenProjectTriggered()

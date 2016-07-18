@@ -150,6 +150,19 @@ namespace te
     TEGEOMEXPORT void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);
 
     /*!
+    \brief It will fix geometries with self-intersection.
+
+    \param g Input Geometry to fix.
+    
+    \return a vector of geometries.
+
+    \note It will not check if the geometry is invalid.
+
+    \exception Exception It throws an exception if the geometry is not Polygon or MultiPolygon.
+    */
+    TEGEOMEXPORT std::vector<te::gm::Geometry*> FixSelfIntersection(const te::gm::Geometry* g);
+
+    /*!
     \brief It will get the union of the input geometries.
 
     \param geom   Input Geometry.
@@ -177,6 +190,31 @@ namespace te
     \return True if geometry is valid.
     */
     TEGEOMEXPORT bool CheckValidity(const te::gm::Geometry* geom, te::gm::TopologyValidationError& error);
+
+    /*!
+    \brief Get/create a valid version of the geometry given. If the geometry is a polygon or multi polygon, self intersections /
+           inconsistencies are fixed. Otherwise the geometry is returned.
+
+    \param geom
+    \return a geometry
+    */
+    TEGEOMEXPORT te::gm::Geometry* Validate(te::gm::Geometry* geom);
+
+    /*!
+    \brief Add all line strings from the polygon given to the vector given.
+
+    \param polygon polygon from which to extract line strings
+    \param pAdd A reference to a vector of geometries.
+    */
+    TEGEOMEXPORT void AddPolygon(te::gm::Polygon* polygon, std::vector<te::gm::Geometry*>& pAdd);
+
+    /*!
+    \brief Add the linestring given to the vector.
+
+    \param linestring line string
+    \param pAdd A reference to a vector of geometries.
+    */
+    TEGEOMEXPORT void AddLineString(te::gm::LineString* lineString, std::vector<te::gm::Geometry*>& pAdd);
 
   } // end namespace gm
 }   // end namespace te

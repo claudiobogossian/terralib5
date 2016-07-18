@@ -83,7 +83,7 @@ namespace te
     /*!
     \enum OperationsType
 
-    \brief Defines the operations (CUD - Create, Update ad Remove) to this tool.
+    \brief Defines the operations (CUD - Create, Update and Delete) to this tool.
     */
     enum OperationType
     {

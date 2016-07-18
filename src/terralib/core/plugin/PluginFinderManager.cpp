@@ -29,6 +29,7 @@
 
 // TerraLib
 #include "PluginFinderManager.h"
+#include "../translator/Translator.h"
 #include "Exception.h"
 
 // STL
@@ -51,7 +52,7 @@ te::core::PluginFinderManager::getFinders() const
 
   for(const plugin_finder_t& pf : m_pimpl->finders)
     finders.push_back(pf.first);
-  
+
   return finders;
 }
 
@@ -61,8 +62,11 @@ te::core::PluginFinderManager::get(const std::string& finder_name)
   std::map<std::string, PluginFinderFnct>::iterator it = m_pimpl->finders.find(finder_name);
 
   if(it == m_pimpl->finders.end())
-    throw OutOfRangeException() << ErrorDescription((boost::format("could not find plugin finder: '%1%'.") % finder_name).str());
+  {
+    boost::format err_msg(TE_TR("Could not find plugin finder: '%1%'."));
 
+    throw OutOfRangeException() << ErrorDescription((err_msg% finder_name).str());
+  }
   return it->second;
 }
 
@@ -72,7 +76,7 @@ te::core::PluginFinderManager::insert(const std::string& finder_name,
 {
   if(exists(finder_name))
   {
-    boost::format err_msg("there is already a plugin finder registered with the name: '%1%'");
+    boost::format err_msg(TE_TR("There is already a plugin finder registered with the name: '%1%'"));
 
     throw InvalidArgumentException() << ErrorDescription((err_msg % finder_name).str());
   }
@@ -86,8 +90,11 @@ te::core::PluginFinderManager::remove(const std::string& finder_name)
   std::map<std::string, PluginFinderFnct>::iterator it = m_pimpl->finders.find(finder_name);
 
   if(it == m_pimpl->finders.end())
-    throw OutOfRangeException() << ErrorDescription((boost::format("could not find plugin finder: '%1%'.") % finder_name).str());
+  {
+    boost::format err_msg(TE_TR("Could not find plugin finder: '%1%'."));
 
+    throw OutOfRangeException() << ErrorDescription((err_msg % finder_name).str());
+  }
   m_pimpl->finders.erase(it);
 }
 

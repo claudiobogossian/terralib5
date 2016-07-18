@@ -49,15 +49,23 @@
 
 te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, Qt::MouseButton sideToClose, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-  m_oidSet(0),
+  m_tol(0.000001),
   m_sideToClose(sideToClose),
-  m_tol(0.000001)
+  m_oidSet(0),
+  m_vecFeature(0)
 {
+  pickFeatures();
+
+  draw();
 }
 
 te::edit::SplitPolygonTool::~SplitPolygonTool()
 {
-  delete m_oidSet;
+  te::common::FreeContents(m_vecFeature);
+  m_vecFeature.clear();
+
+  if (m_oidSet)
+    m_oidSet = 0;
 }
 
 bool te::edit::SplitPolygonTool::mousePressEvent(QMouseEvent* e)
@@ -69,6 +77,8 @@ bool te::edit::SplitPolygonTool::mousePressEvent(QMouseEvent* e)
   {
     resetVisualizationTool();
     m_isFinished = false;
+
+    pickFeatures();
   }
 
   return te::edit::CreateLineTool::mousePressEvent(e);
@@ -86,6 +96,8 @@ bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   startSplit();
 
+  emit splitFinished(*m_oidSet, m_layer->getId());
+
   return true;
 }
 
@@ -95,6 +107,8 @@ bool te::edit::SplitPolygonTool::mouseReleaseEvent(QMouseEvent* e)
     return false;
 
   startSplit();
+
+  emit splitFinished(*m_oidSet, m_layer->getId());
 
   return true;
 }
@@ -106,86 +120,77 @@ void te::edit::SplitPolygonTool::startSplit()
 
   m_isFinished = true;
 
-  m_oidSet = new te::da::ObjectIdSet();
+  if (m_oidSet == 0)
+    m_oidSet = new te::da::ObjectIdSet();
 
-  std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
-  std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
-
-  std::vector<std::string> oidPropertyNames;
-  te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
-
-  while (ds->moveNext())
+  for (std::size_t i = 0; i < m_vecFeature.size(); i++)
   {
-    m_feature = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), ds->getGeometry(gpos).release(), te::edit::GEOMETRY_UPDATE);
-    splitPolygon();
+    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_vecFeature[i]->getId());
+    splitPolygon(i);
   }
-
-  if(m_oidSet->size() == 0)
-    return;
-
-  draw();
 
   te::edit::CreateLineTool::clear();
 
-  emit splitFinished(*m_oidSet);
-}
-
-void te::edit::SplitPolygonTool::splitPolygon()
-{
-  if (m_feature == 0)
+  if (!m_oidSet->size())
     return;
 
-  std::auto_ptr<te::gm::Geometry> feature_bounds;
+  emit geometriesEdited();
+}
+
+void te::edit::SplitPolygonTool::splitPolygon(std::size_t index)
+{
+  int srid = m_vecFeature.at(index)->getGeometry()->getSRID();
+  std::vector<te::gm::Polygon*> outPolygons;
+
+  std::auto_ptr<te::gm::Geometry> geom_bounds;
+  geom_bounds.reset(m_vecFeature.at(index)->getGeometry()->getBoundary());
+  geom_bounds->setSRID(srid);
+
   std::auto_ptr<te::gm::Geometry> blade_in;
-  std::auto_ptr<te::gm::Geometry> vgeoms;
-  std::vector<te::gm::Polygon*> outputPolygons;
-
-  int srid = m_feature->getGeometry()->getSRID();
-
-  feature_bounds.reset(m_feature->getGeometry()->getBoundary());
-  feature_bounds->setSRID(srid);
-
   blade_in.reset(te::edit::CreateLineTool::buildLine());
   blade_in->setSRID(srid);
 
-  vgeoms.reset(feature_bounds->Union(blade_in.get()));
+  std::auto_ptr<te::gm::Geometry> vgeoms;
+  vgeoms.reset(geom_bounds->Union(blade_in.get()));
   vgeoms->setSRID(srid);
 
-  te::gm::Polygonizer(vgeoms.get(), outputPolygons);
+  te::gm::Polygonizer(vgeoms.get(), outPolygons);
 
-  RepositoryManager& repository = RepositoryManager::getInstance();
+  for (std::size_t i = 0; i < outPolygons.size(); i++)
+  {
+    outPolygons.at(i)->setSRID(m_layer->getSRID());
+    if (outPolygons.at(i)->getSRID() != m_display->getSRID())
+      outPolygons.at(i)->transform(m_display->getSRID());
+  }
+
+  m_vecFeature.at(index)->getGeometry()->setSRID(m_layer->getSRID());
+  if (m_vecFeature.at(index)->getGeometry()->getSRID() != m_display->getSRID())
+    m_vecFeature.at(index)->getGeometry()->transform(m_display->getSRID());
 
   std::size_t i = 1;
-  while (i < outputPolygons.size())
+  while (i < outPolygons.size())
   {
-    if (!outputPolygons.at(i)->equals(m_feature->getGeometry()) &&
-         outputPolygons.at(i)->coveredBy(m_feature->getGeometry()->buffer(m_tol)))
+    if (!outPolygons.at(i)->equals(m_vecFeature.at(index)->getGeometry()) &&
+         outPolygons.at(i)->coveredBy(m_vecFeature.at(index)->getGeometry()->buffer(m_tol)))
     {
-      Feature* f = new Feature(GenerateId(), outputPolygons.at(i), te::edit::GEOMETRY_CREATE);
-
-      if (outputPolygons.at(i)->getSRID() != m_display->getSRID())
-        outputPolygons.at(i)->setSRID(m_display->getSRID());
-
-      repository.addFeature(m_layer->getId(), f->clone());
+      Feature* f = new Feature(GenerateId(), outPolygons.at(i), te::edit::GEOMETRY_CREATE);
+      RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
       m_oidSet->add(f->getId());
     }
+
     i++;
   }
 
-  if(m_oidSet->size() && outputPolygons.at(0)->coveredBy(m_feature->getGeometry()->buffer(m_tol)))
+  if (m_oidSet->size() && 
+      outPolygons.at(0)->coveredBy(m_vecFeature.at(index)->getGeometry()->buffer(m_tol)))
   {
-    m_feature->setGeometry(outputPolygons.at(0));
+    m_vecFeature.at(index)->setGeometry(outPolygons.at(0));
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_vecFeature.at(index)->clone());
 
-    if (outputPolygons.at(0)->getSRID() != m_display->getSRID())
-      outputPolygons.at(0)->setSRID(m_display->getSRID());
-
-    repository.addFeature(m_layer->getId(), m_feature->clone());
-
-    m_oidSet->add(m_feature->getId());
+    m_oidSet->add(m_vecFeature.at(index)->getId());
   }
 
-  emit geometriesEdited();
 }
 
 void te::edit::SplitPolygonTool::draw()
@@ -225,7 +230,38 @@ void te::edit::SplitPolygonTool::resetVisualizationTool()
   }
 
   te::edit::CreateLineTool::clear();
-
-  m_feature = 0;
   m_oidSet = 0;
+}
+
+void te::edit::SplitPolygonTool::pickFeatures()
+{
+  try
+  {
+    std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
+    std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
+
+    std::vector<std::string> oidPropertyNames;
+    te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
+
+    m_vecFeature.clear();
+
+    while (ds->moveNext())
+    {
+      Feature* f = te::edit::PickFeature(m_layer, *ds->getGeometry(gpos)->getMBR(), m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+
+      f->getGeometry()->setSRID(m_display->getSRID());
+
+      if (f->getGeometry()->getSRID() != m_layer->getSRID())
+        f->getGeometry()->transform(m_layer->getSRID());
+
+      m_vecFeature.push_back(f);
+
+      RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
+    }
+
+  }
+  catch (std::exception& e)
+  {
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
+  }
 }

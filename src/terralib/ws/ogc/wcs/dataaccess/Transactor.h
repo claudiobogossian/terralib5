@@ -63,11 +63,11 @@ namespace te
           {
           public:
 
-            Transactor(WCSClient wcs);
+            Transactor(const std::shared_ptr<te::ws::ogc::WCSClient> wcs);
 
             ~Transactor();
 
-            CoverageDescription coverageDescription(const std::string coverageName) const;
+            CoverageDescription coverageDescription(const std::string coverageName);
 
             void setCoverageRequest(const CoverageRequest coverageRequest);
 
@@ -262,7 +262,7 @@ namespace te
 
           private:
 
-            WCSClient m_wcs;
+            std::shared_ptr<te::ws::ogc::WCSClient> m_wcs;
             CoverageRequest m_coverageRequest;
 
 

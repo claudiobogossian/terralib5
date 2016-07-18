@@ -94,6 +94,8 @@ namespace te
 
         Feature* getFeature(const te::gm::Envelope& e, int srid) const;
 
+        Feature* getFeature(te::da::ObjectId* id) const;
+
         void clear();
 
       private:

@@ -80,7 +80,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, QObject* parent = 0);
+        CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, bool validatePolygon = false, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~CreatePolygonTool();
@@ -122,6 +122,8 @@ namespace te
 
         void storeUndoCommand();
 
+        bool validPolygon();
+
       private slots:
 
         void onExtentChanged();
@@ -134,6 +136,7 @@ namespace te
         te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
+        bool m_validatePolygon;
         Qt::MouseButton m_sideToClose;
         UndoStackManager& m_stack;
 

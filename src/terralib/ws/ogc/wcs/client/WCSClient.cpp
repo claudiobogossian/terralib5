@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../core/CurlWrapper.h"
 #include "WCSClient.h"
 
 //STL
@@ -40,9 +41,37 @@
 #include <boost/filesystem.hpp>
 
 te::ws::ogc::WCSClient::WCSClient(const std::string usrDataDir, const std::string uri, const std::string version)
-  : m_uri(uri + "?SERVICE=WCS"), m_version(version)
+  : m_version(version),
+    m_uri (uri)
 {
   m_dataDir = usrDataDir + "/wcs/";
+
+  std::string baseUrl = m_uri.scheme() + "://" + m_uri.host();
+
+  if (!m_uri.port().empty())
+  {
+    baseUrl = baseUrl + ":" + m_uri.port();
+  }
+
+  baseUrl = baseUrl + m_uri.path() + "?";
+
+  if (!m_uri.query().empty())
+  {
+    std::string query = m_uri.query();
+
+    size_t endsWith = query.rfind("&");
+
+    if (endsWith != (query.size() - 1))
+    {
+      query.append("&");
+    }
+
+    baseUrl = baseUrl + query;
+  }
+
+  m_uri = te::core::URI(baseUrl);
+
+  m_curl = std::shared_ptr<te::ws::core::CurlWrapper>(new te::ws::core::CurlWrapper());
 
   if (boost::filesystem::is_directory(usrDataDir) && !boost::filesystem::exists(m_dataDir))
     boost::filesystem::create_directories(m_dataDir);
@@ -56,16 +85,18 @@ te::ws::ogc::WCSClient::~WCSClient()
 
 void te::ws::ogc::WCSClient::updateCapabilities()
 {
-  std::string url ("");
+  std::string url = m_uri.uri();
 
   if(m_version == "2.0.1")
   {
-    url = m_uri + "&VERSION=" + m_version + "&REQUEST=GetCapabilities";
+    url = url + "SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=GetCapabilities";
   }
   else
   {
     throw te::common::Exception(TE_TR("WCS version not supported!"));
   }
+
+  m_curl->setTaskMessage(TE_TR("Getting Capabilities"));
 
   // Request the WCS Capabilities XML file
   std::string xmlPath = te::ws::ogc::WCSClient::makeFileRequest(url, "capabilities.xml");
@@ -75,27 +106,36 @@ void te::ws::ogc::WCSClient::updateCapabilities()
 }
 
 
-te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const std::string coverage) const
+te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const std::string coverage)
 {
+
+  if(m_descriptionMap.find(coverage) != m_descriptionMap.end())
+  {
+    return m_descriptionMap[coverage];
+  }
 
   te::ws::ogc::CoverageDescription describeCoverage;
 
-  std::string url;
+  std::string url = m_uri.uri();
 
   if(m_version == "2.0.1")
   {
-    url = m_uri + "&VERSION=" + m_version + "&REQUEST=DescribeCoverage&CoverageID=" + coverage;
+    url = url + "SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=DescribeCoverage&CoverageID=" + coverage;
   }
   else
   {
     throw te::common::Exception(TE_TR("WCS version not supported!"));
   }
 
+  m_curl->setTaskMessage(TE_TR("Getting Coverage Description"));
+
   // Request the WCS Describe Coverage XML file
   std::string xmlPath = te::ws::ogc::WCSClient::makeFileRequest(url, "describeCoverage.xml");
 
   // Parse the XML file into a struct
   describeCoverage = parseDescribeCoverage(xmlPath);
+
+  m_descriptionMap[coverage] = describeCoverage;
 
   return describeCoverage;
 }
@@ -105,11 +145,11 @@ std::string te::ws::ogc::WCSClient::getCoverage(const CoverageRequest coverageRe
 {
   std::string coveragePath;
 
-  std::string url;
+  std::string url = m_uri.uri();
 
   if(m_version == "2.0.1")
   {
-    url = m_uri + "&VERSION=" + m_version + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
+    url = url + "SERVICE=WCS" + "&VERSION=" + m_version + "&REQUEST=GetCoverage&COVERAGEID=" + coverageRequest.coverageID;
 
     if(!coverageRequest.format.empty())
       url += "&FORMAT=" + coverageRequest.format;
@@ -156,102 +196,28 @@ std::string te::ws::ogc::WCSClient::getCoverage(const CoverageRequest coverageRe
     throw te::common::Exception(TE_TR("WCS version not supported!"));
   }
 
+  m_curl->setTaskMessage(TE_TR("Getting Coverage"));
+
   coveragePath = makeFileRequest(url, coverageRequest.coverageID);
 
   return coveragePath;
 }
 
-
-size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data)
-{
-  size_t sizeRead = size * nmemb;
-
-  std::string* block = (std::string*) data;
-  block->append((char *)ptr, sizeRead);
-
-  return sizeRead;
-}
-
-
-std::string te::ws::ogc::WCSClient::makeRequest(const std::string url) const
-{
-  CURL* curl;
-  std::string callback;
-
-  curl = curl_easy_init();
-  curl_easy_cleanup(curl);
-  curl = curl_easy_init();
-
-  CURLcode status;
-
-  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
-  // Get data to be written
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-  // Set a pointer to our xml string
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&callback);
-  /* Perform the request, status will get the return code */
-  status = curl_easy_perform(curl);
-
-  // Check for errors
-  if(status != CURLE_OK)
-    throw te::common::Exception(curl_easy_strerror(status));
-
-  if(curl) curl_easy_cleanup(curl);
-
-  return callback;
-
-  return callback;
-}
-
-size_t write_file_callback(void *ptr, size_t size, size_t nmemb, void *data)
-{
-  FILE *writehere = (FILE *)data;
-  return fwrite(ptr, size, nmemb, writehere);
-}
-
 std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const std::string fileName) const
 {
-  CURL* curl;
-  std::FILE* file;
-
   std::string path = m_dataDir + fileName;
 
-  curl = curl_easy_init();
-  curl_easy_cleanup(curl);
-  curl = curl_easy_init();
-
-  CURLcode status;
-  file = std::fopen(path .c_str(), "wb");
-
-  if(!file)
-    throw te::common::Exception(TE_TR("Could not open file to write!"));
-
-  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
-  // Get data to be written
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_file_callback);
-  // Set a pointer to our file
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
-  /* Perform the request, status will get the return code */
-  status = curl_easy_perform(curl);
-
-  // Check for errors
-  if(status != CURLE_OK)
-    throw te::common::Exception(curl_easy_strerror(status));
-
-  if (!file)
-    throw te::common::Exception(TE_TR("Error at received file!"));
-  else
-    std::fclose(file);
-
-  if(curl) curl_easy_cleanup(curl);
+  m_curl->downloadFile(url, path);
 
   return path;
 }
 
-
-const struct te::ws::ogc::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
+const te::ws::ogc::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
 {
   return m_capabilities;
+}
+
+void te::ws::ogc::WCSClient::setCurlWrapper(te::ws::core::CurlWrapper* curlWrapper)
+{
+  m_curl.reset(curlWrapper);
 }

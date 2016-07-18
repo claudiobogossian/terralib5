@@ -31,10 +31,6 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/Config.h.in
 
 include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
-if(TERRALIB_LOGGER_ENABLED)
-  include_directories(${LOG4CXX_INCLUDE_DIR})
-endif()
-
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.h)
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ui/*.ui)

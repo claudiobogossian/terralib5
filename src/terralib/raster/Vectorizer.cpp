@@ -366,7 +366,9 @@ bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons,
     
     if( ((double)polStructure.m_value) != m_noDataValue )
     {
-      polygons.push_back( polStructure.m_polygonPtr.release() );
+      std::vector<te::gm::Geometry*> fixed = te::gm::FixSelfIntersection(polStructure.m_polygonPtr.get());
+
+      polygons.insert(polygons.end(), fixed.begin(), fixed.end());
       if( polygonsValues ) polygonsValues->push_back( polStructure.m_value );
       polStructure.clear();
     }

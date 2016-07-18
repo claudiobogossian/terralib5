@@ -45,19 +45,19 @@
 #include "../../../../raster/BandProperty.h"
 #include "../../../../common/StringUtils.h"
 
-te::ws::ogc::wcs::da::Transactor::Transactor(WCSClient wcs)
-  : te::da::DataSourceTransactor(),
-    m_wcs(wcs)
+te::ws::ogc::wcs::da::Transactor::Transactor(const std::shared_ptr<te::ws::ogc::WCSClient> wcs)
+  : te::da::DataSourceTransactor()
 {
+  m_wcs = wcs;
 }
 
 te::ws::ogc::wcs::da::Transactor::~Transactor()
 {
 }
 
-te::ws::ogc::CoverageDescription te::ws::ogc::wcs::da::Transactor::coverageDescription(const std::string coverageName) const
+te::ws::ogc::CoverageDescription te::ws::ogc::wcs::da::Transactor::coverageDescription(const std::string coverageName)
 {
-  return m_wcs.describeCoverage(coverageName);
+  return m_wcs->describeCoverage(coverageName);
 }
 
 void te::ws::ogc::wcs::da::Transactor::setCoverageRequest(const te::ws::ogc::CoverageRequest coverageRequest)
@@ -81,7 +81,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   m_coverageRequest = te::ws::ogc::CoverageRequest();
   m_coverageRequest.coverageID = name;
   
-  std::string coveragePath = m_wcs.getCoverage(m_coverageRequest);
+  std::string coveragePath = m_wcs->getCoverage(m_coverageRequest);
 
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = coveragePath;
@@ -110,7 +110,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   m_coverageRequest = te::ws::ogc::CoverageRequest();
   m_coverageRequest.coverageID = name;
 
-  std::string coveragePath = m_wcs.getCoverage(m_coverageRequest);
+  std::string coveragePath = m_wcs->getCoverage(m_coverageRequest);
 
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = coveragePath;
@@ -163,12 +163,12 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::query(const std
 
 std::vector<std::string> te::ws::ogc::wcs::da::Transactor::getDataSetNames()
 {
-  return m_wcs.getCapabilities().coverages;
+  return m_wcs->getCapabilities().coverages;
 }
 
 std::size_t te::ws::ogc::wcs::da::Transactor::getNumberOfDataSets()
 {
-  return m_wcs.getCapabilities().coverages.size();
+  return m_wcs->getCapabilities().coverages.size();
 }
 
 std::auto_ptr<te::da::DataSetType> te::ws::ogc::wcs::da::Transactor::getDataSetType(const std::string& name)
@@ -335,7 +335,7 @@ std::size_t te::ws::ogc::wcs::da::Transactor::getNumberOfItems(const std::string
 
 bool te::ws::ogc::wcs::da::Transactor::hasDataSets()
 {
-  if(m_wcs.getCapabilities().coverages.size() > 0)
+  if(m_wcs->getCapabilities().coverages.size() > 0)
     return true;
 
   return false;
@@ -343,9 +343,9 @@ bool te::ws::ogc::wcs::da::Transactor::hasDataSets()
 
 bool te::ws::ogc::wcs::da::Transactor::dataSetExists(const std::string& name)
 {
-  std::vector< std::string > coverages = m_wcs.getCapabilities().coverages;
+  std::vector< std::string > coverages = m_wcs->getCapabilities().coverages;
 
-  for(int i = 0; i < coverages.size(); i ++)
+  for(unsigned int i = 0; i < coverages.size(); i ++)
   {
     if(coverages.at(i).compare(name) == 0)
       return true;

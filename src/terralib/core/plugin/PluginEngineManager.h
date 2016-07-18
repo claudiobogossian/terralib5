@@ -26,7 +26,7 @@
   \author Gilberto Ribeiro de Queiroz
   \author Matheus Cavassan Zaglia
  */
- 
+
 #ifndef __TERRALIB_CORE_PLUGIN_PLUGINENGINEMANAGER_H__
 #define __TERRALIB_CORE_PLUGIN_PLUGINENGINEMANAGER_H__
 
@@ -35,6 +35,7 @@
 
 // STL
 #include <memory>
+#include <string>
 
 namespace te
 {

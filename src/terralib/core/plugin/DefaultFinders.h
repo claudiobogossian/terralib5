@@ -26,7 +26,7 @@
   \author Gilberto Ribeiro de Queiroz
   \author Matheus Cavassan Zaglia
  */
- 
+
 #ifndef __TERRALIB_CORE_PLUGIN_DEFAULTFINDERS_H__
 #define __TERRALIB_CORE_PLUGIN_DEFAULTFINDERS_H__
 
@@ -43,7 +43,7 @@ namespace te
   namespace core
   {
 
-    //! A plugin finder that search for plugins in some special directories defined by compile time macros.
+    /*! A plugin finder that search for plugins in some special directories defined by compile time macros. */
     TECOREEXPORT std::vector<PluginInfo> DefaultPluginFinder();
 
   } // end namespace core
