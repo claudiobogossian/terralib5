@@ -48,8 +48,9 @@
 #include <cassert>
 #include <memory>
 
-te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, bool rightButtonToSave, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
+    m_rightButtonToSave(rightButtonToSave),
     m_selected(false),
     m_moveStarted(false),
     m_vecFeature(0),
@@ -133,6 +134,9 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 {
+  if (e->button() == Qt::RightButton && m_rightButtonToSave)
+    emit geometriesEdited();
+
   if (e->button() != Qt::LeftButton)
     return false;
 
@@ -144,6 +148,11 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
   storeFeature();
 
   storeUndoCommand();
+
+  if (!m_rightButtonToSave)
+    emit geometriesEdited();
+  else
+    draw();
 
   return false;
 }
@@ -255,9 +264,8 @@ void te::edit::MoveGeometryTool::storeFeature()
     return;
 
   for (std::size_t i = 0; i < m_vecFeature.size(); i++)
-      RepositoryManager::getInstance().addFeature(m_layer->getId(), m_vecFeature[i]->clone());
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_vecFeature[i]->clone());
 
-  emit geometriesEdited();
 }
 
 void te::edit::MoveGeometryTool::storeUndoCommand()
