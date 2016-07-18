@@ -32,6 +32,9 @@
 #include <terralib/core/plugin/PluginEngineManager.h>
 #include <terralib/core/plugin/PluginManager.h>
 
+// STL
+#include <cstdlib>
+
 int main(int argc, char *argv[])
 {
   // Load all the config files for the plugins that are in the default path.

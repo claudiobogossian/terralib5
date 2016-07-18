@@ -25,17 +25,24 @@
 
   \author Matheus Cavassan Zaglia
 */
-#include "Plugin2.h"
 
-void Plugin2::startup()
+// TerraLib
+#include <terralib/core/plugin/CppPlugin.h>
+// STL
+#include <iostream>
+
+TERRALIB_CPP_PLUGIN_BEGIN(Plugin2)
+
+TERRALIB_CPP_PLUGIN_STARTUP
 {
   std::cout << "Plugin2 startup" << std::endl;
 }
 
-void Plugin2::shutdown()
+TERRALIB_CPP_PLUGIN_SHUTDOWN
 {
   std::cout << "Plugin2 shutdown" << std::endl;
 }
 
+TERRALIB_CPP_PLUGIN_END
 
 TERRALIB_PLUGIN_CALL_BACK_IMPL(Plugin2)
