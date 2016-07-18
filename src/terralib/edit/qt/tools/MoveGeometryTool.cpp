@@ -232,7 +232,11 @@ void te::edit::MoveGeometryTool::draw()
   }
 
   if (m_delta == QPointF(0., 0.))
+  {
+    renderer.end();
+    m_display->repaint();
     return;
+  }
 
   for (std::size_t i = 0; i < m_vecFeature.size(); i++)
   { 
