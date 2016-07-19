@@ -118,10 +118,6 @@ set ICU=%LIBS_DIR%\icuuc52.dll
 set XML2=%LIBS_DIR%\libxml2.dll
 set NETCDF=%LIBS_DIR%\netcdf.dll
 
-set APR=%ROOT_DIR%\install%_X86%\bin\libapr-1.dll
-set APRD=%ROOT_DIR%\install%_X86%\bin\libapr-1d.dll
-set APRUTIL=%ROOT_DIR%\install%_X86%\bin\libaprutil-1.dll
-set APRUTILD=%ROOT_DIR%\install%_X86%\bin\libaprutil-1d.dll
 set LIBKML=%ROOT_DIR%\libkml-master\build%_X86%\Release\libkml.lib
 set BZIP=%ROOT_DIR%\bzip2-1.0.6\lib%_X86%\libbz2.lib
 set JPEG=%ROOT_DIR%\jpeg-9a\build%_X86%\libjpeg.lib
@@ -133,7 +129,6 @@ set URIPARSER=%ROOT_DIR%\uriparser-0.8.4\win32\build%_aux%\uriparser.lib
 
 :: libraries linked against TerraLib 5 (fully installed)
 :: -------------------------------------------------------------
-set LOG4CXX=%LIBS_DIR%\log4cxx.lib
 set ICONV=%LIBS_DIR%\iconv.lib
 set PROJ=%LIBS_DIR%\proj_i.lib
 set GEOS=%LIBS_DIR%\geos_i.lib
@@ -148,7 +143,6 @@ set QWT=%LIBS_DIR%\qwt.lib
 set LUA=%LIBS_DIR%\lua.lib
 set TERRALIB4=%LIBS_DIR%\terralib.lib
 set CURL=%LIBS_DIR%\libcurl.lib
-set GETTEXT=%LIBS_DIR%\intl.lib
 set QSCINTILLA=%LIBS_DIR%\qscintilla2.lib
 
 del %ROOT_DIR%\..\*.log /S /Q >nul 2>nul
@@ -159,9 +153,11 @@ IF NOT EXIST %LIBS_DIR% (
   goto begin_build
 )
 
-goto cppunit_deps
+goto gtest_deps
 
 :begin_build
+
+:gtest
 
 :: ====
 :: GTest and GMock
@@ -170,7 +166,11 @@ set GMOCK_DIR=%ROOT_DIR%\googletest-master\googlemock
 set GTEST_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
 set GTEST_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\gtest.lib
 
-:: No dependencies.
+:: Check dependencies
+goto end_gtest_deps
+:gtest_deps
+goto cppunit_deps
+:end_gtest_deps
 
 echo | set /p="Installing gtest and gmock... "<nul
 
@@ -299,12 +299,12 @@ set ICONV_LIBRARIES=debug;%ICONVD_LIBRARY%;optimized;%ICONV_LIBRARY%
 :: Check dependencies
 goto end_iconv_deps
 :iconv_deps
-goto gettext_deps
+goto expat_deps
 :end_iconv_deps
 
 echo | set /p="Installing iconv... "<nul
 
-IF EXIST %ICONV_LIBRARY% call :skip_build && goto gettext 
+IF EXIST %ICONV_LIBRARY% call :skip_build && goto expat 
 
 call :append_log_begin iconv
 
@@ -312,13 +312,13 @@ call :append_log_begin iconv
 
 cd %ICONV_DIR% >nul 2>nul
 
-( msbuild /m /t:clean  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean debug" && goto gettext
+( msbuild /m /t:clean  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean debug" && goto expat
 
-( msbuild /m /p:Configuration=Release /t:clean myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean release" && goto gettext
+( msbuild /m /p:Configuration=Release /t:clean myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv  "clean release" && goto expat
 
-( msbuild /m  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build debug" && goto gettext
+( msbuild /m  myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build debug" && goto expat
 
-( msbuild /m /p:Configuration=Release myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build release" && goto gettext
+( msbuild /m /p:Configuration=Release myIconv.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog iconv "build release" && goto expat
 
 xcopy %ICONV_DIR%\myIconv\include\iconv.h %ICONV_INCLUDE_DIR% /Y >nul 2>nul
 
@@ -341,60 +341,60 @@ echo done.
 cd %ROOT_DIR%
 ::  ========
 
-:gettext
+:: :gettext
 
 ::  ====
 ::  GetText
-set GETTEXT_DIR=%ROOT_DIR%\gettext-0.19.4
-set GETTEXT_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
-set GETTEXT_LIBRARY=%GETTEXT%
-set GETTEXTD_LIBRARY=%LIBS_DIR%\intld.lib
+:: set GETTEXT_DIR=%ROOT_DIR%\gettext-0.19.4
+:: set GETTEXT_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
+:: set GETTEXT_LIBRARY=%GETTEXT%
+:: set GETTEXTD_LIBRARY=%LIBS_DIR%\intld.lib
 
 :: Check dependencies
-goto end_gettext_deps
-:gettext_deps
-IF NOT EXIST %ICONV% call :remove_lib %GETTEXT% && goto expat_deps
-goto expat_deps
-:end_gettext_deps
+:: goto end_gettext_deps
+:: :gettext_deps
+:: IF NOT EXIST %ICONV% call :remove_lib %GETTEXT% && goto expat_deps
+:: goto expat_deps
+:: :end_gettext_deps
 
-echo | set /p="Installing gettext... "<nul
+:: echo | set /p="Installing gettext... "<nul
 
-IF EXIST %GETTEXT_LIBRARY% call :skip_build && goto expat 
+:: IF EXIST %GETTEXT_LIBRARY% call :skip_build && goto expat 
 
-call :append_log_begin gettext
+:: call :append_log_begin gettext
 
-:begin_gettext
+:: :begin_gettext
 
-cd %GETTEXT_DIR% >nul 2>nul
+:: cd %GETTEXT_DIR% >nul 2>nul
 
-( msbuild /m /p:Configuration=Release /t:clean libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "clean release" && goto expat
+:: ( msbuild /m /p:Configuration=Release /t:clean libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "clean release" && goto expat
 
-( msbuild /m /p:Configuration=Release libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "build release" && goto expat
+:: ( msbuild /m /p:Configuration=Release libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "build release" && goto expat
 
-( msbuild /m /t:clean libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "clean release" && goto expat
+:: ( msbuild /m /t:clean libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "clean release" && goto expat
 
-( msbuild /m libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "build release" && goto expat
+:: ( msbuild /m libintl.vcxproj >>%BUILD_LOG% 2>nul  ) || call :buildFailLog gettext "build release" && goto expat
 
-copy %GETTEXT_DIR%\libgnuintl.h %GETTEXT_INCLUDE_DIR%\libintl.h /Y >nul 2>nul
-copy %GETTEXT_DIR%\config.h %GETTEXT_INCLUDE_DIR%\libintlConfig.h /Y >nul 2>nul
+:: copy %GETTEXT_DIR%\libgnuintl.h %GETTEXT_INCLUDE_DIR%\libintl.h /Y >nul 2>nul
+:: copy %GETTEXT_DIR%\config.h %GETTEXT_INCLUDE_DIR%\libintlConfig.h /Y >nul 2>nul
 
-IF DEFINED TERRALIB_X64 ( 
-  set "_libF=-X64" 
-) ELSE set "_libF=-Win32"
+:: IF DEFINED TERRALIB_X64 ( 
+::   set "_libF=-X64" 
+:: ) ELSE set "_libF=-Win32"
 
-xcopy %GETTEXT_DIR%\Release%_libF%\*.lib %LIBS_DIR% /Y  >nul 2>nul
-xcopy %GETTEXT_DIR%\Release%_libF%\*.dll %LIBS_DIR% /Y  >nul 2>nul
+:: xcopy %GETTEXT_DIR%\Release%_libF%\*.lib %LIBS_DIR% /Y  >nul 2>nul
+:: xcopy %GETTEXT_DIR%\Release%_libF%\*.dll %LIBS_DIR% /Y  >nul 2>nul
 
-xcopy %GETTEXT_DIR%\Debug%_libF%\*.lib %LIBS_DIR% /Y  >nul 2>nul
-xcopy %GETTEXT_DIR%\Debug%_libF%\*.dll %LIBS_DIR% /Y  >nul 2>nul
+:: xcopy %GETTEXT_DIR%\Debug%_libF%\*.lib %LIBS_DIR% /Y  >nul 2>nul
+:: xcopy %GETTEXT_DIR%\Debug%_libF%\*.dll %LIBS_DIR% /Y  >nul 2>nul
 
-call :append_log_end gettext
+:: call :append_log_end gettext
 
-:end_gettext
+:: :end_gettext
 
-echo done.
+:: echo done.
 
-cd %ROOT_DIR%
+:: cd %ROOT_DIR%
 ::  ========
 
 :expat
@@ -408,12 +408,12 @@ set EXPATD_LIBRARY=%EXPAT_DIR%\binaries%_X86%\lib\expatd.lib
 :: Check dependencies
 goto end_expat_deps
 :expat_deps
-goto apr_deps
+goto zlib_deps
 :end_expat_deps
 
 echo | set /p="Installing expat... "<nul
 
-IF EXIST %EXPAT% call :skip_build && goto apr 
+IF EXIST %EXPAT% call :skip_build && goto zlib 
 
 call :append_log_begin expat
 
@@ -430,11 +430,11 @@ mkdir build%_X86% >nul 2>nul
 cd build%_X86% >nul 2>nul
 
 ( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%EXPAT_DIR%\binaries%_X86% ^
- -DCMAKE_DEBUG_POSTFIX=d %EXPAT_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog expat "configuring" && goto apr
+ -DCMAKE_DEBUG_POSTFIX=d %EXPAT_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog expat "configuring" && goto zlib
 
-( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build release" && goto apr
+( msbuild /m /p:Configuration=Release INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build release" && goto zlib
 
-( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build debug" && goto apr
+( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog expat "build debug" && goto zlib
 
 xcopy %EXPAT_DIR%\binaries%_X86%\bin\*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -447,52 +447,52 @@ echo done.
 cd %ROOT_DIR%
 :: ====
 
-:apr
+:: :apr
 
 :: APR-1.5.2
 ::  =========================================
-set APACHE_INSTALL_DIR=%ROOT_DIR%\install%_X86%
+:: set APACHE_INSTALL_DIR=%ROOT_DIR%\install%_X86%
 
-set APR_DIR=%ROOT_DIR%\apr-1.5.2
-set APR_INCLUDE_DIR=%APACHE_INSTALL_DIR%\include
-set APR_LIBRARY=%APACHE_INSTALL_DIR%\lib\libapr-1.lib
-set APRD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libapr-1d.lib
+:: set APR_DIR=%ROOT_DIR%\apr-1.5.2
+:: set APR_INCLUDE_DIR=%APACHE_INSTALL_DIR%\include
+:: set APR_LIBRARY=%APACHE_INSTALL_DIR%\lib\libapr-1.lib
+:: set APRD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libapr-1d.lib
 
 :: Check dependencies
-goto end_apr_deps
-:apr_deps
-goto zlib_deps
-:end_apr_deps
+:: goto end_apr_deps
+:: :apr_deps
+:: goto zlib_deps
+:: :end_apr_deps:: 
 
-echo | set /p="Installing apr... "<nul
+:: echo | set /p="Installing apr... "<nul
 
-IF EXIST %APR% call :skip_build && goto zlib 
+:: IF EXIST %APR% call :skip_build && goto zlib 
 
-call :append_log_begin apr
+:: call :append_log_begin apr
 
-:begin_apr
+:: :begin_apr
 
-cd %APR_DIR% >nul 2>nul
+:: cd %APR_DIR% >nul 2>nul
 
-IF EXIST building%_X86% del /s /Q building%_X86% >nul 2>nul
+:: IF EXIST building%_X86% del /s /Q building%_X86% >nul 2>nul
 
-mkdir building%_X86% >nul 2>nul
+:: mkdir building%_X86% >nul 2>nul
 
-cd building%_X86% >nul 2>nul
+:: cd building%_X86% >nul 2>nul
 
-( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%APACHE_INSTALL_DIR% -DCMAKE_DEBUG_POSTFIX=d -DINSTALL_PDB=OFF %APR_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr "configuring" && goto zlib 
+:: ( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%APACHE_INSTALL_DIR% -DCMAKE_DEBUG_POSTFIX=d -DINSTALL_PDB=OFF %APR_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr "configuring" && goto zlib 
 
-( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build release" && goto zlib
+:: ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build release" && goto zlib
 
-( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build debug" && goto zlib
+:: ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr "build debug" && goto zlib
 
-call :append_log_end apr
+:: call :append_log_end apr
 
-:end_apr  
+:: :end_apr  
 
-echo done.
+:: echo done.
 
-cd %ROOT_DIR%
+:: cd %ROOT_DIR%
 ::  ================================
 
 :zlib
@@ -567,13 +567,13 @@ set EAYD_LIBRARY=%SSL_DIR%\out%_out_%dll.dbg\libeay32d.lib
 :: Check dependencies
 goto end_openssl_deps
 :openssl_deps
-IF NOT EXIST %ZLIB% call :remove_lib %SSL% && goto apr_util_deps
-goto apr_util_deps
+IF NOT EXIST %ZLIB% call :remove_lib %SSL% && goto bzip_deps
+goto bzip_deps
 :end_openssl_deps
 
 echo | set /p="Installing openssl... "<nul
 
-IF EXIST %SSL% call :skip_build && goto apr_util 
+IF EXIST %SSL% call :skip_build && goto bzip 
 
 call :append_log_begin openssl
 
@@ -603,21 +603,17 @@ copy ms\libeay32.release%_x86_%.def.in ms\libeay32.def /Y >nul 2>nul
 
 copy ms\ssleay32.release%_x86_%.def.in ms\ssleay32.def /Y >nul 2>nul
 
-::copy ms\nt.release%_x86_%.mak.in ms\nt.mak /Y >nul 2>nul
-
 copy ms\ntdll.release%_x86_%.mak.in ms\ntdll.mak /Y >nul 2>nul  
 
-( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build release" && goto apr_util
+( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build release" && goto bzip
 
 copy ms\libeay32.debug%_x86_%.def.in ms\libeay32.def /Y >nul 2>nul
 
 copy ms\ssleay32.debug%_x86_%.def.in ms\ssleay32.def /Y >nul 2>nul
 
-::copy ms\nt.debug%_x86_%.mak.in ms\nt.mak /Y >nul 2>nul
-
 copy ms\ntdll.debug%_x86_%.mak.in ms\ntdll.mak /Y >nul 2>nul
 
-( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build debug" && goto apr_util
+( nmake /f ms\ntdll.mak lib >>%BUILD_LOG% 2>nul ) || call :buildFailLog openssl "build debug" && goto bzip
 
 xcopy out%_out_%dll\ssleay32.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -637,121 +633,121 @@ cd %ROOT_DIR%
 ::  ====
 
 
-:apr_util
+:: :apr_util
 
 
 :: APRUTIL-1.5.4
 ::  =========================================
-set APRUTIL_DIR=%ROOT_DIR%\apr-util-1.5.4
-set APRUTIL_INCLUDE_DIR=%APACHE_INSTALL_DIR%\include
-set APRUTIL_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1.lib
-set APRUTILD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1d.lib
+:: set APRUTIL_DIR=%ROOT_DIR%\apr-util-1.5.4
+:: set APRUTIL_INCLUDE_DIR=%APACHE_INSTALL_DIR%\include
+:: set APRUTIL_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1.lib
+:: set APRUTILD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1d.lib
 
 :: Check dependencies
-goto end_apr_util_deps
-:apr_util_deps
-IF NOT EXIST %APR% call :remove_lib aprutil && goto log4cxx_deps
-IF NOT EXIST %EXPAT% call :remove_lib aprutil && goto log4cxx_deps
-goto log4cxx_deps
-:end_apr_util_deps
+:: goto end_apr_util_deps
+:: :apr_util_deps
+:: IF NOT EXIST %APR% call :remove_lib aprutil && goto log4cxx_deps
+:: IF NOT EXIST %EXPAT% call :remove_lib aprutil && goto log4cxx_deps
+:: goto log4cxx_deps
+:: :end_apr_util_deps
 
-echo | set /p="Installing apr-util... "<nul
+:: echo | set /p="Installing apr-util... "<nul
 
-IF EXIST %APRUTIL% call :skip_build && goto log4cxx 
+:: IF EXIST %APRUTIL% call :skip_build && goto log4cxx 
 
-call :append_log_begin apr_util
+:: call :append_log_begin apr_util
 
-:begin_apr_util
+:: :begin_apr_util
 
-cd %APRUTIL_DIR% >nul 2>nul
+:: cd %APRUTIL_DIR% >nul 2>nul
 
-del building%_X86% /S /Q >nul 2>nul
+:: del building%_X86% /S /Q >nul 2>nul
 
-mkdir building%_X86% >nul 2>nul
+:: mkdir building%_X86% >nul 2>nul
 
-cd building%_X86% >nul 2>nul
+:: cd building%_X86% >nul 2>nul
 
-( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%APACHE_INSTALL_DIR% ^
--DCMAKE_DEBUG_POSTFIX=d ^
--DINSTALL_PDB=OFF ^
--D_OPENSSL_VERSION=1.1.0 ^
--DOPENSSL_INCLUDE_DIR=%SSL_INCLUDE_DIR% ^
--DLIB_EAY_LIBRARY_DEBUG=%EAYD_LIBRARY% ^
--DLIB_EAY_LIBRARY_RELEASE=%EAY_LIBRARY% ^
--DSSL_EAY_LIBRARY_DEBUG=%SSLD_LIBRARY% ^
--DSSL_EAY_LIBRARY_RELEASE=%SSL_LIBRARY% ^
--DXMLLIB_LIBRARIES:STRING="debug;%EXPATD_LIBRARY%;optimized;%EXPAT_LIBRARY%" ^
--DXMLLIB_INCLUDE_DIR=%EXPAT_INCLUDE_DIR% ^
--DAPR_INCLUDE_DIR=%APACHE_INSTALL_DIR%/include ^
--DAPR_LIBRARIES=%APR_LIBRARY% %APRUTIL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr-util "configuring" && goto log4cxx 
+:: ( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%APACHE_INSTALL_DIR% ^
+:: -DCMAKE_DEBUG_POSTFIX=d ^
+:: -DINSTALL_PDB=OFF ^
+:: -D_OPENSSL_VERSION=1.1.0 ^
+:: -DOPENSSL_INCLUDE_DIR=%SSL_INCLUDE_DIR% ^
+:: -DLIB_EAY_LIBRARY_DEBUG=%EAYD_LIBRARY% ^
+:: -DLIB_EAY_LIBRARY_RELEASE=%EAY_LIBRARY% ^
+:: -DSSL_EAY_LIBRARY_DEBUG=%SSLD_LIBRARY% ^
+:: -DSSL_EAY_LIBRARY_RELEASE=%SSL_LIBRARY% ^
+:: -DXMLLIB_LIBRARIES:STRING="debug;%EXPATD_LIBRARY%;optimized;%EXPAT_LIBRARY%" ^
+:: -DXMLLIB_INCLUDE_DIR=%EXPAT_INCLUDE_DIR% ^
+:: -DAPR_INCLUDE_DIR=%APACHE_INSTALL_DIR%/include ^
+:: -DAPR_LIBRARIES=%APR_LIBRARY% %APRUTIL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr-util "configuring" && goto log4cxx 
 
-( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build release" && goto log4cxx
+:: ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build release" && goto log4cxx
 
-( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build debug" && goto log4cxx
+:: ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build debug" && goto log4cxx
 
-call :append_log_end apr_util
+:: call :append_log_end apr_util
 
-:end_apr_util  
+:: :end_apr_util  
 
-echo done.
+:: echo done.
 
-cd %ROOT_DIR%
+:: cd %ROOT_DIR%
 ::  ================================
 
-:log4cxx
+:: :log4cxx
 
 :: Log4cxx-0.10.0
 ::  =========================================
-set LOG4CXX_DIR=%ROOT_DIR%\apache-log4cxx-0.10.0
-set LOG4CXX_LIBRARY=%LOG4CXX%
+:: set LOG4CXX_DIR=%ROOT_DIR%\apache-log4cxx-0.10.0
+:: set LOG4CXX_LIBRARY=%LOG4CXX%
 
 :: Check dependencies
-goto end_log4cxx_deps
-:log4cxx_deps
-IF NOT EXIST %APR% call :remove_lib log4cxx && goto bzip_deps
-IF NOT EXIST %APRUTIL% call :remove_lib log4cxx && goto bzip_deps
-goto bzip_deps
-:end_log4cxx_deps
+:: goto end_log4cxx_deps
+:: :log4cxx_deps
+:: IF NOT EXIST %APR% call :remove_lib log4cxx && goto bzip_deps
+:: IF NOT EXIST %APRUTIL% call :remove_lib log4cxx && goto bzip_deps
+:: goto bzip_deps
+:: :end_log4cxx_deps
 
-echo | set /p="Installing log4cxx... "<nul
+:: echo | set /p="Installing log4cxx... "<nul
 
-IF EXIST %LOG4CXX_LIBRARY% call :skip_build && goto bzip 
+:: IF EXIST %LOG4CXX_LIBRARY% call :skip_build && goto bzip 
 
-call :append_log_begin log4cxx
+:: call :append_log_begin log4cxx
 
-:begin_log4cxx
+:: :begin_log4cxx
 
-cd %LOG4CXX_DIR%\projects >nul 2>nul
+:: cd %LOG4CXX_DIR%\projects >nul 2>nul
 
-( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean release" && goto bzip
+:: ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean release" && goto bzip
 
-( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean debug" && goto bzip
+:: ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean debug" && goto bzip
 
-( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build release" && goto bzip
+:: ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build release" && goto bzip
 
-( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build debug" && goto bzip
+:: ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build debug" && goto bzip
 
-IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx mkdir %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx >nul 2>nul
+:: IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx mkdir %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx >nul 2>nul
 
-xcopy ..\src\main\include\log4cxx %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx /S /Y >nul 2>nul
+:: xcopy ..\src\main\include\log4cxx %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx /S /Y >nul 2>nul
 
-xcopy Debug%_X86%\log4cxxd.lib %LIBS_DIR% /Y >nul 2>nul
+:: xcopy Debug%_X86%\log4cxxd.lib %LIBS_DIR% /Y >nul 2>nul
 
-xcopy Debug%_X86%\log4cxxd.dll %LIBS_DIR% /Y >nul 2>nul
+:: xcopy Debug%_X86%\log4cxxd.dll %LIBS_DIR% /Y >nul 2>nul
 
-xcopy Release%_X86%\log4cxx.lib %LIBS_DIR% /Y >nul 2>nul
+:: xcopy Release%_X86%\log4cxx.lib %LIBS_DIR% /Y >nul 2>nul
 
-xcopy Release%_X86%\log4cxx.dll %LIBS_DIR% /Y >nul 2>nul
+:: xcopy Release%_X86%\log4cxx.dll %LIBS_DIR% /Y >nul 2>nul
 
-xcopy %APACHE_INSTALL_DIR%\bin\libapr*.dll %LIBS_DIR% /Y >nul 2>nul
+:: xcopy %APACHE_INSTALL_DIR%\bin\libapr*.dll %LIBS_DIR% /Y >nul 2>nul
 
-call :append_log_end log4cxx
+:: call :append_log_end log4cxx
 
-:end_log4cxx
+:: :end_log4cxx
 
-echo done.
+:: echo done.
 
-cd %ROOT_DIR%
+:: cd %ROOT_DIR%
 ::  ================================
 
 :bzip
@@ -2281,8 +2277,8 @@ cd %ROOT_DIR%
 
 :lua
 
-:: Lua version 5.3.2
-set LUAC_DIR=%ROOT_DIR%\lua-5.3.2
+:: Lua version 5.2.2
+set LUAC_DIR=%ROOT_DIR%\lua-5.2.2
 set LUAC_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include\lua
 set LUAC_LIBRARY=%LUA%
 set LUACD_LIBRARY=%LIBS_DIR%\luad.lib
