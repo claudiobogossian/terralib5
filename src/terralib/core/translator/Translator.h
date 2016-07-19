@@ -88,7 +88,7 @@ namespace te
 
       public:
 
-        static Translator& getInstance();
+        static Translator& instance();
 
         /*!
           \brief It tries to translate the specified text string.
@@ -221,7 +221,7 @@ namespace te
   \param dir Where the text domain is located.
 */
 #ifdef TERRALIB_TRANSLATOR_ENABLED
-  #define TE_ADD_TEXT_DOMAIN(domain, dir) te::core::Translator::getInstance().addTextDomain(domain, dir)
+  #define TE_ADD_TEXT_DOMAIN(domain, dir) te::core::Translator::instance().addTextDomain(domain, dir)
 #else
   #define TE_ADD_TEXT_DOMAIN(domain, dir) ((void)0)
 #endif
@@ -240,7 +240,7 @@ namespace te
   throw Exception(TE_TR("My other message!"));
   \endcode
  */
-#define TE_TR(message) te::core::Translator::getInstance().translate(message).c_str()
+#define TE_TR(message) te::core::Translator::instance().translate(message).c_str()
 
 /*!
   \def TE_TR_PLURAL
@@ -267,7 +267,7 @@ namespace te
   the plural versin will be choosed, otherwise, it will choose the
   singular form (the fisrt one).
  */
-#define TE_TR_PLURAL(message1, message2, n) te::core::Translator::getInstance().translate(message1, message2, n).c_str()
+#define TE_TR_PLURAL(message1, message2, n) te::core::Translator::instance().translate(message1, message2, n).c_str()
 
 /*!
   \def TE_TR_LANGUAGE
@@ -276,6 +276,6 @@ namespace te
 
   \param locale A string of the new locale.
  */
-#define TE_TR_LANGUAGE(locale) te::core::Translator::getInstance().setLocale(locale)
+#define TE_TR_LANGUAGE(locale) te::core::Translator::instance().setLocale(locale)
 
 #endif  // __TERRALIB_CORE_TRANSLATOR_TRANSLATOR_H__

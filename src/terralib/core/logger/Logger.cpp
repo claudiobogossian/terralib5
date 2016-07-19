@@ -42,7 +42,7 @@
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(channel, "Channel", std::string)
 
-te::core::Logger& te::core::Logger::getInstance()
+te::core::Logger& te::core::Logger::instance()
 {
   static Logger instance;
 

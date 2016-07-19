@@ -70,7 +70,7 @@ namespace te
 
           \return A reference to the singleton instance.
          */
-        static Logger& getInstance();
+        static Logger& instance();
 
         /*!
           \brief It logs a given string message, channel and severity.
@@ -151,7 +151,7 @@ namespace te
   \param format The format string of the logger.
   */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_ADD_LOGGER(name, filename, format) te::core::Logger::getInstance().addLogger(name, filename, format)
+  #define TE_ADD_LOGGER(name, filename, format) te::core::Logger::instance().addLogger(name, filename, format)
 #else
   #define TE_ADD_LOGGER(name, filename, format) ((void)0)
 #endif
@@ -166,7 +166,7 @@ namespace te
   \exception std::exception If the configuration file is doesn't load.
   */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_ADD_LOGGER_FROM_FILE(filename) te::core::Logger::getInstance().addLoggerFromFile(filename)
+  #define TE_ADD_LOGGER_FROM_FILE(filename) te::core::Logger::instance().addLoggerFromFile(filename)
 #else
   #define TE_ADD_LOGGER_FROM_FILE(filename) ((void)0)
 #endif
@@ -179,7 +179,7 @@ namespace te
   \param  filename The name of the log file.
  */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_INIT_DEFAULT_LOGGER(filename) te::core::Logger::getInstance().addLogger(TERRALIB_DEFAULT_LOGGER, filename, TERRALIB_DEFAULT_LOGGER_FORMAT)
+  #define TE_INIT_DEFAULT_LOGGER(filename) te::core::Logger::instance().addLogger(TERRALIB_DEFAULT_LOGGER, filename, TERRALIB_DEFAULT_LOGGER_FORMAT)
 #else
   #define TE_INIT_DEFAULT_LOGGER(filename) ((void)0)
 #endif
@@ -193,7 +193,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_TRACE_ENABLED
-  #define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::trace)
+  #define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::trace)
 #else
   #define TE_CORE_LOG_TRACE(channel, message) ((void)0)
 #endif
@@ -207,7 +207,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_DEBUG_ENABLED
-  #define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::debug)
+  #define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::debug)
 #else
   #define TE_CORE_LOG_DEBUG(channel, message) ((void)0)
 #endif
@@ -221,7 +221,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_INFO_ENABLED
-  #define TE_CORE_LOG_INFO(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::info)
+  #define TE_CORE_LOG_INFO(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::info)
 #else
   #define TE_CORE_LOG_INFO(channel, message) ((void)0)
 #endif
@@ -235,7 +235,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_WARN_ENABLED
-  #define TE_CORE_LOG_WARN(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::warning)
+  #define TE_CORE_LOG_WARN(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::warning)
 #else
   #define TE_CORE_LOG_WARN(channel, message) ((void)0)
 #endif
@@ -249,7 +249,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_ERROR_ENABLED
-  #define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::error)
+  #define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::error)
 #else
   #define TE_CORE_LOG_ERROR(channel, message) ((void)0)
 #endif
@@ -263,7 +263,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_FATAL_ENABLED
-  #define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::getInstance().log(message, channel ,boost::log::trivial::fatal)
+  #define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::fatal)
 #else
   #define TE_CORE_LOG_FATAL(channel, message) ((void)0)
 #endif
