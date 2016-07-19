@@ -27,6 +27,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../datatype/Utils.h"
+#include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../../raster/Band.h"
 #include "../../../../raster/BandProperty.h"
@@ -70,10 +71,10 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   /// Bounding Box
   QtProperty* bbox_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Bounding box"));
 
-  QtProperty* llx_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Lower left x"));
-  QtProperty* lly_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Lower left y"));
-  QtProperty* urx_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Upper right x"));
-  QtProperty* ury_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Upper right y"));
+  QtProperty* llx_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("min-x"));
+  QtProperty* lly_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("min-y"));
+  QtProperty* urx_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("max-x"));
+  QtProperty* ury_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("max-y"));
 
   llx_prop->setEnabled(false);
   lly_prop->setEnabled(false);
@@ -128,6 +129,10 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   if(dsType->hasRaster())
   {
     setLayerRasterProperties(layer);
+  }
+  else if (dsType->hasGeom())
+  {
+    setLayerVecProperties(layer);
   }
 }
 
@@ -298,4 +303,146 @@ void te::qt::widgets::LayerPropertiesInfo::setLayerRasterProperties(te::map::Abs
 
   //add top property to tree
   addProperty(rasterInfoProp, tr("Raster properties"), Qt::lightGray);
+}
+
+void te::qt::widgets::LayerPropertiesInfo::setLayerVecProperties(te::map::AbstractLayer* vecLayer)
+{
+  std::auto_ptr<te::da::DataSetType> dsType = vecLayer->getSchema();
+
+  //create top property
+  QtProperty* vecInfoProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Data properties"));
+
+  //add properties
+  QtProperty* titleProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Title"));
+
+  //add properties to parent property
+  vecInfoProp->addSubProperty(titleProp);
+
+  //set the property state
+  titleProp->setEnabled(false);
+
+  //set properties values
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(titleProp, dsType->getTitle().c_str());
+
+  //get all properties
+  std::vector<te::dt::Property*> vecProps = dsType->getProperties();
+
+  for (std::size_t t = 0; t < vecProps.size(); ++t)
+  {
+    //get property
+    te::dt::Property* propItem = vecProps[t];
+
+    //create top property
+    QtProperty* propProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Property ") + QString::number(t));
+
+    //create prop n properties
+    QtProperty* nameProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Name"));
+    QtProperty* dataTypeProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Data Type"));
+
+    //add properties to top property
+    propProperty->addSubProperty(nameProp);
+    propProperty->addSubProperty(dataTypeProp);
+
+    //set the properties state
+    nameProp->setEnabled(false);
+    dataTypeProp->setEnabled(false);
+
+    //set the properties values
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(nameProp, propItem->getName().c_str());
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(dataTypeProp, te::dt::ConvertDataTypeToString(propItem->getType()).c_str());
+
+    //add prop to top property
+    vecInfoProp->addSubProperty(propProperty);
+  }
+
+  //get primary key
+  te::da::PrimaryKey* pk = dsType->getPrimaryKey();
+
+  if (pk)
+  {
+    QtProperty* pkProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Primary Key"));
+
+    //create prop n properties
+    QtProperty* nameProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Name"));
+
+    //add properties to top property
+    pkProperty->addSubProperty(nameProp);
+
+    //set the properties state
+    nameProp->setEnabled(false);
+
+    //set the properties values
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(nameProp, pk->getName().c_str());
+
+    //get all properties
+    std::vector<te::dt::Property*> vecProps = pk->getProperties();
+
+    for (std::size_t t = 0; t < vecProps.size(); ++t)
+    {
+      //get property
+      te::dt::Property* propItem = vecProps[t];
+
+      //create top property
+      QtProperty* propProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("PK Property ") + QString::number(t));
+
+      //create prop n properties
+      QtProperty* nameProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Name"));
+      QtProperty* dataTypeProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Data Type"));
+      
+      //add properties to top property
+      propProperty->addSubProperty(nameProp);
+      propProperty->addSubProperty(dataTypeProp);
+
+      //set the properties state
+      nameProp->setEnabled(false);
+      dataTypeProp->setEnabled(false);
+
+      //set the properties values
+      te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(nameProp, propItem->getName().c_str());
+      te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(dataTypeProp, te::dt::ConvertDataTypeToString(propItem->getType()).c_str());
+
+      //add prop to top property
+      pkProperty->addSubProperty(propProperty);
+    }
+
+    //add prop to top property
+    vecInfoProp->addSubProperty(pkProperty);
+  }
+
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
+
+  if (geomProp)
+  {
+    QtProperty* geomProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Geometry Property"));
+
+    //create prop n properties
+    QtProperty* nameProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Name"));
+    QtProperty* geomTypeProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Geometry Type"));
+    QtProperty* sridProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("SRID"));
+
+    //add properties to top property
+    geomProperty->addSubProperty(nameProp);
+    geomProperty->addSubProperty(geomTypeProp);
+    geomProperty->addSubProperty(sridProp);
+    
+    //set the properties state
+    nameProp->setEnabled(false);
+    geomTypeProp->setEnabled(false);
+    sridProp->setEnabled(false);
+
+    //set the properties values
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(nameProp, geomProp->getName().c_str());
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(geomTypeProp, te::gm::Geometry::getGeomTypeString(geomProp->getGeometryType()).c_str());
+
+    QString sridStr = QString::number(geomProp->getSRID());
+    sridStr += QObject::tr(" -  ");
+    sridStr += QString(te::srs::SpatialReferenceSystemManager::getInstance().getName(geomProp->getSRID()).c_str());
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(sridProp, sridStr);
+
+    //add prop to top property
+    vecInfoProp->addSubProperty(geomProperty);
+  }
+
+  //add top property to tree
+  addProperty(vecInfoProp, tr("Data properties"), Qt::lightGray);
 }
