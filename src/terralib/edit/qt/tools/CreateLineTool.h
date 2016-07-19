@@ -96,6 +96,8 @@ namespace te
 
         bool mouseDoubleClickEvent(QMouseEvent* e);
 
+        void resetVisualizationTool();
+
         //@}
 
         te::gm::Geometry* buildLine();

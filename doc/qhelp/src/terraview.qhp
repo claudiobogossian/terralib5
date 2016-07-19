@@ -146,6 +146,7 @@
 			<file>./widgets/srs/*.*</file>
             <file>./widgets/style/*.*</file>
 			<file>./widgets/table/*.*</file>
+			<file>./widgets/utils/*.*</file>
 			<file>./widgets/*.html</file>
 			<file>./*.*</file>
        </files>
@@ -180,6 +181,7 @@
 			<keyword name="Chart Display" ref="./widgets/charts/display/display.html"/>
 	        <keyword name="Chart Style" ref="./widgets/charts/style/style.html"/>
 			<keyword name="Pie Bar Chart" ref="./widgets/charts/pie_bar/pie_bar.html"/>
+			<keyword name="Check Geometry Validity" ref="./widgets/utils/check_geometry_validity.html"/>
 
 			<keyword name="PostGIS Connector" ref="./plugins/pgis/pgis.html"/>
 			<keyword name="PostGIS creator" ref="./plugins/pgis/pgis_creator.html"/>

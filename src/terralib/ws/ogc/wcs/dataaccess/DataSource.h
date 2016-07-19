@@ -32,11 +32,12 @@
 // STL
 #include <map>
 #include <string>
+#include <memory>
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../client/WCS.h"
+#include "../client/WCSClient.h"
 #include "Config.h"
 #include "Exception.h"
 
@@ -104,7 +105,7 @@ namespace te
 
           private:
 
-            WCS m_wcs;
+            std::shared_ptr<te::ws::ogc::WCSClient> m_wcs;
             std::map<std::string, std::string> m_connectionInfo;
             bool m_isOpened;
             static te::da::DataSourceCapabilities sm_capabilities;

@@ -108,12 +108,16 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     storeUndoCommand();
 
+    te::edit::CreateLineTool::clear();
+
+    emit geometriesEdited();
+
     return true;
   }
   catch (std::exception& e)
   {
-      QMessageBox::critical(m_display, tr("Error"), QString(tr("Could not subtract.") + " %1.").arg(e.what()));
-      return false;
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("Could not subtract.") + " %1.").arg(e.what()));
+    return false;
   }
 }
 
@@ -193,7 +197,7 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
   }
 
-  geoSubtract = convertGeomType(m_layer, differenceGeometry(m_feature->getGeometry(), pHole));
+  geoSubtract = ConvertGeomType(m_layer, differenceGeometry(m_feature->getGeometry(), pHole));
 
   geoSubtract->setSRID(m_display->getSRID());
 

@@ -41,6 +41,7 @@ qt5_use_modules(terralib_mod_ws_ogc_wcs_client Core)
 target_link_libraries(terralib_mod_ws_ogc_wcs_client terralib_mod_dataaccess
                                                       terralib_mod_xml
                                                       terralib_mod_common
+                                                      terralib_mod_ws_core
                                                       ${CURL_LIBRARIES})
 
 install(TARGETS terralib_mod_ws_ogc_wcs_client

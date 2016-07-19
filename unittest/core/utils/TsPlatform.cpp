@@ -1,4 +1,4 @@
-﻿/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -72,6 +72,17 @@ BOOST_AUTO_TEST_CASE( findpath_wrong_tests )
 
   /* First directory is not in the search directories */
   BOOST_CHECK(boost::algorithm::ends_with(te::core::FindInTerraLibPath("/core/encoding"),"/core/encoding") == false);
+
+  return;
+}
+
+BOOST_AUTO_TEST_CASE( system_directories_tests )
+{
+  BOOST_CHECK_NO_THROW(te::core::GetUserDirectory());
+
+  BOOST_CHECK_NO_THROW(te::core::GetUserDataPath());
+
+  BOOST_CHECK_NO_THROW(te::core::GetAllUsersDataPath());
 
   return;
 }

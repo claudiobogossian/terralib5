@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../BuildConfig.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 #include "../core/utils/Platform.h"
 #include "../Defines.h"

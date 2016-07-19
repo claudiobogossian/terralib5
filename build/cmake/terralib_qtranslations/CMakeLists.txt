@@ -100,10 +100,62 @@ if(DEFINED TERRALIB_QTRANSLATION_ENABLED)
     GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt" "terralib_mod_vp_qt" _qm_files) 
   endif()
 
+  if(TERRALIB_MOD_ATTRIBUTEFILL_QT_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/attributefill/qt" "terralib_mod_attributefill_qt" _qm_files) 
+  endif()
+
+  if(TERRALIB_MOD_CEDITOR_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qsci/ceditor" "terralib_mod_ceditor" _qm_files) 
+  endif()
+
+  if(TERRALIB_MOD_QT_PLUGINS_CELLSPACE_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace" "terralib_mod_qt_plugins_cellspace" _qm_files) 
+  endif()
+  
+  if(TERRALIB_MOD_EDIT_QT_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt" "terralib_mod_edit_qt" _qm_files) 
+  endif()
+  
+  if(TERRALIB_MOD_MNT_QT_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/mnt/qt" "terralib_mod_mnt_qt" _qm_files) 
+  endif()
+
+  if(TERRALIB_MOD_QT_PLUGINS_ADDRESSGEOCODING_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/addressgeocoding" "terralib_mod_qt_plugins_addressgeocoding" _qm_files) 
+  endif()
+
+  if(TERRALIB_QT_PLUGINS_ATTRIBUTEFILL_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill" "terralib_mod_qt_plugins_attributefill" _qm_files) 
+  endif()
+
+  if(TERRALIB_QT_PLUGINS_CELLSPACE_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace" "terralib_mod_qt_plugins_cellspace" _qm_files) 
+  endif()
+
+  if(TERRALIB_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4" "terralib_mod_qt_plugins_terralib4" _qm_files) 
+  endif()
+
+  if(TERRALIB_QT_PLUGINS_ATTRIBUTEFILL_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill" "terralib_mod_qt_plugins_attributefill" _qm_files) 
+  endif()
+
+  if(TERRALIB_QT_PLUGINS_EDIT_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit" "terralib_mod_qt_plugins_edit" _qm_files) 
+  endif()
+
+  if(TERRALIB_QT_PLUGINS_MNT_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/mnt" "terralib_mod_qt_plugins_attributefill" _qm_files) 
+  endif()
+
+  if(TERRALIB_QT_PLUGINS_ATTRIBUTEFILL_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/attributefill" "terralib_mod_qt_plugins_attributefill" _qm_files) 
+  endif()
+
   if(TERRALIB_TERRAVIEW_ENABLED)
     GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview" "terraview" _qm_files) 
   endif()
-
+  
   add_custom_target(
     terralib_qtranslations
     COMMENT "Generating qt translation files..."

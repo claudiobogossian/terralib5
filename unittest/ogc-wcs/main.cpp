@@ -20,97 +20,38 @@
 /*!
   \file terralib/unittest/ogc-wcs/main.cpp
 
-  \brief Main file to test suit for the WS OGC WCS.
+  \brief Main file of test suit for the WCS Client Plugin.
 
-  \author Vinicius campanha
+  \author Emerson Moraes
  */
 
+// TerraLib
+#include <terralib/Defines.h>
 
 // STL
 #include <cstdlib>
+#include <iostream>
 
-// cppUnit
-#include <cppunit/BriefTestProgressListener.h>
-#include <cppunit/CompilerOutputter.h>
-#include <cppunit/XmlOutputter.h>
-#include <cppunit/TextOutputter.h>
+// QT
+#include <QApplication>
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/extensions/TestFactoryRegistry.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestResultCollector.h>
-#include <cppunit/TestRunner.h>
+// Boost
+#define BOOST_TEST_NO_MAIN
+#include <boost/test/unit_test.hpp>
 
-// TerraLib
-#include "../Config.h"
-#include "TsWCS.h"
-#include <terralib/common/TerraLib.h>
-#include <terralib/plugin.h>
-#include <terralib/common/PlatformUtils.h>
-#include "LoadModules.h"
+// GMock
+#include <gmock/gmock.h>
 
+bool init_unit_test()
+{
+  return true;
+}
 
 int main(int argc, char *argv[])
 {
-  TerraLib::getInstance().initialize();
+  QApplication app(argc, argv);
 
-  LoadModules();
+  ::testing::InitGoogleMock(&argc, argv);
 
-  // it creates the event manager and test controller
-    CPPUNIT_NS::TestResult controller;
-
-  // it adds a listener that colllects test result
-    CPPUNIT_NS::TestResultCollector result;
-
-    controller.addListener(&result);
-
-  // it adds a listener that print dots as test run.
-    CPPUNIT_NS::BriefTestProgressListener progress;
-
-    controller.addListener(&progress);
-
-  // it adds the top suite to the test runner
-    CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
-
-    CPPUNIT_NS::TestRunner runner;
-
-    runner.addTest(suite);
-
-    runner.run(controller);
-
-    CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
-
-    outputter.write();
-
-  // Testing  different outputs
-
-  // Print only fail results in a txt file (the same you can see in DOS window)
-    std::ofstream file1( TERRALIB_REPORT_DIR "/testsResult_ws_ogc_wcs_dos.txt" );
-    CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
-    outputter1.write();
-    file1.close();
-
-  // Printing testResults in XML file
-  // Testing  different outputs
-    // The testResult_*.xml files will be saved at TERRALIB_REPORT_DIR directory.
-    // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
-    // The "data.zip" (downloaded) containing the data used in unit tests should be at TERRALIB_DATA_DIR
-
-    CPPUNIT_NS::OFileStream file2( TERRALIB_REPORT_DIR "/testsResult_ws_ogc_wcs_xml.xml" );
-    CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-    xml.setStyleSheet( "report.xsl" );
-    xml.write();
-    file2.close();
-
-  // Print formated testResult in a txt
-    CPPUNIT_NS::OFileStream file3( TERRALIB_REPORT_DIR "/testsResult_ws_ogc_wcs_formated.txt" );
-    CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
-    outputter3.write();
-    file3.close();
-
-    bool resultStatus = result.wasSuccessful();
-
-    TerraLib::getInstance().finalize();
-
-    return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
+  return boost::unit_test::unit_test_main(init_unit_test, argc, argv);
 }

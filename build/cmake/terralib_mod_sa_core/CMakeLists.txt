@@ -67,3 +67,6 @@ install(TARGETS terralib_mod_sa_core
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/sa COMPONENT devel)
 
+install(FILES ${TERRALIB_CORE_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/sa/core COMPONENT devel)
+

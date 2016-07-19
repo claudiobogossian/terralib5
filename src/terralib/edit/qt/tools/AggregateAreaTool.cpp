@@ -107,6 +107,10 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     storeUndoCommand();
 
+    te::edit::CreateLineTool::clear();
+
+    emit geometriesEdited();
+
     return true;
   }
   catch (std::exception& e)
@@ -193,7 +197,7 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
     }
 
-    geoUnion = convertGeomType(m_layer, unionGeometry(polygon, m_feature->getGeometry()));
+    geoUnion = ConvertGeomType(m_layer, unionGeometry(polygon, m_feature->getGeometry()));
 
     geoUnion->setSRID(m_display->getSRID());
 

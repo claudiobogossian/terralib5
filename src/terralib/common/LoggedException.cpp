@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "LoggedException.h"
-#include "Logger.h"
+#include "../core/logger/Logger.h"
 
 te::common::LoggedException::LoggedException(const std::string& what) throw()
   : Exception(what.c_str())

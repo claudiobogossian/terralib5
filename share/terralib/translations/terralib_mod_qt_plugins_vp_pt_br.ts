@@ -4,19 +4,27 @@
 <context>
     <name>te::qt::plugins::vp::AggregationAction</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="42"/>
         <source>Aggregation...</source>
-        <translation>Agregação...</translation>
+        <translation type="vanished">Agregação...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="76"/>
-        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="85"/>
         <source>Aggregation Result</source>
-        <translation>Resultado da Agregação</translation>
+        <translation type="vanished">Resultado da Agregação</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="42"/>
+        <source>Dissolve...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="76"/>
         <source>The operation was concluded successfully. But it has warning(s). Would you like to add the layer to the project?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="76"/>
+        <location filename="../../../src/terralib/qt/plugins/vp/AggregationAction.cpp" line="85"/>
+        <source>Dissolve Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -183,6 +191,24 @@
         <location filename="../../../src/terralib/qt/plugins/vp/TransformationAction.cpp" line="40"/>
         <source>Transformation...</source>
         <translation>Transformação...</translation>
+    </message>
+</context>
+<context>
+    <name>te::qt::plugins::vp::UnionAction</name>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/UnionAction.cpp" line="39"/>
+        <source>Union...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/UnionAction.cpp" line="62"/>
+        <source>Union Result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/vp/UnionAction.cpp" line="62"/>
+        <source>The operation was concluded successfully. Would you like to add the layer to the project?</source>
+        <translation type="unfinished">A operação foi concluída com êxito. Você gostaria de adicionar a camada para o projeto ?</translation>
     </message>
 </context>
 </TS>

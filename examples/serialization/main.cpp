@@ -68,10 +68,6 @@ int main(int /*argc*/, char** /*argv*/)
     te::se::Style* style = DecodeStyle(path); // Decodes the created XML file.
     delete style;
 
-    /* XSD Schema */
-
-    std::cout << "Decoding schema..." << std::endl;
-    DecodeSchema(TERRALIB_DATA_DIR "/xml/plugin_info.xsd");
   }
   catch(const std::exception& e)
   {

@@ -1,4 +1,4 @@
-/* 
+/*
   Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
   This file is part of the TerraLib - a Framework for building GIS enabled applications.
@@ -19,9 +19,9 @@
  */
 
 /*!
-  \file terralib/core/lib/Config.h
+  \file terralib/core/Config.h
 
-  \brief Configuration flags for TerraLib Core Library.
+  \brief Configuration flags for TerraLib Core.
 */
 
 #ifndef __TERRALIB_CORE_CONFIG_H__
@@ -35,7 +35,7 @@
     #define TECOREEXPORT TE_DLL_EXPORT
   #else
     #define TECOREEXPORT TE_DLL_IMPORT
-  #endif 
+  #endif
 #else
   #define TECOREEXPORT
 #endif

@@ -25,17 +25,75 @@
 
 #include "TsRaster.h"
 #include "../Config.h"
-
+#include <terralib/dataaccess.h>
+#include <terralib/datatype.h>
+#include <terralib/raster.h>
 #include <terralib/memory/CachedRaster.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/raster/BandProperty.h>
-#include <terralib/raster/Grid.h>
-
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
 #include <boost/shared_ptr.hpp>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsRaster );
+
+bool TsRaster::loadSHPFile( const std::string& shpFileName, 
+  std::vector< te::gm::Geometry* >& geomPtrs )
+{
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = shpFileName;
+  std::auto_ptr< te::da::DataSource > ogrDataSourcePtr( 
+    te::da::DataSourceFactory::make("OGR") );
+  CPPUNIT_ASSERT( ogrDataSourcePtr.get() != 0 );
+  
+  ogrDataSourcePtr->setConnectionInfo(connInfo);
+  ogrDataSourcePtr->open(); 
+  
+  CPPUNIT_ASSERT( ogrDataSourcePtr->isOpened() );
+  
+  std::vector<std::string> dataSetNames = ogrDataSourcePtr->getDataSetNames();  
+  std::auto_ptr< te::da::DataSourceTransactor > transactorPtr = 
+    ogrDataSourcePtr->getTransactor();
+  
+  for( unsigned int dataSetNamesIdx = 0 ; dataSetNamesIdx < dataSetNames.size() ;
+    ++dataSetNamesIdx )
+  {
+    std::auto_ptr<te::da::DataSet> datasetPtr = transactorPtr->getDataSet(
+      dataSetNames[ dataSetNamesIdx ] );
+    
+    const std::size_t nProperties = datasetPtr->getNumProperties();
+    
+    CPPUNIT_ASSERT( datasetPtr->moveBeforeFirst() );
+    
+    while( datasetPtr->moveNext() )
+    {
+      for( std::size_t propIdx = 0 ; propIdx < nProperties ; ++propIdx )
+      {
+        if( datasetPtr->getPropertyDataType( propIdx ) == te::dt::GEOMETRY_TYPE )
+        {
+          std::auto_ptr< te::gm::Geometry > geomPtr = datasetPtr->getGeometry(
+            propIdx );
+          
+          if( geomPtr->getGeomTypeId() == te::gm::PolygonType )
+          {
+            geomPtrs.push_back( geomPtr.release() );
+          }
+          else if( geomPtr->getGeomTypeId() == te::gm::MultiPolygonType )
+          {
+            te::gm::MultiPolygon const * const mPolPtr = (te::gm::MultiPolygon const *)
+              geomPtr.get();
+              
+            for( std::size_t gIdx = 0 ; gIdx < mPolPtr->getNumGeometries() ;
+              ++gIdx )
+            {
+              geomPtrs.push_back( new te::gm::Polygon( *( (te::gm::Polygon*)
+                mPolPtr->getGeometryN( gIdx ) ) ) );
+            }
+          }          
+        }
+      }
+    }
+  }  
+  
+  return true;
+}
 
 void TsRaster::tcRasterConstructor()
 {
@@ -47,4 +105,35 @@ void TsRaster::tcRasterGrid()
 
 void TsRaster::tcRasterCopyConstructor()
 {
+}
+
+void TsRaster::tcRasterize()
+{
+  std::vector< te::gm::Geometry* > geomPtrs;
+  CPPUNIT_ASSERT( loadSHPFile( TERRALIB_DATA_DIR "/shp/PoligonoUnico.shp",
+    geomPtrs ) );
+  
+  std::vector<te::rst::BandProperty*> vecBandProp;
+  vecBandProp.push_back( new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE ) );
+  vecBandProp[ 0 ]->m_blkh = 100;
+  vecBandProp[ 0 ]->m_blkw = 100;
+  vecBandProp[ 0 ]->m_nblocksx = 1;
+  vecBandProp[ 0 ]->m_nblocksy = 1;
+  vecBandProp[ 0 ]->m_noDataValue = 0;
+  vecBandProp[ 0 ]->m_type = te::dt::UCHAR_TYPE;
+  
+  std::map<std::string, std::string> dsinfo;
+  dsinfo["URI"] = "TsRastertcRasterize.tif";
+  
+  te::rst::Grid* grid = new te::rst::Grid( (unsigned int)
+    vecBandProp[ 0 ]->m_blkw, (unsigned int)vecBandProp[ 0 ]->m_blkh, 
+    new te::gm::Envelope( *geomPtrs[ 0 ]->getMBR() ), geomPtrs[ 0 ]->getSRID() );
+  
+  std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", grid, 
+    vecBandProp, dsinfo));
+  
+  std::vector< double > values;
+  values.push_back( 1.0 );
+  
+  rst->rasterize( geomPtrs, values, 0 );
 }

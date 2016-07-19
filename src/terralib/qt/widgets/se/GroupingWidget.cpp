@@ -248,7 +248,7 @@ void te::qt::widgets::GroupingWidget::updateUi(bool loadColorBar)
       QPixmap pix = te::qt::widgets::SymbologyPreview::build(ss, QSize(24, 24));
       QIcon icon(pix);
       QTableWidgetItem* item = new QTableWidgetItem(icon, "");
-      item->setFlags(Qt::ItemIsEnabled);
+      item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
       m_ui->m_tableWidget->setItem(newrow, 0, item);
     }
 
@@ -417,8 +417,6 @@ void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
   }
 
   updateUi(true);
-
-  onApplyPushButtonClicked();
 }
 
 void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()

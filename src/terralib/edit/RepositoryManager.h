@@ -83,6 +83,8 @@ namespace te
 
       Feature* getFeature(const std::string& source, const te::gm::Envelope& e, int srid) const;
 
+      Feature* getFeature(const std::string& source, te::da::ObjectId* id) const;
+
       void clearAll();
 
       void clear(const std::string& source);

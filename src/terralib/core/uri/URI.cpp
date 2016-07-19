@@ -19,9 +19,9 @@
  */
 
 /*!
-  \file terralib/core/URI.cpp
+  \file terralib/core/uri/URI.cpp
 
-  \brief URI.
+  \brief A class for representing an Uniform Resource Identifier (URI).
 
   \author Vinicius Campanha
   \author Gilberto Ribeiro de Queiroz

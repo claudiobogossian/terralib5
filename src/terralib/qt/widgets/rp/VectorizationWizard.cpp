@@ -176,6 +176,7 @@ bool te::qt::widgets::VectorizationWizard::execute()
 
   //output parameters
   std::vector<te::gm::Geometry*> geomVec;
+  std::vector< double > geomsValues;
 
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
@@ -186,7 +187,7 @@ bool te::qt::widgets::VectorizationWizard::execute()
   try
   {
     //run operation
-    raster->vectorize(geomVec, band, maxGeom);
+    raster->vectorize(geomVec, band, maxGeom, &geomsValues);
   }
   catch(const std::exception& e)
   {
@@ -218,7 +219,7 @@ bool te::qt::widgets::VectorizationWizard::execute()
     //save data
     std::auto_ptr<te::da::DataSetType> dsType = createDataSetType(outputdataset, raster->getSRID());
 
-    std::auto_ptr<te::mem::DataSet> dsMem = createDataSet(dsType.get(), geomVec);
+    std::auto_ptr<te::mem::DataSet> dsMem = createDataSet(dsType.get(), geomVec, geomsValues);
 
     te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(outDSInfo->getId(), outDSInfo->getType(), outDSInfo->getConnInfo());
 
@@ -256,6 +257,9 @@ std::auto_ptr<te::da::DataSetType> te::qt::widgets::VectorizationWizard::createD
   //create id property
   te::dt::SimpleProperty* idProperty = new te::dt::SimpleProperty("id", te::dt::INT32_TYPE);
   dsType->add(idProperty);
+  
+  te::dt::SimpleProperty* valueProperty = new te::dt::SimpleProperty("value", te::dt::DOUBLE_TYPE, true);
+  dsType->add(valueProperty);
 
   //create geometry property
   te::gm::GeometryProperty* geomProperty = new te::gm::GeometryProperty("geom", srid, te::gm::PolygonType);
@@ -270,7 +274,7 @@ std::auto_ptr<te::da::DataSetType> te::qt::widgets::VectorizationWizard::createD
   return dsType;
 }
 
-std::auto_ptr<te::mem::DataSet> te::qt::widgets::VectorizationWizard::createDataSet(te::da::DataSetType* dsType, std::vector<te::gm::Geometry*>& geoms)
+std::auto_ptr<te::mem::DataSet> te::qt::widgets::VectorizationWizard::createDataSet(te::da::DataSetType* dsType, std::vector<te::gm::Geometry*>& geoms, std::vector< double >& geomsValues)
 {
   std::auto_ptr<te::mem::DataSet> ds(new te::mem::DataSet(dsType));
 
@@ -280,10 +284,13 @@ std::auto_ptr<te::mem::DataSet> te::qt::widgets::VectorizationWizard::createData
     te::mem::DataSetItem* item = new te::mem::DataSetItem(ds.get());
 
     //set id
-    item->setInt32("id", (int)t);
+    item->setInt32(0, (int)t);
+    
+    //set Value
+    item->setDouble( 1, geomsValues[ t ] );
 
     //set geometry
-    item->setGeometry("geom", geoms[t]);
+    item->setGeometry(2, geoms[t]);
 
     ds->add(item);
   }

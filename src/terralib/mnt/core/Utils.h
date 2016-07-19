@@ -115,6 +115,7 @@ namespace te
  
     double PerpendicularDistance(te::gm::Coord2D& first, te::gm::Coord2D& last, te::gm::Coord2D& pin, te::gm::Coord2D& pinter);
 
+    TEMNTEXPORT te::mnt::mntType getMNTType(const te::da::DataSetType* dt);
   }
 }
 

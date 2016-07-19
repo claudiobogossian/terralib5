@@ -26,6 +26,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 //terralib
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
+#include "../../core/logger/Logger.h"
 #include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -33,10 +34,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
-#include "../../mnt/core/CalculateGrid.h"
-#include "../../mnt/core/SplineGrass.h"
-#include "../../mnt/core/SplineGrassMitasova.h"
-#include "../../mnt/core/TINCalculateGrid.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/rp/Utils.h"
@@ -46,6 +43,13 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../raster/RasterFactory.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
+#include "../core/CalculateGrid.h"
+#include "../core/SplineGrass.h"
+#include "../core/SplineGrassMitasova.h"
+#include "../core/TINCalculateGrid.h"
+#include "../core/Utils.h"
+
+#include "LayerSearchDialog.h"
 #include "MNTGenerationDialog.h"
 #include "ui_MNTGenerationDialogForm.h"
 
@@ -70,6 +74,7 @@ te::mnt::MNTGenerationDialog::MNTGenerationDialog(QWidget* parent , Qt::WindowFl
 
   //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
+  connect(m_ui->m_layerSearchToolButton, SIGNAL(clicked()), this, SLOT(onlayerSearchToolButtonClicked()));
   
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
 
@@ -121,7 +126,26 @@ void te::mnt::MNTGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
     if (it->get())
     {
       if (it->get()->isValid())
-        m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+      {
+        te::map::AbstractLayerPtr layer = it->get();
+        std::auto_ptr<te::da::DataSetType> dsType(layer->getSchema());
+        mntType inputType = getMNTType(dsType.get());
+        if (inputType == GRID)
+        {
+          std::auto_ptr<te::da::DataSet> inds(layer->getData());
+          std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
+          if (inds->getRaster(rpos)->getNumberOfBands() > 1)
+          {
+            inds.release();
+            dsType.release();
+            ++it;
+            continue;
+          }
+          inds.release();
+        }
+        dsType.release();
+        m_ui->m_layersComboBox->addItem(QString(layer->getTitle().c_str()), QVariant(layer->getId().c_str()));
+      }
     }
     ++it;
   }
@@ -131,6 +155,7 @@ te::map::AbstractLayerPtr te::mnt::MNTGenerationDialog::getLayer()
 {
   return m_outputLayer;
 }
+
 
 void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 {
@@ -143,6 +168,7 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+
   while (it != m_layers.end())
   {
     if (layerID == it->get()->getId().c_str())
@@ -151,22 +177,15 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 
       setSRID(m_inputLayer->getSRID());
 
-      std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
-      if (dsType->hasGeom())
-      {
-        std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
+      std::auto_ptr<te::da::DataSetType> dsType (m_inputLayer->getSchema());
 
+      m_inputType = getMNTType(dsType.get());
+
+      if (m_inputType != GRID)
+      {
         m_ui->m_inputstackedWidget->setCurrentIndex(1);
 
-        te::gm::GeomType gmType = geomProp->getGeometryType();
-        if (gmType == te::gm::PointType || gmType == te::gm::MultiPointType ||
-          gmType == te::gm::PointZType || gmType == te::gm::MultiPointZType ||
-          gmType == te::gm::PointMType || gmType == te::gm::MultiPointMType ||
-          gmType == te::gm::PointZMType || gmType == te::gm::MultiPointZMType ||
-          gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType ||
-          gmType == te::gm::LineStringZType || gmType == te::gm::MultiLineStringZType ||
-          gmType == te::gm::LineStringMType || gmType == te::gm::MultiLineStringMType ||
-          gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringZMType) //samples
+        if (m_inputType == SAMPLE || m_inputType == ISOLINE)
         {
           m_inputType = SAMPLE;
           m_ui->m_interpolatorComboBox->addItem("Weighted Avg./Z Value/Quadrant");
@@ -184,10 +203,10 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
 
           m_inSetName = m_inputLayer->getDataSetName();
 
-          std::auto_ptr<te::da::DataSet> inDset = m_inDataSource->getDataSet(m_inSetName);
+          std::auto_ptr<te::da::DataSet> inDset(m_inDataSource->getDataSet(m_inSetName));
           std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
           inDset->moveFirst();
-          std::auto_ptr<te::gm::Geometry> gin = inDset->getGeometry(geo_pos);
+          std::auto_ptr<te::gm::Geometry> gin(inDset->getGeometry(geo_pos));
           if (gin->is3D())
           {
             m_ui->m_ZcomboBox->hide();
@@ -203,53 +222,43 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
           {
             switch (props[i]->getType())
             {
-            case te::dt::FLOAT_TYPE:
-            case te::dt::DOUBLE_TYPE:
-            case te::dt::INT16_TYPE:
-            case te::dt::INT32_TYPE:
-            case te::dt::INT64_TYPE:
-            case te::dt::UINT16_TYPE:
-            case te::dt::UINT32_TYPE:
-            case te::dt::UINT64_TYPE:
-            case te::dt::NUMERIC_TYPE:
-              m_ui->m_ZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
-              break;
+              case te::dt::FLOAT_TYPE:
+              case te::dt::DOUBLE_TYPE:
+              case te::dt::INT16_TYPE:
+              case te::dt::INT32_TYPE:
+              case te::dt::INT64_TYPE:
+              case te::dt::UINT16_TYPE:
+              case te::dt::UINT32_TYPE:
+              case te::dt::UINT64_TYPE:
+              case te::dt::NUMERIC_TYPE:
+                m_ui->m_ZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
+                break;
+              default:
+                break;
             }
           }
 
         }
-        if (gmType == te::gm::TINType || gmType == te::gm::MultiPolygonType || gmType == te::gm::PolyhedralSurfaceType || gmType == te::gm::PolygonType ||
-          gmType == te::gm::TINZType || gmType == te::gm::MultiPolygonZType || gmType == te::gm::PolyhedralSurfaceZType || gmType == te::gm::PolygonZType ||
-          gmType == te::gm::GeometryType)//TIN
+        if (m_inputType == TIN)
         {
-          m_inputType = TIN;
-          std::auto_ptr<te::da::DataSet> dataquery;
           te::da::DataSourcePtr ds = te::da::GetDataSource(m_inputLayer->getDataSourceId());
           m_ui->m_interpolatorComboBox->addItem("Linear");
           m_ui->m_interpolatorComboBox->addItem("Quintic without breaklines");
 
-          bool hastype = false;
-          std::vector<te::dt::Property*> props = dsType->getProperties();
-          for (std::size_t i = 0; i < props.size(); ++i)
-          {
-            if (boost::iequals(props[i]->getName(), "type1"))
-            {
-              hastype = true;
-              break;
-            }
-          }
-          if (hastype)
-          {
+          std::string tname("type1");
+         if (ds->propertyExists(m_inputLayer->getDataSetName(), tname))
+         {
             std::string qry("Select type1, type2, type3 from ");
             qry += m_inputLayer->getTitle();
             qry += " where (type1 > 3 and type1 < 7) or (type2 > 3 and type2 < 7) or (type3 > 3 and type3 < 7)";
-            dataquery = ds->query(qry);
+            std::auto_ptr<te::da::DataSet> dataquery(ds->query(qry));
             if (!dataquery->isEmpty())
               m_ui->m_interpolatorComboBox->addItem("Quintic with breaklines");
+            dataquery.release();
           }
         }
       }
-      if (dsType->hasRaster()) //GRID
+      if (m_inputType == GRID)
       {
         m_ui->m_inputstackedWidget->setCurrentIndex(0);
         m_inputType = GRID;
@@ -264,6 +273,18 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
   }
 }
 
+void te::mnt::MNTGenerationDialog::onlayerSearchToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_layersComboBox->setCurrentIndex(search.getLayerIndex());
+}
 
 void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
 {
@@ -273,44 +294,52 @@ void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
 
   switch (m_inputType)
   {
-  case SAMPLE:
-  {
-    m_ui->m_interparamStackedWidget->show();
-    double raio = std::sqrt(m_inputLayer->getExtent().getWidth() * m_inputLayer->getExtent().getWidth() +
-      m_inputLayer->getExtent().getHeight() * m_inputLayer->getExtent().getHeight()) / 5.;
-    m_ui->m_radiusLineEdit->setText(QString::number(raio, 'f', 4));
-
-    switch (index)
+    case SAMPLE:
     {
-    case 0: //Weighted Average/Z Value/Quadrant
-    case 1: //Weighted Average/Quadrant
-    case 2: //Weighted Average
-      m_ui->m_interparamStackedWidget->setCurrentIndex(0);
-      m_ui->m_powerLabel->show();
-      m_ui->m_powerComboBox->show();
-      break;
-    case 3: //Simple Average
-    case 4: //Nearest Neighbor
-      m_ui->m_interparamStackedWidget->setCurrentIndex(0);
-      m_ui->m_powerLabel->hide();
-      m_ui->m_powerComboBox->hide();
-      break;
-    case 5: //Bilinear Spline
-    case 6: //Bicubic Spline
-      m_ui->m_interparamStackedWidget->setCurrentIndex(1);
-      break;
-    case 7: //Mitasova Spline
-      m_ui->m_interparamStackedWidget->setCurrentIndex(2);
+      m_ui->m_interparamStackedWidget->show();
+      double raio = std::sqrt(m_inputLayer->getExtent().getWidth() * m_inputLayer->getExtent().getWidth() +
+        m_inputLayer->getExtent().getHeight() * m_inputLayer->getExtent().getHeight()) / 5.;
+      m_ui->m_radiusLineEdit->setText(QString::number(raio, 'f', 4));
+
+      switch (index)
+      {
+      case 0: //Weighted Average/Z Value/Quadrant
+      case 1: //Weighted Average/Quadrant
+      case 2: //Weighted Average
+        m_ui->m_interparamStackedWidget->setCurrentIndex(0);
+        m_ui->m_powerLabel->show();
+        m_ui->m_powerComboBox->show();
+        m_ui->m_radiusLabel->show();
+        m_ui->m_radiusLineEdit->show();
+        break;
+      case 3: //Simple Average
+      case 4: //Nearest Neighbor
+        m_ui->m_interparamStackedWidget->setCurrentIndex(0);
+        m_ui->m_powerLabel->hide();
+        m_ui->m_powerComboBox->hide();
+        m_ui->m_radiusLabel->show();
+        m_ui->m_radiusLineEdit->show();
+        break;
+      case 5: //Bilinear Spline
+      case 6: //Bicubic Spline
+        m_ui->m_interparamStackedWidget->setCurrentIndex(1);
+        break;
+      case 7: //Mitasova Spline
+        m_ui->m_interparamStackedWidget->setCurrentIndex(2);
+        break;
+      default:
+        break;
+      }
       break;
     }
-    break;
-  }
     case TIN:
       switch (index)
       {
       case 0:
       case 1:
       case 2:
+        break;
+      default:
         break;
       }
       break;
@@ -320,7 +349,13 @@ void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
       case 0:
       case 1:
         break;
+      default:
+        break;
       }
+    case OTHER:
+    case ISOLINE:
+    default:
+      break;
   }
 }
 
@@ -505,6 +540,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
           m_inter = Mitasova;
           spline = true;
           break;
+        default:
+          break;
         }
 
         if (!spline)
@@ -588,9 +625,13 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
       case GRID:
       {
         //get input raster
-        std::auto_ptr<te::da::DataSet> inds = m_inputLayer->getData();
+        std::auto_ptr<te::da::DataSet> inds(m_inputLayer->getData());
         std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
         std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
+        if (inputRst->getNumberOfBands() > 1)
+        {
+          throw te::common::Exception(TE_TR("Layer isn't Regular Grid."));
+        }
 
         std::vector< std::complex<double> > dummy;
         if (m_ui->m_dummycheckBox->isChecked())
@@ -671,6 +712,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
         break;
       }
+      case ISOLINE:
+      case OTHER:
       default:
         break;
     }
@@ -719,7 +762,7 @@ void te::mnt::MNTGenerationDialog::setSRID(int newSRID)
   }
   else
   {
-    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName((unsigned int)newSRID);
     if (name.size())
       m_ui->m_resSRIDLabel->setText(name.c_str());
     else

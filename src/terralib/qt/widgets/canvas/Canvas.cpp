@@ -24,9 +24,6 @@
   */
 
 // TerraLib
-#include "../../../annotationtext/Attributes.h"
-#include "../../../annotationtext/Element.h"
-#include "../../../annotationtext/Text.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../common/StringUtils.h"
 #include "../../../geometry.h"

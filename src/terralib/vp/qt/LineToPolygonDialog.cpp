@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../common/progress/ProgressManager.h"
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -382,7 +382,7 @@ void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string str = "Line to polygon - ";
     str += e.what();
-    te::common::Logger::logDebug("vp", str.c_str());
+    TE_CORE_LOG_DEBUG("vp", str.c_str());
 #endif
 
     te::common::ProgressManager::getInstance().removeViewer(id);

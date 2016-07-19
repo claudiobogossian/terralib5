@@ -78,9 +78,9 @@ void te::ws::ogc::wcs::da::DataSource::open()
 
   try
   {
-    m_wcs = te::ws::ogc::WCS(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    m_wcs = std::shared_ptr<te::ws::ogc::WCSClient>(new te::ws::ogc::WCSClient(m_connectionInfo.find("USERDATADIR")->second, m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second));
 
-    m_wcs.updateCapabilities();
+    m_wcs->updateCapabilities();
   }
   catch(const te::common::Exception& e)
   {
@@ -113,7 +113,7 @@ bool te::ws::ogc::wcs::da::DataSource::isValid() const
   {
     verifyConnectionInfo();
 
-    te::ws::ogc::WCS wcs(m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    te::ws::ogc::WCSClient wcs(m_connectionInfo.find("USERDATADIR")->second, m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
 
     wcs.updateCapabilities();
   }
@@ -155,6 +155,10 @@ bool te::ws::ogc::wcs::da::DataSource::exists(const std::map<std::string, std::s
   if(dsInfo.empty())
     return false;
 
+  std::map<std::string, std::string>::const_iterator usrDataDir = dsInfo.find("USERDATADIR");
+  if(usrDataDir == dsInfo.end())
+    return false;
+
   std::map<std::string, std::string>::const_iterator uri = dsInfo.find("URI");
   if(uri == dsInfo.end())
     return false;
@@ -167,7 +171,7 @@ bool te::ws::ogc::wcs::da::DataSource::exists(const std::map<std::string, std::s
   {
     verifyConnectionInfo();
 
-    te::ws::ogc::WCS wcs(uri->second, version->second);
+    te::ws::ogc::WCSClient wcs(usrDataDir->second, uri->second, version->second);
 
     wcs.updateCapabilities();
   }
@@ -201,4 +205,11 @@ void te::ws::ogc::wcs::da::DataSource::verifyConnectionInfo() const
   std::map<std::string, std::string>::const_iterator version = m_connectionInfo.find("VERSION");
   if(version == m_connectionInfo.end())
     throw Exception(TE_TR("The connection information is invalid. Missing VERSION parameter!"));
+
+  std::map<std::string, std::string>::const_iterator usrDataDir = m_connectionInfo.find("USERDATADIR");
+  if(usrDataDir == m_connectionInfo.end())
+    throw Exception(TE_TR("The connection information is invalid. Missing USERDATADIR parameter!"));
+
+  std::string dataDir = usrDataDir->second + "/wcs/";
+
 }

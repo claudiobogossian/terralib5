@@ -28,7 +28,7 @@
 
 #include "../../core/translator/Translator.h"
 #include "../../common/progress/TaskProgress.h"
-#include "../../common/Logger.h"
+#include "../../core/logger/Logger.h"
 #include "../../common/UnitsOfMeasureManager.h"
 
 #include "../../dataaccess/dataset/DataSetTypeConverter.h"
@@ -496,7 +496,7 @@ bool te::mnt::Profile::runTINProfile(std::vector<te::gm::LineString*> visadas, s
   catch (te::common::Exception& e)
   {
 #ifdef TERRALIB_LOGGER_ENABLED
-    te::common::Logger::logDebug("mnt", e.what());
+    TE_CORE_LOG_DEBUG("mnt", e.what());
 #endif
     dsType.release();
     throw te::common::Exception(e.what());

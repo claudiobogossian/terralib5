@@ -35,7 +35,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
-#include "../client/WCS.h"
+#include "../client/WCSClient.h"
 //#include "WCSLayerInfo.h"
 #include "Config.h"
 #include "../client/DataTypes.h"
@@ -63,11 +63,11 @@ namespace te
           {
           public:
 
-            Transactor(WCS wcs);
+            Transactor(const std::shared_ptr<te::ws::ogc::WCSClient> wcs);
 
             ~Transactor();
 
-            CoverageDescription coverageDescription(const std::string coverageName) const;
+            CoverageDescription coverageDescription(const std::string coverageName);
 
             void setCoverageRequest(const CoverageRequest coverageRequest);
 
@@ -262,7 +262,7 @@ namespace te
 
           private:
 
-            WCS m_wcs;
+            std::shared_ptr<te::ws::ogc::WCSClient> m_wcs;
             CoverageRequest m_coverageRequest;
 
 

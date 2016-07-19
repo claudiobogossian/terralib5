@@ -41,7 +41,7 @@
 #include "common/Globals.h"
 #include "common/HexUtils.h"
 #include "common/LoggedException.h"
-#include "common/Logger.h"
+#include "core/logger/Logger.h"
 #include "common/Module.h"
 #include "common/ParameterizedAbstractFactory.h"
 #include "common/PlatformUtils.h"

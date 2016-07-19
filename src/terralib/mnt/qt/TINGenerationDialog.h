@@ -69,12 +69,15 @@ namespace te
 
       protected slots:
 
+      void onInputIsolinesToolButtonClicked();
       void onIsolinesComboBoxChanged(int index);
+      void onInputSamplesToolButtonClicked();
       void onSamplesComboBoxChanged(int index);
       void onScalePushButtonClicked();
       void onYesToggled();
       void onNoToggled();
       void onBreakLinesComboBoxChanged(int index);
+      void onInputBreaklineToolButtonClicked();
       void onTargetDatasourceToolButtonPressed();
       void onTargetFileToolButtonPressed();
       void onHelpPushButtonClicked();

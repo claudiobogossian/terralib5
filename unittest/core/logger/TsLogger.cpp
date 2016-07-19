@@ -39,29 +39,32 @@ BOOST_AUTO_TEST_SUITE(logger_test_case)
 
 BOOST_AUTO_TEST_CASE(default_logger_test)
 {
-  BOOST_CHECK_NO_THROW(TE_INIT_LOGGER("logs/mylogs.log"));
-  BOOST_CHECK(boost::filesystem::file_size(te::core::FindInTerraLibPath("logs/mylogs.log")) > 0);
-  BOOST_CHECK_NO_THROW(TE_LOGGER_FORMAT("[%TimeStamp%]{%ThreadID%} %Process%(%ProcessID%) <%Severity%>: %Message%"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_WARN("Warning log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_INFO("Info log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_ERROR("Error log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_TRACE("Trace log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_FATAL("Fatal log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_DEBUG("Debug log"));
+  BOOST_CHECK_NO_THROW(TE_INIT_DEFAULT_LOGGER("log/unit_test_terralib.log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_WARN("Warning log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_INFO("Info log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_ERROR("Error log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_TRACE("Trace log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_FATAL("Fatal log"));
+  BOOST_CHECK_NO_THROW(TE_LOG_DEBUG("Debug log"));
+  BOOST_CHECK(boost::filesystem::file_size("log/unit_test_terralib.log") > 0);
+
+  return;
 }
 
 BOOST_AUTO_TEST_CASE(configuration_file_logger_test)
 {
-  BOOST_CHECK_THROW(TE_INIT_LOGGER_FROM_FILE("mylogger.ini"), std::exception);
-  BOOST_CHECK_NO_THROW(TE_INIT_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/terralib/config/te-log-unittest.ini")));
-  BOOST_CHECK_THROW(TE_LOGGER_FORMAT("[%TimeStamp%]{%ThreadID%} %Process%(%ProcessID%) <%Severity%>: %Message%"), te::Exception);
-  BOOST_CHECK(boost::filesystem::file_size(te::core::FindInTerraLibPath("logs/terralib_unittest_core.log")) > 0);
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_WARN("Warning log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_INFO("Info log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_ERROR("Error log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_TRACE("Trace log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_FATAL("Fatal log"));
-  BOOST_CHECK_NO_THROW(TE_LOG_CORE_DEBUG("Debug log"));
+  BOOST_CHECK_THROW(TE_ADD_LOGGER_FROM_FILE("mylogger.ini"), std::exception);
+  BOOST_CHECK_NO_THROW(TE_ADD_LOGGER_FROM_FILE(
+                         te::core::FindInTerraLibPath("share/terralib/config/te-log-unittest.ini")));
+  BOOST_CHECK_NO_THROW(TE_CORE_LOG_WARN("unittest","Warning log"));
+  BOOST_CHECK_NO_THROW(TE_CORE_LOG_INFO("unittest","Info log"));
+  BOOST_CHECK_NO_THROW(TE_CORE_LOG_ERROR("unittest","Error log"));
+  BOOST_CHECK_NO_THROW(TE_CORE_LOG_TRACE("unittest","Trace log"));
+  BOOST_CHECK_NO_THROW(TE_CORE_LOG_FATAL("unittest","Fatal log"));
+  BOOST_CHECK_NO_THROW(TE_CORE_LOG_DEBUG("unittest","Debug log"));
+  BOOST_CHECK(boost::filesystem::file_size(te::core::FindInTerraLibPath("log/terralib_unittest_core.log")) > 0);
+
+  return;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

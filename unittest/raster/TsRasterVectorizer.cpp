@@ -47,7 +47,8 @@ void TsRasterVectorizer::tcRasterVectorizer()
   std::auto_ptr< te::rst::Raster > inrasterPtr( te::rst::RasterFactory::open(rinfo) );
 
   std::vector<te::gm::Geometry*> polygons;
-  inrasterPtr->vectorize(polygons, 0);
+  std::vector< double > polygonsValues;
+  inrasterPtr->vectorize(polygons, 0, 0, &polygonsValues);
 
   std::cout << "vectorizer created " << polygons.size() << " polygons" << std::endl;
   for (unsigned int i = 0; i < polygons.size(); i++)
@@ -60,17 +61,17 @@ void TsRasterVectorizer::tcRasterVectorizer()
   {
     std::auto_ptr<te::da::DataSetType> dataSetTypePtr(new te::da::DataSetType("RasterVectorizerTestPolygons"));
     
-    te::gm::GeometryProperty* propPtr = new te::gm::GeometryProperty("polygon", 0, 
-      te::gm::PolygonType, true);
-    propPtr->setSRID( inrasterPtr->getSRID() );
-    dataSetTypePtr->add( propPtr );  
+    dataSetTypePtr->add( new te::dt::SimpleProperty("Value", te::dt::DOUBLE_TYPE, true) );  
+    dataSetTypePtr->add( new te::gm::GeometryProperty("polygon", inrasterPtr->getSRID(), 
+      te::gm::PolygonType, true) );  
     
     memDataSetPtr.reset( new te::mem::DataSet( dataSetTypePtr.get()) );
     
     for( unsigned int polygonsIdx = 0 ; polygonsIdx < polygons.size() ; ++polygonsIdx )
     {
       te::mem::DataSetItem* dsItemPtr = new te::mem::DataSetItem(memDataSetPtr.get());
-      dsItemPtr->setGeometry( 0, polygons[ polygonsIdx ] );
+      dsItemPtr->setDouble( 0, polygonsValues[ polygonsIdx ] );
+      dsItemPtr->setGeometry( 1, polygons[ polygonsIdx ] );
       
       memDataSetPtr->add( dsItemPtr );
     }
@@ -81,10 +82,9 @@ void TsRasterVectorizer::tcRasterVectorizer()
   {
     std::auto_ptr<te::da::DataSetType> dataSetTypePtr(new te::da::DataSetType("RasterVectorizerTestPolygons"));
     
-    te::gm::GeometryProperty* propPtr = new te::gm::GeometryProperty("polygon", 0, 
-      te::gm::PolygonType, true);
-    propPtr->setSRID( inrasterPtr->getSRID() );
-    dataSetTypePtr->add( propPtr );  
+    dataSetTypePtr->add( new te::dt::SimpleProperty("Value", te::dt::DOUBLE_TYPE, true) );  
+    dataSetTypePtr->add( new te::gm::GeometryProperty("polygon", inrasterPtr->getSRID(), 
+      te::gm::PolygonType, true) );  
     
     std::map<std::string, std::string> connInfo;
     connInfo["URI"] = "./RasterVectorizerTestPolygons";

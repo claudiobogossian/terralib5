@@ -140,6 +140,16 @@ te::edit::Feature* te::edit::RepositoryManager::getFeature(const std::string& so
   return repository->getFeature(e, srid);
 }
 
+te::edit::Feature* te::edit::RepositoryManager::getFeature(const std::string& source, te::da::ObjectId* id) const
+{
+  Repository* repository = getRepository(source);
+
+  if (repository == 0)
+    return 0;
+
+  return repository->getFeature(id);
+}
+
 void te::edit::RepositoryManager::clearAll()
 {
   std::map<std::string, Repository*>::const_iterator it;

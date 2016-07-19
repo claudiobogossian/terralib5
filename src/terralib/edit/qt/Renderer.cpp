@@ -117,12 +117,15 @@ void te::edit::Renderer::prepare(te::gm::GeomType type, const bool& removed)
     {
       te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
 
-      QBrush b;
+      QBrush f;
 
-      b.setColor((removed) ? Qt::black : m_polygonFillColor);
-      b.setStyle((removed) ? Qt::DiagCrossPattern : Qt::SolidPattern);
+      f.setColor((removed) ? Qt::black : m_polygonFillColor);
+      f.setStyle((removed) ? Qt::DiagCrossPattern : Qt::SolidPattern);
 
-      m_canvas->setPolygonFillColor(b);
+      m_canvas->setPolygonFillColor(f);
+
+      m_canvas->setPolygonContourDashStyle(te::map::DashLine);
+
     }
     break;
 
@@ -238,6 +241,12 @@ void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillCo
   m_pointSize = size;
 
   m_styleChanged = true;
+}
+
+void te::edit::Renderer::setLineStyle(const QColor& lineColor, const std::size_t& lineWidth)
+{
+  m_lineColor = lineColor;
+  m_lineWidth = lineWidth;
 }
 
 void te::edit::Renderer::setupDefaultStyle()

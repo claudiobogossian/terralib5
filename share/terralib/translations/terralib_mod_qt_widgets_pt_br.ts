@@ -9006,17 +9006,17 @@ p, li { white-space: pre-wrap; }
         <translation>Selecione o tipo de recorte e os parâmetros específicos.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="456"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="525"/>
         <source>Extent</source>
         <translation>Extensão</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="457"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="526"/>
         <source>Dimension</source>
         <translation>Dimensão</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="458"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="527"/>
         <source>Layer</source>
         <translation>Camada</translation>
     </message>
@@ -10415,10 +10415,10 @@ Pode ser um erro no conector da aplicação !</translation>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="325"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="334"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="340"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="648"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="696"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="705"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="654"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="702"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="711"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="717"/>
         <source>Warning</source>
         <translation>Aviso</translation>
     </message>
@@ -10431,7 +10431,7 @@ Pode ser um erro no conector da aplicação !</translation>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="168"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="317"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="648"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="654"/>
         <source>Error getting selected layer.</source>
         <translation>Erro na obtenção da camada selecionada.</translation>
     </message>
@@ -10445,34 +10445,34 @@ Pode ser um erro no conector da aplicação !</translation>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="238"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="286"/>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="294"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="399"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="426"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="567"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="579"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="405"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="432"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="573"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="585"/>
         <source>Exchanger</source>
         <translation>Intercambiar</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="211"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="399"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="405"/>
         <source>Layer name invalid for output datasource. Would you like to normalize the name?</source>
         <translation>O arquivo não pôde ser lido !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="221"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="409"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="415"/>
         <source>Layer name invalid for output datasource!</source>
         <translation>Nome da camada inválido para a fonte de dados de saída !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="238"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="426"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="432"/>
         <source>Some property name is invalid for output datasource. Would you like to normalize the name?</source>
         <translation>Alguma propriedade inválida no nome da fonte de dados de saída. Gostaria de normalizar o nome ?</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="256"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="444"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="450"/>
         <source>Some property name is invalid for output datasource:
 
 </source>
@@ -10480,13 +10480,13 @@ Pode ser um erro no conector da aplicação !</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="286"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="567"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="573"/>
         <source>Layer exported successfully.</source>
         <translation>Camada exportada com sucesso.</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="290"/>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="575"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="581"/>
         <source>Error during exchanger. The reported error is: %1</source>
         <translation>Erro durante a troca de dados. O erro relatado é:%1</translation>
     </message>
@@ -10506,32 +10506,32 @@ Pode ser um erro no conector da aplicação !</translation>
         <translation>Nome do conjunto de dados não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="671"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="677"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="672"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="678"/>
         <source>Shapefile (*.shp *.SHP);;Mapinfo File (*.mif *.MIF);;KML (*.kml *.KML);;GeoJSON (*.geojson *.GEOJSON);;GML (*.gml *.GML);;DXF (*.dxf *.DXF);;DGN (*.dgn *.DGN);;</source>
         <translation>Shapefile (*.shp *.SHP);;Mapinfo File (*.mif *.MIF);;KML (*.kml *.KML);;GeoJSON (*.geojson *.GEOJSON);;GML (*.gml *.GML);;DXF (*.dxf *.DXF);;DGN (*.dgn *.DGN);;</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="696"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="702"/>
         <source>Output Layer SRID not defined.</source>
         <translation>SRID da camada de saída não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="705"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="711"/>
         <source>Invalid output Layer SRID.</source>
         <translation>SRID da camada de saída inválido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="711"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="717"/>
         <source>Invalid input Layer SRID.</source>
         <translation>SRID da camada de entrada inválido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="753"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DirectExchangerDialog.cpp" line="759"/>
         <source>Choose the SRS</source>
         <translation>Escolha o SRS</translation>
     </message>
@@ -11317,30 +11317,30 @@ Pode ser um erro no conector da aplicação !</translation>
         <translation>Valor</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="428"/>
-        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1303"/>
+        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="426"/>
+        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1301"/>
         <source>Manual changes will be lost. Continue?</source>
         <translation>Alterações manuais serão perdidas. Continuar ?</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="428"/>
+        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="426"/>
         <source>Edit Legend</source>
         <translation>Editar Legenda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1297"/>
-        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1303"/>
-        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1333"/>
+        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1295"/>
+        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1301"/>
+        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1331"/>
         <source>Grouping</source>
         <translation>Agrupamento</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1297"/>
+        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1295"/>
         <source>There are no other layers with Grouping!</source>
         <translation>Não há outras camadas com Agrupamento !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1331"/>
+        <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1329"/>
         <source>There is no grouping that can be imported!
 The layer must have an attribute with the same name of the attribute used to make the reference layer grouping: </source>
         <translation>Não há agrupamento que pode ser importado !
@@ -12987,108 +12987,108 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
 <context>
     <name>te::qt::widgets::QueryDataSourceDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="473"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="481"/>
         <source>Set a SQL file...</source>
         <translation>Selecione um arquivo SQL...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="473"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="501"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="481"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="509"/>
         <source>SQL File *.sql</source>
         <translation>SQL File *.sql</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="486"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="511"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="543"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="573"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="611"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="662"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="668"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="778"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="815"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="494"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="519"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="551"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="581"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="616"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="619"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="670"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="676"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="786"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="820"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="823"/>
         <source>Query DataSource</source>
         <translation>Conjunto de Dados de Consulta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="501"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="509"/>
         <source>Select a SQL file...</source>
         <translation>Selecione um arquivo SQL...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="534"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="620"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="626"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="632"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="542"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="628"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="634"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="640"/>
         <source>Warning</source>
         <translation>Aviso</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="534"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="620"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="542"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="628"/>
         <source>SQL not defined.</source>
         <translation>SQL não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="543"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="551"/>
         <source>No layer selected.</source>
         <translation>Nenhuma camada selecionada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="573"/>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="662"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="581"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="670"/>
         <source>Error executing SQL.</source>
         <translation>Erro na execução do SQL.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="608"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="616"/>
         <source>Error selecting objects: </source>
         <translation>Erro na seleção de objetos: </translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="611"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="619"/>
         <source>Selection done.</source>
         <translation>Seleção feita.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="626"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="634"/>
         <source>Define a repository for the result.</source>
         <translation>Definir um repositório para o resultado.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="632"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="640"/>
         <source>Define a name for the resulting layer.</source>
         <translation>Defina um nome para a camada resultante.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="668"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="676"/>
         <source>Query result is empty.</source>
         <translation>Resultado da consulta está vazio.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="778"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="786"/>
         <source>Error creating output dataset.</source>
         <translation>Erro ao criar conjunto de dados de saída.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="812"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="820"/>
         <source>Error creating layer. </source>
         <translation>Erro ao criar camada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="815"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="823"/>
         <source>Layer created.</source>
         <translation>Camada criada.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="845"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="853"/>
         <source>Save as...</source>
         <translation>Salvar como...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="845"/>
+        <location filename="../../../src/terralib/qt/widgets/query/QueryDataSourceDialog.cpp" line="853"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation>Shapefile (*.shp *.SHP);;</translation>
     </message>
@@ -14481,10 +14481,10 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="122"/>
         <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="130"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="193"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="203"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="238"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="244"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="194"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="204"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="239"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="245"/>
         <source>Vectorizer</source>
         <translation>Vetorizar</translation>
     </message>
@@ -14499,12 +14499,12 @@ A camada deve ter um atributo com o mesmo nome do atributo utilizado para fazer 
         <translation>Nome do repositório de saída não definido.</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="203"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="204"/>
         <source>An exception has occurred!</source>
         <translation>Ocorreu uma exceção !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="244"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/VectorizationWizard.cpp" line="245"/>
         <source>An exception has occurred saving geometries!</source>
         <translation>Ocorreu uma exceção ao salvar geometrias !</translation>
     </message>

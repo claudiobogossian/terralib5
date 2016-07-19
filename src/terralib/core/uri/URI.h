@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file terralib/core/URI.h
+  \file terralib/core/uri/URI.h
 
   \brief A class for representing an Uniform Resource Identifier (URI).
 

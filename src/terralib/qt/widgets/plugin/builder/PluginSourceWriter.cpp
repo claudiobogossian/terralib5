@@ -129,7 +129,7 @@ void te::qt::widgets::PluginSourceWriter::createCppFile(const std::string& sourc
   file << "// TerraLib Includes\n";
   file << "#include \"Plugin.h\"\n\n";
   file << "#include <terralib/common/Config.h>\n";
-  file << "#include <terralib/common/Logger.h>\n";
+  file << "#include <terralib/core/logger/Logger.h>\n";
   file << "#include <terralib/core/translator/Translator.h>\n\n";
   
   //constructor

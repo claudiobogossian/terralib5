@@ -34,6 +34,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/Exception.h"
+#include "../../../../qt/af/ApplicationController.h"
 
 
 // Boost
@@ -217,6 +218,9 @@ void te::ws::ogc::wcs::qt::WCSConnectorDialog::getConnectionInfo(std::map<std::s
   if(url.isEmpty())
     throw te::ws::ogc::wcs::da::Exception(TE_TR("Please define the server address first!"));
 
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+
   connInfo["URI"] = url.toStdString();
   connInfo["VERSION"] = "2.0.1";
+  connInfo["USERDATADIR"] = usrDataDir;
 }

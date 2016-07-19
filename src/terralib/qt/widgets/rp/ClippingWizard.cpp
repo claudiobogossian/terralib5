@@ -279,6 +279,9 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
+  if (inputRst->getSRID() != layer->getSRID())
+    inputRst->getGrid()->setSRID(layer->getSRID());
+
   //get parameters
   std::auto_ptr< te::gm::GeometryCollection > geomColl;
   m_clippingPage->getLayerClipping(geomColl);
@@ -290,10 +293,13 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
   {
     geomColl->transform( inputRst->getSRID() );
   }
-
+  
+  // Creating the output raster (single raster case)
+  
+  std::auto_ptr<te::rst::Raster> outputRst;
+  
   if(m_clippingPage->isSingleRasterResult())
   {
-    //output raster
     std::vector<te::rst::BandProperty*> bands;
   
     for(std::size_t t = 0; t < inputRst->getNumberOfBands(); ++t)
@@ -303,115 +309,116 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
     }
 
     te::gm::Envelope* env = new te::gm::Envelope(*geomColl->getMBR());
-    te::rst::Grid* grid = new te::rst::Grid(inputRst->getGrid()->getResolutionX(), inputRst->getGrid()->getResolutionY(), env, inputRst->getSRID());
+    te::rst::Grid* grid = new te::rst::Grid(inputRst->getGrid()->getResolutionX(), 
+      inputRst->getGrid()->getResolutionY(), env, inputRst->getSRID());
 
     std::string type = m_rasterInfoPage->getWidget()->getType();
 
-    std::map<std::string, std::string> rinfo =  m_rasterInfoPage->getWidget()->getInfo();
-    std::auto_ptr<te::rst::Raster> outputRst( te::rst::RasterFactory::make(type, grid, bands, rinfo) );
-    te::rst::FillRaster(outputRst.get(), outputRst->getBand( 0 )->getProperty()->m_noDataValue );
+    std::map<std::string, std::string> rinfo =  
+      m_rasterInfoPage->getWidget()->getInfo();
+      
+    outputRst.reset( te::rst::RasterFactory::make(type, grid, bands, rinfo) );
     
-    te::gm::Polygon* polygon = 0;
-//     te::rst::PolygonIterator<double> it;
-//     te::rst::PolygonIterator<double> itend;
-    std::vector<double> doubleVec;
-    te::gm::Coord2D inputCoord;
-    te::gm::Coord2D outputCoord;
+    te::rst::FillRaster(outputRst.get(), outputRst->getBand( 0 )->getProperty()->m_noDataValue );  
+  }
+  
+  // Breaking the geometry collection into single geometries
+  
+  std::vector< te::gm::Geometry* > singleGeometriesPtrs;
+  te::gm::Multi2Single( geomColl.get(), singleGeometriesPtrs );
+  
+  // Iterating over each geometry
+  
+  te::gm::Polygon* polygon = 0;
+  std::vector< std::complex< double > > doubleVec;
+  unsigned int outRow = 0 ;
+  unsigned int outCol = 0 ;
+  te::gm::Coord2D inputCoord;
+  te::gm::Coord2D outputCoord;
 
-    for(std::size_t i = 0; i < geomColl->getNumGeometries(); ++i)
+  for(std::size_t singleGeometriesPtrsIdx = 0; singleGeometriesPtrsIdx < 
+    singleGeometriesPtrs.size() ; ++singleGeometriesPtrsIdx)
+  {
+    te::gm::Geometry* currGeomPtr = singleGeometriesPtrs[ singleGeometriesPtrsIdx ];
+    
+    if( currGeomPtr->getGeomTypeId() == te::gm::PolygonType )
     {
-      polygon = static_cast<te::gm::Polygon*> (geomColl->getGeometryN(i));
-
-      te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(inputRst.get(), polygon);
-      te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(inputRst.get(), polygon);
-
-      while (it != itend)
+      // creating the output raster : for the case where multiple rasters
+      // should be generated (one for each geometry )
+      
+      if( ! m_clippingPage->isSingleRasterResult() )
       {
-        inputRst->getValues(it.getColumn(), it.getRow(), doubleVec);
+        std::vector<te::rst::BandProperty*> bands;
 
-        inputCoord = inputRst->getGrid()->gridToGeo(it.getColumn(), it.getRow());
-        outputCoord = outputRst->getGrid()->geoToGrid(inputCoord.x, inputCoord.y);
-        outputCoord.x = te::rst::Round(outputCoord.x);
-        outputCoord.y = te::rst::Round(outputCoord.y);
-
-        if( 
-            (
-              ( outputCoord.x >= 0 )
-              && 
-              ( outputCoord.x < (int)outputRst->getNumberOfColumns() )
-            ) 
-            &&
-            (
-              ( outputCoord.y >= 0 )
-              && 
-              ( outputCoord.y < (int)outputRst->getNumberOfRows() )
-            )
-          )
+        for(std::size_t t = 0; t < inputRst->getNumberOfBands(); ++t)
         {
-          outputRst->setValues(outputCoord.x, outputCoord.y, doubleVec);
+          te::rst::BandProperty* b = new te::rst::BandProperty(t, inputRst->getBand(t)->getProperty()->getType());
+          bands.push_back(b);
         }
 
-        ++it;
+        te::gm::Envelope* env = new te::gm::Envelope(*currGeomPtr->getMBR());
+        te::rst::Grid* grid = new te::rst::Grid( inputRst->getGrid()->getResolutionX(), 
+          inputRst->getGrid()->getResolutionY(), env, inputRst->getSRID());
+
+        std::string type = m_rasterInfoPage->getWidget()->getType();
+
+        std::map<std::string, std::string> rinfo =  
+          m_rasterInfoPage->getWidget()->getInfo(singleGeometriesPtrsIdx);
+          
+        outputRst.reset( te::rst::RasterFactory::make(type, grid, bands, rinfo) );
+        
+        te::rst::FillRaster(outputRst.get(), outputRst->getBand( 0 )->getProperty()->m_noDataValue);
       }
-    }
-
-    outputRst.reset();
-
-    //set output layer
-    m_outputLayer.push_back(te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
-                                                        m_rasterInfoPage->getWidget()->getInfo()));
-  }
-  else
-  {
-    for(std::size_t i = 0; i < geomColl->getNumGeometries(); ++i)
-    {
-      //output raster
-      std::vector<te::rst::BandProperty*> bands;
-  
-      for(std::size_t t = 0; t < inputRst->getNumberOfBands(); ++t)
-      {
-        te::rst::BandProperty* b = new te::rst::BandProperty(t, inputRst->getBand(t)->getProperty()->getType());
-        bands.push_back(b);
-      }
-
-      te::gm::Envelope* env = new te::gm::Envelope(*geomColl->getMBR());
-      te::rst::Grid* grid = new te::rst::Grid(inputRst->getGrid()->getResolutionX(), inputRst->getGrid()->getResolutionY(), env, inputRst->getSRID());
-
-      std::string type = m_rasterInfoPage->getWidget()->getType();
-
-      std::map<std::string, std::string> rinfo =  m_rasterInfoPage->getWidget()->getInfo(i);
-      std::auto_ptr<te::rst::Raster> outputRst( te::rst::RasterFactory::make(type, grid, bands, rinfo) );
       
-      te::rst::FillRaster(outputRst.get(), 255);
+      // Iterating over the current geometry
 
-      te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (geomColl->getGeometryN(i));
-
-      te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(inputRst.get(), polygon);
-      te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(inputRst.get(), polygon);
-
+      polygon = (te::gm::Polygon*)currGeomPtr;
+      te::rst::PolygonIterator<double> it = 
+        te::rst::PolygonIterator<double>::begin(outputRst.get(), polygon);
+      te::rst::PolygonIterator<double> itend = 
+        te::rst::PolygonIterator<double>::end(outputRst.get(), polygon);
+      te::rst::Interpolator interp( inputRst.get(), te::rst::NearestNeighbor );
+      const te::rst::Grid& inputGrid = *inputRst->getGrid();
+      const te::rst::Grid& outputGrid = *outputRst->getGrid();
+      
       while (it != itend)
       {
-        std::vector<double> doubleVec;
-        inputRst->getValues(it.getColumn(), it.getRow(), doubleVec);
+        outRow = it.getRow();
+        outCol = it.getColumn();
+        
+        outputGrid.gridToGeo( (double)outCol, (double)outRow, outputCoord.x,
+          outputCoord.y );
+        inputGrid.geoToGrid( outputCoord.x, outputCoord.y, inputCoord.x,
+          inputCoord.y );        
+        
+        interp.getValues( inputCoord.x, inputCoord.y, doubleVec );
 
-        te::gm::Coord2D inputCoord = inputRst->getGrid()->gridToGeo(it.getColumn(), it.getRow());
-        te::gm::Coord2D outputCoord = outputRst->getGrid()->geoToGrid(inputCoord.x, inputCoord.y);
-
-        if( (te::rst::Round(inputCoord.x) >= 0 && te::rst::Round(outputCoord.x) < (int)inputRst->getNumberOfColumns()) &&
-            (te::rst::Round(inputCoord.y) >= 0 && te::rst::Round(outputCoord.y) < (int)inputRst->getNumberOfRows()))
-          outputRst->setValues(te::rst::Round(outputCoord.x), te::rst::Round(outputCoord.y), doubleVec);
+        outputRst->setValues( outCol, outRow, doubleVec);
 
         ++it;
       }
 
       outputRst.reset();
-
-      //set output layer
-      m_outputLayer.push_back(te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
-                                                          m_rasterInfoPage->getWidget()->getInfo(i)));
+      
+      if( ! m_clippingPage->isSingleRasterResult() )
+      {      
+        //set output layer
+        m_outputLayer.push_back(te::qt::widgets::createLayer(
+          m_rasterInfoPage->getWidget()->getType(), 
+          m_rasterInfoPage->getWidget()->getInfo(singleGeometriesPtrsIdx)));
+      }
     }
   }
-
+  
+  //set output layer ( for single output raster mode )
+  
+  if( m_clippingPage->isSingleRasterResult() )
+  {
+    m_outputLayer.push_back(te::qt::widgets::createLayer(
+      m_rasterInfoPage->getWidget()->getType(), 
+      m_rasterInfoPage->getWidget()->getInfo()));  
+  }
+  
   return true;
 }
 

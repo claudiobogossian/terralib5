@@ -45,10 +45,11 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, QObject* parent)
+te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, Qt::MouseButton sideToClose, bool validatePolygon, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
+    m_validatePolygon(validatePolygon),
     m_sideToClose(sideToClose),
     m_stack(UndoStackManager::getInstance())
 {
@@ -59,13 +60,6 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 
 te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
-  if (m_feature)
-  {
-    RepositoryManager& repo = RepositoryManager::getInstance();
-
-    if (repo.hasIdentify(m_layer->getId(), m_feature->getId()) == false)
-      storeFeature();
-  }
 }
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
@@ -86,6 +80,9 @@ bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
   TrySnap(coord, m_display->getSRID());
 
   m_coords.push_back(coord);
+
+  if (!validPolygon())
+    return false;
 
   storeUndoCommand();
 
@@ -114,6 +111,9 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
   {
     m_continuousMode = true;
 
+    if (!validPolygon())
+      return false;
+
     storeUndoCommand();
   }
   else
@@ -126,10 +126,7 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  if (m_sideToClose != Qt::LeftButton)
-    return false;
-
-  if (e->button() != Qt::LeftButton)
+  if (m_sideToClose != Qt::LeftButton || Qt::LeftButton != e->button())
     return false;
 
   if(m_coords.size() < 3) // Can not stop yet...
@@ -144,10 +141,7 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 bool te::edit::CreatePolygonTool::mouseReleaseEvent(QMouseEvent* e)
 {
-  if (m_sideToClose != Qt::RightButton)
-    return false;
-
-  if (e->button() != Qt::RightButton)
+  if (m_sideToClose != Qt::RightButton || Qt::RightButton != e->button())
     return false;
 
   if (m_coords.size() < 3) // Can not stop yet...
@@ -323,4 +317,21 @@ void te::edit::CreatePolygonTool::onUndoFeedback(std::vector<te::gm::Coord2D> co
 void te::edit::CreatePolygonTool::resetVisualizationTool()
 {
   clear();
+}
+
+bool te::edit::CreatePolygonTool::validPolygon()
+{
+  if (!m_validatePolygon)
+    return true;
+
+  if (m_coords.size() > 3)
+  {
+    if (!buildPolygon()->isValid())
+    {
+      m_coords.pop_back();
+      return false;
+    }
+  }
+
+  return true;
 }

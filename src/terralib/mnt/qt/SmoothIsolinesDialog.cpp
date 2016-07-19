@@ -43,6 +43,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../raster.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
+#include "LayerSearchDialog.h"
 #include "SmoothIsolinesDialog.h"
 #include "ui_SmoothIsolinesDialogForm.h"
 
@@ -66,6 +67,7 @@ te::mnt::SmoothIsolinesDialog::SmoothIsolinesDialog(QWidget* parent, Qt::WindowF
   m_ui->setupUi(this);
 
   //signals
+  connect(m_ui->m_layerSearchToolButton, SIGNAL(clicked()), this, SLOT(onInputLayerToolButtonClicked()));
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputComboBoxChanged(int)));
 
   connect(m_ui->m_scalePushButton, SIGNAL(clicked()), this, SLOT(onScalePushButtonClicked()));
@@ -101,25 +103,33 @@ void te::mnt::SmoothIsolinesDialog::setLayers(std::list<te::map::AbstractLayerPt
       if (it->get()->isValid())
       {
         std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-        if (dsType.get())
-        {
-          if (dsType->hasGeom())
-          {
-            std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-            te::gm::GeomType gmType = geomProp->getGeometryType();
-            if (gmType == te::gm::LineStringType || gmType == te::gm::LineStringZType || gmType == te::gm::LineStringMType ||
-              gmType == te::gm::LineStringZMType || gmType == te::gm::MultiLineStringType || gmType == te::gm::MultiLineStringZType ||
-              gmType == te::gm::MultiLineStringMType || gmType == te::gm::MultiLineStringZMType)
-            {
-              m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-            }
-          }
-          dsType.release();
-        }
+        mntType type = getMNTType(dsType.get());
+
+        if (type == ISOLINE)
+          m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+
+        dsType.release();
       }
     }
     ++it;
   }
+}
+
+void te::mnt::SmoothIsolinesDialog::onInputLayerToolButtonClicked()
+{
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types.append(ISOLINE);
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_layersComboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
 }
 
 void te::mnt::SmoothIsolinesDialog::onInputComboBoxChanged(int index)

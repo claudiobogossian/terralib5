@@ -68,6 +68,7 @@ namespace te
 
       protected slots:
 
+      void onInputLayerToolButtonClicked();
       void onInputComboBoxChanged(int index);
       void onScalePushButtonClicked();
       void onTargetDatasourceToolButtonPressed();

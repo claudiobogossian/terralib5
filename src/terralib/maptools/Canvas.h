@@ -27,7 +27,6 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_CANVAS_H
 
 // TerraLib
-#include "../annotationtext/Enums.h"
 #include "../color/RGBAColor.h"
 #include "../se/Font.h"
 #include "Config.h"

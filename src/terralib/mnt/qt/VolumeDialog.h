@@ -66,8 +66,10 @@ namespace te
 
       protected slots:
 
+      void onInputRasterToolButtonClicked();
       void onRasterInputComboBoxChanged(int index);
       void onDummyLineEditEditingFinished();
+      void onInputVectorToolButtonClicked();
       void onVectorInputComboBoxChanged(int index);
       void onHelpPushButtonClicked();
       void onOkPushButtonClicked();

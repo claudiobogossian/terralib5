@@ -22,7 +22,7 @@
  */
 
 #include "../core/translator/Translator.h"
-#include "../common/Logger.h"
+#include "../core/logger/Logger.h"
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
@@ -143,7 +143,7 @@ bool te::vp::Intersection::executeMemory(te::vp::AlgorithmParams* mainParams)
       if (!resultingGeometry || !resultingGeometry->isValid())
       {
 #ifdef TERRALIB_LOGGER_ENABLED
-        te::common::Logger::logDebug("vp", "Intersection - Invalid geometry found");
+        TE_CORE_LOG_DEBUG("vp", "Intersection - Invalid geometry found");
 #endif //TERRALIB_LOGGER_ENABLED
         continue;
       }

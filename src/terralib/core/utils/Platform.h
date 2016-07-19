@@ -31,7 +31,7 @@
 #define __TERRALIB_CORE_UTILS_PLATFORM_H__
 
 // TerraLib
-#include "Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -59,6 +59,19 @@ namespace te
         */
         TECOREEXPORT std::string GetUserDirectory();
 
+        /*!
+          \brief It returns the folder location to store per user data.
+
+          \return The folder location to store per user data.
+         */
+        TECOREEXPORT std::string GetUserDataPath();
+
+        /*!
+          \brief It returns the folder location to store application data applied to all users.
+
+          \return The folder location to store application data applied to all users.
+         */
+        TECOREEXPORT std::string GetAllUsersDataPath();
 
   }  // end namespace core
 }    // end namespace te

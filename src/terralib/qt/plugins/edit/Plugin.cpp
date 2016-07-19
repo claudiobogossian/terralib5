@@ -26,7 +26,8 @@
 // TerraLib
 #include "../../../common/Config.h"
 #include "../../../core/translator/Translator.h"
-#include "../../../common/Logger.h"
+#include "../../../core/logger/Logger.h"
+#include "../../../edit/SnapManager.h"
 #include "../../../edit/qt/Renderer.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../af/ApplicationController.h"
@@ -91,8 +92,7 @@ te::map::AbstractLayer* GetSelectedLayer(QTreeView* view)
 te::qt::plugins::edit::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : QObject(),
   te::plugin::Plugin(pluginInfo),
-    m_toolbar(0),
-    m_menu(0)
+    m_toolbar(0)
 {
 }
 
@@ -116,26 +116,19 @@ void te::qt::plugins::edit::Plugin::startup()
 
   connect(m_toolbar, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   connect(m_toolbar, SIGNAL(stashed(te::map::AbstractLayer*)), SLOT(onStashedLayer(te::map::AbstractLayer*)));
-
   connect(m_toolbar, SIGNAL(geometriesEdited()), SLOT(onGeometriesChanged()));
 
   // Get plugins menu
   QMenu* pluginsMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Plugins");
 
-  // Create the main menu
-  m_menu = new QMenu(pluginsMenu);
-  m_menu->setTitle(TE_TR("Edit"));
-  m_menu->setIcon(QIcon::fromTheme("layer-edit"));
-
   // Insert menu before plugins last action
-  QAction* lastAction = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
-  /* Only use for testing!
-  pluginsMenu->insertMenu(lastAction, m_menu);
-  */
-  m_action = new QAction(m_menu);
-  m_action->setText(TE_TR("Tools"));
-  m_action->setIcon(QIcon::fromTheme("edit_tools"));
-  m_menu->addAction(m_action);
+  m_action = new QAction(this);
+  m_action->setText(tr("&Edition"));
+  m_action->setIcon(QIcon::fromTheme("layer-edit"));
+
+  ///* Only use for testing!
+  //pluginsMenu->addAction(m_action);
+  //*/
 
   connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
@@ -155,8 +148,6 @@ void te::qt::plugins::edit::Plugin::shutdown()
     return;
 
   updateDelegate(false);
-
-  delete m_menu;
 
   TE_LOG_TRACE(TE_TR("TerraLib Edit Qt Plugin shutdown!"));
 
@@ -248,6 +239,9 @@ void te::qt::plugins::edit::Plugin::drawStashed()
   
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
+
+  const te::gm::Envelope& env = e.m_display->getDisplay()->getExtent();
+  te::edit::SnapManager::getInstance().setWorld(env.m_llx, env.m_lly, env.m_urx, env.m_ury, e.m_display->getDisplay()->getWidth(), e.m_display->getDisplay()->getHeight());
 
   // Initialize the renderer
   te::qt::widgets::MapDisplay* display = e.m_display->getDisplay();
