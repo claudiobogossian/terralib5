@@ -44,8 +44,11 @@ te::se::Font::Font()
   sm_fontStyleMap[te::se::Font::StyleOblique] = "oblique";
   
   // FontWeightType
+  sm_fontWeightMap[te::se::Font::WeightLight] = "light";
   sm_fontWeightMap[te::se::Font::WeightNormal]  = "normal";
+  sm_fontWeightMap[te::se::Font::WeightDemiBold] = "demibold";
   sm_fontWeightMap[te::se::Font::WeightBold]    = "bold";
+  sm_fontWeightMap[te::se::Font::WeightBlack] = "black";
 }
 
 te::se::Font::~Font()

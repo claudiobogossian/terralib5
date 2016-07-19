@@ -45,13 +45,24 @@
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/Line.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Polygon.h"
+#include "../geometry/Utils.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterProperty.h"
-#include "../se/FeatureTypeStyle.h"
+#include "../se/AnchorPoint.h"
 #include "../se/CoverageStyle.h"
+#include "../se/Displacement.h"
+#include "../se/Fill.h"
+#include "../se/FeatureTypeStyle.h"
+#include "../se/Halo.h"
+#include "../se/LabelPlacement.h"
+#include "../se/LinePlacement.h"
+#include "../se/ParameterValue.h"
+#include "../se/PointPlacement.h"
 #include "../se/Rule.h"
+#include "../se/TextSymbolizer.h"
 #include "../se/Utils.h"
 #include "../srs/Config.h"
 #include "AbstractLayer.h"
@@ -349,17 +360,25 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       // Let's config the canvas based on the current symbolizer
       cc.config(symb);
 
-      // Let's draw! for each data set geometry...
-      if(j != nSymbolizers - 1)
-        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, cancel, &task);
+      if (symb->getType() == "TextSymbolizer")
+      {
+        te::se::TextSymbolizer* ts = static_cast<te::se::TextSymbolizer*>(symb);
+
+        drawDatSetTexts(dataset.get(), gpos, canvas, layer->getSRID(), srid, ts, cancel, &task);
+      }
       else
-        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), cancel, &task); // Here, produces the chart if exists
+      {
+        // Let's draw! for each data set geometry...
+        if (j != nSymbolizers - 1)
+          drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, cancel, &task);
+        else
+          drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), cancel, &task); // Here, produces the chart if exists
+      }
 
       // Prepares to draw the other symbolizer
       dataset->moveFirst();
 
     } // end for each <Symbolizer>
-
   }   // end for each <Rule>
 }
 
@@ -780,6 +799,174 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
 
     te::common::Free(m_chartImages[i], chart->getHeight());
   }
+}
+
+void te::map::AbstractLayerRenderer::drawDatSetTexts(te::da::DataSet* dataset, const std::size_t& gpos, Canvas* canvas, int fromSRID, int toSRID, te::se::TextSymbolizer* symb, bool* cancel, te::common::TaskProgress* task)
+{
+  assert(dataset);
+  assert(canvas);
+  assert(symb);
+
+  // Verify if is necessary convert the data set geometries to the given srid
+  bool needRemap = false;
+  if ((fromSRID != TE_UNKNOWN_SRS) && (toSRID != TE_UNKNOWN_SRS) && (fromSRID != toSRID))
+    needRemap = true;
+
+  std::string propName = te::se::GetString(symb->getLabel());
+
+  if (propName.empty())
+    return;
+
+  int propIdx = te::da::GetPropertyIndex(dataset, propName);
+
+  //rtree for text boxes
+  te::sam::rtree::Index<std::size_t, 4> rtree;
+
+  do
+  {
+    if (task)
+    {
+      if (!task->isActive())
+      {
+        *cancel = true;
+        return;
+      }
+
+      // update the draw task
+      task->pulse();
+    }
+
+    std::auto_ptr<te::gm::Geometry> geom(0);
+    try
+    {
+      geom = dataset->getGeometry(gpos);
+      if (geom.get() == 0)
+        continue;
+    }
+    catch (std::exception& /*e*/)
+    {
+      continue;
+    }
+
+    // If necessary, geometry remap
+    if (needRemap)
+    {
+      geom->setSRID(fromSRID);
+      geom->transform(toSRID);
+    }
+
+    std::string label = dataset->getString(propIdx);
+
+    if (label == "")
+      continue;
+
+    //initial position
+    te::gm::Coord2D cCenter = te::gm::GetCentroid(geom.get());
+    double posX = cCenter.getX();
+    double posY = cCenter.getY();
+
+    //rotation
+    float angle = 0.0;
+
+    //displacement
+    double anchorX = 0.5;
+    double anchorY = 0.5;
+    int displacementX = 0;
+    int displacementY = 0;
+
+    if (symb->getLabelPlacement())
+    {
+      if (symb->getLabelPlacement()->getPointPlacement())
+      {
+        const te::se::PointPlacement* pp = symb->getLabelPlacement()->getPointPlacement();
+
+        if (pp->getRotation())
+          angle = te::se::GetDouble(pp->getRotation());
+
+        if (pp->getAnchorPoint())
+        {
+          anchorX = te::se::GetDouble(pp->getAnchorPoint()->getAnchorPointX());
+          anchorY = te::se::GetDouble(pp->getAnchorPoint()->getAnchorPointY());
+        }
+
+        if (pp->getDisplacement())
+        {
+          displacementX = te::se::GetInt(pp->getDisplacement()->getDisplacementX());
+          displacementY = te::se::GetInt(pp->getDisplacement()->getDisplacementY());
+        }
+      }
+
+      if (symb->getLabelPlacement()->getLinePlacement())
+      {
+        //adjust centroid over the line
+        if (geom->getGeomTypeId() == te::gm::GeomType::MultiLineStringType ||
+            geom->getGeomTypeId() == te::gm::GeomType::LineStringType)
+        {
+          std::auto_ptr<te::gm::Point> point(new te::gm::Point(cCenter.x, cCenter.y, geom->getSRID()));
+          te::gm::Coord2D coordGeom, coordPoint;
+          te::gm::ClosestPoints(geom.get(), point.get(), coordGeom, coordPoint);
+
+          posX = coordGeom.getX();
+          posY = coordGeom.getY();
+        }
+
+        //adjust label over the line
+        if (symb->getLabelPlacement()->getLinePlacement()->isAligned())
+        {
+          te::gm::Coord2D coord(posX, posY);
+          std::auto_ptr<te::gm::Line> line(te::gm::GetIntersectionLine(geom.get(), coord));
+
+          if (line.get())
+          {
+            te::gm::Coord2D cStart(line->getStartPoint()->getX(), line->getStartPoint()->getY());
+            te::gm::Coord2D cEnd(line->getEndPoint()->getX(), line->getEndPoint()->getY());
+            angle = te::gm::GetAngle(cStart, cEnd);
+            angle = -angle;
+
+            //set perpendicular distance
+            if (symb->getLabelPlacement()->getLinePlacement()->getPerpendicularOffset())
+            {
+              double dist = te::se::GetDouble(symb->getLabelPlacement()->getLinePlacement()->getPerpendicularOffset());
+
+              //rotate line
+              std::auto_ptr<te::gm::LineString> lineRotate(new te::gm::LineString(2, te::gm::LineStringType, geom->getSRID()));
+              te::gm::Coord2D centroidCoord(posX, posY);
+              te::gm::Rotate(centroidCoord, line.get(), 90., lineRotate.get());
+              
+              //adjust segment
+              std::auto_ptr<te::gm::Point> p0(dynamic_cast<te::gm::Point*>(lineRotate->intersection(line.get())));
+              std::auto_ptr<te::gm::Point> p1(lineRotate->getPointN(1));
+              te::gm::Coord2D c0, c1;
+              te::gm::AdjustSegment(p0.get(), p1.get(), dist, c0, c1);
+
+              //set new point to start drawing text
+              posX = c1.getX();
+              posY = c1.getY();
+            }
+          }
+        }
+      }
+    }
+
+    std::auto_ptr<te::gm::Polygon> poly(canvas->getTextBoundary(posX, posY, label, angle, anchorX, anchorY, displacementX, displacementY));
+
+    te::gm::Envelope mbr(*poly->getMBR());
+
+    //check rtree to avoid text overlay
+    std::vector<std::size_t> report;
+    rtree.search(mbr, report);
+
+    if (report.empty())
+    {
+      canvas->drawText(posX, posY, label, angle, anchorX, anchorY, displacementX, displacementY);
+
+      rtree.insert(mbr, 0);
+    }
+
+    if (cancel != 0 && (*cancel))
+      return;
+
+  } while (dataset->moveNext()); // next geometry!
 }
 
 void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom)

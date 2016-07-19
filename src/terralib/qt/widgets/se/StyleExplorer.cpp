@@ -48,6 +48,7 @@ te::qt::widgets::StyleExplorer::StyleExplorer(QWidget* parent)
   m_symbolizerNames["LineSymbolizer"] = tr("Line Symbol");
   m_symbolizerNames["PointSymbolizer"] = tr("Point Symbol");
   m_symbolizerNames["RasterSymbolizer"] = tr("Raster Symbol");
+  m_symbolizerNames["TextSymbolizer"] = tr("Text Symbol");
 
   // Signals & slots
   connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));

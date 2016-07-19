@@ -24,12 +24,19 @@
 */
 
 // TerraLib
+#include "../../../geometry/Envelope.h"
 #include "../../../geometry/Polygon.h"
 #include "../../../geometry/LinearRing.h"
 #include "../../../geometry/Point.h"
 #include "../../../maptools/CanvasConfigurer.h"
+#include "../../../se/AnchorPoint.h"
+#include "../../../se/Displacement.h"
+#include "../../../se/LabelPlacement.h"
+#include "../../../se/PointPlacement.h"
 #include "../../../se/Rule.h"
 #include "../../../se/Symbolizer.h"
+#include "../../../se/TextSymbolizer.h"
+#include "../../../se/Utils.h"
 #include "../canvas/Canvas.h"
 #include "SymbologyPreview.h"
 #include "Symbol.h"
@@ -72,6 +79,12 @@ QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Symbolizer* symb,
   {
     QIcon raster = QIcon::fromTheme("raster-symbolizer");
     return raster.pixmap(size);
+  }
+  else if (symb->getType() == "TextSymbolizer")
+  {
+    QPixmap result = buildText(symb, size);
+
+    return result;
   }
 
   QPixmap result = build(symb, geom, size);
@@ -125,6 +138,61 @@ QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Symbolizer* symb,
 
   // Let's draw!
   canvas.draw(geom);
+
+  return *canvas.getPixmap();
+}
+
+QPixmap te::qt::widgets::SymbologyPreview::buildText(const te::se::Symbolizer* symb, const QSize& size)
+{
+  assert(symb);
+
+  if (symb->getType() != "TextSymbolizer")
+    return QPixmap();
+
+  assert(!size.isEmpty());
+
+  // Creating a canvas...
+  te::qt::widgets::Canvas canvas(size.width(), size.height());
+  canvas.setWindow(0.0, size.height(), size.width(), 0);
+  canvas.setBackgroundColor(te::color::RGBAColor(0, 0, 255, TE_TRANSPARENT));
+
+  // Configuring...
+  te::map::CanvasConfigurer cc(&canvas);
+  cc.config(symb);
+
+  // Let's draw!
+  double posX = size.width() / 2.;
+  double posY = size.height() / 2.;
+
+  float angle = 0.0;
+  double anchorX = 0.5;
+  double anchorY = 0.5;
+  int displacementX = 0;
+  int displacementY = 0;
+
+  const te::se::TextSymbolizer* ts = dynamic_cast<const te::se::TextSymbolizer*>(symb);
+
+  if (ts && ts->getLabelPlacement() && ts->getLabelPlacement()->getPointPlacement())
+  {
+    const te::se::PointPlacement* pp = ts->getLabelPlacement()->getPointPlacement();
+
+    if (pp->getRotation())
+      angle = te::se::GetDouble(pp->getRotation());
+
+    if (pp->getAnchorPoint())
+    {
+      anchorX = te::se::GetDouble(pp->getAnchorPoint()->getAnchorPointX());
+      anchorY = te::se::GetDouble(pp->getAnchorPoint()->getAnchorPointY());
+    }
+
+    if (pp->getDisplacement())
+    {
+      displacementX = te::se::GetInt(pp->getDisplacement()->getDisplacementX());
+      displacementY = te::se::GetInt(pp->getDisplacement()->getDisplacementY());
+    }
+  }
+
+  canvas.drawText(posX, posY, "ABC", angle, anchorX, anchorY, displacementX, displacementY);
 
   return *canvas.getPixmap();
 }

@@ -109,6 +109,16 @@ namespace te
           static QPixmap build(const te::se::Symbolizer* symb, const te::gm::Geometry* geom, const QSize& size);
 
           /*!
+          \brief Generates the preview of given text symbolizer element.
+
+          \param symb A valid symbolizer element.
+          \param size The preview size.
+
+          \return A pixmap that represents the result of symbolizer preview.
+          */
+          static QPixmap buildText(const te::se::Symbolizer* symb, const QSize& size);
+
+          /*!
             \brief Generates the preview of a set of symbolizers elements.
 
             \param symbs A set of symbolizers elements.
