@@ -153,6 +153,8 @@ c) Type "cpack -G RPM" to build an RPM binary install package.
 
 d) Type "make package_source" to build a source Tar.Gz file.
 
+e) Type "make terralib_doxygen" to build the doxygen documentation (it will be saved under the sub-directory "terralib_doxygen/doc/html/").
+
 5. Tests
 --------
 
