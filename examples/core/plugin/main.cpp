@@ -27,45 +27,52 @@
 */
 
 // TerraLib
-#include <terralib/core/plugin/DefaultFinders.h>
-#include <terralib/core/plugin/CppPluginEngine.h>
-#include <terralib/core/plugin/PluginEngineManager.h>
-#include <terralib/core/plugin/PluginManager.h>
+#include <terralib/core/plugin.h>
+#include <terralib/core/utils.h>
 
 // STL
 #include <cstdlib>
 
+void InitPluginSystem()
+{
+// prepare PluginEngineManager with all known plugin engines.
+  std::unique_ptr < te::core::AbstractPluginEngine > cppengine(new te::core::CppPluginEngine());
+  
+  te::core::PluginEngineManager::instance().insert(std::move(cppengine));
+}
+
 int main(int argc, char *argv[])
 {
-  // Load all the config files for the plugins that are in the default path.
-  std::vector< te::core::PluginInfo > v_pinfo = te::core::DefaultPluginFinder();
-
-  // Create unique_ptr for a AbstractPluginEngine. In this case is a CppPluginEngine
-  std::unique_ptr < te::core::AbstractPluginEngine > cppengine(new te::core::CppPluginEngine());
-
-  // Insert the CppPluginEngine to the PluginEngineManager
-  te::core::PluginEngineManager::instance().insert(std::move(cppengine));
-
-  // Insert all the plugins stored in the vector from a given PluginInfo.
-  for(const te::core::PluginInfo& pinfo: v_pinfo)
-  {
-    te::core::PluginManager::instance().insert(pinfo);
-  }
-
-  // Get all the names for the available plugins
-  std::vector< std::string > v_plugins = te::core::PluginManager::instance().getPlugins();
-
-  // Load all the plugins
-  for(const std::string& plugin: v_plugins)
-  {
-    te::core::PluginManager::instance().load(plugin);
-  }
-
-  // Unload all the plugins
-  for(const std::string& plugin: v_plugins)
-  {
-    te::core::PluginManager::instance().unload(plugin);
-  }
+  InitPluginSystem();
+  
+// plugins will be loaded with C++ plugin engine
+  te::core::AbstractPluginEngine& plugin_engine = te::core::PluginEngineManager::instance().get("C++");
+  
+// find fisrt plugin manifest file, read the manifest, load plugin and start it
+  std::string p1_manifest_file = te::core::FindInTerraLibPath("share/terralib/plugins/plugin1.teplg.json");
+  
+  te::core::PluginInfo p1_info = te::core::JSONPluginInfoSerializer(p1_manifest_file);
+  
+  std::unique_ptr<te::core::AbstractPlugin> p1(plugin_engine.load(p1_info));
+  
+  p1->startup();
+  
+  
+// find second plugin manifest file, read the manifest, load plugin and start it
+  std::string p2_manifest_file = te::core::FindInTerraLibPath("share/terralib/plugins/plugin2.teplg.json");
+  
+  te::core::PluginInfo p2_info = te::core::JSONPluginInfoSerializer(p2_manifest_file);
+  
+  std::unique_ptr<te::core::AbstractPlugin> p2(plugin_engine.load(p2_info));
+  
+  p2->startup();
+  
+// stop all plugins and unload them
+  p2->shutdown();
+  plugin_engine.unload(std::move(p2));
+  
+  p1->shutdown();
+  plugin_engine.unload(std::move(p1));
 
   return EXIT_SUCCESS;
 }
