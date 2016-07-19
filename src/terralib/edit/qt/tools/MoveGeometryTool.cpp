@@ -79,12 +79,16 @@ bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
       std::auto_ptr<te::da::DataSet> ds(m_layer->getData(m_layer->getSelected()));
       std::size_t gpos = te::da::GetFirstSpatialPropertyPos(ds.get());
 
+      std::vector<std::string> oidPropertyNames;
+      te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
+
       if (!m_vecFeature.size())
       { 
         ds->moveBeforeFirst();
         while (ds->moveNext())
         {
-          m_feature = PickFeature(m_layer, *ds->getGeometry(gpos)->getMBR(), m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+          std::auto_ptr<te::gm::Geometry> g(ds->getGeometry(gpos));
+          m_feature = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), g.release(), te::edit::GEOMETRY_UPDATE);
           if (m_feature)
           {
             m_vecFeature.push_back(m_feature->clone());

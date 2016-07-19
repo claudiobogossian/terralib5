@@ -251,17 +251,14 @@ void te::edit::SplitPolygonTool::pickFeatures()
 
     m_vecFeature.clear();
 
+    ds->moveBeforeFirst();
     while (ds->moveNext())
     {
-      Feature* f = te::edit::PickFeature(m_layer, *ds->getGeometry(gpos)->getMBR(), m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+      std::auto_ptr<te::gm::Geometry> g(ds->getGeometry(gpos));
 
-      f->getGeometry()->setSRID(m_display->getSRID());
-
-      if (f->getGeometry()->getSRID() != m_layer->getSRID())
-        f->getGeometry()->transform(m_layer->getSRID());
-
+      Feature* f = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), g.release(), te::edit::GEOMETRY_UPDATE);
+      
       m_vecFeature.push_back(f);
-
       RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
     }
 
