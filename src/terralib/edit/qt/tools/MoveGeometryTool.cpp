@@ -48,8 +48,9 @@
 #include <cassert>
 #include <memory>
 
-te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, bool rightButtonToSave, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
+    m_rightButtonToSave(rightButtonToSave),
     m_selected(false),
     m_moveStarted(false),
     m_vecFeature(0),
@@ -133,14 +134,25 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 {
+  if (e->button() == Qt::RightButton && m_rightButtonToSave)
+    emit geometriesEdited();
+
   if (e->button() != Qt::LeftButton)
     return false;
 
   m_moveStarted = false;
 
+  if (m_delta == QPointF(0., 0.))
+    return false;
+
   storeFeature();
 
   storeUndoCommand();
+
+  if (!m_rightButtonToSave)
+    emit geometriesEdited();
+  else
+    draw();
 
   return false;
 }
@@ -219,6 +231,13 @@ void te::edit::MoveGeometryTool::draw()
     return;
   }
 
+  if (m_delta == QPointF(0., 0.))
+  {
+    renderer.end();
+    m_display->repaint();
+    return;
+  }
+
   for (std::size_t i = 0; i < m_vecFeature.size(); i++)
   { 
     // Draw the vertexes
@@ -249,17 +268,13 @@ void te::edit::MoveGeometryTool::storeFeature()
     return;
 
   for (std::size_t i = 0; i < m_vecFeature.size(); i++)
-      RepositoryManager::getInstance().addFeature(m_layer->getId(), m_vecFeature[i]->clone());
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), m_vecFeature[i]->clone());
 
-  emit geometriesEdited();
 }
 
 void te::edit::MoveGeometryTool::storeUndoCommand()
 {
   if (!m_vecFeature.size())
-    return;
-
-  if (m_delta == QPointF(0., 0.))
     return;
 
   for (std::size_t i = 0; i < m_vecFeature.size(); i++)
@@ -273,7 +288,7 @@ void te::edit::MoveGeometryTool::storeUndoCommand()
 
 void te::edit::MoveGeometryTool::resetVisualizationTool()
 {
-  delete m_feature;
+  m_feature = 0;
 
   te::common::FreeContents(m_vecFeature);
   m_vecFeature.clear();

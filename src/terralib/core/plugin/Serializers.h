@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file terralib/core/plugin/DefaultSerializers.h
+  \file terralib/core/plugin/Serializers.h
 
   \brief General utilities for serializing plugin information.
 
@@ -27,8 +27,8 @@
   \author Matheus Cavassan Zaglia
  */
 
-#ifndef __TERRALIB_CORE_PLUGIN_DEFAULTSERIALIZERS_H__
-#define __TERRALIB_CORE_PLUGIN_DEFAULTSERIALIZERS_H__
+#ifndef __TERRALIB_CORE_PLUGIN_SERIALIZERS_H__
+#define __TERRALIB_CORE_PLUGIN_SERIALIZERS_H__
 
 // TerraLib
 #include "../Config.h"
@@ -45,4 +45,4 @@ namespace te
   } // end namespace core
 }   // end namespace te
 
-#endif  // __TERRALIB_CORE_PLUGIN_DEFAULTSERIALIZERS_H__
+#endif  // __TERRALIB_CORE_PLUGIN_SERIALIZERS_H__

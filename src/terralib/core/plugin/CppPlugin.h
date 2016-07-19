@@ -85,7 +85,7 @@ class plugin_class_name : public te::core::CppPlugin \
   public: \
 \
     plugin_class_name(const te::core::PluginInfo& pinfo) \
-      : CppPlugin(pinfo) \
+      : te::core::CppPlugin(pinfo) \
     { \
     }
 

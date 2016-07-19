@@ -19,22 +19,23 @@
  */
 
 /*!
-  \file terralib/examples/core/plugin/Plugin1.h
+  \file terralib/core/plugin.h
 
-  \brief Examples for the Terralib Plugin Module
-
-  \author Matheus Cavassan Zaglia
+  \brief Include files for Core Plugin Library.
 */
 
-// TerraLib
-#include <terralib/core/plugin/CppPlugin.h>
-// STL
-#include <iostream>
+#ifndef __TERRALIB_CORE_PLUGIN_H__
+#define __TERRALIB_CORE_PLUGIN_H__
 
-TERRALIB_CPP_PLUGIN_BEGIN(Plugin1)
+// TerraLIb
+#include "plugin/AbstractPlugin.h"
+#include "plugin/AbstractPluginEngine.h"
+#include "plugin/CppPlugin.h"
+#include "plugin/CppPluginEngine.h"
+#include "plugin/Exception.h"
+#include "plugin/Finders.h"
+#include "plugin/PluginEngineManager.h"
+#include "plugin/PluginInfo.h"
+#include "plugin/Serializers.h"
 
-TERRALIB_CPP_PLUGIN_STARTUP;
-TERRALIB_CPP_PLUGIN_SHUTDOWN;
-
-TERRALIB_CPP_PLUGIN_END
-
+#endif // __TERRALIB_CORE_PLUGIN_H__

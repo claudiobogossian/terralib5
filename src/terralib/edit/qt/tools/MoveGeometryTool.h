@@ -82,7 +82,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject *parent = 0);
+        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, bool rightButtonToSave = false, QObject *parent = 0);
         /*! \brief Destructor. */
         ~MoveGeometryTool();
 
@@ -125,6 +125,7 @@ namespace te
 
       protected:
 
+        bool m_rightButtonToSave;
         bool m_selected;
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.

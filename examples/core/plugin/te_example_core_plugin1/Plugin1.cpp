@@ -19,25 +19,31 @@
  */
 
 /*!
-  \file terralib/examples/core/plugin/Plugin1.cpp
+  \file terralib/examples/core/plugin/terralib_example_core_plugin1/Plugin1.cpp
 
-  \brief Examples for the Terralib Plugin Module
+  \brief Example of a C++ Library that will be loaded as a plugin.
 
   \author Matheus Cavassan Zaglia
 */
-#include "Plugin1.h"
 
-void Plugin1::startup()
+// TerraLib
+#include <terralib/core/plugin/CppPlugin.h>
+
+// STL
+#include <iostream>
+
+TERRALIB_CPP_PLUGIN_BEGIN(Plugin1)
+
+TERRALIB_CPP_PLUGIN_STARTUP
 {
   std::cout << "Plugin1 startup" << std::endl;
 }
 
-void Plugin1::shutdown()
+TERRALIB_CPP_PLUGIN_SHUTDOWN
 {
   std::cout << "Plugin1 shutdown" << std::endl;
 }
 
-
+TERRALIB_CPP_PLUGIN_END
+  
 TERRALIB_PLUGIN_CALL_BACK_IMPL(Plugin1)
-
-

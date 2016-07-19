@@ -19,7 +19,7 @@
  */
 
 /*!
-  \file terralib/core/plugin/DefaultFinders.h
+  \file terralib/core/plugin/Finders.h
 
   \brief General utilities for searching for plugins.
 
@@ -27,8 +27,8 @@
   \author Matheus Cavassan Zaglia
  */
 
-#ifndef __TERRALIB_CORE_PLUGIN_DEFAULTFINDERS_H__
-#define __TERRALIB_CORE_PLUGIN_DEFAULTFINDERS_H__
+#ifndef __TERRALIB_CORE_PLUGIN_FINDERS_H__
+#define __TERRALIB_CORE_PLUGIN_FINDERS_H__
 
 // TerraLib
 #include "../Config.h"
@@ -49,4 +49,4 @@ namespace te
   } // end namespace core
 }   // end namespace te
 
-#endif  // __TERRALIB_CORE_PLUGIN_DEFAULTFINDERS_H__
+#endif  // __TERRALIB_CORE_PLUGIN_FINDERS_H__

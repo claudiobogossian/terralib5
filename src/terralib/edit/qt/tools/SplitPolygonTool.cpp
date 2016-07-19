@@ -66,6 +66,8 @@ te::edit::SplitPolygonTool::~SplitPolygonTool()
 
   if (m_oidSet)
     m_oidSet = 0;
+
+  m_layer->clearSelected();
 }
 
 bool te::edit::SplitPolygonTool::mousePressEvent(QMouseEvent* e)
@@ -125,8 +127,11 @@ void te::edit::SplitPolygonTool::startSplit()
 
   for (std::size_t i = 0; i < m_vecFeature.size(); i++)
   {
-    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_vecFeature[i]->getId());
-    splitPolygon(i);
+    if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_vecFeature[i]->getId()))
+    {
+      RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_vecFeature[i]->getId());
+      splitPolygon(i);
+    }
   }
 
   te::edit::CreateLineTool::clear();
@@ -230,6 +235,7 @@ void te::edit::SplitPolygonTool::resetVisualizationTool()
   }
 
   te::edit::CreateLineTool::clear();
+  m_isFinished = true;
   m_oidSet = 0;
 }
 

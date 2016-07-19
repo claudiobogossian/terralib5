@@ -28,7 +28,7 @@
  */
 
 // TerraLib
-#include "DefaultSerializers.h"
+#include "Serializers.h"
 #include "Exception.h"
 
 // Boost

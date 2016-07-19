@@ -34,16 +34,14 @@
 #include <cassert>
 
 te::edit::Feature::Feature()
-  : m_geom(0),
-    m_operationType(OperationType::GEOMETRY_CREATE)
+  : m_geom(0)
 {
   m_id = GenerateId();
 }
 
 te::edit::Feature::Feature(te::da::ObjectId* id)
   : m_id(id),
-    m_geom(0),
-    m_operationType(OperationType::GEOMETRY_CREATE)
+    m_geom(0)
 {
   assert(m_id);
 }

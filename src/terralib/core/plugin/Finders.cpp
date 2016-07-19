@@ -19,19 +19,19 @@
  */
 
 /*!
-  \file terralib/core/plugin/PluginFinderManager.cpp
+  \file terralib/core/plugin/Finders.cpp
 
-  \brief A singleton that can be used to register plugin finders.
+  \brief General utilities for searching for plugins.
 
   \author Gilberto Ribeiro de Queiroz
   \author Matheus Cavassan Zaglia
  */
 
 // TerraLib
-#include "DefaultFinders.h"
+#include "Finders.h"
 #include "../utils/Platform.h"
 #include "Exception.h"
-#include "DefaultSerializers.h"
+#include "Serializers.h"
 
 
 // Boost
