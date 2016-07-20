@@ -230,6 +230,19 @@ void te::mnt::ProfileDialog::release()
 
 void te::mnt::ProfileDialog::onInputLayerToolButtonClicked()
 {
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types << TIN << GRID << ISOLINE;
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_inputLayersComboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
 }
 
 void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
