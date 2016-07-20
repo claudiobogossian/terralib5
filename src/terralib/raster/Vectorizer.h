@@ -26,15 +26,7 @@
 #ifndef __TERRALIB_RASTER_INTERNAL_VECTORIZER_H
 #define __TERRALIB_RASTER_INTERNAL_VECTORIZER_H
 
-// The 8 cardinals directions used by vectorize method
-#define NORTHWEST 0
-#define NORTH     1
-#define NORTHEAST 2
-#define EAST      3
-#define SOUTHEAST 4
-#define SOUTH     5
-#define SOUTHWEST 6
-#define WEST      7
+
 
 // TerraLib
 #include "../geometry/Coord2D.h"
@@ -79,8 +71,9 @@ namespace te
           \param r      The input raster.
           \param b      The selected band of the raster to be vectorized.
           \param mp     The maximum allowed number of polygons to be created (default = 0, unlimited).
+          \param noDataExclusion If true, regions with no-data pixels will not generate geometries.
         */
-        Vectorizer(Raster* r, std::size_t b, unsigned int mp = 0);
+        Vectorizer(Raster* r, std::size_t b, unsigned int mp = 0, const bool noDataExclusion = true );
 
         /*!
           \brief Copy constructor.
@@ -127,13 +120,13 @@ namespace te
         /*!
           \brief Detects an edge of a cell in Raster.
 
-          \param i abscissa (column) of the upper-left point of the shape
-          \param j ordinate (line) of the upper-left point of the shape
+          \param segmentInitialCol abscissa (column) of the upper-left point of the shape
+          \param segmentInitialRow ordinate (line) of the upper-left point of the shape
           \param line 2D Line.
 
           \return true if ok, otherwise false
         */
-        bool detectEdge(long i, long j, te::gm::LinearRing& line);
+        bool detectEdge(long segmentInitialCol, long segmentInitialRow, te::gm::LinearRing& outputLine);
 
 
 
@@ -151,8 +144,6 @@ namespace te
         unsigned long m_nColumns;           //!< The number of columns.
         unsigned int m_rasterBand;          //!< The raster band to be used.
         unsigned int m_maxPolygons;         //!< The maximum allowed number of polygons to be created.
-        te::sam::rtree::Index<unsigned int, 8, 4>* m_rTreePolygons;   //!< A RTree instance pointer to optimize the searching of points inside already created polygons
-        std::vector<VectorizerPolygonStructure> m_containerPolygons; //!< Vector of all polygons.
     };
   } // end namespace rst
 }   // end namespace te

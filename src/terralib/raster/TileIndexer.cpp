@@ -177,6 +177,54 @@ bool te::rst::TileIndexer::getTile(const double& y, TileSegIndex** index) const
   }
 }
 
+bool te::rst::TileIndexer::within(const te::gm::Point& geometry) const
+{
+  m_withinTileY = geometry.getY();
+  
+  if( getTile( m_withinTileY, &m_withinTileIndexPtr ) )
+  {
+    assert( m_withinTileIndexPtr );
+    
+    m_withinTileX = geometry.getX();
+    m_withinIsInside = false;
+    
+    for( unsigned int i = 0 ; i < m_withinTileIndexPtr->size() ; ++i ) 
+    {
+      assert( ( ( *m_withinTileIndexPtr )[ i ].first < m_referencePolygon.getNumRings() ) );
+      assert( dynamic_cast< te::gm::LinearRing const* >( m_referencePolygon[ 
+        ( *m_withinTileIndexPtr )[ i ].first ] ) );      
+      m_withinRingPtr = (te::gm::LinearRing const*)m_referencePolygon[ ( *m_withinTileIndexPtr )[ i ].first ];
+      
+      assert( ( *m_withinTileIndexPtr )[ i ].second  < m_withinRingPtr->getNPoints() );    
+      m_withinVtx0.x = m_withinRingPtr->getX( ( *m_withinTileIndexPtr )[ i ].second );
+      m_withinVtx0.y = m_withinRingPtr->getY( ( *m_withinTileIndexPtr )[ i ].second );
+      m_withinVtx1.x = m_withinRingPtr->getX( ( *m_withinTileIndexPtr )[ i ].second + 1 );
+      m_withinVtx1.y = m_withinRingPtr->getY( ( *m_withinTileIndexPtr )[ i ].second + 1 );
+      
+      m_withinYFlag0 = (m_withinVtx0.y >= m_withinTileY);
+      
+      m_withinYFlag1 = (m_withinVtx1.y >= m_withinTileY);
+    
+      if(m_withinYFlag0 != m_withinYFlag1)
+      {
+        /* TODO - Check Boundary case */
+      
+        if(((m_withinVtx1.y - m_withinTileY) * (m_withinVtx0.x - m_withinVtx1.x) >=
+              (m_withinVtx1.x - m_withinTileX) * (m_withinVtx0.y - m_withinVtx1.y)) == m_withinYFlag1)
+        {
+          m_withinIsInside = !m_withinIsInside ;
+        }
+      }
+    }
+    
+    return m_withinIsInside;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 bool te::rst::TileIndexer::within_or_touches(const te::gm::Point& geometry) const
 {
   m_withinTileY = geometry.getY();
