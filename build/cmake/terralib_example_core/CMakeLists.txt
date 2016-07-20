@@ -99,7 +99,7 @@ add_library(terralib_example_core_plugin1 SHARED ${TERRALIB_EXAMPLE_CORE_PLUGIN1
 target_link_libraries(terralib_example_core_plugin1 terralib_mod_core)
 
 file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin1/plugin1.teplg.json
-     DESTINATION ${CMAKE_BINARY_DIR}/share/terralib/plugins)
+     DESTINATION ${CMAKE_BINARY_DIR}/share/terralib/example/plugins)
 
 #Plugin2 example
 file(GLOB TERRALIB_EXAMPLE_CORE_PLUGIN2_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin2/*.cpp)
@@ -108,7 +108,7 @@ add_library(terralib_example_core_plugin2 SHARED ${TERRALIB_EXAMPLE_CORE_PLUGIN2
 target_link_libraries(terralib_example_core_plugin2 terralib_mod_core)
 
 file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin2/plugin2.teplg.json
-     DESTINATION ${CMAKE_BINARY_DIR}/share/terralib/plugins)
+     DESTINATION ${CMAKE_BINARY_DIR}/share/terralib/example/plugins)
 
 add_dependencies(terralib_example_core_plugin terralib_example_core_plugin1
                                               terralib_example_core_plugin2)
