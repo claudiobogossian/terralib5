@@ -125,7 +125,10 @@ bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
     case QEvent::ContextMenu:
     {
       if (m_menu)
-        m_menu->exec(static_cast<QContextMenuEvent*>(e)->globalPos());
+      {
+        if (m_menu->objectName() == "Map")
+          m_menu->exec(static_cast<QContextMenuEvent*>(e)->globalPos());
+      }
     }
     break;
           

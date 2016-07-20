@@ -682,11 +682,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     m_layerIsStashed = false;
 
-    for (int i = 0; i < m_tools.size(); ++i)
-      m_tools[i]->setChecked(false);
-
-    enableCurrentTool(false);
-
+    m_currentTool->resetVisualizationTool();
   }
   catch(te::common::Exception& ex)
   {
