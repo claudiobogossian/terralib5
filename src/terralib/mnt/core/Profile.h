@@ -74,25 +74,33 @@ namespace te
       /*! \brief Virtual destructor. */
       ~Profile();
 
-
+      /*! \brief Calculate Profile from raster */
       bool runRasterProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
+
+      /*! \brief Calculate Profile from isolines */
       bool runIsolinesProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
+
+      /*! \brief Calculate Profile from TIN */
       bool runTINProfile(std::vector<te::gm::LineString*> visadas, std::vector<te::gm::LineString*>& profileSet);
-
-      te::gm::LineString* calculateProfile(std::vector<te::gm::Geometry*> &isolines, te::gm::LineString &trajectory);
-
-      std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType);
+      
+      /*! \brief Reads raster */
       std::auto_ptr<te::rst::Raster> getPrepareRaster();
-      void setInput(te::da::DataSourcePtr inDsrc, std::string inName, std::auto_ptr<te::da::DataSetType> inDsetType, double dummy);
 
+      /*! \brief Sets input parameters to calculate profile */
+      void setInput(te::da::DataSourcePtr inDsrc, std::string inName, std::auto_ptr<te::da::DataSetType> inDsetType, double dummy, std::string zattr);
+
+      /*! \brief Sets SRID */
       void setSRID(int srid) { m_srid = srid; }
 
     private:
-      int m_srid;
-      double m_dummy;
-      te::da::DataSourcePtr m_inDsrc;
-      std::string m_inName;
-      std::auto_ptr<te::da::DataSetType> m_inDsType;
+      te::gm::LineString* calculateProfile(std::vector<te::gm::Geometry*> &isolines, te::gm::LineString &trajectory);
+
+      int m_srid;     //!< Attribute with spatial reference information
+      double m_dummy; //!< Nodata value
+      te::da::DataSourcePtr m_inDsrc; //!< Input Datasource
+      std::string m_inName; //!< Input data name
+      std::auto_ptr<te::da::DataSetType> m_inDsType; //!< Input datasettype
+      std::string m_attrZ;      //!< Z attribute name
 
     };
   }
