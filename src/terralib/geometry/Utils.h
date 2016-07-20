@@ -44,6 +44,7 @@ namespace te
     class Point;
     class Polygon;
     class LineString;
+    class Line;
     
     /*!
     \struct TopologyValidationError
@@ -145,7 +146,7 @@ namespace te
     \param g      Input GeometryCollection.
     \param geoms  Output Geometry Vector.
 
-    \note If the geomSource is not a te::gm::GeometryCollectionType it will return an empty vector.
+    \note If the geomSource is not a te::gm::GeometryCollectionType it will return vector with the input geometry.
     */
     TEGEOMEXPORT void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);
 
@@ -174,6 +175,35 @@ namespace te
     TEGEOMEXPORT te::gm::Geometry* UnaryUnion(te::gm::Geometry* geom);
 
     /*!
+    \brief It will get the centroid of the input geometries.
+
+    \param geom   Input Geometry.
+
+    \return a Point containing the centroid coord.
+    */
+    TEGEOMEXPORT te::gm::Coord2D GetCentroid(te::gm::Geometry* geom);
+
+    /*!
+    \brief Compute the the closest points of two geometries.
+
+    \param geomA   Input Geometry A.
+    \param geomB   Input Geometry B.
+    \param coordA  Output coord on Geometry A.
+    \param coordB  Output coord on Geometry B.
+
+    */
+    TEGEOMEXPORT void ClosestPoints(te::gm::Geometry* geomA, te::gm::Geometry* geomB, 
+                                    te::gm::Coord2D& coordA, te::gm::Coord2D& coordB);
+
+    TEGEOMEXPORT te::gm::Line* GetIntersectionLine(te::gm::Geometry* geom, te::gm::Coord2D coord);
+
+    TEGEOMEXPORT double GetAngle(te::gm::Coord2D coordA, te::gm::Coord2D coordB);
+
+    TEGEOMEXPORT bool Rotate(te::gm::Coord2D pr, te::gm::LineString* l, double angle, te::gm::LineString* lOut);
+
+    TEGEOMEXPORT bool AdjustSegment(te::gm::Point* P0, te::gm::Point* P1, double d0, te::gm::Coord2D& P0out, te::gm::Coord2D& P1out);
+
+	/*!
     \brief It will get a list of polygons formed by the polygonization.
 
     \param g      Input Polygon.

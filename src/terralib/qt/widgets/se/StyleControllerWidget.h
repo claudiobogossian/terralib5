@@ -102,6 +102,8 @@ namespace te
 
         protected slots:
 
+          void onAddTextSymbolizerClicked();
+
           void onAddSymbolizerClicked();
 
           void onRemoveSymbolizerClicked();

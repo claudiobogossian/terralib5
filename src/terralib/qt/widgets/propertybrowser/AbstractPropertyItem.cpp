@@ -38,10 +38,12 @@ te::qt::widgets::AbstractPropertyItem::AbstractPropertyItem(QtTreePropertyBrowse
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager, SIGNAL(valueChanged(QtProperty *, int)), this, SLOT(valueChanged(QtProperty *, int)));
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager, SIGNAL(valueChanged(QtProperty *, int)), this, SLOT(valueChanged(QtProperty *, int)));
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager, SIGNAL(valueChanged(QtProperty *, double)), this, SLOT(valueChanged(QtProperty *, double)));
+  connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_boolManager, SIGNAL(valueChanged(QtProperty *, bool)), this, SLOT(valueChanged(QtProperty *, bool)));
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager, SIGNAL(valueChanged(QtProperty *, const QString &)), this, SLOT(valueChanged(QtProperty *, const QString &)));
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_colorManager, SIGNAL(valueChanged(QtProperty *, const QColor &)), this, SLOT(valueChanged(QtProperty *, const QColor &)));
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_fontManager, SIGNAL(valueChanged(QtProperty *, const QFont &)), this, SLOT(valueChanged(QtProperty *, const QFont &)));
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_sizeManager, SIGNAL(valueChanged(QtProperty *, const QSize &)), this, SLOT(valueChanged(QtProperty *, const QSize &)));
+  connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_sizeFManager, SIGNAL(valueChanged(QtProperty *, const QSizeF &)), this, SLOT(valueChanged(QtProperty *, const QSizeF &)));
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager, SIGNAL(valueChanged(QtProperty *, int)), this, SLOT(valueChanged(QtProperty *, int)));
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager, SIGNAL(valueChanged(QtProperty *, const QPointF &)), this, SLOT(valueChanged(QtProperty *, const QPointF &)));
 }
@@ -87,6 +89,10 @@ void te::qt::widgets::AbstractPropertyItem::valueChanged(QtProperty *p, double v
 {
 }
 
+void te::qt::widgets::AbstractPropertyItem::valueChanged(QtProperty* p, bool value)
+{
+}
+
 void te::qt::widgets::AbstractPropertyItem::valueChanged(QtProperty *p, const QString &value)
 {
 }
@@ -100,6 +106,10 @@ void te::qt::widgets::AbstractPropertyItem::valueChanged(QtProperty *p, const QF
 }
 
 void te::qt::widgets::AbstractPropertyItem::valueChanged(QtProperty *p, const QSize &value)
+{
+}
+
+void te::qt::widgets::AbstractPropertyItem::valueChanged(QtProperty* p, const QSizeF &value)
 {
 }
 

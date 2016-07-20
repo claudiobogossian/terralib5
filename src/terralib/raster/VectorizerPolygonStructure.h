@@ -62,7 +62,7 @@ namespace te
           \param v      The pixel value related to the polygon.
           \param tidy   Tile indexer dy.
         */
-        VectorizerPolygonStructure( te::gm::Polygon* polPtr, const unsigned int& v, const double& tidy);
+        VectorizerPolygonStructure( te::gm::Polygon* polPtr, const double& v, const double& tidy);
 
         /*! \brief Default destructor. */
         ~VectorizerPolygonStructure();
@@ -77,11 +77,11 @@ namespace te
           \brief Reset the current instance.
 
           \param polPtr      Polygon pointer (this structure will take the ownership of the given pointer)
-          \param v      Parameter V.
+          \param v      Pixel value related to the polygon.
           \param tidy   Tile indexer dy.
           
         */
-        void reset( te::gm::Polygon* polPtr, const unsigned int& v, const double& tidy);
+        void reset( te::gm::Polygon* polPtr, const double& v, const double& tidy);
 
         /*!
           \brief Assignment operator.
@@ -94,7 +94,7 @@ namespace te
 
       public:
         
-        unsigned int m_value;                   //!< The value (color) related to a polygon.
+        double m_value;                   //!< The pixel value related to a polygon.
         double m_tileIndexerDY;        //!< The polygon tile indexer Y Axis resolution.
         std::auto_ptr< TileIndexer > m_indexerPtr;        //!< A pointer to the polygon tile indexer pointer.
         std::auto_ptr< te::gm::Polygon > m_polygonPtr;     //!< A pointer to the stored polygon instance.

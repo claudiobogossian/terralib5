@@ -81,43 +81,15 @@ te::mnt::Profile::~Profile()
 {
 }
 
-void te::mnt::Profile::setInput(te::da::DataSourcePtr inDsrc, std::string inName, std::auto_ptr<te::da::DataSetType> inDsetType,  double dummy)
+void te::mnt::Profile::setInput(te::da::DataSourcePtr inDsrc, std::string inName, std::auto_ptr<te::da::DataSetType> inDsetType, double dummy, std::string zattr)
 {
   m_inDsrc = inDsrc;
   m_inName = inName;
   m_inDsType = inDsetType;
   m_dummy = dummy;
+  m_attrZ = zattr;
 }
 
-std::auto_ptr<te::mem::DataSet> te::mnt::Profile::createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType)
-{
-  std::auto_ptr<te::mem::DataSet> outDataset(new te::mem::DataSet(dsType));
-
-  std::size_t nProp = inputDataSet->getNumProperties();
-
-  inputDataSet->moveBeforeFirst();
-
-  while (inputDataSet->moveNext())
-  {
-    //create dataset item
-    te::mem::DataSetItem* outDSetItem = new te::mem::DataSetItem(outDataset.get());
-
-    for (std::size_t t = 0; t < nProp; ++t)
-    {
-      te::dt::AbstractData* ad = inputDataSet->getValue(t).release();
-
-      outDSetItem->setValue(t, ad);
-    }
-
-    //set kernel default value
-    outDSetItem->setDouble("TE_MNT_CREATEISOLINES_ATTR_NAME", 0.);
-
-    //add item into dataset
-    outDataset->add(outDSetItem);
-  }
-
-  return outDataset;
-}
 
 std::auto_ptr<te::rst::Raster> te::mnt::Profile::getPrepareRaster()
 {
@@ -382,8 +354,7 @@ bool te::mnt::Profile::runIsolinesProfile(std::vector<te::gm::LineString*> visad
   std::string geostype;
   te::gm::Envelope env;
 
-  std::string vazio;
-  size_t nsamples = ReadSamples(m_inName, m_inDsrc, vazio, 0, 0, None, mpt, isolines, geostype, env, m_srid);
+  size_t nsamples = ReadSamples(m_inName, m_inDsrc, m_attrZ, 0, 0, None, mpt, isolines, geostype, env, m_srid);
 
   te::sam::rtree::Index<te::gm::Geometry*> linetree;
   std::vector<te::gm::Geometry*> reportline;

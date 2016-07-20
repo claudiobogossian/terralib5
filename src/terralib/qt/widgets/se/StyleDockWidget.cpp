@@ -32,6 +32,7 @@
 #include "LineSymbolizerProperty.h"
 #include "PointSymbolizerProperty.h"
 #include "RasterSymbolizerWidget.h"
+#include "TextSymbolizerProperty.h"
 #include "RuleProperty.h"
 #include "StyleControllerWidget.h"
 #include "StyleExplorer.h"
@@ -66,6 +67,7 @@ void te::qt::widgets::StyleDockWidget::setTabStatus(bool status)
   m_tabWidget->setTabEnabled(2, status); // Lines
   m_tabWidget->setTabEnabled(3, status); // Points
   m_tabWidget->setTabEnabled(4, status); // Raster
+  m_tabWidget->setTabEnabled(5, status); // Text
 }
 
 void te::qt::widgets::StyleDockWidget::updateUi()
@@ -119,6 +121,11 @@ QWidget* te::qt::widgets::StyleDockWidget::buildUi()
   m_tabWidget->addTab(m_rasterWidget, tr("Raster"));
   connect(m_rasterWidget, SIGNAL(symbolizerChanged()), this, SLOT(onRasterSymbolizerChanged()));
 
+  // Text Symbolizer Widget
+  m_textWidget = new te::qt::widgets::TextSymbolizerProperty(m_tabWidget);
+  m_tabWidget->addTab(m_textWidget, tr("Text"));
+  connect(m_textWidget, SIGNAL(symbolizerChanged()), this, SLOT(onTextSymbolizerChanged()));
+
   setTabStatus(false);
 
   return w;
@@ -170,7 +177,36 @@ void te::qt::widgets::StyleDockWidget::onSymbolizerSelected(te::se::Symbolizer* 
     m_rasterWidget->setBandProperty(bprops);
 
     m_rasterWidget->setRasterSymbolizer(dynamic_cast<te::se::RasterSymbolizer*>(s));
+  }
+  else if (s->getType() == "TextSymbolizer")
+  {
+    std::vector<std::string> propNames;
 
+    std::auto_ptr<te::da::DataSetType> dsType = m_currentLayer->getSchema();
+
+    for (std::size_t t = 0; t < dsType->getProperties().size(); ++t)
+    {
+      if (dsType->getProperty(t)->getType() != te::dt::GEOMETRY_TYPE)
+        propNames.push_back(dsType->getProperty(t)->getName());
+    }
+    
+    m_tabWidget->setCurrentWidget(m_textWidget);
+    m_tabWidget->setTabEnabled(5, true);
+
+    m_textWidget->setLabels(propNames);
+
+    te::se::TextSymbolizer* symbText = dynamic_cast<te::se::TextSymbolizer*>(s);
+
+    if (symbText)
+    {
+      if (!symbText->getLabel() || te::se::GetString(symbText->getLabel()) == "")
+      {
+        if (!propNames.empty())
+          symbText->setLabel(new te::se::ParameterValue(propNames[0]));
+      }
+
+      m_textWidget->setSymbolizer(symbText);
+    }
   }
 }
 
@@ -201,6 +237,14 @@ void te::qt::widgets::StyleDockWidget::onPointSymbolizerChanged()
 void te::qt::widgets::StyleDockWidget::onRasterSymbolizerChanged()
 {
   te::se::Symbolizer* s = m_rasterWidget->getRasterSymbolizer();
+  emit symbolizerChanged(s);
+
+  emit symbolChanged(m_currentLayer);
+}
+
+void te::qt::widgets::StyleDockWidget::onTextSymbolizerChanged()
+{
+  te::se::Symbolizer* s = m_textWidget->getSymbolizer();
   emit symbolizerChanged(s);
 
   emit symbolChanged(m_currentLayer);

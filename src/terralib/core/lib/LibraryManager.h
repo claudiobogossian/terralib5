@@ -24,8 +24,9 @@
   \brief A singleton that can be used to observe the available shared libraries in the system.
 
   \author Gilberto Ribeiro de Queiroz
+  \author Matheus Cavassan Zaglia
  */
- 
+
 #ifndef __TERRALIB_CORE_LIB_LIBRARYMANAGER_H__
 #define __TERRALIB_CORE_LIB_LIBRARYMANAGER_H__
 
@@ -33,11 +34,7 @@
 #include "../Config.h"
 
 // STL
-#include <memory>
 #include <string>
-
-// Boost
-#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -45,53 +42,112 @@ namespace te
   {
 // Forward declaration
     class Library;
-
-    //! A singleton that can be used to observe the available libraries in the system.
     /*!
+      \typedef void (*StartupFptr)(void);
+
+      \brief This is the type for call back functions that makes the startup of a module.
+     */
+    typedef void (*StartupFptr)(void);
+
+    /*!
+      \typedef void (*CleanupFptr)(void);
+
+      \brief This is the type for call back functions that makes the cleanup of a module.
+     */
+    typedef void (*CleanupFptr)(void);
+
+
+    struct LibraryEntry
+    {
+      std::string m_name;
+      StartupFptr m_startFptr;
+      CleanupFptr m_cleanupFptr;
+      bool m_initialized;
+    };
+    /*!
+      \class LibraryManager
+
+      \brief A singleton that can be used to observe the available libraries in the system.
+
       This singleton doesn't control the libraries lifetime, it just make smart
       references to them. These references will be automatically removed
       when a library goes out of scope (or been destroyed). Actually it works
       like an observer of known libraries.
      */
-    class TECOREEXPORT LibraryManager : public boost::noncopyable
+    class TECOREEXPORT LibraryManager
     {
       public:
 
-        //! Add a new library to be managed.
         /*!
-          This implementation will keep the library in the manager
-          while there is at least someone pointing to it.
-          As soon as no one keeps a reference to it the
-          manager will be communicated and the library will not be available
-          anymore.
+          \brief It inserts a LibraryEntry to the manager.
 
-          \param id An identifier used to search for the library in successive lookups.
-          \param l  The library to be managed.
+          \param entry LibraryEntry to be managed.
 
-          \exception te::InvalidArgumentException If a library with the given identifier is already registered.
+          \exception te::InvalidArgumentException If a LibraryEntry with the given name is already registered.
          */
-        void insert(const std::string& id, const std::shared_ptr<Library>& l);
+        void insert(const LibraryEntry& entry);
 
-        //! Return a null pointer if a library doesnt't exist.
         /*!
-          \param name The library name.
+          \brief It removes a LibraryEntry from the manager.
 
-          \return A pointer to an already loaded library or null if the library was unloaded and not unregistered.
+          \param name The name of the LibraryEntry.
 
-          \excpetion te::OutOfRangeException If a library with the given identifier is not registered.
+          \exception te::OutOfRangeException If a LibraryEntry with the given name is not registered.,
+          \exception te::Exception If trying to remove a initialized library.
+         */
+        void remove(const std::string& name);
+
+        /*!
+          \brief Return a null pointer if a library doesnt't exist.
+
+          \param name The LibraryEntry name.
+
+          \return a const reference to the LibraryEntry
+
+          \exception te::OutOfRangeException If a LibraryEntry with the given name is not registered.
         */
-        std::shared_ptr<Library> get(const std::string& id);
+        const LibraryEntry& get(const std::string& name);
 
-        //! Return a reference to the singleton.
+        /*!
+          \brief The current state of the LibraryEntry.
+
+          \param name The name of the LibraryEntry.
+
+          \return true if the LibraryEntry is initialized or false if isn't.
+
+          \exception te::OutOfRangeException If a LibraryEntry with the given name is not registered.
+         */
+        bool isInitialized(const std::string& name);
+
+        /*!
+          \brief Checks if a LibraryEntry exists from a given name
+
+          \param name The name of the LibraryEntry
+
+          \return true if the LibraryEntry exist or false if doesn't.
+         */
+        bool exists(const std::string& name);
+
+        /*!
+          \brief It returns a reference to the singleton instance.
+
+          \return A reference to the singleton instance.
+         */
         static LibraryManager& instance();
 
       protected:
 
-        /*! \brief Consructor. */
+        /*! \brief Singleton constructor must be private or protected. */
         LibraryManager();
 
-        /*! \brief Destructor. */
+        /*! \brief Singleton destructor must be private or protected. */
         ~LibraryManager();
+
+        /*! \brief Singleton copy constructor must be private or protected. */
+        LibraryManager(const LibraryManager&); // no copy allowed
+
+        /*! \brief Singleton copy assignment operator must be private or protected. */
+        LibraryManager& operator=(const LibraryManager&); // no copy allowed
 
       private:
 
@@ -102,5 +158,41 @@ namespace te
 
   }  // end namespace core
 }    // end namespace te
+
+#define TERRALIB_LIBRARY_BEGIN(library_name) \
+class library_ ## library_name \
+{ \
+  public: \
+\
+    library_ ## library_name() \
+    { \
+      LibraryEntry le = {#library_name, \
+                         startup, \
+                         shutdown \
+                        }; \
+\
+       te::core::LibraryManager::instance().insert(le); \
+    } \
+\
+    ~library_ ## library_name() \
+    {\
+      if(te::core::LibraryManager::instance().exists(#library_name))\
+      {\
+        te::core::LibraryManager::instance().get(#library_name).shutdown();\
+        te::core::LibraryManager::instance().remove(#library_name);\
+      }\
+    }
+
+
+#define TERRALIB_LIBRARY_STARTUP \
+    void startup()
+
+#define TERRALIB_LIBRARY_SHUTDOWN \
+    void shutdown()
+
+#define TERRALIB_LIBRARY_END(library_name) \
+}; \
+\
+static library_ ## library_name s_lib;
 
 #endif  // __TERRALIB_CORE_LIB_LIBRARYMANAGER_H__

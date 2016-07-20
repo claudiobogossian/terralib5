@@ -6,13 +6,11 @@
 #include <terralib/fe/serialization/xml/Filter.h>
 #include <terralib/se/serialization/xml/Style.h>
 #include <terralib/xlink/serialization/xml/XLinkSerializer.h>
-#include <terralib/xsd/serialization/xml/XSDSerializer.h>
 #include <terralib/xml/AbstractWriter.h>
 #include <terralib/xml/AbstractWriterFactory.h>
 #include <terralib/xml/Reader.h>
 #include <terralib/xml/ReaderFactory.h>
 #include <terralib/xlink/SimpleLink.h>
-#include <terralib/xsd/Schema.h>
 
 // STL
 #include <cassert>
@@ -164,12 +162,5 @@ te::se::Style* DecodeStyle(const std::string& path)
   te::se::Style* style = te::se::serialize::Style::getInstance().read(*reader);
 
   return style;
-}
-
-void DecodeSchema(const std::string& path)
-{
-  te::xsd::Schema* schema = te::xsd::serialize::ReadSchema(path);
-  assert(schema);
-  delete schema;
 }
 

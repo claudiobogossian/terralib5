@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../color/RGBAColor.h"
+#include "../se/Font.h"
 #include "../se/Visitor.h"
 #include "Config.h"
 #include "Enums.h"
@@ -178,6 +179,9 @@ namespace te
 
         static std::map<std::string, te::map::LineCapStyle> sm_lineCapMap;   //!< A map that associates stroke-linecap value to the correct LineCapStyle.
         static std::map<std::string, te::map::LineJoinStyle> sm_lineJoinMap; //!< A map that associates stroke-linejoin value to the correct LineJoinStyle.
+
+        static std::map<std::string, te::se::Font::FontStyleType> sm_fontStyleMap;   //!< A map that associates FontStyleType to the correct string value.
+        static std::map<std::string, te::se::Font::FontWeightType> sm_fontWeightMap; //!< A map that associates FontWeightType to the correct string value.
     };
 
   } // end namespace map

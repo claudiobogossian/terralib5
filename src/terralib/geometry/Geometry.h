@@ -812,13 +812,24 @@ namespace te
         /*!
           \brief It returns the TerraLib geometry type id given a type string (the type string must be in capital letters).
 
-          \param stype The geometry type name.
+          \param gtype The geometry type name.
 
           \return The geometry type id equivalent to the string name.
 
           \note If the type is unknow it returns UnknownGeometryType.
         */
         static GeomType getGeomTypeId(const std::string& gtype);
+
+        /*!
+        \brief It returns the TerraLib geometry type string given a type id.
+
+        \param gId The geometry type id.
+
+        \return The geometry type string equivalent to the id.
+
+        \note If the type is unknow it returns UNKNOWGEOMETRYTYPE.
+        */
+        static std::string getGeomTypeString(const int& gId);
 
         /*!
           \brief It tells if the given string is a geometry data type.

@@ -150,7 +150,11 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
       else if (alg == DouglasPeucker)
         ls = GEOS_DouglasPeucker(l, tol, value);
       else if (alg == None)
-        ls = dynamic_cast<te::gm::LineString*>(l->clone());
+      {
+        ls = new te::gm::LineString(l->size(), te::gm::LineStringZType, isolines.getSRID());
+        for (std::size_t il = 0; il < l->size(); il++)
+          ls->setPointZ(il, l->getX(il), l->getY(il), value);
+      }
       else
         ls = pointListSimplify(l, tol, max, value);
 
@@ -183,7 +187,7 @@ size_t te::mnt::ReadSamples(std::string &inDsetName, te::da::DataSourcePtr &inDs
         else if (alg == DouglasPeucker)
           ls = GEOS_DouglasPeucker(l, tol, value);
         else if (alg == None)
-          ls = dynamic_cast<te::gm::LineString*>(l->clone());
+          ls = lz;
         else
           ls = pointListSimplify(l, tol, max, value);
         if (ls->size())

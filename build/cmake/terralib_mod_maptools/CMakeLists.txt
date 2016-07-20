@@ -56,8 +56,7 @@ endif()
 add_library(terralib_mod_maptools SHARED ${TERRALIB_FILES})
 
 if(TERRALIB_MOD_XML_ENABLED)
-  target_link_libraries(terralib_mod_maptools terralib_mod_annotationtext
-                                              terralib_mod_color
+  target_link_libraries(terralib_mod_maptools terralib_mod_color
                                               terralib_mod_dataaccess
                                               terralib_mod_datatype
                                               terralib_mod_filter
@@ -71,8 +70,7 @@ if(TERRALIB_MOD_XML_ENABLED)
                                               terralib_mod_xml
                                               terralib_mod_common)
 else()
-  target_link_libraries(terralib_mod_maptools terralib_mod_annotationtext
-                                              terralib_mod_color
+  target_link_libraries(terralib_mod_maptools terralib_mod_color
                                               terralib_mod_dataaccess
                                               terralib_mod_datatype
                                               terralib_mod_filter

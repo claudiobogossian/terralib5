@@ -32,6 +32,7 @@
 #include "GEOSGeometryFactory.h"
 #include "GEOSReader.h"
 #include "GEOSWriter.h"
+#include "Line.h"
 #include "LinearRing.h"
 #include "LineString.h"
 #include "MultiPolygon.h"
@@ -41,10 +42,12 @@
 
 #ifdef TERRALIB_GEOS_ENABLED
 // GEOS
+#include <geos/algorithm/CentroidArea.h>
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/Geometry.h>
 #include <geos/operation/polygonize/Polygonizer.h>
 #include <geos/operation/union/UnaryUnionOp.h>
+#include <geos/operation/distance/DistanceOp.h>
 #include <geos/operation/valid/IsValidOp.h>
 #include <geos/util/GEOSException.h>
 #endif
@@ -309,6 +312,209 @@ te::gm::Geometry* te::gm::UnaryUnion(te::gm::Geometry* geom)
 #else
   throw te::common::Exception(TE_TR("Union routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
+}
+
+te::gm::Coord2D te::gm::GetCentroid(te::gm::Geometry* geom)
+{
+  te::gm::Coord2D coord2d;
+
+#ifdef TERRALIB_GEOS_ENABLED
+  std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(geom));
+
+  std::auto_ptr<geos::geom::Point> point(thisGeom->getCentroid());
+
+  coord2d.x = point->getX();
+  coord2d.y = point->getY();
+
+#else
+  throw te::common::Exception(TE_TR("getCentroid routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+
+  return coord2d;
+}
+
+void te::gm::ClosestPoints(te::gm::Geometry* geomA, te::gm::Geometry* geomB,
+  te::gm::Coord2D& coordA, te::gm::Coord2D& coordB)
+{
+#ifdef TERRALIB_GEOS_ENABLED
+  std::auto_ptr<geos::geom::Geometry> thisGeomA(GEOSWriter::write(geomA));
+  std::auto_ptr<geos::geom::Geometry> thisGeomB(GEOSWriter::write(geomB));
+
+  geos::operation::distance::DistanceOp op(thisGeomA.get(), thisGeomB.get());
+
+  geos::geom::CoordinateSequence* cs = op.closestPoints();
+
+  if (cs->getSize() == 2)
+  {
+    coordA = te::gm::Coord2D(cs->getAt(0).x, cs->getAt(0).y);
+    coordB = te::gm::Coord2D(cs->getAt(1).x, cs->getAt(1).y);
+  }
+
+  delete cs;
+
+#else
+  throw te::common::Exception(TE_TR("getCentroid routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+}
+
+te::gm::Line* te::gm::GetIntersectionLine(te::gm::Geometry* geom, te::gm::Coord2D coord)
+{
+  std::vector<te::gm::Geometry*> geomVec;
+  std::auto_ptr<te::gm::Point> pRef(new te::gm::Point(coord.x, coord.y, geom->getSRID()));
+  
+  te::gm::Multi2Single(geom, geomVec);
+
+  for (std::size_t t = 0; t < geomVec.size(); ++t)
+  {
+    te::gm::Geometry* g = geomVec[t];
+
+    if (g->getGeomTypeId() == te::gm::LineStringType)
+    {
+      te::gm::LineString* ls = static_cast<te::gm::LineString*>(g);
+
+      if (ls->getNPoints() == 2)
+      {
+        std::auto_ptr<te::gm::Point> p0(ls->getPointN(0));
+        std::auto_ptr<te::gm::Point> p1(ls->getPointN(1));
+
+        te::gm::Line* line = new te::gm::Line(te::gm::LineStringType, geom->getSRID());
+
+        line->setCoord(0, p0->getX(), p0->getY());
+        line->setCoord(1, p1->getX(), p1->getY());
+
+        return line;
+      }
+      else
+      {
+        for (std::size_t p = 0; p < ls->getNPoints() - 1; ++p)
+        {
+          std::auto_ptr<te::gm::Point> p0(ls->getPointN(p));
+          std::auto_ptr<te::gm::Point> p1(ls->getPointN(p + 1));
+
+          std::auto_ptr<te::gm::Line> line(new te::gm::Line(te::gm::LineStringType, geom->getSRID()));
+          line->setCoord(0, p0->getX(), p0->getY());
+          line->setCoord(1, p1->getX(), p1->getY());
+
+          std::auto_ptr<te::gm::Geometry> geomMBR(te::gm::GetGeomFromEnvelope(line->getMBR(), geom->getSRID()));
+
+          if (geomMBR->intersects(pRef.get()))
+          {
+            return line.release();
+          }
+        }
+      }
+    }
+  }
+
+  return 0;
+}
+
+double te::gm::GetAngle(te::gm::Coord2D coordA, te::gm::Coord2D coordB)
+{
+  double pi = 3.14159265358979323846;
+
+  if (coordA.x == coordB.x)
+  {
+    return 1.57079632679489661923;
+  }
+
+  if (coordA.y == coordB.y)
+  {
+    return 0.0;
+  }
+
+  double dx = (coordA.x - coordB.x);
+  double dy = (coordA.y - coordB.y);
+
+  double rad = atan(dy / dx);
+
+  //Convert radians to degrees
+  double angle = rad / 0.01745329251994329576;
+
+  return angle;
+}
+
+bool te::gm::Rotate(te::gm::Coord2D pr, te::gm::LineString* l, double angle, te::gm::LineString* lOut)
+{
+  double alfa;
+  double dx, dy;
+  double x, y;
+  double xr, yr;
+
+  try
+  {
+    if (l->size() < 2)
+      return (false);
+
+    //transform Degree to Radius
+    alfa = (4.*atan(1.)*angle) / 180.;
+
+    dx = pr.getX();
+    dy = pr.getY();
+
+    for (std::size_t count = 0; count < l->size(); count++)
+    {
+      std::auto_ptr<te::gm::Point> curPoint(l->getPointN(count));
+
+      x = curPoint->getX() - dx;
+      y = curPoint->getY() - dy;
+
+      xr = x * cos(alfa) - y * sin(alfa);
+      yr = x * sin(alfa) + y * cos(alfa);
+
+      lOut->setPoint(count, xr + dx, yr + dy);
+    }
+  }
+  catch (...)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+bool te::gm::AdjustSegment(te::gm::Point* P0, te::gm::Point* P1, double d0, te::gm::Coord2D& P0out, te::gm::Coord2D& P1out)
+{
+  double vL_norm1;
+  double vL_norm2;
+
+  try
+  {
+    if (P0->getX() == P1->getX() && P0->getY() == P1->getY())
+      return false;
+
+    te::gm::Coord2D vL1((P1->getX() - P0->getX()), (P1->getY() - P0->getY()));
+    te::gm::Coord2D vL2(-1 * (P1->getX() - P0->getX()), -1 * (P1->getY() - P0->getY()));
+    vL_norm1 = sqrt(vL1.getX() * vL1.getX() + vL1.getY() * vL1.getY());
+    vL_norm2 = sqrt(vL2.getX() * vL2.getX() + vL2.getY() * vL2.getY());
+
+    te::gm::Coord2D uL1((vL1.getX() / vL_norm1), (vL1.getY() / vL_norm1));
+    te::gm::Coord2D uL2((vL2.getX() / vL_norm2), (vL2.getY() / vL_norm2));
+
+    te::gm::Point* pFim1 = new te::gm::Point(P0->getX() + uL1.getX() * d0, P0->getY() + uL1.getY() * d0, P0->getSRID());
+    te::gm::Point* pFim2 = new te::gm::Point(P0->getX() + uL2.getX() * d0, P0->getY() + uL2.getY() * d0, P1->getSRID());
+
+    if (pFim1->distance(P1) <= pFim2->distance(P1))
+    {
+      P0out.x = P0->getX();
+      P0out.y = P0->getY();
+      P1out.x = pFim1->getX();
+      P1out.y = pFim1->getY();
+    }
+    else
+    {
+      P0out.x = P0->getX();
+      P0out.y = P0->getY();
+      P1out.x = pFim2->getX();
+      P1out.y = pFim2->getY();
+    }
+  }
+  catch (...)
+  {
+    return false;
+  }
+
+  return true;
 }
 
 void te::gm::Polygonizer(te::gm::Geometry* g, std::vector<te::gm::Polygon*>& pols)
