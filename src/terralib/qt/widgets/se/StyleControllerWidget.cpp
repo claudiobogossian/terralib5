@@ -24,8 +24,11 @@
 */
 
 // TerraLib
+#include "../../../se/Font.h"
 #include "../../../se/Rule.h"
 #include "../../../se/Symbolizer.h"
+#include "../../../se/TextSymbolizer.h"
+#include "../../../se/Utils.h"
 #include "ui_StyleControllerWidgetForm.h"
 #include "StyleControllerWidget.h"
 #include "StyleExplorer.h"
@@ -53,6 +56,7 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
 
   // Signals & slots
   connect(m_ui->m_iconSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeLegendIconSize(int)));
+  connect(m_ui->m_addTextSymbToolButton, SIGNAL(clicked()), this, SLOT(onAddTextSymbolizerClicked()));
   connect(m_ui->m_addSymbToolButton, SIGNAL(clicked()), this, SLOT(onAddSymbolizerClicked()));
   connect(m_ui->m_removeSymbToolButton, SIGNAL(clicked()), this, SLOT(onRemoveSymbolizerClicked()));
   connect(m_ui->m_upSymbToolButton, SIGNAL(clicked()), this, SLOT(onUpSymbolizerClicked()));
@@ -81,10 +85,31 @@ void te::qt::widgets::StyleControllerWidget::updateUi()
 {
   m_ui->m_upSymbToolButton->setIcon(QIcon::fromTheme("go-up").pixmap(16,16));
   m_ui->m_downSymbToolButton->setIcon(QIcon::fromTheme("go-down").pixmap(16,16));
-  m_ui->m_addSymbToolButton->setIcon(QIcon::fromTheme("list-add").pixmap(16,16));
+  m_ui->m_addTextSymbToolButton->setIcon(QIcon::fromTheme("list-abc-add").pixmap(16, 16));
+  m_ui->m_addSymbToolButton->setIcon(QIcon::fromTheme("list-add").pixmap(16, 16));
   m_ui->m_removeSymbToolButton->setIcon(QIcon::fromTheme("list-remove").pixmap(16,16));
   m_ui->m_libManagerToolButton->setIcon(QIcon::fromTheme("library").pixmap(16,16));
   m_ui->m_mapRefreshToolButton->setIcon(QIcon::fromTheme("map-draw").pixmap(16,16));
+}
+
+void te::qt::widgets::StyleControllerWidget::onAddTextSymbolizerClicked()
+{
+  te::se::Rule* rule = m_explorer->getCurrentRule();
+
+  if (rule == 0)
+  {
+    QMessageBox::information(this, tr("Style"), tr("Select a rule first."));
+    return;
+  }
+
+  //creates new text symbolizer representation
+  te::se::Fill* fill = te::se::CreateFill("#000000", "1.0");
+  te::se::Font* font = te::se::CreateFont("Arial", "8", te::se::Font::StyleNormal, te::se::Font::WeightNormal);
+  te::se::Symbolizer* symb = te::se::CreateTextSymbolizer("", fill, font);
+
+  rule->push_back(symb);
+
+  m_explorer->updateStyleTree();
 }
 
 void te::qt::widgets::StyleControllerWidget::onAddSymbolizerClicked()

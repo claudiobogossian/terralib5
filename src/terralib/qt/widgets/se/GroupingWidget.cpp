@@ -455,11 +455,14 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
 
     getDataAsDouble(vec, attr, attrType, nullValues);
 
-    te::map::GroupingByEqualSteps(vec.begin(), vec.end(), slices, m_legend, prec);
+    if (!vec.empty())
+    {
+      te::map::GroupingByEqualSteps(vec.begin(), vec.end(), slices, m_legend, prec);
 
-    buildSymbolizer(mean);
+      buildSymbolizer(mean);
 
-    createDoubleNullGroupingItem(nullValues);
+      createDoubleNullGroupingItem(nullValues);
+    }
   }
   else if(type == te::map::QUANTIL) 
   {
@@ -467,11 +470,14 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
 
     getDataAsDouble(vec, attr, attrType, nullValues);
 
-    te::map::GroupingByQuantil(vec.begin(), vec.end(), slices, m_legend, prec);
+    if (!vec.empty())
+    {
+      te::map::GroupingByQuantil(vec.begin(), vec.end(), slices, m_legend, prec);
 
-    buildSymbolizer(mean);
+      buildSymbolizer(mean);
 
-    createDoubleNullGroupingItem(nullValues);
+      createDoubleNullGroupingItem(nullValues);
+    }
   }
   else if(type == te::map::STD_DEVIATION) 
   {
@@ -479,11 +485,14 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
 
     getDataAsDouble(vec, attr, attrType, nullValues);
 
-    te::map::GroupingByStdDeviation(vec.begin(), vec.end(), stdDev, m_legend, mean, prec);
+    if (!vec.empty())
+    {
+      te::map::GroupingByStdDeviation(vec.begin(), vec.end(), stdDev, m_legend, mean, prec);
 
-    buildSymbolizer(mean);
+      buildSymbolizer(mean);
 
-    createDoubleNullGroupingItem(nullValues);
+      createDoubleNullGroupingItem(nullValues);
+    }
 
     update = false;
   }
@@ -493,11 +502,14 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
 
     getDataAsString(vec, attr, nullValues);
 
-    te::map::GroupingByUniqueValues(vec, attrType, m_legend, prec);
+    if (!vec.empty())
+    {
+      te::map::GroupingByUniqueValues(vec, attrType, m_legend, prec);
 
-    buildSymbolizer(mean);
+      buildSymbolizer(mean);
 
-    createStringNullGroupingItem(nullValues);
+      createStringNullGroupingItem(nullValues);
+    }
   }
 
   updateUi(update);

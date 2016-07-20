@@ -54,7 +54,7 @@ QPointF te::edit::GetPosition(QMouseEvent* e)
 #endif
 }
 
-te::gm::Geometry* te::edit::convertGeomType(const te::map::AbstractLayerPtr& layer, te::gm::Geometry* geom)
+te::gm::Geometry* te::edit::ConvertGeomType(const te::map::AbstractLayerPtr& layer, te::gm::Geometry* geom)
 {
   te::gm::Geometry* geomConvert = 0;
 

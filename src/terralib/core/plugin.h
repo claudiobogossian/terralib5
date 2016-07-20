@@ -19,30 +19,23 @@
  */
 
 /*!
-  \file terralib/core/plugin/DefaultSerializers.h
+  \file terralib/core/plugin.h
 
-  \brief General utilities for serializing plugin information.
+  \brief Include files for Core Plugin Library.
+*/
 
-  \author Gilberto Ribeiro de Queiroz
-  \author Matheus Cavassan Zaglia
- */
- 
-#ifndef __TERRALIB_CORE_PLUGIN_DEFAULTSERIALIZERS_H__
-#define __TERRALIB_CORE_PLUGIN_DEFAULTSERIALIZERS_H__
+#ifndef __TERRALIB_CORE_PLUGIN_H__
+#define __TERRALIB_CORE_PLUGIN_H__
 
-// TerraLib
-#include "../Config.h"
-#include "PluginInfo.h"
+// TerraLIb
+#include "plugin/AbstractPlugin.h"
+#include "plugin/AbstractPluginEngine.h"
+#include "plugin/CppPlugin.h"
+#include "plugin/CppPluginEngine.h"
+#include "plugin/Exception.h"
+#include "plugin/Finders.h"
+#include "plugin/PluginEngineManager.h"
+#include "plugin/PluginInfo.h"
+#include "plugin/Serializers.h"
 
-namespace te
-{
-  namespace core
-  {
-
-    //! A plugin finder that search for plugins in some special directories defined by compile time macros.
-    TECOREEXPORT PluginInfo JSONPluginInfoSerializer(const std::string& file_name);
-
-  } // end namespace core
-}   // end namespace te
-
-#endif  // __TERRALIB_CORE_PLUGIN_DEFAULTSERIALIZERS_H__
+#endif // __TERRALIB_CORE_PLUGIN_H__

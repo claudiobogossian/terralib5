@@ -40,7 +40,7 @@ namespace te
   namespace core
   {
 
-    //! Describe the plugin provider.
+    /*! Describe the plugin provider. */
     struct Provider
     {
       std::string name;   //!< Provider name: may be a person or a company.
@@ -48,7 +48,7 @@ namespace te
       std::string email;  //!< The provider contact e-mail.
     };
 
-    //! Describe the host system
+    /*! \brief Describe the host system */
     struct HostApplication
     {
       std::string name;
@@ -59,7 +59,7 @@ namespace te
 
     typedef std::pair<std::string, std::string> Parameter;
 
-    //! Basic information about a plugin.
+    /*! \brief Basic information about a plugin. */
     struct PluginInfo
     {
       std::string name;                          //!< The plugin name: an internal value used to identify the plugin in the system. Must be a unique value.

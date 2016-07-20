@@ -345,7 +345,7 @@ bool te::ws::ogc::wcs::da::Transactor::dataSetExists(const std::string& name)
 {
   std::vector< std::string > coverages = m_wcs->getCapabilities().coverages;
 
-  for(int i = 0; i < coverages.size(); i ++)
+  for(unsigned int i = 0; i < coverages.size(); i ++)
   {
     if(coverages.at(i).compare(name) == 0)
       return true;

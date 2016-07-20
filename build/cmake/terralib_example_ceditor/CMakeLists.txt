@@ -47,3 +47,5 @@ add_executable(terralib_example_ceditor ${TERRALIB_EXAMPLE_CEDITOR_HDR_FILES} ${
 target_link_libraries(terralib_example_ceditor terralib_mod_ceditor terralib_mod_plugin ${Qscintilla_LIBRARY})
 
 qt5_use_modules(terralib_example_ceditor Widgets)
+
+add_dependencies(terralib_example_ceditor terralib_mod_vm_lua)

@@ -235,7 +235,7 @@ void te::qt::widgets::Measure::drawText(Canvas& canvas, const std::string& text,
   // Testing...
   canvas.setTextColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE));
   canvas.setFontFamily("Arial");
-  canvas.setTextWeight(te::at::Bold);
+  canvas.setTextWeight(te::se::Font::WeightBold);
   canvas.setTextPointSize(9);
   canvas.setTextContourEnabled(true);
   canvas.setTextContourWidth(3);

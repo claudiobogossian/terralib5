@@ -53,12 +53,25 @@ namespace te
         /*! \brief Destructor. */
         ~CppPluginEngine();
 
+        /*! \brief It returns the id of the plugin engine */
         const std::string& id() const;
 
+        /*! \brief It returns the name of the plugin engine */
         const std::string& name() const;
 
+        /*!
+          \brief It loads a cpp plugin from a give PluginInfo
+
+          \exception PluginEngineLoadException If the plugin cannot be loaded.
+          \return A unique_ptr of the loaded plugin.
+         */
         std::unique_ptr<AbstractPlugin> load(const PluginInfo& pinfo);
 
+        /*!
+          \brief It unloads a cpp plugin from a give AbstractPlugin unique_ptr
+
+          \exception PluginEngineUnloadException If the plugin cannot be unloaded.
+         */
         void unload(std::unique_ptr<AbstractPlugin> plugin);
 
       private:

@@ -83,8 +83,11 @@ namespace te
          */
         enum FontWeightType
         {
-          WeightNormal,  /*!< Normal. */
-          WeightBold     /*!< Bold.   */
+          WeightLight = 25,     /*!< Weight Light.   */
+          WeightNormal = 50,    /*!< Weight Normal.  */
+          WeightDemiBold = 63,  /*!< Weight DemiBold.*/
+          WeightBold = 75,      /*!< Weight Bold.    */
+          WeightBlack = 87      /*!< Weight Black.   */
         };
 
         /** @name Initializer Methods

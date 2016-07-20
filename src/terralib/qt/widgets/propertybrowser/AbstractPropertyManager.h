@@ -80,12 +80,15 @@ namespace te
           QtColorPropertyManager*   m_colorManager;
           QtFontPropertyManager*    m_fontManager;
           QtSizePropertyManager*    m_sizeManager;
+          QtSizeFPropertyManager*   m_sizeFManager;
           QtEnumPropertyManager*    m_enumManager;
           QtPointFPropertyManager*  m_pointFManager;
+          QtBoolPropertyManager*    m_boolManager;
 
           QtDoubleSpinBoxFactory*   m_doubleSpinBoxFactory;
           QtCheckBoxFactory*        m_checkBoxFactory;
           QtSpinBoxFactory*         m_spinBoxFactory;
+          QtDoubleSpinBoxFactory*   m_spinFBoxFactory;
           QtLineEditFactory*        m_lineEditFactory;
           QtEnumEditorFactory*      m_comboBoxFactory;
           QtSliderFactory*          m_sliderFactory;

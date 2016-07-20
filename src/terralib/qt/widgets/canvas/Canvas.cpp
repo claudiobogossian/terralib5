@@ -24,9 +24,6 @@
   */
 
 // TerraLib
-#include "../../../annotationtext/Attributes.h"
-#include "../../../annotationtext/Element.h"
-#include "../../../annotationtext/Text.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../common/StringUtils.h"
 #include "../../../geometry.h"
@@ -1232,195 +1229,51 @@ void te::qt::widgets::Canvas::drawPixel(int x, int y, const te::color::RGBAColor
 void te::qt::widgets::Canvas::drawText(int x, int y,
                                        const std::string& txt,
                                        float angle,
-                                       te::at::HorizontalAlignment hAlign,
-                                       te::at::VerticalAlignment vAlign)
+                                       double anchorX, double anchorY,
+                                       int displacementX, int displacementY)
 {
   QPoint p(x, y);
-  drawText(p, txt, angle, hAlign, vAlign);
+  drawText(p, txt, angle, anchorX, anchorY, displacementX, displacementY);
 }
 
 void te::qt::widgets::Canvas::drawText(const te::gm::Point* p,
                                        const std::string& txt,
                                        float angle,
-                                       te::at::HorizontalAlignment hAlign,
-                                       te::at::VerticalAlignment vAlign)
+                                       double anchorX, double anchorY,
+                                       int displacementX, int displacementY)
 {
-  drawText(p->getX(), p->getY(), txt, angle, hAlign, vAlign);
+  drawText(p->getX(), p->getY(), txt, angle, anchorX, anchorY, displacementX, displacementY);
 }
 
 void te::qt::widgets::Canvas::drawText(const double& x, const double& y,
                                        const std::string& txt,
                                        float angle,
-                                       te::at::HorizontalAlignment hAlign,
-                                       te::at::VerticalAlignment vAlign)
+                                       double anchorX, double anchorY,
+                                       int displacementX, int displacementY)
 {
   QPointF pf(x, y);
   pf = m_matrix.map(pf);
   QPoint p = pf.toPoint();
-  drawText(p, txt, angle, hAlign, vAlign);
+  drawText(p, txt, angle, anchorX, anchorY, displacementX, displacementY);
 }
 
-void te::qt::widgets::Canvas::draw(const te::at::Text* txt)
-{
-  std::size_t size = txt->getElements().size();
-
-  if(size == 0)
-    return;
-
-  std::size_t i = 0;
-
-  while(txt->getElements()[i]->getAttributes() == 0 && i < size)
-    ++i;
-
-  te::at::HorizontalAlignment hAlign = te::at::Start;
-  te::at::VerticalAlignment vAlign = te::at::Baseline;
-
-  while(i < size)
-  {
-    // set attributes
-    te::at::Element* element = txt->getElements()[i];
-    te::at::Attributes* atr = (te::at::Attributes*)element->getAttributes();
-    if(atr)
-    {
-      // get font family
-      std::string family = ((te::at::Attributes*)atr)->getFamily();
-      m_font.setFamily(family.c_str());
-
-      // get font point size
-      const double& pointSize = atr->getPointSize();
-      setTextPointSize(pointSize);
-
-      // get font weight
-      const te::at::FontWeight& weight = atr->getWeight();
-      if(weight == te::at::Light)
-        m_font.setWeight(QFont::Light);
-      else if(weight == te::at::NormalWeight)
-        m_font.setWeight(QFont::Normal);
-      else if(weight == te::at::DemiBold)
-        m_font.setWeight(QFont::DemiBold);
-      else if(weight == te::at::Bold)
-        m_font.setWeight(QFont::Bold);
-      else
-        m_font.setWeight(QFont::Black);
-
-      // get font style
-      const te::at::FontStyle& style = atr->getStyle();
-      if(style == te::at::NormalStyle)
-        m_font.setStyle(QFont::StyleNormal);
-      else if(style == te::at::Oblique)
-        m_font.setStyle(QFont::StyleOblique);
-      else
-        m_font.setStyle(QFont::StyleItalic);
-
-      // get font decoration
-      const te::at::TextDecoration& decoration = atr->getDecoration();
-      if(decoration == te::at::None)
-      {
-        m_font.setOverline(false);
-        m_font.setUnderline(false);
-        m_font.setStrikeOut(false);
-      }
-      else if(decoration == te::at::Overline)
-        m_font.setOverline(true);
-      else if(decoration == te::at::Underline)
-        m_font.setUnderline(true);
-      else
-        m_font.setStrikeOut(true);
-
-      m_painter->setFont(m_font);
-
-      // get letter spacing
-      m_txtLetterSpacing = atr->getLetterSpacing();
-      // nao sei o que fazer ????????????
-
-      // get word spacing
-      m_txtWordSpacing = atr->getLetterSpacing();
-      // nao sei o que fazer ????????????
-
-      // get text color and opacity
-      const std::string& cor = atr->getTextColor();
-      QColor qcor(cor.c_str());
-      int opacity = atr->getTextOpacity() * 255.;
-      qcor.setAlpha(opacity);
-      m_txtBrush = QBrush(qcor);
-
-      // get stroke color and opacity
-      const std::string& sCor = atr->getTextStrokeColor();
-      QColor qscor(sCor.c_str());
-      int sOpacity = atr->getTextStrokeOpacity() * 255.;
-      qscor.setAlpha(sOpacity);
-      m_txtContourPen = QPen(qscor);
-
-      // get stroke width
-      m_txtContourPen.setWidth(10. * atr->getTextStrokeWidth() * (double)getResolution() / 72.);
-
-      // get horizontal alignment
-      hAlign = atr->getHorizontalAlignment();
-
-      // get vertical alignment
-      vAlign = atr->getVerticalAlignment();
-
-      // get multi line spacing
-      m_txtLineSpacing = atr->getLineSpacing();
-      // como usar isto (0...1) ????????????
-    }
-
-    if(element->getLeaderLine() == 0) // without leaderLine
-    {
-      // supondo que location e' do tipo ponto
-      const te::gm::Point* pt = static_cast<const te::gm::Point*>(element->getLocation());
-      std::string text = element->getValue();
-      size_t p = text.find("\n");
-      double hline = 0;
-      te::gm::Point* pclone = 0;
-      if(p != std::string::npos)
-      {
-        QFontMetrics fm = QFontMetrics(m_font);
-        QRectF rec(fm.boundingRect("A"));
-        hline = QRectF(m_matrix.inverted().mapRect(rec)).height();
-        hline = hline + hline * m_txtLineSpacing; // no chute ????????
-        pclone = (te::gm::Point*)pt->clone();
-      }
-      while(p != std::string::npos) // multiline text
-      {
-        std::string t = text.substr(0, p);
-        drawText(pclone, t, 0., hAlign, vAlign);
-        text = text.substr(p + 1);
-        p = text.find("\n");
-        pclone->setY(pclone->getY() - hline); // next line
-      }
-      if(pclone) // multiline
-        drawText(pclone, text, 0., hAlign, vAlign);
-      else
-        drawText(pt, text, 0., hAlign, vAlign);
-
-      delete pclone;
-    }
-    else // with leaderLine
-    {
-    }
-
-    ++i;
-  }
-}
-
-te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(int x, int y, const std::string& txt, float angle, te::at::HorizontalAlignment hAlign, te::at::VerticalAlignment vAlign)
+te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(int x, int y, const std::string& txt, float angle, double anchorX, double anchorY, int displacementX, int displacementY)
 {
   QPoint p(x, y);
-  return getTextBoundary(p, txt, angle, hAlign, vAlign);
+  return getTextBoundary(p, txt, angle, anchorX, anchorY, displacementX, displacementY);
 }
 
-te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const te::gm::Point* p, const std::string& txt, float angle, te::at::HorizontalAlignment hAlign, te::at::VerticalAlignment vAlign)
+te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const te::gm::Point* p, const std::string& txt, float angle, double anchorX, double anchorY, int displacementX, int displacementY)
 {
-  return getTextBoundary(p->getX(), p->getY(), txt, angle, hAlign, vAlign);
+  return getTextBoundary(p->getX(), p->getY(), txt, angle, anchorX, anchorY, displacementX, displacementY);
 }
 
-te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const double& x, const double& y, const std::string& txt, float angle, te::at::HorizontalAlignment hAlign, te::at::VerticalAlignment vAlign)
+te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const double& x, const double& y, const std::string& txt, float angle, double anchorX, double anchorY, int displacementX, int displacementY)
 {
   QPointF pf(x, y);
   pf = m_matrix.map(pf);
   QPoint p = pf.toPoint();
-  return getTextBoundary(p, txt, angle, hAlign, vAlign);
+  return getTextBoundary(p, txt, angle, anchorX, anchorY, displacementX, displacementY);
 }
 
 void te::qt::widgets::Canvas::setTextColor(const te::color::RGBAColor& color)
@@ -1455,19 +1308,14 @@ void te::qt::widgets::Canvas::setTextPointSize(double psize)
   m_font.setPointSizeF(PointSize);
 }
 
-void te::qt::widgets::Canvas::setTextStyle(te::at::FontStyle style)
+void te::qt::widgets::Canvas::setTextStyle(te::se::Font::FontStyleType style)
 {
   m_font.setStyle((QFont::Style)style);
 }
 
-void te::qt::widgets::Canvas::setTextWeight(te::at::FontWeight weight)
+void te::qt::widgets::Canvas::setTextWeight(te::se::Font::FontWeightType weight)
 {
-  int wg = weight;
-
-  if(wg > 99)
-    wg = 99;
-
-  m_font.setWeight((QFont::Weight)wg);
+  m_font.setWeight((QFont::Weight)weight);
 }
 
 void te::qt::widgets::Canvas::setTextStretch(std::size_t stretch)
@@ -1521,7 +1369,7 @@ void te::qt::widgets::Canvas::setTextContourWidth(int width)
   m_txtContourPen.setWidth(width);
 }
 
-void te::qt::widgets::Canvas::setTextJustification(te::at::LineJustification /*just*/)
+void te::qt::widgets::Canvas::setTextJustification(int /*justType*/)
 {
 }
 
@@ -1935,11 +1783,14 @@ void te::qt::widgets::Canvas::setPolygonContourJoinStyle(te::map::LineJoinStyle 
 void te::qt::widgets::Canvas::drawText(const QPoint& p,
                                        const std::string& txt,
                                        float angle,
-                                       te::at::HorizontalAlignment hAlign,
-                                       te::at::VerticalAlignment vAlign)
+                                       double anchorX, double anchorY,
+                                       int displacementX, int displacementY)
 {
   if(txt.empty())
     return;
+
+  m_painter->save();
+  m_painter->setRenderHint(QPainter::Antialiasing, true);
 
   double ax, ay; // alignment position
   QString qtx(txt.c_str());
@@ -1947,28 +1798,29 @@ void te::qt::widgets::Canvas::drawText(const QPoint& p,
   QFontMetrics fm(m_font);
   QRectF rec(fm.boundingRect(qtx));
 
-  if(hAlign == te::at::Start)
-    ax = rec.left();
-  else if(hAlign == te::at::CenterH)
-    ax = rec.center().x();
-  else
-    ax = rec.right();
+  path.addText(0, 0, m_font, qtx);
 
-  if(vAlign == te::at::Bottom)
-    ay = rec.bottom();
-  else if(vAlign == te::at::CenterV)
-    ay = rec.center().y();
-  else if(vAlign == te::at::Top)
-    ay = rec.top();
-  else
-    ay = 0.;
-
-  path.addText(-ax, -ay, m_font, qtx);
+  ax = p.x() - path.boundingRect().width() * anchorX;
+  ay = p.y() + path.boundingRect().height() * anchorY;
 
   m_painter->resetMatrix();
-  m_painter->translate(p);
-  if(angle != 0.)
-    m_painter->rotate(angle);
+
+  if (angle != 0.)
+  {
+    double textWidth = path.boundingRect().width();
+    double textHeight = path.boundingRect().height();
+
+    path.translate(-textWidth / 2., textHeight / 2.);
+
+    QTransform transform;
+    transform.rotate(angle);
+
+    path = transform.map(path);
+    
+    path.translate(textWidth / 2., -textHeight / 2.);
+  }
+
+  path.translate(ax + displacementX, ay - displacementY);
 
   if(m_txtContourEnabled)
   {
@@ -1980,14 +1832,12 @@ void te::qt::widgets::Canvas::drawText(const QPoint& p,
   m_painter->setPen(Qt::NoPen);
   m_painter->fillPath(path, m_txtBrush);
 
-  m_painter->drawPath(path);
-
   m_painter->setMatrix(m_matrix);
+
+  m_painter->restore();
 }
 
-te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const QPoint& p, const std::string& txt, float angle,
-                                                          te::at::HorizontalAlignment hAlign,
-                                                          te::at::VerticalAlignment vAlign)
+te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const QPoint& p, const std::string& txt, float angle, double anchorX, double anchorY, int displacementX, int displacementY)
 {
   if(txt.empty())
     return 0;
@@ -1995,38 +1845,41 @@ te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const QPoint& p, const
   double ax, ay; // alignment position
   QString qtx(txt.c_str());
   QPainterPath path;
-  QFontMetrics fm(m_font);
-  QRectF rec(fm.boundingRect(qtx));
-  QRectF wrec(m_matrix.inverted().mapRect(rec));
+    
+  path.addText(0, 0, m_font, qtx);
 
-  if(hAlign == te::at::Start)
-    ax = wrec.left();
-  else if(hAlign == te::at::CenterH)
-    ax = wrec.center().x();
-  else
-    ax = wrec.right();
+  ax = p.x() - path.boundingRect().width() * anchorX;
+  ay = p.y() + path.boundingRect().height() * anchorY;
 
-  // reverse top-bottom
-  if(vAlign == te::at::Bottom)
-    ay = wrec.top();
-  else if(vAlign == te::at::CenterV)
-    ay = wrec.center().y();
-  else if(vAlign == te::at::Top)
-    ay = wrec.bottom();
-  else // Baseline
-    ay = m_matrix.inverted().map(QPoint(0, 0)).y();
+  double w = path.boundingRect().width();
+  double h = path.boundingRect().height();
 
-  wrec.translate(-ax, -ay); // rotation point on text alignment
-  QPolygonF polf(wrec);
-
-  if(angle != 0.)
+  if (angle != 0.)
   {
-    QMatrix m;
-    m.rotate(-angle);
-    polf = m.map(polf);
+    double textWidth = path.boundingRect().width();
+    double textHeight = path.boundingRect().height();
+
+    path.translate(-textWidth / 2., textHeight / 2.);
+
+    QTransform transform;
+    transform.rotate(angle);
+
+    path = transform.map(path);
+
+    path.translate(textWidth / 2., -textHeight / 2.);
   }
-  QPointF wp = m_matrix.inverted().map(QPointF(p));
-  polf.translate(wp.x(), wp.y()); // translate to entry point
+
+  w = path.boundingRect().width();
+  h = path.boundingRect().height();
+
+  path.translate(ax + displacementX, ay - displacementY);
+
+  path = m_matrix.inverted().map(path);
+
+  w = path.boundingRect().width();
+  h = path.boundingRect().height();
+
+  QPolygonF polf(path.boundingRect());
 
   //converter QPolygon para te::gm::Polygon. Como fazer isso?
   te::gm::LinearRing* lr = new te::gm::LinearRing(4, te::gm::LineStringType);

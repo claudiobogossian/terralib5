@@ -35,7 +35,7 @@
 #include "../Exception.h"
 #include "../utils/Platform.h"
 
-te::core::Translator& te::core::Translator::getInstance()
+te::core::Translator& te::core::Translator::instance()
 {
   static Translator instance;
 
