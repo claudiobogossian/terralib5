@@ -93,7 +93,8 @@ void te::serialize::xml::ReadDataSourceInfo(const std::string& datasourcesFileNa
     return;
 
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
-
+  xmlReader->setValidationScheme(false);
+  xmlReader->setDoSchema(false);
   xmlReader->read(datasourcesFileName);
 
   if(!xmlReader->next())
@@ -101,7 +102,7 @@ void te::serialize::xml::ReadDataSourceInfo(const std::string& datasourcesFileNa
 
   if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
     throw te::da::Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % datasourcesFileName).str());
-
+  
   if(xmlReader->getElementLocalName() != "DataSourceList")
     throw te::da::Exception((boost::format(TE_TR("The first tag in the document %1% is not 'DataSourceList'.")) % datasourcesFileName).str());
 
