@@ -59,7 +59,7 @@ te::core::LibraryManager::insert(const te::core::LibraryEntry &entry)
 void
 te::core::LibraryManager::remove(const std::string &name)
 {
-  std::vector<LibraryEntry>::const_iterator it = std::find_if(m_pimpl->library_entries.begin(),
+  std::vector<LibraryEntry>::iterator it = std::find_if(m_pimpl->library_entries.begin(),
                                                               m_pimpl->library_entries.end(),
                                                               [&name](const LibraryEntry& le)
                                                               { return le.m_name == name; });

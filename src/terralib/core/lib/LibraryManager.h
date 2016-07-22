@@ -40,8 +40,6 @@ namespace te
 {
   namespace core
   {
-// Forward declaration
-    class Library;
     /*!
       \typedef void (*StartupFptr)(void);
 
@@ -64,6 +62,7 @@ namespace te
       CleanupFptr m_cleanupFptr;
       bool m_initialized;
     };
+
     /*!
       \class LibraryManager
 
