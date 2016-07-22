@@ -225,7 +225,7 @@ bool te::rst::TileIndexer::within(const te::gm::Point& geometry) const
   }
 }
 
-bool te::rst::TileIndexer::within_or_touches(const te::gm::Point& geometry) const
+bool te::rst::TileIndexer::withinOrTouches(const te::gm::Point& geometry) const
 {
   m_withinTileY = geometry.getY();
   

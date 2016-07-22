@@ -43,6 +43,8 @@
 // QScintilla
 #include <Qsci/qsciscintilla.h>
 
+#include <iostream>
+
 te::ce::ScriptWidget::ScriptWidget(QWidget* parent)
   : QWidget(parent),
     m_txtEditor(nullptr),
@@ -175,7 +177,7 @@ void te::ce::ScriptWidget::execute()
 
   try
   {
-    te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get("lua");
+    te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get(getScriptType().toStdString());
 
     vm->build(m_fileName.toStdString());
 

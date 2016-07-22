@@ -661,7 +661,7 @@ namespace te
 
               // Is the middle-point (between the start end end point)
               // inside the current polygon ??
-              if (  m_tileIndexer->within_or_touches(te::gm::Point(
+              if (  m_tileIndexer->withinOrTouches(te::gm::Point(
                 (startingX + (endingX - startingX) / 2.0 ), (startingY + 
                 (endingY - startingY) / 2.0 ), m_polygon->getSRID()))) 
               {

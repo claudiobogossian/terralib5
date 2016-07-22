@@ -32,6 +32,9 @@
 // TerraLib
 #include "../core/VirtualMachine.h"
 
+// Python
+#include <Python.h>
+
 namespace te
 {
   namespace vm
@@ -61,6 +64,10 @@ namespace te
           void stop();
 
           void reset();
+
+      protected:
+
+        PyObject* m_pyModule;
       };
     } // end namespace python
   }   // end namespace vm

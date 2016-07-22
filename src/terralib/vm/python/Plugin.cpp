@@ -53,7 +53,7 @@ class Plugin : public te::plugin::Plugin
       if(m_initialized)
         return;
 
-      te::vm::core::VirtualMachineManager::instance().insert("python", std::unique_ptr<te::vm::core::VirtualMachine>(new te::vm::python::VirtualMachine()));
+      te::vm::core::VirtualMachineManager::instance().insert("py", std::unique_ptr<te::vm::core::VirtualMachine>(new te::vm::python::VirtualMachine()));
 
       m_initialized = true;
     }
@@ -63,7 +63,7 @@ class Plugin : public te::plugin::Plugin
       if(!m_initialized)
         return;
 
-      te::vm::core::VirtualMachineManager::instance().erase("python");
+      te::vm::core::VirtualMachineManager::instance().erase("py");
 
       m_initialized = false;
     }
