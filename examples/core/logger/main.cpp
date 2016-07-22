@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
   TE_INIT_DEFAULT_LOGGER("logs/terralib.log");
 
   //Adding a logger from a configuration file.
-  TE_ADD_LOGGER_FROM_FILE(te::core::FindInTerraLibPath("share/terralib/config/te-log.ini"));
+  TE_ADD_LOGGER_FROM_FILE("terralib_example", te::core::FindInTerraLibPath("share/terralib/config/te-log.ini"));
 
   TE_LOG_TRACE("This is a trace log.");
   TE_CORE_LOG_DEBUG("vp", "Logging config file");
