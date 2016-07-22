@@ -39,7 +39,10 @@ BOOST_AUTO_TEST_SUITE(logger_test_case)
 
 BOOST_AUTO_TEST_CASE(default_logger_test)
 {
+  BOOST_CHECK(!te::core::Logger::instance().exists(TERRALIB_DEFAULT_LOGGER));
   BOOST_CHECK_NO_THROW(TE_INIT_DEFAULT_LOGGER("log/unit_test_terralib.log"));
+  BOOST_CHECK(te::core::Logger::instance().exists(TERRALIB_DEFAULT_LOGGER));
+  BOOST_CHECK_THROW(TE_INIT_DEFAULT_LOGGER("log/unit_test_terralib.log"), te::InvalidArgumentException);
   BOOST_CHECK_NO_THROW(TE_LOG_WARN("Warning log"));
   BOOST_CHECK_NO_THROW(TE_LOG_INFO("Info log"));
   BOOST_CHECK_NO_THROW(TE_LOG_ERROR("Error log"));
@@ -53,8 +56,8 @@ BOOST_AUTO_TEST_CASE(default_logger_test)
 
 BOOST_AUTO_TEST_CASE(configuration_file_logger_test)
 {
-  BOOST_CHECK_THROW(TE_ADD_LOGGER_FROM_FILE("mylogger.ini"), std::exception);
-  BOOST_CHECK_NO_THROW(TE_ADD_LOGGER_FROM_FILE(
+  BOOST_CHECK_THROW(TE_ADD_LOGGER_FROM_FILE("unittest", "mylogger.ini"), std::exception);
+  BOOST_CHECK_NO_THROW(TE_ADD_LOGGER_FROM_FILE("unittest",
                          te::core::FindInTerraLibPath("share/terralib/config/te-log-unittest.ini")));
   BOOST_CHECK_NO_THROW(TE_CORE_LOG_WARN("unittest","Warning log"));
   BOOST_CHECK_NO_THROW(TE_CORE_LOG_INFO("unittest","Info log"));

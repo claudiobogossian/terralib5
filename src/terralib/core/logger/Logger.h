@@ -84,11 +84,12 @@ namespace te
         /*!
           \brief It sets the logger configuration from a given file.
 
+          \param name The name of the logger.
           \param filename The name of the configuration file.
 
           \exception std::exception If the configuration file is doesn't load.
         */
-        void addLoggerFromFile(const std::string &filename);
+        void addLoggerFromFile(const std::string &name, const std::string &filename);
 
         /*!
           \brief It sets the logger using a default implementation.
@@ -97,10 +98,21 @@ namespace te
           \param filename The name of the log file.
           \param format The format string of the logger.
 
+          \exception te::InvalidArgumentException If the logger name is empty or already registered
+
           \note The logs will be stored in the given file name. If the file already
           exists, the logs will be appended to the end of the file.
         */
-        void addLogger(const std::string &name, const std::string &filename, const std::string& format);
+        void addLogger(const std::string &name, const std::string &filename, std::string format);
+
+        /*!
+          \brief Checks if exists a logger registered with the given name.
+
+          \param name The name to be checked.
+
+          \return True if a logger with the given name, false if not.
+         */
+        bool exists(const std::string &name);
 
         /*!
           \brief It removes all added loggers.
@@ -126,14 +138,8 @@ namespace te
         /*! \brief Multi-Thread severity logger*/
         boost::log::sources::severity_channel_logger_mt<boost::log::trivial::severity_level, std::string>  m_logger;
 
-        /*! \brief Logger file name */
-        std::string m_filename = TERRALIB_DEFAULT_LOGGER;
-
-        /*! \brief Logger message format */
-        std::string m_format = TERRALIB_DEFAULT_LOGGER_FORMAT;
-
-        /*! \brief Logger type status */
-        bool m_fromfile = false;
+        /*! \brief Logger list */
+        std::vector< std::string > m_logger_list;
 
 
     };
@@ -161,14 +167,15 @@ namespace te
 
   \brief Use this tag to init a logger using a configuration file.
 
+  \param name The name of the logger.
   \param filename The name of the configuration file.
 
   \exception std::exception If the configuration file is doesn't load.
   */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_ADD_LOGGER_FROM_FILE(filename) te::core::Logger::instance().addLoggerFromFile(filename)
+  #define TE_ADD_LOGGER_FROM_FILE(name, filename) te::core::Logger::instance().addLoggerFromFile(name, filename)
 #else
-  #define TE_ADD_LOGGER_FROM_FILE(filename) ((void)0)
+  #define TE_ADD_LOGGER_FROM_FILE(name, filename) ((void)0)
 #endif
 
 /*!
