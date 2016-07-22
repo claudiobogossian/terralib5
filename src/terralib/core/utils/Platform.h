@@ -60,18 +60,18 @@ namespace te
         TECOREEXPORT std::string GetUserDirectory();
 
         /*!
-          \brief It returns the folder location to store per user data.
+          \brief It returns the writable folder location to store per user data.
 
           \return The folder location to store per user data.
          */
-        TECOREEXPORT std::string GetUserDataPath();
+        TECOREEXPORT std::string GetAppLocalDataLocation();
 
         /*!
-          \brief It returns the folder location to store application data applied to all users.
+          \brief It returns the writable folder location to store application data applied to all users.
 
           \return The folder location to store application data applied to all users.
          */
-        TECOREEXPORT std::string GetAllUsersDataPath();
+        TECOREEXPORT std::string GetAppDataLocation();
 
   }  // end namespace core
 }    // end namespace te

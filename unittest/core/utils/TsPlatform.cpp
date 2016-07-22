@@ -80,9 +80,9 @@ BOOST_AUTO_TEST_CASE( system_directories_tests )
 {
   BOOST_CHECK_NO_THROW(te::core::GetUserDirectory());
 
-  BOOST_CHECK_NO_THROW(te::core::GetUserDataPath());
+  BOOST_CHECK_NO_THROW(te::core::GetAppDataLocation());
 
-  BOOST_CHECK_NO_THROW(te::core::GetAllUsersDataPath());
+  BOOST_CHECK_NO_THROW(te::core::GetAppLocalDataLocation());
 
   return;
 }
