@@ -618,14 +618,28 @@ te::gm::Geometry* te::gm::Validate(te::gm::Geometry* geom)
       return GEOSReader::read(vecpolGeos->at(0)); // single polygon - no need to wrap
     default:
     {
+      //filter the invalid polygons
+      std::size_t i = 0;
+      while (i < vecpolGeos->size()) 
+      {
+        if (!vecpolGeos->at(i)->isValid()) 
+        {
+          vecpolGeos->erase(vecpolGeos->begin() + i);
+        }
+        else 
+        {
+          ++i;
+        }
+      }
+
       //polygons may still overlap! Need to sym difference them
       vecpolGeos->at(0)->setSRID(geom->getSRID());
       te::gm::Geometry* ret = GEOSReader::read(vecpolGeos->at(0));
 
-      for (std::size_t i = 1; i < vecpolGeos->size(); i++)
+      for (std::size_t p = 1; p < vecpolGeos->size(); p++)
       {
-        vecpolGeos->at(i)->setSRID(geom->getSRID());
-        ret = ret->symDifference(GEOSReader::read(vecpolGeos->at(i)));
+        vecpolGeos->at(p)->setSRID(geom->getSRID());
+        ret = ret->symDifference(GEOSReader::read(vecpolGeos->at(p)));
       }
       return ret;
     }
