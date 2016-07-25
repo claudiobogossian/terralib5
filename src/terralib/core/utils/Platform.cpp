@@ -120,7 +120,7 @@ std::string te::core::GetUserDirectory()
 }
 
 
-std::string te::core::GetUserDataPath()
+std::string te::core::GetAppLocalDataLocation()
 {
   std::string dataPath;
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
@@ -143,7 +143,7 @@ std::string te::core::GetUserDataPath()
   if( homePtr && boost::filesystem::is_directory(homePtr))
   {
     boost::filesystem::path path(homePtr);
-    path /=".config";
+    path /=".local/share";
 
     dataPath = path.string();
   }
@@ -163,7 +163,7 @@ std::string te::core::GetUserDataPath()
   return dataPath;
 }
 
-std::string te::core::GetAllUsersDataPath()
+std::string te::core::GetAppDataLocation()
 {
   std::string dataPath;
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
@@ -182,15 +182,14 @@ std::string te::core::GetAllUsersDataPath()
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
 
-  if(boost::filesystem::is_directory("/etc/xdg"))
-    dataPath = "/etc/xdg";
+  dataPath = GetAppLocalDataLocation();
 
-#elif  (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+#elif (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
-  if(boost::filesystem::is_directory("/Library/Application Support"))
-    dataPath = "/Library/Application Support";
+  dataPath = GetAppLocalDataLocation();
+
 #else
-#error "Platform not supported! Contact TerraLib Team"
+  #error "Platform not supported! Contact TerraLib Team"
 #endif
   return dataPath;
 }

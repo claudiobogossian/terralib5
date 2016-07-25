@@ -27,15 +27,12 @@
 #include "../Config.h"
 #include "TsRasterVectorizer.h"
 #include <terralib/geometry.h>
-#include <terralib/raster/Raster.h>
-#include <terralib/raster/Vectorizer.h>
-#include <terralib/dataaccess/dataset/DataSetType.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/dataaccess/utils/Utils.h>
-#include <terralib/memory/DataSet.h>
-#include <terralib/memory/DataSetItem.h>
+#include <terralib/raster.h>
+#include <terralib/dataaccess.h>
+#include <terralib/memory.h>
 
 #include <memory>
+#include <cstdio>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TsRasterVectorizer);
 
@@ -43,52 +40,49 @@ void TsRasterVectorizer::tcRasterVectorizer()
 {
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/pattern1.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR "/rasters/pattern1.tif";
   std::auto_ptr< te::rst::Raster > inrasterPtr( te::rst::RasterFactory::open(rinfo) );
 
   std::vector<te::gm::Geometry*> polygons;
   std::vector< double > polygonsValues;
-  inrasterPtr->vectorize(polygons, 0, 0, &polygonsValues);
+  
+  te::rst::Vectorizer vectorizerInstance( inrasterPtr.get(), 0, 0, false );
+  vectorizerInstance.run( polygons, &polygonsValues);
+  CPPUNIT_ASSERT( !polygons.empty() );
+  CPPUNIT_ASSERT( polygons.size() == polygonsValues.size() );
 
-  std::cout << "vectorizer created " << polygons.size() << " polygons" << std::endl;
-  for (unsigned int i = 0; i < polygons.size(); i++)
-    std::cout << "  polygon " << i << ": " << polygons[i]->toString() << std::endl;
-  
-  // creating a dataset in memory
-  
-  std::auto_ptr< te::mem::DataSet > memDataSetPtr;
+  // Exporting to disk
   
   {
-    std::auto_ptr<te::da::DataSetType> dataSetTypePtr(new te::da::DataSetType("RasterVectorizerTestPolygons"));
+    std::auto_ptr<te::da::DataSetType> dataSetTypePtr1(new te::da::DataSetType("RasterVectorizerTestPolygons"));
     
-    dataSetTypePtr->add( new te::dt::SimpleProperty("Value", te::dt::DOUBLE_TYPE, true) );  
-    dataSetTypePtr->add( new te::gm::GeometryProperty("polygon", inrasterPtr->getSRID(), 
+    dataSetTypePtr1->add( new te::dt::SimpleProperty("value", te::dt::DOUBLE_TYPE, true) );  
+    dataSetTypePtr1->add( new te::dt::SimpleProperty("id", te::dt::DOUBLE_TYPE, true) );
+    dataSetTypePtr1->add( new te::gm::GeometryProperty("polygon", inrasterPtr->getSRID(), 
       te::gm::PolygonType, true) );  
     
-    memDataSetPtr.reset( new te::mem::DataSet( dataSetTypePtr.get()) );
+    std::auto_ptr<te::da::DataSetType> dataSetTypePtr2( new te::da::DataSetType( *dataSetTypePtr1 ) );
+    
+    std::auto_ptr< te::mem::DataSet > memDataSetPtr( new te::mem::DataSet( dataSetTypePtr1.get()) );
     
     for( unsigned int polygonsIdx = 0 ; polygonsIdx < polygons.size() ; ++polygonsIdx )
     {
       te::mem::DataSetItem* dsItemPtr = new te::mem::DataSetItem(memDataSetPtr.get());
       dsItemPtr->setDouble( 0, polygonsValues[ polygonsIdx ] );
-      dsItemPtr->setGeometry( 1, polygons[ polygonsIdx ] );
+      dsItemPtr->setDouble( 1, polygonsIdx );
+      dsItemPtr->setGeometry( 2, polygons[ polygonsIdx ] );
       
       memDataSetPtr->add( dsItemPtr );
     }
-  }
-  
-  // Exporting to disk
-  
-  {
-    std::auto_ptr<te::da::DataSetType> dataSetTypePtr(new te::da::DataSetType("RasterVectorizerTestPolygons"));
-    
-    dataSetTypePtr->add( new te::dt::SimpleProperty("Value", te::dt::DOUBLE_TYPE, true) );  
-    dataSetTypePtr->add( new te::gm::GeometryProperty("polygon", inrasterPtr->getSRID(), 
-      te::gm::PolygonType, true) );  
+
+    remove( "RasterVectorizerTestPolygons.dbf" );
+    remove( "RasterVectorizerTestPolygons.prj" );
+    remove( "RasterVectorizerTestPolygons.shp" );
+    remove( "RasterVectorizerTestPolygons.shx" );    
     
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = "./RasterVectorizerTestPolygons";
-    connInfo["DRIVER"] = "ESRI Shapefile";
+    connInfo["URI"] = "RasterVectorizerTestPolygons.shp";
+//    connInfo["DRIVER"] = "ESRI Shapefile";
     
     std::auto_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR") );
     dsOGR->setConnectionInfo(connInfo);
@@ -96,7 +90,7 @@ void TsRasterVectorizer::tcRasterVectorizer()
     
     memDataSetPtr->moveBeforeFirst();
     
-    te::da::Create(dsOGR.get(), dataSetTypePtr.get(), memDataSetPtr.get());
+    te::da::Create(dsOGR.get(), dataSetTypePtr2.get(), memDataSetPtr.get());
 
     dsOGR->close();
   }  

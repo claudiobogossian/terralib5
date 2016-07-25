@@ -136,7 +136,16 @@ namespace te
 
           \return true if the given geometry is within the indexed reference polygon.
         */
-        bool within_or_touches(const te::gm::Point& geometry) const;
+        bool within(const te::gm::Point& geometry) const;        
+        
+        /*!
+          \brief It returns true if the given geometry is within or touches the indexed reference polygon.
+
+          \param rhs The other geometry to be compared.
+
+          \return true if the given geometry is within the indexed reference polygon.
+        */
+        bool withinOrTouches(const te::gm::Point& geometry) const;
 
       protected:
         double m_dy;                                  //!< Tile resolution along "y" axis.

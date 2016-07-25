@@ -543,6 +543,34 @@ namespace te
           }
           break;
         }
+        case MaxMethod :
+        {
+          if( ( m_intersectionPtr.get() != 0 ) && 
+            ( m_r1IntersectionSegmentsPointsSize > 1 ) && 
+            ( m_r2IntersectionSegmentsPointsSize > 1 ) )
+          {
+            m_blendMethod = MaxMethod;
+          }
+          else
+          {
+            m_blendMethod = NoBlendMethod;
+          }
+          break;
+        }        
+        case MinMethod :
+        {
+          if( ( m_intersectionPtr.get() != 0 ) && 
+            ( m_r1IntersectionSegmentsPointsSize > 1 ) && 
+            ( m_r2IntersectionSegmentsPointsSize > 1 ) )
+          {
+            m_blendMethod = MinMethod;
+          }
+          else
+          {
+            m_blendMethod = NoBlendMethod;
+          }
+          break;
+        }         
         default :
         {
           TERP_LOG_AND_THROW( "Invalid blend method" );
@@ -714,6 +742,16 @@ namespace te
           m_blendFuncPtr = &Blender::sumMethodImp;
           break;
         }
+        case MaxMethod :
+        {
+          m_blendFuncPtr = &Blender::maxMethodImp;
+          break;
+        }
+        case MinMethod :
+        {
+          m_blendFuncPtr = &Blender::minMethodImp;
+          break;
+        }                
         default :
         {
           TERP_LOG_AND_THROW( "Invalid blend method" );
@@ -788,7 +826,7 @@ namespace te
         ++m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx )
       {
         if( m_intersectionTileIndexers[ 
-          m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx ].within_or_touches( 
+          m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx ].within( 
           m_euclideanDistanceMethodImp_auxPoint ) )
         {
           m_euclideanDistanceMethodImp_PointInsideIntersection = true;
@@ -989,7 +1027,7 @@ namespace te
         ++m_sumMethodImp_IntersectionTileIndexersIdx )
       {
         if( m_intersectionTileIndexers[ 
-          m_sumMethodImp_IntersectionTileIndexersIdx ].within_or_touches( 
+          m_sumMethodImp_IntersectionTileIndexersIdx ].within( 
           m_sumMethodImp_auxPoint ) )
         {
           m_sumMethodImp_PointInsideIntersection = true;
@@ -1081,6 +1119,229 @@ namespace te
       }
     }    
     
+    void Blender::maxMethodImp( const double& line, const double& col,
+      double* const values )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( m_intersectionPtr.get(), "Invalid intersection pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r1IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r2IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      
+      // Checking if it is inside the intersection
+      
+      m_maxMethodImp_auxPoint.setX( col );
+      m_maxMethodImp_auxPoint.setY( line );
+      
+      m_maxMethodImp_PointInsideIntersection = false;
+      for( m_maxMethodImp_IntersectionTileIndexersIdx = 0;
+        m_maxMethodImp_IntersectionTileIndexersIdx < m_intersectionTileIndexers.size() ;
+        ++m_maxMethodImp_IntersectionTileIndexersIdx )
+      {
+        if( m_intersectionTileIndexers[ 
+          m_maxMethodImp_IntersectionTileIndexersIdx ].within( 
+          m_maxMethodImp_auxPoint ) )
+        {
+          m_maxMethodImp_PointInsideIntersection = true;
+          break;
+        }
+      }
+      
+      // Blending if the point is inside the intersection      
+      
+      if( m_maxMethodImp_PointInsideIntersection )
+      {
+        // Finding the point over the second raster
+        
+        m_geomTransformationPtr->directMap( col, line, m_maxMethodImp_Point2Col,
+          m_maxMethodImp_Point2Line );      
+        
+        // Blending values
+
+        for( m_maxMethodImp_BandIdx = 0 ; m_maxMethodImp_BandIdx <
+          m_raster1Bands.size() ; ++m_maxMethodImp_BandIdx )
+        {
+          m_interp1Ptr->getValue( col, line, m_maxMethodImp_cValue1, 
+            m_raster1Bands[ m_maxMethodImp_BandIdx ] ); 
+          m_interp2Ptr->getValue( m_maxMethodImp_Point2Col, 
+            m_maxMethodImp_Point2Line, m_maxMethodImp_cValue2, 
+            m_raster2Bands[ m_maxMethodImp_BandIdx ] );
+      
+          if( m_maxMethodImp_cValue1.real() == m_raster1NoDataValues[ m_maxMethodImp_BandIdx ] )
+          {
+            if( m_maxMethodImp_cValue2.real() == m_raster2NoDataValues[ m_maxMethodImp_BandIdx ] )
+            {
+              values[ m_maxMethodImp_BandIdx ] = m_outputNoDataValue;
+            }
+            else
+            {
+              values[ m_maxMethodImp_BandIdx ] = 
+                ( 
+                  m_maxMethodImp_cValue2.real()
+                  *
+                  m_pixelScales2[ m_maxMethodImp_BandIdx ]
+                )
+                +
+                m_pixelOffsets2[ m_maxMethodImp_BandIdx ]; 
+            }
+          }
+          else
+          {
+            if( m_maxMethodImp_cValue2.real() == m_raster2NoDataValues[ m_maxMethodImp_BandIdx ] )
+            {
+              values[ m_maxMethodImp_BandIdx ] =  
+                ( 
+                  m_maxMethodImp_cValue1.real()
+                  
+                  *
+                  m_pixelScales1[ m_maxMethodImp_BandIdx ]
+                )
+                +
+                m_pixelOffsets1[ m_maxMethodImp_BandIdx ]; 
+            }
+            else
+            {
+              values[ m_maxMethodImp_BandIdx ] =
+                std::max(
+                  (
+                    (
+                      m_maxMethodImp_cValue1.real()  
+                      * 
+                      m_pixelScales1[ m_maxMethodImp_BandIdx ] 
+                    )
+                    +
+                    m_pixelOffsets1[ m_maxMethodImp_BandIdx ]
+                  )
+                  ,
+                  (
+                    (
+                      m_maxMethodImp_cValue2.real()
+                      * 
+                      m_pixelScales2[ m_maxMethodImp_BandIdx ]
+                    )
+                    +
+                    m_pixelOffsets2[ m_maxMethodImp_BandIdx ]
+                  )
+                );
+            }          
+          }      
+        }
+      }
+      else
+      {
+        noBlendMethodImp( line, col, values );
+      }
+    }    
+
+    void Blender::minMethodImp( const double& line, const double& col,
+      double* const values )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( m_intersectionPtr.get(), "Invalid intersection pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r1IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r2IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      
+      // Checking if it is inside the intersection
+      
+      m_minMethodImp_auxPoint.setX( col );
+      m_minMethodImp_auxPoint.setY( line );
+      
+      m_minMethodImp_PointInsideIntersection = false;
+      for( m_minMethodImp_IntersectionTileIndexersIdx = 0;
+        m_minMethodImp_IntersectionTileIndexersIdx < m_intersectionTileIndexers.size() ;
+        ++m_minMethodImp_IntersectionTileIndexersIdx )
+      {
+        if( m_intersectionTileIndexers[ 
+          m_minMethodImp_IntersectionTileIndexersIdx ].within( 
+          m_minMethodImp_auxPoint ) )
+        {
+          m_minMethodImp_PointInsideIntersection = true;
+          break;
+        }
+      }
+      
+      // Blending if the point is inside the intersection      
+      
+      if( m_minMethodImp_PointInsideIntersection )
+      {
+        // Finding the point over the second raster
+        
+        m_geomTransformationPtr->directMap( col, line, m_minMethodImp_Point2Col,
+          m_minMethodImp_Point2Line );      
+        
+        // Blending values
+
+        for( m_minMethodImp_BandIdx = 0 ; m_minMethodImp_BandIdx <
+          m_raster1Bands.size() ; ++m_minMethodImp_BandIdx )
+        {
+          m_interp1Ptr->getValue( col, line, m_minMethodImp_cValue1, 
+            m_raster1Bands[ m_minMethodImp_BandIdx ] ); 
+          m_interp2Ptr->getValue( m_minMethodImp_Point2Col, 
+            m_minMethodImp_Point2Line, m_minMethodImp_cValue2, 
+            m_raster2Bands[ m_minMethodImp_BandIdx ] );
+      
+          if( m_minMethodImp_cValue1.real() == m_raster1NoDataValues[ m_minMethodImp_BandIdx ] )
+          {
+            if( m_minMethodImp_cValue2.real() == m_raster2NoDataValues[ m_minMethodImp_BandIdx ] )
+            {
+              values[ m_minMethodImp_BandIdx ] = m_outputNoDataValue;
+            }
+            else
+            {
+              values[ m_minMethodImp_BandIdx ] = 
+                ( 
+                  m_minMethodImp_cValue2.real()
+                  *
+                  m_pixelScales2[ m_minMethodImp_BandIdx ]
+                )
+                +
+                m_pixelOffsets2[ m_minMethodImp_BandIdx ]; 
+            }
+          }
+          else
+          {
+            if( m_minMethodImp_cValue2.real() == m_raster2NoDataValues[ m_minMethodImp_BandIdx ] )
+            {
+              values[ m_minMethodImp_BandIdx ] =  
+                ( 
+                  m_minMethodImp_cValue1.real()
+                  
+                  *
+                  m_pixelScales1[ m_minMethodImp_BandIdx ]
+                )
+                +
+                m_pixelOffsets1[ m_minMethodImp_BandIdx ]; 
+            }
+            else
+            {
+              values[ m_minMethodImp_BandIdx ] =
+                std::min(
+                  (
+                    (
+                      m_minMethodImp_cValue1.real()  
+                      * 
+                      m_pixelScales1[ m_minMethodImp_BandIdx ] 
+                    )
+                    +
+                    m_pixelOffsets1[ m_minMethodImp_BandIdx ]
+                  )
+                  ,
+                  (
+                    (
+                      m_minMethodImp_cValue2.real()
+                      * 
+                      m_pixelScales2[ m_minMethodImp_BandIdx ]
+                    )
+                    +
+                    m_pixelOffsets2[ m_minMethodImp_BandIdx ]
+                  )
+                );
+            }          
+          }      
+        }
+      }
+      else
+      {
+        noBlendMethodImp( line, col, values );
+      }
+    }         
         
     bool Blender::blendIntoRaster1()
     {

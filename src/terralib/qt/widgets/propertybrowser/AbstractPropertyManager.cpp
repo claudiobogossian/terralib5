@@ -41,8 +41,10 @@ void te::qt::widgets::AbstractPropertyManager::setFactories(QtTreePropertyBrowse
   pb->setFactoryForManager(m_fontManager->subBoolPropertyManager(), m_checkBoxFactory);
   pb->setFactoryForManager(m_fontManager->subEnumPropertyManager(), m_comboBoxFactory);
   pb->setFactoryForManager(m_sizeManager->subIntPropertyManager(), m_spinBoxFactory);
+  pb->setFactoryForManager(m_sizeFManager->subDoublePropertyManager(), m_spinFBoxFactory);
   pb->setFactoryForManager(m_enumManager, m_comboBoxFactory);
   pb->setFactoryForManager(m_pointFManager->subDoublePropertyManager(), m_doubleSpinBoxFactory);
+  pb->setFactoryForManager(m_boolManager, m_checkBoxFactory);
 }
 
 te::qt::widgets::AbstractPropertyManager::AbstractPropertyManager()
@@ -56,12 +58,15 @@ te::qt::widgets::AbstractPropertyManager::AbstractPropertyManager()
   m_colorManager = new QtColorPropertyManager(this);
   m_fontManager = new QtFontPropertyManager(this);
   m_sizeManager = new QtSizePropertyManager(this);
+  m_sizeFManager = new QtSizeFPropertyManager(this);
   m_enumManager = new QtEnumPropertyManager(this);
   m_pointFManager = new QtPointFPropertyManager(this);
+  m_boolManager = new QtBoolPropertyManager(this);
 
   m_doubleSpinBoxFactory = new QtDoubleSpinBoxFactory(this);
   m_checkBoxFactory = new QtCheckBoxFactory(this);
   m_spinBoxFactory = new QtSpinBoxFactory(this);
+  m_spinFBoxFactory = new QtDoubleSpinBoxFactory(this);
   m_lineEditFactory = new QtLineEditFactory(this);
   m_comboBoxFactory = new QtEnumEditorFactory(this);
   m_sliderFactory = new QtSliderFactory(this);

@@ -42,7 +42,7 @@
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(channel, "Channel", std::string)
 
-te::core::Logger& te::core::Logger::getInstance()
+te::core::Logger& te::core::Logger::instance()
 {
   static Logger instance;
 
@@ -51,12 +51,37 @@ te::core::Logger& te::core::Logger::getInstance()
 
 void te::core::Logger::addLoggerFromFile(const std::string& filename)
 {
+  if(filename.empty())
+    te::InvalidArgumentException() << te::ErrorDescription(TE_TR("The logger configuration file name cannot be empty."));
+
+  if(exists(filename))
+  {
+    boost::format err_msg(TE_TR("There is already a logger registered using the configuration in file named: %1%"));
+
+    te::InvalidArgumentException() << te::ErrorDescription((err_msg  % filename).str());
+  }
+
   boost::filesystem::ifstream settings(filename);
   boost::log::init_from_stream(settings);
+  
+  m_logger_list.push_back(filename);
 }
 
-void te::core::Logger::addLogger(const std::string& name, const std::string& filename, const std::string& format)
+void te::core::Logger::addLogger(const std::string& name, const std::string& filename, std::string format)
 {
+  if(name.empty())
+    throw te::InvalidArgumentException() << te::ErrorDescription(TE_TR("The logger name cannot be empty."));
+
+  if(exists(name))
+  {
+    boost::format err_msg(TE_TR("There is already a logger registered with the name: %1%"));
+
+    throw te::InvalidArgumentException() << te::ErrorDescription((err_msg  % name).str());
+  }
+
+  if(format.empty())
+    format = "[%TimeStamp%] <%Severity%>: %Message%";
+
   boost::log::add_file_log(boost::log::keywords::auto_flush = true,
                            boost::log::keywords::format = format,
                            boost::log::keywords::file_name = filename,
@@ -64,11 +89,21 @@ void te::core::Logger::addLogger(const std::string& name, const std::string& fil
                            boost::log::keywords::open_mode = std::ios_base::app,
                            boost::log::keywords::filter = (channel == name)
                           );
+
+  m_logger_list.push_back(name);
+}
+
+bool te::core::Logger::exists(const std::string &name)
+{
+  return std::find_if(m_logger_list.begin(), m_logger_list.end(),
+                      [&name](const std::string& n)
+                      { return name == n; }) != m_logger_list.end();
 }
 
 void te::core::Logger::removeAllLoggers()
 {
   boost::log::core::get()->remove_all_sinks();
+  m_logger_list.clear();
 }
 
 te::core::Logger::Logger()

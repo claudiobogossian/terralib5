@@ -39,7 +39,10 @@ BOOST_AUTO_TEST_SUITE(logger_test_case)
 
 BOOST_AUTO_TEST_CASE(default_logger_test)
 {
+  BOOST_CHECK(!te::core::Logger::instance().exists(TERRALIB_DEFAULT_LOGGER));
   BOOST_CHECK_NO_THROW(TE_INIT_DEFAULT_LOGGER("log/unit_test_terralib.log"));
+  BOOST_CHECK(te::core::Logger::instance().exists(TERRALIB_DEFAULT_LOGGER));
+  BOOST_CHECK_THROW(TE_INIT_DEFAULT_LOGGER("log/unit_test_terralib.log"), te::InvalidArgumentException);
   BOOST_CHECK_NO_THROW(TE_LOG_WARN("Warning log"));
   BOOST_CHECK_NO_THROW(TE_LOG_INFO("Info log"));
   BOOST_CHECK_NO_THROW(TE_LOG_ERROR("Error log"));

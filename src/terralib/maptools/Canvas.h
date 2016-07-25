@@ -27,8 +27,8 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_CANVAS_H
 
 // TerraLib
-#include "../annotationtext/Enums.h"
 #include "../color/RGBAColor.h"
+#include "../se/Font.h"
 #include "Config.h"
 #include "Enums.h"
 
@@ -38,6 +38,11 @@
 namespace te
 {
 // Forward declarations
+  namespace at
+  {
+    class Text;
+  }
+
   namespace gm
   {
     class Envelope;
@@ -53,11 +58,6 @@ namespace te
     class PointZM;
     class Polygon;
     class MultiSurface;
-  }
-
-  namespace at
-  {
-    class Text;
   }
 
   namespace rst
@@ -486,14 +486,16 @@ namespace te
           \param y          The text entry point y in device coordinate.
           \param txt        The text to be drawn.
           \param angle      The text rotation.
-          \param hAlign     The horizontal text alignment.
-          \param vAlign     The vertical text alignment.
+          \param anchorX     The horizontal text anchor.
+          \param anchorY     The vertical text anchor.
+          \param displacementX     The horizontal text displacement.
+          \param displacementY     The vertical text displacement.
         */
         virtual void drawText(int x, int y,
                               const std::string& txt,
                               float angle = 0.0,
-                              te::at::HorizontalAlignment hAlign = te::at::Start,
-                              te::at::VerticalAlignment vAlign = te::at::Baseline) = 0;
+                              double anchorX = 0.5, double anchorY = 0.5,
+                              int displacementX = 0, int displacementY = 0) = 0;
 
         /*!
           \brief It draws a text.
@@ -503,14 +505,16 @@ namespace te
           \param p          The text entry point in world coordinate.
           \param txt        The text to be drawn.
           \param angle      The text rotation.
-          \param hAlign     The horizontal text alignment.
-          \param vAlign     The vertical text alignment.
+          \param anchorX     The horizontal text anchor.
+          \param anchorY     The vertical text anchor.
+          \param displacementX     The horizontal text displacement.
+          \param displacementY     The vertical text displacement.
         */
         virtual void drawText(const te::gm::Point* p,
                               const std::string& txt,
                               float angle = 0.0,
-                              te::at::HorizontalAlignment hAlign = te::at::Start,
-                              te::at::VerticalAlignment vAlign = te::at::Baseline) = 0;
+                              double anchorX = 0.5, double anchorY = 0.5,
+                              int displacementX = 0, int displacementY = 0) = 0;
 
         /*!
           \brief It draws a text.
@@ -521,22 +525,16 @@ namespace te
           \param y          The text entry point y in world coordinate.
           \param txt        The text to be drawn.
           \param angle      The text rotation.
-          \param hAlign     The horizontal text alignment.
-          \param vAlign     The vertical text alignment.
+          \param anchorX     The horizontal text anchor.
+          \param anchorY     The vertical text anchor.
+          \param displacementX     The horizontal text displacement.
+          \param displacementY     The vertical text displacement.
         */
         virtual void drawText(const double& x, const double& y,
                               const std::string& txt,
                               float angle = 0.0,
-                              te::at::HorizontalAlignment hAlign = te::at::Start,
-                              te::at::VerticalAlignment vAlign = te::at::Baseline) = 0;
-
-        /*!
-          \brief It draws an annotaion text.
-
-          \param txt The annotation text to be drawn.
-        */
-        virtual void draw(const te::at::Text* txt) = 0;
-
+                              double anchorX = 0.5, double anchorY = 0.5,
+                              int displacementX = 0, int displacementY = 0) = 0;
 
         /*!
           \brief It returns the text boundary (its enclose rectangle).
@@ -547,8 +545,10 @@ namespace te
           \param y          The text entry point y in device coordinate.
           \param txt        The text to be drawn.
           \param angle      The text rotation.
-          \param hAlign     The horizontal text alignment.
-          \param vAlign     The vertical text alignment.
+          \param anchorX     The horizontal text anchor.
+          \param anchorY     The vertical text anchor.
+          \param displacementX     The horizontal text displacement.
+          \param displacementY     The vertical text displacement.
 
           \return The text boundary in world coordinate.
 
@@ -557,8 +557,8 @@ namespace te
         virtual te::gm::Polygon* getTextBoundary(int x, int y,
                                                  const std::string& txt,
                                                  float angle = 0.0,
-                                                 te::at::HorizontalAlignment hAlign = te::at::Start,
-                                                 te::at::VerticalAlignment vAlign = te::at::Baseline) = 0;
+                                                 double anchorX = 0.5, double anchorY = 0.5,
+                                                 int displacementX = 0, int displacementY = 0) = 0;
 
         /*!
           \brief It returns the text boundary (its enclose rectangle).
@@ -568,8 +568,10 @@ namespace te
           \param p          The text entry point in world coordinate.
           \param txt        The text to be drawn.
           \param angle      The text rotation.
-          \param hAlign     The horizontal text alignment.
-          \param vAlign     The vertical text alignment.
+          \param anchorX     The horizontal text anchor.
+          \param anchorY     The vertical text anchor.
+          \param displacementX     The horizontal text displacement.
+          \param displacementY     The vertical text displacement.
 
           \return The text boundary in world coordinate.
 
@@ -578,8 +580,8 @@ namespace te
         virtual te::gm::Polygon* getTextBoundary(const te::gm::Point* p,
                                                  const std::string& txt,
                                                  float angle = 0.0,
-                                                 te::at::HorizontalAlignment hAlign = te::at::Start,
-                                                 te::at::VerticalAlignment vAlign = te::at::Baseline) = 0;
+                                                 double anchorX = 0.5, double anchorY = 0.5,
+                                                 int displacementX = 0, int displacementY = 0) = 0;
 
         /*!
           \brief It returns the text boundary (its enclose rectangle).
@@ -590,8 +592,10 @@ namespace te
           \param y          The text entry point y in world coordinate.
           \param txt        The text to be drawn.
           \param angle      The text rotation.
-          \param hAlign     The horizontal text alignment.
-          \param vAlign     The vertical text alignment.
+          \param anchorX     The horizontal text anchor.
+          \param anchorY     The vertical text anchor.
+          \param displacementX     The horizontal text displacement.
+          \param displacementY     The vertical text displacement.
 
           \return The text boundary in world coordinates.
 
@@ -600,8 +604,8 @@ namespace te
         virtual te::gm::Polygon* getTextBoundary(const double& x, const double& y,
                                                  const std::string& txt,
                                                  float angle = 0.0,
-                                                 te::at::HorizontalAlignment hAlign = te::at::Start,
-                                                 te::at::VerticalAlignment vAlign = te::at::Baseline) = 0;
+                                                 double anchorX = 0.5, double anchorY = 0.5,
+                                                 int displacementX = 0, int displacementY = 0) = 0;
 
         //@}
 
@@ -643,14 +647,14 @@ namespace te
 
           \param style The new style for drawing a text.
         */
-        virtual void setTextStyle(te::at::FontStyle style) = 0;
+        virtual void setTextStyle(te::se::Font::FontStyleType style) = 0;
 
         /*!
           \brief It sets the text weight.
 
           \param weight The new weight for drawing a text.
         */
-        virtual void setTextWeight(te::at::FontWeight weight) = 0;
+        virtual void setTextWeight(te::se::Font::FontWeightType weight) = 0;
 
         /*!
           \brief It sets the text stretch.
@@ -727,7 +731,7 @@ namespace te
 
           \param just The new justification for drawing a multi line text.
         */
-        virtual void setTextJustification(te::at::LineJustification just) = 0;
+        virtual void setTextJustification(int justType) = 0;
           
         /*!
           \brief It sets the multi line text spacing.

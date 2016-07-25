@@ -49,6 +49,7 @@ namespace te
       class PolygonSymbolizerProperty;
       class LineSymbolizerProperty;
       class PointSymbolizerProperty;
+      class TextSymbolizerProperty;
       class RasterSymbolizerWidget;
       class StyleControllerWidget;
 
@@ -106,6 +107,7 @@ namespace te
           void onLineSymbolizerChanged();
           void onPointSymbolizerChanged();
           void onRasterSymbolizerChanged();
+          void onTextSymbolizerChanged();
           void onMapRefresh();
 
         signals:
@@ -126,6 +128,7 @@ namespace te
           te::qt::widgets::PointSymbolizerProperty* m_pointWidget;
           te::qt::widgets::RasterSymbolizerWidget* m_rasterWidget;
           te::qt::widgets::StyleControllerWidget* m_styleController;
+          te::qt::widgets::TextSymbolizerProperty* m_textWidget;
 
           te::map::AbstractLayer* m_currentLayer;                     //!< Current Layer pointer (used for raster symbolizer information)
       };

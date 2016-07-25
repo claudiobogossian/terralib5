@@ -172,40 +172,38 @@ namespace te
           void drawText(int x, int y,
                         const std::string& txt,
                         float angle = 0.0,
-                        te::at::HorizontalAlignment hAlign = te::at::Start,
-                        te::at::VerticalAlignment vAlign = te::at::Baseline);
+                        double anchorX = 0.5, double anchorY = 0.5,
+                        int displacementX = 0, int displacementY = 0);
 
           void drawText(const te::gm::Point* p,
                         const std::string& txt,
                         float angle = 0.0,
-                        te::at::HorizontalAlignment hAlign = te::at::Start,
-                        te::at::VerticalAlignment vAlign = te::at::Baseline);
+                        double anchorX = 0.5, double anchorY = 0.5,
+                        int displacementX = 0, int displacementY = 0);
 
           void drawText(const double& x, const double& y,
                         const std::string& txt,
                         float angle = 0.0,
-                        te::at::HorizontalAlignment hAlign = te::at::Start,
-                        te::at::VerticalAlignment vAlign = te::at::Baseline);
-
-          void draw(const te::at::Text* tx);
+                        double anchorX = 0.5, double anchorY = 0.5,
+                        int displacementX = 0, int displacementY = 0);
 
           te::gm::Polygon* getTextBoundary(int x, int y,
                                            const std::string& txt,
                                            float angle = 0.0,
-                                           te::at::HorizontalAlignment hAlign = te::at::Start,
-                                           te::at::VerticalAlignment vAlign = te::at::Baseline);
+                                           double anchorX = 0.5, double anchorY = 0.5,
+                                           int displacementX = 0, int displacementY = 0);
 
           te::gm::Polygon* getTextBoundary(const te::gm::Point* p,
                                            const std::string& txt,
                                            float angle = 0.0,
-                                           te::at::HorizontalAlignment hAlign = te::at::Start,
-                                           te::at::VerticalAlignment vAlign = te::at::Baseline);
+                                           double anchorX = 0.5, double anchorY = 0.5,
+                                           int displacementX = 0, int displacementY = 0);
 
           te::gm::Polygon* getTextBoundary(const double& x, const double& y,
                                            const std::string& txt,
                                            float angle = 0.0,
-                                           te::at::HorizontalAlignment hAlign = te::at::Start,
-                                           te::at::VerticalAlignment vAlign = te::at::Baseline);
+                                           double anchorX = 0.5, double anchorY = 0.5,
+                                           int displacementX = 0, int displacementY = 0);
           
           void setTextColor(const te::color::RGBAColor& color);
           
@@ -215,9 +213,9 @@ namespace te
 
           void setTextPointSize(double psize);
 
-          void setTextStyle(te::at::FontStyle style);
+          void setTextStyle(te::se::Font::FontStyleType style);
 
-          void setTextWeight(te::at::FontWeight weight);
+          void setTextWeight(te::se::Font::FontWeightType weight);
 
           void setTextStretch(std::size_t stretch);
 
@@ -239,7 +237,7 @@ namespace te
           
           void setTextContourWidth(int width);
           
-          void setTextJustification(te::at::LineJustification just);
+          void setTextJustification(int justType);
           
           void setTextMultiLineSpacing(int spacing);
 
@@ -328,16 +326,18 @@ namespace te
             \param p          The text entry point i device coordinate.
             \param txt        The text to be drawed.
             \param angle      The text rotation.
-            \param hAlign     The horizontal text alignment.
-            \param vAlign     The vertical text alignment.
+            \param anchorX     The horizontal text anchor.
+            \param anchorY     The vertical text anchor.
+            \param displacementX     The horizontal text displacement.
+            \param displacementY     The vertical text displacement.
 
             \note Qt Canvas extended method.
            */
           void drawText(const QPoint& p,
                         const std::string& txt,
                         float angle = 0.0, 
-                        te::at::HorizontalAlignment hAlign = te::at::Start,
-                        te::at::VerticalAlignment vAlign = te::at::Baseline);
+                        double anchorX = 0.5, double anchorY = 0.5,
+                        int displacementX = 0, int displacementY = 0);
 
           /*!
             \brief It returns text boundary. Color and font family should be defined in advance.
@@ -345,8 +345,10 @@ namespace te
             \param p          The text entry point in device coordinate.
             \param tx         The text to be drawed.
             \param angle      The text rotation.
-            \param hAlign     The horizontal text alignment.
-            \param vAlign     The vertical text alignment.
+            \param anchorX     The horizontal text anchor.
+            \param anchorY     The vertical text anchor.
+            \param displacementX     The horizontal text displacement.
+            \param displacementY     The vertical text displacement.
 
             \return The text boundary in world coordinate.
 
@@ -355,8 +357,8 @@ namespace te
             \warning Qt Canvas extended method.
            */
           te::gm::Polygon* getTextBoundary(const QPoint& p, const std::string& txt, float angle = 0.0,
-                                           te::at::HorizontalAlignment hAlign = te::at::Start,
-                                           te::at::VerticalAlignment vAlign = te::at::Baseline);
+            double anchorX = 0.5, double anchorY = 0.5,
+            int displacementX = 0, int displacementY = 0);
 
           /*!
             \brief It returns the internal pixmap used to draw geographical objects.

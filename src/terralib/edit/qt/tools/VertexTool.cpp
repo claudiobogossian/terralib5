@@ -52,10 +52,11 @@
 #include <memory>
 #include <string>
 
-te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, bool fixGeometry, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
   m_currentStage(FEATURE_SELECTION),
   m_isEdited(false),
+  m_fixGeometry(fixGeometry),
   m_stack(UndoStackManager::getInstance())
 {
   m_currentVertexIndex.makeInvalid();
@@ -202,6 +203,19 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
     updateRTree();
 
     setStage(VERTEX_SEARCH);
+  }
+
+  if (m_fixGeometry && m_feature)
+  {
+    if (!m_feature->getGeometry()->isValid())
+    {
+      m_feature->setGeometry(te::gm::Validate(m_feature->getGeometry()));
+
+      m_lines.clear();
+      GetLines(m_feature->getGeometry(), m_lines);
+
+      updateRTree();
+    }
   }
 
   storeFeature();

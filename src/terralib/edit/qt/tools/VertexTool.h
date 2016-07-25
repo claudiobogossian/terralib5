@@ -104,7 +104,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+        VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, bool fixGeometry = false, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~VertexTool();
@@ -153,6 +153,7 @@ namespace te
         te::sam::rtree::Index<VertexIndex, 8> m_rtree;
         StageType m_currentStage;
         bool m_isEdited;
+        bool m_fixGeometry;
         UndoStackManager& m_stack;
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);

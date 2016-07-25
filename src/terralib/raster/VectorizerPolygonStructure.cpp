@@ -44,7 +44,7 @@ te::rst::VectorizerPolygonStructure::VectorizerPolygonStructure(const Vectorizer
 }
 
 te::rst::VectorizerPolygonStructure::VectorizerPolygonStructure( te::gm::Polygon* polPtr,
-  const unsigned int& v, const double& tidy)
+  const double& v, const double& tidy)
 {
   init();
 
@@ -70,7 +70,7 @@ void te::rst::VectorizerPolygonStructure::clear()
 }
 
 void te::rst::VectorizerPolygonStructure::reset( te::gm::Polygon* polPtr, 
-  const unsigned int& v, const double& tidy)
+  const double& v, const double& tidy)
 {
   clear();
 

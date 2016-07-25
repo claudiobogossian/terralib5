@@ -640,6 +640,19 @@ te::gm::GeomType te::gm::Geometry::getGeomTypeId(const std::string& gtype)
   return te::gm::UnknownGeometryType;
 }
 
+std::string te::gm::Geometry::getGeomTypeString(const int& gId)
+{
+  std::map<std::string, GeomType>::const_iterator it;
+
+  for (it = sm_geomTypeMap.begin(); it != sm_geomTypeMap.end(); ++it)
+  {
+    if (it->second == gId)
+      return it->first;
+  }
+
+  return "UNKNOWGEOMETRYTYPE";
+}
+
 bool te::gm::Geometry::isGeomType(const std::string& stype)
 {
   return getGeomTypeId(stype) != te::gm::UnknownGeometryType;

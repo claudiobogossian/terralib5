@@ -65,7 +65,9 @@ namespace te
           InvalidBlendMethod, //!< Invalid blending method.
           NoBlendMethod, //!< No blending performed.
           EuclideanDistanceMethod, //!< Euclidean distance method.
-          SumMethod //!< Pixels will be summed inside the raster overlapped area.
+          SumMethod, //!< Pixels will be summed inside the raster overlapped area.
+          MaxMethod, //!< Keep the maximum value of two overlapping pixels.
+          MinMethod //!< Keep the minimum value of two overlapping pixels.
         };        
         
         /*! Default constructor. */
@@ -279,6 +281,26 @@ namespace te
         unsigned int m_sumMethodImp_IntersectionTileIndexersIdx;
         bool m_sumMethodImp_PointInsideIntersection;
         
+        // variables used by the maxMethodImp method
+        te::gm::Point m_maxMethodImp_auxPoint;
+        double m_maxMethodImp_Point2Line;
+        double m_maxMethodImp_Point2Col;        
+        std::complex< double > m_maxMethodImp_cValue1;
+        std::complex< double > m_maxMethodImp_cValue2;
+        unsigned int m_maxMethodImp_BandIdx; 
+        unsigned int m_maxMethodImp_IntersectionTileIndexersIdx;
+        bool m_maxMethodImp_PointInsideIntersection;        
+        
+        // variables used by the minMethodImp method
+        te::gm::Point m_minMethodImp_auxPoint;
+        double m_minMethodImp_Point2Line;
+        double m_minMethodImp_Point2Col;        
+        std::complex< double > m_minMethodImp_cValue1;
+        std::complex< double > m_minMethodImp_cValue2;
+        unsigned int m_minMethodImp_BandIdx; 
+        unsigned int m_minMethodImp_IntersectionTileIndexersIdx;
+        bool m_minMethodImp_PointInsideIntersection;             
+        
         /*! \brief Reset the instance to its initial default state. */
         void initState();
         
@@ -314,6 +336,24 @@ namespace te
         */
         void sumMethodImp( const double& line1, const double& col1,
           double* const values );        
+        
+        /*!
+          \brief Implementation for MaxMethod.
+          \param line Raster 1 Line.
+          \param col Raster 1 Column.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
+        */
+        void maxMethodImp( const double& line1, const double& col1,
+          double* const values );      
+
+        /*!
+          \brief Implementation for MinMethod.
+          \param line Raster 1 Line.
+          \param col Raster 1 Column.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
+        */
+        void minMethodImp( const double& line1, const double& col1,
+          double* const values );              
         
         /*!
           \brief Thread entry for the method blendIntoRaster1.

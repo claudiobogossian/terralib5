@@ -57,18 +57,33 @@
 std::map<std::string, te::map::LineCapStyle> te::map::CanvasConfigurer::sm_lineCapMap;
 std::map<std::string, te::map::LineJoinStyle> te::map::CanvasConfigurer::sm_lineJoinMap;
 
+std::map<std::string, te::se::Font::FontStyleType> te::map::CanvasConfigurer::sm_fontStyleMap;
+std::map<std::string, te::se::Font::FontWeightType> te::map::CanvasConfigurer::sm_fontWeightMap;
+
 te::map::CanvasConfigurer::CanvasConfigurer(te::map::Canvas* canvas)
   : m_canvas(canvas)
 {
   // LineCapMap
-  sm_lineCapMap[TE_SE_BUTT_CAP  ] = te::map::ButtCap;
-  sm_lineCapMap[TE_SE_ROUND_CAP ] = te::map::RoundCap;
+  sm_lineCapMap[TE_SE_BUTT_CAP] = te::map::ButtCap;
+  sm_lineCapMap[TE_SE_ROUND_CAP] = te::map::RoundCap;
   sm_lineCapMap[TE_SE_SQUARE_CAP] = te::map::SquareCap;
 
   // LineJoinMap
   sm_lineJoinMap[TE_SE_MITRE_JOIN] = te::map::MiterJoin;
   sm_lineJoinMap[TE_SE_ROUND_JOIN] = te::map::RoundJoin;
   sm_lineJoinMap[TE_SE_BEVEL_JOIN] = te::map::BevelJoin;
+
+  // FontStyle
+  sm_fontStyleMap["normal"] = te::se::Font::StyleNormal;
+  sm_fontStyleMap["italic"] = te::se::Font::StyleItalic;
+  sm_fontStyleMap["oblique"] = te::se::Font::StyleOblique;
+
+  // FontWeightType
+  sm_fontWeightMap["light"] = te::se::Font::WeightLight;
+  sm_fontWeightMap["normal"] = te::se::Font::WeightNormal;
+  sm_fontWeightMap["demibold"] = te::se::Font::WeightDemiBold;
+  sm_fontWeightMap["bold"] = te::se::Font::WeightBold;
+  sm_fontWeightMap["black"] = te::se::Font::WeightBlack;
 }
 
 te::map::CanvasConfigurer::~CanvasConfigurer()
@@ -174,15 +189,15 @@ void te::map::CanvasConfigurer::visit(const te::se::TextSymbolizer& visited)
     if(style)
     {
       std::string value = te::se::GetString(style);
-      //TODO: m_canvas->setTextStyle(need a map <std::string, te::FontStyle>);
+      m_canvas->setTextStyle(sm_fontStyleMap[value]);
     }
 
-    // Weight - {normal, and bold}
+    // Weight - {light, normal, demibold, bold and black}
     const te::se::SvgParameter* weight = font->getWeight();
     if(weight)
     {
       std::string value = te::se::GetString(weight);
-      //TODO: m_canvas->setTextWeight(need a map <std::string, te::WeightStyle>);
+      m_canvas->setTextWeight(sm_fontWeightMap[value]);
     }
   }
 

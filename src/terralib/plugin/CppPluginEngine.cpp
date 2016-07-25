@@ -225,7 +225,6 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 
   CppPluginProxy* proxy = new CppPluginProxy(slib, cppPlugin.release());
 
-  te::core::LibraryManager::instance().insert(libName, slib);
 
   return proxy;
 }

@@ -129,8 +129,8 @@ void te::mnt::MNTGenerationDialog::setLayers(std::list<te::map::AbstractLayerPtr
       {
         te::map::AbstractLayerPtr layer = it->get();
         std::auto_ptr<te::da::DataSetType> dsType(layer->getSchema());
-        m_inputType = getMNTType(dsType.get());
-        if (m_inputType == GRID)
+        mntType inputType = getMNTType(dsType.get());
+        if (inputType == GRID)
         {
           std::auto_ptr<te::da::DataSet> inds(layer->getData());
           std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
@@ -309,12 +309,16 @@ void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
         m_ui->m_interparamStackedWidget->setCurrentIndex(0);
         m_ui->m_powerLabel->show();
         m_ui->m_powerComboBox->show();
+        m_ui->m_radiusLabel->show();
+        m_ui->m_radiusLineEdit->show();
         break;
       case 3: //Simple Average
       case 4: //Nearest Neighbor
         m_ui->m_interparamStackedWidget->setCurrentIndex(0);
         m_ui->m_powerLabel->hide();
         m_ui->m_powerComboBox->hide();
+        m_ui->m_radiusLabel->show();
+        m_ui->m_radiusLineEdit->show();
         break;
       case 5: //Bilinear Spline
       case 6: //Bicubic Spline

@@ -31,6 +31,7 @@
 //#include "core/encoding.h"
 //#include "core/lib.h"
 //#include "core/logger.h"
+#include "core/plugin.h"
 //#include "core/translator.h"
 //#include "core/uri.h"
 #include "core/utils.h"

@@ -80,7 +80,7 @@ namespace te
   {
     TEEDITQTEXPORT QPointF GetPosition(QMouseEvent* e);
 
-    TEEDITQTEXPORT te::gm::Geometry* convertGeomType(const te::map::AbstractLayerPtr& layer, te::gm::Geometry* geom);
+    TEEDITQTEXPORT te::gm::Geometry* ConvertGeomType(const te::map::AbstractLayerPtr& layer, te::gm::Geometry* geom);
 
   } // end namespace edit
 }   // end namespace te

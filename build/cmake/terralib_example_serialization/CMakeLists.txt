@@ -36,8 +36,7 @@ target_link_libraries(terralib_example_serialization terralib_mod_common
                                                      terralib_mod_filter
                                                      terralib_mod_plugin
                                                      terralib_mod_symbology
-                                                     terralib_mod_xml
-                                                     terralib_mod_xsd)
+                                                     terralib_mod_xml)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/serialization COMPONENT devel)

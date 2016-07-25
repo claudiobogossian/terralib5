@@ -30,7 +30,6 @@
 // TerraLib
 #include "CppPluginEngine.h"
 #include "../lib/Library.h"
-#include "../lib/LibraryManager.h"
 #include "../translator/Translator.h"
 #include "CppPlugin.h"
 #include "CppPluginProxy.h"

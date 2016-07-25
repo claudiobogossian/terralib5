@@ -63,6 +63,8 @@ namespace te
 
           void setLayerRasterProperties(te::map::AbstractLayer* rasterLayer);
 
+          void setLayerVecProperties(te::map::AbstractLayer* vecLayer);
+
         protected:
 
           te::map::AbstractLayer* m_layer;

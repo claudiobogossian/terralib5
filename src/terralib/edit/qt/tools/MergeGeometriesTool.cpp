@@ -113,7 +113,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
   for (std::size_t i = 1; i < m_geocollection->getNumGeometries(); i++)
     mergeGeo = Union(*mergeGeo, *m_geocollection->getGeometryN(i));
 
-  mergeGeo = convertGeomType(m_layer, mergeGeo);
+  mergeGeo = ConvertGeomType(m_layer, mergeGeo);
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
 

@@ -24,64 +24,106 @@
   \brief A singleton that can be used to observe the available libraries in the system.
 
   \author Gilberto Ribeiro de Queiroz
+  \author Matheus Cavassan Zaglia
  */
 
 // TerraLib
 #include "LibraryManager.h"
 #include "Exception.h"
-#include "Library.h"
 #include "../translator/Translator.h"
+
 // STL
-#include <cassert>
-#include <map>
+#include <vector>
 
 // Boost
 #include <boost/format.hpp>
 
 struct te::core::LibraryManager::Impl
 {
-  std::map<std::string, std::weak_ptr<Library> > libraries;
+  std::vector<te::core::LibraryEntry > library_entries;
 };
 
 void
-te::core::LibraryManager::insert(const std::string& id, const std::shared_ptr<Library>& l)
+te::core::LibraryManager::insert(const te::core::LibraryEntry &entry)
 {
-  std::map<std::string, std::weak_ptr<Library> >::const_iterator it = m_pimpl->libraries.find(id);
-  if(it != m_pimpl->libraries.end())
+  if(exists(entry.m_name))
   {
-    boost::format err_msg(TE_TR("A library named '%1%' is already registered with identifier: %2%."));
+    boost::format err_msg(TE_TR("There is already a library registered with the name: %1%."));
 
-    std::shared_ptr<Library> lib = it->second.lock();
-
-    std::string lib_name = lib ? lib->getFileName() : std::string();
-
-    throw te::InvalidArgumentException() << te::ErrorDescription((err_msg % lib_name % it->first).str());
+    throw te::InvalidArgumentException() << te::ErrorDescription((err_msg % entry.m_name).str());
   }
 
-  m_pimpl->libraries.insert(std::make_pair(id, l));
+  m_pimpl->library_entries.push_back(entry);
 }
 
-std::shared_ptr<te::core::Library>
-te::core::LibraryManager::get(const std::string& id)
+void
+te::core::LibraryManager::remove(const std::string &name)
 {
-  std::map<std::string, std::weak_ptr<Library> >::const_iterator it = m_pimpl->libraries.find(id);
+  std::vector<LibraryEntry>::iterator it = std::find_if(m_pimpl->library_entries.begin(),
+                                                        m_pimpl->library_entries.end(),
+                                                        [&name](const LibraryEntry& le)
+                                                        { return le.m_name == name; });
 
-  if(it == m_pimpl->libraries.end())
+  if(it != m_pimpl->library_entries.end())
   {
-    boost::format err_msg(TE_TR("There is no library registered with identifier: %1%."));
+    boost::format err_msg(TE_TR("There is no library registered with the name: %1%."));
 
-    throw te::OutOfRangeException() << te::ErrorDescription((err_msg % id).str());
+    throw te::OutOfRangeException() << te::ErrorDescription((err_msg % name).str());
   }
 
-  return it->second.lock();
+  if(it->m_initialized)
+  {
+    boost::format err_msg(TE_TR("The library cannot be initialized in order to remove it."));
+
+    throw te::Exception() << te::ErrorDescription((err_msg % name).str());
+  }
+
+  m_pimpl->library_entries.erase(it);
+}
+
+
+const te::core::LibraryEntry&
+te::core::LibraryManager::get(const std::string& name)
+{
+  for(const LibraryEntry& le: m_pimpl->library_entries)
+  {
+    if(le.m_name == name)
+      return le;
+  }
+
+  boost::format err_msg(TE_TR("There is no library registered with the name: %1%."));
+
+  throw te::OutOfRangeException() << te::ErrorDescription((err_msg % name).str());
+}
+
+bool
+te::core::LibraryManager::isInitialized(const std::string& name)
+{
+  for(const LibraryEntry& le: m_pimpl->library_entries)
+  {
+    if(le.m_name == name)
+      return le.m_initialized;
+  }
+
+  boost::format err_msg(TE_TR("There is no library registered with the name: %1%."));
+
+  throw te::OutOfRangeException() << te::ErrorDescription((err_msg % name).str());
+}
+
+bool te::core::LibraryManager::exists(const std::string &name)
+{
+  return std::find_if(m_pimpl->library_entries.begin(),
+                      m_pimpl->library_entries.end(),
+                      [&name](const LibraryEntry& le)
+                      { return le.m_name == name; }) != m_pimpl->library_entries.end();
 }
 
 te::core::LibraryManager&
 te::core::LibraryManager::instance()
 {
-  static LibraryManager inst;
+  static LibraryManager instance;
 
-  return inst;
+  return instance;
 }
 
 te::core::LibraryManager::LibraryManager()

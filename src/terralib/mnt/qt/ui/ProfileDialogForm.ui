@@ -96,28 +96,47 @@
        </layout>
       </item>
       <item>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="m_dummycheckBox">
-          <property name="text">
-           <string>Dummy Value</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="m_dummylineEdit">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QStackedWidget" name="m_inputstackedWidget">
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="page">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <widget class="QCheckBox" name="m_dummycheckBox">
+              <property name="text">
+               <string>Dummy Value</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="m_dummylineEdit">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_2">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="m_Zlabel">
+            <property name="text">
+             <string>Quota Column:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="m_ZcomboBox"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </item>
       <item>
        <widget class="QGroupBox" name="groupBox">
@@ -166,6 +185,9 @@
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
                  <widget class="QToolButton" name="m_addPointMousePushButton">
+                  <property name="toolTip">
+                   <string>Create trajectory by click in path.</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -179,6 +201,9 @@
                 </item>
                 <item>
                  <widget class="QToolButton" name="m_changePointPushButton">
+                  <property name="toolTip">
+                   <string>Move selected point in trajectory.</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -192,6 +217,9 @@
                 </item>
                 <item>
                  <widget class="QToolButton" name="m_addPointPushButton">
+                  <property name="toolTip">
+                   <string>Add point on selected trajectory.</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -205,6 +233,9 @@
                 </item>
                 <item>
                  <widget class="QToolButton" name="m_deletePointPushButton">
+                  <property name="toolTip">
+                   <string>Delete selected point from trajectory.</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -218,6 +249,9 @@
                 </item>
                 <item>
                  <widget class="QToolButton" name="m_deletePathPushButton">
+                  <property name="toolTip">
+                   <string>Delete selected trajectory.</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -231,6 +265,9 @@
                 </item>
                 <item>
                  <widget class="QToolButton" name="m_invertPushButton">
+                  <property name="toolTip">
+                   <string>Invert trajectory direction.</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>

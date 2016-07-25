@@ -50,6 +50,8 @@
 #include "../../raster.h"
 #include "../../statistics/core/Utils.h"
 
+#include "../core/Utils.h"
+
 #include "LayerSearchDialog.h"
 #include "ProfileDialog.h"
 #include "ProfileResultDialog.h"
@@ -156,8 +158,6 @@ void te::mnt::ProfileDialog::setLayers(std::list<te::map::AbstractLayerPtr> laye
             {
               case te::gm::LineStringType:
               case te::gm::MultiLineStringType:
-                m_ui->m_vectorlayersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-                break;
               case te::gm::LineStringZType:
               case te::gm::MultiLineStringZType:
               case te::gm::LineStringMType:
@@ -230,6 +230,19 @@ void te::mnt::ProfileDialog::release()
 
 void te::mnt::ProfileDialog::onInputLayerToolButtonClicked()
 {
+  LayerSearchDialog search(this->parentWidget());
+  search.setLayers(m_layers);
+  QList<mntType> types;
+  types << TIN << GRID << ISOLINE;
+  search.setActive(types);
+
+  if (search.exec() != QDialog::Accepted)
+  {
+    return;
+  }
+
+  m_ui->m_inputLayersComboBox->setCurrentText(search.getLayer().get()->getTitle().c_str());
+
 }
 
 void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
@@ -245,9 +258,67 @@ void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
       std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
       te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
-      std::auto_ptr<te::da::DataSet> dsRaster = inDataSource->getDataSet(indsLayer->getDataSetName());
-      if (dsType->hasRaster()) //GRID
+
+      m_inputType = getMNTType(dsType.get());
+
+      if (m_inputType != GRID)
       {
+        m_ui->m_inputstackedWidget->setCurrentIndex(1);
+
+        if (m_inputType == SAMPLE || m_inputType == ISOLINE)
+        {
+          te::da::DataSourcePtr inDataSource = te::da::GetDataSource(m_inputLayer->getDataSourceId(), true);
+          std::string inSetName = m_inputLayer->getDataSetName();
+
+          if (!inDataSource.get())
+            return;
+
+          std::auto_ptr<te::da::DataSet> inDset(inDataSource->getDataSet(inSetName));
+          std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
+          inDset->moveFirst();
+          std::auto_ptr<te::gm::Geometry> gin(inDset->getGeometry(geo_pos));
+          if (gin->is3D())
+          {
+            m_ui->m_ZcomboBox->hide();
+            m_ui->m_Zlabel->hide();
+            dsType.release();
+            return;
+          }
+
+          m_ui->m_ZcomboBox->show();
+          m_ui->m_Zlabel->show();
+          std::vector<te::dt::Property*> props = dsType->getProperties();
+          for (std::size_t i = 0; i < props.size(); ++i)
+          {
+            switch (props[i]->getType())
+            {
+            case te::dt::FLOAT_TYPE:
+            case te::dt::DOUBLE_TYPE:
+            case te::dt::INT16_TYPE:
+            case te::dt::INT32_TYPE:
+            case te::dt::INT64_TYPE:
+            case te::dt::UINT16_TYPE:
+            case te::dt::UINT32_TYPE:
+            case te::dt::UINT64_TYPE:
+            case te::dt::NUMERIC_TYPE:
+              m_ui->m_ZcomboBox->addItem(QString(props[i]->getName().c_str()), QVariant(props[i]->getName().c_str()));
+              break;
+            default:
+              break;
+            }
+          }
+        }
+        else //TIN
+        {
+          m_ui->m_ZcomboBox->hide();
+          m_ui->m_Zlabel->hide();
+        }
+      }
+      else
+      {
+        m_ui->m_inputstackedWidget->setCurrentIndex(0);
+        std::auto_ptr<te::da::DataSet> dsRaster = inDataSource->getDataSet(indsLayer->getDataSetName());
+
         te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(dsType.get());
         std::auto_ptr<te::rst::Raster> in_raster = dsRaster->getRaster(rasterProp->getName());
         m_ui->m_dummylineEdit->setText(QString::number(in_raster->getBand(0)->getProperty()->m_noDataValue));
@@ -539,6 +610,7 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
   if (m_trajectoryLayer)
     visibility = m_trajectoryLayer->getVisibility();
 
+  std::string attrZ("");
   try
   {
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -574,15 +646,19 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     if (gin.get())
       if (!gin.get()->is3D())
       {
-        std::stringstream msg;
-        msg << "'" << inDsetName << "' " << TE_TR("without 3D information!");
-        throw te::common::Exception(msg.str());
-      }
+        attrZ = m_ui->m_ZcomboBox->currentText().toStdString();
+        if (attrZ.empty())
+        {
+          std::stringstream msg;
+          msg << "'" << inDsetName << "' " << TE_TR("Sets Quote Attribute!");
+          throw te::common::Exception(msg.str());
+        }
+     }
 
     std::auto_ptr<te::da::DataSetType> inDsetType(inDataSource->getDataSetType(inDsetName));
 
     Profile* profile = new Profile();
-    profile->setInput(inDataSource, inDsetName, inDsetType, m_dummy);
+    profile->setInput(inDataSource, inDsetName, inDsetType, m_dummy, attrZ);
     profile->setSRID(m_inputLayer->getSRID());
 
     std::string geostype;

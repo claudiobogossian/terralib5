@@ -79,10 +79,12 @@ namespace te
 
           virtual void valueChanged(QtProperty* p, int value);
           virtual void valueChanged(QtProperty* p, double value);
+          virtual void valueChanged(QtProperty* p, bool value);
           virtual void valueChanged(QtProperty* p, const QString &value);
           virtual void valueChanged(QtProperty* p, const QColor &value);
           virtual void valueChanged(QtProperty* p, const QFont &value);
           virtual void valueChanged(QtProperty* p, const QSize &value);
+          virtual void valueChanged(QtProperty* p, const QSizeF &value);
           virtual void valueChanged(QtProperty* p, const QPointF &value);
 
         protected:

@@ -88,6 +88,30 @@ add_executable(terralib_example_core_plugin ${TERRALIB_EXAMPLE_CORE_PLUGIN_SRC_F
 
 target_link_libraries(terralib_example_core_plugin terralib_mod_core)
 
+if(WIN32)
+  add_definitions(-DTECOREEXEMPDLL )
+endif()
+
+#Plugin1 example
+file(GLOB TERRALIB_EXAMPLE_CORE_PLUGIN1_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin1/*.cpp)
+
+add_library(terralib_example_core_plugin1 SHARED ${TERRALIB_EXAMPLE_CORE_PLUGIN1_SRC_FILES})
+target_link_libraries(terralib_example_core_plugin1 terralib_mod_core)
+
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin1/plugin1.teplg.json
+     DESTINATION ${CMAKE_BINARY_DIR}/example/plugins)
+
+#Plugin2 example
+file(GLOB TERRALIB_EXAMPLE_CORE_PLUGIN2_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin2/*.cpp)
+
+add_library(terralib_example_core_plugin2 SHARED ${TERRALIB_EXAMPLE_CORE_PLUGIN2_SRC_FILES})
+target_link_libraries(terralib_example_core_plugin2 terralib_mod_core)
+
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/plugin/te_example_core_plugin2/plugin2.teplg.json
+     DESTINATION ${CMAKE_BINARY_DIR}/example/plugins)
+
+add_dependencies(terralib_example_core_plugin terralib_example_core_plugin1
+                                              terralib_example_core_plugin2)
 
 # Examples of core/uri
 

@@ -53,8 +53,18 @@ namespace te
         /*! \brief Virtual destructor. */
         virtual ~CppPlugin();
 
+        /*!
+          \brief It returns the PluginInfo of the CppPlugin
+
+          \return The CppPlugin information
+         */
         const PluginInfo& info() const;
 
+        /*!
+          \brief It returns true or false if the CppPlugin was initialized
+
+          \return The current state of the CppPlugin
+         */
         bool initialized() const;
 
       protected:
@@ -63,7 +73,7 @@ namespace te
         bool m_initialized;
     };
 
-    //! The type of function for plugin's entry point.
+    /*! \brief The type of function for plugin's entry point. */
     typedef CppPlugin* (*te_get_plugin_fnct_t)(const PluginInfo& pinfo);
 
   }  // end namespace plugin
@@ -75,7 +85,7 @@ class plugin_class_name : public te::core::CppPlugin \
   public: \
 \
     plugin_class_name(const te::core::PluginInfo& pinfo) \
-      : CppPlugin(pinfo) \
+      : te::core::CppPlugin(pinfo) \
     { \
     }
 
