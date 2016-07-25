@@ -49,20 +49,22 @@ te::core::Logger& te::core::Logger::instance()
   return instance;
 }
 
-void te::core::Logger::addLoggerFromFile(const std::string& name, const std::string& filename)
+void te::core::Logger::addLoggerFromFile(const std::string& filename)
 {
-  if(name.empty())
-    te::InvalidArgumentException() << te::ErrorDescription(TE_TR("The logger name cannot be empty."));
+  if(filename.empty())
+    te::InvalidArgumentException() << te::ErrorDescription(TE_TR("The logger configuration file name cannot be empty."));
 
-  if(exists(name))
+  if(exists(filename))
   {
-    boost::format err_msg(TE_TR("There is already a logger registered with the name: %1%"));
+    boost::format err_msg(TE_TR("There is already a logger registered using the configuration in file named: %1%"));
 
-    te::InvalidArgumentException() << te::ErrorDescription((err_msg  % name).str());
+    te::InvalidArgumentException() << te::ErrorDescription((err_msg  % filename).str());
   }
 
   boost::filesystem::ifstream settings(filename);
   boost::log::init_from_stream(settings);
+  
+  m_logger_list.push_back(filename);
 }
 
 void te::core::Logger::addLogger(const std::string& name, const std::string& filename, std::string format)

@@ -56,8 +56,8 @@ BOOST_AUTO_TEST_CASE(default_logger_test)
 
 BOOST_AUTO_TEST_CASE(configuration_file_logger_test)
 {
-  BOOST_CHECK_THROW(TE_ADD_LOGGER_FROM_FILE("unittest", "mylogger.ini"), std::exception);
-  BOOST_CHECK_NO_THROW(TE_ADD_LOGGER_FROM_FILE("unittest",
+  BOOST_CHECK_THROW(TE_ADD_LOGGER_FROM_FILE("mylogger.ini"), std::exception);
+  BOOST_CHECK_NO_THROW(TE_ADD_LOGGER_FROM_FILE(
                          te::core::FindInTerraLibPath("share/terralib/config/te-log-unittest.ini")));
   BOOST_CHECK_NO_THROW(TE_CORE_LOG_WARN("unittest","Warning log"));
   BOOST_CHECK_NO_THROW(TE_CORE_LOG_INFO("unittest","Info log"));

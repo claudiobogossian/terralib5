@@ -84,12 +84,11 @@ namespace te
         /*!
           \brief It sets the logger configuration from a given file.
 
-          \param name The name of the logger.
           \param filename The name of the configuration file.
 
           \exception std::exception If the configuration file is doesn't load.
         */
-        void addLoggerFromFile(const std::string &name, const std::string &filename);
+        void addLoggerFromFile(const std::string &filename);
 
         /*!
           \brief It sets the logger using a default implementation.
@@ -173,9 +172,9 @@ namespace te
   \exception std::exception If the configuration file is doesn't load.
   */
 #ifdef TERRALIB_LOGGER_ENABLED
-  #define TE_ADD_LOGGER_FROM_FILE(name, filename) te::core::Logger::instance().addLoggerFromFile(name, filename)
+  #define TE_ADD_LOGGER_FROM_FILE(filename) te::core::Logger::instance().addLoggerFromFile(filename)
 #else
-  #define TE_ADD_LOGGER_FROM_FILE(name, filename) ((void)0)
+  #define TE_ADD_LOGGER_FROM_FILE(filename) ((void)0)
 #endif
 
 /*!
