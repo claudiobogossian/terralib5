@@ -3,6 +3,7 @@
 #include "../../src/terralib/ws/ogc/wms/client/XMLParser.h"
 #include "../../src/terralib/common/TerraLib.h"
 #include "../../src/terralib/qt/af/ApplicationController.h"
+#include "../../src/terralib/ws/ogc/wms/client/WMSClient.h"
 
 #include <QApplication>
 
@@ -14,9 +15,15 @@ int main(int argc, char *argv[])
 
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  te::ws::ogc::wms::XMLParser parser;
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
 
-  parser.parseCapabilities("/home/emerson/workspace/test_data/wmscapabilities.xml");
+  std::string url = "http://mapas.mma.gov.br/i3geo/ogc.php?tema=transporte";
+
+  te::ws::ogc::WMSClient client (usrDataDir, url);
+
+  client.updateCapabilities();
+
+  te::ws::ogc::wms::WMSCapabilities capabilities = client.getCapabilities();
 
   return 0;
 }

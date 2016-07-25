@@ -17,6 +17,10 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
+
+#ifndef __TERRALIB_WS_OGC_WCS_XMLPARSER_WMS_H
+#define __TERRALIB_WS_OGC_WCS_XMLPARSER_WMS_H
+
 #include "DataTypes.h"
 
 // TerraLib
@@ -43,6 +47,14 @@ namespace te
 
         virtual ~XMLParser();
 
+        /*!
+          \brief Method responsible to parse a WMS XML GetCapabilities file and
+          create an WMSCapabilities instance with document metadata.
+
+          \param xmlPath path of the file that will be parsed.
+
+          \return Return the WMS Server Capabilities
+        */
         virtual WMSCapabilities parseCapabilities(const std::string& xmlPath);
 
       private:
@@ -78,3 +90,5 @@ namespace te
     }
   }
 }
+
+#endif //__TERRALIB_WS_OGC_WCS_XMLPARSER_WMS_H
