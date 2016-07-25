@@ -1,6 +1,10 @@
 -------------------------------------------------------
 -- import TerraLib module and do some initialization --
 -------------------------------------------------------
+package.cpath = package.cpath .. ";./lib?.so"
+
+print(package.cpath)
+
 require ( "terralib_mod_binding_lua" )
  
 ---------------------------
