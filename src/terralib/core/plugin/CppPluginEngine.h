@@ -43,7 +43,7 @@ namespace te
 
       \brief A plugin engine for plugins written in C++.
      */
-    class CppPluginEngine : public AbstractPluginEngine
+    class TECOREEXPORT CppPluginEngine : public AbstractPluginEngine
     {
       public:
 
