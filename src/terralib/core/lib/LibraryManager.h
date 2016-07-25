@@ -36,6 +36,9 @@
 // STL
 #include <string>
 
+// Boost
+#include <boost/function.hpp>
+
 namespace te
 {
   namespace core
@@ -45,21 +48,21 @@ namespace te
 
       \brief This is the type for call back functions that makes the startup of a module.
      */
-    typedef void (*StartupFptr)(void);
+    typedef boost::function0<void> StartupFnct;
 
     /*!
       \typedef void (*CleanupFptr)(void);
 
       \brief This is the type for call back functions that makes the cleanup of a module.
      */
-    typedef void (*CleanupFptr)(void);
+    typedef boost::function0<void> CleanupFnct;
 
 
     struct LibraryEntry
     {
       std::string m_name;
-      StartupFptr m_startFptr;
-      CleanupFptr m_cleanupFptr;
+      StartupFnct m_startFptr;
+      CleanupFnct m_cleanupFptr;
       bool m_initialized;
     };
 
@@ -142,11 +145,9 @@ namespace te
         /*! \brief Singleton destructor must be private or protected. */
         ~LibraryManager();
 
-        /*! \brief Singleton copy constructor must be private or protected. */
-        LibraryManager(const LibraryManager&); // no copy allowed
-
-        /*! \brief Singleton copy assignment operator must be private or protected. */
-        LibraryManager& operator=(const LibraryManager&); // no copy allowed
+// no copy allowed
+        LibraryManager(const LibraryManager&);
+        LibraryManager& operator=(const LibraryManager&);
 
       private:
 

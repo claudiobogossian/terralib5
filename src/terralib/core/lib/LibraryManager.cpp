@@ -60,9 +60,9 @@ void
 te::core::LibraryManager::remove(const std::string &name)
 {
   std::vector<LibraryEntry>::iterator it = std::find_if(m_pimpl->library_entries.begin(),
-                                                              m_pimpl->library_entries.end(),
-                                                              [&name](const LibraryEntry& le)
-                                                              { return le.m_name == name; });
+                                                        m_pimpl->library_entries.end(),
+                                                        [&name](const LibraryEntry& le)
+                                                        { return le.m_name == name; });
 
   if(it != m_pimpl->library_entries.end())
   {
@@ -70,6 +70,7 @@ te::core::LibraryManager::remove(const std::string &name)
 
     throw te::OutOfRangeException() << te::ErrorDescription((err_msg % name).str());
   }
+
   if(it->m_initialized)
   {
     boost::format err_msg(TE_TR("The library cannot be initialized in order to remove it."));
