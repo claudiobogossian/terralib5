@@ -40,6 +40,9 @@
 #include "Polygon.h"
 #include "Utils.h"
 
+// STL
+#include <cmath>
+
 #ifdef TERRALIB_GEOS_ENABLED
 // GEOS
 #include <geos/algorithm/CentroidArea.h>
@@ -426,7 +429,7 @@ double te::gm::GetAngle(te::gm::Coord2D coordA, te::gm::Coord2D coordB)
   double dx = (coordA.x - coordB.x);
   double dy = (coordA.y - coordB.y);
 
-  double rad = atan(dy / dx);
+  double rad = std::atan(dy / dx);
 
   //Convert radians to degrees
   double angle = rad / 0.01745329251994329576;
@@ -447,7 +450,7 @@ bool te::gm::Rotate(te::gm::Coord2D pr, te::gm::LineString* l, double angle, te:
       return (false);
 
     //transform Degree to Radius
-    alfa = (4.*atan(1.)*angle) / 180.;
+    alfa = (4.*std::atan(1.)*angle) / 180.;
 
     dx = pr.getX();
     dy = pr.getY();
@@ -459,8 +462,8 @@ bool te::gm::Rotate(te::gm::Coord2D pr, te::gm::LineString* l, double angle, te:
       x = curPoint->getX() - dx;
       y = curPoint->getY() - dy;
 
-      xr = x * cos(alfa) - y * sin(alfa);
-      yr = x * sin(alfa) + y * cos(alfa);
+      xr = x * std::cos(alfa) - y * std::sin(alfa);
+      yr = x * std::sin(alfa) + y * std::cos(alfa);
 
       lOut->setPoint(count, xr + dx, yr + dy);
     }
@@ -485,8 +488,8 @@ bool te::gm::AdjustSegment(te::gm::Point* P0, te::gm::Point* P1, double d0, te::
 
     te::gm::Coord2D vL1((P1->getX() - P0->getX()), (P1->getY() - P0->getY()));
     te::gm::Coord2D vL2(-1 * (P1->getX() - P0->getX()), -1 * (P1->getY() - P0->getY()));
-    vL_norm1 = sqrt(vL1.getX() * vL1.getX() + vL1.getY() * vL1.getY());
-    vL_norm2 = sqrt(vL2.getX() * vL2.getX() + vL2.getY() * vL2.getY());
+    vL_norm1 = std::sqrt(vL1.getX() * vL1.getX() + vL1.getY() * vL1.getY());
+    vL_norm2 = std::sqrt(vL2.getX() * vL2.getX() + vL2.getY() * vL2.getY());
 
     te::gm::Coord2D uL1((vL1.getX() / vL_norm1), (vL1.getY() / vL_norm1));
     te::gm::Coord2D uL2((vL2.getX() / vL_norm2), (vL2.getY() / vL_norm2));
