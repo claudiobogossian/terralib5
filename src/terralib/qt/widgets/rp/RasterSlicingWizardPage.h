@@ -40,11 +40,21 @@ namespace Ui
 
 namespace te 
 {
+  namespace se
+  {
+    class ColorMap;
+  }
+
   namespace qt 
   {
     namespace widgets 
     {
-      
+      class ChartStyle;
+      class ChartDisplay;
+      class ColorMapWidget;
+      class Histogram;
+      class HistogramChart;
+
       class TEQTWIDGETSEXPORT RasterSlicingWizardPage : public QWizardPage
       {
           Q_OBJECT
@@ -55,22 +65,48 @@ namespace te
 
           ~RasterSlicingWizardPage();
 
-          /*!
-            \brief Configure the total number of bands 
-            \param bandsNumber The bands number 
+          te::se::ColorMap* getColorMap();
 
-          */
-          void setBandsNumber( const unsigned int bandsNumber );
+          std::string getCurrentBand();
+
+          const te::gm::Envelope& getExtent();
+
+          int getSRID();
+
+          bool trimRaster();
+
+          void setRaster(te::rst::Raster* raster);
+
+          void setExtent(const te::gm::Envelope& extent);
+
+          void setSRID(int srid = 0);
           
           void getParameters( unsigned int& inputRasterBand, bool& createPaletteRaster,
             unsigned int& slicesNumber, bool& eqHistogram );
+
+          bool isComplete() const;
           
         protected :
 
-          std::auto_ptr<Ui::RasterSlicingWizardPageForm> m_ui;
+          std::auto_ptr<Ui::RasterSlicingWizardPageForm>  m_ui;
+          te::qt::widgets::ChartStyle*                    m_chartStyle;
+          te::qt::widgets::ChartDisplay*                  m_chartDisplay;
+          te::qt::widgets::ColorMapWidget*                m_colorMapWidget;
+          te::qt::widgets::Histogram*                     m_histogram;
+          te::qt::widgets::HistogramChart*                m_histogramChart;
+          std::auto_ptr<te::rst::Raster>                  m_raster;
 
-      };
-      
+        protected slots:
+
+          void onApplyPushButtonClicked();
+          void onHistBandComboBoxIndexCHanged(int index);
+          void onSliceBandComboBoxIndexCHanged(int index);
+
+      private:
+
+        te::gm::Envelope m_extent;
+        int m_srid;
+      };      
     } // namespace widgets
   } // namespace qt
 } // namespace te

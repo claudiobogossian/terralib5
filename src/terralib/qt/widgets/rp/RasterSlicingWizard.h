@@ -56,6 +56,10 @@ namespace te
 
           te::map::AbstractLayerPtr getOutputLayer();
 
+          void setExtent(const te::gm::Envelope& extent);
+
+          void setSRID(int srid = 0);
+
         protected:
 
           void addPages();
@@ -69,8 +73,7 @@ namespace te
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
 
           te::map::AbstractLayerPtr m_outputLayer;
-      };
-      
+      };      
     } // namespace widgets
   } // namespace qt
 } // namespace te

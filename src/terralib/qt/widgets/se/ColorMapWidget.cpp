@@ -161,6 +161,11 @@ std::string te::qt::widgets::ColorMapWidget::getCurrentBand()
   return "";
 }
 
+Ui::ColorMapWidgetForm * te::qt::widgets::ColorMapWidget::getForm()
+{
+  return m_ui.get();
+}
+
 void te::qt::widgets::ColorMapWidget::initialize()
 {
   m_colorBar->getColorBar()->setHeight(20);
@@ -739,7 +744,6 @@ void te::qt::widgets::ColorMapWidget::buildRecodingMap()
   }
 }
 
-
 void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
 {
   delete m_cb;
@@ -927,8 +931,8 @@ void te::qt::widgets::ColorMapWidget::onBandSelected(QString value)
 
   const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(m_raster, te::rst::SUMMARY_MIN);
   const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(m_raster, te::rst::SUMMARY_MAX);
-  const std::complex<double>* cmin = rsMin->at(0).m_minVal;
-  const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
+  const std::complex<double>* cmin = rsMin->at(value.toInt()).m_minVal;
+  const std::complex<double>* cmax = rsMax->at(value.toInt()).m_maxVal;
   double min = cmin->real();
   double max = cmax->real();
 

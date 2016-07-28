@@ -27,6 +27,8 @@
 #include "../../../qt/widgets/rp/RasterSlicingWizard.h"
 #include "../../../raster/Raster.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/BaseApplication.h"
+#include "../../widgets/canvas/MapDisplay.h"
 #include "RasterSlicingAction.h"
 
 // Qt
@@ -54,6 +56,14 @@ void te::qt::plugins::rp::RasterSlicingAction::onActionActivated(bool checked)
 
   dlg.setList( layersList );
 
+  //get display extent
+  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  const te::gm::Envelope extent = ba->getMapDisplay()->getExtent();
+  int srid = ba->getMapDisplay()->getSRID();
+
+  dlg.setExtent(extent);
+  dlg.setSRID(srid);
+  
   if(dlg.exec() == QDialog::Accepted)
   {
     //add new layer
@@ -68,8 +78,6 @@ void te::qt::plugins::rp::RasterSlicingAction::onPopUpActionActivated(bool check
   if(layer.get())
   {
     te::qt::widgets::RasterSlicingWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
-
-    //dlg.setLayer(layer);
 
     if(dlg.exec() == QDialog::Accepted)
     {
