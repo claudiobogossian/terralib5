@@ -29,6 +29,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 // TerraLib
 #include "../../common/Singleton.h"
 #include "../../geometry/Enums.h"
+#include "../Utils.h"
 #include "Config.h"
 
 // Qt
@@ -76,9 +77,9 @@ namespace te
 
       void drawRepository(const std::string& source, const te::gm::Envelope& e, int srid);
 
-      void prepare(te::gm::GeomType type, const bool& removed = false);
+      void prepare(te::gm::GeomType type, OperationType operation = te::edit::GEOMETRY_SELECTED);
 
-      void draw(te::gm::Geometry* geom, bool showVertexes = false, const bool& removed = false);
+      void draw(te::gm::Geometry* geom, bool showVertexes = false, OperationType operation = te::edit::GEOMETRY_SELECTED);
 
       void drawVertexes(te::gm::Geometry* geom);
 
@@ -94,6 +95,10 @@ namespace te
         const std::size_t& contourWidth, const std::size_t& size);
 
       void setLineStyle(const QColor& lineColor, const std::size_t& lineWidth);
+
+      void setUserCellStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth);
+
+      void setOtherCellStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth);
 
     protected:
 
@@ -124,6 +129,14 @@ namespace te
       QColor m_pointContourColor;
       std::size_t m_pointContourWidth;
       std::size_t m_pointSize;
+
+      QColor m_freeCellsFillColor;
+      QColor m_freeCellsContourColor;
+      std::size_t m_freeCellsContourWidth;
+
+      QColor m_lockedCellsFillColor;
+      QColor m_lockedCellsContourColor;
+      std::size_t m_lockedCellsContourWidth;
 
       te::gm::GeomType m_currentGeomType;
       bool m_styleChanged;
