@@ -89,6 +89,7 @@ QWidget* te::qt::widgets::StyleDockWidget::buildUi()
   connect(m_styleController, SIGNAL(mapRefresh()), this, SLOT(onMapRefresh()));
   connect(m_styleController->getStyleExplorer(), SIGNAL(symbolizerClicked(te::se::Symbolizer*)), this, SLOT(onSymbolizerSelected(te::se::Symbolizer*)));
   connect(m_styleController->getStyleExplorer(), SIGNAL(ruleClicked(te::se::Rule*)), this, SLOT(onRuleSelected(te::se::Rule*)));
+  connect(m_styleController->getStyleExplorer(), SIGNAL(styleImported(te::se::Style*)), this, SLOT(onStyleImported(te::se::Style*)));
   connect(this, SIGNAL(symbolizerChanged(te::se::Symbolizer*)), m_styleController->getStyleExplorer(), SLOT(onSymbolizerChanged(te::se::Symbolizer*)));
 
   // Tab widget
@@ -208,6 +209,15 @@ void te::qt::widgets::StyleDockWidget::onSymbolizerSelected(te::se::Symbolizer* 
       m_textWidget->setSymbolizer(symbText);
     }
   }
+}
+
+void te::qt::widgets::StyleDockWidget::onStyleImported(te::se::Style* style)
+{
+  m_currentLayer->setStyle(style);
+
+  m_styleController->setStyle(style);
+
+  emit symbolChanged(m_currentLayer);
 }
 
 void te::qt::widgets::StyleDockWidget::onPolygonSymbolizerChanged()

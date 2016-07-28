@@ -29,6 +29,15 @@
 #include "../../../se/Symbolizer.h"
 #include "../../../se/TextSymbolizer.h"
 #include "../../../se/Utils.h"
+
+#include "../../../se/serialization/xml/Style.h"
+#include "../../../se/Style.h"
+#include "../../../xml/AbstractWriter.h"
+#include "../../../xml/AbstractWriterFactory.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/ReaderFactory.h"
+
+
 #include "ui_StyleControllerWidgetForm.h"
 #include "StyleControllerWidget.h"
 #include "StyleExplorer.h"
@@ -38,9 +47,16 @@
 
 // Qt
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QFile>
+#include <QDir>
+#include <QString>
 
 // STL
 #include <cassert>
+
+// Boost
+#include <boost/filesystem/operations.hpp>
 
 te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -62,6 +78,8 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   connect(m_ui->m_upSymbToolButton, SIGNAL(clicked()), this, SLOT(onUpSymbolizerClicked()));
   connect(m_ui->m_downSymbToolButton, SIGNAL(clicked()), this, SLOT(onDownSymbolizerClicked()));
   connect(m_ui->m_libManagerToolButton, SIGNAL(clicked()), this, SLOT(onLibraryManagerClicked()));
+  connect(m_ui->m_exportStyleToolButton, SIGNAL(clicked()), this, SLOT(onExportClicked()));
+  connect(m_ui->m_importStyleToolButton, SIGNAL(clicked()), this, SLOT(onImportClicked()));
   connect(m_ui->m_mapRefreshToolButton, SIGNAL(clicked()), this, SLOT(onMapRefreshClicked()));
 
   updateUi();
@@ -74,6 +92,7 @@ te::qt::widgets::StyleControllerWidget::~StyleControllerWidget()
 void te::qt::widgets::StyleControllerWidget::setStyle(te::se::Style* style)
 {
   m_explorer->setStyle(style);
+  m_currentStyle = style;
 }
 
 te::qt::widgets::StyleExplorer* te::qt::widgets::StyleControllerWidget::getStyleExplorer() const
@@ -89,6 +108,8 @@ void te::qt::widgets::StyleControllerWidget::updateUi()
   m_ui->m_addSymbToolButton->setIcon(QIcon::fromTheme("list-add").pixmap(16, 16));
   m_ui->m_removeSymbToolButton->setIcon(QIcon::fromTheme("list-remove").pixmap(16,16));
   m_ui->m_libManagerToolButton->setIcon(QIcon::fromTheme("library").pixmap(16,16));
+  m_ui->m_importStyleToolButton->setIcon(QIcon::fromTheme("").pixmap(16, 16));
+  m_ui->m_exportStyleToolButton->setIcon(QIcon::fromTheme("").pixmap(16, 16));
   m_ui->m_mapRefreshToolButton->setIcon(QIcon::fromTheme("map-draw").pixmap(16,16));
 }
 
@@ -219,6 +240,27 @@ void te::qt::widgets::StyleControllerWidget::onLibraryManagerClicked()
   m_explorer->updateStyleTree();
 }
 
+void te::qt::widgets::StyleControllerWidget::onExportClicked()
+{
+  QString styleFile = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("style (*.sld)"));
+
+  if (!styleFile.isEmpty())
+    writeStyle(m_currentStyle, styleFile.toUtf8().constData());
+  else
+    return;
+
+}
+
+void te::qt::widgets::StyleControllerWidget::onImportClicked()
+{
+  QString styleFile = QFileDialog::getOpenFileName(this, "Select a style file", "", "style (*.sld)");
+
+  if (!styleFile.isEmpty())
+    readStyle(styleFile.toUtf8().constData());
+  else
+    return;
+}
+
 void te::qt::widgets::StyleControllerWidget::onMapRefreshClicked()
 {
   emit mapRefresh();
@@ -227,4 +269,73 @@ void te::qt::widgets::StyleControllerWidget::onMapRefreshClicked()
 void te::qt::widgets::StyleControllerWidget::changeLegendIconSize(int size)
 {
   m_explorer->setLegendIconSize(size);
+}
+
+
+void te::qt::widgets::StyleControllerWidget::writeStyle(const te::se::Style* style, std::string path)
+{
+  boost::filesystem::wpath file = boost::filesystem::absolute(path);
+
+  {
+    std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
+
+    writer->setURI(file.string());
+    writer->writeStartDocument("UTF-8", "no");
+
+    writer->writeStartElement("StyledLayerDescriptor");
+
+    writer->writeAttribute("xmlns", "http://www.opengis.net/sld");
+    writer->writeAttribute("xmlns:ogc", "http://www.opengis.net/ogc");
+    writer->writeAttribute("xmlns:se", "http://www.opengis.net/se");
+    writer->writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+    writer->writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+    writer->writeAttribute("xsi:schemaLocation", "http://www.opengis.net/sld StyledLayerDescriptor.xsd");
+
+    writer->writeAttribute("version", style->getVersion());
+
+    writer->writeStartElement("NamedLayer");
+    writer->writeStartElement("UserStyle");
+
+    te::se::serialize::Style::getInstance().write(style, *writer.get());
+
+    writer->writeEndElement("UserStyle");
+    writer->writeEndElement("NamedLayer");
+
+    writer->writeEndElement("StyledLayerDescriptor");
+    writer->writeToFile();
+  }
+}
+
+void te::qt::widgets::StyleControllerWidget::readStyle(std::string path)
+{
+  std::auto_ptr<te::se::Style> style;
+
+  boost::filesystem::wpath file = boost::filesystem::absolute(path);
+  {
+    std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make());
+    reader->setValidationScheme(false);
+
+    reader->read(file.string());
+    reader->next();
+
+    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+      (reader->getElementLocalName() == "StyledLayerDescriptor"))
+      reader->next();
+
+    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+      (reader->getElementLocalName() == "NamedLayer"))
+      reader->next();
+
+    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+      (reader->getElementLocalName() == "UserStyle"))
+      reader->next();
+
+    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+      (reader->getElementLocalName() == "FeatureTypeStyle"))
+    {
+      if (reader->getNodeType() == te::xml::START_ELEMENT)
+        style.reset(te::se::serialize::Style::getInstance().read(*reader.get()));
+    }
+  }
+  m_explorer->importStyle(style.release());
 }

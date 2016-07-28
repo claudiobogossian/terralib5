@@ -95,6 +95,10 @@ namespace te
 
           StyleExplorer* getStyleExplorer() const;
 
+          void writeStyle(const te::se::Style* style, std::string path);
+
+          void readStyle(std::string path);
+
         protected:
 
           /*! \brief Updates the widget form based on internal mark element. */
@@ -114,6 +118,10 @@ namespace te
 
           void onLibraryManagerClicked();
 
+          void onExportClicked();
+
+          void onImportClicked();
+
           void onMapRefreshClicked();
 
           void changeLegendIconSize(int size);
@@ -126,6 +134,7 @@ namespace te
 
           std::auto_ptr<Ui::StyleControllerWidgetForm> m_ui; //!< Widget form.
           te::qt::widgets::StyleExplorer* m_explorer;        //!< A style explorer used to explore the style.
+          te::se::Style* m_currentStyle;
       }; 
 
     } // end namespace widgets
