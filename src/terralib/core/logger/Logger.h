@@ -30,26 +30,26 @@
 #ifndef __TERRALIB_CORE_LOGGER_LOGGER_H__
 #define __TERRALIB_CORE_LOGGER_LOGGER_H__
 
+
 // TerraLib
 #include "../Config.h"
 #include "../utils/Platform.h"
 #include "../../BuildConfig.h"
 
-// Boost
-#include <boost/current_function.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/text_ostream_backend.hpp>
-#include <boost/log/sources/severity_channel_logger.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  #define CURRENT_FUNCTION std::string(__FUNCTION__)
+#else
+  #define CURRENT_FUNCTION std::string(__func__)
+#endif
 
 /*!
    \brief The default name of the log file if none is informed.
-  */
+ */
 const std::string TERRALIB_DEFAULT_LOGGER("terralib");
 
 /*!
    \brief The default message format if none is informed.
-  */
+ */
 const std::string TERRALIB_DEFAULT_LOGGER_FORMAT("[%TimeStamp%] <%Severity%> %Message%");
 
 namespace te
@@ -65,6 +65,16 @@ namespace te
        */
       public:
 
+        enum severity_level
+        {
+          trace,
+          debug,
+          info,
+          warning,
+          error,
+          fatal
+        };
+
         /*!
           \brief It returns a reference to the singleton instance.
 
@@ -79,7 +89,7 @@ namespace te
           \param channel The channel name that will receive the message.
           \param severity The severity of the logged message.
         */
-        void log(const std::string& message, const std::string &channel, boost::log::trivial::severity_level severity);
+        void log(const std::string& message, const std::string &channel, severity_level severity);
 
         /*!
           \brief It sets the logger configuration from a given file.
@@ -124,7 +134,7 @@ namespace te
         Logger();
 
         /*! \brief Singleton destructor must be private or protected. */
-        ~Logger(){}
+        ~Logger();
 
         /*! \brief Singleton copy constructor must be private or protected. */
         Logger(Logger const&); // No copy allowed
@@ -134,11 +144,9 @@ namespace te
 
       private:
 
-        /*! \brief Multi-Thread severity logger*/
-        boost::log::sources::severity_channel_logger_mt<boost::log::trivial::severity_level, std::string>  m_logger;
+        struct Impl;
 
-        /*! \brief Logger list */
-        std::vector< std::string > m_logger_list;
+        Impl* m_pimpl;
 
 
     };
@@ -199,7 +207,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_TRACE_ENABLED
-  #define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::trace)
+  #define TE_CORE_LOG_TRACE(channel, message) te::core::Logger::instance().log(message, channel ,te::core::Logger::severity_level::trace)
 #else
   #define TE_CORE_LOG_TRACE(channel, message) ((void)0)
 #endif
@@ -213,7 +221,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_DEBUG_ENABLED
-  #define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::debug)
+  #define TE_CORE_LOG_DEBUG(channel, message) te::core::Logger::instance().log(message, channel ,te::core::Logger::severity_level::debug)
 #else
   #define TE_CORE_LOG_DEBUG(channel, message) ((void)0)
 #endif
@@ -227,7 +235,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_INFO_ENABLED
-  #define TE_CORE_LOG_INFO(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::info)
+  #define TE_CORE_LOG_INFO(channel, message) te::core::Logger::instance().log(message, channel ,te::core::Logger::severity_level::info)
 #else
   #define TE_CORE_LOG_INFO(channel, message) ((void)0)
 #endif
@@ -241,7 +249,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_WARN_ENABLED
-  #define TE_CORE_LOG_WARN(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::warning)
+  #define TE_CORE_LOG_WARN(channel, message) te::core::Logger::instance().log(message, channel ,te::core::Logger::severity_level::warning)
 #else
   #define TE_CORE_LOG_WARN(channel, message) ((void)0)
 #endif
@@ -255,7 +263,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_ERROR_ENABLED
-  #define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::error)
+  #define TE_CORE_LOG_ERROR(channel, message) te::core::Logger::instance().log(message, channel ,te::core::Logger::severity_level::error)
 #else
   #define TE_CORE_LOG_ERROR(channel, message) ((void)0)
 #endif
@@ -269,7 +277,7 @@ namespace te
   \param message The message to be logged.
  */
 #ifdef TERRALIB_LOGGER_FATAL_ENABLED
-  #define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::instance().log(message, channel ,boost::log::trivial::fatal)
+  #define TE_CORE_LOG_FATAL(channel, message) te::core::Logger::instance().log(message, channel ,te::core::Logger::severity_level::fatal)
 #else
   #define TE_CORE_LOG_FATAL(channel, message) ((void)0)
 #endif
@@ -283,7 +291,7 @@ namespace te
 
   \note The TRACE Level designates finer-grained informational events than the DEBUG.
 */
-#define TE_LOG_TRACE(message) TE_CORE_LOG_TRACE(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+#define TE_LOG_TRACE(message) TE_CORE_LOG_TRACE(TERRALIB_DEFAULT_LOGGER, CURRENT_FUNCTION + " : " + message)
 
 /*!
   \def TE_LOG_DEBUG
@@ -294,7 +302,7 @@ namespace te
 
   \note The DEBUG Level designates fine-grained informational events that are most useful to debug an application.
 */
-#define TE_LOG_DEBUG(message) TE_CORE_LOG_DEBUG(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+#define TE_LOG_DEBUG(message) TE_CORE_LOG_DEBUG(TERRALIB_DEFAULT_LOGGER, CURRENT_FUNCTION + " : " + message)
 
 /*!
   \def TE_LOG_INFO
@@ -305,7 +313,7 @@ namespace te
 
   \note The INFO level designates informational messages that highlight the progress of the application at coarse-grained level.
 */
-#define TE_LOG_INFO(message) TE_CORE_LOG_INFO(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+#define TE_LOG_INFO(message) TE_CORE_LOG_INFO(TERRALIB_DEFAULT_LOGGER, CURRENT_FUNCTION + " : " + message)
 
 /*!
   \def TE_LOG_WARN
@@ -316,7 +324,7 @@ namespace te
 
   \note The WARN level designates potentially harmful situations.
 */
-#define TE_LOG_WARN(message)TE_CORE_LOG_WARN(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+#define TE_LOG_WARN(message)TE_CORE_LOG_WARN(TERRALIB_DEFAULT_LOGGER, CURRENT_FUNCTION + " : " + message)
 
 /*!
   \def TE_LOG_ERROR
@@ -327,7 +335,7 @@ namespace te
 
   \note The ERROR level designates error events that might still allow the application to continue running.
 */
-#define TE_LOG_ERROR(message) TE_CORE_LOG_ERROR(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+#define TE_LOG_ERROR(message) TE_CORE_LOG_ERROR(TERRALIB_DEFAULT_LOGGER, CURRENT_FUNCTION + " : " + message)
 
 /*!
   \def TE_LOG_FATAL
@@ -338,6 +346,6 @@ namespace te
 
   \note The FATAL level designates very severe error events that will presumably lead the application to abort.
 */
-#define TE_LOG_FATAL(message) TE_CORE_LOG_FATAL(TERRALIB_DEFAULT_LOGGER, std::string(BOOST_CURRENT_FUNCTION) + " : " + message)
+#define TE_LOG_FATAL(message) TE_CORE_LOG_FATAL(TERRALIB_DEFAULT_LOGGER, CURRENT_FUNCTION + " : " + message)
 
 #endif  // __TERRALIB_CORE_LOGGER_LOGGER_H__
