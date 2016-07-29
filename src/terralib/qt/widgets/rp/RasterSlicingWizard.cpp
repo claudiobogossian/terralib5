@@ -32,6 +32,7 @@
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
 #include "../progress/ProgressViewerDialog.h"
+#include "../utils/ScopedCursor.h"
 #include "RasterSlicingWizardPage.h"
 #include "RasterInfoWizardPage.h"
 #include "../raster/RasterInfoWidget.h"
@@ -68,6 +69,7 @@ bool te::qt::widgets::RasterSlicingWizard::validateCurrentPage()
 {
   if(currentPage() ==  m_layerSearchPage.get())
   {
+    te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
     std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
 
     if(list.empty() == false)
@@ -89,9 +91,9 @@ bool te::qt::widgets::RasterSlicingWizard::validateCurrentPage()
           {
             m_wizardPage->setRaster(inputRst.release());
           }
-        }        
+        }
       }
-    }    
+    }
     
     return m_layerSearchPage->isComplete();
   }
@@ -194,7 +196,12 @@ bool te::qt::widgets::RasterSlicingWizard::execute()
     m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                  m_rasterInfoPage->getWidget()->getInfo());
 
-    te::se::Style* style = te::se::CreateCoverageStyle(1);
+    te::se::Style* style;
+
+    if (createPaletteRaster)
+      style = te::se::CreateCoverageStyle(1);
+    else
+      style = te::se::CreateCoverageStyle(inputRst->getNumberOfBands());
 
     te::se::RasterSymbolizer* rasterSymb = te::se::GetRasterSymbolizer(style);
     

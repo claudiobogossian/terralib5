@@ -119,7 +119,7 @@ bool te::qt::widgets::RasterSlicingWizardPage::trimRaster()
   bool useVisibleArea = m_ui->m_visibleAreaCheckBox->isChecked();
   bool extValid = m_extent.isValid();
   bool isWithinRaster = m_raster->getExtent()->contains(m_extent);
-
+  
   if (useVisibleArea && extValid && isWithinRaster)
     return true;
   else
@@ -158,7 +158,7 @@ void te::qt::widgets::RasterSlicingWizardPage::onApplyPushButtonClicked()
   int slices = m_ui->m_slicesNumberSpinBox->value();
   bool useVisibleArea = m_ui->m_visibleAreaCheckBox->isChecked();
   bool extValid = m_extent.isValid();
-  bool isWithinRaster = m_raster->getExtent()->contains(m_extent);  
+  bool isWithinRaster = m_raster->getExtent()->contains(m_extent);
 
   if (m_raster.get())
   {

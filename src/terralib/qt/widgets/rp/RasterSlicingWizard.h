@@ -46,18 +46,45 @@ namespace te
       {
         public:
 
+          /*! \brief Constructor. */
           RasterSlicingWizard(QWidget* parent=0);
 
+          /*! \brief Destructor. */
           ~RasterSlicingWizard();
 
+          /*!
+          \brief Overridden function that checks if the current page's configuration is done in order to proceed to the next page.
+
+          \return A boolean that indicates if the current page's configuration is finished.
+          */
           bool validateCurrentPage();
 
+          /*!
+          \brief This function sets the list of layers from which the raster that will be sliced will come from.
+
+          \param layerList The list of AbstractLayerPtrs that will be used to get a raster from.
+          */
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          /*!
+          \brief This function returns the layer that has been created by the wizard with the sliced raster.
+
+          \retunrn A new AbstractLayerPtr containing the sliced raster.
+          */
           te::map::AbstractLayerPtr getOutputLayer();
 
+          /*!
+          \brief This function sets the envelope that will be used to trim tha raster if the user requests it.
+
+          \param extent A reference to the envelope that can be used to trim tha raster.
+          */
           void setExtent(const te::gm::Envelope& extent);
 
+          /*!
+          \brief This function sets the srid of the display when the wizard was initiated.
+
+          \param srid The current srid of the display.
+          */
           void setSRID(int srid = 0);
 
         protected:
@@ -68,9 +95,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<te::qt::widgets::RasterSlicingWizardPage> m_wizardPage;
-          std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
-          std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
+          std::auto_ptr<te::qt::widgets::RasterSlicingWizardPage>  m_wizardPage;       //!< The wizard page used to define the slicing parameters
+          std::auto_ptr<te::qt::widgets::LayerSearchWizardPage>    m_layerSearchPage;  //!< The wizard page used to select an input layer
+          std::auto_ptr<te::qt::widgets::RasterInfoWizardPage>     m_rasterInfoPage;   //!< The wizard page used to define the output layer parameters
 
           te::map::AbstractLayerPtr m_outputLayer;
       };      
