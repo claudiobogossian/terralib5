@@ -83,7 +83,7 @@ namespace te
     /*!
     \enum OperationsType
 
-    \brief Defines the operations (CUD - Create, Update and Delete) to this tool.
+    \brief Defines the operations (CUD - Create, Update and Delete) and FreeCell/LockedCell to this tool.
     */
     enum OperationType
     {
@@ -91,7 +91,9 @@ namespace te
       GEOMETRY_UPDATE,                  /*!< Features to update. */
       GEOMETRY_DELETE,                  /*!< Features to delete. */
       GEOMETRY_UPDATE_ATTRIBUTES,       /*!< Features to update attributes. */
-      NumberOfOperationTypes            /*!< Size of Enum */
+      GEOMETRY_FREECELLS,               /*!< Free cells, my cells... */
+      GEOMETRY_LOCKEDCELLS,             /*!< Locked cells, other cells... */
+      GEOMETRY_SELECTED                 /*!< Used to selectb features.rs.. */
     };
 
     TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, OperationType operation);

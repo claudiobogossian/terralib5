@@ -235,6 +235,9 @@ te::edit::Feature* te::edit::Repository::getFeature(const te::gm::Envelope& e, i
 
   for(std::size_t i = 0; i < candidates.size(); ++i)
   {
+    if (candidates[i]->getOperationType() > te::edit::GEOMETRY_UPDATE_ATTRIBUTES) //Ignores geometries that represent the cells.
+      continue;
+
     te::gm::Geometry* g = candidates[i]->getGeometry();
 
     if (g->getSRID() != srid)
