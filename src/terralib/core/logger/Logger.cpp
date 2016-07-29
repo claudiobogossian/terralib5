@@ -37,10 +37,24 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/log/attributes/current_process_name.hpp>
 #include <boost/log/attributes/current_thread_id.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sources/severity_channel_logger.hpp>
+#include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/from_stream.hpp>
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(channel, "Channel", std::string)
+
+
+struct te::core::Logger::Impl
+{
+  /*! \brief Multi-Thread severity logger*/
+  boost::log::sources::severity_channel_logger_mt<boost::log::trivial::severity_level, std::string>  m_logger;
+
+  /*! \brief Logger list */
+  std::vector< std::string > m_logger_list;
+};
 
 te::core::Logger& te::core::Logger::instance()
 {
@@ -63,8 +77,8 @@ void te::core::Logger::addLoggerFromFile(const std::string& filename)
 
   boost::filesystem::ifstream settings(filename);
   boost::log::init_from_stream(settings);
-  
-  m_logger_list.push_back(filename);
+
+  m_pimpl->m_logger_list.push_back(filename);
 }
 
 void te::core::Logger::addLogger(const std::string& name, const std::string& filename, std::string format)
@@ -90,23 +104,24 @@ void te::core::Logger::addLogger(const std::string& name, const std::string& fil
                            boost::log::keywords::filter = (channel == name)
                           );
 
-  m_logger_list.push_back(name);
+  m_pimpl->m_logger_list.push_back(name);
 }
 
 bool te::core::Logger::exists(const std::string &name)
 {
-  return std::find_if(m_logger_list.begin(), m_logger_list.end(),
+  return std::find_if(m_pimpl->m_logger_list.begin(), m_pimpl->m_logger_list.end(),
                       [&name](const std::string& n)
-                      { return name == n; }) != m_logger_list.end();
+                      { return name == n; }) != m_pimpl->m_logger_list.end();
 }
 
 void te::core::Logger::removeAllLoggers()
 {
   boost::log::core::get()->remove_all_sinks();
-  m_logger_list.clear();
+  m_pimpl->m_logger_list.clear();
 }
 
-te::core::Logger::Logger()
+te::core::Logger::Logger() :
+  m_pimpl(nullptr)
 {
   boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >("Severity");
 
@@ -117,11 +132,45 @@ te::core::Logger::Logger()
   boost::log::core::get()->add_global_attribute("ThreadID",
                                                 boost::log::attributes::current_thread_id());
   boost::log::add_common_attributes();
+
+  m_pimpl = new Impl;
 }
 
-void te::core::Logger::log(const std::string& message, const std::string& channel, boost::log::trivial::severity_level severity)
+te::core::Logger::~Logger()
 {
-  BOOST_LOG_CHANNEL_SEV(m_logger, channel, severity) << message;
+  delete m_pimpl;
+}
+
+
+void te::core::Logger::log(const std::string& message, const std::string& channel,  severity_level severity)
+{
+  boost::log::trivial::severity_level boost_severity;
+  switch(severity)
+  {
+    case severity_level::trace :
+      boost_severity = boost::log::trivial::trace;
+      break;
+    case severity_level::debug :
+      boost_severity = boost::log::trivial::debug;
+      break;
+    case severity_level::info :
+      boost_severity = boost::log::trivial::info;
+      break;
+    case severity_level::warning :
+      boost_severity = boost::log::trivial::warning;
+      break;
+    case severity_level::error :
+      boost_severity = boost::log::trivial::error;
+      break;
+    case severity_level::fatal :
+      boost_severity = boost::log::trivial::fatal;
+      break;
+    default:
+      throw InvalidArgumentException() << ErrorDescription(TE_TR("Invalid severity level."));
+      break;
+  }
+
+  BOOST_LOG_CHANNEL_SEV(m_pimpl->m_logger, channel, boost_severity) << message;
 }
 
 

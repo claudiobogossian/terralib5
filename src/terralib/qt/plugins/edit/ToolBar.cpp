@@ -490,7 +490,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       // Build the DataSet that will be used to update
       std::map<te::edit::OperationType, te::mem::DataSet* > operationds;
 
-      for (std::size_t i = 0; i < te::edit::NumberOfOperationTypes; i++)
+      for (std::size_t i = 0; i <= te::edit::GEOMETRY_UPDATE_ATTRIBUTES; i++)
         operationds[te::edit::OperationType(i)] = new te::mem::DataSet(schema.get());
 
       // Get the geometry property position
@@ -509,6 +509,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       for (std::size_t i = 0; i < features.size(); ++i) // for each edited feature
       {
+        if (features[i]->getOperationType() > te::edit::GEOMETRY_UPDATE_ATTRIBUTES)
+          continue;
+
         // Create the new item
         te::mem::DataSetItem* item = new te::mem::DataSetItem(operationds[te::edit::GEOMETRY_CREATE]);
 
