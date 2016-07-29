@@ -573,7 +573,7 @@ void te::qt::af::BaseApplication::onLayerInvertSelectionTriggered()
 
     const te::da::ObjectIdSet* selected = layer->getSelected();
 
-    if(selected && (selected->size() < 1))
+    if(selected && (selected->size() > 0))
       allObjects->difference(selected);
 
     layer->clearSelected();
