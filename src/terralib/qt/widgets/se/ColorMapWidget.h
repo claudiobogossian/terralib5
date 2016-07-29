@@ -105,6 +105,8 @@ namespace te
           te::se::ColorMap* getColorMap();
 
           std::string getCurrentBand();
+          
+          Ui::ColorMapWidgetForm* getForm();
 
         protected:
 
