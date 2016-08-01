@@ -108,8 +108,8 @@ void te::qt::widgets::StyleControllerWidget::updateUi()
   m_ui->m_addSymbToolButton->setIcon(QIcon::fromTheme("list-add").pixmap(16, 16));
   m_ui->m_removeSymbToolButton->setIcon(QIcon::fromTheme("list-remove").pixmap(16,16));
   m_ui->m_libManagerToolButton->setIcon(QIcon::fromTheme("library").pixmap(16,16));
-  m_ui->m_importStyleToolButton->setIcon(QIcon::fromTheme("").pixmap(16, 16));
-  m_ui->m_exportStyleToolButton->setIcon(QIcon::fromTheme("").pixmap(16, 16));
+  m_ui->m_importStyleToolButton->setIcon(QIcon::fromTheme("document-open").pixmap(16, 16));
+  m_ui->m_exportStyleToolButton->setIcon(QIcon::fromTheme("document-save-as").pixmap(16, 16));
   m_ui->m_mapRefreshToolButton->setIcon(QIcon::fromTheme("map-draw").pixmap(16,16));
 }
 
@@ -318,24 +318,47 @@ void te::qt::widgets::StyleControllerWidget::readStyle(std::string path)
     reader->read(file.string());
     reader->next();
 
-    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
-      (reader->getElementLocalName() == "StyledLayerDescriptor"))
-      reader->next();
-
-    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
-      (reader->getElementLocalName() == "NamedLayer"))
-      reader->next();
-
-    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
-      (reader->getElementLocalName() == "UserStyle"))
-      reader->next();
-
-    if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
-      (reader->getElementLocalName() == "FeatureTypeStyle"))
+    if (checkSymbolizer(file.string()))
     {
-      if (reader->getNodeType() == te::xml::START_ELEMENT)
-        style.reset(te::se::serialize::Style::getInstance().read(*reader.get()));
+      if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+        (reader->getElementLocalName() == "StyledLayerDescriptor"))
+        reader->next();
+
+      if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+        (reader->getElementLocalName() == "NamedLayer"))
+        reader->next();
+
+      if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+        (reader->getElementLocalName() == "UserStyle"))
+        reader->next();
+
+      if ((reader->getNodeType() == te::xml::START_ELEMENT) &&
+        (reader->getElementLocalName() == "FeatureTypeStyle"))
+      {
+        if (reader->getNodeType() == te::xml::START_ELEMENT)
+          style.reset(te::se::serialize::Style::getInstance().read(*reader.get()));
+      }
+      m_explorer->importStyle(style.release());
     }
+    else
+      QMessageBox::warning(this, tr("Style Explorer"), tr("The selected theme is not compatible with the current data."));
+      return;
   }
-  m_explorer->importStyle(style.release());
+}
+
+bool te::qt::widgets::StyleControllerWidget::checkSymbolizer(std::string file)
+{
+  std::string sldFile;
+  std::ifstream t(file);
+  std::stringstream buffer;
+  buffer << t.rdbuf();
+
+  sldFile = buffer.str();
+
+  std::size_t found = sldFile.find(m_explorer->getCurrentSymbolizer()->getType());
+
+  if (found != std::string::npos)
+    return true;
+  else
+    return false;
 }
