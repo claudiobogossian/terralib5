@@ -129,6 +129,8 @@ namespace te
 
           void setLegendIconSize(int size);
 
+          void importStyle(te::se::Style* style);
+
         public slots:
 
           void onSymbolizerChanged(te::se::Symbolizer* symb);
@@ -163,6 +165,8 @@ namespace te
 
           /*! This signal is emitted when a symbolizer is clicked. */
           void symbolizerClicked(te::se::Symbolizer* symb);
+
+          void styleImported(te::se::Style* style);
 
         private:
 
