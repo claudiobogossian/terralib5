@@ -677,7 +677,7 @@ void te::qt::widgets::RasterizationWizardPage::updateUi(bool loadColorBar)
     //class
     {
       //Value
-      QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getValue()));
+      QTableWidgetItem* item = new QTableWidgetItem(QString::fromUtf8(gi->getValue().c_str()));
       item->setFlags(Qt::ItemIsEnabled);
       m_ui->m_tableWidget->setItem(newrow, 0, item);
     }
@@ -945,7 +945,7 @@ std::map<std::string, std::vector<int> > te::qt::widgets::RasterizationWizardPag
     v.push_back(m_ui->m_tableWidget->item(i, 2)->text().toInt());
     v.push_back(m_ui->m_tableWidget->item(i, 3)->text().toInt());
 
-    result[m_ui->m_tableWidget->item(i, 0)->text().toStdString()] = v;
+    result[m_ui->m_tableWidget->item(i, 0)->text().toUtf8().constData()] = v;
   }
 
   return result;

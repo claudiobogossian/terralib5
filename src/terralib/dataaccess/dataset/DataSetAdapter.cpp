@@ -228,7 +228,7 @@ std::string te::da::DataSetAdapter::getNumeric(std::size_t i) const
 std::string te::da::DataSetAdapter::getString(std::size_t i) const
 {
   std::auto_ptr<te::dt::String> data(static_cast<te::dt::String*>(getAdaptedValue(i)));
-  return data->getValue();
+  return te::core::CharEncoding::toUTF8(data->getValue());
 }
 
 std::auto_ptr<te::dt::ByteArray> te::da::DataSetAdapter::getByteArray(std::size_t i) const

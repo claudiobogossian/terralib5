@@ -189,7 +189,7 @@ std::auto_ptr<te::dt::AbstractData> te::da::DataSet::getValue(std::size_t i) con
       return std::auto_ptr<te::dt::AbstractData>(new te::dt::Numeric(getNumeric(i)));
 
     case te::dt::STRING_TYPE:
-      return std::auto_ptr<te::dt::AbstractData>(new te::dt::String(getString(i)));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::String(te::core::CharEncoding::toUTF8(getString(i))));
 
     case te::dt::BYTE_ARRAY_TYPE:
        return std::auto_ptr<te::dt::AbstractData>(getByteArray(i));
@@ -300,7 +300,7 @@ std::string te::da::DataSet::getAsString(std::size_t i, int precision) const
     break;
   }
 
-  return value;
+  return te::core::CharEncoding::toUTF8(value);
 }
 
 std::string te::da::DataSet::getAsString(const std::string& name, int precision) const
