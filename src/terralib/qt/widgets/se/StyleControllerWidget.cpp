@@ -24,26 +24,25 @@
 */
 
 // TerraLib
+#include "StyleControllerWidget.h"
 #include "../../../se/Font.h"
 #include "../../../se/Rule.h"
-#include "../../../se/Symbolizer.h"
 #include "../../../se/TextSymbolizer.h"
 #include "../../../se/Utils.h"
-
-#include "../../../se/serialization/xml/Style.h"
 #include "../../../se/Style.h"
+#include "../../../se/Symbolizer.h"
+#include "../../../se/serialization/xml/Style.h"
 #include "../../../xml/AbstractWriter.h"
 #include "../../../xml/AbstractWriterFactory.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
-
-
-#include "ui_StyleControllerWidgetForm.h"
-#include "StyleControllerWidget.h"
 #include "StyleExplorer.h"
 #include "Symbol.h"
 #include "SymbolPreviewWidget.h"
 #include "SymbolSelectorDialog.h"
+
+// TerraLib - UIC
+#include "ui_StyleControllerWidgetForm.h"
 
 // Qt
 #include <QMessageBox>
@@ -54,6 +53,7 @@
 
 // STL
 #include <cassert>
+#include <fstream>
 
 // Boost
 #include <boost/filesystem/operations.hpp>
