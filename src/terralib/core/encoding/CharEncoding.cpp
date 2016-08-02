@@ -20,7 +20,7 @@
 /*!
   \file terralib/core/encoding/CharEncoding.cpp
 
-  \brief A namespace for handling character enconding/decoding.
+  \brief A class for handling character enconding/decoding.
 
   \author Matheus Cavassan Zaglia
   \author Gilberto Ribeiro de Queiroz
@@ -75,13 +75,6 @@ te::core::CharEncoding::fromUTF8(const std::string &src, EncodingType to)
 }
 
 std::string
-te::core::CharEncoding::utf_to_utf(const std::string &src)
-{
-  return boost::locale::conv::utf_to_utf<char>(src);
-}
-
-
-std::string
 te::core::CharEncoding::convert(const std::string &src,
                                 EncodingType from,
                                 EncodingType to)
@@ -92,7 +85,7 @@ te::core::CharEncoding::convert(const std::string &src,
 std::string
 te::core::CharEncoding::getEncodingName(EncodingType et)
 {
- return EncodingString.at(et);
+  return EncodingString.at(et);
 }
 
 te::core::EncodingType

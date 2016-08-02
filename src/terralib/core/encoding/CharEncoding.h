@@ -21,7 +21,7 @@
 /*!
   \file terralib/core/encoding/CharEncoding.h
 
-  \brief A namespace for handling character enconding/decoding.
+  \brief A class for handling character enconding/decoding.
 
   \author Matheus Cavassan Zaglia
   \author Gilberto Ribeiro de Queiroz
@@ -65,9 +65,9 @@ namespace te
 
       \brief A class for handling character enconding/decoding.
      */
-    namespace CharEncoding
+    class TECOREEXPORT CharEncoding
     {
-
+      public:
         /*!
           \brief Convert a string in UTF-8 to the current locale encoding.
 
@@ -75,26 +75,26 @@ namespace te
 
           \return String encoded according to new character encoding.
          */
-        TECOREEXPORT std::string fromUTF8(const std::string& src);
+        static std::string fromUTF8(const std::string& src);
 
         /*!
-        \brief Convert a string in UTF-8 to another character encoding.
+          \brief Convert a string in UTF-8 to another character encoding.
 
-        \param src UTF-8 string.
-        \param to  The target character encoding.
-
-        \return String encoded according to new character encoding.
-        */
-        TECOREEXPORT std::string fromUTF8(const std::string& src, EncodingType to);
+          \param src UTF-8 string.
+          \param to  The target character encoding.
+         
+          \return String encoded according to new character encoding.
+         */
+        static std::string fromUTF8(const std::string& src, EncodingType to);
 
         /*!
-        \brief Convert a string from a current locale encoding to UTF-8.
+          \brief Convert a string from a current locale encoding to UTF-8.
 
-        \param src  String to be encoded in UTF-8.
+          \param src  String to be encoded in UTF-8.
 
-        \return String encoded in UTF-8.
-        */
-        TECOREEXPORT std::string toUTF8(const std::string& src);
+          \return String encoded in UTF-8.
+         */
+        static std::string toUTF8(const std::string& src);
 
         /*!
           \brief Convert a string from a given character encoding to UTF-8.
@@ -103,7 +103,7 @@ namespace te
 
           \return String encoded in UTF-8.
          */
-        TECOREEXPORT std::string toUTF8(const std::string& src, EncodingType from);
+        static std::string toUTF8(const std::string& src, EncodingType from);
           
         /*!
           \brief Convert a string from one character encoding to another one.
@@ -114,7 +114,7 @@ namespace te
 
           \return String in a new encoding.
          */
-        TECOREEXPORT std::string convert(const std::string& src,
+        static std::string convert(const std::string& src,
                                    EncodingType from,
                                    EncodingType to);
         /*!
@@ -124,7 +124,7 @@ namespace te
 
           \return Encoding Type as string.
          */
-        TECOREEXPORT std::string getEncodingName(EncodingType et);
+        static std::string getEncodingName(EncodingType et);
 
         /*!
           \brief Retrive an EncodingType from a given character encoding name.
@@ -133,11 +133,13 @@ namespace te
 
           \return Encoding as enum.
          */
-        TECOREEXPORT te::core::EncodingType getEncodingType(const std::string &name);
-        
-        TECOREEXPORT std::string utf_to_utf(const std::string &src);
+        static te::core::EncodingType getEncodingType(const std::string &name);
+      private:
 
-    } //end namespace CharEncoding
+// Not instatiable
+        CharEncoding();
+        ~CharEncoding();
+    };
   }  // end namespace core
 }    // end namespace te
 
