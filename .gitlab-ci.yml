@@ -1,0 +1,27 @@
+stages:
+  - build
+  - test
+
+terralib5_build:
+  script:
+    - mkdir $CI_BUILD_REF 
+    - cd $CI_BUILD_REF
+    - cmake ../build/cmake -DCMAKE_INSTALL_PREFIX:PATH="/home/jenkins/MyDevel/gitlab/terralib/install/$CI_BUILD_REF/terralib-5.2.0" -DCMAKE_INSTALL_RPATH:PATH="/home/jenkins/MyDevel/gitlab/terralib/install/$CI_BUILD_REF/terralib-5.2.0/lib" -DCMAKE_SKIP_BUILD_RPATH:BOOL="OFF" -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL="OFF" -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL="ON" -DCMAKE_PREFIX_PATH:PATH="/home/jenkins/MyLibs;/home/jenkins/MyLibs/gdal2;/home/jenkins/MyLibs/pgsql" -DCMAKE_BUILD_TYPE:STRING="Release" -DTERRALIB_BUILD_EXAMPLES_ENABLED:BOOL="OFF" -DTERRALIB_BUILD_UNITTEST_ENABLED:BOOL="OFF" -DTERRALIB_DOXYGEN_ENABLED:BOOL="OFF" -DTERRALIB_QTRANSLATION_ENABLED:BOOL="OFF" -DTERRALIB_QHELP_ENABLED:BOOL="OFF" -DTERRALIB_MOD_BINDING_PYTHON_ENABLED:BOOL="OFF" -DTERRALIB_MOD_BINDING_LUA_ENABLED:BOOL="OFF" -DTERRALIB_MOD_BINDING_JAVA_ENABLED:BOOL="OFF" -DTERRALIB_MOD_MNT_CORE_ENABLED:BOOL="OFF"
+    - make -j 2
+  stage: build
+  only:
+    - develop
+
+  artifacts:
+    paths:
+      - $CI_BUILD_REF/
+
+terralib5_tests:
+  script:
+    - cd $CI_BUILD_REF
+    - make test
+  stage: test
+  only:
+    - develop
+
+
