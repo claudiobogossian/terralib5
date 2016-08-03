@@ -241,10 +241,8 @@ void te::qt::widgets::StyleControllerWidget::onLibraryManagerClicked()
 }
 
 void te::qt::widgets::StyleControllerWidget::onExportClicked()
-{
-  QString filter = "Style file (*.sld)";
-  
-  QString styleFile = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), filter);
+{  
+  QString styleFile = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), "Style file (*.sld)");
 
   if (styleFile.isEmpty())
     return;
@@ -252,7 +250,7 @@ void te::qt::widgets::StyleControllerWidget::onExportClicked()
   QFileInfo info(styleFile);
 
   if (info.suffix().isEmpty())
-    styleFile.append("." + filter);
+    styleFile.append(".sld");
 
   writeStyle(m_currentStyle, styleFile.toUtf8().constData());
 }
