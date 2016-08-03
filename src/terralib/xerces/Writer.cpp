@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/Exception.h"
 #include "../common/StringUtils.h"
+#include "../core/encoding/CharEncoding.h"
 #include "../core/translator/Translator.h"
 #include "StrToXMLCh.h"
 #include "XMLChToStr.h"
@@ -103,7 +104,7 @@ void te::xerces::Writer::writeToFile()
     theOutput->setByteStream(myFormTarget);
     theSerializer->write(m_doc, theOutput );
     std::string xmlstring = (char*)((xercesc::MemBufFormatTarget*)myFormTarget)->getRawBuffer();
-    std::ofstream out(m_uri.c_str());
+    std::ofstream out(te::core::CharEncoding::fromUTF8(m_uri).c_str());
     out << xmlstring;
     out.close();
 #endif

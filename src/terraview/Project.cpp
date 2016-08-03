@@ -48,7 +48,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
 {
   std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
 
-  writer->setURI(te::core::CharEncoding::fromUTF8(proj.m_fileName.toUtf8().constData()));
+  writer->setURI(proj.m_fileName.toUtf8().constData());
 
   std::string schema_loc = te::core::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
