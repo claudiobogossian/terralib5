@@ -572,3 +572,32 @@ void TsExpansibleRaster::multiResolutionTest()
   CPPUNIT_ASSERT( level2Ptr->getNumberOfRows() == 25 );
   CPPUNIT_ASSERT( level2Ptr->getNumberOfColumns() == 25 ); 
 }
+
+void TsExpansibleRaster::cloneTest()
+{
+  std::vector< te::rst::BandProperty * > bandsProps;
+  bandsProps.push_back( new te::rst::BandProperty( 0, te::dt::UINT32_TYPE ) );
+  bandsProps[ 0 ]->m_blkw = 5;
+  bandsProps[ 0 ]->m_blkh = 10;
+  bandsProps[ 0 ]->m_nblocksx = 2;
+  bandsProps[ 0 ]->m_nblocksy = 1;   
+  bandsProps.push_back( new te::rst::BandProperty( 1, te::dt::UINT16_TYPE ) );
+  bandsProps[ 1 ]->m_blkw = 10;
+  bandsProps[ 1 ]->m_blkh = 10;
+  bandsProps[ 1 ]->m_nblocksx = 1;
+  bandsProps[ 1 ]->m_nblocksy = 1;
+  bandsProps.push_back( new te::rst::BandProperty( 2, te::dt::DOUBLE_TYPE ) );
+  bandsProps[ 2 ]->m_blkw = 10;
+  bandsProps[ 2 ]->m_blkh = 5;
+  bandsProps[ 2 ]->m_nblocksx = 1;
+  bandsProps[ 2 ]->m_nblocksy = 2; 
+  
+  te::mem::ExpansibleRaster rasterInstance( new te::rst::Grid( 10, 10 ), bandsProps, 2 );
+
+  writeValues( rasterInstance );
+  
+  std::unique_ptr< te::mem::ExpansibleRaster > clonePtr( 
+    (te::mem::ExpansibleRaster*)rasterInstance.clone() );
+  
+  testValues( *clonePtr );
+}
