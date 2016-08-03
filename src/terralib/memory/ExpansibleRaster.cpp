@@ -216,15 +216,43 @@ std::map<std::string, std::string> te::mem::ExpansibleRaster::getInfo() const
 
 te::dt::AbstractData* te::mem::ExpansibleRaster::clone() const
 {
+  const std::size_t nBands = m_bands.size();
+  std::size_t bandIdx = 0;
+  
   std::vector<te::rst::BandProperty*> bandsProperties;
-  for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
+  for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
   {
     bandsProperties.push_back( new te::rst::BandProperty( 
-      *(m_bands[ bandsIdx ]->getProperty() ) ) );
+      *(m_bands[ bandIdx ]->getProperty() ) ) );
   }
   
-  return new te::mem::ExpansibleRaster( new te::rst::Grid( *m_grid ), bandsProperties,
-    m_blocksManagerPtr->getMaxNumberOfRAMBlocks() );
+  std::unique_ptr< ExpansibleRaster > rasterPtr( new ExpansibleRaster( 
+    new te::rst::Grid( *m_grid ), bandsProperties,  
+    m_blocksManagerPtr->getMaxNumberOfRAMBlocks() ) );  
+  
+  int bufferSize = 0;
+  int nblcksX = 0;
+  int nblkksY = 0;
+  int blkXIdx = 0;
+  int blkYIdx = 0;
+  
+  for ( bandIdx = 0; bandIdx < nBands; ++bandIdx ) 
+  { 
+    te::rst::Band& inBand = *m_bands[ bandIdx ]; 
+    te::rst::Band& outBand = *rasterPtr->m_bands[ bandIdx ]; 
+    nblcksX = inBand.getProperty()->m_nblocksx; 
+    nblkksY = inBand.getProperty()->m_nblocksy; 
+    
+    for( blkXIdx = 0; blkXIdx < nblcksX; ++blkXIdx )
+    { 
+      for( blkYIdx = 0; blkYIdx < nblkksY; ++blkYIdx )  
+      { 
+        outBand.write( blkXIdx, blkYIdx, inBand.read( blkXIdx, blkYIdx ) );
+      } 
+    } 
+  }   
+
+  return rasterPtr.release();
 }
 
 bool te::mem::ExpansibleRaster::createMultiResolution( const unsigned int levels, 
