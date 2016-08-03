@@ -64,6 +64,8 @@ class TsExpansibleRaster : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST( multiResolutionTest );
   
+  CPPUNIT_TEST( cloneTest );
+  
   CPPUNIT_TEST_SUITE_END();
 
   protected :
@@ -94,6 +96,8 @@ class TsExpansibleRaster : public CPPUNIT_NS::TestFixture
     void addBottomBandsTest();
     
     void multiResolutionTest();
+    
+    void cloneTest();
 };
 
 #endif  // __TERRALIB_UNITTEST_MEMORY_EXPANSIBLERASTER_INTERNAL_H
