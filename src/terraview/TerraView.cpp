@@ -909,11 +909,11 @@ void TerraView::onOpenProjectTriggered()
   }
 }
 
-void TerraView::onSaveProjectTriggered()
+void TerraView::onSaveProjectTriggered(bool save_as)
 {
   QString projFile = m_project->m_fileName;
 
-  if(projFile.isEmpty())
+  if (projFile.isEmpty() || save_as)
   {
     QFileDialog d(this);
 
@@ -956,37 +956,7 @@ void TerraView::onSaveProjectTriggered()
 
 void TerraView::onSaveProjectAsTriggered()
 {
-  if (m_project == 0)
-    return;
-
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), m_tvController->getExtensionFilter());
-
-  if (fileName.isEmpty())
-    return;
-
-  std::string fName = fileName.toStdString();
-
-  m_project->m_fileName = fName.c_str();
-
-  if (!boost::filesystem::exists(fName) && m_project->m_title == "New Project")
-  {
-    m_project->m_title = (boost::filesystem::basename(fName)).c_str();
-  }
-
-  //  te::qt::af::Save(*m_project, fName);
-
-  m_tvController->updateRecentProjects(fileName, m_project->m_title);
-
-  // Set the project title and its status as "no change"
-  //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
-  //m_project->setTitle(projectTitle);
-
-  m_project->m_changed = false;
-
-  // Set the window title
-  setWindowTitle(GetWindowTitle(*m_project, m_app));
-
-  te::qt::af::SaveDataSourcesFile(m_app);
+  onSaveProjectTriggered(true);
 }
 
 

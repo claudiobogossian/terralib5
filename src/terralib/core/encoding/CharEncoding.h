@@ -56,7 +56,7 @@ namespace te
       CP1253,   /*!< CP1253 encoding.              */
       CP1254,   /*!< CP1254 encoding.              */
       CP1257,   /*!< CP1257 encoding.              */
-      LATIN1,   /*!< ISO-8859-1 encoding (Latin1). */
+      LATIN1,   /*!< ISO8859-1 encoding (Latin1). */
       UNKNOWN   /*!< Unknown encoding.             */
     };
 
@@ -68,27 +68,43 @@ namespace te
     class TECOREEXPORT CharEncoding
     {
       public:
-
         /*!
-          \brief Convert a string from a given character encoding to UTF-8.
+          \brief Convert a string in UTF-8 to the current locale encoding.
 
-          \param src  String to be encoded in UTF-8.
-          \param from String character encoding.
+          \param src UTF - 8 string.
 
-          \return String encoded in UTF-8.
+          \return String encoded according to new character encoding.
          */
-        static std::string toUTF8(const std::string& src, EncodingType from);
+        static std::string fromUTF8(const std::string& src);
 
         /*!
           \brief Convert a string in UTF-8 to another character encoding.
 
           \param src UTF-8 string.
           \param to  The target character encoding.
-
+         
           \return String encoded according to new character encoding.
          */
         static std::string fromUTF8(const std::string& src, EncodingType to);
 
+        /*!
+          \brief Convert a string from a current locale encoding to UTF-8.
+
+          \param src  String to be encoded in UTF-8.
+
+          \return String encoded in UTF-8.
+         */
+        static std::string toUTF8(const std::string& src);
+
+        /*!
+          \brief Convert a string from a given character encoding to UTF-8.
+
+          \param src  String to be encoded in UTF-8.
+
+          \return String encoded in UTF-8.
+         */
+        static std::string toUTF8(const std::string& src, EncodingType from);
+          
         /*!
           \brief Convert a string from one character encoding to another one.
 
@@ -118,24 +134,12 @@ namespace te
           \return Encoding as enum.
          */
         static te::core::EncodingType getEncodingType(const std::string &name);
-
       private:
 
-        /*! \brief Singleton constructor must be private or protected. */
+// Not instatiable
         CharEncoding();
-
-        /*! \brief Singleton destructor must be private or protected. */
         ~CharEncoding();
-
-        /*! \brief Singleton copy constructor must be private or protected. */
-        CharEncoding(CharEncoding const&);
-
-        /*! \brief Singleton copy assignment operator must be private or protected. */
-        CharEncoding& operator=(CharEncoding const&);
-
-        static const std::map<EncodingType, std::string> EncodingString; //!< An index over character encoding types.
     };
-
   }  // end namespace core
 }    // end namespace te
 
