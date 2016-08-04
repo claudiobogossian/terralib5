@@ -33,7 +33,6 @@
 
 // Boost
 #define BOOST_TEST_NO_MAIN
-#define BOOST_TESTS_TO_RUN = blender_tests
 #include <boost/test/unit_test.hpp>
 
 bool init_unit_test()
