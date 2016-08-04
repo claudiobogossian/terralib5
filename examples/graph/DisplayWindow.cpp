@@ -304,7 +304,7 @@ void DisplayWindow::onPNGTriggered()
 
 void DisplayWindow::onCoordTracked(QPointF& coordinate)
 {
-  QString text = QString::fromLatin1("Coordinates: (") + QString::number(coordinate.x()) + " , " + QString::number(coordinate.y()) + ")";
+  QString text = QString::fromUtf8("Coordinates: (") + QString::number(coordinate.x()) + " , " + QString::number(coordinate.y()) + ")";
   QStatusBar* sb = statusBar();
   sb->showMessage(text);
 }

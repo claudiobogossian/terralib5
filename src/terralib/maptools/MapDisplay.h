@@ -52,6 +52,8 @@ namespace te
         /*! \brief Virtual destructor. */
         virtual ~MapDisplay();
 
+        virtual std::list<AbstractLayerPtr> getLayerList() const;
+
         virtual void setLayerList(const std::list<te::map::AbstractLayerPtr>& layers);
 
         virtual te::map::AlignType getHAlign() const;

@@ -48,7 +48,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
 {
   std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
 
-  writer->setURI(proj.m_fileName.toStdString());
+  writer->setURI(proj.m_fileName.toUtf8().constData());
 
   std::string schema_loc = te::core::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
@@ -102,11 +102,11 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
     writer->writeAttribute("access_driver", it->second->getAccessDriver());
 
     writer->writeStartElement("te_da:Title");
-    writer->writeValue((!ogrDsrc) ? it->second->getTitle() : te::common::ConvertLatin1UTFString(it->second->getTitle()));
+    writer->writeValue(it->second->getTitle());
     writer->writeEndElement("te_da:Title");
 
     writer->writeStartElement("te_da:Description");
-    writer->writeValue((!ogrDsrc) ? it->second->getDescription() : te::common::ConvertLatin1UTFString(it->second->getDescription()));
+    writer->writeValue(it->second->getDescription());
     writer->writeEndElement("te_da:Description");
 
     writer->writeStartElement("te_da:ConnectionInfo");
@@ -122,7 +122,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
       writer->writeEndElement("te_common:Name");
 
       writer->writeStartElement("te_common:Value");
-      writer->writeValue((ogrDsrc && (conIt->first == "URI" || conIt->first == "SOURCE")) ? te::common::ConvertLatin1UTFString(conIt->second) : conIt->second);
+      writer->writeValue(conIt->second);
       writer->writeEndElement("te_common:Value");
 
       writer->writeEndElement("te_common:Parameter");
@@ -156,7 +156,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
 void LoadProject(const QString& projFile, ProjectMetadata& proj, std::list<te::map::AbstractLayerPtr>& layers)
 {
   QFileInfo info(projFile);
-  std::string fName = projFile.toStdString();
+  std::string fName = projFile.toUtf8().constData();
 
   if(!info.exists() || !info.isFile())
   {
@@ -165,9 +165,8 @@ void LoadProject(const QString& projFile, ProjectMetadata& proj, std::list<te::m
   }
 
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
-  xmlReader->setValidationScheme(false);
 
-  xmlReader->read(fName);
+  xmlReader->read(te::core::CharEncoding::fromUTF8(fName));
 
   if(!xmlReader->next())
   {

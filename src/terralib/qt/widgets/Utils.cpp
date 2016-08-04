@@ -390,36 +390,12 @@ QString te::qt::widgets::GetFilePathFromSettings(const QString& typeFile)
 
 QString te::qt::widgets::Convert2Qt(const std::string& text, te::core::EncodingType encoding)
 {
-  try
-  {
-    switch(encoding)
-    {
-      case te::core::EncodingType::UNKNOWN:
-        return text.c_str();
+  std::string conv_text = text;
 
-      case te::core::EncodingType::UTF8:
-        return QString::fromUtf8(text.c_str());
+  if (encoding != te::core::EncodingType::UTF8)
+    conv_text = te::core::CharEncoding::toUTF8(text, encoding);
 
-      case te::core::EncodingType::LATIN1:
-        return QString::fromLatin1(text.c_str());
-
-      // continues...
-
-      default:
-      {
-#ifdef TERRALIB_CHARENCODING_ENABLED
-        std::string latin1 = te::core::EncodingTypeConv::convert(text, encoding, te::core::EncodingType::LATIN1);
-        return QString::fromLatin1(latin1.c_str());
-#else
-        return text.c_str();
-#endif
-      }
-    }
-  }
-  catch(...)
-  {
-    return text.c_str();
-  }
+  return QString::fromUtf8(conv_text.c_str());
 }
 
 QString te::qt::widgets::GetDiskRasterFileSelFilter()

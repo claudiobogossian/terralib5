@@ -39,6 +39,11 @@ te::map::MapDisplay::~MapDisplay()
 {
 }
 
+std::list<te::map::AbstractLayerPtr> te::map::MapDisplay::getLayerList() const
+{
+  return m_layerList;
+}
+
 void te::map::MapDisplay::setLayerList(const std::list<te::map::AbstractLayerPtr>& layers)
 {
   m_layerList = layers;

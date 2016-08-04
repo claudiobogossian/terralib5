@@ -34,20 +34,38 @@
 #include <boost/locale.hpp>
 
 const std::map<te::core::EncodingType, std::string>
-te::core::CharEncoding::EncodingString = boost::assign::map_list_of(te::core::EncodingType::UTF8, "UTF8")
+EncodingString = boost::assign::map_list_of(te::core::EncodingType::UTF8, "UTF8")
                                                                    (te::core::EncodingType::CP1250, "CP1250")
                                                                    (te::core::EncodingType::CP1251, "CP1251")
                                                                    (te::core::EncodingType::CP1252,"CP1252")
                                                                    (te::core::EncodingType::CP1253,"CP1253")
                                                                    (te::core::EncodingType::CP1254,"CP1254")
                                                                    (te::core::EncodingType::CP1257,"CP1257")
-                                                                   (te::core::EncodingType::LATIN1 ,"LATIN1")
+                                                                   (te::core::EncodingType::LATIN1 ,"ISO8859-1")
                                                                    (te::core::EncodingType::UNKNOWN, "UNKNOWN");
 
 std::string
 te::core::CharEncoding::toUTF8(const std::string &src, EncodingType from)
 {
   return boost::locale::conv::to_utf<char>(src, EncodingString.at(from));
+}
+
+std::string
+te::core::CharEncoding::toUTF8(const std::string &src)
+{
+  boost::locale::generator g;
+  g.locale_cache_enabled(true);
+  std::locale loc = g(boost::locale::util::get_system_locale());
+  return boost::locale::conv::to_utf<char>(src, loc);
+}
+
+std::string 
+te::core::CharEncoding::fromUTF8(const std::string &src)
+{
+  boost::locale::generator g;
+  g.locale_cache_enabled(true);
+  std::locale loc = g(boost::locale::util::get_system_locale());
+  return boost::locale::conv::from_utf<char>(src, loc);
 }
 
 std::string
