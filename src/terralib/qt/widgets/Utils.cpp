@@ -390,11 +390,12 @@ QString te::qt::widgets::GetFilePathFromSettings(const QString& typeFile)
 
 QString te::qt::widgets::Convert2Qt(const std::string& text, te::core::EncodingType encoding)
 {
-  std::string conv_text;
+  std::string conv_text = text;
+
   if (encoding != te::core::EncodingType::UTF8)
-	conv_text = te::core::CharEncoding::toUTF8(text, encoding);
+    conv_text = te::core::CharEncoding::toUTF8(text, encoding);
+
   return QString::fromUtf8(conv_text.c_str());
-  
 }
 
 QString te::qt::widgets::GetDiskRasterFileSelFilter()
