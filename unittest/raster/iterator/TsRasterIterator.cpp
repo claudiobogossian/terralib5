@@ -18,43 +18,42 @@
  */
 
 /*!
-  \file TsRaterIterator.cpp
+  \file terralib/unittest/raster/TsRasterIterator.cpp
  
   \brief A test suit for the Raster iterator class.
  */
 
-#include "TsRasterIterator.h"
-#include "../Config.h"
-
+// TerraLib
+#include <terralib/raster.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/dataaccess/utils/Utils.h>
 #include <terralib/geometry/Utils.h>
 #include <terralib/memory/DataSet.h>
 #include <terralib/memory/DataSetItem.h>
-#include <terralib/raster/RasterIterator.h>
-#include <terralib/raster/PositionIterator.h>
 #include <terralib/rp/Functions.h>
+#include "../Config.h"
 
-//#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-
-#include <boost/shared_ptr.hpp>
-
+// STL
 #include <memory>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TsRasterIterator );
+// Boost
+#include <boost/test/unit_test.hpp>
+#include <boost/shared_ptr.hpp>
 
-void TsRasterIterator::CreateTestRaster( unsigned int nBands, unsigned int nLines, 
+BOOST_AUTO_TEST_SUITE ( rasterIterator_tests )
+
+void CreateTestRaster( unsigned int nBands, unsigned int nLines,
   unsigned int nCols, boost::shared_ptr< te::rst::Raster >& rasterPointer, bool zero )
 {
   std::vector< te::rst::BandProperty * > bandsProps;
   for( unsigned int bandsPropsIdx = 0 ; bandsPropsIdx < nBands ; ++bandsPropsIdx )
   {
-    bandsProps.push_back( new te::rst::BandProperty( bandsPropsIdx, 
-      te::dt::UINT32_TYPE ) );    
+    bandsProps.push_back( new te::rst::BandProperty( bandsPropsIdx,
+      te::dt::UINT32_TYPE ) );
   }
   
-  rasterPointer.reset( te::rst::RasterFactory::make( "MEM", 
-    new te::rst::Grid( nCols, nLines ), bandsProps, 
+  rasterPointer.reset( te::rst::RasterFactory::make( "MEM",
+    new te::rst::Grid( nCols, nLines ), bandsProps,
     std::map< std::string, std::string >(), 0, 0 ) );
     
   unsigned int band = 0;
@@ -72,7 +71,7 @@ void TsRasterIterator::CreateTestRaster( unsigned int nBands, unsigned int nLine
       }
 }
 
-void TsRasterIterator::Copy2DiskShp(std::vector<te::gm::Polygon*> polygons, std::string shpName) {
+void Copy2DiskShp(std::vector<te::gm::Polygon*> polygons, std::string shpName) {
     std::auto_ptr< te::mem::DataSet> memDataSetPtr;
 
     std::auto_ptr<te::da::DataSetType> dataSetTypePtr(new te::da::DataSetType(shpName));
@@ -107,12 +106,12 @@ void TsRasterIterator::Copy2DiskShp(std::vector<te::gm::Polygon*> polygons, std:
     dsOGR->close();
 }
 
-te::gm::LinearRing* TsRasterIterator::createSquare(const double& xCenter, const double& yCenter, 
+te::gm::LinearRing* createSquare(const double& xCenter, const double& yCenter,
                                                    const double& size, int srid)
 {
     te::gm::LinearRing* s = new te::gm::LinearRing(5, te::gm::LineStringType, srid);
     double halfSize = size * 0.5;
-    s->setPoint(0, xCenter - halfSize, yCenter - halfSize); // lower left 
+    s->setPoint(0, xCenter - halfSize, yCenter - halfSize); // lower left
     s->setPoint(1, xCenter - halfSize, yCenter + halfSize); // upper left
     s->setPoint(2, xCenter + halfSize, yCenter + halfSize); // upper rigth
     s->setPoint(3, xCenter + halfSize, yCenter - halfSize); // lower rigth
@@ -120,30 +119,30 @@ te::gm::LinearRing* TsRasterIterator::createSquare(const double& xCenter, const 
     return s;
 }
 
-void TsRasterIterator::tcRasterIteratorConstructor1()
+BOOST_AUTO_TEST_CASE (rasterIteratorConstructor1_test)
 {
 }
 
-void TsRasterIterator::tcRasterIteratorConstructor2()
+BOOST_AUTO_TEST_CASE (rasterIteratorConstructor2_test)
 {
 }
 
-void TsRasterIterator::tcRasterIteratorConstructor3()
+BOOST_AUTO_TEST_CASE (rasterIteratorConstructor3_test)
 {
 }
 
-void TsRasterIterator::tcRasterIteratorGetRow()
+BOOST_AUTO_TEST_CASE (rasterIteratorGetRow_test)
 {
 }
 
-void TsRasterIterator::tcRasterIteratorGetCol()
+BOOST_AUTO_TEST_CASE (rasterIteratorGetCol_test)
 {
 }
 
-void TsRasterIterator::PolygonIteratorTest1()
+BOOST_AUTO_TEST_CASE (polygonIterator1_test)
 {
   boost::shared_ptr< te::rst::Raster > rasterPointer;
-  CreateTestRaster( 3, 3, 3, rasterPointer );
+  CreateTestRaster( 3, 3, 3, rasterPointer, true );
   
   std::auto_ptr< te::gm::Polygon > polPtr( (te::gm::Polygon*)
     te::gm::GetGeomFromEnvelope( rasterPointer->getGrid()->getExtent(),
@@ -151,24 +150,24 @@ void TsRasterIterator::PolygonIteratorTest1()
     
   double pixelValueCounter = 0;
 
-  for( unsigned int band = 0 ; band < rasterPointer->getNumberOfBands() ; 
+  for( unsigned int band = 0 ; band < rasterPointer->getNumberOfBands() ;
     ++band )
-  {    
-    te::rst::PolygonIterator< double > it = 
+  {
+    te::rst::PolygonIterator< double > it =
       te::rst::PolygonIterator< double >::begin( rasterPointer.get(),
       polPtr.get() );
-    const te::rst::PolygonIterator< double > itEnd = 
+    const te::rst::PolygonIterator< double > itEnd =
       te::rst::PolygonIterator< double >::end( rasterPointer.get(),
-      polPtr.get() );      
+      polPtr.get() );
       
     int col = 0;
     int row = 0;
     int count = 0;
     while (it != itEnd)
     {
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(pixelValueCounter, it[band], 0.0000000001);
-      CPPUNIT_ASSERT_EQUAL(row, (int)it.getRow());
-      CPPUNIT_ASSERT_EQUAL(col, (int)it.getColumn());
+      BOOST_CHECK_CLOSE(pixelValueCounter, it[band], 0.0000000001);
+      BOOST_CHECK_EQUAL(row, (int)it.getRow());
+      BOOST_CHECK_EQUAL(col, (int)it.getColumn());
 
       ++pixelValueCounter;
       ++it;
@@ -182,12 +181,11 @@ void TsRasterIterator::PolygonIteratorTest1()
       }
     }
 
-    CPPUNIT_ASSERT_EQUAL(count, 9);
+    BOOST_CHECK_EQUAL(count, 9);
   }
 }
 
-
-void TsRasterIterator::PolygonIteratorTest2()
+BOOST_AUTO_TEST_CASE (polygonIterator2_test)
 {
     boost::shared_ptr< te::rst::Raster > rasterPointer;
     CreateTestRaster(1, 8, 8, rasterPointer, true);
@@ -197,29 +195,33 @@ void TsRasterIterator::PolygonIteratorTest2()
         rasterPointer->getGrid()->getExtent(), rasterPointer->getGrid()->getSRID());
     polVector.push_back(externalPol);
 
-    // Create Internal polygon 1
-    te::gm::Polygon* internalPol_1 = new te::gm::Polygon(0, te::gm::PolygonType, 
+    /* Create Internal polygon 1 */
+
+    te::gm::Polygon* internalPol_1 = new te::gm::Polygon(0, te::gm::PolygonType,
                                                          rasterPointer->getSRID());
     te::gm::LinearRing* l1 = createSquare(2, -2, 1, rasterPointer->getSRID());
     internalPol_1->add(l1);
     polVector.push_back(internalPol_1);
 
-    // Create internal polygon 2
-    te::gm::Polygon* internalPol_2 = new te::gm::Polygon(0, te::gm::PolygonType, 
+    /* Create internal polygon 2 */
+
+    te::gm::Polygon* internalPol_2 = new te::gm::Polygon(0, te::gm::PolygonType,
                                                          rasterPointer->getSRID());
     te::gm::LinearRing* l2 = createSquare(2, -5.5, 3, rasterPointer->getSRID());
     internalPol_2->add(l2);
     polVector.push_back(internalPol_2);
 
-    // Create internal polygon 3
-    te::gm::Polygon* internalPol_3 = new te::gm::Polygon(0, te::gm::PolygonType, 
+    /* Create internal polygon 3 */
+
+    te::gm::Polygon* internalPol_3 = new te::gm::Polygon(0, te::gm::PolygonType,
                                                          rasterPointer->getSRID());
     te::gm::LinearRing* l3 = createSquare(6, -6, 2.5, rasterPointer->getSRID());
     internalPol_3->add(l3);
     polVector.push_back(internalPol_3);
 
-    // Create Internal polygon 4
-    te::gm::Polygon* internalPol_4 = new te::gm::Polygon(0, te::gm::PolygonType, 
+    /* Create Internal polygon 4 */
+
+    te::gm::Polygon* internalPol_4 = new te::gm::Polygon(0, te::gm::PolygonType,
                                                          rasterPointer->getSRID());
     te::gm::LinearRing* l4 = new te::gm::LinearRing(6, te::gm::LineStringType, rasterPointer->getSRID());
 
@@ -233,7 +235,8 @@ void TsRasterIterator::PolygonIteratorTest2()
     internalPol_4->add(l4);
     polVector.push_back(internalPol_4);
 
-    // Adding internal polygons to the external polygon
+    /* Adding internal polygons to the external polygon */
+
     externalPol->add((te::gm::LinearRing*)l1->clone());
     externalPol->add((te::gm::LinearRing*)l2->clone());
     externalPol->add((te::gm::LinearRing*)l3->clone());
@@ -243,7 +246,7 @@ void TsRasterIterator::PolygonIteratorTest2()
 
     for (unsigned int band = 0; band < rasterPointer->getNumberOfBands(); ++band)
     {
-        for (int countPol = 0; countPol < polVector.size(); countPol++) 
+        for (int countPol = 0; countPol < polVector.size(); countPol++)
         {
             te::rst::PolygonIterator< double > it =
                 te::rst::PolygonIterator< double >::begin(rasterPointer.get(),
@@ -282,7 +285,9 @@ void TsRasterIterator::PolygonIteratorTest2()
           templateRaster->getValue(col, lin, templateValue);
           rasterPointer->getValue(col, lin, currentValue);
 
-          CPPUNIT_ASSERT_EQUAL(templateValue, currentValue);
+          BOOST_CHECK_EQUAL(templateValue, currentValue);
       }
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END ()
