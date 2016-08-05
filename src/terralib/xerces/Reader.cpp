@@ -33,8 +33,12 @@
 #include "StrToXMLCh.h"
 #include "Utils.h"
 
+// STL
+#include <fstream>
+
 // Xerces-C++
 #include <xercesc/sax2/SAX2XMLReader.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 
 te::xerces::Reader::Reader()
@@ -42,7 +46,7 @@ te::xerces::Reader::Reader()
     m_readerH(0),
     m_errH(0),
     m_token(0),
-    m_ignoreWhiteSpaces(false)
+    m_ignoreWhiteSpaces(true)
 {
   m_parser = xercesc::XMLReaderFactory::createXMLReader();
   m_readerH = new ReaderHandler;
@@ -53,8 +57,8 @@ te::xerces::Reader::Reader()
     m_parser->setContentHandler(m_readerH);
     m_parser->setErrorHandler(m_errH);
     m_parser->setFeature(xercesc::XMLUni::fgSAX2CoreNameSpaces, true);
-    m_parser->setFeature(xercesc::XMLUni::fgXercesSchema, true);
-    m_parser->setFeature(xercesc::XMLUni::fgSAX2CoreValidation, true);
+    m_parser->setFeature(xercesc::XMLUni::fgXercesSchema, false);
+    m_parser->setFeature(xercesc::XMLUni::fgSAX2CoreValidation, false);
     m_parser->setFeature(xercesc::XMLUni::fgXercesUseCachedGrammarInParse, true);
     m_parser->setFeature(xercesc::XMLUni::fgXercesCacheGrammarFromParse, true);
     m_parser->setInputBufferSize(TE_XERCES_READER_MAX_BUFFSIZE);
@@ -113,7 +117,11 @@ void te::xerces::Reader::read(const std::string& fileURI)
 
   try
   {
-    if(!m_parser->parseFirst(fileURI.c_str(), *m_token))
+    std::ifstream file(fileURI.c_str());
+    std::string text((std::istreambuf_iterator<char>(file)),
+      std::istreambuf_iterator<char>());
+    xercesc::MemBufInputSource xmlbuffer((const ::XMLByte*)text.c_str(), text.size(), "");
+    if (!m_parser->parseFirst(xmlbuffer, *m_token))
     {
       ErrorHandler* errH = static_cast<ErrorHandler*>(m_parser->getErrorHandler());
 

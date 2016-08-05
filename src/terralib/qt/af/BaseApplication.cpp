@@ -573,7 +573,7 @@ void te::qt::af::BaseApplication::onLayerInvertSelectionTriggered()
 
     const te::da::ObjectIdSet* selected = layer->getSelected();
 
-    if(selected && (selected->size() < 1))
+    if(selected && (selected->size() > 0))
       allObjects->difference(selected);
 
     layer->clearSelected();
@@ -645,9 +645,17 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
     // The layer fitting will be accomplished only on the first layer selected
     te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
 
+    te::gm::Envelope env = selectedLayer->getExtent();
+
     te::qt::widgets::MapDisplay* display = m_display->getDisplay();
 
-    te::gm::Envelope env = selectedLayer->getExtent();
+    if(display->getLayerList().empty())
+    {
+      std::list<te::map::AbstractLayerPtr> ls;
+      te::qt::widgets::GetValidLayers(getLayerExplorer()->model(), QModelIndex(), ls);
+
+      display->setLayerList(ls);
+    }
 
     if((display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == selectedLayer->getSRID()))
     {

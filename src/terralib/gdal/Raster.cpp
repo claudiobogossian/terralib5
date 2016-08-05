@@ -110,30 +110,23 @@ te::gdal::Raster::Raster(te::rst::Grid* grid,
 te::gdal::Raster::Raster(const Raster& rhs)
   : te::rst::Raster(rhs),
     m_gdataset(0),
-    m_deleter( 0 )    
+    m_deleter( rhs.m_deleter ),
+    m_myURI( rhs.m_myURI )    
 {
   if(rhs.m_gdataset)
   {
+    m_dsUseCounterPtr.reset( new DataSetUseCounter( GetParentDataSetName( m_myURI ),  
+      ( IsSubDataSet( m_myURI ) || ( m_policy & te::common::WAccess ) ) ? 
+      DataSetsManager::SingleAccessType : DataSetsManager::MultipleAccessType ) );
     
-    
-    GDALDriver* driverPtr = rhs.m_gdataset->GetDriver();
+    m_gdataset = te::gdal::GetRasterHandle(m_myURI, m_policy);
 
-    char** papszOptions = 0;
+    if(m_gdataset == 0)
+      throw Exception(TE_TR("Data file can not be accessed."));
 
-    m_gdataset = driverPtr->CreateCopy(rhs.m_gdataset->GetDescription(),
-                                       rhs.m_gdataset, 1, papszOptions,
-                                       NULL, NULL);
-   
-    m_myURI = m_gdataset->GetDescription(); 
-                                       
-    m_dsUseCounterPtr.reset( new DataSetUseCounter( GetParentDataSetName( m_myURI ), 
-      DataSetsManager::MultipleAccessType ) );
+    m_grid = GetGrid(m_gdataset);
 
-    GDALFlushCache(m_gdataset);
-
-    m_policy = te::common::RAccess;
-
-    GetBands(this, m_bands);
+    GetBands(this, m_bands);    
   }
 }
 

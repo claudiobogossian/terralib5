@@ -24,10 +24,15 @@
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../rp/Functions.h"
+#include "../../../se/ChannelSelection.h"
+#include "../../../se/RasterSymbolizer.h"
+#include "../../../se/SelectedChannel.h"
+#include "../../../se/Utils.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
 #include "../progress/ProgressViewerDialog.h"
+#include "../utils/ScopedCursor.h"
 #include "RasterSlicingWizardPage.h"
 #include "RasterInfoWizardPage.h"
 #include "../raster/RasterInfoWidget.h"
@@ -64,6 +69,7 @@ bool te::qt::widgets::RasterSlicingWizard::validateCurrentPage()
 {
   if(currentPage() ==  m_layerSearchPage.get())
   {
+    te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
     std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
 
     if(list.empty() == false)
@@ -83,18 +89,17 @@ bool te::qt::widgets::RasterSlicingWizard::validateCurrentPage()
 
           if(inputRst.get())
           {
-            m_wizardPage->setBandsNumber( inputRst->getNumberOfBands() );
+            m_wizardPage->setRaster(inputRst.release());
           }
         }
-        
       }
-    }    
+    }
     
     return m_layerSearchPage->isComplete();
   }
   else if(currentPage() ==  m_wizardPage.get())
   {
-    return true;
+    return m_wizardPage->isComplete();
   }
   else if(currentPage() ==  m_rasterInfoPage.get())
   {
@@ -115,6 +120,16 @@ te::map::AbstractLayerPtr te::qt::widgets::RasterSlicingWizard::getOutputLayer()
   return m_outputLayer;
 }
 
+void te::qt::widgets::RasterSlicingWizard::setExtent(const te::gm::Envelope& extent)
+{
+  m_wizardPage->setExtent(extent);
+}
+
+void te::qt::widgets::RasterSlicingWizard::setSRID(int srid)
+{
+  m_wizardPage->setSRID(srid);
+}
+
 void te::qt::widgets::RasterSlicingWizard::addPages()
 {
   m_layerSearchPage.reset(new LayerSearchWizardPage(this));
@@ -126,6 +141,8 @@ void te::qt::widgets::RasterSlicingWizard::addPages()
   
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
   addPage(m_rasterInfoPage.get());
+
+  this->resize(m_wizardPage->sizeHint());
 }
 
 bool te::qt::widgets::RasterSlicingWizard::execute()
@@ -137,7 +154,7 @@ bool te::qt::widgets::RasterSlicingWizard::execute()
 
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
-  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst;
   
   unsigned int inputRasterBand = 0;
   bool createPaletteRaster = false;
@@ -150,19 +167,74 @@ bool te::qt::widgets::RasterSlicingWizard::execute()
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
   
   // Execute slicing
-
   QApplication::setOverrideCursor(Qt::WaitCursor);
   std::auto_ptr< te::rst::Raster > outRasterPtr;
+
+  bool trimRaster = m_wizardPage->trimRaster();
+
+  if(trimRaster)
+  {
+    std::auto_ptr<te::rst::Raster> tempRaster = ds->getRaster(rpos);
+
+    std::map<std::string, std::string> rinfo = tempRaster->getInfo();
+    rinfo["FORCE_MEM_DRIVER"] = "TRUE";
+
+    inputRst.reset(tempRaster->trim(&m_wizardPage->getExtent(), rinfo));
+  }
+  else
+  {
+    inputRst = ds->getRaster(rpos);
+  }
 
   if( te::rp::RasterSlicing( *inputRst, inputRasterBand, createPaletteRaster,
     slicesNumber, eqHistogram, m_rasterInfoPage->getWidget()->getInfo(),
     m_rasterInfoPage->getWidget()->getType(), true, 0, outRasterPtr ) )
   {
     outRasterPtr.reset();
+
     //set output layer
     m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                  m_rasterInfoPage->getWidget()->getInfo());
+
+    te::se::Style* style;
+
+    if (createPaletteRaster)
+      style = te::se::CreateCoverageStyle(1);
+    else
+      style = te::se::CreateCoverageStyle(inputRst->getNumberOfBands());
+
+    te::se::RasterSymbolizer* rasterSymb = te::se::GetRasterSymbolizer(style);
     
+    te::se::ColorMap* cm = m_wizardPage->getColorMap();
+
+    rasterSymb->setColorMap(cm);
+
+    te::se::ChannelSelection* cs = rasterSymb->getChannelSelection();
+
+    if (cs->getGrayChannel())
+    {
+      te::se::SelectedChannel* scGray = cs->getGrayChannel();
+
+      if(createPaletteRaster)
+        scGray->setSourceChannelName("0");
+      else
+        scGray->setSourceChannelName(m_wizardPage->getCurrentBand());
+    }
+    else
+    {
+      te::se::SelectedChannel* scGray = new te::se::SelectedChannel();
+
+      if (createPaletteRaster)
+        scGray->setSourceChannelName("0");
+      else
+        scGray->setSourceChannelName(m_wizardPage->getCurrentBand());
+
+      cs->setGrayChannel(scGray);
+    }
+
+    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+    m_outputLayer->setStyle(style);
+
     QMessageBox::information(this, tr("Raster slicing"), tr("Raster slicing ended sucessfully"));
   }
   else
@@ -183,5 +255,3 @@ bool te::qt::widgets::RasterSlicingWizard::execute()
 
   return true;
 }
-
-

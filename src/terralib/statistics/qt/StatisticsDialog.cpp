@@ -24,12 +24,12 @@
 */
 
 // TerraLib
+#include "../../common/Exception.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
 #include "../core/Config.h"
-#include "../core/Exception.h"
 #include "../core/NumericStatisticalSummary.h"
 #include "../core/StringStatisticalSummary.h"
 #include "../core/SummaryFunctions.h"
@@ -110,7 +110,9 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
       m_ui->m_statTableWidget->setItem(3, 1, itemValue);
     }
     else
-      QMessageBox::information(this, "Warning", "The input vector of values is empty.");
+    {
+      throw te::common::Exception(tr("The selected column is empty.").toUtf8().data());
+    }
   }
   else
   {
@@ -234,14 +236,16 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 
     }
     else
-      QMessageBox::information(this, "Warning", "The input vector of values is empty.");
+    {
+      throw te::common::Exception(tr("The selected column is empty.").toUtf8().data());
+    }
   }
   m_ui->m_statTableWidget->resizeColumnToContents(0);
 }
 
 void te::stat::StatisticsDialog::onSavePushButtonClicked()
 {
-  QMessageBox::information(this, "Save", "Under development - It should save the result...");
+  throw te::common::Exception(tr("Under development - It should save the result...").toUtf8().data());
 }
 
 void te::stat::StatisticsDialog::onCancelPushButtonClicked()

@@ -194,6 +194,11 @@ void te::qt::widgets::StyleExplorer::setLegendIconSize(int size)
   updateStyleTree();
 }
 
+void te::qt::widgets::StyleExplorer::importStyle(te::se::Style* style)
+{
+  emit styleImported(style);
+}
+
 void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* symb)
 {
   QTreeWidgetItem* symbolizerItem = getSelectedItem();

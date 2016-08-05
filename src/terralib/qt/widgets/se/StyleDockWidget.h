@@ -103,6 +103,8 @@ namespace te
 
           void onSymbolizerSelected(te::se::Symbolizer* s);
 
+          void onStyleImported(te::se::Style* style);
+
           void onPolygonSymbolizerChanged();
           void onLineSymbolizerChanged();
           void onPointSymbolizerChanged();

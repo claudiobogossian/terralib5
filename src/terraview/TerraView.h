@@ -106,7 +106,7 @@ class TerraView : public te::qt::af::BaseApplication
 
     void onOpenProjectTriggered();
 
-    void onSaveProjectTriggered();
+    void onSaveProjectTriggered(bool save_as = false);
 
     void onSaveProjectAsTriggered();
 

@@ -57,8 +57,11 @@
 
 
 // STL
-#include <vector>
+#include <string>
 #include <memory>
+#include <vector>
+
+
 
 bool IsGeometryColumn(te::da::DataSet* dset, const size_t& col)
 {
@@ -790,9 +793,18 @@ class TablePopupFilter : public QObject
     void showStatistics()
     {
       te::stat::StatisticsDialog statisticDialog;
+
       std::string prop = m_dset->getPropertyName(m_columnPressed);
-      statisticDialog.setStatistics(m_dset, prop);
-      statisticDialog.exec();
+
+      try
+      {
+        statisticDialog.setStatistics(m_dset, prop);
+        statisticDialog.exec();
+      }
+      catch (const te::common::Exception& e)
+      {
+        QMessageBox::information(m_view, tr("Show statistics"), e.what());
+      }
     }
 
     void removeColumn()

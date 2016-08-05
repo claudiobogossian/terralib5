@@ -26,10 +26,14 @@
 // TerraLib
 #include "../common/Exception.h"
 #include "../common/StringUtils.h"
+#include "../core/encoding/CharEncoding.h"
 #include "../core/translator/Translator.h"
 #include "StrToXMLCh.h"
 #include "XMLChToStr.h"
 #include "Writer.h"
+
+// STL
+#include <fstream>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -85,14 +89,13 @@ void te::xerces::Writer::writeToFile()
 #endif
 
   xercesc::XMLFormatTarget* myFormTarget = 0;
-
   try
   {
     // Se nao tem filename, eh stdout
     if( m_uri.empty() )
       myFormTarget = new xercesc::StdOutFormatTarget();
     else
-      myFormTarget = new xercesc::LocalFileFormatTarget( m_uri.c_str() );
+      myFormTarget = new xercesc::MemBufFormatTarget();
 
 #if XERCES_VERSION_MAJOR == 2
     theSerializer->writeNode( myFormTarget, *doc_ );
@@ -100,8 +103,11 @@ void te::xerces::Writer::writeToFile()
     theOutput = ( (xercesc::DOMImplementationLS*)m_impl)->createLSOutput();
     theOutput->setByteStream(myFormTarget);
     theSerializer->write(m_doc, theOutput );
+    std::string xmlstring = (char*)((xercesc::MemBufFormatTarget*)myFormTarget)->getRawBuffer();
+    std::ofstream out(te::core::CharEncoding::fromUTF8(m_uri).c_str());
+    out << xmlstring;
+    out.close();
 #endif
-
     delete theOutput;
     delete theSerializer;
     delete myFormTarget;
