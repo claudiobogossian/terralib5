@@ -171,6 +171,29 @@ namespace te
 
       private:
 
+        /** @name Copy Constructor and Assignment Operator
+        *  Copy constructor and assignment operator not allowed.
+        */
+        //@{
+
+        /*!
+        \brief Copy constructor not allowed.
+
+        \param rhs The right-hand-side copy that would be used to copy from.
+        */
+        RasterSlicingWizardPage(const RasterSlicingWizardPage& rhs);
+
+        /*!
+        \brief Assignment operator not allowed.
+
+        \param rhs The right-hand-side copy that would be used to copy from.
+
+        \return A reference to this object.
+        */
+        RasterSlicingWizardPage& operator=(const RasterSlicingWizardPage& rhs);
+
+        //@}
+
         te::gm::Envelope m_extent;  //!< The envelope that can be used to trim the output raster
         int m_srid;                 //!<  The current srid from the display
       };

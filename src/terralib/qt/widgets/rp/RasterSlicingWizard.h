@@ -95,6 +95,29 @@ namespace te
 
         private:
 
+          /** @name Copy Constructor and Assignment Operator
+          *  Copy constructor and assignment operator not allowed.
+          */
+          //@{
+
+          /*!
+          \brief Copy constructor not allowed.
+
+          \param rhs The right-hand-side copy that would be used to copy from.
+          */
+          RasterSlicingWizard(const RasterSlicingWizard& rhs);
+
+          /*!
+          \brief Assignment operator not allowed.
+
+          \param rhs The right-hand-side copy that would be used to copy from.
+
+          \return A reference to this object.
+          */
+          RasterSlicingWizard& operator=(const RasterSlicingWizard& rhs);
+
+          //@}
+        
           std::auto_ptr<te::qt::widgets::RasterSlicingWizardPage>  m_wizardPage;       //!< The wizard page used to define the slicing parameters
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage>    m_layerSearchPage;  //!< The wizard page used to select an input layer
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage>     m_rasterInfoPage;   //!< The wizard page used to define the output layer parameters

@@ -58,12 +58,16 @@ void te::qt::plugins::rp::RasterSlicingAction::onActionActivated(bool checked)
 
   //get display extent
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
-  const te::gm::Envelope extent = ba->getMapDisplay()->getExtent();
-  int srid = ba->getMapDisplay()->getSRID();
 
-  dlg.setExtent(extent);
-  dlg.setSRID(srid);
-  
+  if(ba)
+  {
+    const te::gm::Envelope extent = ba->getMapDisplay()->getExtent();
+    int srid = ba->getMapDisplay()->getSRID();
+
+    dlg.setExtent(extent);
+    dlg.setSRID(srid);
+  }
+
   if(dlg.exec() == QDialog::Accepted)
   {
     //add new layer
