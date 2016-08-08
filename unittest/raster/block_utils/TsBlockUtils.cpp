@@ -18,34 +18,35 @@
  */
 
 /*!
-  \file TsBlockUtils.cpp
+  \file terralib/unittest/raster/TsBlockUtils.cpp
  
   \brief A test suit for the BlockUtils class.
  */
 
-#include "TsBlockUtils.h"
+// TerraLib
+#include <terralib/raster/BlockUtils.h>
 #include "../Config.h"
 
-#include <terralib/raster/BlockUtils.h>
-
-//#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-
+// Boost
+#include <boost/test/unit_test.hpp>
 #include <boost/shared_ptr.hpp>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TsBlockUtils );
+BOOST_AUTO_TEST_SUITE (blockUtils_tests)
 
-void TsBlockUtils::tcDummyGetValue()
+BOOST_AUTO_TEST_CASE (dummyGetValue_test)
 {
 }
 
-void TsBlockUtils::tcDummySetValue()
+BOOST_AUTO_TEST_CASE (dummySetValue_test)
 {
 }
 
-void TsBlockUtils::tcGet4bits()
+BOOST_AUTO_TEST_CASE (get4bits_test)
 {
 }
 
-void TsBlockUtils::tcGet2bits()
+BOOST_AUTO_TEST_CASE (get2bits_test)
 {
 }
+
+BOOST_AUTO_TEST_SUITE_END()

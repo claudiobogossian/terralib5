@@ -18,65 +18,47 @@
  */
 
 /*!
-  \file TsProxyRaster.cpp
+  \file terralib/unittest/raster/TsBand.cpp
  
-  \brief A test suit for the Cached Raster class.
+  \brief A test suit for the Raster Band class.
  */
 
-#include "TsProxyRaster.h"
+// TerraLib
+#include <terralib/raster.h>
 #include "../Config.h"
 
-#include <terralib/memory/CachedRaster.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/raster/BandProperty.h>
-#include <terralib/raster/Grid.h>
-
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-
+// Boost
+#include <boost/test/unit_test.hpp>
 #include <boost/shared_ptr.hpp>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TsProxyRaster );
+BOOST_AUTO_TEST_SUITE ( band_tests )
 
-void TsProxyRaster::tcProxyRasterConstructor()
+BOOST_AUTO_TEST_CASE (bandConstructor_test)
 {
 }
 
-void TsProxyRaster::tcSwap()
+BOOST_AUTO_TEST_CASE (getRaster_test)
 {
 }
 
-void TsProxyRaster::tcOpen()
+BOOST_AUTO_TEST_CASE (operatorEqual_test)
 {
 }
 
-void TsProxyRaster::tcGetInfo()
+BOOST_AUTO_TEST_CASE (getValue_test)
 {
 }
 
-void TsProxyRaster::tcGetNumberOfBands()
+BOOST_AUTO_TEST_CASE (setValue_test)
 {
 }
 
-void TsProxyRaster::tcGetBandDataType()
+BOOST_AUTO_TEST_CASE (getIValue_test)
 {
 }
 
-void TsProxyRaster::tcGetBandI()
+BOOST_AUTO_TEST_CASE (setIValue_test)
 {
 }
 
-void TsProxyRaster::tcGetBand()
-{
-}
-
-void TsProxyRaster::tcBandOperatorI()
-{
-}
-
-void TsProxyRaster::tcBandOperator()
-{
-}
-
-void TsProxyRaster::tcBandClone()
-{
-}
+BOOST_AUTO_TEST_SUITE_END()

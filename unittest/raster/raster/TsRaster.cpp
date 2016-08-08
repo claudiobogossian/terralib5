@@ -18,38 +18,40 @@
  */
 
 /*!
-  \file TsRaster.cpp
+  \file terralib/unittest/raster/TsRaster.cpp
  
   \brief A test suit for the Cached Raster class.
  */
 
-#include "TsRaster.h"
-#include "../Config.h"
+// TerraLib
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
 #include <terralib/raster.h>
 #include <terralib/memory/CachedRaster.h>
+#include "../Config.h"
 
+// Boost
+#include <boost/test/unit_test.hpp>
 #include <boost/shared_ptr.hpp>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TsRaster );
+BOOST_AUTO_TEST_SUITE ( raster_tests )
 
-bool TsRaster::loadSHPFile( const std::string& shpFileName, 
+bool loadSHPFile( const std::string& shpFileName,
   std::vector< te::gm::Geometry* >& geomPtrs )
 {
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = shpFileName;
-  std::auto_ptr< te::da::DataSource > ogrDataSourcePtr( 
+  std::auto_ptr< te::da::DataSource > ogrDataSourcePtr(
     te::da::DataSourceFactory::make("OGR") );
-  CPPUNIT_ASSERT( ogrDataSourcePtr.get() != 0 );
+  BOOST_CHECK( ogrDataSourcePtr.get() != 0 );
   
   ogrDataSourcePtr->setConnectionInfo(connInfo);
-  ogrDataSourcePtr->open(); 
+  ogrDataSourcePtr->open();
   
-  CPPUNIT_ASSERT( ogrDataSourcePtr->isOpened() );
+  BOOST_CHECK( ogrDataSourcePtr->isOpened() );
   
-  std::vector<std::string> dataSetNames = ogrDataSourcePtr->getDataSetNames();  
-  std::auto_ptr< te::da::DataSourceTransactor > transactorPtr = 
+  std::vector<std::string> dataSetNames = ogrDataSourcePtr->getDataSetNames();
+  std::auto_ptr< te::da::DataSourceTransactor > transactorPtr =
     ogrDataSourcePtr->getTransactor();
   
   for( unsigned int dataSetNamesIdx = 0 ; dataSetNamesIdx < dataSetNames.size() ;
@@ -60,7 +62,7 @@ bool TsRaster::loadSHPFile( const std::string& shpFileName,
     
     const std::size_t nProperties = datasetPtr->getNumProperties();
     
-    CPPUNIT_ASSERT( datasetPtr->moveBeforeFirst() );
+    BOOST_CHECK( datasetPtr->moveBeforeFirst() );
     
     while( datasetPtr->moveNext() )
     {
@@ -86,31 +88,31 @@ bool TsRaster::loadSHPFile( const std::string& shpFileName,
               geomPtrs.push_back( new te::gm::Polygon( *( (te::gm::Polygon*)
                 mPolPtr->getGeometryN( gIdx ) ) ) );
             }
-          }          
+          }
         }
       }
     }
-  }  
+  }
   
   return true;
 }
 
-void TsRaster::tcRasterConstructor()
+BOOST_AUTO_TEST_CASE (rasterConstructor_test)
 {
 }
 
-void TsRaster::tcRasterGrid()
+BOOST_AUTO_TEST_CASE (rasterGrid_test)
 {
 }
 
-void TsRaster::tcRasterCopyConstructor()
+BOOST_AUTO_TEST_CASE (rasterCopyConstructor_test)
 {
 }
 
-void TsRaster::tcRasterize()
+BOOST_AUTO_TEST_CASE (rasterize_test)
 {
   std::vector< te::gm::Geometry* > geomPtrs;
-  CPPUNIT_ASSERT( loadSHPFile( TERRALIB_DATA_DIR "/shp/PoligonoUnico.shp",
+  BOOST_CHECK( loadSHPFile( TERRALIB_DATA_DIR "/shp/PoligonoUnico.shp",
     geomPtrs ) );
   
   std::vector<te::rst::BandProperty*> vecBandProp;
@@ -126,10 +128,10 @@ void TsRaster::tcRasterize()
   dsinfo["URI"] = "TsRastertcRasterize.tif";
   
   te::rst::Grid* grid = new te::rst::Grid( (unsigned int)
-    vecBandProp[ 0 ]->m_blkw, (unsigned int)vecBandProp[ 0 ]->m_blkh, 
+    vecBandProp[ 0 ]->m_blkw, (unsigned int)vecBandProp[ 0 ]->m_blkh,
     new te::gm::Envelope( *geomPtrs[ 0 ]->getMBR() ), geomPtrs[ 0 ]->getSRID() );
   
-  std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", grid, 
+  std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", grid,
     vecBandProp, dsinfo));
   
   std::vector< double > values;
@@ -137,3 +139,5 @@ void TsRaster::tcRasterize()
   
   rst->rasterize( geomPtrs, values, 0 );
 }
+
+BOOST_AUTO_TEST_SUITE_END ()

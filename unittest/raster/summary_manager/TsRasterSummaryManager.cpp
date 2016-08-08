@@ -18,43 +18,39 @@
  */
 
 /*!
-  \file TsReprojection.cpp
+  \file terralib/unittest/raster/TsRasterSummaryManager.cpp
  
-  \brief A test suit for the raster Reprojection class.
+  \brief A test suit for the Raster Summary Manager class.
  */
 
-#include "TsReprojection.h"
+// TerraLib
+#include <terralib/raster/RasterSummaryManager.h>
 #include "../Config.h"
 
-#include <terralib/raster/Interpolator.h>
-
+// Boost
+#include <boost/test/unit_test.hpp>
 #include <boost/shared_ptr.hpp>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TsReprojection );
+BOOST_AUTO_TEST_SUITE ( rasterSummaryManager_tests )
 
-void TsReprojection::tcReprojection1()
-{
-  // openning input raster
-
-  std::map<std::string, std::string> auxRasterInfo;
-
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
-  boost::shared_ptr< te::rst::Raster > inputRasterPtr ( te::rst::RasterFactory::open(
-    auxRasterInfo ) );
-  CPPUNIT_ASSERT( inputRasterPtr.get() );
-
-  // Reprojecting
-  
-  auxRasterInfo["URI"] = "TsReprojection_tcReprojection1.tif";
-  boost::shared_ptr< te::rst::Raster > outputRasterPtr( 
-    inputRasterPtr->transform( 32621, auxRasterInfo, 1 ) );
-  CPPUNIT_ASSERT( outputRasterPtr.get() );
-}
-
-void TsReprojection::tcReprojection2()
+BOOST_AUTO_TEST_CASE (constructor_test)
 {
 }
 
-void TsReprojection::tcReprojection3()
+BOOST_AUTO_TEST_CASE (add_test)
 {
 }
+
+BOOST_AUTO_TEST_CASE (find_test)
+{
+}
+
+BOOST_AUTO_TEST_CASE (remove_test)
+{
+}
+
+BOOST_AUTO_TEST_CASE (get_test)
+{
+}
+
+BOOST_AUTO_TEST_SUITE_END ()

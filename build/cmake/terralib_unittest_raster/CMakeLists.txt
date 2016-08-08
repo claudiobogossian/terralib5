@@ -25,25 +25,65 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
+add_definitions(-DBOOST_TEST_DYN_LINK)
 
 include_directories(${Boost_INCLUDE_DIR}
-                    ${CPPUNIT_INCLUDE_DIR}
                     ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/*.cpp)
-
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/*.h)
+file(GLOB TERRALIB_UNITTEST_RASTER_BAND_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/band/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_BLOCK_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/block_utils/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_GRID_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/grid/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_INTERPOLATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/interpolator/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_ITERATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/iterator/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_PROXY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/proxy/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_RASTER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/raster/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_REPROJECTION_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/reprojection/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_SUMMARY_MANAGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/summary_manager/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_SYNCHRONIZED_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/synchronized/*.cpp)
+file(GLOB TERRALIB_UNITTEST_RASTER_VECTORIZER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/vectorizer/*.cpp)
 
-add_executable(terralib_unittest_raster ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
+source_group("Source Files\\band"            FILES ${TERRALIB_UNITTEST_RASTER_BAND_SRC_FILES})
+source_group("Source Files\\block_utils"     FILES ${TERRALIB_UNITTEST_RASTER_BLOCK_UTILS_SRC_FILES})
+source_group("Source Files\\grid"            FILES ${TERRALIB_UNITTEST_RASTER_GRID_SRC_FILES})
+source_group("Source Files\\interpolator"    FILES ${TERRALIB_UNITTEST_RASTER_INTERPOLATOR_SRC_FILES})
+source_group("Source Files\\iterator"        FILES ${TERRALIB_UNITTEST_RASTER_ITERATOR_SRC_FILES})
+source_group("Source Files\\proxy"           FILES ${TERRALIB_UNITTEST_RASTER_PROXY_SRC_FILES})
+source_group("Source Files\\raster"          FILES ${TERRALIB_UNITTEST_RASTER_RASTER_SRC_FILES})
+source_group("Source Files\\reprojection"    FILES ${TERRALIB_UNITTEST_RASTER_REPROJECTION_SRC_FILES})
+source_group("Source Files\\summary_manager" FILES ${TERRALIB_UNITTEST_RASTER_SUMMARY_MANAGER_SRC_FILES})
+source_group("Source Files\\synchronized"    FILES ${TERRALIB_UNITTEST_RASTER_SYNCHRONIZED_SRC_FILES})
+source_group("Source Files\\vectorizer"      FILES ${TERRALIB_UNITTEST_RASTER_VECTORIZER_SRC_FILES})
+
+
+add_executable(terralib_unittest_raster ${TERRALIB_SRC_FILES}
+                                        ${TERRALIB_HDR_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_BAND_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_BLOCK_UTILS_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_GRID_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_INTERPOLATOR_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_ITERATOR_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_PROXY_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_RASTER_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_REPROJECTION_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_SUMMARY_MANAGER_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_SYNCHRONIZED_SRC_FILES}
+                                        ${TERRALIB_UNITTEST_RASTER_VECTORIZER_SRC_FILES})
 
 target_link_libraries(terralib_unittest_raster terralib_mod_dataaccess
-											   terralib_mod_geometry
-											   terralib_mod_memory
+                                               terralib_mod_geometry
+                                               terralib_mod_memory
                                                terralib_mod_plugin 
                                                terralib_mod_raster
                                                terralib_mod_rp
-                                               ${CPPUNIT_LIBRARY})
+                                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(NAME terralib_unittest_raster
+         COMMAND terralib_unittest_raster
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/raster COMPONENT devel)
