@@ -440,7 +440,10 @@ void te::qt::af::BaseApplication::onLayerRenameTriggered()
 {
   std::list<te::qt::widgets::TreeItem*> selectedLayerItems = getLayerExplorer()->getSelectedItems();
 
-  bool renameAllowed = !selectedLayerItems.empty() && selectedLayerItems.size() == 1 && (selectedLayerItems.front()->getType() == "LAYER" || selectedLayerItems.front()->getType() == "FOLDER");
+  if (selectedLayerItems.empty())
+    return;
+  
+  bool renameAllowed = (selectedLayerItems.size() == 1 && (selectedLayerItems.front()->getType() == "LAYER" || selectedLayerItems.front()->getType() == "FOLDER"));
 
   if(!renameAllowed)
   {
@@ -1139,6 +1142,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapUnknownSRID, "srs-unknown", "Map.UnknownSRID", tr("&Set Unknown SRS"), tr("Set the Map SRS to unknown"), true, false, true, m_menubar);
   initAction(m_mapStopDrawing, "map-draw-cancel", "Map.Stop Drawing", tr("&Stop Drawing"), tr("Stop all drawing tasks"), true, false, true, m_menubar);
   initAction(m_internalSettings, "gear", "Map.Internal Settings", tr("&Internal Settings"), tr("Application Internal Settings"), true, false, true, m_menubar);
+
+  m_layerRename->setShortcut(QKeySequence(Qt::Key_F2));
 
   onSelectionToggled(true);
   m_mapSelection->setChecked(true);
