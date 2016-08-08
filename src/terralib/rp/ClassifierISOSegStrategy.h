@@ -63,10 +63,22 @@ namespace te
         class TERPEXPORT Parameters : public ClassifierStrategyParameters
         {
           public:
+            
+            /*!
+              \enum class DistanceType
+              \brief Used distance type.
+            */
+            enum DistanceType
+            {
+              InvalidDistanceType, //!< Invalid distance type.
+              MahalanobisDistanceType, //!< Mahalanobis Distance Type.
+              BhattacharyyaDistanceType //!< Bhattacharyya Distance Type.
+            };
 
+            DistanceType m_distanceType; //!< Distance type.
             double m_acceptanceThreshold;   //!< The acceptance threshold (the closer to 100\%, few clusters are created).
 
-			Parameters();
+            Parameters();
 
             ~Parameters();
 
@@ -110,15 +122,14 @@ namespace te
 
             ~Pattern();
 
-            /*!
-              \brief Add a region inside a cluster.
-
-              \param p       The region to be added.
-            */
-            void add(Pattern* p);
-
             /*! \brief Returns the Mahalanobis distance between two patterns */
-            double getDistance(Pattern* p);
+            double getMahalanobisDistance(Pattern const * const p) const;
+            
+            /*! 
+               \brief Returns the Bhattacharyya distance between two patterns 
+               \note Returns std::numeric_limits< double >::max() on errors.
+             */
+            double getBhattacharyyaDistance(Pattern const * const p) const;            
 
             /*! \brief Return true if two clusters are equal. */
             bool operator=(Pattern& rhs);
@@ -126,9 +137,20 @@ namespace te
             int m_id;                                                     //!< The id of the region of the pattern.
             Pattern* m_myCluster;                                         //!< The associated cluster of this pattern (optional).
             double m_area;                                                //!< The area of all regions inside a pattern.
+            double m_covarianceMatrixDet;     //!< The covariance matrix determinant.
             std::vector<double> m_meanVector;                             //!< The vector of mean values, 1 value per band;
             boost::numeric::ublas::matrix<double> m_covarianceMatrix;     //!< The covariance matrix between bands.
             boost::numeric::ublas::matrix<double> m_covarianceInversion;  //!< The inversion of covariance matrix between bands.
+            
+            // Variables used by the getBhattacharyyaDistance method
+            mutable unsigned int m_getBhattacharyyaDistance_nBands;
+            mutable unsigned int m_getBhattacharyyaDistance_bandIdx;
+            mutable double m_getBhattacharyyaDistance_covsMegeDet;
+            mutable double m_getBhattacharyyaDistance_distanceValue;
+            mutable boost::numeric::ublas::matrix<double> m_getBhattacharyyaDistance_meansDif;
+            mutable boost::numeric::ublas::matrix<double> m_getBhattacharyyaDistance_covsMege;
+            mutable boost::numeric::ublas::matrix<double> m_getBhattacharyyaDistance_covsMegeInv;
+            mutable boost::numeric::ublas::matrix<double> m_getBhattacharyyaDistance_distanceTerm1;
         };
 
       public:

@@ -230,10 +230,24 @@ bool te::rp::Classifier::initialize(const AlgorithmInputParameters& inputParams)
                               "Invalid raster bands" );
 
 // check if input raster and geometries fit
-  for (unsigned i = 0; i > inputParamsPtr->m_inputPolygons.size(); i++)
+    
+  const std::vector< te::gm::Polygon* >& inputPolygons = 
+    inputParamsPtr->m_inputPolygons;
+  const te::rst::Raster& inputRaster = *inputParamsPtr->m_inputRasterPtr;
+    
+  const std::size_t inputPolygonsSize = inputPolygons.size();
+    
+  for (std::size_t inputPolygonsIdx = 0; inputPolygonsIdx > inputPolygonsSize; 
+    inputPolygonsIdx++)
   {
-    TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputPolygons[i]->getMBR()->within(*inputParamsPtr->m_inputRasterPtr->getExtent()),
-                              "Raster and Polygons does not fit");
+    TERP_TRUE_OR_RETURN_FALSE( inputPolygons[ inputPolygonsIdx ],
+                              "Invalid input polygon pointer");
+    TERP_TRUE_OR_RETURN_FALSE(
+      inputPolygons[ inputPolygonsIdx ]->getSRID() == 
+      inputRaster.getSRID(), "Invalid input polygon SRID" );
+    TERP_TRUE_OR_RETURN_FALSE(
+        inputPolygons[ inputPolygonsIdx ]->getMBR()->within(*inputRaster.getExtent()),
+        "Raster and Polygons does not fit");
   }
 
 // everything is ok
