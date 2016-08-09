@@ -95,6 +95,11 @@ namespace te
 
         private:
 
+          //No copy allowed
+          RasterSlicingWizard(const RasterSlicingWizard& rhs);
+          RasterSlicingWizard& operator=(const RasterSlicingWizard& rhs);
+
+
           std::auto_ptr<te::qt::widgets::RasterSlicingWizardPage>  m_wizardPage;       //!< The wizard page used to define the slicing parameters
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage>    m_layerSearchPage;  //!< The wizard page used to select an input layer
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage>     m_rasterInfoPage;   //!< The wizard page used to define the output layer parameters

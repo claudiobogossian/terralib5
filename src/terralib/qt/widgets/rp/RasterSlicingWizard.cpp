@@ -27,6 +27,7 @@
 #include "../../../se/ChannelSelection.h"
 #include "../../../se/RasterSymbolizer.h"
 #include "../../../se/SelectedChannel.h"
+#include "../../../se/Style.h"
 #include "../../../se/Utils.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
@@ -196,14 +197,14 @@ bool te::qt::widgets::RasterSlicingWizard::execute()
     m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                  m_rasterInfoPage->getWidget()->getInfo());
 
-    te::se::Style* style;
+    std::unique_ptr<te::se::Style> style;
 
     if (createPaletteRaster)
-      style = te::se::CreateCoverageStyle(1);
+      style.reset(te::se::CreateCoverageStyle(1));
     else
-      style = te::se::CreateCoverageStyle(inputRst->getNumberOfBands());
+      style.reset(te::se::CreateCoverageStyle(inputRst->getNumberOfBands()));
 
-    te::se::RasterSymbolizer* rasterSymb = te::se::GetRasterSymbolizer(style);
+    te::se::RasterSymbolizer* rasterSymb = te::se::GetRasterSymbolizer(style.get());
     
     te::se::ColorMap* cm = m_wizardPage->getColorMap();
 
@@ -233,7 +234,7 @@ bool te::qt::widgets::RasterSlicingWizard::execute()
     }
 
     cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
-    m_outputLayer->setStyle(style);
+    m_outputLayer->setStyle(style.release());
 
     QMessageBox::information(this, tr("Raster slicing"), tr("Raster slicing ended sucessfully"));
   }

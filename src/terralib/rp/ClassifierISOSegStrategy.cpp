@@ -69,6 +69,7 @@ const te::rp::ClassifierISOSegStrategy::Parameters& te::rp::ClassifierISOSegStra
 {
   reset();
 
+  m_distanceType = rhs.m_distanceType;
   m_acceptanceThreshold = rhs.m_acceptanceThreshold;
 
   return *this;
@@ -76,6 +77,7 @@ const te::rp::ClassifierISOSegStrategy::Parameters& te::rp::ClassifierISOSegStra
 
 void te::rp::ClassifierISOSegStrategy::Parameters::reset() throw(te::rp::Exception)
 {
+  m_distanceType = InvalidDistanceType;
   m_acceptanceThreshold = 0;
 }
 
@@ -101,7 +103,12 @@ te::rp::ClassifierISOSegStrategy::Pattern::Pattern(int i, double a, std::vector<
     m_covarianceMatrix(cm)
 {
   m_covarianceInversion = boost::numeric::ublas::matrix<double>(m_covarianceMatrix.size1(), m_covarianceMatrix.size2());
-
+  
+  if( ! te::common::GetDeterminant( m_covarianceMatrix, m_covarianceMatrixDet ) )
+  {
+    m_covarianceMatrixDet = 0;
+  }
+  
   te::common::GetInverseMatrix(m_covarianceMatrix, m_covarianceInversion);
 }
 
@@ -113,6 +120,8 @@ te::rp::ClassifierISOSegStrategy::Pattern::Pattern(Pattern& rhs)
   m_meanVector = rhs.m_meanVector;
 
   m_covarianceMatrix = rhs.m_covarianceMatrix;
+  
+  m_covarianceMatrixDet = rhs.m_covarianceMatrixDet;
 
   m_covarianceInversion = rhs.m_covarianceInversion;
 }
@@ -132,33 +141,8 @@ te::rp::ClassifierISOSegStrategy::Pattern::~Pattern()
   m_covarianceInversion.clear();
 }
 
-void te::rp::ClassifierISOSegStrategy::Pattern::add(Pattern* p)
-{
-  assert(m_meanVector.size() == p->m_meanVector.size());
-  assert(p->m_area > 0.0);
-  assert(m_myCluster == 0);
-
-// update mean vectors
-  double total_area = m_area + p->m_area;
-  for (unsigned i = 0; i < m_meanVector.size(); i++)
-    m_meanVector[i] = (m_meanVector[i] * m_area + p->m_meanVector[i] * p->m_area) / total_area;
-
-// update covariance matrices (the matrix with the biggest area wins)
-  if (p->m_area > m_area)
-  {
-    m_covarianceMatrix = p->m_covarianceMatrix;
-
-    m_covarianceInversion = p->m_covarianceInversion;
-  }
-
-// add the new area
-  m_area += p->m_area;
-
-// update the pattern values
-  p->m_myCluster = this;
-}
-
-double te::rp::ClassifierISOSegStrategy::Pattern::getDistance(Pattern* p)
+double te::rp::ClassifierISOSegStrategy::Pattern::getMahalanobisDistance(
+  Pattern const * const p ) const 
 {
   assert(m_meanVector.size() == p->m_meanVector.size());
 
@@ -181,6 +165,77 @@ double te::rp::ClassifierISOSegStrategy::Pattern::getDistance(Pattern* p)
     return DBL_MAX;
 
   return term1(0, 0);
+}
+
+double te::rp::ClassifierISOSegStrategy::Pattern::getBhattacharyyaDistance(
+  Pattern const * const p) const
+{
+  assert(m_meanVector.size() == p->m_meanVector.size());
+  
+  if( ( m_covarianceMatrixDet == 0 ) || ( p->m_covarianceMatrixDet == 0 ) )
+  {
+    return std::numeric_limits< double >::max();
+  }
+
+  m_getBhattacharyyaDistance_nBands = m_meanVector.size();
+
+  m_getBhattacharyyaDistance_meansDif.resize(m_getBhattacharyyaDistance_nBands,
+    1 );
+  
+  for ( m_getBhattacharyyaDistance_bandIdx = 0 ; m_getBhattacharyyaDistance_bandIdx
+    < m_getBhattacharyyaDistance_nBands; ++m_getBhattacharyyaDistance_bandIdx)
+  {
+    m_getBhattacharyyaDistance_meansDif(m_getBhattacharyyaDistance_bandIdx, 0 ) = 
+      m_meanVector[ m_getBhattacharyyaDistance_bandIdx] - 
+      p->m_meanVector[m_getBhattacharyyaDistance_bandIdx];
+  }
+  
+  m_getBhattacharyyaDistance_covsMege = ( m_covarianceMatrix
+    + p->m_covarianceMatrix ) / 2.0;
+    
+  if( ! te::common::GetDeterminant( m_getBhattacharyyaDistance_covsMege,
+    m_getBhattacharyyaDistance_covsMegeDet ) )
+  {
+    return std::numeric_limits< double >::max();
+  }
+    
+  if( ! te::common::GetInverseMatrix( m_getBhattacharyyaDistance_covsMege, 
+    m_getBhattacharyyaDistance_covsMegeInv ) )
+  {
+    return std::numeric_limits< double >::max();
+  }
+  
+  m_getBhattacharyyaDistance_distanceTerm1 = 
+    boost::numeric::ublas::prod( 
+      boost::numeric::ublas::trans( m_getBhattacharyyaDistance_meansDif )
+      ,
+      m_getBhattacharyyaDistance_covsMegeInv
+    );
+  m_getBhattacharyyaDistance_distanceTerm1 = 
+    boost::numeric::ublas::prod( 
+      m_getBhattacharyyaDistance_distanceTerm1
+      ,
+      m_getBhattacharyyaDistance_meansDif
+    );     
+    
+  m_getBhattacharyyaDistance_distanceValue = 
+    m_getBhattacharyyaDistance_distanceTerm1( 0, 0 )
+    /
+    8.0;
+  m_getBhattacharyyaDistance_distanceValue +=
+    (
+      0.5
+      *
+      std::log(
+        m_getBhattacharyyaDistance_covsMegeDet
+        /
+        (
+          std::sqrt( m_covarianceMatrixDet * p->m_covarianceMatrixDet )
+        )
+      )  
+    );
+    
+  return m_getBhattacharyyaDistance_distanceValue;
 }
 
 bool te::rp::ClassifierISOSegStrategy::Pattern::operator=(Pattern& rhs)
@@ -217,6 +272,11 @@ bool te::rp::ClassifierISOSegStrategy::initialize(te::rp::ClassifierStrategyPara
     return false;
 
   m_parameters = *(paramsPtr);
+  
+  TERP_TRUE_OR_RETURN_FALSE( ( m_parameters.m_distanceType == 
+    Parameters::BhattacharyyaDistanceType ) || ( m_parameters.m_distanceType == 
+    Parameters::MahalanobisDistanceType ),
+    "Invalid distance type" );
 
   TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_acceptanceThreshold > 0 && m_parameters.m_acceptanceThreshold <= 100, "Invalid acceptance threshold [0, 100].")
 
@@ -277,6 +337,8 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   for (unsigned i = 0; i < inputPolygons.size(); i++)
   {
     te::gm::Polygon* polygon = inputPolygons[i];
+    TERP_TRUE_OR_RETURN_FALSE( polygon->getSRID() == inputRaster.getSRID(),
+      "Invalid polygon SRID" );
 
     std::vector<std::vector<double> > values_in_polygon = rattributes.getValuesFromRaster(inputRaster, *polygon, inputRasterBands);
     std::vector<double> means;
@@ -336,11 +398,20 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
           continue;
 
 // use the smallest distance between region1 <-> cluster2, and region2 <-> cluster1
-        distance = rit->second->m_myCluster->getDistance(riti->second->m_myCluster);
-
-        distance2 = riti->second->m_myCluster->getDistance(rit->second->m_myCluster);
-
-        distance = (distance2 < distance? distance2: distance);
+        
+        switch( m_parameters.m_distanceType )
+        {
+          case Parameters::MahalanobisDistanceType :
+            distance = rit->second->m_myCluster->getMahalanobisDistance(riti->second->m_myCluster);
+            distance2 = riti->second->m_myCluster->getMahalanobisDistance(rit->second->m_myCluster);
+            distance = (distance2 < distance? distance2: distance);
+            break;
+          case Parameters::BhattacharyyaDistanceType :
+            distance = rit->second->m_myCluster->getBhattacharyyaDistance(riti->second->m_myCluster);
+            break;
+          default :
+            TERP_LOG_AND_THROW( "Invalid distance" );
+        }
 
         if (distance <= maxDistance)
         {

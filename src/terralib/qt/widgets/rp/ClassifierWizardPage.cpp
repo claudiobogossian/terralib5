@@ -163,6 +163,17 @@ te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getIn
 
     te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
     classifierparameters.m_acceptanceThreshold = m_ui->m_acceptanceThresholdComboBox->currentText().toDouble();
+    
+    if( m_ui->m_distanceTypeComboBox_->currentText() == "Mahalanobis" )
+    {
+      classifierparameters.m_distanceType = 
+        te::rp::ClassifierISOSegStrategy::Parameters::MahalanobisDistanceType;
+    }
+    else // Bhattacharyya
+    {
+      classifierparameters.m_distanceType = 
+        te::rp::ClassifierISOSegStrategy::Parameters::BhattacharyyaDistanceType;
+    }
 
     //get layer
     int idxLayer = m_ui->m_isosegLayersComboBox->currentIndex();
