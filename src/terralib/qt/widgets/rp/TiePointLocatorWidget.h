@@ -202,6 +202,10 @@ namespace te
           void onTiePointsUpdated();
 
           void onSRIDPushButtonClicked();
+          
+          void onLoadTiePointsToolButtonClicked();
+          
+          void onSaveTiePointsToolButtonClicked();
 
         protected:
 
