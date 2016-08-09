@@ -58,12 +58,21 @@ void te::qt::plugins::rp::RasterSlicingAction::onActionActivated(bool checked)
 
   //get display extent
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
-  const te::gm::Envelope extent = ba->getMapDisplay()->getExtent();
-  int srid = ba->getMapDisplay()->getSRID();
 
-  dlg.setExtent(extent);
-  dlg.setSRID(srid);
-  
+  /*
+    The extent and srid information is optional
+    If this is not available, the user won't be able to trim the raster
+    However, the user can stil proceed with the slicing function normally
+  */
+  if(ba)
+  {
+    const te::gm::Envelope extent = ba->getMapDisplay()->getExtent();
+    int srid = ba->getMapDisplay()->getSRID();
+
+    dlg.setExtent(extent);
+    dlg.setSRID(srid);
+  }
+
   if(dlg.exec() == QDialog::Accepted)
   {
     //add new layer
