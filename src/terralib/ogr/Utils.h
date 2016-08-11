@@ -30,6 +30,9 @@
 #include "Config.h"
 #include "../srs/Config.h"
 
+// BOOST
+#include <boost/thread/mutex.hpp>
+
 // OGR
 #include <ogr_core.h>
 
@@ -239,6 +242,12 @@ namespace te
     TEOGREXPORT std::string GetOGRConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
     TEOGREXPORT std::string RemoveSpatialSql(const std::string& sql);
+
+    /*!
+    \brief Returns a reference to a static mutex initialized when this module is initialized.
+    \return Returns a reference to a static mutex initialized when this module is initialized.
+    */
+    TEOGREXPORT boost::mutex& getStaticMutex();
 
   } // end namespace ogr
 }   // end namespace te
