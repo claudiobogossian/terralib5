@@ -42,7 +42,7 @@ namespace te
       /*!
         \class SplashScreenManager
 
-        \brief A singleton for holding he application splash screen.
+        \brief A singleton for holding the application splash screen.
       */
       class TEQTAFEXPORT SplashScreenManager : public te::common::Singleton<SplashScreenManager>
       {
@@ -78,6 +78,13 @@ namespace te
             \param pix New image to be presented.
           */
           void setLogo(const QPixmap& pix);
+
+          /*!
+            \brief Shows the splash screen.
+
+            This function can be used when the splash screen is hidden.
+          */
+          void show();
 
           /*!
             \brief Closes the splash screen.

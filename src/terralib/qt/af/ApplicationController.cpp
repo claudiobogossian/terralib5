@@ -477,7 +477,11 @@ void  te::qt::af::ApplicationController::initialize()
       
       if (infoDataSourceFile.exists())
       {
+        SplashScreenManager::getInstance().close();
+
         int reply = QMessageBox::question(0, tr("Data Sources XML"), tr("A file containing data sources already configured was found. Would you like to load it."), QMessageBox::No, QMessageBox::Yes);
+
+        SplashScreenManager::getInstance().show();
 
         if (reply == QMessageBox::Yes)
         {
@@ -629,6 +633,8 @@ void te::qt::af::ApplicationController::initializePlugins()
   }
   catch(const std::exception& e)
   {
+    SplashScreenManager::getInstance().close();
+
     te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
 
     QString msgErr(tr("Error reading application's plugin list: %1"));
