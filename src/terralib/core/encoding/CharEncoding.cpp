@@ -28,21 +28,23 @@
 
 // TerraLib
 #include "CharEncoding.h"
+#include "../Exception.h"
+#include "../translator/Translator.h"
 
 // Boost
 #include <boost/assign/list_of.hpp>
+#include <boost/format.hpp>
 #include <boost/locale.hpp>
 
 const std::map<te::core::EncodingType, std::string>
 EncodingString = boost::assign::map_list_of(te::core::EncodingType::UTF8, "UTF8")
-                                                                   (te::core::EncodingType::CP1250, "CP1250")
-                                                                   (te::core::EncodingType::CP1251, "CP1251")
-                                                                   (te::core::EncodingType::CP1252,"CP1252")
-                                                                   (te::core::EncodingType::CP1253,"CP1253")
-                                                                   (te::core::EncodingType::CP1254,"CP1254")
-                                                                   (te::core::EncodingType::CP1257,"CP1257")
-                                                                   (te::core::EncodingType::LATIN1 ,"ISO8859-1")
-                                                                   (te::core::EncodingType::UNKNOWN, "UNKNOWN");
+                                           (te::core::EncodingType::CP1250, "CP1250")
+                                           (te::core::EncodingType::CP1251, "CP1251")
+                                           (te::core::EncodingType::CP1252, "CP1252")
+                                           (te::core::EncodingType::CP1253, "CP1253")
+                                           (te::core::EncodingType::CP1254, "CP1254")
+                                           (te::core::EncodingType::CP1257, "CP1257")
+                                           (te::core::EncodingType::LATIN1, "LATIN1");
 
 std::string
 te::core::CharEncoding::toUTF8(const std::string &src, EncodingType from)
@@ -97,5 +99,20 @@ te::core::CharEncoding::getEncodingType(const std::string &name)
     if(it->second == name)
       return it->first;
   }
-  return EncodingType::UNKNOWN;
+  
+  boost::format err_msg(TE_TR("There is no encoding type with the name: %1%."));
+  throw Exception() << te::ErrorDescription((err_msg % name).str());
+}
+
+std::vector<std::string> 
+te::core::CharEncoding::getEncodingsName()
+{
+  std::vector<std::string> vec;
+
+  std::map<EncodingType, std::string>::const_iterator it;
+
+  for (it = EncodingString.begin(); it != EncodingString.end(); ++it)
+    vec.push_back(it->second);
+
+  return vec;
 }

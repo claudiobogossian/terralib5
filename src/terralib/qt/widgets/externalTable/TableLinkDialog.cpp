@@ -389,7 +389,7 @@ void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
   }
 
   //Adjusting the table that will display the tabular dataset
-  m_tabularView->setDataSet(new te::mem::DataSet(*dataSet.get(), dataSetProperties, 5), m_ds->getEncoding());
+  m_tabularView->setDataSet(new te::mem::DataSet(*dataSet.get(), dataSetProperties, 5));
   m_tabularView->resizeColumnsToContents();
 
   if(m_ui->m_tabularFrame->isHidden())

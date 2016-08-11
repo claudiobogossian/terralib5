@@ -35,6 +35,7 @@
 
 // STL
 #include <map>
+#include <vector>
 #include <string>
 
 namespace te
@@ -56,8 +57,7 @@ namespace te
       CP1253,   /*!< CP1253 encoding.              */
       CP1254,   /*!< CP1254 encoding.              */
       CP1257,   /*!< CP1257 encoding.              */
-      LATIN1,   /*!< ISO8859-1 encoding (Latin1). */
-      UNKNOWN   /*!< Unknown encoding.             */
+      LATIN1    /*!< Latin1 encoding (ISO8859-1).  */
     };
 
     /*!
@@ -134,6 +134,14 @@ namespace te
           \return Encoding as enum.
          */
         static te::core::EncodingType getEncodingType(const std::string &name);
+
+        /*!
+        \brief Retrive a vector of string with all available encoding types name.
+
+        \return A vector of encoding type as string.
+        */
+        static std::vector<std::string> getEncodingsName();
+
       private:
 
 // Not instatiable

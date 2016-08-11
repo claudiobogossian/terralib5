@@ -306,15 +306,13 @@ te::qt::widgets::DataSetTableModel::~DataSetTableModel()
   delete m_promoter;
 }
 
-void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset, te::core::EncodingType enc, const bool& clearEditor)
+void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset, const bool& clearEditor)
 {
   beginResetModel();
 
   delete m_dataset;
 
   m_dataset = dset;
-
-  m_encoding = enc;
 
   if(m_dataset)
     m_dataset->moveFirst();
@@ -448,9 +446,9 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
 
       if(m_editor->isEdited(m_promoter->getLogicalRow(index.row()), index.column()))
       {
-        std::string f = m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
+        std::string value = m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
 
-        return te::qt::widgets::Convert2Qt(f, m_encoding);
+        return QString::fromUtf8(value.c_str());
       }
 
       if(m_dataset->isNull(index.column()))
@@ -459,11 +457,8 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       if(m_dataset->getPropertyDataType(index.column()) == te::dt::STRING_TYPE)
       {
         std::string value = m_dataset->getString(index.column());
-        te::core::EncodingType encoding = m_dataset->getPropertyCharEncoding(index.column());
-        if (encoding == te::core::EncodingType::UNKNOWN)
-          return value.c_str();
-        else
-          return Convert2Qt(value, encoding);
+
+        return QString::fromUtf8(value.c_str());
       }
       else
         return m_dataset->getAsString(index.column(), 6).c_str();
@@ -589,7 +584,7 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
 
       if(curV != newV)
       {
-        std::string out = te::core::CharEncoding::fromUTF8(newV.toStdString(), m_encoding);
+        std::string out = newV.toUtf8().constData();
         m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), out);
       }
 

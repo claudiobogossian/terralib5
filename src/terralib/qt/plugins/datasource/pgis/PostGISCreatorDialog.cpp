@@ -252,15 +252,7 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::
     connInfo["PG_NEWDB_OWNER"] = qstr.toStdString();
 
 // get Encoding
-  qstr = m_ui->m_encodingComboBox->currentText().trimmed();
-  
-  if (!qstr.isEmpty())
-  {
-    if (qstr.toStdString() == "UTF-8")
-      connInfo["PG_NEWDB_ENCODING"] = "UTF8";
-    else
-      connInfo["PG_NEWDB_ENCODING"] = qstr.toStdString();
-  }
+ connInfo["PG_NEWDB_ENCODING"] = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
 
 // get Tablespace
   qstr = m_ui->m_tablespaceLineEdit->text().trimmed();
@@ -314,14 +306,6 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onLineEditEditingFinished()
       }
 
       m_ui->m_templateComboBox->setCurrentIndex(m_ui->m_templateComboBox->findText("postgis"));
-
-      // Get Encodings
-      m_ui->m_encodingComboBox->clear();
-      m_ui->m_encodingComboBox->addItem("");
-      std::vector<te::core::EncodingType> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
-      if(!encodings.empty())
-        for(std::size_t i = 0; i < encodings.size(); i++)
-          m_ui->m_encodingComboBox->addItem(te::core::CharEncoding::getEncodingName(encodings[i]).c_str());
 
       // Try to go the owners
       m_ui->m_ownerComboBox->clear();

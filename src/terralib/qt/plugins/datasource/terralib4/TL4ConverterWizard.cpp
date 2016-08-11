@@ -710,21 +710,11 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
           pk->setName(te::common::Convert2LCase(targetName) + "_pk");
         }
 
-        te::core::EncodingType encTo = tl5ds->getEncoding();
-
         for(std::size_t i = 0; i < type->size(); ++i)
         {
           te::dt::Property* p = type->getProperty(i);
 
-          if(p->getType() == te::dt::STRING_TYPE)
-          {
-            te::da::CharEncodingConverter conversor(encTo);
-            ds_adapter->add(p->getName(), p->getType(), indexes[i], conversor);
-          }
-          else
-          {
-            ds_adapter->add(p->getName(), p->getType(), indexes[i], funcs[i]);
-          }
+          ds_adapter->add(p->getName(), p->getType(), indexes[i], funcs[i]);
         }
 
         ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());

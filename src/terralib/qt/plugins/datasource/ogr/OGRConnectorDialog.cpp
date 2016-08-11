@@ -279,7 +279,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::s
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TE_TR("Please select a feature file first!"));
   
-  connInfo["URI"] = qstr.toLatin1().data();
+  connInfo["URI"] = qstr.toUtf8().constData();
 }
 
 void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
