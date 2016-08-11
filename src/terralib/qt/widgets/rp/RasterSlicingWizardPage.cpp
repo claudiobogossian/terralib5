@@ -83,6 +83,7 @@ te::qt::widgets::RasterSlicingWizardPage::RasterSlicingWizardPage(QWidget *paren
 
   m_extent.makeInvalid();
   m_srid = 0;
+  m_ui->m_visibleAreaCheckBox->setEnabled(false);
 
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_bandComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onHistBandComboBoxIndexCHanged(int)));
@@ -143,6 +144,11 @@ void te::qt::widgets::RasterSlicingWizardPage::setRaster(te::rst::Raster* raster
 void te::qt::widgets::RasterSlicingWizardPage::setExtent(const te::gm::Envelope& extent)
 {
   m_extent = extent;
+
+  if (m_extent.isValid())
+    m_ui->m_visibleAreaCheckBox->setEnabled(true);
+  else
+    m_ui->m_visibleAreaCheckBox->setEnabled(false);
 }
 
 void te::qt::widgets::RasterSlicingWizardPage::setSRID(int srid)

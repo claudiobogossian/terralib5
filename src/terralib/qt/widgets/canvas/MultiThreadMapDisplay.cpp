@@ -224,6 +224,17 @@ void te::qt::widgets::MultiThreadMapDisplay::updateLayer(te::map::AbstractLayerP
     refresh();
 }
 
+void te::qt::widgets::MultiThreadMapDisplay::updateLayer(std::vector<te::map::AbstractLayerPtr> layers, bool redraw)
+{
+  for (std::size_t i = 0; i < layers.size(); ++i)
+  {
+    RemoveImage(layers[i].get(), m_images);
+  }
+
+  if (redraw)
+    refresh();
+}
+
 void te::qt::widgets::MultiThreadMapDisplay::resizeEvent(QResizeEvent* e)
 {
   if (m_isDrawing)

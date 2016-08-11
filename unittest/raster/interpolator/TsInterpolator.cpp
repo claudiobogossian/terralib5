@@ -18,31 +18,31 @@
  */
 
 /*!
-  \file TsInterpolator.cpp
+  \file terralib/unittest/raster/TsInterpolator.cpp
  
   \brief A test suit for the Raster Interpolator class.
  */
 
-#include "TsInterpolator.h"
+// TerraLib
+#include <terralib/raster.h>
 #include "../Config.h"
 
-#include <terralib/raster/Interpolator.h>
-#include <terralib/raster/RasterFactory.h>
+// Boost
+#include <boost/test/unit_test.hpp>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TsInterpolator );
+BOOST_AUTO_TEST_SUITE ( interpolator_tests )
 
-void TsInterpolator::createTestRaster( unsigned int nBands, unsigned int nLines, 
+void createTestRaster( unsigned int nBands, unsigned int nLines,
   unsigned int nCols, std::auto_ptr< te::rst::Raster >& rasterPointer )
 {
   std::vector< te::rst::BandProperty * > bandsProps;
   for( unsigned int bandsPropsIdx = 0 ; bandsPropsIdx < nBands ; ++bandsPropsIdx )
   {
-    bandsProps.push_back( new te::rst::BandProperty( bandsPropsIdx, 
-      te::dt::UINT32_TYPE ) );    
+    bandsProps.push_back( new te::rst::BandProperty( bandsPropsIdx, te::dt::UINT32_TYPE ) );
   }
   
-  rasterPointer.reset( te::rst::RasterFactory::make( "MEM", 
-    new te::rst::Grid( nCols, nLines ), bandsProps, 
+  rasterPointer.reset( te::rst::RasterFactory::make( "MEM",
+    new te::rst::Grid( nCols, nLines ), bandsProps,
     std::map< std::string, std::string >(), 0, 0 ) );
     
   unsigned int band = 0;
@@ -63,7 +63,7 @@ void TsInterpolator::createTestRaster( unsigned int nBands, unsigned int nLines,
   }
 }
 
-void TsInterpolator::tcNearestNeighbor()
+BOOST_AUTO_TEST_CASE (nearestNeighbor_test)
 {
   std::auto_ptr< te::rst::Raster > rasterPointer;
   createTestRaster( 2, 4, 4, rasterPointer );
@@ -78,33 +78,33 @@ void TsInterpolator::tcNearestNeighbor()
   std::complex<double> v;
   
   interp.getValue( -0.7, -0.7, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( ((double)rasterPointer->getNumberOfColumns()) - 0.3 , -0.7, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
 
   interp.getValue( ((double)rasterPointer->getNumberOfColumns()) - 0.3 ,
     ((double)rasterPointer->getNumberOfRows()) - 0.3, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );    
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( -0.7 ,
     ((double)rasterPointer->getNumberOfRows()) - 0.3, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( 1.5 , 1.5, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 10.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 ); 
+  BOOST_CHECK_CLOSE( 10.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( 1.5 , 1.5, v, 1 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 26.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );   
+  BOOST_CHECK_CLOSE( 26.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
 }
 
-void TsInterpolator::tcBilinear()
+BOOST_AUTO_TEST_CASE (bilinear_test)
 {
   std::auto_ptr< te::rst::Raster > rasterPointer;
   createTestRaster( 2, 4, 4, rasterPointer );
@@ -119,33 +119,33 @@ void TsInterpolator::tcBilinear()
   std::complex<double> v;
   
   interp.getValue( -0.7, -0.7, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( ((double)rasterPointer->getNumberOfColumns()) - 0.3 , -0.7, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
 
   interp.getValue( ((double)rasterPointer->getNumberOfColumns()) - 0.3 ,
     ((double)rasterPointer->getNumberOfRows()) - 0.3, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );    
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( -0.7 ,
     ((double)rasterPointer->getNumberOfRows()) - 0.3, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( 1.5 , 1.5, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 7.5, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 ); 
+  BOOST_CHECK_CLOSE( 7.5, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( 1.5 , 1.5, v, 1 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 23.5, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );   
+  BOOST_CHECK_CLOSE( 23.5, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
 }
 
-void TsInterpolator::tcBicubic()
+BOOST_AUTO_TEST_CASE (bicubic_test)
 {
   std::auto_ptr< te::rst::Raster > rasterPointer;
   createTestRaster( 2, 4, 4, rasterPointer );
@@ -160,28 +160,30 @@ void TsInterpolator::tcBicubic()
   std::complex<double> v;
   
   interp.getValue( -0.7, -0.7, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( ((double)rasterPointer->getNumberOfColumns()) - 0.3 , -0.7, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
 
   interp.getValue( ((double)rasterPointer->getNumberOfColumns()) - 0.3 ,
     ((double)rasterPointer->getNumberOfRows()) - 0.3, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );    
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( -0.7 ,
     ((double)rasterPointer->getNumberOfRows()) - 0.3, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( 1.5 , 1.5, v, 0 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 7.5, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 ); 
+  BOOST_CHECK_CLOSE( 7.5, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
   
   interp.getValue( 1.5 , 1.5, v, 1 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 23.5, v.real(), 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, v.imag(), 0.0000000001 );   
+  BOOST_CHECK_CLOSE( 23.5, v.real(), 0.0000000001 );
+  BOOST_CHECK_CLOSE( 0.0, v.imag(), 0.0000000001 );
 }
+
+BOOST_AUTO_TEST_SUITE_END ()
