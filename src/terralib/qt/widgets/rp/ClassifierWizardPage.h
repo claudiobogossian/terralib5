@@ -94,6 +94,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
           te::rp::Classifier::InputParameters getInputParams();

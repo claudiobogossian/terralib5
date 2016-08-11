@@ -59,7 +59,7 @@ namespace te
     namespace widgets
     {
       class ColorPickerToolButton;
-      class RasterNavigatorWidget;
+      class RpToolsWidget;
 
       /*!
         \class ROIManagerWidget
@@ -79,6 +79,10 @@ namespace te
           Ui::ROIManagerWidgetForm* getForm() const;
 
         public:
+          /*!
+          \brief This method is used to set the display
+          */
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
 
           /*!
             \brief This method is used to set the list of layers
@@ -93,6 +97,8 @@ namespace te
           void set(te::map::AbstractLayerPtr layer);
 
           te::cl::ROISet* getROISet();
+
+          void closeEvent();
 
         protected:
           
@@ -118,7 +124,7 @@ namespace te
 
           void onGeomAquired(te::gm::Polygon* poly);
 
-          void onPointPicked(double x, double y);
+          void onEnvelopeAcquired(te::gm::Envelope env);
 
         signals:
 
@@ -126,11 +132,13 @@ namespace te
 
         private:
 
-         std::auto_ptr<Ui::ROIManagerWidgetForm> m_ui;
+          std::auto_ptr<Ui::ROIManagerWidgetForm> m_ui;
 
-         std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
+          std::auto_ptr<te::qt::widgets::RpToolsWidget> m_navigator;
 
-         ColorPickerToolButton* m_colorPicker;
+          ColorPickerToolButton* m_colorPicker;
+
+          te::qt::widgets::MapDisplay* m_mapDisplay;
 
          te::map::AbstractLayerPtr m_layer;
 
@@ -141,6 +149,8 @@ namespace te
          te::se::Symbolizer* m_symb;
 
          te::cl::ROISet* m_rs;
+
+         te::gm::Geometry* m_geom;
 
          int m_sampleCounter;
       }; 

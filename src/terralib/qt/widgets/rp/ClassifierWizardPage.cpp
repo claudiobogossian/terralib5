@@ -129,6 +129,11 @@ void te::qt::widgets::ClassifierWizardPage::set(te::map::AbstractLayerPtr layer)
   listBands();
 }
 
+void te::qt::widgets::ClassifierWizardPage::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_roiMngDlg->setMapDisplay(mapDisplay);
+}
+
 void te::qt::widgets::ClassifierWizardPage::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_roiMngDlg->setList(layerList);

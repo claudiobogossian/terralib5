@@ -106,6 +106,11 @@ bool te::qt::widgets::ClassifierWizard::validateCurrentPage()
   return true;
 }
 
+void te::qt::widgets::ClassifierWizard::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_classifierPage->setMapDisplay(mapDisplay);
+}
+
 void te::qt::widgets::ClassifierWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);

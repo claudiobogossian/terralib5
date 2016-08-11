@@ -54,6 +54,11 @@ te::qt::widgets::ROIManagerWidget* te::qt::widgets::ROIManagerDialog::getWidget(
   return m_widgetROIWidget.get();
 }
 
+void te::qt::widgets::ROIManagerDialog::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_widgetROIWidget->setMapDisplay(mapDisplay);
+}
+
 void te::qt::widgets::ROIManagerDialog::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_widgetROIWidget->setList(layerList);
