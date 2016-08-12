@@ -241,6 +241,8 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
     if(dsc.get() == 0)
       throw std::string("Fail to get data source.");
 
+    dsc->setEncoding(layer->getEncoding());
+
     return dsc->getTransactor()->query(query.get(), te::common::RANDOM);
   }
   catch(...)
@@ -313,6 +315,8 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
 
     if(dsc.get() == 0)
       throw std::string("Fail to get data source.");
+
+    dsc->setEncoding(layer->getEncoding());
 
     return dsc->getTransactor()->query(query.get(), te::common::RANDOM);
   }
@@ -1004,7 +1008,7 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
 
   te::da::DataSourcePtr dsc = GetDataSource(m_layer);
 
-  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), dsc->getEncoding(), clearEditor);
+  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), clearEditor);
 
   setLayerSchema(sch.get());
 
@@ -1026,13 +1030,11 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
   highlightOIds(m_layer->getSelected());
 }
 
-void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, te::core::EncodingType enc, const bool& clearEditor)
+void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, const bool& clearEditor)
 {
   reset();
 
-  m_encoding = enc;
-
-  m_model->setDataSet(dset, enc, clearEditor);
+  m_model->setDataSet(dset, clearEditor);
   DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
   hheader->setDataSet(dset);
 
@@ -1211,7 +1213,7 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
     if(dsrc.get() == 0)
       throw Exception(tr("Fail to get data source.").toStdString());
 
-    setDataSet(0, te::core::EncodingType::LATIN1);
+    setDataSet(0);
 
     dsrc->changePropertyDefinition(dsetName, columnName, dlg.getProperty().release());
 
@@ -1516,7 +1518,7 @@ void te::qt::widgets::DataSetTableView::sortByColumns(const bool& asc)
     if(dset.get() == 0)
       throw te::common::Exception(tr("Sort operation not supported by the source of data.").toStdString());
 
-    setDataSet(dset.release(), m_encoding);
+    setDataSet(dset.release());
 
     viewport()->repaint();
 

@@ -40,7 +40,8 @@ te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
     m_style(0),
     m_grouping(0),
     m_chart(0),
-    m_compositionMode(te::map::SourceOver)
+    m_compositionMode(te::map::SourceOver),
+    m_encoding(te::core::EncodingType::UTF8)
 {
 }
 
@@ -54,7 +55,8 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id, AbstractLayer* pare
     m_style(0),
     m_grouping(0),
     m_chart(0),
-    m_compositionMode(te::map::SourceOver)
+    m_compositionMode(te::map::SourceOver),
+    m_encoding(te::core::EncodingType::UTF8)
 {
 }
 
@@ -71,7 +73,8 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
     m_style(0),
     m_grouping(0),
     m_chart(0),
-    m_compositionMode(te::map::SourceOver)
+    m_compositionMode(te::map::SourceOver),
+    m_encoding(te::core::EncodingType::UTF8)
 {
 }
 
@@ -329,6 +332,16 @@ te::map::CompositionMode te::map::AbstractLayer::getCompositionMode() const
 void te::map::AbstractLayer::setCompositionMode(te::map::CompositionMode mode)
 {
   m_compositionMode = mode;
+}
+
+te::core::EncodingType te::map::AbstractLayer::getEncoding() const
+{
+  return m_encoding;
+}
+
+void te::map::AbstractLayer::setEncoding(te::core::EncodingType et)
+{
+  m_encoding = et;
 }
 
 void te::map::AbstractLayer::setOutOfDate()
