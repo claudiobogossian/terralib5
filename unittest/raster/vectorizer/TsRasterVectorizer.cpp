@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE (rasterVectorizer_test)
   /* Define raster info and load */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR "/rasters/pattern1.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR "/geotiff/pattern1.tif";
   std::auto_ptr< te::rst::Raster > inrasterPtr( te::rst::RasterFactory::open(rinfo) );
 
   std::vector<te::gm::Geometry*> polygons;

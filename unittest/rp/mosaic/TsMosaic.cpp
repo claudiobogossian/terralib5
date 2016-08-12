@@ -43,22 +43,22 @@ BOOST_AUTO_TEST_CASE(geoReferencedImagesMosaic_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/L5219075_07520040503_r3g2b1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/L5219075_07520040503_r3g2b1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/L5219076_07620040908_r3g2b1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/L5219076_07620040908_r3g2b1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/L71218075_07520070614_r3g2b1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/L71218075_07520070614_r3g2b1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster3Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/L71218076_07620060814_r3g2b1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/L71218076_07620060814_r3g2b1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster4Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster4Pointer.get() );
@@ -110,17 +110,17 @@ BOOST_AUTO_TEST_CASE(geoReferencedImagesMosaicWithReprojection_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop3_EPSG_22522.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster3Pointer.get() );
@@ -178,17 +178,17 @@ BOOST_AUTO_TEST_CASE(tiePointsMosaic1_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop3_EPSG_22522.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster3Pointer.get() );
@@ -282,17 +282,17 @@ BOOST_AUTO_TEST_CASE(tiePointsMosaic2_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.jpg";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/jpeg/cbers_rgb342_crop1.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.jpg";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/jpeg/cbers_rgb342_crop2.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3.jpg";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/jpeg/cbers_rgb342_crop3.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster3Pointer.get() );
@@ -386,17 +386,17 @@ BOOST_AUTO_TEST_CASE(sequenceMosaic_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.jpg";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/jpeg/cbers_rgb342_crop1.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.jpg";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/jpeg/cbers_rgb342_crop2.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3.jpg";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/jpeg/cbers_rgb342_crop3.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster3Pointer.get() );

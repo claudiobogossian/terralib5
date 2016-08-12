@@ -51,12 +51,12 @@ BOOST_AUTO_TEST_CASE(pixelByPixelNoBlend_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
@@ -167,12 +167,12 @@ BOOST_AUTO_TEST_CASE(equalization_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
@@ -311,12 +311,12 @@ BOOST_AUTO_TEST_CASE(pixelByPixelEucBlend_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
@@ -427,12 +427,12 @@ BOOST_AUTO_TEST_CASE(pixelByPixelSumBlend_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
@@ -548,12 +548,12 @@ BOOST_AUTO_TEST_CASE(fullRasterBlend_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
@@ -760,12 +760,12 @@ BOOST_AUTO_TEST_CASE(threadedFullRasterBlend_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
@@ -966,12 +966,12 @@ BOOST_AUTO_TEST_CASE(pixelByPixelMaxBlend_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );
@@ -1082,12 +1082,12 @@ BOOST_AUTO_TEST_CASE(pixelByPixelMinBlend_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster1Pointer.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRaster2Pointer.get() );

@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(sampleFunction_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
 
