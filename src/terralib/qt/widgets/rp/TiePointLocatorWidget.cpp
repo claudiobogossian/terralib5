@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Coord2D.h"
@@ -54,9 +55,15 @@
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QPixmap>
+#include <QFileDialog>
+#include <QString>
+
+// Boost
+#include <boost/filesystem.hpp>
 
 // STL
 #include <memory>
+#include <fstream>
 
 #define PATTERN_SIZE 12
 
@@ -111,7 +118,9 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   m_ui->m_autoAcquireTiePointsToolButton->setIcon(QIcon::fromTheme("wand"));
   m_ui->m_addToolButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_refreshToolButton->setIcon(QIcon::fromTheme("view-refresh"));
-  m_ui->m_doneToolButton->setIcon(QIcon::fromTheme("check"));
+  m_ui->m_doneToolButton->setIcon(QIcon::fromTheme("check"));  
+  m_ui->m_loadTiePointsToolButton_->setIcon(QIcon::fromTheme("folder-open"));
+  m_ui->m_saveTiePointsToolButton_->setIcon(QIcon::fromTheme("document-save"));
 
   //add tie point parameters widget
   m_tiePointParameters = new te::qt::widgets::TiePointLocatorParametersWidget(m_ui->m_tabWidget);
@@ -126,7 +135,9 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   connect(m_ui->m_refreshToolButton, SIGNAL(clicked()), this, SLOT(onRefreshToolButtonClicked()));
   connect(m_ui->m_doneToolButton, SIGNAL(clicked()), this, SLOT(onDoneToolButtonClicked()));
   connect(m_ui->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onTiePointsTableWidgetItemSelectionChanged()));
-  connect(m_ui->m_sridPushButton, SIGNAL(clicked()), this, SLOT(onSRIDPushButtonClicked()));
+  connect(m_ui->m_sridPushButton, SIGNAL(clicked()), this, SLOT(onSRIDPushButtonClicked()));  
+  connect(m_ui->m_loadTiePointsToolButton_, SIGNAL(clicked()), this, SLOT(onLoadTiePointsToolButtonClicked()));
+  connect(m_ui->m_saveTiePointsToolButton_, SIGNAL(clicked()), this, SLOT(onSaveTiePointsToolButtonClicked()));
 
   connect(m_tiePointParameters->getWidgetForm()->m_geomTransfNameComboBox, SIGNAL(activated(int)), this, SLOT(onRefreshToolButtonClicked()));
 
@@ -754,6 +765,201 @@ void te::qt::widgets::TiePointLocatorWidget::onSRIDPushButtonClicked()
     strSRID.setNum(srid.first);
     m_ui->m_sridLineEdit->setText(strSRID);
   }
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onLoadTiePointsToolButtonClicked()
+{
+  QString tiePointsFileName = QFileDialog::getOpenFileName(this, tr("Select the input file name"), 
+    te::qt::widgets::GetFilePathFromSettings("tie_points_file_directory"), 
+    tr("Tie-points file (*.tps)"), 0 ,QFileDialog::ReadOnly);
+  
+  if( !tiePointsFileName.isEmpty() )
+  {
+    boost::filesystem::path fullFilePath( tiePointsFileName.toStdString() );
+    te::qt::widgets::AddFilePathToSettings(fullFilePath.parent_path().string().c_str(), 
+      "tie_points_file_directory");        
+    
+    std::ifstream tiePointsFile;
+    tiePointsFile.open( tiePointsFileName.toStdString(), std::ofstream::in );
+    if( !tiePointsFile.good() )
+    {
+      QMessageBox::critical(this, tr("Warning"), tr("Tie points file open error"));
+      return;
+    }
+    
+    std::string lineStr;
+    std::vector< std::string > tokens;  
+
+    int refSRID = 0;
+    int adjSRID = 0;
+    
+    while( !tiePointsFile.eof() )
+    {
+      std::getline( tiePointsFile, lineStr );    
+      
+      if( lineStr.find( "REFSRID", 0 ) == 0 )
+      {
+        tokens.clear();
+        te::common::Tokenize( lineStr, tokens, " " );
+        refSRID = boost::lexical_cast< int >( tokens[ 1 ] );
+      }
+      else if( lineStr.find( "ADJSRID", 0 ) == 0 )
+      {
+        tokens.clear();
+        te::common::Tokenize( lineStr, tokens, " " );
+        adjSRID = boost::lexical_cast< int >( tokens[ 1 ] );
+      }
+      else if( lineStr.find( "TPID", 0 ) == 0 )
+      {
+        break;
+      }
+    }
+    
+    if( refSRID <= 0 )
+    {
+      QMessageBox::critical(this, tr("Warning"), tr("Invalid tie-points file (invalid reference raster SRID)"));
+      return;
+    }    
+    
+    TiePointData auxTpData;
+    te::gm::Coord2D point;
+    te::gm::Coord2D reprojectedPoint;
+    std::auto_ptr< te::rst::Raster > refRasterPtr = m_refLayer->getData()->getRaster(0);
+    std::auto_ptr< te::rst::Raster > adjRasterPtr = m_adjLayer->getData()->getRaster(0);
+    te::srs::Converter refConverter( refSRID, refRasterPtr->getSRID() );
+    te::srs::Converter adjConverter( adjSRID, adjRasterPtr->getSRID() );
+    unsigned int tpID = m_tiePoints.size();
+    
+    while( !tiePointsFile.eof() )
+    {
+      std::getline( tiePointsFile, lineStr );    
+      
+      if( lineStr.size() )
+      {
+        tokens.clear();
+        te::common::Tokenize( lineStr, tokens, ";" );
+              
+        if( tokens.size() > 9 )
+        {
+          if( tokens[ 1 ] == "auto" )
+          {
+            auxTpData.m_acqType = TiePointData::AutomaticAcquisitionT;
+          }
+          else
+          {
+            auxTpData.m_acqType = TiePointData::ManualAcquisitionT;
+          }
+          
+          point.x = boost::lexical_cast< double >( tokens[ 4 ] );
+          point.y = boost::lexical_cast< double >( tokens[ 5 ] );
+          refConverter.convert( point.x, point.y, reprojectedPoint.x, reprojectedPoint.y );
+          refRasterPtr->getGrid()->geoToGrid( reprojectedPoint.x, reprojectedPoint.y, 
+            auxTpData.m_tiePoint.first.x, auxTpData.m_tiePoint.first.y );
+
+          if( adjSRID > 0 )
+          {
+            point.x = boost::lexical_cast< double >( tokens[ 8 ] );
+            point.y = boost::lexical_cast< double >( tokens[ 9 ] );            
+            adjConverter.convert( point.x, point.y, reprojectedPoint.x, reprojectedPoint.y );
+            adjRasterPtr->getGrid()->geoToGrid( reprojectedPoint.x, reprojectedPoint.y, 
+              auxTpData.m_tiePoint.second.x, auxTpData.m_tiePoint.second.y );
+          }
+          else
+          {
+            auxTpData.m_tiePoint.second.x = boost::lexical_cast< double >( tokens[ 6 ] );
+            auxTpData.m_tiePoint.second.y = boost::lexical_cast< double >( tokens[ 7 ] );              
+          }
+          
+          while( m_tiePoints.find( tpID ) != m_tiePoints.end() )
+          {
+            ++tpID;
+          }
+          
+          m_tiePoints[ tpID ] = auxTpData;
+        }
+      }
+    }
+    
+    tiePointsTableUpdate();
+
+    transformationInfoUpdate();
+  }
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onSaveTiePointsToolButtonClicked()
+{
+  QString tiePointsFileName = QFileDialog::getSaveFileName(this, tr("Select the output file name"), 
+    te::qt::widgets::GetFilePathFromSettings("tie_points_file_directory"), 
+    tr("Tie-points file (*.tps)"), 0 , 0);
+  
+  if( !tiePointsFileName.isEmpty() )
+  {
+    boost::filesystem::path fullFilePath( tiePointsFileName.toStdString() );
+    te::qt::widgets::AddFilePathToSettings(fullFilePath.parent_path().string().c_str(), 
+      "tie_points_file_directory");   
+    
+    std::auto_ptr< te::rst::Raster > refRasterPtr = m_refLayer->getData()->getRaster(0);
+    std::auto_ptr< te::rst::Raster > adjRasterPtr = m_adjLayer->getData()->getRaster(0);
+    
+    std::ofstream tiePointsFile;
+    tiePointsFile.open( tiePointsFileName.toStdString(), std::ofstream::out | 
+      std::ofstream::trunc );
+    if( !tiePointsFile.good() )
+    {
+      QMessageBox::critical(this, tr("Warning"), tr("Tie points file creation error"));
+      return;
+    }
+    tiePointsFile.precision( 40 );    
+    
+    tiePointsFile << "REFSRID " << refRasterPtr->getSRID();
+    tiePointsFile << std::endl << "REFDSNAME " << m_refLayer->getDataSetName();
+    tiePointsFile << std::endl << "ADJSRID " << adjRasterPtr->getSRID();
+    tiePointsFile << std::endl << "ADJDSNAME " << m_adjLayer->getDataSetName();
+    tiePointsFile << std::endl << "TPID;ACKTYPE;REFCOL;REFROW;REFX;REFY;ADJCOL;AJDROW;ADJX;ADJY";
+    
+    const std::size_t tiePointsSize = m_tiePoints.size();
+    
+    const te::rst::Grid& refGrid = *refRasterPtr->getGrid();
+    const te::rst::Grid& adjGrid = *adjRasterPtr->getGrid();
+    
+    TiePointData::TPContainerT::const_iterator tpIt = m_tiePoints.begin();
+    TiePointData::TPContainerT::const_iterator tpItEnd = m_tiePoints.end();
+    te::gm::Coord2D auxCood;
+    
+    while( tpIt != tpItEnd )
+    {
+      tiePointsFile << std::endl << tpIt->first;
+      
+      if( tpIt->second.m_acqType == TiePointData::ManualAcquisitionT )
+      {
+        tiePointsFile << ";manual";
+      }
+      else
+      {
+        tiePointsFile << ";auto";
+      }
+      
+      auxCood = refGrid.gridToGeo( tpIt->second.m_tiePoint.first.x,
+          tpIt->second.m_tiePoint.first.y );
+      tiePointsFile
+        << ";" << tpIt->second.m_tiePoint.first.x
+        << ";" << tpIt->second.m_tiePoint.first.y
+        << ";" << auxCood.x
+        << ";" << auxCood.y
+        ;
+        
+      auxCood = adjGrid.gridToGeo( tpIt->second.m_tiePoint.second.x,
+          tpIt->second.m_tiePoint.second.y );
+      tiePointsFile
+        << ";" << tpIt->second.m_tiePoint.second.x
+        << ";" << tpIt->second.m_tiePoint.second.y
+        << ";" << auxCood.x
+        << ";" << auxCood.y
+        ;
+        
+      ++tpIt;
+    }
+  }  
 }
 
 void te::qt::widgets::TiePointLocatorWidget::tiePointsTableUpdate()
