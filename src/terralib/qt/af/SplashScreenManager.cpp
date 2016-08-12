@@ -52,10 +52,22 @@ void te::qt::af::SplashScreenManager::setLogo(const QPixmap& pix)
     m_sc->setPixmap(pix);
 }
 
-void te::qt::af::SplashScreenManager::close()
+void te::qt::af::SplashScreenManager::show()
+{
+  if(m_sc != 0 && m_sc->isHidden())
+    m_sc->show();
+}
+
+void te::qt::af::SplashScreenManager::hide()
 {
   if(m_sc != 0 && m_sc->isVisible())
     m_sc->hide();
+}
+
+void te::qt::af::SplashScreenManager::finish(QWidget* w)
+{
+  if(m_sc != 0)
+    m_sc->finish(w);
 }
 
 te::qt::af::SplashScreenManager::SplashScreenManager()
