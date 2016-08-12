@@ -15,98 +15,44 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
- */
+*/
 
-#include <terralib/common/Module.h>
-#include <terralib/plugin.h>
+/*!
+  \file terralib/unittest/edit/main.cpp
 
-// cppUnit
-#include <cppunit/BriefTestProgressListener.h>
-#include <cppunit/CompilerOutputter.h>
-#include <cppunit/XmlOutputter.h>
-#include <cppunit/TextOutputter.h>
+  \brief Main file of test suit for the Edit Module.
+*/
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/extensions/TestFactoryRegistry.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestResultCollector.h>
-#include <cppunit/TestRunner.h>
+// TerraLib
 
-// Unit-Test TerraLib includes by platform
-#include "Config.h"
 #include "LoadModules.h"
+#include "Config.h"
 
+// STL
 #include <cstdlib>
 
-#define TS_TEST_NAME "testResult_edit"
+// Boost
+#define BOOST_TEST_NO_MAIN
+#include <boost/test/unit_test.hpp>
 
-int main(int /*argc*/, char** /*argv*/)
+bool init_unit_test()
 {
-  // initialize Terralib platform
+  return true;
+}
+
+int main(int argc, char *argv[])
+{
+  /* Initialize Terralib platform */
   TerraLib::getInstance().initialize();
 
   LoadModules();
-  
-  // it creates the event manager and test controller
-  CPPUNIT_NS::TestResult controller;
 
-  // it adds a listener that collects test result 
-  CPPUNIT_NS::TestResultCollector result;
+  int resultStatus = boost::unit_test::unit_test_main(init_unit_test, argc, argv);
 
-  controller.addListener(&result);
-
-  // it adds a listener that print dots as test run.
-  CPPUNIT_NS::BriefTestProgressListener progress;
-
-  controller.addListener(&progress);
-
-  // it adds the top suite to the test runner
-  CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
-
-  CPPUNIT_NS::TestRunner runner;
-
-  runner.addTest(suite);
-
-  runner.run(controller);
-
-  CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
-  outputter.write();
-
-// Testing  different outputs...
-
-// Print only fail results in a txt file (the same containt you see in DOS window)
-  std::ofstream file1(TERRALIB_REPORT_DIR "/" TS_TEST_NAME ".txt" );
-  CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
-  outputter1.write();
-  file1.close();
-
-// Printing testResults in XML file 
-  // The testResult_*.xml files will be saved at TERRALIB_REPORT_DIR directory.
-  // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
-  // The "data.zip" (downloaded) containing the data used in unit tests should be at TERRALIB_DATA_DIR
-
-  CPPUNIT_NS::OFileStream file2(TERRALIB_REPORT_DIR "/" TS_TEST_NAME ".xml");
-  CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet( "report.xsl" ); 
-  xml.write();
-  file2.close();
-
-// Print formated testResult in a txt 
-  CPPUNIT_NS::OFileStream file3(TERRALIB_REPORT_DIR "/" TS_TEST_NAME ".txt" );
-  CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
-  outputter3.write();
-  file3.close();
-
-  bool resultStatus = result.wasSuccessful();
-
-  te::plugin::PluginManager::getInstance().shutdownAll();
-
+  /* Finalize TerraLib Plataform */
   te::plugin::PluginManager::getInstance().unloadAll();
+  TerraLib::getInstance().finalize();
 
-  te::plugin::PluginManager::getInstance().clear();
-  
-  // finalize TerraLib Plataform
-  TerraLib::getInstance().finalize();  
-
-  return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
+  return resultStatus;
 }
+

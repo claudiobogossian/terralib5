@@ -18,36 +18,27 @@
  */
 
 /*!
-  \file TsMoveGeometry.cpp
- 
+  \file terralib/unittest/edit/movegeometry/TsMoveGeometry.cpp
+
   \brief A test suit for the Move Geometries.
- */
+*/
 
-// Unit-Test Terralib
-#include "TsMoveGeometry.h"
+// TerraLib
 #include "../Config.h"
-
-// Terralib
-#include <terralib/Defines.h>
-#include <terralib/common.h>
-#include <terralib/common/Globals.h>
 #include <terralib/edit/Utils.h>
 #include <terralib/geometry.h>
 
 // STL
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <memory>
 
 // Boost
-#include <boost/shared_ptr.hpp>
+#define BOOST_TEST_NO_MAIN
+#include <boost/test/unit_test.hpp>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TsMoveGeometry );
+BOOST_AUTO_TEST_SUITE(movegeometry_tests);
 
-void TsMoveGeometry::tcMove()
+BOOST_AUTO_TEST_CASE(movePolygon_test)
 {
-  //#ifdef TE_COMPILE_ALL
-  
   te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType, 4326);
   line->setPoint(0, 1.0, 1.5);
   line->setPoint(1, 1.0, 3.3);
@@ -66,12 +57,7 @@ void TsMoveGeometry::tcMove()
   double distance = pOrigin->distance(poly->getCentroid());
 
   //moved?
-  try
-  {
-    CPPUNIT_ASSERT(distance > 0.);
-  }
-  catch (const std::exception& e)
-  {
-    CPPUNIT_ASSERT(false);
-  }
+  BOOST_CHECK(distance > 0.);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

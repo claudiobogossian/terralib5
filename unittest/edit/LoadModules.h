@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LoadModules.h
+  \file unittest/edit/LoadModules.h
  
   \brief Load terralib modules.
  */
@@ -29,16 +29,16 @@
 #include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
-#include "Config.h"
+#include <terralib/BuildConfig.h>
 
 /*!
-  \brief Load terralib modules.
+  \brief Load TerraLib modules.
  */
 
 void LoadModules()
 {
   std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
-  
+
   te::plugin::PluginInfo* info;
 
 #ifdef TERRALIB_MOD_OGR_ENABLED
