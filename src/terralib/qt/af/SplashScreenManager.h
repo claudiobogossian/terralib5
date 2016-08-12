@@ -87,11 +87,18 @@ namespace te
           void show();
 
           /*!
-            \brief Closes the splash screen.
+            \brief Hide the splash screen.
 
             This function can be used when something fails and the splash screen is visible.
           */
-          void close();
+          void hide();
+
+          /*!
+            \brief Finishes the splash screen.
+
+            This function makes the splash screen wait until the widget mainWin is displayed before calling close() on itself.
+          */
+          void finish(QWidget* w);
 
         protected:
 
