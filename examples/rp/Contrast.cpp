@@ -21,7 +21,7 @@ void Contrast()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
@@ -32,7 +32,7 @@ void Contrast()
 
 // create output raster for linear contrast
       std::map<std::string, std::string> orinfo;
-      orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_linear_contrast.tif";
+      orinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop_linear_contrast.tif";
 
 // create contrast algorithm parameters
       te::rp::Contrast::InputParameters contInputParameters;

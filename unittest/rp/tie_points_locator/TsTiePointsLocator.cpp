@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategySameImage_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategyUpsampledImage_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategyUpsampledImage_test)
 
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop_upsampled.tif";
+    "/geotiff/cbers_b2_crop_upsampled.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategy90ClkWRotationImage_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategy90ClkWRotationImage_test)
 
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop_90clockw_rotation.tif";
+    "/geotiff/cbers_b2_crop_90clockw_rotation.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -285,7 +285,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategyHalfRotated90Image_test)
 
   std::map<std::string, std::string> inputRaster1Info;
   inputRaster1Info["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     inputRaster1Info ) );
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategyHalfRotated90Image_test)
 
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
+    "/geotiff/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategySameImageDifBoxes_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -391,7 +391,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategyMultipleThreads_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -435,7 +435,7 @@ BOOST_AUTO_TEST_CASE(moravecStrategyRescaleFactor_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers2b_hrc_crop.tif";
+    "/geotiff/cbers2b_hrc_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -480,7 +480,7 @@ BOOST_AUTO_TEST_CASE(surfStrategySameImage_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -524,7 +524,7 @@ BOOST_AUTO_TEST_CASE(surfStrategyUpsampledImage_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -532,7 +532,7 @@ BOOST_AUTO_TEST_CASE(surfStrategyUpsampledImage_test)
 
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop_upsampled.tif";
+    "/geotiff/cbers_b2_crop_upsampled.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -580,7 +580,7 @@ BOOST_AUTO_TEST_CASE(surfStrategy90ClkWRotationImage_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -588,7 +588,7 @@ BOOST_AUTO_TEST_CASE(surfStrategy90ClkWRotationImage_test)
 
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop_90clockw_rotation.tif";
+    "/geotiff/cbers_b2_crop_90clockw_rotation.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -632,7 +632,7 @@ BOOST_AUTO_TEST_CASE(surfStrategySameImageDifBoxes_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -684,7 +684,7 @@ BOOST_AUTO_TEST_CASE(surfStrategyHalfRotated90Image_test)
 
   std::map<std::string, std::string> inputRaster1Info;
   inputRaster1Info["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     inputRaster1Info ) );
@@ -692,7 +692,7 @@ BOOST_AUTO_TEST_CASE(surfStrategyHalfRotated90Image_test)
 
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
+    "/geotiff/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -738,7 +738,7 @@ BOOST_AUTO_TEST_CASE(surfStrategyMultipleThreads_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers_b2_crop.tif";
+    "/geotiff/cbers_b2_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -782,7 +782,7 @@ BOOST_AUTO_TEST_CASE(surfStrategyRescaleFactor_test)
 
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR
-    "/rasters/cbers2b_hrc_crop.tif";
+    "/geotiff/cbers2b_hrc_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );

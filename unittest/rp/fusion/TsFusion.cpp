@@ -42,12 +42,12 @@ BOOST_AUTO_TEST_CASE(ihs_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   boost::shared_ptr< te::rst::Raster > lowResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( lowResRasterPtr.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   boost::shared_ptr< te::rst::Raster > highResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( highResRasterPtr.get() );
@@ -87,12 +87,12 @@ BOOST_AUTO_TEST_CASE(pca_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   boost::shared_ptr< te::rst::Raster > lowResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( lowResRasterPtr.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   boost::shared_ptr< te::rst::Raster > highResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( highResRasterPtr.get() );
@@ -131,12 +131,12 @@ BOOST_AUTO_TEST_CASE(wisper_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   boost::shared_ptr< te::rst::Raster > lowResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( lowResRasterPtr.get() );
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   boost::shared_ptr< te::rst::Raster > highResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( highResRasterPtr.get() );
