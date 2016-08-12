@@ -42,7 +42,7 @@ namespace te
       /*!
         \class SplashScreenManager
 
-        \brief A singleton for holding he application splash screen.
+        \brief A singleton for holding the application splash screen.
       */
       class TEQTAFEXPORT SplashScreenManager : public te::common::Singleton<SplashScreenManager>
       {
@@ -80,11 +80,25 @@ namespace te
           void setLogo(const QPixmap& pix);
 
           /*!
-            \brief Closes the splash screen.
+            \brief Shows the splash screen.
+
+            This function can be used when the splash screen is hidden.
+          */
+          void show();
+
+          /*!
+            \brief Hide the splash screen.
 
             This function can be used when something fails and the splash screen is visible.
           */
-          void close();
+          void hide();
+
+          /*!
+            \brief Finishes the splash screen.
+
+            This function makes the splash screen wait until the widget mainWin is displayed before calling close() on itself.
+          */
+          void finish(QWidget* w);
 
         protected:
 

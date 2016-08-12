@@ -15,7 +15,7 @@ void MixtureModel()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
     bool executeok = false;
@@ -25,7 +25,7 @@ void MixtureModel()
 
 // create output raster for linear mixture model
       std::map<std::string, std::string> orinfo;
-      orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_linearMixtureModel.tif";
+      orinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop_linearMixtureModel.tif";
 
 // create algorithm parameters
       te::rp::MixtureModel::InputParameters mmInputParameters;

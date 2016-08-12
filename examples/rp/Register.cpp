@@ -15,7 +15,7 @@ void Register()
     // Openning the the input image
     
     std::map<std::string, std::string> auxRasterInfo;    
-    auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+    auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
     te::rst::Raster* inputRasterPointer = te::rst::RasterFactory::open(
       auxRasterInfo );
     if( inputRasterPointer == 0 )

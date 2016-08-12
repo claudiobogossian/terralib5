@@ -40,7 +40,7 @@ void loadDoubleRaster( const std::string& rasterFileName, std::auto_ptr< te::rst
   /* Open input raster */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
   std::auto_ptr<te::rst::Raster> rin(te::rst::RasterFactory::open(rinfo));
 
   std::vector< te::rst::BandProperty * > bandsProperties;
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE (rasterSum_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE (rasterSubtraction_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE (rasterProduct_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE (rasterDivision_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE (realSum_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -315,7 +315,7 @@ BOOST_AUTO_TEST_CASE (realSubtraction_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE (realSubtractionInverse_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -405,7 +405,7 @@ BOOST_AUTO_TEST_CASE (realProduct_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -450,7 +450,7 @@ BOOST_AUTO_TEST_CASE (realDivision_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -495,7 +495,7 @@ BOOST_AUTO_TEST_CASE (realDivisionInverse_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
     rin );
 
   /* Defining input parameters, the arithmetic operation will be
@@ -538,11 +538,11 @@ BOOST_AUTO_TEST_CASE (realDivisionInverse_test)
 BOOST_AUTO_TEST_CASE (diffGrid_test)
 {
   std::map<std::string, std::string> rinfo1;
-  rinfo1["URI"] = TERRALIB_DATA_DIR"/rasters/cbers_rgb342_crop1.tif";
+  rinfo1["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers_rgb342_crop1.tif";
   std::auto_ptr<te::rst::Raster> rin1(te::rst::RasterFactory::open(rinfo1));  
   
   std::map<std::string, std::string> rinfo2;
-  rinfo2["URI"] = TERRALIB_DATA_DIR"/rasters/cbers_rgb342_crop2.tif";
+  rinfo2["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr<te::rst::Raster> rin2(te::rst::RasterFactory::open(rinfo2));  
   
   /* Defining input parameters, the arithmetic operation will be

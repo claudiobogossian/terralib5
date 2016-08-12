@@ -45,7 +45,7 @@ void SegmentImage(te::rst::Raster* rin, std::vector<te::gm::Polygon*>& polygons,
 
  /* Create output raster info */
  std::map<std::string, std::string> orinfo;
- orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmented.tif";
+ orinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop_segmented.tif";
 
  /* Input parameters */
 
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(ISOSeg_test)
  /* First open the input image */
 
  std::map<std::string, std::string> rinfo;
- rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+ rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
  std::unique_ptr< te::rst::Raster > rin( te::rst::RasterFactory::open(rinfo) );
 
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE(MAP_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
@@ -312,7 +312,7 @@ BOOST_AUTO_TEST_CASE(EM_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
@@ -365,7 +365,7 @@ BOOST_AUTO_TEST_CASE(SAM_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
@@ -444,7 +444,7 @@ BOOST_AUTO_TEST_CASE(KMeans_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
