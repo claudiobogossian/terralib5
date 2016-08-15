@@ -74,10 +74,9 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
 
   m_ui->m_openLayerROIToolButton->setIcon(QIcon::fromTheme("folder-open"));
   m_ui->m_fileDialogToolButton->setIcon(QIcon::fromTheme("folder-open"));
-  m_ui->m_removeROIToolButton->setIcon(QIcon::fromTheme("edit_delete"));
+  m_ui->m_removeROIToolButton->setIcon(QIcon::fromTheme("edit-deletetool"));
   m_ui->m_exportROISetToolButton->setIcon(QIcon::fromTheme("document-export"));
   m_ui->m_addROIToolButton->setIcon(QIcon::fromTheme("list-add"));
-  //m_ui->m_vectorLayerToolButton->setIcon(QIcon::fromTheme("map-draw"));
 
   // Color Picker
   m_colorPicker = new te::qt::widgets::ColorPickerToolButton(this);
@@ -105,7 +104,6 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   connect(m_ui->m_removeROIToolButton, SIGNAL(clicked()), this, SLOT(onRemoveROIToolButtonClicked()));
   connect(m_ui->m_fileDialogToolButton, SIGNAL(clicked()), this, SLOT(onFileDialogToolButtonClicked()));
   connect(m_ui->m_exportROISetToolButton, SIGNAL(clicked()), this, SLOT(onExportROISetToolButtonClicked()));
-  //connect(m_ui->m_vectorLayerToolButton, SIGNAL(clicked(bool)), this, SLOT(onVectorLayerToolButtonClicked(bool)));
   connect(m_ui->m_roiSetTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onROITreItemClicked(QTreeWidgetItem*, int)));
   
   connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
@@ -134,14 +132,13 @@ Ui::ROIManagerWidgetForm* te::qt::widgets::ROIManagerWidget::getForm() const
 
 void te::qt::widgets::ROIManagerWidget::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
 {
-	m_navigator->setMapDisplay(mapDisplay);
-	m_mapDisplay = mapDisplay;
+  m_navigator->setMapDisplay(mapDisplay);
+  m_mapDisplay = mapDisplay;
 }
 
 void te::qt::widgets::ROIManagerWidget::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_ui->m_layerROIComboBox->clear();
-  //m_ui->m_vectorLayerComboBox->clear();
 
   std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
 

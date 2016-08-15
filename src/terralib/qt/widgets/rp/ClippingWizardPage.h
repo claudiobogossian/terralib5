@@ -30,6 +30,7 @@
 #include "../../../geometry/Envelope.h"
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #endif
 #include "../Config.h"
 
@@ -48,7 +49,7 @@ namespace te
   {
     namespace widgets
     {
-      class RasterNavigatorWidget;
+      class RpToolsWidget;
 
       /*!
         \class ClippingWizardPage
@@ -61,7 +62,7 @@ namespace te
 
           enum CLIPPING_TYPE
           {
-            CLIPPING_EXTENT,
+            CLIPPING_ROI,
             CLIPPING_DIMENSION,
             CLIPPING_LAYER
           };
@@ -87,6 +88,8 @@ namespace te
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
           te::map::AbstractLayerPtr get();
 
           bool isExtentClipping();
@@ -98,6 +101,8 @@ namespace te
           bool isSingleRasterResult();
 
           void getExtentClipping(te::gm::Envelope& env);
+
+          void getPolygonClipping(te::gm::Polygon* poly);
 
           void getDimensionClipping(int& x, int& y, int& width, int& height);
 
@@ -115,11 +120,17 @@ namespace te
 
           void onEnvelopeAcquired(te::gm::Envelope env);
 
-          void onEnvelopeExtentAcquired();
-
           void onEnvelopeDimensionAcquired();
 
+          void onGeomAquired(te::gm::Polygon* poly);
+
+          void onPreviewClicked();
+
           void drawGeom();
+
+          void onChangeCollectType();
+
+          void clearCanvas();
 
         protected:
 
@@ -128,12 +139,17 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ClippingWizardPageForm> m_ui;
-          std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
+          std::auto_ptr<te::qt::widgets::RpToolsWidget> m_navigator;
 
           te::map::AbstractLayerPtr m_layer;
 
           te::gm::Envelope m_envExt;
           te::gm::Envelope m_envDim;
+          te::gm::Polygon* m_polyROI;
+
+          te::qt::widgets::Canvas* m_canvas;
+
+          te::qt::widgets::MapDisplay* m_mapDisplay;
       };
 
     } // end namespace widgets
