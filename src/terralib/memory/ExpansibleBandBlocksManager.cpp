@@ -763,38 +763,90 @@ bool te::mem::ExpansibleBandBlocksManager::allocateAndActivateDiskBlocks(
 bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int size,
   FILE** fileptr, std::string& fullFileName ) const
 {
+  // trying to use the system temp path
+  
+  bool returnValue = true;
+  long seekoff = (long)size;
+  const boost::filesystem::path randShortFileNamePath( 
+    "TerralibExpansibleBandBlocksManager_%%%%-%%%%-%%%%-%%%%" );
+  const unsigned char c = '\0';
+  
   fullFileName = boost::filesystem::unique_path( 
-    boost::filesystem::path( te::core::GetUserDirectory() ) /= 
-    boost::filesystem::path( "TerralibExpansibleBandBlocksManager_%%%%-%%%%-%%%%-%%%%" ) ).string();
+    boost::filesystem::temp_directory_path() /= 
+    randShortFileNamePath ).string();
+    
   if( fullFileName.empty() )
   {
-    return false;
+    returnValue = false;
+  }
+  else 
+  {
+    (*fileptr) = std::fopen( fullFileName.c_str(),  "wb+"  );
+    if( (*fileptr) == 0 )
+    {
+      returnValue = false;
+    }
+    else
+    {
+      if( std::fseek( (*fileptr), seekoff, SEEK_SET ) != 0  )
+      {
+        std::fclose( (*fileptr) );
+        std::remove( fullFileName.c_str() );
+        returnValue = false;
+      }
+      else
+      {
+        if( 1 != std::fwrite( &c, 1, 1, (*fileptr) ) )
+        {
+          std::fclose( (*fileptr) );
+          std::remove( fullFileName.c_str() );
+          returnValue = false;
+        }
+      }
+    }
   }
   
-  (*fileptr) = fopen( fullFileName.c_str(),  "wb+"  );
-  if( (*fileptr) == 0 )
-  {
-    return false;
-  }
+  // trying to use the user home path
   
-  long seekoff = (long)( size - 1 );
-  
-  if( 0 != std::fseek( (*fileptr), seekoff, SEEK_SET ) )
+  if( ! returnValue )
   {
-    fclose( (*fileptr) );
-    remove( fullFileName.c_str() );
-    return false;
-  }
-
-  unsigned char c = '\0';
-  if( 1 != std::fwrite( &c, 1, 1, (*fileptr) ) )
-  {
-    fclose( (*fileptr) );
-    remove( fullFileName.c_str() );
-    return false;
+    fullFileName = boost::filesystem::unique_path( 
+      boost::filesystem::path( te::core::GetUserDirectory() ) /= 
+      randShortFileNamePath ).string();
+      
+    if( fullFileName.empty() )
+    {
+      returnValue = false;
+    }
+    else       
+    {
+      (*fileptr) = std::fopen( fullFileName.c_str(),  "wb+"  );
+      if( (*fileptr) == 0 )
+      {
+        returnValue = false;
+      }
+      else
+      {
+        if( std::fseek( (*fileptr), seekoff, SEEK_SET ) != 0  )
+        {
+          std::fclose( (*fileptr) );
+          std::remove( fullFileName.c_str() );
+          returnValue = false;
+        }
+        else
+        {
+          if( 1 != std::fwrite( &c, 1, 1, (*fileptr) ) )
+          {
+            std::fclose( (*fileptr) );
+            std::remove( fullFileName.c_str() );
+            returnValue = false;
+          }
+        }
+      }
+    }
   }
     
-  return true;
+  return returnValue;
 }
 
         
