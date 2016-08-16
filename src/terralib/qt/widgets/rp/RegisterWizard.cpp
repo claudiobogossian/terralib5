@@ -182,17 +182,20 @@ bool te::qt::widgets::RegisterWizard::execute()
   int srid;
   m_tiePointLocatorDialog->getWidget()->getOutputSRID(srid);
 
-  double resX, resY;
+  double resX = 0;
+  double resY = 0;
   m_tiePointLocatorDialog->getWidget()->getOutputResolution(resX, resY);
 
   //input parameters
   te::rp::Register::InputParameters algoInputParams;
-  algoInputParams.m_inputRasterPtr = inputRst.release();
+  algoInputParams.m_inputRasterPtr = inputRst.get();
   algoInputParams.m_inputRasterBands = vec;
   algoInputParams.m_tiePoints = tiePoints;
   algoInputParams.m_outputSRID = srid;
   algoInputParams.m_outputResolutionX = resX;
   algoInputParams.m_outputResolutionY = resY;
+  algoInputParams.m_geomTransfName = m_tiePointLocatorDialog->getWidget()->getTransformationName();
+  algoInputParams.m_interpMethod = m_tiePointLocatorDialog->getWidget()->getInterpolatorMethod();
 
   //output parameters
   te::rp::Register::OutputParameters algoOutputParams;
