@@ -26,6 +26,7 @@
 // Terralib
 #include "../../../qt/widgets/rp/MixtureModelWizard.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/BaseApplication.h"
 #include "MixtureModelAction.h"
 
 // Qt
@@ -49,17 +50,26 @@ te::qt::plugins::rp::MixtureModelAction::~MixtureModelAction()
 
 void te::qt::plugins::rp::MixtureModelAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::MixtureModelWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  m_mixtureModelWizard = new te::qt::widgets::MixtureModelWizard(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+
+  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  m_mixtureModelWizard->setMapDisplay(ba->getMapDisplay());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  dlg.setList( layersList );
+  m_mixtureModelWizard->setList(layersList);
 
-  if(dlg.exec() == QDialog::Accepted)
-  {
-    //add new layer
-    addNewLayer(dlg.getOutputLayer());
-  }
+  m_mixtureModelWizard->setModal(false);
+
+  m_mixtureModelWizard->show();
+
+  connect(m_mixtureModelWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
+  connect(m_mixtureModelWizard, SIGNAL(closeTool()), this, SLOT(closeTool()));
+}
+
+void te::qt::plugins::rp::MixtureModelAction::addLayerSlot(te::map::AbstractLayerPtr layer)
+{
+  addNewLayer(layer);
 }
 
 void te::qt::plugins::rp::MixtureModelAction::onPopUpActionActivated(bool checked)
@@ -81,5 +91,14 @@ void te::qt::plugins::rp::MixtureModelAction::onPopUpActionActivated(bool checke
   else
   {
     QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
+  }
+}
+
+void te::qt::plugins::rp::MixtureModelAction::closeTool()
+{
+  if (m_mixtureModelWizard)
+  {
+    delete m_mixtureModelWizard;
+    m_mixtureModelWizard = 0;
   }
 }
