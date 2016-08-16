@@ -59,7 +59,7 @@
       <item row="5" column="0">
        <widget class="QToolButton" name="m_extentActionToolButtontoolButton">
         <property name="toolTip">
-         <string>Extent Selection</string>
+         <string>Create by Extent</string>
         </property>
         <property name="text">
          <string/>
@@ -97,7 +97,7 @@
       <item row="4" column="0">
        <widget class="QToolButton" name="m_geomActionToolButtontoolButton">
         <property name="toolTip">
-         <string>Draw Polygon</string>
+         <string>Create by Polygon</string>
         </property>
         <property name="text">
          <string/>
@@ -123,7 +123,7 @@
       <item row="3" column="0">
        <widget class="QToolButton" name="m_pointActionToolButtontoolButton">
         <property name="toolTip">
-         <string>Point Picker</string>
+         <string>Create by Point</string>
         </property>
         <property name="text">
          <string/>

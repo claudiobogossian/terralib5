@@ -221,7 +221,7 @@
                <item row="0" column="0">
                 <widget class="QToolButton" name="m_loadToolButton">
                  <property name="toolTip">
-                  <string>Remove Entry</string>
+                  <string> Import Component</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -240,7 +240,7 @@
                <item row="1" column="0">
                 <widget class="QToolButton" name="m_saveToolButton">
                  <property name="toolTip">
-                  <string>Remove Entry</string>
+                  <string>Export Component</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -259,7 +259,7 @@
                <item row="2" column="0">
                 <widget class="QToolButton" name="m_removeToolButton">
                  <property name="toolTip">
-                  <string>Remove Entry</string>
+                  <string>Remove Component</string>
                  </property>
                  <property name="text">
                   <string/>
