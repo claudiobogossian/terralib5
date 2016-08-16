@@ -18,23 +18,20 @@
  */
 
 /*!
-  \file terralib/unittest/dataaccess/main.cpp
+  \file terralib/unittest/dataaccess/TsDataSource.cpp
 
-  \brief Main file of test suit for the Data Access Module.
-*/
+  \brief A test suite for the Data Source Class.
+
+ */
 
 // Boost
-#define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 
-bool init_unit_test()
+BOOST_AUTO_TEST_SUITE( datasource_tests )
+
+BOOST_AUTO_TEST_CASE( createDataSource_test )
 {
-  return true;
+  /* Create tests here */
 }
 
-int main(int argc, char *argv[])
-{
-  int resultStatus = boost::unit_test::unit_test_main(init_unit_test, argc, argv);
-
-  return resultStatus;
-}
+BOOST_AUTO_TEST_SUITE_END()
