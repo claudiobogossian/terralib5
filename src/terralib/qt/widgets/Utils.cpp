@@ -395,7 +395,7 @@ QString te::qt::widgets::Convert2Qt(const std::string& text, te::core::EncodingT
   if (encoding != te::core::EncodingType::UTF8)
     conv_text = te::core::CharEncoding::toUTF8(text, encoding);
 
-  return QString::fromUtf8(conv_text.c_str());
+  return QString::fromStdString(conv_text);
 }
 
 QString te::qt::widgets::GetDiskRasterFileSelFilter()

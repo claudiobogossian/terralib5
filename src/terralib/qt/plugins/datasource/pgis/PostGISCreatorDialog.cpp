@@ -157,7 +157,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
       m_datasource->setDescription("");
       m_datasource->setAccessDriver("POSTGIS");
       m_datasource->setType("POSTGIS");
@@ -166,7 +166,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(connInfo);
-      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
       m_datasource->setDescription("");
     }
 

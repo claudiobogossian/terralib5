@@ -448,7 +448,7 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       {
         std::string value = m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
 
-        return QString::fromUtf8(value.c_str());
+        return QString::fromStdString(value);
       }
 
       if(m_dataset->isNull(index.column()))
@@ -458,7 +458,7 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       {
         std::string value = m_dataset->getString(index.column());
 
-        return QString::fromUtf8(value.c_str());
+        return QString::fromStdString(value);
       }
       else
         return m_dataset->getAsString(index.column(), 6).c_str();
@@ -584,7 +584,7 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
 
       if(curV != newV)
       {
-        std::string out = newV.toUtf8().constData();
+        std::string out = newV.toStdString();
         m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), out);
       }
 
