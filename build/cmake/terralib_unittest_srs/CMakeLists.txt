@@ -27,17 +27,25 @@
 
 
 include_directories(${Boost_INCLUDE_DIR}
-                    ${CPPUNIT_INCLUDE_DIR}
                     ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
+add_definitions(-DBOOST_TEST_DYN_LINK)
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/srs/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/srs/*.h)
+file(GLOB TERRALIB_UNITTEST_SRS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/srs/*.h)
+file(GLOB TERRALIB_UNITTEST_SRS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/srs/*.cpp)
 
-add_executable(terralib_unittest_srs ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+source_group("Header Files" FILES ${TERRALIB_UNITTEST_SRS_HDR_FILES})
+source_group("Source Files" FILES ${TERRALIB_UNITTEST_SRS_SRC_FILES})
+
+add_executable(terralib_unittest_srs ${TERRALIB_UNITTEST_SRS_HDR_FILES}
+                                     ${TERRALIB_UNITTEST_SRS_SRC_FILES})
 
 target_link_libraries(terralib_unittest_srs terralib_mod_srs
-                                            ${CPPUNIT_LIBRARY})
+                                            ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(NAME terralib_unittest_srs
+         COMMAND terralib_unittest_srs
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/srs COMPONENT devel)

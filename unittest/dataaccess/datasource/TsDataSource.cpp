@@ -18,39 +18,20 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/unittest/dataaccess/TsDataSource.cpp
 
-  \brief Configuration flags for TerraLib Unittest DataAccess drivers .
+  \brief A test suite for the Data Source Class.
+
  */
 
-#ifndef __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_CONFIG_H
-#define __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_CONFIG_H
+// Boost
+#include <boost/test/unit_test.hpp>
 
-// TerraLib
-#include "../Config.h"
+BOOST_AUTO_TEST_SUITE( datasource_tests )
 
-/*!
-  \def TE_TEST_GDAL, TE_TEST_OGR, TE_TEST_PGIS and other dataaccess drivers
+BOOST_AUTO_TEST_CASE( createDataSource_test )
+{
+  /* Create tests here */
+}
 
-  \brief Flags for TerraLib Unittest Dataaccess drivers.
-         The set of flags below controls which data source driver Unittest will be executed.
-         If you want to disable the Unittest for a specific data source driver
-         just set the flag to 0 (this will turn of the test).
- */
-
-#if TE_USE_GDAL
-#define TE_TEST_GDAL 1
-#endif
-
-#if TE_USE_OGR
-#define TE_TEST_OGR 0
-#endif
-
-#if TE_USE_PGIS
-#define TE_TEST_PGIS 1
-#endif
-
-
-#endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_CONFIG_H
-
-
+BOOST_AUTO_TEST_SUITE_END()
