@@ -79,9 +79,12 @@ namespace te
           Ui::ROIManagerWidgetForm* getForm() const;
 
         public:
+
           /*!
           \brief This method is used to set the display
+
           */
+
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
 
           /*!
@@ -97,8 +100,6 @@ namespace te
           void set(te::map::AbstractLayerPtr layer);
 
           te::cl::ROISet* getROISet();
-
-          void closeEvent();
 
         protected:
           
@@ -126,19 +127,21 @@ namespace te
 
           void onEnvelopeAcquired(te::gm::Envelope env);
 
+          void clearCanvas();
+
         signals:
 
           void roiSetChanged(te::cl::ROISet* rs);
 
         private:
 
-          std::auto_ptr<Ui::ROIManagerWidgetForm> m_ui;
+         std::auto_ptr<Ui::ROIManagerWidgetForm> m_ui;
 
-          std::auto_ptr<te::qt::widgets::RpToolsWidget> m_navigator;
+         std::auto_ptr<te::qt::widgets::RpToolsWidget> m_navigator;
 
-          ColorPickerToolButton* m_colorPicker;
+         ColorPickerToolButton* m_colorPicker;
 
-          te::qt::widgets::MapDisplay* m_mapDisplay;
+         te::qt::widgets::MapDisplay* m_mapDisplay;
 
          te::map::AbstractLayerPtr m_layer;
 

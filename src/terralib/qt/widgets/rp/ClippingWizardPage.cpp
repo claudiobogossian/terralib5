@@ -59,7 +59,6 @@ Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::ClippingWizardPageForm),
-    m_canvas(0),
     m_layer(0)
 {
 // setup controls
@@ -644,21 +643,17 @@ void te::qt::widgets::ClippingWizardPage::fillClippingTypes()
 void te::qt::widgets::ClippingWizardPage::drawGeom()
 {
   //te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
-
-  if (!m_canvas)
-  {
-    m_canvas = new te::qt::widgets::Canvas(m_mapDisplay->getDraftPixmap());
-  }
-
+  
   m_mapDisplay->getDraftPixmap()->fill(Qt::transparent);
 
   const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
 
-  m_canvas->setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
+  canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
 
-  m_canvas->setPolygonContourWidth(2);
-  m_canvas->setPolygonContourColor(te::color::RGBAColor(100, 177, 216, TE_OPAQUE));
-  m_canvas->setPolygonFillColor(te::color::RGBAColor(100, 177, 216, 80));
+  canvasInstance.setPolygonContourWidth(2);
+  canvasInstance.setPolygonContourColor(te::color::RGBAColor(100, 177, 216, TE_OPAQUE));
+  canvasInstance.setPolygonFillColor(te::color::RGBAColor(100, 177, 216, 80));
 
   te::gm::Geometry* geom = 0;
 
@@ -678,7 +673,7 @@ void te::qt::widgets::ClippingWizardPage::drawGeom()
 
   if(geom)
   {
-    m_canvas->draw(geom);
+    canvasInstance.draw(geom);
     delete geom;
   }
 
@@ -687,12 +682,9 @@ void te::qt::widgets::ClippingWizardPage::drawGeom()
 
 void te::qt::widgets::ClippingWizardPage::clearCanvas()
 {
-  m_canvas->clear();
-  m_mapDisplay->repaint();
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
 
-  if (m_canvas)
-  {
-    delete m_canvas;
-    m_canvas = 0;
-  }
+  canvasInstance.clear();
+
+  m_mapDisplay->repaint();
 }

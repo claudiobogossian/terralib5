@@ -90,7 +90,7 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
 
 
   QGridLayout* layout = new QGridLayout(m_ui->m_navigatorWidget);
-  m_navigator.reset(new te::qt::widgets::RpToolsWidget(m_ui->m_navigatorWidget));
+	m_navigator.reset(new te::qt::widgets::RpToolsWidget(m_ui->m_navigatorWidget));
   layout->addWidget(m_navigator.get(), 0, 0);
   layout->setContentsMargins(0,0,0,0);
   layout->setSizeConstraint(QLayout::SetMinimumSize);
@@ -105,7 +105,7 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   connect(m_ui->m_fileDialogToolButton, SIGNAL(clicked()), this, SLOT(onFileDialogToolButtonClicked()));
   connect(m_ui->m_exportROISetToolButton, SIGNAL(clicked()), this, SLOT(onExportROISetToolButtonClicked()));
   connect(m_ui->m_roiSetTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onROITreItemClicked(QTreeWidgetItem*, int)));
-  
+
   connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
   connect(m_navigator.get(), SIGNAL(geomAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
   connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
@@ -185,9 +185,9 @@ void te::qt::widgets::ROIManagerWidget::drawROISet()
 {
   if(!m_rs)
     return;
-  
+
   m_mapDisplay->getDraftPixmap()->fill(Qt::transparent);
-  
+
   const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
 
   te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
@@ -435,6 +435,7 @@ void te::qt::widgets::ROIManagerWidget::onROITreItemClicked(QTreeWidgetItem* ite
     return;
 
   //te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
+
   const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
 
   te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
@@ -459,7 +460,6 @@ void te::qt::widgets::ROIManagerWidget::onROITreItemClicked(QTreeWidgetItem* ite
   canvasInstance.draw(p);
 
   m_mapDisplay->repaint();
-
 }
 
 void te::qt::widgets::ROIManagerWidget::onExportROISetToolButtonClicked()
@@ -537,15 +537,6 @@ void te::qt::widgets::ROIManagerWidget::onVectorLayerToolButtonClicked(bool flag
 void te::qt::widgets::ROIManagerWidget::onMapDisplayExtentChanged()
 {
   drawROISet();
-}
-
-void te::qt::widgets::ROIManagerWidget::closeEvent()
-{
-  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
-
-  canvasInstance.clear();
- 
-  m_mapDisplay->repaint();
 }
 
 void te::qt::widgets::ROIManagerWidget::onEnvelopeAcquired(te::gm::Envelope env)
@@ -632,7 +623,6 @@ void te::qt::widgets::ROIManagerWidget::onEnvelopeAcquired(te::gm::Envelope env)
   {
     return;
   }
-
 }
 
 void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
@@ -696,4 +686,13 @@ void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
   emit roiSetChanged(m_rs);
   
   drawROISet();
+}
+
+void te::qt::widgets::ROIManagerWidget::clearCanvas()
+{
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
+  
+  canvasInstance.clear();
+  
+  m_mapDisplay->repaint();
 }

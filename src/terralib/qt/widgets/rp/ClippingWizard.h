@@ -80,13 +80,13 @@ namespace te
 
           bool execute();
 
+          void closeEvent(QCloseEvent* e);
+
           bool executeExtentClipping();
 
           bool executeDimensionClipping();
 
           bool executeLayerClipping();
-
-          void closeEvent(QCloseEvent* e);
 
         signals:
 

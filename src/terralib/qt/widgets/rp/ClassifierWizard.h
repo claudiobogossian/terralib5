@@ -78,9 +78,13 @@ namespace te
 
           bool execute();
 
+          void closeEvent(QCloseEvent* e);
+
         signals:
 
           void addLayer(te::map::AbstractLayerPtr layer);
+
+          void closeTool();
 
         private:
 

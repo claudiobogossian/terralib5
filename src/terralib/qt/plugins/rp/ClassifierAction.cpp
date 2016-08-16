@@ -62,9 +62,19 @@ void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
   m_classifierWizard->show();
 
   connect(m_classifierWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
+  connect(m_classifierWizard, SIGNAL(closeTool()), this, SLOT(closeTool()));
 }
 
 void te::qt::plugins::rp::ClassifierAction::addLayerSlot(te::map::AbstractLayerPtr layer)
 {
   addNewLayer(layer);
+}
+
+void te::qt::plugins::rp::ClassifierAction::closeTool()
+{
+  if (m_classifierWizard)
+  {
+    delete m_classifierWizard;
+    m_classifierWizard = 0;
+  }
 }

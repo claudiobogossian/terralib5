@@ -106,11 +106,6 @@ bool te::qt::widgets::ClassifierWizard::validateCurrentPage()
   return true;
 }
 
-void te::qt::widgets::ClassifierWizard::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
-{
-  m_classifierPage->setMapDisplay(mapDisplay);
-}
-
 void te::qt::widgets::ClassifierWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
@@ -137,6 +132,12 @@ void te::qt::widgets::ClassifierWizard::addPages()
   //for contrast only one layer can be selected
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
 }
+
+void te::qt::widgets::ClassifierWizard::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_classifierPage->setMapDisplay(mapDisplay);
+}
+
 
 bool te::qt::widgets::ClassifierWizard::execute()
 {
@@ -178,7 +179,9 @@ bool te::qt::widgets::ClassifierWizard::execute()
       //set output layer
       m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
-      
+
+      emit addLayer(m_outputLayer);
+
       QMessageBox::information(this, tr("Classifier"), tr("Classifier ended sucessfully"));
     }
     else
@@ -262,4 +265,11 @@ bool te::qt::widgets::ClassifierWizard::execute()
   QApplication::restoreOverrideCursor();
 
   return true;
+}
+
+void te::qt::widgets::ClassifierWizard::closeEvent(QCloseEvent* e)
+{
+  m_classifierPage->clearCanvas();
+
+  emit closeTool();
 }

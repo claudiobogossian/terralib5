@@ -189,8 +189,6 @@ namespace te
           te::color::RGBAColor** m_rgbaMark;
           te::se::Mark* m_mark;
 
-          te::qt::widgets::Canvas* m_canvas;
-
           te::qt::widgets::MapDisplay* m_mapDisplay;
       };
 

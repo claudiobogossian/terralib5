@@ -147,8 +147,6 @@ namespace te
           te::gm::Envelope m_envDim;
           te::gm::Polygon* m_polyROI;
 
-          te::qt::widgets::Canvas* m_canvas;
-
           te::qt::widgets::MapDisplay* m_mapDisplay;
       };
 

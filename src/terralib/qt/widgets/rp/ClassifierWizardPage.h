@@ -35,6 +35,7 @@
 #include "../../../rp/Classifier.h"
 #include "../../../rp/ClassifierMAPStrategy.h"
 #include "../../../rp/ClassifierSAMStrategy.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #endif
 #include "../Config.h"
 
@@ -121,6 +122,8 @@ namespace te
           void onROIManagerClosed();
 
           void onRoiSetChanged(te::cl::ROISet* rs);
+
+          void clearCanvas();
 
         private:
 

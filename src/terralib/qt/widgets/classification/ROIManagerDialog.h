@@ -70,15 +70,11 @@ namespace te
           te::qt::widgets::ROIManagerWidget* getWidget();
 
           /*!
-          \brief This method is used to set display
-
+            \brief This method is used to set the list of layers
+            
           */
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
 
-          /*!
-          \brief This method is used to set the list of layers
-
-          */
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
           
           /*!
@@ -86,6 +82,8 @@ namespace te
             
           */
           void set(te::map::AbstractLayerPtr layer);
+
+          void clearCanvas();
 
         protected:
 
