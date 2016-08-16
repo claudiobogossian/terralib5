@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(linearContrast_test)
   /* Open input raster */
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(histogramEqualizationContrast_test)
   /* Open input raster */
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(squareContrast_test)
   /* Open input raster */
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(squareRootContrast_test)
   /* Open input raster */
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(logContrast_test)
   /* Open input raster */
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(setMeanAndStdContrast_test)
   /* Open input raster */
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(decorrelationEnhancementTContrast_test)
   /* Open input raster */
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );

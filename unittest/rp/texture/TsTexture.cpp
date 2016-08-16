@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(GLCM_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
   // Retrieve the minimum and maximum values of the band to normalize GLCM

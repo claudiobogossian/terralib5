@@ -15,38 +15,44 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
- */
+*/
 
 /*!
-  \file terralib/unittest/rp/radar_functions/TsRadarFunctions.cpp
+  \file terralib/unittest/edit/main.cpp
 
-  \brief A test suit for raster processing Radar Functions.
+  \brief Main file of test suit for the Edit Module.
 */
 
 // TerraLib
-#include "../Config.h"
-#include <terralib/rp.h>
-#include <terralib/raster/RasterFactory.h>
+
+#include "LoadModules.h"
+#include "Config.h"
+
+// STL
+#include <cstdlib>
 
 // Boost
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
-#include <boost/shared_ptr.hpp>
 
-BOOST_AUTO_TEST_SUITE (radar_functions_tests)
-
-BOOST_AUTO_TEST_CASE(sampleFunction_test)
+bool init_unit_test()
 {
-  /* Openning input raster */
-  
-  std::map<std::string, std::string> auxRasterInfo;
-  
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
-  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
-    auxRasterInfo ) );
-
-  BOOST_CHECK( diskRasterPtr.get() );
-  BOOST_CHECK( te::rp::radar::SampleFunction( *diskRasterPtr ) );
+  return true;
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+int main(int argc, char *argv[])
+{
+  /* Initialize Terralib platform */
+  TerraLib::getInstance().initialize();
+
+  LoadModules();
+
+  int resultStatus = boost::unit_test::unit_test_main(init_unit_test, argc, argv);
+
+  /* Finalize TerraLib Plataform */
+  te::plugin::PluginManager::getInstance().unloadAll();
+  TerraLib::getInstance().finalize();
+
+  return resultStatus;
+}
+

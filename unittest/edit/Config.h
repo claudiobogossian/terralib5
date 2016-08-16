@@ -18,35 +18,18 @@
  */
 
 /*!
-  \file terralib/unittest/rp/radar_functions/TsRadarFunctions.cpp
+  \file Config.h
 
-  \brief A test suit for raster processing Radar Functions.
-*/
+  \brief Configuration flags for TerraLib Unittest Edition.
+ */
+
+#ifndef __TERRALIB_UNITTEST_EDIT_INTERNAL_CONFIG_H
+#define __TERRALIB_UNITTEST_EDIT_INTERNAL_CONFIG_H
 
 // TerraLib
 #include "../Config.h"
-#include <terralib/rp.h>
-#include <terralib/raster/RasterFactory.h>
 
-// Boost
-#define BOOST_TEST_NO_MAIN
-#include <boost/test/unit_test.hpp>
-#include <boost/shared_ptr.hpp>
 
-BOOST_AUTO_TEST_SUITE (radar_functions_tests)
+#endif  // __TERRALIB_UNITTEST_EDIT_INTERNAL_CONFIG_H
 
-BOOST_AUTO_TEST_CASE(sampleFunction_test)
-{
-  /* Openning input raster */
-  
-  std::map<std::string, std::string> auxRasterInfo;
-  
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
-  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
-    auxRasterInfo ) );
 
-  BOOST_CHECK( diskRasterPtr.get() );
-  BOOST_CHECK( te::rp::radar::SampleFunction( *diskRasterPtr ) );
-}
-
-BOOST_AUTO_TEST_SUITE_END()

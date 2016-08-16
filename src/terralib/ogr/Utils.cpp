@@ -661,25 +661,6 @@ std::string te::ogr::GetDriverName(const std::string& path)
   return "";
 }
 
-//std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate)
-//{
-//  std::vector<std::string> drivernames;
-//  
-//  int ndrivers = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-//  
-//  for (int i = 0; i < ndrivers; ++i)
-//  {
-//    OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriver(i);
-//    if (filterCreate && !driver->TestCapability(ODrCCreateDataSource))
-//      continue;
-//    if (filterCreate && !driver->GetMetadataItem(ODrCCreateDataSource))
-//      continue;
-//    drivernames.push_back(driver->GetName());
-//  }
-//  
-//  return drivernames;
-//}
-
 std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate)
 {
   std::vector<std::string> drivernames;
@@ -734,3 +715,8 @@ std::string te::ogr::RemoveSpatialSql(const std::string& sql)
   return newQuery;
 }
 
+TEOGREXPORT boost::mutex & te::ogr::getStaticMutex()
+{
+  static boost::mutex getStaticMutexStaticMutex;
+  return getStaticMutexStaticMutex;
+}

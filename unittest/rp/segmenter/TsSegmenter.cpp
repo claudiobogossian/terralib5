@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(dummyStrategy_test)
   /* Open input raster */
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(blockProcessingWithoutMerging_test)
   /* Open input raster */
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(blockProcessingWithMerging_test)
   /* Open input raster */
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(threadedProcessing_test)
   /* Open input raster */
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(regionGrowingMeanStrategy_test)
   /* Open input raster */
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -329,7 +329,7 @@ BOOST_AUTO_TEST_CASE(regionGrowingMeanStrategyBlockProcessing_test)
   /* Open input raster */
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE(regionGrowingBaatzStrategy_test)
   /* Open input raster */
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -445,7 +445,7 @@ BOOST_AUTO_TEST_CASE(regionGrowingBaatzStrategyBlockProcessing_test)
   /* Open input raster */
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
