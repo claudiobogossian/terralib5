@@ -27,22 +27,35 @@
 
 
 include_directories(${Boost_INCLUDE_DIR}
-                    ${CPPUNIT_INCLUDE_DIR}
                     ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
+add_definitions(-DBOOST_TEST_DYN_LINK)
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/dataaccess/*.cpp)
 
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/dataaccess/*.h)
+file(GLOB TERRALIB_UNITTEST_DATAACCESS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/dataaccess/*.cpp)
+file(GLOB TERRALIB_UNITTEST_DATAACCESS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/dataaccess/*.h)
+file(GLOB TERRALIB_UNITTEST_DATAACCESS_DATASOURCE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/dataaccess/datasource/*.cpp)
 
-add_executable(terralib_unittest_dataaccess ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
+source_group("Header Files"              FILES ${TERRALIB_UNITTEST_DATAACCESS_HDR_FILES})
+source_group("Source Files"              FILES ${TERRALIB_UNITTEST_DATAACCESS_SRC_FILES})
+source_group("Source Files\\datasource"  FILES ${TERRALIB_UNITTEST_DATAACCESS_DATASOURCE_SRC_FILES})
+
+
+add_executable(terralib_unittest_dataaccess ${TERRALIB_UNITTEST_DATAACCESS_HDR_FILES}
+                                            ${TERRALIB_UNITTEST_DATAACCESS_SRC_FILES}
+                                            ${TERRALIB_UNITTEST_DATAACCESS_DATASOURCE_SRC_FILES})
 
 target_link_libraries(terralib_unittest_dataaccess terralib_mod_common
                                                    terralib_mod_dataaccess
                                                    terralib_mod_geometry
                                                    terralib_mod_plugin
                                                    terralib_mod_raster
-                                                   ${CPPUNIT_LIBRARY})
+                                                   ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(NAME terralib_unittest_dataaccess
+         COMMAND terralib_unittest_dataaccess
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/dataaccess COMPONENT devel)
