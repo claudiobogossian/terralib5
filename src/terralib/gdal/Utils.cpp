@@ -831,11 +831,9 @@ boost::mutex& te::gdal::getStaticMutex()
   return getStaticMutexStaticMutex;
 }
 
-const std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDriversMetadata()
+std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDriversMetadata()
 {
-  static std::map< std::string, DriverMetadata > driversMetadata;
-  
-  if( driversMetadata.empty() )
+  if(m_driversMetadata.empty() )
   {
     GDALDriverManager* driverManagerPtr = GetGDALDriverManager();
     
@@ -873,19 +871,17 @@ const std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDrive
           }
         }
         
-        driversMetadata[ auxMD.m_driverName ] = auxMD;
+        m_driversMetadata[ auxMD.m_driverName ] = auxMD;
       }
     }
   }
   
-  return driversMetadata;
+  return m_driversMetadata;
 }
 
-const std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseExt2DriversMap()
-{
-  static std::multimap< std::string, std::string > extensions;
-  
-  if( extensions.empty() )
+std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseExt2DriversMap()
+{  
+  if(m_extensions.empty() )
   {
     const std::map< std::string, DriverMetadata >& driversMetadata = GetGDALDriversMetadata();
     
@@ -894,11 +890,11 @@ const std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseEx
     {
       if( ! it->second.m_extension.empty() )
       {
-        extensions.insert( std::pair< std::string, std::string >( 
+        m_extensions.insert( std::pair< std::string, std::string >(
           te::common::Convert2UCase( it->second.m_extension ), it->first ) );;
       }
     }
   }
   
-  return extensions;
+  return m_extensions;
 }

@@ -127,9 +127,18 @@ void te::gdal::Module::startup()
   // Supported file extensions capability
   
   std::set< std::string > supportedExtensionsSet;
+  std::map< std::string, te::gdal::DriverMetadata >& driversMetadata = te::gdal::GetGDALDriversMetadata();
+  std::multimap< std::string, std::string >& extensions = te::gdal::GetGDALDriversUCaseExt2DriversMap();
+
+  //Registering extra driver(s) that are supported by gdal
+  driversMetadata.find("ENVI")->second.m_extension = "env";
+
+  //Registering extra extension(s) that are supported by gdal
+  extensions.insert(std::pair< std::string, std::string >("ENV", "ENVI"));
+
   for( std::map< std::string, DriverMetadata >::const_iterator it = 
-    GetGDALDriversMetadata().begin() ; it != 
-    GetGDALDriversMetadata().end() ; ++it )
+    driversMetadata.begin() ; it !=
+    driversMetadata.end() ; ++it )
   {
     if( !it->second.m_extension.empty() )
     {
