@@ -182,27 +182,19 @@ te::dt::AbstractData* te::da::CharEncodingConverter::operator()(DataSet* dataset
     return 0;
 
   std::string value = dataset->getString(pos);
-  te::core::EncodingType fromCode = dataset->getPropertyCharEncoding(pos);
 
-  if(fromCode == m_toCode)
+  if (m_toCode == te::core::EncodingType::UTF8)
     return new te::dt::String(value);
 
-  if(fromCode == te::core::EncodingType::UNKNOWN || m_toCode == te::core::EncodingType::UNKNOWN)
-    return new te::dt::String(value);
-
-#ifdef TERRALIB_CHARENCODING_ENABLED
   try
   {
-    std::string result = te::core::CharEncoding::convert(value, fromCode, m_toCode);
+    std::string result = te::core::CharEncoding::fromUTF8(value, m_toCode);
     return new te::dt::String(result);
   }
   catch(...)
   {
     return new te::dt::String(value);
   }
-#else
-    return new te::dt::String(value);
-#endif
 }
 
 te::dt::AbstractData* te::da::SRIDAssociation::operator()(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType)

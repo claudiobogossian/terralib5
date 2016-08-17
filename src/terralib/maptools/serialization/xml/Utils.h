@@ -61,6 +61,8 @@ namespace te
 
       TEMAPEXPORT std::string ReadLayerTitle(te::xml::Reader& reader);
 
+      TEMAPEXPORT std::string ReadLayerEncoding(te::xml::Reader& reader);
+
       TEMAPEXPORT std::string ReadDataSetName(te::xml::Reader& reader);
 
       TEMAPEXPORT std::string ReadDataSourceId(te::xml::Reader& reader);

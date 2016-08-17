@@ -98,7 +98,8 @@ void GetCapabilities(GDALDataset* ds, te::da::DataSourceCapabilities& caps)
 te::ogr::DataSource::DataSource() :
   te::da::DataSource(),
   m_ogrDS(0),
-  m_isValid(false)
+  m_isValid(false),
+  m_encoding(te::core::EncodingType::UTF8)
 {
 }
 
@@ -132,7 +133,9 @@ void te::ogr::DataSource::open()
   close();
 
   if(m_connectionInfo.empty())
-    throw Exception(TE_TR("There is no information about the data source")); 
+    throw Exception(TE_TR("There is no information about the data source"));
+
+
 
   std::string path;
   std::map<std::string, std::string>::const_iterator it;
@@ -142,6 +145,11 @@ void te::ogr::DataSource::open()
     throw(Exception(TE_TR("Not enough information to open the data source.")));
 
   path = it->second;
+
+  // Retrieve the char encoding
+  it = m_connectionInfo.find("SHAPE_ENCODING");
+  if (it != m_connectionInfo.end())
+    CPLSetConfigOption("SHAPE_ENCODING", it->second.c_str());
 
   if (boost::filesystem::exists(path))
     //m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
@@ -229,6 +237,11 @@ void te::ogr::DataSource::createOGRDataSource()
     if (!dir.empty() && !boost::filesystem::exists(dir))
       boost::filesystem::create_directory(dir);
 
+    // Retrieve the char encoding
+    it = m_connectionInfo.find("SHAPE_ENCODING");
+    if (it != m_connectionInfo.end())
+      CPLSetConfigOption("SHAPE_ENCODING", it->second.c_str());
+
     //OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
     //OGRSFDriver* driver;
 
@@ -283,7 +296,17 @@ void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInf
   close();
 }
 
-void  te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options)
+te::core::EncodingType te::ogr::DataSource::getEncoding()
+{
+  return m_encoding;
+}
+
+void te::ogr::DataSource::setEncoding(const te::core::EncodingType& et)
+{
+  m_encoding = et;
+}
+
+void te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options)
 {
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
   return t->createDataSet(dt, options);
@@ -329,11 +352,6 @@ std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<
   names.push_back(dsInfo.begin()->second);
 
   return names;
-}
-
-std::vector<te::core::EncodingType> te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
-{
-  return std::vector<te::core::EncodingType>();
 }
 
 te::ogr::DataSource* te::ogr::Build()

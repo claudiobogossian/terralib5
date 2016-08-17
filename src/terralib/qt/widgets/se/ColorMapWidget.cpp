@@ -491,7 +491,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
   c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
   QColor cWhite(Qt::white);
-  std::string colorWhiteStr = cWhite.name().toLatin1().data();
+  std::string colorWhiteStr = cWhite.name().toStdString();
 
   //added dummy color for values < than min values...
   c->addValue(new te::se::ParameterValue(colorWhiteStr));
@@ -550,7 +550,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
   c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
   QColor cWhite(Qt::white);
-  std::string colorWhiteStr = cWhite.name().toLatin1().data();
+  std::string colorWhiteStr = cWhite.name().toStdString();
 
   //added dummy color for values < than min values...
   c->addValue(new te::se::ParameterValue(colorWhiteStr));
@@ -601,7 +601,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
     {
       {
         QString rangeStr = m_ui->m_tableWidget->item(i, 1)->text();
-        std::string colorStr = color.name().toLatin1().data();
+        std::string colorStr = color.name().toStdString();
 
         te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -615,7 +615,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
         color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(22,1));
 
         QString rangeStr = m_ui->m_tableWidget->item(i, 2)->text();
-        std::string colorStr = color.name().toLatin1().data();
+        std::string colorStr = color.name().toStdString();
 
         te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -629,7 +629,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
     else
     {
       QString rangeStr = m_ui->m_tableWidget->item(i, 1)->text();
-      std::string colorStr = color.name().toLatin1().data();
+      std::string colorStr = color.name().toStdString();
 
       te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -682,7 +682,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
     if(i == colorVec.size() - 1)
     {
       QString rangeStr = legVec[i - 1]->getUpperLimit().c_str();
-      std::string colorStr = color.name().toLatin1().data();
+      std::string colorStr = color.name().toStdString();
 
       te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -694,7 +694,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
     else
     {
       QString rangeStr = legVec[i]->getLowerLimit().c_str();
-      std::string colorStr = color.name().toLatin1().data();
+      std::string colorStr = color.name().toStdString();
 
       te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -725,7 +725,7 @@ void te::qt::widgets::ColorMapWidget::buildRecodingMap()
     QColor color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(1, 1));
 
     double data = m_ui->m_tableWidget->item(i, 1)->text().toDouble();
-    std::string colorStr = color.name().toLatin1().data();
+    std::string colorStr = color.name().toStdString();
     std::string title = m_ui->m_tableWidget->item(i, 2)->text().toStdString();
 
     te::se::MapItem* m = new te::se::MapItem();

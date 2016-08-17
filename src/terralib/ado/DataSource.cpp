@@ -222,11 +222,6 @@ std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::map<
   return std::vector<std::string>(); // The DataSource is a File.
 }
 
-std::vector<te::core::EncodingType> te::ado::DataSource::getEncodings(const std::map<std::string, std::string>&)
-{
-  return std::vector<te::core::EncodingType>(); //TODO how?
-}
-
 void te::ado::DataSource::loadGeometryColumnsCache(_ConnectionPtr& adoConn)
 {
   boost::lock_guard<boost::mutex> lock(m_mtx);

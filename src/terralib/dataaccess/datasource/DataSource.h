@@ -1220,13 +1220,6 @@ namespace te
                          std::size_t limit = 0);
 
         /*!
-          \brief It return the DataSource current encoding.
-
-          \return The DataSource current encoding.
-        */
-        virtual te::core::EncodingType getEncoding();
-
-        /*!
           \brief It removes all the informed items from the dataset.
 
           It removes all the data items from a dataset which are identified by 
@@ -1282,6 +1275,23 @@ namespace te
                             DataSet* dataset,
                             const std::vector< std::set<int> >& properties,
                             const std::vector<size_t>& ids);
+
+        /*!
+        \brief It return the DataSource current encoding.
+
+        \return The DataSource current encoding.
+        */
+        virtual te::core::EncodingType getEncoding();
+
+        /*!
+        \brief It sets the encodings for the data source.
+
+        \param et The char encoding type.
+
+        \note This function only takes effect if datasource support this option.
+
+        */
+        virtual void setEncoding(const te::core::EncodingType& et);
 
     //@}
 
@@ -1346,17 +1356,6 @@ namespace te
         */
         static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
 
-        /*!
-          \brief It gets the encoding names of the data source.
-          
-          \param dsType The data source type name (example: PostGIS, Oracle, WFS).
-          \param dsInfo The data source information.
-
-          \exception Exception An exception can be thrown, if the encoding names could not be retrieved.
-
-          \return The encoding types of the data source.
-        */
-        static std::vector<te::core::EncodingType> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
         //@}
 
       protected:
@@ -1414,17 +1413,6 @@ namespace te
         */
         virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo) = 0;
 
-        /*!
-          \brief It gets the encodings for the data source.
-          
-          \param dsInfo The data source information.
-
-          \exception Exception An exception can be thrown, if the encoding names could not be retrieved.
-
-          \return The encoding types for the data source.
-
-        */
-        virtual std::vector<te::core::EncodingType> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
         //@}
 
       protected:

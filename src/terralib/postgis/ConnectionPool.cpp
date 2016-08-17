@@ -111,8 +111,7 @@ void te::pgis::ConnectionPool::initialize()
   it = connInfo.find("PG_MAX_IDLE_TIME");
   m_pImpl->m_maxIdleTime = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MAX_IDLE_TIME;
 
-  it = connInfo.find("PG_CLIENT_ENCODING");
-  m_pImpl->m_cencoding = (it != itend ? GetPGEncoding(te::core::CharEncoding::getEncodingType(it->second)) : std::string(""));
+  m_pImpl->m_cencoding = te::core::CharEncoding::getEncodingName(m_pImpl->m_ds->getEncoding());
 
 // make connection info
   m_pImpl->m_conninfo = MakeConnectionStr(connInfo);

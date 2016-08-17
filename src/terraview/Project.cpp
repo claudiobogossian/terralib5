@@ -48,7 +48,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
 {
   std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
 
-  writer->setURI(proj.m_fileName.toUtf8().constData());
+  writer->setURI(proj.m_fileName.toStdString());
 
   std::string schema_loc = te::core::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
@@ -156,7 +156,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
 void LoadProject(const QString& projFile, ProjectMetadata& proj, std::list<te::map::AbstractLayerPtr>& layers)
 {
   QFileInfo info(projFile);
-  std::string fName = projFile.toUtf8().constData();
+  std::string fName = projFile.toStdString();
 
   if(!info.exists() || !info.isFile())
   {

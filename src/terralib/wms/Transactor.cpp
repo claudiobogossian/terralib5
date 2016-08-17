@@ -582,10 +582,4 @@ void te::wms::Transactor::optimize(const std::map<std::string, std::string>& /*o
 {
   throw Exception(TE_TR("The method optimize() is not supported by the WMS driver!"));
 }
-
-te::core::EncodingType te::wms::Transactor::getEncoding()
-{
-  return te::core::EncodingType::UTF8;
-}
-
 //@}

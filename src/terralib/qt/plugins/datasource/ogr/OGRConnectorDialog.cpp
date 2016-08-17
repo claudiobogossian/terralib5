@@ -144,8 +144,8 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toLatin1().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toLatin1().data());
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
     }
 
     if(m_ui->m_fileRadioButton->isChecked())
@@ -279,7 +279,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::s
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TE_TR("Please select a feature file first!"));
   
-  connInfo["URI"] = qstr.toLatin1().data();
+  connInfo["URI"] = qstr.toStdString();
 }
 
 void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
