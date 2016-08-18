@@ -105,7 +105,7 @@ te::core::CharEncoding::getEncodingType(const std::string &name)
 }
 
 std::vector<std::string> 
-te::core::CharEncoding::getEncodingsName()
+te::core::CharEncoding::getEncodingList()
 {
   std::vector<std::string> vec;
 

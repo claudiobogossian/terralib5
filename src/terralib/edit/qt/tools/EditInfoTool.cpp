@@ -237,7 +237,7 @@ void te::edit::EditInfoTool::getInfo(const te::gm::Envelope& e)
             if (m_dataset->getPropertyDataType(pos) == te::dt::STRING_TYPE)
             {
               std::string value = m_dataset->getString(pos);
-              qvalue = QString::fromUtf8(value.c_str());
+              qvalue = QString::fromStdString(value);
             }
             else
             {
