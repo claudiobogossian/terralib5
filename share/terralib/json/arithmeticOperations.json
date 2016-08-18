@@ -1,0 +1,32 @@
+{
+    "operations": [
+        {
+            "name": "",
+            "operation": "Gain * R0:B + Offset"
+        },
+        {
+            "name": "",
+            "operation": "Gain * ( R0:B + R1:B ) + Offset"
+        },
+        {
+            "name": "",
+            "operation": "Gain * ( R0:B - R1:B ) + Offset"
+        },
+        {
+            "name": "",
+            "operation": "Gain * ( R0:B * R1:B ) + Offset"
+        },
+        {
+            "name": "",
+            "operation": "Gain * ( R0:B \/ R1:B ) + Offset"
+        },
+        {
+            "name": "NDVI",
+            "operation": "( Gain * ( R0:B - R1:B ) \/ ( R0:B + R1:B )) + Offset"
+        },
+        {
+            "name": "MSAVI2",
+            "operation": "( 2 * R0:B + 1 - sqrt((( 2 * R0:B + 1 ) * ( 2 * R0:B + 1 )) - 8 * ( R0:B - R1:B ))) \/ 2"
+        }
+    ]
+}

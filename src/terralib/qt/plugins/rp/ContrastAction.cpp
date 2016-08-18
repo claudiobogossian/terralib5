@@ -24,8 +24,9 @@
 */
 
 // Terralib
-#include "../../../qt/widgets/rp/ContrastWizard.h"
+#include "../../af/events/LayerEvents.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/BaseApplication.h"
 #include "ContrastAction.h"
 
 // Qt
@@ -37,29 +38,67 @@
 
 te::qt::plugins::rp::ContrastAction::ContrastAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
+  m_contrastDlg = 0;
+
   createAction(tr("Contrast...").toStdString(), "histogram");
 
-  //createPopUpAction(tr("Contrast...").toStdString(), "histogram");
   m_action->setObjectName("Processing.Raster Processing.Contrast");
 }
 
 te::qt::plugins::rp::ContrastAction::~ContrastAction()
 {
+  if (m_contrastDlg)
+  {
+    delete m_contrastDlg;
+    m_contrastDlg = 0;
+  }
 }
 
 void te::qt::plugins::rp::ContrastAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ContrastWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
-  
-  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
+	te::map::AbstractLayerPtr layer = getCurrentLayer();
 
-  dlg.setList( layersList );
+	if (layer.get())
+	{
+    if (layer->getVisibility() != te::map::VISIBLE)
+    {
+      QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer is not checked!"));
+      return;
+    }
 
-  if(dlg.exec() == QDialog::Accepted)
-  {
-    //add new layer
-    addNewLayer(dlg.getOutputLayer());
-  }
+    std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+    //Checking if the layer contains a raster property
+    if (!dsType->hasRaster())
+    {
+      QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("There is no selected raster layer."));
+      return;
+    }
+
+    // Register the application framework listener
+    te::qt::af::AppCtrlSingleton::getInstance().addListener(this);
+
+    if (m_contrastDlg)
+    {
+      delete m_contrastDlg;
+      m_contrastDlg = 0;
+    }
+
+		m_contrastDlg = new te::qt::widgets::ContrastDialogForm(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+
+    connect(m_contrastDlg, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayer(te::map::AbstractLayerPtr)));
+    connect(m_contrastDlg, SIGNAL(closeTool()), this, SLOT(closeTool()));
+
+    te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+
+    m_contrastDlg->setModal(false);
+    m_contrastDlg->setMapDisplay(ba->getMapDisplay());
+    m_contrastDlg->set(layer);
+    m_contrastDlg->setConfigurations();
+    m_contrastDlg->show();
+    m_contrastDlg->exec();
+	}
+  else
+    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("There is no selected layer."));
 }
 
 void te::qt::plugins::rp::ContrastAction::onPopUpActionActivated(bool checked)
@@ -68,18 +107,63 @@ void te::qt::plugins::rp::ContrastAction::onPopUpActionActivated(bool checked)
 
   if(layer.get())
   {
-    te::qt::widgets::ContrastWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+    te::qt::widgets::ContrastDialogForm dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
-    dlg.setLayer(layer);
+    dlg.set(layer);
 
-    if(dlg.exec() == QDialog::Accepted)
-    {
-      //add new layer
-      addNewLayer(dlg.getOutputLayer());
-    }
+    dlg.exec();
   }
   else
   {
     QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
+  }
+}
+
+void te::qt::plugins::rp::ContrastAction::onApplicationTriggered(te::qt::af::evt::Event* e)
+{
+  switch (e->m_id)
+  {
+    case te::qt::af::evt::LAYER_SELECTED:
+    {
+      te::qt::af::evt::LayerSelected* evt = static_cast<te::qt::af::evt::LayerSelected*>(e);
+
+      te::map::AbstractLayerPtr layer = evt->m_layer;
+      assert(layer);
+
+      if (layer == 0)
+      {
+        return;
+      }
+
+      if (layer->getVisibility() != te::map::VISIBLE)
+      {
+        QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer is not checked!"));
+        return ;
+      }
+
+      if (m_contrastDlg)
+      {
+        m_contrastDlg->resetWindow(layer);
+      }
+    }
+    break;
+
+    default:
+      break;
+  }
+}
+
+void te::qt::plugins::rp::ContrastAction::addLayer(te::map::AbstractLayerPtr outputLayer)
+{
+  //add new layer
+  addNewLayer(outputLayer);
+}
+
+void te::qt::plugins::rp::ContrastAction::closeTool()
+{
+  if (m_contrastDlg)
+  {
+    delete m_contrastDlg;
+    m_contrastDlg = 0;
   }
 }

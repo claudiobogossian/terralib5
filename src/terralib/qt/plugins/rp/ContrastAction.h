@@ -27,6 +27,7 @@
 #define __TE_QT_PLUGINS_RP_INTERNAL_CONTRASTACTION_H
 
 // TerraLib
+#include "../../../qt/widgets/rp/ContrastDialogForm.h"
 #include "Config.h"
 #include "AbstractAction.h"
 
@@ -59,6 +60,15 @@ namespace te
             virtual void onActionActivated(bool checked);
 
             virtual void onPopUpActionActivated(bool checked);
+
+            void onApplicationTriggered(te::qt::af::evt::Event* e);
+            
+            void addLayer(te::map::AbstractLayerPtr outputLayer);
+
+            void closeTool();
+
+          private:
+            te::qt::widgets::ContrastDialogForm* m_contrastDlg;
         };
 
       } // end namespace rp
