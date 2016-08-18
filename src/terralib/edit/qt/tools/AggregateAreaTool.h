@@ -20,7 +20,7 @@
 /*!
   \file terralib/edit/qt/tools/AggregateAreaTool.cpp
 
-  \brief This class implements a concrete tool to aggregate geometries.
+  \brief This class implements a concrete tool to aggregate polygons.
 */
 
 #ifndef __TERRALIB_EDIT_QT_INTERNAL_AGGREGATEAREATOOL_H
@@ -68,7 +68,7 @@ namespace te
     Q_OBJECT
 
     public:
-      AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+      AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const te::edit::MouseEventEdition mouseEventToSave, QObject* parent = 0);
 
       ~AggregateAreaTool();
 
@@ -85,13 +85,17 @@ namespace te
 
       bool mouseDoubleClickEvent(QMouseEvent* e);
 
+      bool mouseReleaseEvent(QMouseEvent* e);
+
       //@}
 
     private:
 
+      bool aggregatePolygon();
+
       void drawPolygon();
 
-      void draw(bool onlyRepository = false);
+      void draw();
 
       void storeFeature();
 
@@ -105,14 +109,10 @@ namespace te
 
       te::gm::Geometry* unionGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2);
 
-      std::set<std::string> m_oidsSet;
-
-    private slots:
-
-      void onExtentChanged();
-
     protected:
 
+      std::set<std::string> m_oidsSet;
+      MouseEventEdition m_mouseEventToSave;
       UndoStackManager& m_stack;
 
     };
