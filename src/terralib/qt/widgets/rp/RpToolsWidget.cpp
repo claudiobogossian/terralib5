@@ -349,13 +349,17 @@ void te::qt::widgets::RpToolsWidget::onRedoToggled(bool checked)
 
 void te::qt::widgets::RpToolsWidget::onPointPickerToggled(bool checked)
 {
-  if(!checked)
-    return;
+  if (checked)
+  {
+    te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, Qt::ArrowCursor);
+    m_mapDisplay->setCurrentTool(pp);
 
-  te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, m_pointCursor);
-  setCurrentTool(pp);
-
-  connect(pp, SIGNAL(pointPicked(QPointF&)), this, SLOT(onPointPicked(QPointF&)));
+    connect(pp, SIGNAL(pointPicked(QPointF&)), this, SLOT(onPointPicked(QPointF&)));
+  }
+  else
+  {
+    m_mapDisplay->setCurrentTool(NULL);
+  }
 }
 
 void te::qt::widgets::RpToolsWidget::onGeomToggled(bool checked)

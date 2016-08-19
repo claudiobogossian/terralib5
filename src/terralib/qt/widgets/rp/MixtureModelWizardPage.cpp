@@ -73,6 +73,8 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
 //setup controls
   m_ui->setupUi(this);
 
+  m_canvas = 0;
+
   m_ui->m_loadToolButton->setIcon(QIcon::fromTheme("document-open"));
   m_ui->m_saveToolButton->setIcon(QIcon::fromTheme("document-save"));
 
@@ -169,6 +171,28 @@ void te::qt::widgets::MixtureModelWizardPage::setMapDisplay(te::qt::widgets::Map
 {
   m_mapDisplay = mapDisplay;
   m_navigator->setMapDisplay(mapDisplay);
+
+  const te::gm::Envelope& env = m_mapDisplay->getExtent();
+
+  QPixmap* draft = m_mapDisplay->getDraftPixmap();
+  draft->fill(Qt::transparent);
+
+  if (m_canvas)
+  {
+    delete m_canvas;
+    m_canvas = 0;
+  }
+
+  // Prepares the canvas
+  m_canvas = new Canvas(m_mapDisplay->width(), m_mapDisplay->height());
+  m_canvas->setDevice(draft, false);
+  m_canvas->setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+
+  m_canvas->setPolygonContourWidth(2);
+  m_canvas->setPolygonContourColor(te::color::RGBAColor(100, 177, 216, TE_OPAQUE));
+  m_canvas->setPolygonFillColor(te::color::RGBAColor(100, 177, 216, 0));
+
+  connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::MixtureModelWizardPage::get()
@@ -479,11 +503,15 @@ void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
 
 void te::qt::widgets::MixtureModelWizardPage::clearCanvas()
 {
-  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
-
-  canvasInstance.clear();
+  m_canvas->clear();
 
   m_mapDisplay->repaint();
+
+  if (m_canvas)
+  {
+    delete m_canvas;
+    m_canvas = 0;
+  }
 }
 
 void te::qt::widgets::MixtureModelWizardPage::fillMixtureModelTypes()
@@ -548,15 +576,20 @@ void te::qt::widgets::MixtureModelWizardPage::drawMarks()
 {
   //te::qt::widgets::MapDisplay* mapDisplay = m_navigatorDlg->getWidget()->getDisplay();
 
-
-  m_mapDisplay->getDraftPixmap()->fill(Qt::transparent);
+  delete m_canvas;
+  m_canvas = 0;
 
   const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
 
-  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
-  canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+  QPixmap* draft = m_mapDisplay->getDraftPixmap();
+  draft->fill(Qt::transparent);
 
-  canvasInstance.setPointPattern(m_rgbaMark, PATTERN_SIZE, PATTERN_SIZE);
+  // Prepares the canvas
+  m_canvas = new Canvas(m_mapDisplay->width(), m_mapDisplay->height());
+  m_canvas->setDevice(draft, false);
+  m_canvas->setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+
+  m_canvas->setPointPattern(m_rgbaMark, PATTERN_SIZE, PATTERN_SIZE);
 
   std::map<std::string, MixModelComponent>::iterator it = m_components.begin();
 
@@ -568,7 +601,7 @@ void te::qt::widgets::MixtureModelWizardPage::drawMarks()
     point.setX(cGeo.x);
     point.setY(cGeo.y);
 
-    canvasInstance.draw(&point);
+    m_canvas->draw(&point);
 
     ++it;
   }
