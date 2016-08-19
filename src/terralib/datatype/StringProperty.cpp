@@ -38,8 +38,7 @@ te::dt::StringProperty::StringProperty(const std::string& name,
                                        Property* parent)
   : SimpleProperty(name, STRING_TYPE, isRequired, defaultValue, id, parent),
     m_size(size),
-    m_strSubType(strType),
-    m_et(te::core::EncodingType::UNKNOWN)
+    m_strSubType(strType)
 {
 }
 

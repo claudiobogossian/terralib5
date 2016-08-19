@@ -243,8 +243,6 @@ namespace te
 
         void setPropertyName(const std::string& name, std::size_t pos);
 
-        te::core::EncodingType getPropertyCharEncoding(std::size_t i) const;
-
         std::string getDatasetNameOfProperty(std::size_t pos) const;
 
         DataSetItem* getItem() const;
@@ -384,7 +382,6 @@ namespace te
         boost::shared_ptr<boost::ptr_vector<DataSetItem> > m_items;   //!< The list of dataset items.
         std::vector<std::string> m_pnames;                            //!< The list of property names.
         std::vector<int> m_ptypes;                                    //!< The list of property types.
-        std::map<int, te::core::EncodingType> m_encodings;          //!< The list of string properties char-encoding.
         int m_i;                                                      //!< The index of the current item.
     };
 

@@ -20,6 +20,7 @@
 #include "../widgets/layer/explorer/LayerItem.h"
 
 #include "../widgets/layer/info/LayerPropertiesInfoWidget.h"
+#include "../widgets/layer/utils/CharEncodingMenuWidget.h"
 #include "../widgets/layer/utils/SaveSelectedObjectsDialog.h"
 #include "../widgets/tools/Info.h"
 #include "../widgets/tools/Pan.h"
@@ -63,6 +64,7 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent) :
   m_layerExplorer = 0;
   m_display = 0;
   m_styleExplorer = 0;
+  m_encodingMenu = 0;
   m_app = 0;
   m_mapCursorSize = QSize(20, 20);
 
@@ -828,6 +830,18 @@ void te::qt::af::BaseApplication::onLayerSaveSelectedObjectsTriggered()
 
 }
 
+void te::qt::af::BaseApplication::onLayerCharEncodingHovered()
+{
+  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::widgets::GetSelectedLayersOnly(getLayerExplorer());
+
+  if (!selectedLayers.empty())
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+    m_encodingMenu->setLayer(*it);
+  }
+}
+
 
 void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)
 {
@@ -1001,6 +1015,10 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_display->getDisplay()->connect(m_mapStopDrawing, SIGNAL(triggered()), SLOT(onDrawCanceled()));
 
+  //char encoding
+  m_encodingMenu = new te::qt::widgets::CharEncodingMenuWidget();
+  m_layerCharEncoding->setMenu(m_encodingMenu->getMenu());
+
   //set app info
   setWindowTitle(m_app->getAppTitle());
   setWindowIcon(QIcon(m_app->getAppIconName()));
@@ -1126,6 +1144,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerSaveSelectedObjects, "layer-save-selected-obj", "Layer.Save Selected Objects", tr("Save Selected Objects..."), tr("Save a new layer based on the selected objects from this layer"), true, false, true, this);
+  initAction(m_layerCharEncoding, "char-encoding", "Layer.Encoding", tr("&Encoding..."), tr("Set the encoding to load data from selected layer"), true, false, true, m_menubar);
 
   initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
   initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
@@ -1185,6 +1204,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerPanToSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerPanToSelectedOnMapDisplayTriggered()));
   connect(m_layerShowTable, SIGNAL(triggered()), SLOT(onLayerShowTableTriggered()));
   connect(m_layerSaveSelectedObjects, SIGNAL(triggered()), SLOT(onLayerSaveSelectedObjectsTriggered()));
+  connect(m_layerCharEncoding, SIGNAL(hovered()), SLOT(onLayerCharEncodingHovered()));
 
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapUnknownSRID, SIGNAL(triggered()), SLOT(onMapSetUnknwonSRIDTriggered()));

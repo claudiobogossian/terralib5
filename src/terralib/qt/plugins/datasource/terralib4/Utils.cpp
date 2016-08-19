@@ -389,7 +389,7 @@ te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
   c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
   QColor cWhite(Qt::white);
-  std::string colorWhiteStr = cWhite.name().toLatin1().data();
+  std::string colorWhiteStr = cWhite.name().toStdString();
 
   //added dummy color for values < than min values...
   c->addValue(new te::se::ParameterValue(colorWhiteStr));
