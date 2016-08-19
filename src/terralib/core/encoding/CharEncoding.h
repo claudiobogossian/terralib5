@@ -140,7 +140,7 @@ namespace te
 
         \return A vector of encoding type as string.
         */
-        static std::vector<std::string> getEncodingsName();
+        static std::vector<std::string> getEncodingList();
 
       private:
 

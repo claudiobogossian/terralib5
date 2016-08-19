@@ -38,7 +38,7 @@ te::qt::widgets::CharEncodingMenuWidget::CharEncodingMenuWidget(QWidget* parent,
   //create action group
   m_actGroup = new QActionGroup(this);
 
-  std::vector<std::string> etNames = te::core::CharEncoding::getEncodingsName();
+  std::vector<std::string> etNames = te::core::CharEncoding::getEncodingList();
 
   for (std::size_t t = 0; t < etNames.size(); ++t)
   {
@@ -118,7 +118,7 @@ void te::qt::widgets::CharEncodingMenuWidget::onEncodingClicked()
   {
     std::string etName = act->data().toString().toStdString();
 
-    std::vector<std::string> etNames = te::core::CharEncoding::getEncodingsName();
+    std::vector<std::string> etNames = te::core::CharEncoding::getEncodingList();
 
     for (std::size_t t = 0; t < etNames.size(); ++t)
     {
