@@ -346,12 +346,12 @@ void te::qt::widgets::Canvas::resize(int w, int h)
 
 int te::qt::widgets::Canvas::getWidth() const
 {
-  return m_painter->device()->width();
+  return m_painter->viewport().width();
 }
 
 int te::qt::widgets::Canvas::getHeight() const
 {
-  return m_painter->device()->height();
+  return m_painter->viewport().height();
 }
 
 void te::qt::widgets::Canvas::draw(const te::gm::Geometry* geom)
