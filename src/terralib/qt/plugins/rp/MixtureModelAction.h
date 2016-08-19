@@ -29,6 +29,7 @@
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
+#include "../../../qt/widgets/rp/MixtureModelWizard.h"
 
 namespace te
 {
@@ -59,6 +60,15 @@ namespace te
             virtual void onActionActivated(bool checked);
 
             virtual void onPopUpActionActivated(bool checked);
+
+            void addLayerSlot(te::map::AbstractLayerPtr layer);
+
+            void closeTool();
+
+        private:
+
+          te::qt::widgets::MixtureModelWizard* m_mixtureModelWizard;
+
         };
 
       } // end namespace rp

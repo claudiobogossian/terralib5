@@ -41,8 +41,9 @@
 #include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
 #include "MixtureModelWizardPage.h"
-#include "RasterNavigatorWidget.h"
-#include "RasterNavigatorDialog.h"
+#include "RpToolsWidget.h"
+#include "RpToolsDialog.h"
+
 #include "ui_MixtureModelWizardPageForm.h"
 
 // Qt
@@ -69,8 +70,10 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
     m_countComponents(0),
     m_layer(0)
 {
-// setup controls
+//setup controls
   m_ui->setupUi(this);
+
+  m_canvas = 0;
 
   m_ui->m_loadToolButton->setIcon(QIcon::fromTheme("document-open"));
   m_ui->m_saveToolButton->setIcon(QIcon::fromTheme("document-save"));
@@ -87,30 +90,33 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
 //connects
   connect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onItemChanged(QTableWidgetItem*)));
   connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
-  connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showNavigator(bool)));
   connect(m_ui->m_loadToolButton, SIGNAL(clicked()), this, SLOT(onLoadToolButtonClicked()));
   connect(m_ui->m_saveToolButton, SIGNAL(clicked()), this, SLOT(onSaveToolButtonClicked()));
 
+//configure raster navigator
+  QGridLayout* layout = new QGridLayout(m_ui->m_navigatorWidget);
+  m_navigator.reset(new te::qt::widgets::RpToolsWidget(m_ui->m_navigatorWidget));
+  layout->addWidget(m_navigator.get(), 0, 0);
+  layout->setContentsMargins(0, 0, 0, 0);
+  layout->setSizeConstraint(QLayout::SetMinimumSize);
 
-  //configure raster navigator
-  m_navigatorDlg.reset(new te::qt::widgets::RasterNavigatorDialog(this, Qt::Tool));
-  m_navigatorDlg->setWindowTitle(tr("Display"));
-  m_navigatorDlg->setMinimumSize(550, 400);
-  m_navigatorDlg->getWidget()->hideGeomTool(true);
-  m_navigatorDlg->getWidget()->hideInfoTool(true);
-  m_navigatorDlg->getWidget()->hideBoxTool(true);
+  m_navigator->setSelectionMode(false);
+  m_navigator->hidePickerTool(false);
+  m_navigator->hideInfoTool(true);
+  m_navigator->hideBoxTool(true);
+  m_navigator->hideGeomTool(true);
 
-  //connects
-  connect(m_navigatorDlg.get(), SIGNAL(navigatorClosed()), this, SLOT(onNavigatorClosed()));
-  connect(m_navigatorDlg->getWidget(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
-  connect(m_navigatorDlg->getWidget(), SIGNAL(pointPicked(double, double)), this, SLOT(onPointPicked(double, double)));
+//connects
+  connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
+  //connect(m_navigator.get(), SIGNAL(geomAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
+  //connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
+  connect(m_navigator.get(), SIGNAL(pointPicked(double, double)), this, SLOT(onPointPicked(double, double)));
 
-// configure page
+  //configure page
   this->setTitle(tr("Mixture Model"));
   this->setSubTitle(tr("Select the type of mixture model and set their specific parameters."));
 
-  m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("list-remove"));
-  m_ui->m_acquireToolButton->setIcon(QIcon::fromTheme("wand"));
+  m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("edit-deletetool"));
 }
 
 te::qt::widgets::MixtureModelWizardPage::~MixtureModelWizardPage()
@@ -156,9 +162,37 @@ void te::qt::widgets::MixtureModelWizardPage::set(te::map::AbstractLayerPtr laye
 {
   m_layer = layer;
 
-  m_navigatorDlg->set(m_layer);
+  m_navigator->set(m_layer);
 
   listBands();
+}
+
+void te::qt::widgets::MixtureModelWizardPage::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_mapDisplay = mapDisplay;
+  m_navigator->setMapDisplay(mapDisplay);
+
+  const te::gm::Envelope& env = m_mapDisplay->getExtent();
+
+  QPixmap* draft = m_mapDisplay->getDraftPixmap();
+  draft->fill(Qt::transparent);
+
+  if (m_canvas)
+  {
+    delete m_canvas;
+    m_canvas = 0;
+  }
+
+  // Prepares the canvas
+  m_canvas = new Canvas(m_mapDisplay->width(), m_mapDisplay->height());
+  m_canvas->setDevice(draft, false);
+  m_canvas->setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+
+  m_canvas->setPolygonContourWidth(2);
+  m_canvas->setPolygonContourColor(te::color::RGBAColor(100, 177, 216, TE_OPAQUE));
+  m_canvas->setPolygonFillColor(te::color::RGBAColor(100, 177, 216, 0));
+
+  connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::MixtureModelWizardPage::get()
@@ -467,17 +501,17 @@ void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
   }
 }
 
-void te::qt::widgets::MixtureModelWizardPage::showNavigator(bool show)
+void te::qt::widgets::MixtureModelWizardPage::clearCanvas()
 {
-  if(show)
-    m_navigatorDlg->show();
-  else
-    m_navigatorDlg->hide();
-}
+  m_canvas->clear();
 
-void te::qt::widgets::MixtureModelWizardPage::onNavigatorClosed()
-{
-  m_ui->m_acquireToolButton->setChecked(false);
+  m_mapDisplay->repaint();
+
+  if (m_canvas)
+  {
+    delete m_canvas;
+    m_canvas = 0;
+  }
 }
 
 void te::qt::widgets::MixtureModelWizardPage::fillMixtureModelTypes()
@@ -540,16 +574,22 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
 
 void te::qt::widgets::MixtureModelWizardPage::drawMarks()
 {
-  te::qt::widgets::MapDisplay* mapDisplay = m_navigatorDlg->getWidget()->getDisplay();
+  //te::qt::widgets::MapDisplay* mapDisplay = m_navigatorDlg->getWidget()->getDisplay();
 
-  mapDisplay->getDraftPixmap()->fill(Qt::transparent);
+  delete m_canvas;
+  m_canvas = 0;
 
-  const te::gm::Envelope& mapExt = mapDisplay->getExtent();
+  const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
 
-  te::qt::widgets::Canvas canvasInstance(mapDisplay->getDraftPixmap());
-  canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+  QPixmap* draft = m_mapDisplay->getDraftPixmap();
+  draft->fill(Qt::transparent);
 
-  canvasInstance.setPointPattern(m_rgbaMark, PATTERN_SIZE, PATTERN_SIZE);
+  // Prepares the canvas
+  m_canvas = new Canvas(m_mapDisplay->width(), m_mapDisplay->height());
+  m_canvas->setDevice(draft, false);
+  m_canvas->setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+
+  m_canvas->setPointPattern(m_rgbaMark, PATTERN_SIZE, PATTERN_SIZE);
 
   std::map<std::string, MixModelComponent>::iterator it = m_components.begin();
 
@@ -561,12 +601,12 @@ void te::qt::widgets::MixtureModelWizardPage::drawMarks()
     point.setX(cGeo.x);
     point.setY(cGeo.y);
 
-    canvasInstance.draw(&point);
+    m_canvas->draw(&point);
 
     ++it;
   }
 
-  mapDisplay->repaint();
+  m_mapDisplay->repaint();
 }
 
 void te::qt::widgets::MixtureModelWizardPage::updateComponents()

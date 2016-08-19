@@ -26,6 +26,7 @@
 // Terralib
 #include "../../../qt/widgets/rp/ClassifierWizard.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/BaseApplication.h"
 #include "ClassifierAction.h"
 
 
@@ -47,15 +48,33 @@ te::qt::plugins::rp::ClassifierAction::~ClassifierAction()
 
 void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ClassifierWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  m_classifierWizard = new te::qt::widgets::ClassifierWizard(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+
+  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  m_classifierWizard->setMapDisplay(ba->getMapDisplay());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  dlg.setList( layersList );
+  m_classifierWizard->setList(layersList);
 
-  if(dlg.exec() == QDialog::Accepted)
+  m_classifierWizard->setModal(false);
+
+  m_classifierWizard->show();
+
+  connect(m_classifierWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
+  connect(m_classifierWizard, SIGNAL(closeTool()), this, SLOT(closeTool()));
+}
+
+void te::qt::plugins::rp::ClassifierAction::addLayerSlot(te::map::AbstractLayerPtr layer)
+{
+  addNewLayer(layer);
+}
+
+void te::qt::plugins::rp::ClassifierAction::closeTool()
+{
+  if (m_classifierWizard)
   {
-    //add new layer
-    addNewLayer(dlg.getOutputLayer());
+    delete m_classifierWizard;
+    m_classifierWizard = 0;
   }
 }

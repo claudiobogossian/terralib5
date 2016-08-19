@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../Config.h"
 
 // STL
@@ -53,6 +54,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT ClippingWizard : public QWizard
       {
+        Q_OBJECT
+
         public:
 
           ClippingWizard(QWidget* parent);
@@ -67,6 +70,8 @@ namespace te
 
           void setLayer(te::map::AbstractLayerPtr layer);
 
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
           std::vector<te::map::AbstractLayerPtr> getOutputLayers();
 
         protected:
@@ -75,13 +80,21 @@ namespace te
 
           bool execute();
 
+          void closeEvent(QCloseEvent* e);
+
           bool executeExtentClipping();
 
           bool executeDimensionClipping();
 
           bool executeLayerClipping();
 
-        private:
+        signals:
+
+          void addLayer(te::map::AbstractLayerPtr layer);
+
+          void closeTool();
+
+      private:
 
           std::auto_ptr<te::qt::widgets::ClippingWizardPage> m_clippingPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
