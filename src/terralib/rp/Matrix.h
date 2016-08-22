@@ -892,37 +892,90 @@
       bool Matrix< TemplateElementType >::createNewDiskFile( unsigned long int size,
         FILE** fileptr, std::string& fullFileName ) const
       {
-        fullFileName = boost::filesystem::unique_path(
-          boost::filesystem::path( te::core::GetUserDirectory() ) /=
-          boost::filesystem::path( "TerralibRPMatrix_%%%%-%%%%-%%%%-%%%%" ) ).string();
+        // trying to use the system temp path
+        
+        bool returnValue = true;
+        long seekoff = (long)size;
+        const boost::filesystem::path randShortFileNamePath( 
+          "TerralibRPMatrix_%%%%-%%%%-%%%%-%%%%" );
+        const unsigned char c = '\0';
+        
+        fullFileName = boost::filesystem::unique_path( 
+          boost::filesystem::temp_directory_path() /= 
+          randShortFileNamePath ).string();
+          
         if( fullFileName.empty() )
         {
-          return false;
+          returnValue = false;
         }
-
-        (*fileptr) = fopen( fullFileName.c_str(), "wb+" );
-        TERP_TRUE_OR_RETURN_FALSE( (*fileptr) != 0, "Invalid file pointer" )
-
-        long seekoff = (long)( size - 1 );
-
-        if( 0 != fseek( (*fileptr), seekoff, SEEK_SET ) )
+        else 
         {
-          fclose( (*fileptr) );
-          remove( fullFileName.c_str() );
-          TERP_LOGERR( "File seek error" );
-          return false;
+          (*fileptr) = std::fopen( fullFileName.c_str(),  "wb+"  );
+          if( (*fileptr) == 0 )
+          {
+            returnValue = false;
+          }
+          else
+          {
+            if( std::fseek( (*fileptr), seekoff, SEEK_SET ) != 0  )
+            {
+              std::fclose( (*fileptr) );
+              std::remove( fullFileName.c_str() );
+              returnValue = false;
+            }
+            else
+            {
+              if( 1 != std::fwrite( &c, 1, 1, (*fileptr) ) )
+              {
+                std::fclose( (*fileptr) );
+                std::remove( fullFileName.c_str() );
+                returnValue = false;
+              }
+            }
+          }
         }
-
-        unsigned char c = '\0';
-        if( 1 != fwrite( &c, 1, 1, (*fileptr) ) )
+        
+        // trying to use the user home path
+        
+        if( ! returnValue )
         {
-          fclose( (*fileptr) );
-          remove( fullFileName.c_str() );
-          TERP_LOGERR( "File write error" );
-          return false;
+          fullFileName = boost::filesystem::unique_path( 
+            boost::filesystem::path( te::core::GetUserDirectory() ) /= 
+            randShortFileNamePath ).string();
+            
+          if( fullFileName.empty() )
+          {
+            returnValue = false;
+          }
+          else       
+          {
+            (*fileptr) = std::fopen( fullFileName.c_str(),  "wb+"  );
+            if( (*fileptr) == 0 )
+            {
+              returnValue = false;
+            }
+            else
+            {
+              if( std::fseek( (*fileptr), seekoff, SEEK_SET ) != 0  )
+              {
+                std::fclose( (*fileptr) );
+                std::remove( fullFileName.c_str() );
+                returnValue = false;
+              }
+              else
+              {
+                if( 1 != std::fwrite( &c, 1, 1, (*fileptr) ) )
+                {
+                  std::fclose( (*fileptr) );
+                  std::remove( fullFileName.c_str() );
+                  returnValue = false;
+                }
+              }
+            }
+          }
         }
-
-        return true;
+          
+        return returnValue;
       }
     }  //namespace rp
   } // namespace te

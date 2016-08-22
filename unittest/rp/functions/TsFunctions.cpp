@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(rasterSlicing_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(ihs_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(getMeanValue_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(getMeanValueOptimized_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE(getCovarianceValue_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(getCovarianceValueOptimized_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(principalComponents_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE(principalComponentsOptimized_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -422,7 +422,7 @@ BOOST_AUTO_TEST_CASE(getStdDevValue_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -441,7 +441,7 @@ BOOST_AUTO_TEST_CASE(getStdDevValueOptimized_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -460,7 +460,7 @@ BOOST_AUTO_TEST_CASE(decomposeBands_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );
@@ -485,12 +485,12 @@ BOOST_AUTO_TEST_CASE(composeBandsSameSRID_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr1( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr1.get() );
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop3.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr2( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr2.get() );
@@ -521,12 +521,12 @@ BOOST_AUTO_TEST_CASE(composeBandsDifSRID_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr1( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr1.get() );
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop3_EPSG_22522.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr2( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr2.get() );
@@ -633,7 +633,7 @@ BOOST_AUTO_TEST_CASE(waveletAtrous_test)
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( diskRasterPtr.get() );

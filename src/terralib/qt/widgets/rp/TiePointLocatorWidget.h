@@ -158,6 +158,10 @@ namespace te
           void getOutputSRID(int& srid);
           
           void getOutputResolution(double& resX, double& resY);
+          
+          std::string getTransformationName() const;
+          
+          te::rst::Interpolator::Method getInterpolatorMethod() const;
 
         protected:
 
@@ -202,6 +206,10 @@ namespace te
           void onTiePointsUpdated();
 
           void onSRIDPushButtonClicked();
+          
+          void onLoadTiePointsToolButtonClicked();
+          
+          void onSaveTiePointsToolButtonClicked();
 
         protected:
 

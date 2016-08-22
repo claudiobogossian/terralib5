@@ -35,6 +35,7 @@
 #include "../../../rp/Classifier.h"
 #include "../../../rp/ClassifierMAPStrategy.h"
 #include "../../../rp/ClassifierSAMStrategy.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #endif
 #include "../Config.h"
 
@@ -94,6 +95,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
           te::rp::Classifier::InputParameters getInputParams();
@@ -119,6 +122,8 @@ namespace te
           void onROIManagerClosed();
 
           void onRoiSetChanged(te::cl::ROISet* rs);
+
+          void clearCanvas();
 
         private:
 

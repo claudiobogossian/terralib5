@@ -139,7 +139,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger(), m_ds->getCharEncoding()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::string& name,
@@ -172,7 +172,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger(), m_ds->getCharEncoding()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::string& name,
@@ -205,7 +205,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger(), m_ds->getCharEncoding()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::query(const te::da::Select& q,
@@ -231,7 +231,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::query(const std::string& qu
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger(), m_ds->getCharEncoding()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
 }
 
 void te::pgis::Transactor::execute(const te::da::Query& command)
@@ -2480,11 +2480,4 @@ std::vector<te::da::Sequence*> te::pgis::Transactor::getSequences()
   }
 
   return seqs;
-}
-
-te::core::EncodingType te::pgis::Transactor::getEncoding()
-{
-  int encodingId = PQclientEncoding(m_conn->getConn());
-  std::string encodingStr = pg_encoding_to_char(encodingId);
-  return te::pgis::GetTeEncoding(encodingStr.c_str());
 }

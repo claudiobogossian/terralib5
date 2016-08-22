@@ -219,10 +219,7 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISConnectorDialog
     connInfo["PG_DB_NAME"] = qstr.toStdString();
 
 // get client encoding
-  qstr = m_ui->m_clientEncodingComboBox->currentText().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_CLIENT_ENCODING"] = qstr.toStdString();
+  connInfo["PG_CLIENT_ENCODING"] = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
   
 // get user
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
@@ -309,21 +306,6 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std:
     }
   }
 
-  it = connInfo.find("PG_CLIENT_ENCODING");
-
-  if(it != itend)
-  {
-    int pos = m_ui->m_clientEncodingComboBox->findText(QString::fromStdString(it->second));
-
-    if(pos != -1)
-      m_ui->m_clientEncodingComboBox->setCurrentIndex(pos);
-    else
-    {
-      m_ui->m_clientEncodingComboBox->addItem(QString::fromStdString(it->second));
-      m_ui->m_clientEncodingComboBox->setCurrentIndex(0);
-    }
-  }
-
   it = connInfo.find("PG_USER");
 
   if(it != itend)
@@ -386,13 +368,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
       if(!m_ui->m_databaseComboBox->currentText().isEmpty())
         curDb = m_ui->m_databaseComboBox->currentText().toStdString();
 
-      std::string curCE = "";
-
-      if(!m_ui->m_clientEncodingComboBox->currentText().isEmpty())
-        curCE = m_ui->m_clientEncodingComboBox->currentText().toStdString();
-
       m_ui->m_databaseComboBox->clear();
-      m_ui->m_clientEncodingComboBox->clear();
 
       // Get DataSources
       std::vector<std::string> dbNames = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
@@ -409,36 +385,10 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
             m_ui->m_databaseComboBox->setCurrentIndex(idx);
         }
       }
-
-      // Get Encodings
-      m_ui->m_clientEncodingComboBox->addItem("");
-      std::vector<te::core::EncodingType> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
-      if(!encodings.empty())
-      {
-        for(std::size_t i = 0; i < encodings.size(); i++)
-          m_ui->m_clientEncodingComboBox->addItem(te::core::CharEncoding::getEncodingName(encodings[i]).c_str());
-
-        int idx;
-#ifdef WIN32
-        idx = m_ui->m_clientEncodingComboBox->findText("CP1252");
-#else
-        idx = m_ui->m_clientEncodingComboBox->findText("UTF-8");
-#endif
-        if(!curDb.empty())
-        {
-          idx =  m_ui->m_clientEncodingComboBox->findText(curCE.c_str(), Qt::MatchExactly);
-
-          if(idx != -1)
-            m_ui->m_clientEncodingComboBox->setCurrentIndex(idx);
-        }
-        else
-        {
-          m_ui->m_clientEncodingComboBox->setCurrentIndex(idx);
-        }
-      }
     }
     catch(...)
-    {}
+    {
+    }
   }
 }
 

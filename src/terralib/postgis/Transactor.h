@@ -271,9 +271,6 @@ namespace te
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 
-        te::core::EncodingType getEncoding();
-
-
         /*!
           \brief It will check in the database catalog the number that identifies the PostGIS Geometry type.
 

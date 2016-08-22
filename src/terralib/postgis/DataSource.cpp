@@ -132,13 +132,6 @@ void te::pgis::DataSource::open()
   // Assure we are in a closed state
   close();
 
-  // Retrieve the char encoding
-  std::map<std::string, std::string>::const_iterator it = m_connInfo.find("PG_CLIENT_ENCODING");
-  if(it != m_connInfo.end())
-    m_encoding = te::core::CharEncoding::getEncodingType(it->second);
-  else
-    m_encoding = te::core::EncodingType::UNKNOWN;
-
   m_pool->initialize();
 
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
@@ -195,11 +188,6 @@ const std::string& te::pgis::DataSource::getCurrentSchema() const
 te::pgis::ConnectionPool* te::pgis::DataSource::getConnPool() const
 {
   return m_pool;
-}
-
-te::core::EncodingType te::pgis::DataSource::getCharEncoding() const
-{
-  return m_encoding;
 }
 
 void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo)
@@ -475,36 +463,4 @@ std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map
   ds->close();
 
   return dataSourceNames;
-}
-
-
-std::vector<te::core::EncodingType> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
-{
-  std::vector<te::core::EncodingType> encodings;
-
-  encodings.push_back(te::core::EncodingType::UTF8);    // UTF8
-  encodings.push_back(te::core::EncodingType::CP1250);  // WIN1250
-  encodings.push_back(te::core::EncodingType::CP1251);  // WIN1251
-  encodings.push_back(te::core::EncodingType::CP1252);  // WIN1252
-  encodings.push_back(te::core::EncodingType::CP1253);  // WIN1253
-  encodings.push_back(te::core::EncodingType::CP1254);  // WIN1254
-  encodings.push_back(te::core::EncodingType::CP1257);  // WIN1257
-  encodings.push_back(te::core::EncodingType::LATIN1);  // LATIN1
-
-  //std::auto_ptr<DataSource> ds(new DataSource());
-
-  //ds->setConnectionInfo(dsInfo);
-
-  //ds->open();
-
-  //std::string sql("SELECT DISTINCT pg_catalog.pg_encoding_to_char(conforencoding) FROM pg_catalog.pg_conversion ORDER BY pg_catalog.pg_encoding_to_char(conforencoding)");
-
-  //std::auto_ptr<te::da::DataSet> encs(ds->query(sql));
-
-  //while(encs->moveNext())
-  //  encodings.push_back(encs->getString(0));
-
-  //ds->close();
-
-  return encodings;
 }

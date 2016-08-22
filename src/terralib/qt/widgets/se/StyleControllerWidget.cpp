@@ -252,7 +252,7 @@ void te::qt::widgets::StyleControllerWidget::onExportClicked()
   if (info.suffix().isEmpty())
     styleFile.append(".sld");
 
-  writeStyle(m_currentStyle, styleFile.toUtf8().constData());
+  writeStyle(m_currentStyle, styleFile.toStdString());
 }
 
 void te::qt::widgets::StyleControllerWidget::onImportClicked()
@@ -260,7 +260,7 @@ void te::qt::widgets::StyleControllerWidget::onImportClicked()
   QString styleFile = QFileDialog::getOpenFileName(this, "Select a style file", QDir::currentPath(), "Style file (*.sld)");
 
   if (!styleFile.isEmpty())
-    readStyle(styleFile.toUtf8().constData());
+    readStyle(styleFile.toStdString());
   else
     return;
 }

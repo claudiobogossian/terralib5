@@ -41,7 +41,7 @@
 #include "../../../se/Utils.h"
 #include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
-#include "../rp/RasterNavigatorWidget.h"
+#include "../rp/RpToolsWidget.h"
 #include "../utils/ColorPickerToolButton.h"
 #include "ROIManagerWidget.h"
 #include "ui_ROIManagerWidgetForm.h"
@@ -74,10 +74,9 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
 
   m_ui->m_openLayerROIToolButton->setIcon(QIcon::fromTheme("folder-open"));
   m_ui->m_fileDialogToolButton->setIcon(QIcon::fromTheme("folder-open"));
-  m_ui->m_removeROIToolButton->setIcon(QIcon::fromTheme("list-remove"));
+  m_ui->m_removeROIToolButton->setIcon(QIcon::fromTheme("edit-deletetool"));
   m_ui->m_exportROISetToolButton->setIcon(QIcon::fromTheme("document-export"));
   m_ui->m_addROIToolButton->setIcon(QIcon::fromTheme("list-add"));
-  m_ui->m_vectorLayerToolButton->setIcon(QIcon::fromTheme("map-draw"));
 
   // Color Picker
   m_colorPicker = new te::qt::widgets::ColorPickerToolButton(this);
@@ -89,16 +88,15 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   colorPickerLayout->setContentsMargins(0, 0, 0, 0);
   colorPickerLayout->addWidget(m_colorPicker);
 
+
   QGridLayout* layout = new QGridLayout(m_ui->m_navigatorWidget);
-  m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_navigatorWidget));
+	m_navigator.reset(new te::qt::widgets::RpToolsWidget(m_ui->m_navigatorWidget));
   layout->addWidget(m_navigator.get(), 0, 0);
   layout->setContentsMargins(0,0,0,0);
   layout->setSizeConstraint(QLayout::SetMinimumSize);
 
-  m_navigator->setSelectionMode(true);
   m_navigator->hidePickerTool(true);
   m_navigator->hideInfoTool(true);
-  m_navigator->hideBoxTool(true);
 
   //connects
   connect(m_ui->m_openLayerROIToolButton, SIGNAL(clicked()), this, SLOT(onOpenLayerROIToolButtonClicked()));
@@ -106,10 +104,11 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   connect(m_ui->m_removeROIToolButton, SIGNAL(clicked()), this, SLOT(onRemoveROIToolButtonClicked()));
   connect(m_ui->m_fileDialogToolButton, SIGNAL(clicked()), this, SLOT(onFileDialogToolButtonClicked()));
   connect(m_ui->m_exportROISetToolButton, SIGNAL(clicked()), this, SLOT(onExportROISetToolButtonClicked()));
-  connect(m_ui->m_vectorLayerToolButton, SIGNAL(clicked(bool)), this, SLOT(onVectorLayerToolButtonClicked(bool)));
   connect(m_ui->m_roiSetTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onROITreItemClicked(QTreeWidgetItem*, int)));
-  connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
+
+  connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
   connect(m_navigator.get(), SIGNAL(geomAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
+  connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
   connect(m_navigator.get(), SIGNAL(pointPicked(double, double)), this, SLOT(onPointPicked(double, double)));
 }
 
@@ -131,10 +130,15 @@ Ui::ROIManagerWidgetForm* te::qt::widgets::ROIManagerWidget::getForm() const
   return m_ui.get();
 }
 
+void te::qt::widgets::ROIManagerWidget::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_navigator->setMapDisplay(mapDisplay);
+  m_mapDisplay = mapDisplay;
+}
+
 void te::qt::widgets::ROIManagerWidget::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_ui->m_layerROIComboBox->clear();
-  m_ui->m_vectorLayerComboBox->clear();
 
   std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
 
@@ -148,8 +152,8 @@ void te::qt::widgets::ROIManagerWidget::setList(std::list<te::map::AbstractLayer
     {
       te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dsType.get());
       
-      if(gp && gp->getGeometryType() == te::gm::MultiPolygonType)
-        m_ui->m_vectorLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      //if(gp && gp->getGeometryType() == te::gm::MultiPolygonType)
+        //m_ui->m_vectorLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
 
 
       if(dsType->getProperties().size() == 5 &&
@@ -182,13 +186,11 @@ void te::qt::widgets::ROIManagerWidget::drawROISet()
   if(!m_rs)
     return;
 
-  te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
+  m_mapDisplay->getDraftPixmap()->fill(Qt::transparent);
 
-  mapDisplay->getDraftPixmap()->fill(Qt::transparent);
-  
-  const te::gm::Envelope& mapExt = mapDisplay->getExtent();
+  const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
 
-  te::qt::widgets::Canvas canvasInstance(mapDisplay->getDraftPixmap());
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
   canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
 
   std::map<std::string, te::cl::ROI*> roiMap = m_rs->getROISet();
@@ -245,7 +247,7 @@ void te::qt::widgets::ROIManagerWidget::drawROISet()
     }
   }
 
-  mapDisplay->repaint();
+  m_mapDisplay->repaint();
 }
 
 void te::qt::widgets::ROIManagerWidget::onOpenLayerROIToolButtonClicked()
@@ -370,7 +372,7 @@ void te::qt::widgets::ROIManagerWidget::onAddROIToolButtonClicked()
 
 void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
 {
-  if(m_ui->m_roiSetTreeWidget->selectedItems().empty())
+  if (m_ui->m_roiSetTreeWidget->selectedItems().empty())
   {
     QMessageBox::warning(this, tr("Warning"), tr("Select a item first."));
     return;
@@ -378,14 +380,14 @@ void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
 
   QTreeWidgetItem* item = m_ui->m_roiSetTreeWidget->selectedItems()[0];
 
-  if(item->type() == ROI_TREE_ITEM)
+  if (item->type() == ROI_TREE_ITEM)
   {
     std::string label = item->text(0).toStdString();
     m_rs->removeROI(label);
 
     delete item;
   }
-  else if(item->type() == ROI_POLYGON_TREE_ITEM)
+  else if (item->type() == ROI_POLYGON_TREE_ITEM)
   {
     std::string id = item->data(0, Qt::UserRole).toString().toStdString();
 
@@ -400,7 +402,7 @@ void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
     parent->removeChild(item);
   }
 
-  if(m_rs && m_rs->getROISet().empty())
+  if (m_rs && m_rs->getROISet().empty())
   {
     m_sampleCounter = 0;
   }
@@ -432,10 +434,11 @@ void te::qt::widgets::ROIManagerWidget::onROITreItemClicked(QTreeWidgetItem* ite
   if(!item || item->type() != ROI_POLYGON_TREE_ITEM)
     return;
 
-  te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
-  const te::gm::Envelope& mapExt = mapDisplay->getExtent();
+  //te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
 
-  te::qt::widgets::Canvas canvasInstance(mapDisplay->getDraftPixmap());
+  const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
+
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
   canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
 
   std::string id = item->data(0, Qt::UserRole).toString().toStdString();
@@ -456,8 +459,7 @@ void te::qt::widgets::ROIManagerWidget::onROITreItemClicked(QTreeWidgetItem* ite
 
   canvasInstance.draw(p);
 
-  mapDisplay->repaint();
-
+  m_mapDisplay->repaint();
 }
 
 void te::qt::widgets::ROIManagerWidget::onExportROISetToolButtonClicked()
@@ -475,9 +477,9 @@ void te::qt::widgets::ROIManagerWidget::onExportROISetToolButtonClicked()
     return;
   }
 
-  te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
+  //te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
 
-  int srid = mapDisplay->getSRID();
+  int srid = m_mapDisplay->getSRID();
 
   try
   {
@@ -496,11 +498,11 @@ void te::qt::widgets::ROIManagerWidget::onVectorLayerToolButtonClicked(bool flag
 {
   if(flag)
   {
-    int idxLayer = m_ui->m_vectorLayerComboBox->currentIndex();
-    QVariant varLayer = m_ui->m_vectorLayerComboBox->itemData(idxLayer, Qt::UserRole);
-    te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+    //int idxLayer = m_ui->m_vectorLayerComboBox->currentIndex();
+    //QVariant varLayer = m_ui->m_vectorLayerComboBox->itemData(idxLayer, Qt::UserRole);
+    //te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
-    m_vectorLayer = layer;
+    //m_vectorLayer = layer;
     m_vectorLayerVisibility = m_layer->getVisibility();
     m_vectorLayer->setVisibility(te::map::VISIBLE);
 
@@ -535,6 +537,92 @@ void te::qt::widgets::ROIManagerWidget::onVectorLayerToolButtonClicked(bool flag
 void te::qt::widgets::ROIManagerWidget::onMapDisplayExtentChanged()
 {
   drawROISet();
+}
+
+void te::qt::widgets::ROIManagerWidget::onEnvelopeAcquired(te::gm::Envelope env)
+{
+  if (!env.isValid())
+    return;
+
+  if (m_ui->m_roiSetTreeWidget->selectedItems().empty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Select a ROI item first."));
+    return;
+  }
+
+  QTreeWidgetItem* item = m_ui->m_roiSetTreeWidget->selectedItems()[0];
+
+  if (item->type() != ROI_TREE_ITEM)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Select a ROI item first."));
+  }
+
+  //get roi
+  std::string label = item->text(0).toStdString();
+  te::cl::ROI* roi = m_rs->getROI(label);
+
+  bool repaint = false;
+
+  m_geom = 0;
+
+  if (env.isValid())
+    m_geom = te::gm::GetGeomFromEnvelope(&env, m_layer->getSRID());
+
+  if (!env.intersects(*m_geom->getMBR()))
+  {
+    return;
+  }
+
+  te::gm::Polygon* pol = dynamic_cast<te::gm::Polygon*>(m_geom);
+
+  if (pol->isValid())
+  {
+    if (roi)
+    {
+      //create a polygon id
+      static boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
+
+      //add polygon into roi
+      roi->addPolygon(pol, id);
+
+      //update tree
+      m_sampleCounter++;
+
+      QString sampleCounter;
+      sampleCounter.setNum(m_sampleCounter);
+      QString sampleName(tr("Sample"));
+      QString fullName;
+      fullName.append(sampleName);
+      fullName.append(" - ");
+      fullName.append(sampleCounter);
+
+      QTreeWidgetItem* subItem = new QTreeWidgetItem(item, ROI_POLYGON_TREE_ITEM);
+      subItem->setText(0, fullName);
+      subItem->setData(0, Qt::UserRole, QVariant(id.c_str()));
+      subItem->setIcon(0, QIcon::fromTheme("file-vector"));
+      item->setExpanded(true);
+
+      int value = item->childCount();
+      if (value == 1)
+        repaint = true;
+
+      item->addChild(subItem);
+    }
+
+    if (repaint)
+      m_ui->m_roiSetTreeWidget->repaint();
+
+    emit roiSetChanged(m_rs);
+
+    drawROISet();
+  }
+
+  else
+  {
+    return;
+  }
 }
 
 void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
@@ -600,66 +688,11 @@ void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
   drawROISet();
 }
 
-void te::qt::widgets::ROIManagerWidget::onPointPicked(double x, double y)
+void te::qt::widgets::ROIManagerWidget::clearCanvas()
 {
-  if(!m_ui->m_vectorLayerToolButton->isChecked())
-    return;
-
-  te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
-
-  int idxLayer = m_ui->m_vectorLayerComboBox->currentIndex();
-  QVariant varLayer = m_ui->m_vectorLayerComboBox->itemData(idxLayer, Qt::UserRole);
-  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
-
-  //create envelope
-  te::gm::Envelope envelope(x, y, x, y);
-
-  //reproject rect if needs
-  te::gm::Envelope reprojectedEnvelope(envelope);
-
-  if((layer->getSRID() != TE_UNKNOWN_SRS) && (mapDisplay->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != mapDisplay->getSRID()))
-    reprojectedEnvelope.transform(mapDisplay->getSRID(), layer->getSRID());
-
-  if(!reprojectedEnvelope.intersects(layer->getExtent()))
-    return;
-
-  //get geometries
-  try
-  {
-    // Gets the layer schema
-    std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
-    if(!schema->hasGeom())
-      return;
-
-    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
-
-    // Gets the dataset
-    std::auto_ptr<te::da::DataSet> dataset = layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS);
-
-    // Generates a geometry from the given extent. It will be used to refine the results
-    std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&reprojectedEnvelope, layer->getSRID()));
-
-    // The restriction point. It will be used to refine the results
-    te::gm::Coord2D center = reprojectedEnvelope.getCenter();
-    te::gm::Point point(center.x, center.y, layer->getSRID());
-
-    while(dataset->moveNext())
-    {
-      std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
-
-      if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
-      {
-        te::gm::MultiPolygon* mp = (te::gm::MultiPolygon*)dataset->getGeometry(gp->getName()).release();
-        te::gm::Polygon* p = (te::gm::Polygon*)mp->getGeometries()[0];
-
-        onGeomAquired(p);
-        
-        break;
-      }
-    }
-  }
-  catch(...)
-  {
-  }
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
+  
+  canvasInstance.clear();
+  
+  m_mapDisplay->repaint();
 }
-

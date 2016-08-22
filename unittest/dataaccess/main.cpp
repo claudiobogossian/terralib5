@@ -17,130 +17,24 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-// TerraLib
-#include <terralib/common.h>
-#include <terralib/dataaccess.h>
-#include <terralib/plugin.h>
+/*!
+  \file terralib/unittest/dataaccess/main.cpp
 
-// STL
-#include <cstdlib>
+  \brief Main file of test suit for the Data Access Module.
+*/
 
 // Boost
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
+#define BOOST_TEST_NO_MAIN
+#include <boost/test/unit_test.hpp>
 
-// cppUnit
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/extensions/TestFactoryRegistry.h>
-#include <cppunit/BriefTestProgressListener.h>
-#include <cppunit/CompilerOutputter.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestResultCollector.h>
-#include <cppunit/TestRunner.h>
-#include <cppunit/TextOutputter.h>
-#include <cppunit/XmlOutputter.h>
-
-// Unit-Test TerraLib includes by platform
-#include "LoadModules.h"
-#include "Config.h"
-
-#include "TsManagerDataSource.h"
-
-int main(int /*argc*/, char** /*argv*/)
+bool init_unit_test()
 {
-  TerraLib::getInstance().initialize();    
-  LoadModules();
+  return true;
+}
 
-  std::string report_dir = TERRALIB_REPORT_DIR;
-  bool resultStatus = false;
- 
-  boost::property_tree::ptree drivers;
+int main(int argc, char *argv[])
+{
+  int resultStatus = boost::unit_test::unit_test_main(init_unit_test, argc, argv);
 
-  boost::property_tree::read_json("../data/json_files/drivers.json", drivers);
-
-  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, drivers.get_child("drivers").get_child(""))
-  {
-    try
-    {
-    const std::string& driver_name = v.second.data();
-
-    TsManagerDataSource::initialize(driver_name);
-
-    boost::property_tree::ptree driver;
-
-    boost::property_tree::read_json(driver_name, driver);
-
-    std::string m_dsType = driver.get_child("ds.ds_type").data();
-
-// it creates the event manager and test controller
-    CPPUNIT_NS::TestResult controller;
-
-// it adds a listener that collects test result 
-    CPPUNIT_NS::TestResultCollector result;
-
-    controller.addListener(&result);
-
-// it adds a listener that print dots as test run.
-    CPPUNIT_NS::BriefTestProgressListener progress;
-
-    controller.addListener(&progress);
-
-// it adds the top suite to the test runner
-    CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
-
-    CPPUNIT_NS::TestRunner runner;
-
-    runner.addTest(suite);
-
-    runner.run(controller);
-
-    CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
-    outputter.write();
-
-// Testing  different outputs
-  // The testResult_*.xml files will be saved at TERRALIB_REPORT_DIR directory.
-  // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
-  // The "data.zip" (downloaded) containing the data used in unit tests should be at TERRALIB_DATA_DIR 
-
-// Note on how to run the unittests: 
-  // Debug - terralib_unittest_dataaccess_d.exe- Start up terralib_unittest_dataaccess
-  // Release - terralib_unittest_dataaccess.exe
-
-// Print only fail results in a txt file (the same containt you see in DOS window)
-    std::string testResultDriver = TERRALIB_REPORT_DIR"/testResult_" + m_dsType ;
-    std::ofstream file1( (testResultDriver + "_dos.txt" ).c_str() );
-
-	CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
-    outputter1.write();
-    file1.close();
-
-// Printing testResults in XML file 
-    CPPUNIT_NS::OFileStream file2( (testResultDriver + ".xml").c_str() );
-    CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-    xml.setStyleSheet( "report.xsl" );
-
-    xml.write();
-    file2.close();
-
-// Print formated testResult in a txt 
-    CPPUNIT_NS::OFileStream file3( (testResultDriver + ".txt" ).c_str() );
-    CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
-    outputter3.write();
-    file3.close();
-
-    resultStatus = result.wasSuccessful();
-    }
-    catch (te::common::Exception  e)
-    { 
-      throw e;
-    }
-
-    TsManagerDataSource::finalize();
-  }
-
-// finalize TerraLib Plataform
-
-  TerraLib::getInstance().finalize();
-
-  return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
+  return resultStatus;
 }

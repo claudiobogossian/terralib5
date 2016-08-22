@@ -84,6 +84,10 @@ namespace te
         GDALDataset* getOGRDataSource();
 
         void createOGRDataSource();
+
+        te::core::EncodingType getEncoding();
+
+        void setEncoding(const te::core::EncodingType& et);
         
 
       protected:
@@ -96,18 +100,16 @@ namespace te
 
         std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
 
-        std::vector<te::core::EncodingType> getEncodings(const std::map<std::string, std::string>& dsInfo);
-
       protected:
 
         std::map<std::string, std::string> m_connectionInfo;        //!< Connection information.
-        //OGRDataSource* m_ogrDS;                                     //!< A pointer to OGR Data Source.
-        GDALDataset* m_ogrDS;                                     //!< A pointer to OGR Data Source.
+        //OGRDataSource* m_ogrDS;                                   //!< A pointer to OGR Data Source.
+        GDALDataset* m_ogrDS;                                       //!< A pointer to OGR Data Source.
         bool m_isValid;                                             //!< True if this is a valid datasource.
         te::da::DataSourceCapabilities m_capabilities;              //!< OGR capabilities.
         bool m_isInTransaction;                                     //!< Tells if there is a transaction in progress.
-
         static te::da::SQLDialect* sm_myDialect;                    //!< OGR SQL dialect.
+        te::core::EncodingType m_encoding;                          //!< The data source encoding type.
     };
 
     DataSource* Build();

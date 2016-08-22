@@ -222,7 +222,7 @@ bool te::qt::widgets::ArithmeticOpWizardPage::normalize()
 
 std::string te::qt::widgets::ArithmeticOpWizardPage::getUserDefinedExpression()
 {
-  return m_ui->m_expressionLineEdit->text().toLatin1().data();
+  return m_ui->m_expressionLineEdit->text().toStdString();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::layerComboBoxActivated(int index)
@@ -388,7 +388,7 @@ void te::qt::widgets::ArithmeticOpWizardPage::getRasterBands(QComboBox* layer, i
 
 void te::qt::widgets::ArithmeticOpWizardPage::updateExpressionHistory()
 {
-  m_expressionHistory.push_back(m_ui->m_expressionLineEdit->text().toLatin1().data());
+  m_expressionHistory.push_back(m_ui->m_expressionLineEdit->text().toStdString());
 
   m_ui->m_undoToolButton->setEnabled(true);
   m_ui->m_redoToolButton->setEnabled(false);

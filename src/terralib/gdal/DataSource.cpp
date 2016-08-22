@@ -244,8 +244,3 @@ std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::map
   }
   return dsnames;
 }
-
-std::vector<te::core::EncodingType> te::gdal::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
-{
-  return std::vector<te::core::EncodingType>();
-}

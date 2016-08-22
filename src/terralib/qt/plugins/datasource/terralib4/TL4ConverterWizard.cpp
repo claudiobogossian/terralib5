@@ -539,8 +539,8 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getOriginalName(cons
     QString originalNameInTable = m_resolveNameTableWidget->item(i, 1)->text();
     QString targetNameInTable = m_resolveNameTableWidget->item(i, 2)->text();
 
-    std::string originalFromTable = originalNameInTable.toLatin1();
-    std::string targetFromTable = targetNameInTable.toLatin1();
+    std::string originalFromTable = originalNameInTable.toStdString();
+    std::string targetFromTable = targetNameInTable.toStdString();
 
     if (targetFromTable == targetName)
       return originalFromTable;
@@ -557,7 +557,7 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getNewName(const std
   {
     QString oName = m_resolveNameTableWidget->item(i, 1)->text();
 
-    std::string aux = oName.toLatin1();
+    std::string aux = oName.toStdString();
 
     if(originalName.c_str() == aux)
       return m_resolveNameTableWidget->item(i, 2)->text().toStdString();
@@ -642,7 +642,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       throw te::common::Exception(TE_TR("Invalid source table item!"));
     }
 
-    std::string sourceName = item_source->text().toLatin1();
+    std::string sourceName = item_source->text().toStdString();
 
 // get target dataset name
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
@@ -653,7 +653,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       throw te::common::Exception(TE_TR("Invalid target table item!"));
     }
 
-    std::string targetName = item_target->text().toLatin1();
+    std::string targetName = item_target->text().toStdString();
 
 // ask if the dataset is a raster
     try
@@ -710,21 +710,11 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
           pk->setName(te::common::Convert2LCase(targetName) + "_pk");
         }
 
-        te::core::EncodingType encTo = tl5ds->getEncoding();
-
         for(std::size_t i = 0; i < type->size(); ++i)
         {
           te::dt::Property* p = type->getProperty(i);
 
-          if(p->getType() == te::dt::STRING_TYPE)
-          {
-            te::da::CharEncodingConverter conversor(encTo);
-            ds_adapter->add(p->getName(), p->getType(), indexes[i], conversor);
-          }
-          else
-          {
-            ds_adapter->add(p->getName(), p->getType(), indexes[i], funcs[i]);
-          }
+          ds_adapter->add(p->getName(), p->getType(), indexes[i], funcs[i]);
         }
 
         ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());

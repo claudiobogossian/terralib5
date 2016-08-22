@@ -112,6 +112,11 @@ void te::qt::widgets::MixtureModelWizard::setList(std::list<te::map::AbstractLay
   m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
 }
 
+void te::qt::widgets::MixtureModelWizard::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_mixtureModelPage->setMapDisplay(mapDisplay);
+}
+
 void te::qt::widgets::MixtureModelWizard::setLayer(te::map::AbstractLayerPtr layer)
 {
   removePage(m_layerSearchId);
@@ -175,6 +180,9 @@ bool te::qt::widgets::MixtureModelWizard::execute()
       //set output layer
       m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
+
+      emit addLayer(m_outputLayer);
+
       QMessageBox::information(this, tr("Mixture Model"), tr("Mixture Model ended sucessfully"));
     }
     else
@@ -202,3 +210,9 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   return true;
 }
 
+void te::qt::widgets::MixtureModelWizard::closeEvent(QCloseEvent* e)
+{
+  m_mixtureModelPage->clearCanvas();
+
+  emit closeTool();
+}

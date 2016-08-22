@@ -269,8 +269,6 @@ namespace te
 
       void optimize(const std::map<std::string, std::string>& ){}
 
-      te::core::EncodingType getEncoding();
-      
     private:
       
       boost::filesystem::path m_path;

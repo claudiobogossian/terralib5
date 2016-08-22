@@ -29,6 +29,7 @@
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
+#include "../../../qt/widgets/rp/ClassifierWizard.h"
 
 namespace te
 {
@@ -57,6 +58,15 @@ namespace te
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            void addLayerSlot(te::map::AbstractLayerPtr layer);
+
+            void closeTool();
+
+        private:
+
+          te::qt::widgets::ClassifierWizard* m_classifierWizard;
+
         };
 
       } // end namespace rp

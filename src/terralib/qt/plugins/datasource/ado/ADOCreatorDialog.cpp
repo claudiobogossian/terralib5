@@ -136,7 +136,7 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
       m_datasource->setDescription("");
       m_datasource->setAccessDriver("ADO");
       m_datasource->setType("ADO");
@@ -145,7 +145,7 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(connInfo);
-      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
       m_datasource->setDescription("");
     }
   }

@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(pattern1_test)
 
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/pattern1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/pattern1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );

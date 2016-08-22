@@ -27,6 +27,7 @@
 #include "../../../qt/widgets/rp/ClippingWizard.h"
 #include "../../../raster/Raster.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/BaseApplication.h"
 #include "ClippingAction.h"
 
 // Qt
@@ -50,19 +51,26 @@ te::qt::plugins::rp::ClippingAction::~ClippingAction()
 
 void te::qt::plugins::rp::ClippingAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ClippingWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  m_clippingWizard = new te::qt::widgets::ClippingWizard(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+
+  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  m_clippingWizard->setMapDisplay(ba->getMapDisplay());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  dlg.setList( layersList );
+  m_clippingWizard->setList(layersList);
 
-  if(dlg.exec() == QDialog::Accepted)
-  {
-    //add layers
-    std::vector<te::map::AbstractLayerPtr> layersVec = dlg.getOutputLayers();
-    for(std::size_t i = 0; i < layersVec.size(); ++i)
-      addNewLayer(layersVec[i]);
-  }
+  m_clippingWizard->setModal(false);
+
+  m_clippingWizard->show();
+
+  connect(m_clippingWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
+  connect(m_clippingWizard, SIGNAL(closeTool()), this, SLOT(closeTool()));
+}
+
+void te::qt::plugins::rp::ClippingAction::addLayerSlot(te::map::AbstractLayerPtr layer)
+{
+  addNewLayer(layer);
 }
 
 void te::qt::plugins::rp::ClippingAction::onPopUpActionActivated(bool checked)
@@ -86,5 +94,14 @@ void te::qt::plugins::rp::ClippingAction::onPopUpActionActivated(bool checked)
   else
   {
     QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
+  }
+}
+
+void te::qt::plugins::rp::ClippingAction::closeTool()
+{
+  if (m_clippingWizard)
+  {
+    delete m_clippingWizard;
+    m_clippingWizard = 0;
   }
 }

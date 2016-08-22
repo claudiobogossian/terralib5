@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../Config.h"
 
 // STL
@@ -53,6 +54,7 @@ namespace te
       */
       class TEQTWIDGETSEXPORT ClassifierWizard : public QWizard
       {
+        Q_OBJECT
 
         public:
 
@@ -64,6 +66,8 @@ namespace te
 
           virtual bool validateCurrentPage();
 
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
           te::map::AbstractLayerPtr getOutputLayer();
@@ -73,6 +77,14 @@ namespace te
           void addPages();
 
           bool execute();
+
+          void closeEvent(QCloseEvent* e);
+
+        signals:
+
+          void addLayer(te::map::AbstractLayerPtr layer);
+
+          void closeTool();
 
         private:
 

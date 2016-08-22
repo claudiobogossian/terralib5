@@ -136,8 +136,8 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
       m_datasource->setAccessDriver("ADO");
       m_datasource->setType("ADO");
     }
@@ -145,8 +145,8 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(getConnectionInfo(m_ui->m_savePasswordCheckBox->isChecked()));
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
     }
   }
   catch(const std::exception& e)

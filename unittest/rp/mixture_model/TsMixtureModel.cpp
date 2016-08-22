@@ -39,14 +39,14 @@ BOOST_AUTO_TEST_CASE(linear_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
   /* Create output raster for linear mixture model */
 
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_linearMixtureModel.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop_linearMixtureModel.tif";
 
   /* Create algorithm parameters */
 
@@ -102,14 +102,14 @@ BOOST_AUTO_TEST_CASE(pca_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
   /* Create output raster for PCA mixture model */
 
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_PCAMixtureModel.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop_PCAMixtureModel.tif";
 
   /* Create algorithm parameters */
 

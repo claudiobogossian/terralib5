@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE (rasterCopyConstructor_test)
 BOOST_AUTO_TEST_CASE (rasterize_test)
 {
   std::vector< te::gm::Geometry* > geomPtrs;
-  BOOST_CHECK( loadSHPFile( TERRALIB_DATA_DIR "/shp/PoligonoUnico.shp",
+  BOOST_CHECK( loadSHPFile( TERRALIB_DATA_DIR "/shape/poligono_unico.shp",
     geomPtrs ) );
   
   std::vector<te::rst::BandProperty*> vecBandProp;
