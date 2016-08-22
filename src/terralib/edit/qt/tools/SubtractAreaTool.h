@@ -61,7 +61,7 @@ namespace te
       Q_OBJECT
 
     public:
-      SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+      SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const te::edit::MouseEventEdition mouseEventToSave, QObject* parent = 0);
 
       ~SubtractAreaTool();
 
@@ -78,13 +78,17 @@ namespace te
 
       bool mouseDoubleClickEvent(QMouseEvent* e);
 
+      bool mouseReleaseEvent(QMouseEvent* e);
+
       //@}
 
     private:
 
+      bool subtractPolygon();
+
       void drawPolygon();
 
-      void draw(bool onlyRepository = false);
+      void draw();
 
       void storeFeature();
 
@@ -98,14 +102,10 @@ namespace te
 
       te::gm::Geometry* differenceGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2);
 
-      std::set<std::string> m_oidsSet;
-
-    private slots:
-
-      void onExtentChanged();
-
     protected:
 
+      std::set<std::string> m_oidsSet;
+      MouseEventEdition m_mouseEventToSave;
       UndoStackManager& m_stack;
 
     };

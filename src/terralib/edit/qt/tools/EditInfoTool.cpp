@@ -314,7 +314,7 @@ void te::edit::EditInfoTool::onAttributesTreeWidgetItemDoubleClicked(QTreeWidget
 {
   bool isrestrictive = false;
 
-  for (std::size_t i = 0; i < m_restrictivePropertyPos.size(); i++)
+  for (std::size_t i = 0; i < m_restrictivePropertyPos.size(); ++i)
   {
     if ((int)m_restrictivePropertyPos[i] == m_infoWidget->currentIndex().row())
     {

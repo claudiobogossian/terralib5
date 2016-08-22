@@ -42,7 +42,8 @@ Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::edit::SnapOptionsDialog::SnapOptionsDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::SnapOptionsDialogForm)
+    m_ui(new Ui::SnapOptionsDialogForm),
+    m_display(0)
 {
   m_ui->setupUi(this);
 
@@ -61,6 +62,11 @@ void te::edit::SnapOptionsDialog::setLayers(const std::list<te::map::AbstractLay
   buildOptions();
 }
 
+void te::edit::SnapOptionsDialog::setMapDisplay(te::qt::widgets::MapDisplay* display)
+{
+  m_display = display;
+}
+
 void te::edit::SnapOptionsDialog::buildOptions()
 {
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = m_layers.begin(); it != m_layers.end(); ++it)
@@ -76,6 +82,10 @@ void te::edit::SnapOptionsDialog::buildOptions(const te::map::AbstractLayerPtr& 
   }
 
   if(layer->getType() == "FOLDER_LAYER")
+    return;
+
+  std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+  if (dsType->hasRaster())
     return;
 
   int row = m_ui->m_tableOptionsWidget->rowCount() + 1;
@@ -102,11 +112,13 @@ void te::edit::SnapOptionsDialog::buildOptions(const te::map::AbstractLayerPtr& 
   // Snap Mode
   QComboBox* modeComboBox = new QComboBox(m_ui->m_tableOptionsWidget);
   modeComboBox->addItem(tr("vertex"));
+  modeComboBox->setEnabled(false);
   m_ui->m_tableOptionsWidget->setCellWidget(currentRow, currentCollumn++, modeComboBox);
 
   // Tolerance
   QTableWidgetItem* toleranceItem = new QTableWidgetItem("16");
   toleranceItem->setTextAlignment( Qt::AlignCenter);
+  toleranceItem->setFlags(Qt::ItemIsSelectable);
 
   if(SnapManager::getInstance().hasSnap(layer->getId()))
   {
@@ -119,6 +131,7 @@ void te::edit::SnapOptionsDialog::buildOptions(const te::map::AbstractLayerPtr& 
   // Units
   QComboBox* unitsComboBox = new QComboBox(m_ui->m_tableOptionsWidget);
   unitsComboBox->addItem(tr("pixels"));
+  unitsComboBox->setEnabled(false);
   m_ui->m_tableOptionsWidget->setCellWidget(currentRow, currentCollumn++, unitsComboBox);
 }
 
@@ -140,6 +153,12 @@ void te::edit::SnapOptionsDialog::onOkPushButtonPressed()
         // Build the snap
         std::auto_ptr<te::da::DataSet> dataset(layer->getData());
         SnapManager::getInstance().buildSnap(layer->getId(), layer->getSRID(), dataset.get());
+
+        if (m_display)
+        {
+          const te::gm::Envelope& env = m_display->getExtent();
+          SnapManager::getInstance().setWorld(env.m_llx, env.m_lly, env.m_urx, env.m_ury, m_display->getWidth(), m_display->getHeight());
+        }
       }
     }
     else

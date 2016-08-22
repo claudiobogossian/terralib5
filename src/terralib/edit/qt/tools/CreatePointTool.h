@@ -18,52 +18,48 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/MoveGeometryTool.h
+  \file terralib/edit/qt/tools/CreatePointsTool.h
 
-  \brief This class implements a concrete tool to move geometries.
+  \brief This class implements a concrete tool to create points.
 */
 
-#ifndef __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
-#define __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
+#ifndef __TERRALIB_EDIT_QT_INTERNAL_CREATEPOINTTOOL_H
+#define __TERRALIB_EDIT_QT_INTERNAL_CREATEPOINSTOOL_H
 
 // TerraLib
-#include "../../../geometry/Envelope.h"
+#include "../../../geometry/Coord2D.h"
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #endif
-#include "../core/command/AddCommand.h"
-#include "../core/UndoStackManager.h"
 #include "../Config.h"
 #include "GeometriesUpdateTool.h"
 
-// Qt
-#include <QPointF>
-
-//STL
-#include <map>
+// STL
+#include <vector>
 
 namespace te
 {
+  namespace gm
+  {
+    class Geometry;
+  }
+
   namespace qt
   {
     namespace widgets
     {
-      class Canvas;
       class MapDisplay;
     }
   }
 
   namespace edit
   {
-// Forward declaration
-    class Feature;
-
     /*!
-      \class MoveGeometryTool
+      \class CreatePointTool
 
-      \brief This class implements a concrete tool to move geometries.
+      \brief This class implements a concrete tool to create points.
     */
-    class TEEDITQTEXPORT MoveGeometryTool : public GeometriesUpdateTool
+    class TEEDITQTEXPORT CreatePointTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -75,16 +71,17 @@ namespace te
         //@{
 
         /*!
-          \brief It constructs a move geometry tool associated with the given map display.
+          \brief It constructs a create line tool associated with the given map display.
 
           \param display The map display associated with the tool.
           \param parent The tool's parent.
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const te::edit::MouseEventEdition mouseEventToSave, QObject *parent = 0);
+        CreatePointTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
+
         /*! \brief Destructor. */
-        ~MoveGeometryTool();
+        ~CreatePointTool();
 
         //@}
 
@@ -95,46 +92,29 @@ namespace te
 
         bool mousePressEvent(QMouseEvent* e);
 
-        bool mouseMoveEvent(QMouseEvent* e);
-
-        bool mouseReleaseEvent(QMouseEvent* e);
-
-        //@}
+        bool mouseDoubleClickEvent(QMouseEvent* e);
 
         void resetVisualizationTool();
 
-      private:
+        //@}
 
-        void reset();
-
-        void pickFeature(const QPointF& pos);
-
-        te::gm::Envelope buildEnvelope(const QPointF& pos);
+        te::gm::Geometry* buildPoint();
+    
+    private:
 
         void draw();
 
-        void updateCursor();
-
         void storeFeature();
 
-        void storeUndoCommand();
+    protected:
 
-      private slots:
+        std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
+        bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
 
-        void onExtentChanged();
-
-      protected:
-
-        bool m_selected;
-        bool m_moveStarted;                            //!< Flag that indicates if move operation was started.
-        QPointF m_origin;                              //!< Origin point on mouse pressed.
-        QPointF m_delta;                               //!< Difference between pressed point and destination point on mouse move.
-        std::vector<te::edit::Feature*> m_vecFeature;
-        MouseEventEdition m_mouseEventToSave;
-        UndoStackManager& m_stack;
+        void clear();
     };
 
   }   // end namespace edit
 }     // end namespace te
 
-#endif  // __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
+#endif  // __TERRALIB_EDIT_QT_INTERNAL_CREATEPOINTTOOL_H

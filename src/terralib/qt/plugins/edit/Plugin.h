@@ -50,6 +50,15 @@ namespace te
       class LayerItemView;
     }
 
+    // Forward declaration
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
+
     namespace plugins
     {
       namespace edit
