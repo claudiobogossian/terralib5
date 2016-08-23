@@ -27,6 +27,7 @@
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
 #include <terralib/raster.h>
+#include <terralib/geometry.h>
 #include <terralib/memory/CachedRaster.h>
 #include "../Config.h"
 
@@ -138,6 +139,51 @@ BOOST_AUTO_TEST_CASE (rasterize_test)
   values.push_back( 1.0 );
   
   rst->rasterize( geomPtrs, values, 0 );
+}
+
+BOOST_AUTO_TEST_CASE (raste_clip_test)
+{
+  /* Openning input raster */
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop3_EPSG_22522.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtr ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  BOOST_CHECK( inputRasterPtr.get() );
+  
+  // Creating polygon
+  
+  unsigned int nCols = inputRasterPtr->getNumberOfColumns();
+  unsigned int nRows = inputRasterPtr->getNumberOfRows();
+  
+  double x = 0;
+  double y = 0;
+  
+  std::unique_ptr< te::gm::LinearRing > linearRingPtr( new te::gm::LinearRing(4, 
+    te::gm::LineStringType, inputRasterPtr->getSRID() ) );
+  inputRasterPtr->getGrid()->gridToGeo( -0.5, -0.5, x, y ); 
+  linearRingPtr->setPoint(0, x, y ); 
+  inputRasterPtr->getGrid()->gridToGeo( (double)( nCols / 2 ) , -0.5, x, y ); 
+  linearRingPtr->setPoint(1, x, y ); 
+  inputRasterPtr->getGrid()->gridToGeo( -0.5 , (double)( nRows / 2 ), x, y ); 
+  linearRingPtr->setPoint(2, x, y );   
+  inputRasterPtr->getGrid()->gridToGeo( -0.5, -0.5, x, y ); 
+  linearRingPtr->setPoint(3, x, y );
+  
+  std::unique_ptr< te::gm::Polygon > polygonPtr( new te::gm::Polygon(0, te::gm::PolygonType,
+    inputRasterPtr->getSRID() ) );
+  polygonPtr->add( linearRingPtr.release() );
+  
+  /* Clipping */  
+  
+  std::vector< te::gm::Geometry const *> geometries;
+  geometries.push_back( polygonPtr.get() );
+  
+  auxRasterInfo["URI"] = "TsRaster_clipping.tif";
+  boost::shared_ptr< te::rst::Raster > outputRasterPtr(
+    inputRasterPtr->clip( geometries, auxRasterInfo, "GDAL" ) );
+  BOOST_CHECK( outputRasterPtr.get() );
 }
 
 BOOST_AUTO_TEST_SUITE_END ()
