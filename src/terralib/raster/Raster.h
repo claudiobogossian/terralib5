@@ -502,6 +502,22 @@ namespace te
           \note The caller will take the ownership of the returned pointer.
         */
         virtual Raster* trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo) const;
+        
+        /*!
+          \brief Subsetting operation for clipping the raster.
+
+          \param geometries A vector of pointers to valid geometries.
+          \param rinfo The parameters needed to build the output raster (see RasterFactory documentation).
+          \param rType The name of the specific driver to create the raster.
+
+          \return A pointer to the trimmed raster if success and a null pointer otherwise.
+
+          \note The caller will take the ownership of the returned pointer.
+          \note Accepted geometry types: te::gm::Polygon, te::gm::MultiPolygon
+        */
+        virtual Raster* clip(const std::vector< te::gm::Geometry const *> geometries, 
+                             const std::map<std::string, std::string>& rinfo,
+                             const std::string& rType ) const;        
 
         /*!
           \brief Resample a subset of the raster, given a box.
