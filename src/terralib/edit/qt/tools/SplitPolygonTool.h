@@ -85,7 +85,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, Qt::MouseButton sideToClose, QObject* parent = 0);
+        SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const te::edit::MouseEventEdition mouseEventToSave, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~SplitPolygonTool();
@@ -116,9 +116,9 @@ namespace te
       private:
 
         double m_tol;
-        Qt::MouseButton m_sideToClose;
         te::da::ObjectIdSet* m_oidSet;
         std::vector<te::edit::Feature*> m_vecFeature;
+        MouseEventEdition m_mouseEventToSave;
 
         void draw();
         void pickFeatures();

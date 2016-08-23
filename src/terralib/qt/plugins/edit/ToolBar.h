@@ -120,6 +120,8 @@ namespace te
 
           void onResetVisualizationToolActivated(bool checked);
 
+          void onCreatePointToolActivated(bool checked);
+
         Q_SIGNALS:
 
           /*! This signal is emitted when the layer selection changed. */
@@ -152,6 +154,7 @@ namespace te
           QAction* m_featureAttributesAction;
           QAction* m_splitPolygonToolAction;
           QAction* m_mergeGeometriesToolAction;
+          QAction* m_createPointToolAction;
           QAction* m_undoToolAction;
           QAction* m_redoToolAction;
           QList<QAction*> m_tools;

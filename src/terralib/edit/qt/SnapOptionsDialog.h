@@ -29,6 +29,7 @@
 // TerraLib
 #ifndef Q_MOC_RUN
 #include "../../maptools/AbstractLayer.h"
+#include "../../qt/widgets/canvas/MapDisplay.h"
 #endif
 #include "Config.h"
 
@@ -71,6 +72,8 @@ namespace te
 
         void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
 
+        void setMapDisplay(te::qt::widgets::MapDisplay* display);
+
       private:
 
         void buildOptions();
@@ -85,6 +88,7 @@ namespace te
 
         std::auto_ptr<Ui::SnapOptionsDialogForm> m_ui;   //!< Dialog form.
         std::list<te::map::AbstractLayerPtr> m_layers;   //!< The layer list.
+        te::qt::widgets::MapDisplay* m_display;          //!< The map display associated with the tool.
     };
 
   }   // end namespace edit

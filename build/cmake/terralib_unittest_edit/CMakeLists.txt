@@ -18,11 +18,9 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build the Unit Test for the Editìon.
+#  Description: Build the Unit Test for the Edition.
 #
-#  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
-#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#  Author: Thiago Aloizio Barbosa <thiago.aloi@funcate.org.br>
 #
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
@@ -42,8 +40,8 @@ add_executable(terralib_unittest_edit   ${TERRALIB_SRC_FILES}
                                         ${TERRALIB_UNITTEST_EDIT_MOVEGEOMETRY_SRC_FILES})
 
 target_link_libraries(terralib_unittest_edit  terralib_mod_plugin 
-											  terralib_mod_edit_core
-											  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+                      terralib_mod_edit_core
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(NAME terralib_unittest_edit
          COMMAND terralib_unittest_edit

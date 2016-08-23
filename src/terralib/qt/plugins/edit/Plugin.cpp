@@ -38,7 +38,6 @@
 #include "../../widgets/canvas/Canvas.h"
 #include "../../widgets/layer/explorer/LayerItem.h"
 #include "../../widgets/layer/explorer/LayerItemView.h"
-#include "ApplicationListener.h"
 #include "Plugin.h"
 #include "ToolBar.h"
 #include "Stasher.h"
@@ -123,12 +122,10 @@ void te::qt::plugins::edit::Plugin::startup()
 
   // Insert menu before plugins last action
   m_action = new QAction(this);
-  m_action->setText(tr("&Edition"));
+  m_action->setText(tr("&Edition Tools"));
   m_action->setIcon(QIcon::fromTheme("layer-edit"));
 
-  ///* Only use for testing!
-  //pluginsMenu->addAction(m_action);
-  //*/
+  pluginsMenu->addAction(m_action);
 
   connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
