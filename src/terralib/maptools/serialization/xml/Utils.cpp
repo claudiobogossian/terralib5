@@ -103,6 +103,23 @@ std::string te::map::serialize::ReadLayerTitle(te::xml::Reader& reader)
   return title;
 }
 
+std::string te::map::serialize::ReadLayerEncoding(te::xml::Reader& reader)
+{
+  std::string encoding = "";
+
+  if (reader.getNodeType() == te::xml::START_ELEMENT &&
+      reader.getElementLocalName() == "Encoding")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    encoding = reader.getElementValue();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  }
+
+  return encoding;
+}
+
 std::string te::map::serialize::ReadDataSetName(te::xml::Reader& reader)
 {
   std::string dataset = "";
@@ -619,6 +636,7 @@ void te::map::serialize::WriteAbstractLayer(const te::map::AbstractLayer* layer,
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("te_map:Title", layer->getTitle());
   writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
+  writer.writeElement("te_map:Encoding", te::core::CharEncoding::getEncodingName(layer->getEncoding()));
 
   te::map::Grouping* g = layer->getGrouping();
 

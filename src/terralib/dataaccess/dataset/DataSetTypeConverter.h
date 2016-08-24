@@ -99,7 +99,7 @@ namespace te
 
           \sa DataSetType, DataSourceCapabilities DataTypeCapabilities
         */
-        DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, te::core::EncodingType et = te::core::EncodingType::UNKNOWN);
+        DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, te::core::EncodingType et = te::core::EncodingType::UTF8);
 
         /*! \brief Destructor. */
         ~DataSetTypeConverter();

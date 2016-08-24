@@ -582,28 +582,28 @@ void te::qt::widgets::RasterSymbolizerWidget::onCompositionChannelSelectionClick
 
 void te::qt::widgets::RasterSymbolizerWidget::onMonoChannelNameChanged(QString s)
 {
-  m_scMono->setSourceChannelName(s.toLatin1().data());
+  m_scMono->setSourceChannelName(s.toStdString());
 
   onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onRedChannelNameChanged(QString s)
 {
-  m_scRed->setSourceChannelName(s.toLatin1().data());
+  m_scRed->setSourceChannelName(s.toStdString());
 
   onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onGreenChannelNameChanged(QString s)
 {
-  m_scGreen->setSourceChannelName(s.toLatin1().data());
+  m_scGreen->setSourceChannelName(s.toStdString());
 
   onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onBlueChannelNameChanged(QString s)
 {
-  m_scBlue->setSourceChannelName(s.toLatin1().data());
+  m_scBlue->setSourceChannelName(s.toStdString());
 
   onSymbolizerChanged();
 }

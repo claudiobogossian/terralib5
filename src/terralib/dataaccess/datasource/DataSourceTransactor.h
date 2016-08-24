@@ -1065,12 +1065,6 @@ namespace te
           */
         virtual bool dataSetExists(const std::string& name) = 0;
 
-        /*!
-          \brief It return the DataSource current encoding.
-
-          \return The DataSource current encoding.
-          */
-        virtual te::core::EncodingType getEncoding() = 0;
         //@}
     
     /** @name Dataset Schema Persistence Methods

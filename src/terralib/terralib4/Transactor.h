@@ -252,8 +252,6 @@ namespace terralib4
 
       void optimize(const std::map<std::string, std::string>& opInfo);
 
-      te::core::EncodingType getEncoding();
-
       std::vector<std::string> getTL4Layers();
 
       std::vector<std::string> getTL4Tables();
@@ -277,7 +275,6 @@ namespace terralib4
       std::map<int, TeLayer*>& m_layerMap;
       std::map<int, TeView*>& m_viewMap;
       std::map<int, TeAbstractTheme*>& m_themeMap;
-
   };
 
 }   // end namespace terralib4

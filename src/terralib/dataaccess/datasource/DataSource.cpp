@@ -477,12 +477,6 @@ void te::da::DataSource::add(const std::string& datasetName,
   return t->add(datasetName, d, options, limit);
 }
 
-te::core::EncodingType te::da::DataSource::getEncoding()
-{
-  std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getEncoding();
-}
-
 void te::da::DataSource::remove(const std::string& datasetName, const ObjectIdSet* oids)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
@@ -505,6 +499,16 @@ void te::da::DataSource::update(const std::string &datasetName, te::da::DataSet 
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
   return t->update(datasetName, dataset, properties, ids);
+}
+
+te::core::EncodingType te::da::DataSource::getEncoding()
+{
+  return te::core::EncodingType::UTF8;
+}
+
+void te::da::DataSource::setEncoding(const te::core::EncodingType& et)
+{
+
 }
 
 std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
@@ -547,14 +551,4 @@ std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::strin
     throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getDataSourceNames(dsInfo);
-}
-
-std::vector<te::core::EncodingType> te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
-{
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
-
-  if(ds.get() == 0)
-    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
-
-  return ds->getEncodings(dsInfo);
 }

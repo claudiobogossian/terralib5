@@ -232,8 +232,3 @@ std::vector<std::string> te::stmem::DataSource::getDataSourceNames(const std::ma
 {
   return std::vector<std::string>();
 }
-
-std::vector<te::core::EncodingType> te::stmem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  return std::vector<te::core::EncodingType>();
-}

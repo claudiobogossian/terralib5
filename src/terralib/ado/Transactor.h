@@ -261,8 +261,6 @@ namespace te
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 
-        te::core::EncodingType getEncoding();
-
         DataSource* getAdoDataSource() const;
 
       protected:

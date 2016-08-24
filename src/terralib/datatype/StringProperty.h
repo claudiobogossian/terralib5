@@ -123,20 +123,6 @@ namespace te
         void setSize(std::size_t s) { m_size = s; }
 
         /*!
-          \brief It returns the string property character encoding.
-
-          \return The string property character encoding.
-        */
-        te::core::EncodingType getCharEncoding() const { return m_et; }
-
-        /*!
-          \brief It sets the string property character encoding.
-
-          \param ce The character encoding type.
-        */
-        void setCharEncoding(te::core::EncodingType et) { m_et = et; }
-
-        /*!
           \brief It returns a clone of the object.
 
           The new property will NOT have associations to other properties.
@@ -149,7 +135,6 @@ namespace te
 
         std::size_t m_size;            //!< Maximum number of characters for a varying string or the number of characters for a fixed length string. No meaning for STRING.
         StringType m_strSubType;       //!< The sub-type of this string property.
-        te::core::EncodingType m_et; //!< The string property character encoding.
     };
 
   } // end namespace dt

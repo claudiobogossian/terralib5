@@ -238,8 +238,6 @@ namespace te
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 
-        te::core::EncodingType getEncoding();
-
       private:
 
         DataSource* m_ds;                      //!< The associated data source.

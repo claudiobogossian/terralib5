@@ -33,7 +33,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/LineString.h"
+#include "../geometry/MultiLineString.h"
 #include "../geometry/MultiPoint.h"
+#include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/Utils.h"
@@ -280,17 +282,49 @@ void te::edit::MoveGeometry(te::gm::Geometry* geom, const double& deltax, const 
 {
   assert(geom);
 
-  std::vector<te::gm::LineString*> lines;
-  GetLines(geom, lines);
-
-  for (std::size_t i = 0; i < lines.size(); ++i)
+  switch (geom->getGeomTypeId())
   {
-    te::gm::LineString* l = lines[i];
-    assert(l);
+    case te::gm::PointType:
+    {
+      te::gm::Point* p = dynamic_cast<te::gm::Point*>(geom);
+      assert(p);
 
-    for (std::size_t j = 0; j < l->getNPoints(); ++j)
-      l->setPoint(j, l->getX(j) + deltax, l->getY(j) + deltay);
+      p->setX(p->getX() + deltax);
+      p->setY(p->getY() + deltay);
+    }
+    break;
+    case te::gm::MultiPointType:
+    {
+      te::gm::MultiPoint* mp = dynamic_cast<te::gm::MultiPoint*>(geom);
+      assert(mp);
+
+      for (std::size_t i = 0; i < mp->getNumGeometries(); ++i)
+      {
+        te::gm::Point* point = dynamic_cast<te::gm::Point*>(mp->getGeometryN(i));
+        point->setX(point->getX() + deltax);
+        point->setY(point->getY() + deltay);
+      }
+    }
+    break;
+
+    case te::gm::PolygonType:
+    case te::gm::MultiPolygonType:
+    case te::gm::LineStringType:
+    case te::gm::MultiLineStringType:
+
+      std::vector<te::gm::LineString*> lines;
+      GetLines(geom, lines);
+
+      for (std::size_t i = 0; i < lines.size(); ++i)
+      {
+        te::gm::LineString* l = lines[i];
+        assert(l);
+
+        for (std::size_t j = 0; j < l->getNPoints(); ++j)
+          l->setPoint(j, l->getX(j) + deltax, l->getY(j) + deltay);
+      }
   }
+
 }
 
 bool te::edit::IsSpecialRingVertex(te::gm::LineString* l, const VertexIndex& index)
@@ -377,4 +411,130 @@ te::da::ObjectId* te::edit::GenerateId()
   oid->addValue(data);
 
   return oid;
+}
+
+te::gm::Geometry* te::edit::ConvertGeomType(const te::map::AbstractLayerPtr& layer, te::gm::Geometry* geom)
+{
+  assert(layer.get());
+  assert(geom);
+
+  // Get the geometry type of layer
+  std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+  te::gm::Geometry* newGeom = 0;
+  switch (geomProp->getGeometryType())
+  {
+  case te::gm::PolygonType:
+  {
+    if (geom->getGeomTypeId() == te::gm::MultiPolygonType)
+    {
+      te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
+      if (mp)
+      {
+        te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(mp->getGeometryN(0));
+        if (p)
+          newGeom = p;
+      }
+    }
+  }
+  break;
+
+  case te::gm::MultiPolygonType:
+  {
+    if (geom->getGeomTypeId() == te::gm::PolygonType)
+    {
+      te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
+      if (p)
+      {
+        te::gm::MultiPolygon* mp = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, layer->getSRID());
+        if (mp)
+        {
+          mp->add(p);
+          newGeom = mp;
+        }
+      }
+    }
+  }
+  break;
+
+  case te::gm::LineStringType:
+  {
+    if (geom->getGeomTypeId() == te::gm::MultiLineStringType)
+    {
+      te::gm::MultiLineString* ml = dynamic_cast<te::gm::MultiLineString*>(geom);
+      if (ml)
+      {
+        te::gm::LineString* l = dynamic_cast<te::gm::LineString*>(ml->getGeometryN(0));
+        if (l)
+          newGeom = l;
+      }
+    }
+  }
+  break;
+
+  case te::gm::MultiLineStringType:
+  {
+    if (geom->getGeomTypeId() == te::gm::LineStringType)
+    {
+      te::gm::LineString* l = dynamic_cast<te::gm::LineString*>(geom);
+      if (l)
+      {
+        te::gm::MultiLineString* ml = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, layer->getSRID());
+        if (ml)
+        {
+          ml->add(l);
+          newGeom = ml;
+        }
+      }
+    }
+  }
+  break;
+
+  case te::gm::PointType:
+  {
+    if (geom->getGeomTypeId() == te::gm::MultiPointType)
+    {
+      te::gm::MultiPoint* mpt = dynamic_cast<te::gm::MultiPoint*>(geom);
+      if (mpt)
+      {
+        te::gm::Point* pt = dynamic_cast<te::gm::Point*>(mpt->getGeometryN(0));
+        if (pt)
+          newGeom = pt;
+      }
+    }
+  }
+  break;
+
+  case te::gm::MultiPointType:
+  {
+    if (geom->getGeomTypeId() == te::gm::PointType)
+    {
+      te::gm::Point* pt = dynamic_cast<te::gm::Point*>(geom);
+      if (pt)
+      {
+        te::gm::MultiPoint* mpt = new te::gm::MultiPoint(0, te::gm::MultiPointType, layer->getSRID());
+        if (mpt)
+        {
+          mpt->add(pt);
+          newGeom = mpt;
+        }
+      }
+    }
+  }
+  break;
+  }
+
+  if (newGeom == 0)
+    newGeom = geom;
+
+  // SRID
+  if (newGeom->getSRID() == layer->getSRID())
+    return newGeom;
+
+  // else, need conversion...
+  newGeom->transform(layer->getSRID());
+
+  return newGeom;
+
 }

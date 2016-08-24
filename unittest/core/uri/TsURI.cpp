@@ -43,7 +43,11 @@ BOOST_AUTO_TEST_CASE( test_copy_constructor )
 
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   te::core::URI copy(uri);
+
+  BOOST_CHECK(copy.isValid());
 
   BOOST_CHECK(uri.scheme() == "http");
   BOOST_CHECK(uri.user() == "");
@@ -71,10 +75,16 @@ BOOST_AUTO_TEST_CASE( test_copy_assignment )
   std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   std::string address2("scheme2://user:password@sedac.ciesin.columbia.edu:70/geoserver/wcs?service=WCS&request=GetCapabilities#fragment");
   te::core::URI uri2(address2);
 
+  BOOST_CHECK(uri2.isValid());
+
   uri2 = uri;
+
+  BOOST_CHECK(uri2.isValid());
 
   BOOST_CHECK(uri.scheme() == "http");
   BOOST_CHECK(uri.user() == "");
@@ -97,7 +107,11 @@ BOOST_AUTO_TEST_CASE( test_copy_assignment )
   std::string address3("xmpp:example-node@example.com?message;subject=Hello%20World");
   te::core::URI uri3(address3);
 
+  BOOST_CHECK(uri3.isValid());
+
   uri = uri3;
+
+  BOOST_CHECK(uri.isValid());
 
   BOOST_CHECK(uri.scheme() == uri3.scheme());
   BOOST_CHECK(uri.user() == uri3.user());
@@ -116,6 +130,8 @@ BOOST_AUTO_TEST_CASE( test_encode )
   std::string address("scheme://host/ ãõáé");
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   std::string encoded("scheme://host/%20%C3%A3%C3%B5%C3%A1%C3%A9");
 
   BOOST_CHECK_EQUAL(uri.uri(), encoded);
@@ -127,6 +143,8 @@ BOOST_AUTO_TEST_CASE( test_full_http_uri )
 {
   std::string address("http://www.dpi.inpe.br:80/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
   te::core::URI uri(address);
+
+  BOOST_CHECK(uri.isValid());
 
   BOOST_CHECK(uri.scheme() == "http");
   BOOST_CHECK(uri.user() == "");
@@ -145,6 +163,8 @@ BOOST_AUTO_TEST_CASE( test_full_http_uri_2 )
   std::string address("http://sedac.ciesin.columbia.edu/geoserver/wcs?service=WCS&request=GetCapabilities&version=2.0.1");
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   BOOST_CHECK(uri.scheme() == "http");
   BOOST_CHECK(uri.user() == "");
   BOOST_CHECK(uri.password() == "");
@@ -161,6 +181,8 @@ BOOST_AUTO_TEST_CASE( test_ftp_uri )
 {
   std::string address("ftp://ftp.ftp.inpe.br:21/path/");
   te::core::URI uri(address);
+
+  BOOST_CHECK(uri.isValid());
 
   BOOST_CHECK(uri.scheme() == "ftp");
   BOOST_CHECK(uri.user() == "");
@@ -179,6 +201,8 @@ BOOST_AUTO_TEST_CASE( test_ftp_authority_address_uri )
   std::string address("ftp://user:password@ftp.ftp.inpe.br:21/path/");
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   BOOST_CHECK(uri.scheme() == "ftp");
   BOOST_CHECK(uri.user() == "user");
   BOOST_CHECK(uri.password() == "password");
@@ -196,9 +220,7 @@ BOOST_AUTO_TEST_CASE( test_opaque_full_address )
   std::string address("xmpp:example-node@example.com?message;subject=Hello%20World");
   te::core::URI uri(address);
 
-  //  BOOST_CHECK(uri.is_absolute());
-  //  BOOST_CHECK(!uri.is_opaque());
-//  printURI(uri);
+  BOOST_CHECK(uri.isValid());
 
   BOOST_CHECK(uri.scheme() == "xmpp");
   BOOST_CHECK(uri.user() == "");
@@ -218,6 +240,8 @@ BOOST_AUTO_TEST_CASE( test_http_partial_adress )
 
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   BOOST_CHECK(uri.scheme() == "http");
   BOOST_CHECK(uri.user() == "");
   BOOST_CHECK(uri.password() == "");
@@ -233,6 +257,8 @@ BOOST_AUTO_TEST_CASE( test_http_partial_adress_2 )
   std::string address("http://www.dpi.inpe.br");
 
   te::core::URI uri(address);
+
+  BOOST_CHECK(uri.isValid());
 
   BOOST_CHECK(uri.scheme() == "http");
   BOOST_CHECK(uri.user() == "");
@@ -250,6 +276,8 @@ BOOST_AUTO_TEST_CASE( test_pgsql_uri )
 
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   BOOST_CHECK(uri.scheme() == "pgsql");
   BOOST_CHECK(uri.user() == "user");
   BOOST_CHECK(uri.password() == "password");
@@ -265,6 +293,8 @@ BOOST_AUTO_TEST_CASE( test_http_uri_3 )
   std::string address("http://chronos.dpi.inpe.br/wfs");
 
   te::core::URI uri(address);
+
+  BOOST_CHECK(uri.isValid());
 
   BOOST_CHECK(uri.scheme() == "http");
   BOOST_CHECK(uri.user() == "");
@@ -282,6 +312,8 @@ BOOST_AUTO_TEST_CASE( test_http_uri_4 )
 
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   BOOST_CHECK(uri.scheme() == "http");
   BOOST_CHECK(uri.user() == "");
   BOOST_CHECK(uri.password() == "");
@@ -292,11 +324,49 @@ BOOST_AUTO_TEST_CASE( test_http_uri_4 )
   BOOST_CHECK(uri.fragment() == "");
 }
 
+BOOST_AUTO_TEST_CASE( test_http_uri_5 )
+{
+  std::string address("http://xxx.xxx.xx/yyy/yyy");
+
+  te::core::URI uri(address);
+
+  BOOST_CHECK(uri.isValid());
+
+  BOOST_CHECK(uri.scheme() == "http");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
+  BOOST_CHECK(uri.host() == "xxx.xxx.xx");
+  BOOST_CHECK(uri.port() == "");
+  BOOST_CHECK(uri.path() == "/yyy/yyy");
+  BOOST_CHECK(uri.query() == "");
+  BOOST_CHECK(uri.fragment() == "");
+}
+
+BOOST_AUTO_TEST_CASE( test_http_uri_6 )
+{
+  std::string address("http://xxx.xxx.xx/yyy/yyy?");
+
+  te::core::URI uri(address);
+
+  BOOST_CHECK(uri.isValid());
+
+  BOOST_CHECK(uri.scheme() == "http");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
+  BOOST_CHECK(uri.host() == "xxx.xxx.xx");
+  BOOST_CHECK(uri.port() == "");
+  BOOST_CHECK(uri.path() == "/yyy/yyy");
+  BOOST_CHECK(uri.query() == "");
+  BOOST_CHECK(uri.fragment() == "");
+}
+
 BOOST_AUTO_TEST_CASE( test_file_uri_1 )
 {
   std::string address("file:///home/gribeiro/data");
 
   te::core::URI uri(address);
+
+  BOOST_CHECK(uri.isValid());
 
   BOOST_CHECK(uri.scheme() == "file");
   BOOST_CHECK(uri.user() == "");
@@ -314,6 +384,8 @@ BOOST_AUTO_TEST_CASE( test_file_uri_2 )
 
   te::core::URI uri(address);
 
+  BOOST_CHECK(uri.isValid());
+
   BOOST_CHECK(uri.scheme() == "file");
   BOOST_CHECK(uri.user() == "");
   BOOST_CHECK(uri.password() == "");
@@ -323,5 +395,6 @@ BOOST_AUTO_TEST_CASE( test_file_uri_2 )
   BOOST_CHECK(uri.query() == "");
   BOOST_CHECK(uri.fragment() == "");
 }
+
 
 BOOST_AUTO_TEST_SUITE_END()

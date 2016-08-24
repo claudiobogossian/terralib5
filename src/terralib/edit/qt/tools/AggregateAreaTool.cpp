@@ -20,7 +20,7 @@
 /*!
   \file terralib/edit/qt/tools/AggregateAreaTool.cpp
 
-  \brief This class implements a concrete tool to aggregate geometries.
+  \brief This class implements a concrete tool to aggregate polygons.
 */
 
 // TerraLib
@@ -28,7 +28,7 @@
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
-#include "../../../geometry.h"
+#include "../../../geometry/Utils.h"
 #include "../../../qt/af/events/LayerEvents.h"
 #include "../../../qt/af/events/MapEvents.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
@@ -51,8 +51,10 @@
 #include <memory>
 #include <iostream>
 
-te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, 
+                                               const te::edit::MouseEventEdition mouseEventToSave, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
+  m_mouseEventToSave(mouseEventToSave),
   m_stack(UndoStackManager::getInstance())
 {
 }
@@ -86,32 +88,10 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   try
   {
-    if (e->button() != Qt::LeftButton)
+    if (m_mouseEventToSave != te::edit::mouseDoubleClick || Qt::LeftButton != e->button())
       return false;
 
-    if (m_coords.size() < 3) // Can not stop yet...
-      return false;
-
-    if (m_feature == 0) // Can not stop yet...
-    {
-      te::edit::CreateLineTool::clear();
-      QMessageBox::critical(m_display, tr("Error"), QString(tr("Error aggregating area to the polygon")));
-      return false;
-    }
-
-    m_isFinished = true;
-
-    draw();
-
-    storeFeature();
-
-    storeUndoCommand();
-
-    te::edit::CreateLineTool::clear();
-
-    emit geometriesEdited();
-
-    return true;
+    return aggregatePolygon();
   }
   catch (std::exception& e)
   {
@@ -120,7 +100,50 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
   }
 }
 
-void te::edit::AggregateAreaTool::draw(bool onlyRepository)
+bool te::edit::AggregateAreaTool::mouseReleaseEvent(QMouseEvent* e)
+{
+  try
+  {
+    if (m_mouseEventToSave != te::edit::mouseReleaseRightClick || Qt::RightButton != e->button())
+      return false;
+
+    return aggregatePolygon();
+  }
+  catch (std::exception& e)
+  {
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("Could not join.") + " %1.").arg(e.what()));
+    return false;
+  }
+}
+
+bool te::edit::AggregateAreaTool::aggregatePolygon()
+{
+  if (m_coords.size() < 3) // Can not stop yet...
+    return false;
+
+  if (m_feature == 0) // Can not stop yet...
+  {
+    te::edit::CreateLineTool::clear();
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("Error aggregating area to the polygon")));
+    return false;
+  }
+
+  m_isFinished = true;
+
+  draw();
+
+  storeFeature();
+
+  storeUndoCommand();
+
+  te::edit::CreateLineTool::clear();
+
+  emit geometriesEdited();
+
+  return true;
+}
+
+void te::edit::AggregateAreaTool::draw()
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
@@ -135,15 +158,6 @@ void te::edit::AggregateAreaTool::draw(bool onlyRepository)
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
-
-  if (onlyRepository)
-  {
-    renderer.end();
-    m_display->repaint();
-    return;
-  }
-
   if (!m_coords.empty())
   {
     if (m_coords.size() > 3)
@@ -228,11 +242,6 @@ te::gm::Envelope te::edit::AggregateAreaTool::buildEnvelope(const QPointF& pos)
   return env;
 }
 
-void te::edit::AggregateAreaTool::onExtentChanged()
-{
-  draw();
-}
-
 void te::edit::AggregateAreaTool::storeFeature()
 {
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
@@ -240,7 +249,7 @@ void te::edit::AggregateAreaTool::storeFeature()
 
 te::gm::Geometry* te::edit::AggregateAreaTool::unionGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
-  return g1->Union(g2);
+  return te::gm::Validate(g1)->Union(te::gm::Validate(g2));
 }
 
 void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)

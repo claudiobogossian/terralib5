@@ -52,6 +52,7 @@ namespace te
     namespace widgets
     {
       class ChartDisplayWidget;
+      class CharEncodingMenuWidget;
       class LayerItemView;
       class MapDisplay;
     }
@@ -148,6 +149,8 @@ namespace te
 
         void onLayerSaveSelectedObjectsTriggered();
 
+        void onLayerCharEncodingHovered();
+
         void onFullScreenToggled(bool checked);
 
         void onLayerExplorerVisibilityChanged(bool visible);
@@ -219,6 +222,7 @@ namespace te
         QAction* m_layerFitSelectedOnMapDisplay;
         QAction* m_layerPanToSelectedOnMapDisplay;
         QAction* m_layerSaveSelectedObjects;
+        QAction* m_layerCharEncoding;
 
         QAction* m_viewDataTable;
         QAction* m_viewLayerExplorer;
@@ -231,6 +235,7 @@ namespace te
         MapDisplay* m_display;
         StyleExplorer* m_styleExplorer;
         std::vector<te::qt::af::DataSetTableDockWidget*> m_tables;
+        te::qt::widgets::CharEncodingMenuWidget* m_encodingMenu;
 
         //status bar widgets
         QStatusBar* m_statusbar;

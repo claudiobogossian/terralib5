@@ -84,16 +84,31 @@ namespace te
     \enum OperationsType
 
     \brief Defines the operations (CUD - Create, Update and Delete) and FreeCell/LockedCell to this tool.
+
+    \note The order of this enum should not be altered.
     */
     enum OperationType
     {
-      GEOMETRY_CREATE,                  /*!< New Features        */
-      GEOMETRY_UPDATE,                  /*!< Features to update. */
-      GEOMETRY_DELETE,                  /*!< Features to delete. */
-      GEOMETRY_UPDATE_ATTRIBUTES,       /*!< Features to update attributes. */
-      GEOMETRY_FREECELLS,               /*!< Free cells, my cells... */
-      GEOMETRY_LOCKEDCELLS,             /*!< Locked cells, other cells... */
-      GEOMETRY_SELECTED                 /*!< Used to selectb features.rs.. */
+      GEOMETRY_CREATE = 0,                /*!< New Features        */
+      GEOMETRY_UPDATE = 1,                /*!< Features to update. */
+      GEOMETRY_DELETE = 2,                /*!< Features to delete. */
+      GEOMETRY_UPDATE_ATTRIBUTES = 3,     /*!< Features to update attributes. */
+      GEOMETRY_FREECELLS = 4,             /*!< Free cells, my cells... */
+      GEOMETRY_LOCKEDCELLS = 5,           /*!< Locked cells, other cells... */
+      GEOMETRY_SELECTED = 6               /*!< Used to select features.rs.. */
+    };
+
+    /*!
+    \enum MouseEventEdition
+
+    \brief Defines which mouse event will be used in the tool to complete an operation.
+
+    \note The order of this enum should not be altered.
+    */
+    enum MouseEventEdition 
+    {
+      mouseDoubleClick = 0,
+      mouseReleaseRightClick = 1
     };
 
     TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, OperationType operation);
@@ -127,6 +142,8 @@ namespace te
     TEEDITEXPORT void TrySnap(te::gm::Coord2D& coord, int srid);
 
     TEEDITEXPORT te::da::ObjectId* GenerateId();
+
+    TEEDITEXPORT te::gm::Geometry* ConvertGeomType(const te::map::AbstractLayerPtr& layer, te::gm::Geometry* geom);
 
   } // end namespace edit
 }   // end namespace te

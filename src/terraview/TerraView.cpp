@@ -690,6 +690,7 @@ void TerraView::addPopUpMenu()
   treeView->addVectorLayerAction(actionSaveAsSep);
 
   treeView->addVectorLayerAction(m_layerSRS);
+  treeView->addVectorLayerAction(m_layerCharEncoding);
 
   QAction* actionSRSSep = new QAction(this);
   actionSRSSep->setSeparator(true);

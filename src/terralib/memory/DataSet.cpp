@@ -49,14 +49,6 @@ te::mem::DataSet::DataSet(const te::da::DataSetType* const dt)
     m_i(-1)
 {
   te::da::GetPropertyInfo(dt, m_pnames, m_ptypes);
-
-  // Fill char-encodings
-  for(std::size_t i = 0; i < dt->size(); ++i)
-  {
-    te::dt::StringProperty* p = dynamic_cast<te::dt::StringProperty*>(dt->getProperty(i));
-    if(p != 0)
-      m_encodings[i] = p->getCharEncoding();
-  }
 }
 
 te::mem::DataSet::DataSet(te::da::DataSet& rhs)
@@ -64,11 +56,6 @@ te::mem::DataSet::DataSet(te::da::DataSet& rhs)
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
-
-  // Fill char-encodings
-  for(std::size_t i = 0; i < m_ptypes.size(); ++i)
-    if(m_ptypes[i] == te::dt::STRING_TYPE)
-      m_encodings[i] = rhs.getPropertyCharEncoding(i);
 
   copy(rhs, 0);
 }
@@ -78,11 +65,6 @@ te::mem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
-
-  // Fill char-encodings
-  for(std::size_t i = 0; i < m_ptypes.size(); ++i)
-    if(m_ptypes[i] == te::dt::STRING_TYPE)
-      m_encodings[i] = rhs.getPropertyCharEncoding(i);
 
   if(deepCopy)
     m_items.reset(new boost::ptr_vector<DataSetItem>(*(rhs.m_items)));
@@ -100,8 +82,6 @@ te::mem::DataSet::DataSet(te::da::DataSet& rhs, const std::vector<std::size_t>& 
 
     m_pnames.push_back(rhs.getPropertyName(properties[i]));
     m_ptypes.push_back(ptype);
-    if(ptype == te::dt::STRING_TYPE)
-      m_encodings[properties[i]] = rhs.getPropertyCharEncoding(properties[i]);
   }
 
   copy(rhs, properties, limit);
@@ -277,15 +257,6 @@ std::string te::mem::DataSet::getPropertyName(std::size_t pos) const
 void te::mem::DataSet::setPropertyName(const std::string& name, std::size_t pos)
 {
   m_pnames[pos] = name;
-}
-
-te::core::EncodingType te::mem::DataSet::getPropertyCharEncoding(std::size_t i) const
-{
-  if (m_encodings.size()== 0) return te::core::EncodingType::UNKNOWN;
-  std::map<int, te::core::EncodingType>::const_iterator it = m_encodings.find(i);
-  assert(it != m_encodings.end());
-
-  return it->second;
 }
 
 std::string te::mem::DataSet::getDatasetNameOfProperty(std::size_t /*pos*/) const

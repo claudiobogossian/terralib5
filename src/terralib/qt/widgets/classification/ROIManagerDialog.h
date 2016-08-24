@@ -29,6 +29,7 @@
 // TerraLib
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #endif
 #include "../Config.h"
 
@@ -72,6 +73,8 @@ namespace te
             \brief This method is used to set the list of layers
             
           */
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
           
           /*!
@@ -79,6 +82,8 @@ namespace te
             
           */
           void set(te::map::AbstractLayerPtr layer);
+
+          void clearCanvas();
 
         protected:
 
