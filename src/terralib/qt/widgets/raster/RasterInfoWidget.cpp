@@ -237,13 +237,6 @@ void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
   if( ! m_originalFullFileName.empty() )
   {    
     boost::filesystem::path fullFilePath( m_originalFullFileName );
-    
-    //Checking for unsopported file format(s)
-    if (fullFilePath.extension().string() == ".hdr")
-    {
-      QMessageBox::warning(this, tr("Raster"), "Unsupported file format. This is an ENVI header file, in order to open ENVI datasets the file corresponding to the dataset itself must be used instead.");
-      return;
-    }
 
     m_ui->m_fileNameLineEdit->setText(m_originalFullFileName.c_str());
     m_ui->m_nameLineEdit->setText(fullFilePath.stem().string().c_str());
