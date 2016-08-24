@@ -18,18 +18,14 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build the Unit Test for the Editìon.
+#  Description: Build the Unit-Test for the Edition Library.
 #
-#  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
-#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#  Author: Thiago Aloizio Barbosa
 #
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
 
-include_directories(${Boost_INCLUDE_DIR}
-                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
-
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/edit/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/edit/*.h)
@@ -42,12 +38,9 @@ add_executable(terralib_unittest_edit   ${TERRALIB_SRC_FILES}
                                         ${TERRALIB_UNITTEST_EDIT_MOVEGEOMETRY_SRC_FILES})
 
 target_link_libraries(terralib_unittest_edit  terralib_mod_plugin 
-											  terralib_mod_edit_core
-											  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+                      terralib_mod_edit_core
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(NAME terralib_unittest_edit
          COMMAND terralib_unittest_edit
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/edit COMPONENT devel)
