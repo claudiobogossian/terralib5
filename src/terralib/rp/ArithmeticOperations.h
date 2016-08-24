@@ -30,11 +30,15 @@
 #include "../raster/Interpolator.h"
 #include "../common/progress/TaskProgress.h"
 
+//Boost
+#include <boost/math/constants/constants.hpp>
+
 #include <map>
 #include <memory>
 #include <stack>
 #include <string>
 #include <vector>
+#include <math.h>
 
 namespace te
 {
@@ -160,6 +164,14 @@ namespace te
 
             bool m_isRealNumber; //!< true if this is a real number element.
 
+            bool m_isBinaryOp; //!< true if this is a binary operator pointer element.
+
+            bool m_isUnaryOp; //!< true if this is a unary operator pointer element.
+
+            std::string m_binaryOp; //!< Binary operator.
+
+            std::string m_unaryOp; //!< Unary operator.
+
             double m_realNumberValue; //!< Real number value.
 
             unsigned int m_rasterBand; //!< Raster band index.
@@ -169,24 +181,28 @@ namespace te
             mutable std::auto_ptr< te::rst::Raster > m_rasterHandler; //!< Raster handler.
 
             ExecStackElement( const ExecStackElement& rhs )
-            : m_isRaster( false ), m_isRealNumber( false ), m_realNumberValue( 0 ),
-              m_rasterBand( 0 ), m_rasterNPtr( 0 )
+              : m_isRaster(false), m_isRealNumber(false), m_isBinaryOp(false), m_isUnaryOp(false),
+              m_realNumberValue(0), m_rasterBand(0), m_rasterNPtr(0), m_binaryOp(""), m_unaryOp("")
             {
-              operator==( rhs );
+              operator=( rhs );
             };
             
             ExecStackElement()
-            : m_isRaster( false ), m_isRealNumber( false ), m_realNumberValue( 0 ),
-              m_rasterBand( 0 ), m_rasterNPtr( 0 )
+              : m_isRaster(false), m_isRealNumber(false), m_isBinaryOp(false), m_isUnaryOp(false),
+              m_realNumberValue(0), m_rasterBand(0), m_rasterNPtr(0), m_binaryOp(""), m_unaryOp("")
             {};            
             
-            ExecStackElement& operator==( const ExecStackElement& rhs )
+            ExecStackElement& operator=( const ExecStackElement& rhs )
             {
               m_isRaster = rhs.m_isRaster;
               m_isRealNumber = rhs.m_isRealNumber;
+              m_isBinaryOp = rhs.m_isBinaryOp;
+              m_isUnaryOp = rhs.m_isUnaryOp;
               m_realNumberValue = rhs.m_realNumberValue;
               m_rasterBand = rhs.m_rasterBand;
               m_rasterNPtr = rhs.m_rasterNPtr;
+              m_binaryOp = rhs.m_binaryOp;
+              m_unaryOp = rhs.m_unaryOp;
               m_rasterHandler.reset( rhs.m_rasterHandler.release() );
               
               return *this;
@@ -202,6 +218,8 @@ namespace te
          */         
         typedef void (ArithmeticOperations::*BinOpFuncPtrT)( const double& inputValue1, const double& inputValue2,
           double& outputValue ) const;
+
+        typedef void (ArithmeticOperations::*UnaryOpFuncPtrT)(const double& inputValue1, double& outputValue) const;
 
         ArithmeticOperations::InputParameters m_inputParameters; //!< Input execution parameters.
 
@@ -229,8 +247,70 @@ namespace te
           \brief Division binary operator function.
          */             
         inline void divisionBinOp( const double& inputValue1, const double& inputValue2,
-          double& outputValue ) const { ( inputValue2 == 0.0 ) ? ( outputValue = 0 ) 
-          : ( outputValue = inputValue1 / inputValue2 ); };
+          double& outputValue ) const {
+          ( inputValue2 == 0.0 ) ? ( outputValue = 0 ) 
+          : ( outputValue = inputValue1 / inputValue2 ); 
+        };
+
+        /*!
+          \brief Exponencial binary operator function.
+         */             
+        inline void exponencialBinOp( const double& inputValue1, const double& inputValue2,
+          double& outputValue ) const { outputValue = pow(inputValue1, inputValue2); };
+
+        /*!
+        \brief Square root unary operator function.
+        */
+        inline void sqrtUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = sqrt(inputValue); };
+
+        /*!
+        \brief Sine unary operator function.
+        */
+        inline void sinUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = sin(inputValue); };
+
+        /*!
+        \brief Arc sine unary operator function.
+        */
+        inline void asinUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = asin(inputValue); };
+
+        /*!
+        \brief Cosine unary operator function.
+        */
+        inline void cosUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = cos(inputValue); };
+
+        /*!
+        \brief Arc cosine unary operator function.
+        */
+        inline void acosUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = acos(inputValue); };
+
+        /*!
+        \brief Common logarithm unary operator function.
+        */
+        inline void logUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = log10(inputValue); };
+
+        /*!
+        \brief Tangent unary operator function.
+        */
+        inline void tanUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = tan(inputValue); };
+
+        /*!
+        \brief Arc Tangent unary operator function.
+        */
+        inline void atanUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = atan(inputValue); };
+
+        /*!
+        \brief  unary operator function.
+        */
+        inline void lnUnaryOp(const double& inputValue,
+          double& outputValue) const { outputValue = log(inputValue); };
           
         /*!
           \brief Execute the automata parsing the given input string.
@@ -324,7 +404,7 @@ namespace te
           const unsigned int band1, const te::rst::Raster& inRaster2, 
           const unsigned int band2,
           const BinOpFuncPtrT binOptFunctPtr,
-          std::auto_ptr<te::rst::Raster>& outRasterPtr ) const;          
+          std::auto_ptr<te::rst::Raster>& outRasterPtr ) const; 
           
         /*!
           \brief Execute the given binary operator using the given input raster and a real number
@@ -339,7 +419,7 @@ namespace te
           const unsigned int bandIdx, const double value, 
           const BinOpFuncPtrT binOptFunctPtr,
           std::auto_ptr<te::rst::Raster>& outRasterPtr,
-          const bool realNumberIsRigthtTerm ) const;           
+          const bool realNumberIsRigthtTerm ) const;  
       
         /*!
           \brief Execute the given unary operator using the current given execution stack.
@@ -350,6 +430,30 @@ namespace te
         */         
         bool execUnaryOperator( const std::string& token, ExecStackT& 
           execStack, bool generateOutput ) const;
+
+        /*!
+        \brief Execute the given unary operator using the given input raster
+        \param inRaster Input raster.
+        \param band1 Input raster band.
+        \param unaryOptFunctPtr The unary operation function pointer.
+        \param outRasterPtr The generated output raster.
+        \return true if OK, false on errors..
+        */
+        bool execUnaryOperatorRaster(const te::rst::Raster& inRaster,
+          const unsigned int band, const UnaryOpFuncPtrT unaryOptFunctPtr,
+          std::auto_ptr<te::rst::Raster>& outRasterPtr) const;
+
+        /*!
+        \brief Execute the given unary operator using the given a real number
+        \param unaryOptFunctPtr The unary operation function pointer.
+        \param outRasterPtr The generated output raster.
+        \param realNumberIsRigthtTerm true if the real number is the right term.
+        \return true if OK, false on errors..
+        */
+        bool execUnaryOperatorReal(const double value,
+          const UnaryOpFuncPtrT unaryOptFunctPtr,
+          std::auto_ptr<te::rst::Raster>& outRasterPtr,
+          const bool realNumberIsRigthtTerm) const;
         
         /*!
           \brief Returns true if the given token is a real number.

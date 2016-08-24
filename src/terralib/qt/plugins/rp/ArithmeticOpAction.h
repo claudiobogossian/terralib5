@@ -57,6 +57,8 @@ namespace te
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            void addLayer(te::map::AbstractLayerPtr outputLayer);
         };
 
       } // end namespace rp

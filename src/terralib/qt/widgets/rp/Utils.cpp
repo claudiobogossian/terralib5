@@ -29,6 +29,9 @@
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../maptools/Utils.h"
+#include "../../../raster/Grid.h"
 #include "../layer/utils/DataSet2Layer.h"
 #include "Utils.h"
 
@@ -107,3 +110,28 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driver
       layer->setStyle(style);
   }
 */
+
+te::rst::Raster* te::qt::widgets::getRasterVisibleArea(te::map::AbstractLayerPtr layer, te::gm::Envelope boxDisplay, int displaySRID)
+{
+  te::rst::Raster* raster = 0;
+
+  //get box info
+  te::gm::Envelope reprojectedBBOX(boxDisplay);
+  reprojectedBBOX.transform(displaySRID, layer->getSRID());
+  te::gm::Envelope ibbox = reprojectedBBOX.intersection(layer->getExtent());
+
+  //get raster
+  std::auto_ptr<te::da::DataSet> ds(layer->getData());
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+  te::gm::Coord2D startGrid = inputRst->getGrid()->geoToGrid(ibbox.getLowerLeftX(), ibbox.getLowerLeftY());
+  te::gm::Coord2D endGrid = inputRst->getGrid()->geoToGrid(ibbox.getUpperRightX(), ibbox.getUpperRightY());
+
+  int w = (int)endGrid.x - (int)startGrid.x;
+  int h = (int)startGrid.y - (int)endGrid.y;
+
+  raster = te::map::GetExtentRaster(inputRst.get(), w, h, reprojectedBBOX, displaySRID, ibbox, layer->getSRID());
+
+  return raster;
+}
