@@ -129,8 +129,8 @@ void te::gdal::Module::startup()
   std::set< std::string > supportedExtensionsSet;
 
   for( std::map< std::string, DriverMetadata >::const_iterator it = 
-    te::gdal::GetGDALDriversMetadata().begin() ; it !=
-    te::gdal::GetGDALDriversMetadata().end() ; ++it )
+    GetGDALDriversMetadata().begin() ; it !=
+    GetGDALDriversMetadata().end() ; ++it )
   {
     if( !it->second.m_extension.empty() )
     {
