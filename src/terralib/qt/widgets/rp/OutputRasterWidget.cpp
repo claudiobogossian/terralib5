@@ -59,7 +59,7 @@ std::string te::qt::widgets::OutputRasterWidget::getOutputRaster()
 {
   std::string outputRaster = "";
   if (!m_ui->m_repositoryLineEdit->text().isEmpty())
-    outputRaster = m_ui->m_repositoryLineEdit->text().toLatin1();
+    outputRaster = m_ui->m_repositoryLineEdit->text().toStdString();
 
   return outputRaster;
 }
