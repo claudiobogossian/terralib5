@@ -558,7 +558,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TE_TR("Mean Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("Sobel Filter"),
           te::common::TaskProgress::UNDEFINED,
          srcRaster.getNumberOfRows() - 2) );
       }
