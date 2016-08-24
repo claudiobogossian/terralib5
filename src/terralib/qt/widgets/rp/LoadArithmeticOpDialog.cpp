@@ -117,8 +117,10 @@ void te::qt::widgets::LoadArithmeticOpDialog::onOperationComboBoxActivated(QStri
   m_ui->m_gainLineEdit->setText("");
   m_ui->m_offsetLineEdit->setText("");
 
+  std::string op = operation.toStdString();
+
   std::vector<std::string> arithExpVec;
-  boost::split(arithExpVec, operation.toStdString(), boost::is_any_of(" "));
+  boost::split(arithExpVec, op, boost::is_any_of(" "));
 
   for (int i = 0; i < arithExpVec.size(); i++)
   {

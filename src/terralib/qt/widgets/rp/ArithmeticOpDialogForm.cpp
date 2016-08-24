@@ -763,8 +763,10 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpDialo
   if (arithExpStr.empty())
   {
     int nLayer = 0;
+    std::string expression = getUserDefinedExpression();
+
     std::vector<std::string> arithExpVec;
-    boost::split(arithExpVec, getUserDefinedExpression(), boost::is_any_of(" "));
+    boost::split(arithExpVec, expression, boost::is_any_of(" "));
 
     for (int i = 0; i < arithExpVec.size(); i++)
     {
