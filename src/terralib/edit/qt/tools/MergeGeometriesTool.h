@@ -85,22 +85,14 @@ namespace te
 
       bool spatialRelationDisjoint(te::gm::GeometryCollection& gc);
 
-      te::gm::Geometry* Union(te::gm::Geometry& g1, te::gm::Geometry& g2);
-
       const te::gm::Envelope* getRefEnvelope(te::da::DataSet& ds, te::gm::GeometryProperty& geomProp);
 
       void getBaseOID(const te::da::ObjectIdSet& objSet, QString msg);
 
-    private slots:
-
-      void onExtentChanged();
-
     protected:
 
       std::string m_chosenOid;
-
       te::gm::GeometryCollection* m_geocollection;
-
       te::da::ObjectIdSet* m_oidsMerged;
 
     };

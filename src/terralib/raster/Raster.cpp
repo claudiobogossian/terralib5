@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "Utils.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/STLUtils.h"
 #include "../geometry/Coord2D.h"
@@ -519,6 +520,14 @@ te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::m
   }
 
   return rout;
+}
+
+te::rst::Raster* te::rst::Raster::clip(
+  const std::vector< te::gm::Geometry const *> geometries, 
+  const std::map<std::string, std::string>& rinfo,
+  const std::string& rType ) const
+{
+  return te::rst::CropRaster( *this, geometries, rinfo, rType ).release();
 }
 
 te::rst::Raster* te::rst::Raster::resample(int method, int scale, const std::map<std::string, std::string>& rinfo) const

@@ -115,14 +115,6 @@ bool CheckDataSourceExistence(const std::string& dsType, const std::map<std::str
   return te::da::DataSource::exists(dsType, info);
 }
 
-void PrintDataSourceEncodings(const std::string& dsType, const std::map<std::string, std::string>& info)
-{
-  std::cout << "\n===== Encodings for the data source \"" << "terralib4" << "\":\n";
-
-  std::vector<te::core::EncodingType> encs = te::da::DataSource::getEncodings(dsType, info);
-  for(std::size_t i = 0; i < encs.size(); ++i)
-    std::cout << static_cast<int>(encs[i]) << std::endl;
-}
 
 void PrintDataSetNames(te::da::DataSource* ds)
 {

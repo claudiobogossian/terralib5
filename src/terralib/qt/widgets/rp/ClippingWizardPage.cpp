@@ -38,7 +38,8 @@
 #include "../../../raster/Raster.h"
 #include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
-#include "RasterNavigatorWidget.h"
+#include "RpToolsWidget.h"
+
 #include "ClippingWizardPage.h"
 #include "ui_ClippingWizardPageForm.h"
 
@@ -48,6 +49,7 @@
 #include <QDoubleValidator>
 #include <QIntValidator>
 #include <QMessageBox>
+
 
 // STL
 #include <memory>
@@ -66,9 +68,7 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
 
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
-  m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
-  m_navigator->showAsPreview(false, true);
-  m_navigator->hideColorCompositionTool(true);
+  m_navigator.reset( new te::qt::widgets::RpToolsWidget(m_ui->m_frame));
   m_navigator->hideGeomTool(true);
   m_navigator->hideInfoTool(true);
   m_navigator->hidePickerTool(true);
@@ -76,6 +76,9 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   displayLayout->setContentsMargins(0,0,0,0);
 
   connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
+
+  connect(m_navigator.get(), SIGNAL(geomAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
+
   connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(drawGeom()));
 
 //configure page
@@ -91,6 +94,10 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   m_ui->m_startColumnLineEdit->setValidator(new QIntValidator(this));
   m_ui->m_widthLineEdit->setValidator(new QIntValidator(this));
   m_ui->m_heightLineEdit->setValidator(new QIntValidator(this));
+
+//Radio Button - By Drawing
+  m_ui->m_drawingRadioButton->setChecked(true);
+  onChangeCollectType();
 
 //connects
   connect(m_ui->m_strategyTypeComboBox, SIGNAL(activated(int)), this, SLOT(onStrategyTypeComboBoxActivated(int)));
@@ -108,19 +115,20 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   connect(m_ui->m_widthLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
   connect(m_ui->m_heightLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
 
-  connect(m_ui->m_llxLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeExtentAcquired()));
-  connect(m_ui->m_llyLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeExtentAcquired()));
-  connect(m_ui->m_urxLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeExtentAcquired()));
-  connect(m_ui->m_uryLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeExtentAcquired()));
-
   connect(m_ui->m_startRowLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeDimensionAcquired()));
   connect(m_ui->m_startColumnLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeDimensionAcquired()));
   connect(m_ui->m_widthLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeDimensionAcquired()));
   connect(m_ui->m_heightLineEdit, SIGNAL(editingFinished()), this, SLOT(onEnvelopeDimensionAcquired()));
+
+  connect(m_ui->m_drawingRadioButton, SIGNAL(clicked()), this, SLOT(onChangeCollectType()));
+  connect(m_ui->m_parameterRadioButton, SIGNAL(clicked()), this, SLOT(onChangeCollectType()));
+
+  connect(m_ui->m_previewButton, SIGNAL(clicked()), this, SLOT(onPreviewClicked()));
 }
 
 te::qt::widgets::ClippingWizardPage::~ClippingWizardPage()
-{ 
+{
+
 }
 
 bool te::qt::widgets::ClippingWizardPage::isComplete() const
@@ -128,9 +136,16 @@ bool te::qt::widgets::ClippingWizardPage::isComplete() const
   int index = m_ui->m_strategyTypeComboBox->currentIndex();
   int type = m_ui->m_strategyTypeComboBox->itemData(index).toInt();
 
-  if(type == CLIPPING_EXTENT)
+  if (type == CLIPPING_ROI)
   {
-    if(m_ui->m_llxLineEdit->text().isEmpty() ||
+    if (m_ui->m_drawingRadioButton->isChecked())
+    {
+      if (m_envExt.isValid())
+        return true;
+      else
+        return false;
+    }
+    else if(m_ui->m_llxLineEdit->text().isEmpty() ||
        m_ui->m_llyLineEdit->text().isEmpty() ||
        m_ui->m_urxLineEdit->text().isEmpty() ||
        m_ui->m_uryLineEdit->text().isEmpty()
@@ -147,7 +162,7 @@ bool te::qt::widgets::ClippingWizardPage::isComplete() const
        m_ui->m_heightLineEdit->text().isEmpty()
       )
       return false;
-
+    
     return true;
   }
   else if(type == CLIPPING_LAYER)
@@ -192,6 +207,12 @@ void te::qt::widgets::ClippingWizardPage::setList(std::list<te::map::AbstractLay
     onLayerComboBoxActivated(0);
 }
 
+void te::qt::widgets::ClippingWizardPage::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_navigator->setMapDisplay(mapDisplay);
+  m_mapDisplay = mapDisplay;
+}
+
 te::map::AbstractLayerPtr te::qt::widgets::ClippingWizardPage::get()
 {
   return m_layer;
@@ -202,7 +223,7 @@ bool te::qt::widgets::ClippingWizardPage::isExtentClipping()
   int index = m_ui->m_strategyTypeComboBox->currentIndex();
   int type = m_ui->m_strategyTypeComboBox->itemData(index).toInt();
 
-  return type == CLIPPING_EXTENT;
+  return type == CLIPPING_ROI;
 }
 
 bool te::qt::widgets::ClippingWizardPage::isDimensionClipping()
@@ -233,12 +254,64 @@ bool te::qt::widgets::ClippingWizardPage::isSingleRasterResult()
   return true;
 }
 
+void te::qt::widgets::ClippingWizardPage::onChangeCollectType()
+{
+  if (m_ui->m_drawingRadioButton->isChecked())
+  {
+    m_ui->m_llxLineEdit->clear();
+    m_ui->m_llyLineEdit->clear();
+    m_ui->m_urxLineEdit->clear();
+    m_ui->m_uryLineEdit->clear();
+
+    m_ui->m_llxLineEdit->setDisabled(true);
+    m_ui->m_llyLineEdit->setDisabled(true);
+    m_ui->m_urxLineEdit->setDisabled(true);
+    m_ui->m_uryLineEdit->setDisabled(true);
+    m_ui->m_previewButton->setDisabled(true);
+    m_ui->m_frame->setDisabled(false);
+  }
+  else
+  {
+    m_ui->m_llxLineEdit->setDisabled(false);
+    m_ui->m_llyLineEdit->setDisabled(false);
+    m_ui->m_urxLineEdit->setDisabled(false);
+    m_ui->m_uryLineEdit->setDisabled(false);
+    m_ui->m_previewButton->setEnabled(true);
+    m_ui->m_frame->setDisabled(true);
+  }
+}
+
 void te::qt::widgets::ClippingWizardPage::getExtentClipping(te::gm::Envelope& env)
 {
-  env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
-  env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
-  env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
-  env.m_ury = m_ui->m_uryLineEdit->text().toDouble();
+  if (m_ui->m_drawingRadioButton->isChecked())
+  {
+    if (m_envExt.isValid())
+    {
+      env.m_llx = m_envExt.getLowerLeftX();
+      env.m_lly = m_envExt.getLowerLeftY();
+      env.m_urx = m_envExt.getUpperRightX();
+      env.m_ury = m_envExt.getUpperRightY();
+    }
+  }
+  else
+  {
+    env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
+    env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
+    env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
+    env.m_ury = m_ui->m_uryLineEdit->text().toDouble();
+  }
+}
+
+
+void te::qt::widgets::ClippingWizardPage::getPolygonClipping(te::gm::Polygon* poly)
+{
+  if (m_ui->m_drawingRadioButton->isChecked())
+  {
+    if (m_polyROI->isValid())
+    {
+      poly = m_polyROI;
+    }
+  }
 }
 
 void te::qt::widgets::ClippingWizardPage::getDimensionClipping(int& x, int& y, int& width, int& height)
@@ -280,8 +353,7 @@ void te::qt::widgets::ClippingWizardPage::getLayerClipping(
         geomColl->add(static_cast<te::gm::Geometry*>(adCloned));
       }
     }
-  }
-  if(m_ui->m_selectedGeomRadioButton->isChecked())
+  }  if(m_ui->m_selectedGeomRadioButton->isChecked())
   {
     const te::da::ObjectIdSet* oidSet = layer->getSelected();
     if(!oidSet)
@@ -421,37 +493,32 @@ void te::qt::widgets::ClippingWizardPage::onLayerComboBoxChanged(int index)
 
 void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope env)
 {
-  if(!env.isValid())
+  if (!env.isValid())
     return;
 
   int index = m_ui->m_strategyTypeComboBox->currentIndex();
   int type = m_ui->m_strategyTypeComboBox->itemData(index).toInt();
 
-  if(type == CLIPPING_EXTENT)
+  if (type == CLIPPING_ROI)
   {
     m_envExt = env;
-
-    m_ui->m_llxLineEdit->setText(QString::number(env.getLowerLeftX(), 'f', 5));
-    m_ui->m_llyLineEdit->setText(QString::number(env.getLowerLeftY(), 'f', 5));
-    m_ui->m_urxLineEdit->setText(QString::number(env.getUpperRightX(), 'f', 5));
-    m_ui->m_uryLineEdit->setText(QString::number(env.getUpperRightY(), 'f', 5));
   }
-  else if(type == CLIPPING_DIMENSION)
+  else if (type == CLIPPING_DIMENSION)
   {
     m_envDim = env;
 
     std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-    if(ds.get())
+    if (ds.get())
     {
       std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
       std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-      if(inputRst.get())
+      if (inputRst.get())
       {
         // find the envelope coords in grid coordenates
-        te::gm::Coord2D ul = inputRst->getGrid()->geoToGrid((double) env.getLowerLeftX(), (double) env.getUpperRightY());
-        te::gm::Coord2D lr = inputRst->getGrid()->geoToGrid((double) env.getUpperRightX(), (double) env.getLowerLeftY());
+        te::gm::Coord2D ul = inputRst->getGrid()->geoToGrid((double)env.getLowerLeftX(), (double)env.getUpperRightY());
+        te::gm::Coord2D lr = inputRst->getGrid()->geoToGrid((double)env.getUpperRightX(), (double)env.getLowerLeftY());
 
         m_ui->m_startRowLineEdit->setText(QString::number((int)ul.y));
         m_ui->m_startColumnLineEdit->setText(QString::number((int)ul.x));
@@ -466,32 +533,14 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope en
   emit completeChanged();
 }
 
-void te::qt::widgets::ClippingWizardPage::onEnvelopeExtentAcquired()
-{
-  if (m_ui->m_llxLineEdit->text().isEmpty() ||
-      m_ui->m_llyLineEdit->text().isEmpty() ||
-      m_ui->m_urxLineEdit->text().isEmpty() ||
-      m_ui->m_uryLineEdit->text().isEmpty())
-    return;
 
-  te::gm::Envelope env;
-
-  env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
-  env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
-  env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
-  env.m_ury = m_ui->m_uryLineEdit->text().toDouble();
-
-  m_envExt = env;
-
-  drawGeom();
-}
 
 void te::qt::widgets::ClippingWizardPage::onEnvelopeDimensionAcquired()
 {
   if (m_ui->m_startRowLineEdit->text().isEmpty() ||
-      m_ui->m_startColumnLineEdit->text().isEmpty() ||
-      m_ui->m_widthLineEdit->text().isEmpty() ||
-      m_ui->m_heightLineEdit->text().isEmpty())
+    m_ui->m_startColumnLineEdit->text().isEmpty() ||
+    m_ui->m_widthLineEdit->text().isEmpty() ||
+    m_ui->m_heightLineEdit->text().isEmpty())
     return;
 
   int x = m_ui->m_startColumnLineEdit->text().toInt();
@@ -518,24 +567,88 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeDimensionAcquired()
   drawGeom();
 }
 
+void te::qt::widgets::ClippingWizardPage::onGeomAquired(te::gm::Polygon* poly)
+{
+  if (!poly->isValid())
+    return;
+
+  int index = m_ui->m_strategyTypeComboBox->currentIndex();
+  int type = m_ui->m_strategyTypeComboBox->itemData(index).toInt();
+
+  if (type == CLIPPING_ROI)
+  {
+    m_polyROI = poly;
+  }
+
+  drawGeom();
+
+  emit completeChanged();
+}
+
+void te::qt::widgets::ClippingWizardPage::onPreviewClicked()
+{
+  if (m_ui->m_llxLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Clipping", "Lower Left X is empty, please enter value for preview.");
+    return;
+  }
+  else if (m_ui->m_llyLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Clipping", "Lower Left Y is empty, please enter value for preview.");
+    return;
+  }
+  else if (m_ui->m_urxLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Clipping", "Upper Right X is empty, please enter value for preview.");
+    return;
+  }
+  else if (m_ui->m_uryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Clipping", "Upper Right Y is empty, please enter value for preview.");
+    return;
+  }
+
+  const double& llx = m_ui->m_llxLineEdit->text().toDouble();
+  const double& lly = m_ui->m_llyLineEdit->text().toDouble();
+  const double& urx = m_ui->m_urxLineEdit->text().toDouble();
+  const double& ury = m_ui->m_uryLineEdit->text().toDouble();
+
+  te::gm::Envelope env(llx, lly, urx, ury);
+
+  if (!env.isValid())
+    return;
+
+  int index = m_ui->m_strategyTypeComboBox->currentIndex();
+  int type = m_ui->m_strategyTypeComboBox->itemData(index).toInt();
+
+  if (type == CLIPPING_ROI)
+  {
+    m_envExt = env;
+  }
+
+  drawGeom();
+
+  emit completeChanged();
+}
+
 void te::qt::widgets::ClippingWizardPage::fillClippingTypes()
 {
   m_ui->m_strategyTypeComboBox->clear();
 
-  m_ui->m_strategyTypeComboBox->addItem(tr("Extent"), CLIPPING_EXTENT);
+  m_ui->m_strategyTypeComboBox->addItem(tr("Region of interest"), CLIPPING_ROI);
   m_ui->m_strategyTypeComboBox->addItem(tr("Dimension"), CLIPPING_DIMENSION);
   m_ui->m_strategyTypeComboBox->addItem(tr("Layer"), CLIPPING_LAYER);
 }
 
 void te::qt::widgets::ClippingWizardPage::drawGeom()
 {
-  te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
+  //te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
+  
+  m_mapDisplay->getDraftPixmap()->fill(Qt::transparent);
 
-  mapDisplay->getDraftPixmap()->fill(Qt::transparent);
+  const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
 
-  const te::gm::Envelope& mapExt = mapDisplay->getExtent();
-
-  te::qt::widgets::Canvas canvasInstance(mapDisplay->getDraftPixmap());
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
   canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
 
   canvasInstance.setPolygonContourWidth(2);
@@ -547,7 +660,7 @@ void te::qt::widgets::ClippingWizardPage::drawGeom()
   int index = m_ui->m_strategyTypeComboBox->currentIndex();
   int type = m_ui->m_strategyTypeComboBox->itemData(index).toInt();
 
-  if(type == CLIPPING_EXTENT)
+  if(type == CLIPPING_ROI)
   {
     if(m_envExt.isValid())
       geom = te::gm::GetGeomFromEnvelope(&m_envExt, m_layer->getSRID());
@@ -561,9 +674,17 @@ void te::qt::widgets::ClippingWizardPage::drawGeom()
   if(geom)
   {
     canvasInstance.draw(geom);
-
     delete geom;
   }
 
-  mapDisplay->repaint();
+  m_mapDisplay->repaint();
+}
+
+void te::qt::widgets::ClippingWizardPage::clearCanvas()
+{
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
+
+  canvasInstance.clear();
+
+  m_mapDisplay->repaint();
 }

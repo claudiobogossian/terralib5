@@ -18,18 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/classification/ROIManagerDialog.h
+  \file terralib/qt/widgets/rp/RpToolsDialog.h
 
-  \brief This file has the ROIManagerDialog class.
+  \brief This file defines a class for a Raster Navigator Dialog.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_CLASSIFICATION_INTERNAL_ROIMANAGERDIALOG_H
-#define __TERRALIB_QT_WIDGETS_CLASSIFICATION_INTERNAL_ROIMANAGERDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_RPTOOLSDIALOG_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_RPTOOlSDIALOG_H
 
 // TerraLib
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/canvas/MapDisplay.h"
 #endif
 #include "../Config.h"
 
@@ -39,51 +38,41 @@
 // Qt
 #include <QDialog>
 
-// Forward declaraion
-namespace Ui { class ROIManagerDialogForm; }
-
 namespace te
 {
   namespace qt
   {
     namespace widgets
     {
-      class ROIManagerWidget;
+      class RpToolsWidget;
 
       /*!
-        \class ROIManagerDialog
+        \class RpToolsDialog
 
-        \brief This class is a dialog for the ROI Manager widget.
+        \brief This class is a dialog for the RpTools widget.
       */
-      class TEQTWIDGETSEXPORT ROIManagerDialog : public QDialog
+      class TEQTWIDGETSEXPORT RpToolsDialog : public QDialog
       {
         Q_OBJECT
 
         public:
 
-          ROIManagerDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          RpToolsDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~ROIManagerDialog();
+          ~RpToolsDialog();
 
         public:
 
-          te::qt::widgets::ROIManagerWidget* getWidget();
+          te::qt::widgets::RpToolsWidget* getWidget();
 
           /*!
-            \brief This method is used to set the list of layers
+            \brief This method is used to set the selected layer for mixture model operation
             
-          */
-          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+            \param layer The layer ptr 
 
-          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
-          
-          /*!
-            \brief This method is used to set current layer
-            
+            \note This layer MUST HAVE a valid raster object.
           */
           void set(te::map::AbstractLayerPtr layer);
-
-          void clearCanvas();
 
         protected:
 
@@ -91,17 +80,18 @@ namespace te
 
         signals:
 
-          void roiManagerClosed();
+          void navigatorClosed();
+
 
         private:
 
-          std::auto_ptr<Ui::ROIManagerDialogForm> m_ui;
+          std::auto_ptr<te::qt::widgets::RpToolsWidget> m_navigator;
 
-          std::auto_ptr<te::qt::widgets::ROIManagerWidget> m_widgetROIWidget;
+          te::map::AbstractLayerPtr m_layer;
       };
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_CLASSIFICATION_INTERNAL_ROIMANAGERDIALOG_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_RPTOOlSDIALOG_H
