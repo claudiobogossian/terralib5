@@ -354,7 +354,7 @@ namespace te
           \param e             A rectangle to be used as a spatial filter when retrieving datasets.
           \param r             The spatial relation to be used during the filter.
           \param travType      The traverse type associated to the returned dataset. 
-          \param accessPolicy Access policy.
+          \param accessPolicy  Access policy.
 
           \return The caller of this method will take the ownership of the returned DataSet.
 
@@ -384,7 +384,7 @@ namespace te
           \param g             A geometry to be used as a spatial filter when retrieving datasets.
           \param r             The spatial relation to be used during the filter.
           \param travType      The traverse type associated to the returned dataset. 
-          \param accessPolicy Access policy.
+          \param accessPolicy  Access policy.
 
           \return The caller of this method will take the ownership of the returned DataSet.
 
@@ -410,8 +410,8 @@ namespace te
         /*!
           \brief It gets the dataset identified by the layer name using the given restriction.
 
-          \param restriction The restriction expression that will be used.
-          \param travType    The traverse type associated to the returned dataset. 
+          \param restriction  The restriction expression that will be used.
+          \param travType     The traverse type associated to the returned dataset. 
           \param accessPolicy Access policy.
 
           \return The caller of this method will take the ownership of the returned DataSet.
@@ -432,8 +432,8 @@ namespace te
         /*!
           \brief It gets the dataset from the given set of objects identification.
 
-          \param oids     The set of object ids.
-          \param travType The traverse type associated to the returned dataset.
+          \param oids         The set of object ids.
+          \param travType     The traverse type associated to the returned dataset.
           \param accessPolicy Access policy.
 
           \return The caller of this method will take the ownership of the returned dataset.
@@ -500,6 +500,24 @@ namespace te
         void setCompositionMode(te::map::CompositionMode mode);
 
         /*!
+        \brief It returns the encoding type.
+
+        Char enconding is used to inform to data source how to load string information from data.
+
+        \return The encoding type.
+        */
+        te::core::EncodingType getEncoding() const;
+
+        /*!
+        \brief It set the encoding type.
+
+        Char enconding is used to inform to data source how to load string information from data.
+
+        \param The encoding type.
+        */
+        void setEncoding(te::core::EncodingType et);
+
+        /*!
           \brief Its indicate that the layer schema is out of date.
         */
         virtual void setOutOfDate();
@@ -547,7 +565,8 @@ namespace te
         std::string m_geomPropertyName;              //!< The name of the referenced geometry property.
         te::map::CompositionMode m_compositionMode;  //!< The composition mode used to merged the canvas.
         std::string m_datasetName;                   //!< The dataset name where we will retrieve the layer objects.
-        std::string m_datasourceId;                  //!< DataSource id;
+        std::string m_datasourceId;                  //!< DataSource id.
+        te::core::EncodingType m_encoding;           //!< The char encoding of the layer;
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;

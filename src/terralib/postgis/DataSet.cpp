@@ -129,14 +129,12 @@ namespace te
 
 te::pgis::DataSet::DataSet(PGresult* result,
                            const std::vector<int>& ptypes,
-                           bool timeIsInteger,
-                           te::core::EncodingType et)
+                           bool timeIsInteger)
   : m_i(-1),
     m_result(result),
     m_ptypes(ptypes),
     m_mbr(0),
-    m_timeIsInteger(timeIsInteger),
-    m_et(et)
+    m_timeIsInteger(timeIsInteger)
 {
   m_size = PQntuples(m_result);
 }
@@ -169,14 +167,6 @@ int te::pgis::DataSet::getPropertyDataType(std::size_t i) const
 std::string te::pgis::DataSet::getPropertyName(std::size_t i) const
 {
   return PQfname(m_result, i);
-}
-
-te::core::EncodingType te::pgis::DataSet::getPropertyCharEncoding(std::size_t i) const
-{
-  assert(i < m_ptypes.size());
-  assert(m_ptypes[i] == te::dt::STRING_TYPE);
-
-  return m_et;
 }
 
 std::string te::pgis::DataSet::getDatasetNameOfProperty(std::size_t i) const

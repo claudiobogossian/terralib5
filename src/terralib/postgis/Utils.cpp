@@ -655,25 +655,3 @@ std::string te::pgis::GetLoadDataRow(const te::da::DataSetType* dt, te::da::Data
 
   return values;
 }
-
-static std::size_t sg_n_encoding = 8;
-static const char* sg_pg_encoding [] = {"UTF8", "WIN1250", "WIN1251", "WIN1252", "WIN1253", "WIN1254", "WIN1257", "LATIN1"};
-
-const char* te::pgis::GetPGEncoding(te::core::EncodingType encoding)
-{
-  if (encoding == te::core::EncodingType::UNKNOWN)
-    return "";
-  
-  return sg_pg_encoding[static_cast<int>(encoding)]; // strongly typed enum, has to be casted
-}
-
-te::core::EncodingType te::pgis::GetTeEncoding(const char* const encoding)
-{
-  for(std::size_t i = 0; i < sg_n_encoding; ++i)
-  {
-    if(strcmp(sg_pg_encoding[i],encoding) == 0)
-      return (te::core::EncodingType)i;
-  }
-
-  return te::core::EncodingType::UNKNOWN;
-}

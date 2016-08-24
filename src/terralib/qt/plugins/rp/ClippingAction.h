@@ -29,6 +29,7 @@
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
+#include "../../../qt/widgets/rp/ClippingWizard.h"
 
 namespace te
 {
@@ -58,7 +59,15 @@ namespace te
 
             virtual void onActionActivated(bool checked);
 
+            void addLayerSlot(te::map::AbstractLayerPtr layer);
+
             virtual void onPopUpActionActivated(bool checked);
+
+            void closeTool();
+
+        private:
+
+          te::qt::widgets::ClippingWizard* m_clippingWizard;
         };
 
       } // end namespace rp

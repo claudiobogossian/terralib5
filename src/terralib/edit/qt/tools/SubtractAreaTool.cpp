@@ -24,14 +24,9 @@
 */
 
 //TerraLib
-#include "../../../common/STLUtils.h"
-#include "../../../geometry/GeometryProperty.h"
-#include "../../../geometry/MultiPolygon.h"
-#include "../../../dataaccess/dataset/ObjectId.h"
-#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
-#include "../../../qt/af/events/LayerEvents.h"
-#include "../../../qt/af/events/MapEvents.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../geometry/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../Feature.h"
 #include "../../RepositoryManager.h"
@@ -45,15 +40,16 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QDebug>
 
 // STL
 #include <cassert>
 #include <memory>
 #include <iostream>
 
-te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: CreateLineTool(display, layer, Qt::ArrowCursor, parent),
+te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, 
+                                             const te::edit::MouseEventEdition mouseEventToSave, QObject* parent)
+  : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
+  m_mouseEventToSave(mouseEventToSave),
   m_stack(UndoStackManager::getInstance())
 {
 }
@@ -87,32 +83,10 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   try
   {
-    if (e->button() != Qt::LeftButton)
+    if (m_mouseEventToSave != te::edit::mouseDoubleClick || e->button() != Qt::LeftButton)
       return false;
 
-    if (m_coords.size() < 3) // Can not stop yet...
-      return false;
-
-    if (m_feature == 0) // Can not stop yet...
-    {
-      te::edit::CreateLineTool::clear();
-      QMessageBox::critical(m_display, tr("Error"), QString(tr("Error subtracting area to the polygon")));
-      return false;
-    }
-
-    m_isFinished = true;
-
-    draw();
-
-    storeFeature();
-
-    storeUndoCommand();
-
-    te::edit::CreateLineTool::clear();
-
-    emit geometriesEdited();
-
-    return true;
+    return subtractPolygon();
   }
   catch (std::exception& e)
   {
@@ -121,7 +95,50 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
   }
 }
 
-void te::edit::SubtractAreaTool::draw(bool onlyRepository)
+bool te::edit::SubtractAreaTool::mouseReleaseEvent(QMouseEvent* e)
+{
+  try
+  {
+    if (m_mouseEventToSave != te::edit::mouseReleaseRightClick || e->button() != Qt::LeftButton)
+      return false;
+
+    return subtractPolygon();
+  }
+  catch (std::exception& e)
+  {
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("Could not subtract.") + " %1.").arg(e.what()));
+    return false;
+  }
+}
+
+bool te::edit::SubtractAreaTool::subtractPolygon()
+{
+  if (m_coords.size() < 3) // Can not stop yet...
+    return false;
+
+  if (m_feature == 0) // Can not stop yet...
+  {
+    te::edit::CreateLineTool::clear();
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("Error subtracting area to the polygon")));
+    return false;
+  }
+
+  m_isFinished = true;
+
+  draw();
+
+  storeFeature();
+
+  storeUndoCommand();
+
+  te::edit::CreateLineTool::clear();
+
+  emit geometriesEdited();
+
+  return true;
+}
+
+void te::edit::SubtractAreaTool::draw()
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
@@ -137,13 +154,6 @@ void te::edit::SubtractAreaTool::draw(bool onlyRepository)
 
   // Draw the layer edited geometries
   renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
-
-  if (onlyRepository)
-  {
-    renderer.end();
-    m_display->repaint();
-    return;
-  }
 
   if (!m_coords.empty())
   {
@@ -191,7 +201,7 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
   if (pHole->getSRID() != m_feature->getGeometry()->getSRID())
     m_feature->getGeometry()->transform(pHole->getSRID());
 
-  if (!pHole->intersects(m_feature->getGeometry()))
+  if (!pHole->intersects(m_feature->getGeometry()) || pHole->covers(m_feature->getGeometry()))
   {
     m_isFinished = false;
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
@@ -227,11 +237,6 @@ te::gm::Envelope te::edit::SubtractAreaTool::buildEnvelope(const QPointF& pos)
   return env;
 }
 
-void te::edit::SubtractAreaTool::onExtentChanged()
-{
-  draw();
-}
-
 void te::edit::SubtractAreaTool::storeFeature()
 {
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
@@ -239,7 +244,7 @@ void te::edit::SubtractAreaTool::storeFeature()
 
 te::gm::Geometry* te::edit::SubtractAreaTool::differenceGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
-  return g1->difference(g2);
+  return te::gm::Validate(g1)->difference(te::gm::Validate(g2));
 }
 
 void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)

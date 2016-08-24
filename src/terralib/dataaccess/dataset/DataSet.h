@@ -164,19 +164,6 @@ namespace te
         virtual std::string getPropertyName(std::size_t i) const = 0;
 
         /*!
-          \brief It returns the property character encoding at position pos.
-
-          \param i The property the position of interest.
-
-          \return The property character encoding.
-
-          \note The property at position pos must be a textual property.
-
-          \exception Exception It throws an exception if the property at position pos is not a textual property.
-        */
-        virtual te::core::EncodingType getPropertyCharEncoding(std::size_t i) const = 0;
-
-        /*!
           \brief It returns the underlying dataset name of the property at position pos.
 
           \param i The property position of interest.

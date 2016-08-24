@@ -609,9 +609,3 @@ void te::gdal::Transactor::renameDataSet(const std::string& name, const std::str
   boost::filesystem::path newpath(mpath.parent_path() /= newName);
   boost::filesystem::rename(mpath, newpath);
 }
-
-te::core::EncodingType te::gdal::Transactor::getEncoding()
-{
-  return te::core::EncodingType::LATIN1;
-}
-

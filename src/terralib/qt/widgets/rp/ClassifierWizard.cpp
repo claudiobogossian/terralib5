@@ -133,6 +133,12 @@ void te::qt::widgets::ClassifierWizard::addPages()
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
 }
 
+void te::qt::widgets::ClassifierWizard::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_classifierPage->setMapDisplay(mapDisplay);
+}
+
+
 bool te::qt::widgets::ClassifierWizard::execute()
 {
   //get layer
@@ -173,7 +179,9 @@ bool te::qt::widgets::ClassifierWizard::execute()
       //set output layer
       m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
-      
+
+      emit addLayer(m_outputLayer);
+
       QMessageBox::information(this, tr("Classifier"), tr("Classifier ended sucessfully"));
     }
     else
@@ -213,7 +221,7 @@ bool te::qt::widgets::ClassifierWizard::execute()
     c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
     QColor cWhite(Qt::white);
-    std::string colorWhiteStr = cWhite.name().toLatin1().data();
+    std::string colorWhiteStr = cWhite.name().toStdString();
 
     //added dummy color for values < than min values...
     c->addValue(new te::se::ParameterValue(colorWhiteStr));
@@ -257,4 +265,11 @@ bool te::qt::widgets::ClassifierWizard::execute()
   QApplication::restoreOverrideCursor();
 
   return true;
+}
+
+void te::qt::widgets::ClassifierWizard::closeEvent(QCloseEvent* e)
+{
+  m_classifierPage->clearCanvas();
+
+  emit closeTool();
 }

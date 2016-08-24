@@ -627,8 +627,3 @@ te::stmem::DataSet* te::stmem::Transactor::getData(const std::string& datasetNam
     throw Exception("There is not a DataSet with the given name!"); 
   return it->second; 
 }
-
-te::core::EncodingType te::stmem::Transactor::getEncoding()
-{
-  return te::core::EncodingType::UTF8;
-}

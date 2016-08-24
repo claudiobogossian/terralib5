@@ -47,12 +47,13 @@
 #include <cassert>
 #include <memory>
 
-te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, Qt::MouseButton sideToClose, QObject* parent)
+te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, 
+                                             const te::edit::MouseEventEdition mouseEventToSave, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
   m_tol(0.000001),
-  m_sideToClose(sideToClose),
   m_oidSet(0),
-  m_vecFeature(0)
+  m_vecFeature(0),
+  m_mouseEventToSave(mouseEventToSave)
 {
   pickFeatures();
 
@@ -93,7 +94,7 @@ bool te::edit::SplitPolygonTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  if (m_sideToClose != Qt::LeftButton || Qt::LeftButton != e->button())
+  if (m_mouseEventToSave != te::edit::mouseDoubleClick || Qt::LeftButton != e->button())
     return false;
 
   startSplit();
@@ -105,7 +106,7 @@ bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 bool te::edit::SplitPolygonTool::mouseReleaseEvent(QMouseEvent* e)
 {
-  if (m_sideToClose != Qt::RightButton || Qt::RightButton != e->button())
+  if (m_mouseEventToSave != te::edit::mouseReleaseRightClick || Qt::RightButton != e->button())
     return false;
 
   startSplit();
@@ -125,7 +126,7 @@ void te::edit::SplitPolygonTool::startSplit()
   if (m_oidSet == 0)
     m_oidSet = new te::da::ObjectIdSet();
 
-  for (std::size_t i = 0; i < m_vecFeature.size(); i++)
+  for (std::size_t i = 0; i < m_vecFeature.size(); ++i)
   {
     if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_vecFeature[i]->getId()))
     {
@@ -161,7 +162,7 @@ void te::edit::SplitPolygonTool::splitPolygon(std::size_t index)
 
   te::gm::Polygonizer(vgeoms.get(), outPolygons);
 
-  for (std::size_t i = 0; i < outPolygons.size(); i++)
+  for (std::size_t i = 0; i < outPolygons.size(); ++i)
   {
     outPolygons.at(i)->setSRID(m_layer->getSRID());
     if (outPolygons.at(i)->getSRID() != m_display->getSRID())

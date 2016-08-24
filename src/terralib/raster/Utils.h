@@ -35,6 +35,7 @@
 #include "../common/MathUtils.h"
 
 // STL
+#include <memory>
 #include <map>
 #include <vector>
 
@@ -167,6 +168,23 @@ namespace te
                                                  const te::gm::Polygon& pin,
                                                  const std::map<std::string, std::string>& rinfo,
                                                  const std::string& rType = std::string("GDAL"));
+    
+    /*!
+      \brief Creates a raster crop using a polygon delimiter.
+      
+      \param rin   The input raster.
+      \param geometries A vector of pointers to valid geometries.
+      \param rinfo The map of raster informations.
+      \param rType The name of the specific driver to create the raster.
+
+      \return A valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
+      \note The area outside the polygon will be filled with nodata values.
+      \note Accepted geometry types: te::gm::Polygon, te::gm::MultiPolygon.
+    */
+    TERASTEREXPORT std::unique_ptr< te::rst::Raster > CropRaster(const te::rst::Raster& rin, 
+      const std::vector< te::gm::Geometry const *> geometries,
+      const std::map<std::string, std::string>& rinfo,
+      const std::string& rType );    
 
     /*!
       \brief Creates a vector of random positions (points) inside the raster.
