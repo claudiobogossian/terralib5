@@ -241,22 +241,26 @@ void te::qt::widgets::StyleControllerWidget::onLibraryManagerClicked()
 }
 
 void te::qt::widgets::StyleControllerWidget::onExportClicked()
-{
-  QString styleFile = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("style (*.sld)"));
+{  
+  QString styleFile = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), "Style file (*.sld)");
 
-  if (!styleFile.isEmpty())
-    writeStyle(m_currentStyle, styleFile.toUtf8().constData());
-  else
+  if (styleFile.isEmpty())
     return;
 
+  QFileInfo info(styleFile);
+
+  if (info.suffix().isEmpty())
+    styleFile.append(".sld");
+
+  writeStyle(m_currentStyle, styleFile.toStdString());
 }
 
 void te::qt::widgets::StyleControllerWidget::onImportClicked()
 {
-  QString styleFile = QFileDialog::getOpenFileName(this, "Select a style file", "", "style (*.sld)");
+  QString styleFile = QFileDialog::getOpenFileName(this, "Select a style file", QDir::currentPath(), "Style file (*.sld)");
 
   if (!styleFile.isEmpty())
-    readStyle(styleFile.toUtf8().constData());
+    readStyle(styleFile.toStdString());
   else
     return;
 }

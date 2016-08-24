@@ -40,6 +40,7 @@
 #include "DataSource.h"
 #include "Globals.h"
 #include "Module.h"
+#include "Utils.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -110,6 +111,9 @@ void te::ogr::Module::startup()
   if(strcmp(currentValue, "") == 0) // to avoid override
     CPLSetConfigOption("GDAL_FIX_ESRI_WKT", "GEOGCS");
 #endif
+
+  // initializing the static mutex
+  getStaticMutex();
 
   TE_LOG_TRACE(TE_TR("TerraLib OGR driver startup!"));
 

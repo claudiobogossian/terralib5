@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(sobelFilter_test)
 
   std::map<std::string, std::string> auxRasterInfo;
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(sobelFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/rasters/terralib_unittest_rp_Filter_SobelFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_SobelFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(robertsFilter_test)
 
   std::map<std::string, std::string> auxRasterInfo;
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(robertsFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/rasters/terralib_unittest_rp_Filter_RobertsFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_RobertsFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(meanFilter_test)
 
   std::map<std::string, std::string> auxRasterInfo;
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(meanFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/rasters/terralib_unittest_rp_Filter_MeanFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_MeanFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(modeFilter_test)
 
   std::map<std::string, std::string> auxRasterInfo;
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(modeFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/rasters/terralib_unittest_rp_Filter_ModeFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_ModeFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE(medianFilter_test)
 
   std::map<std::string, std::string> auxRasterInfo;
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(medianFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/rasters/terralib_unittest_rp_Filter_MedianFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_MedianFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(dilationFilter_test)
 
   std::map<std::string, std::string> auxRasterInfo;
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(dilationFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/rasters/terralib_unittest_rp_Filter_DilationFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_DilationFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE(erosionFilter_test)
 
   std::map<std::string, std::string> auxRasterInfo;
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(erosionFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/rasters/terralib_unittest_rp_Filter_ErosionFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_ErosionFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE(userDefinedWindow_test)
 
   std::map<std::string, std::string> auxRasterInfo;
 
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE(userDefinedWindow_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/rasters/terralib_unittest_rp_Filter_UserDefinedWindow.tif";
+  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_UserDefinedWindow.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */

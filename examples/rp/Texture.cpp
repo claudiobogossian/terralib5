@@ -15,7 +15,7 @@ void Texture()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
     {

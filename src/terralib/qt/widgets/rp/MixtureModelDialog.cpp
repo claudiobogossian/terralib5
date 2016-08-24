@@ -223,7 +223,7 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
 // insert sensor description of band
       QComboBox *sensorComboBox = (QComboBox*) m_uiPtr->m_bandsListGroupBox->layout()->itemAt(i + 1)->widget();
 #if (QT_VERSION >= 0x050000)
-      algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toLatin1()));
+      algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toStdString()));
 #else
       algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toAscii()));
 #endif

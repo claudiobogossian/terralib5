@@ -143,6 +143,8 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::common::Traver
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
+  ds->setEncoding(this->getEncoding());
+
   return ds->getDataSet(m_datasetName, travType, accessPolicy);
 }
 
@@ -155,6 +157,8 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const std::string&
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  ds->setEncoding(this->getEncoding());
 
   return ds->getDataSet(m_datasetName, propertyName, e, r, travType, accessPolicy);
 }
@@ -169,6 +173,8 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const std::string&
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
+  ds->setEncoding(this->getEncoding());
+
   return ds->getDataSet(m_datasetName, propertyName, g, r, travType, accessPolicy);
 }
 
@@ -180,6 +186,8 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::da::Expression
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  ds->setEncoding(this->getEncoding());
 
   // Where clause
   te::da::Where* filter = new te::da::Where(restriction);
@@ -207,6 +215,8 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const te::da::Obje
   assert(oids);
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  ds->setEncoding(this->getEncoding());
 
   return ds->getDataSet(m_datasetName, oids, travType, accessPolicy);
 }

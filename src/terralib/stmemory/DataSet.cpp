@@ -64,14 +64,6 @@ te::stmem::DataSet::DataSet(const te::da::DataSetType* type, int tpPropIdx)
 {
   te::da::GetPropertyInfo(type, m_pnames, m_ptypes);
 
-  // Fill char-encodings
-  for(std::size_t i = 0; i < type->size(); ++i)
-  {
-    te::dt::StringProperty* p = dynamic_cast<te::dt::StringProperty*>(type->getProperty(i));
-    if(p != 0)
-      m_encodings[i] = p->getCharEncoding();
-  }
-
   //create the internal empty RTree 
   m_RTree.reset(new te::sam::rtree::Index<te::mem::DataSetItem*>());
 }
@@ -88,14 +80,6 @@ te::stmem::DataSet::DataSet(const te::da::DataSetType* type, int tpPropIdx, int 
     m_geomPropIdx(gmPropIdx)
 {
   te::da::GetPropertyInfo(type, m_pnames, m_ptypes);
-
-  // Fill char-encodings
-  for(std::size_t i = 0; i < type->size(); ++i)
-  {
-    te::dt::StringProperty* p = dynamic_cast<te::dt::StringProperty*>(type->getProperty(i));
-    if(p != 0)
-      m_encodings[i] = p->getCharEncoding();
-  }
 
   //create the internal empty RTree 
   m_RTree.reset(new te::sam::rtree::Index<te::mem::DataSetItem*>());
@@ -115,19 +99,11 @@ te::stmem::DataSet::DataSet( const te::da::DataSetType* type, int begTimePropIdx
 {
   te::da::GetPropertyInfo(type, m_pnames, m_ptypes);
 
-  // Fill char-encodings
-  for(std::size_t i = 0; i < type->size(); ++i)
-  {
-    te::dt::StringProperty* p = dynamic_cast<te::dt::StringProperty*>(type->getProperty(i));
-    if(p != 0)
-      m_encodings[i] = p->getCharEncoding();
-  }
-
   //create the internal empty RTree 
   m_RTree.reset(new te::sam::rtree::Index<te::mem::DataSetItem*>());
 }
 
-te::stmem::DataSet::DataSet(const std::vector<std::string>& pnames, const std::vector<int>& ptypes, const std::map<int, te::core::EncodingType>& encodings,
+te::stmem::DataSet::DataSet(const std::vector<std::string>& pnames, const std::vector<int>& ptypes,
                             int begTimePropIdx, int endTimePropIdx, int gmPropIdx)
   : m_items(),
     m_RTree(),  
@@ -135,7 +111,6 @@ te::stmem::DataSet::DataSet(const std::vector<std::string>& pnames, const std::v
     m_beforeFirst(true),  
     m_pnames(pnames),
     m_ptypes(ptypes),
-    m_encodings(encodings),
     m_begTimePropIdx(begTimePropIdx),
     m_endTimePropIdx(endTimePropIdx),
     m_geomPropIdx(gmPropIdx)
@@ -157,11 +132,6 @@ te::stmem::DataSet::DataSet(te::da::DataSet* ds, int tpPropIdx, int gmPropIdx, u
 {
   te::da::GetPropertyInfo(ds, m_pnames, m_ptypes);
 
-  // Fill char-encodings
-  for(std::size_t i = 0; i < m_ptypes.size(); ++i)
-    if(m_ptypes[i] == te::dt::STRING_TYPE)
-      m_encodings[i] = ds->getPropertyCharEncoding(i);
-  
   //create the internal empty RTree 
   m_RTree.reset(new te::sam::rtree::Index<te::mem::DataSetItem*>());
   
@@ -182,11 +152,6 @@ te::stmem::DataSet::DataSet(te::da::DataSet* ds, int begTimePropIdx, int endTime
 {
   te::da::GetPropertyInfo(ds, m_pnames, m_ptypes);
 
-  // Fill char-encodings
-  for(std::size_t i = 0; i < m_ptypes.size(); ++i)
-    if(m_ptypes[i] == te::dt::STRING_TYPE)
-      m_encodings[i] = ds->getPropertyCharEncoding(i);
-  
   //create the internal empty RTree 
   m_RTree.reset(new te::sam::rtree::Index<te::mem::DataSetItem*>());
   
@@ -201,7 +166,6 @@ te::stmem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
     m_beforeFirst(true),  
     m_pnames(rhs.m_pnames),
     m_ptypes(rhs.m_ptypes),
-    m_encodings(rhs.m_encodings),
     m_begTimePropIdx(rhs.m_begTimePropIdx),
     m_endTimePropIdx(rhs.m_endTimePropIdx),
     m_geomPropIdx(rhs.m_geomPropIdx)
@@ -230,7 +194,6 @@ te::stmem::DataSet& te::stmem::DataSet::operator= (const te::stmem::DataSet& oth
     m_beforeFirst = true;
     m_pnames = other.m_pnames;
     m_ptypes = other.m_ptypes;
-    m_encodings = other.m_encodings;
     m_begTimePropIdx = other.m_begTimePropIdx;
     m_endTimePropIdx = other.m_endTimePropIdx;
     m_geomPropIdx = other.m_geomPropIdx;
@@ -398,7 +361,7 @@ std::auto_ptr<te::stmem::DataSet> te::stmem::DataSet::filter(const te::gm::Envel
   std::vector<te::mem::DataSetItem*> report;
   m_RTree->search(*e, report);
 
-  std::auto_ptr<te::stmem::DataSet> result(new DataSet(m_pnames, m_ptypes, m_encodings, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
+  std::auto_ptr<te::stmem::DataSet> result(new DataSet(m_pnames, m_ptypes, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
 
   for(unsigned int i=0; i<report.size(); ++i)
     result->add(report[i]->clone().release());
@@ -414,7 +377,7 @@ std::auto_ptr<te::stmem::DataSet> te::stmem::DataSet::filter(const te::gm::Geome
   std::vector<te::mem::DataSetItem*> report;
   m_RTree->search(*g->getMBR(), report);
 
-  std::auto_ptr<te::stmem::DataSet> result(new DataSet(m_pnames, m_ptypes, m_encodings, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
+  std::auto_ptr<te::stmem::DataSet> result(new DataSet(m_pnames, m_ptypes, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
 
   for(unsigned int i=0; i<report.size(); ++i)
   {
@@ -430,7 +393,7 @@ std::auto_ptr<te::stmem::DataSet> te::stmem::DataSet::filter(const te::dt::DateT
   TimeToDataSetItemMap::const_iterator itb = m_items.end();
   TimeToDataSetItemMap::const_iterator ite = m_items.end();
 
-  std::auto_ptr<te::stmem::DataSet> result(new DataSet(m_pnames, m_ptypes, m_encodings, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
+  std::auto_ptr<te::stmem::DataSet> result(new DataSet(m_pnames, m_ptypes, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
   std::auto_ptr<te::dt::DateTime> dtaux(static_cast<te::dt::DateTime*>(dt->clone()));
 
   if(r==te::dt::AFTER) //2
@@ -524,7 +487,7 @@ std::auto_ptr<te::stmem::DataSet> te::stmem::DataSet::nearestObservations(const 
   }
   
   //After that, we get the first n observation of the result.
-  std::auto_ptr<te::stmem::DataSet> ds(new DataSet(m_pnames, m_ptypes, m_encodings, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
+  std::auto_ptr<te::stmem::DataSet> ds(new DataSet(m_pnames, m_ptypes, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
   std::multimap<long, TimeToDataSetItemMap::const_iterator>::iterator it = result.begin();
   numObs = 0;
   while(it != result.end() && numObs<n)
@@ -560,14 +523,6 @@ int te::stmem::DataSet::getPropertyDataType(std::size_t pos) const
 std::string te::stmem::DataSet::getPropertyName(std::size_t pos) const
 {
   return m_pnames[pos];
-}
-
-te::core::EncodingType te::stmem::DataSet::getPropertyCharEncoding(std::size_t i) const
-{
-  std::map<int, te::core::EncodingType>::const_iterator it = m_encodings.find(i);
-  assert(it != m_encodings.end());
-
-  return it->second;
 }
 
 std::string te::stmem::DataSet::getDatasetNameOfProperty(std::size_t /*pos*/) const

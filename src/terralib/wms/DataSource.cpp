@@ -172,11 +172,6 @@ std::vector<std::string> te::wms::DataSource::getDataSourceNames(const std::map<
   return std::vector<std::string>();
 }
 
-std::vector<te::core::EncodingType> te::wms::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  return std::vector<te::core::EncodingType>();
-}
-
 void te::wms::DataSource::verifyConnectionInfo() const
 {
   if(m_connectionInfo.empty())

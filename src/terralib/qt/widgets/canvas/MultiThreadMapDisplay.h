@@ -111,6 +111,8 @@ namespace te
 
           void updateLayer(te::map::AbstractLayerPtr layer, bool redraw = true);
 
+          void updateLayer(std::vector<te::map::AbstractLayerPtr> layers, bool redraw = true);
+
           void resizeEvent(QResizeEvent* e);
 
         private:

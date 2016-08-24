@@ -25,11 +25,11 @@
 
 // TerraLib
 #include "../Config.h"
+#include <terralib/dataaccess.h>
 #include <terralib/rp.h>
-#include <terralib/gdal.h>
-#include <terralib/gdal/Utils.h>
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
+#include <terralib/memory.h>
 
 // Boost
 #define BOOST_TEST_NO_MAIN
@@ -37,126 +37,194 @@
 
 BOOST_AUTO_TEST_SUITE (classifier_tests)
 
-/* Obs.: Can't find te::gdal::Vectorize. */
-
 /* This code is for image segmentation to be used with ISOSegClassifier function */
-//std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
-//{
-//  /* Define segmentation parameters */
+void SegmentImage(te::rst::Raster* rin, std::vector<te::gm::Polygon*>& polygons, 
+  std::vector< double >& polsValues )
+{
+ /* Define segmentation parameters */
 
-//  /* Create output raster info */
-//  std::map<std::string, std::string> orinfo;
-//  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmented.tif";
+ /* Create output raster info */
+ std::map<std::string, std::string> orinfo;
+ orinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop_segmented.tif";
 
-//  /* Input parameters */
+ /* Input parameters */
 
-//  te::rp::Segmenter::InputParameters algoInputParameters;
-//  algoInputParameters.m_inputRasterPtr = rin;
-//  algoInputParameters.m_inputRasterBands.push_back(0);
-//  algoInputParameters.m_inputRasterBands.push_back(1);
-//  algoInputParameters.m_inputRasterBands.push_back(2);
-//  algoInputParameters.m_enableBlockProcessing = false;
+ te::rp::Segmenter::InputParameters algoInputParameters;
+ algoInputParameters.m_inputRasterPtr = rin;
+ algoInputParameters.m_inputRasterBands.push_back(0);
+ algoInputParameters.m_inputRasterBands.push_back(1);
+ algoInputParameters.m_inputRasterBands.push_back(2);
+ algoInputParameters.m_enableBlockProcessing = false;
 
-//  /* Link specific parameters with chosen implementation */
-//  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters segparameters;
-//  segparameters.m_minSegmentSize = 50;
-//  segparameters.m_segmentsSimilarityThreshold = 0.10;
+ /* Link specific parameters with chosen implementation */
+ te::rp::SegmenterRegionGrowingMeanStrategy::Parameters segparameters;
+ segparameters.m_minSegmentSize = 50;
+ segparameters.m_segmentsSimilarityThreshold = 0.10;
 
-//  algoInputParameters.m_strategyName = "RegionGrowingMean";
-//  algoInputParameters.setSegStrategyParams(segparameters);
+ algoInputParameters.m_strategyName = "RegionGrowingMean";
+ algoInputParameters.setSegStrategyParams(segparameters);
 
-//  /* Output parameters */
+ /* Output parameters */
 
-//  te::rp::Segmenter::OutputParameters algoOutputParameters;
-//  algoOutputParameters.m_rInfo = orinfo;
-//  algoOutputParameters.m_rType = "GDAL";
+ te::rp::Segmenter::OutputParameters algoOutputParameters;
+ algoOutputParameters.m_rInfo = orinfo;
+ algoOutputParameters.m_rType = "GDAL";
 
-//  /* Execute the algorithm */
+ /* Execute the algorithm */
 
-//  te::rp::Segmenter seginstance;
+ te::rp::Segmenter seginstance;
 
-//  if(!seginstance.initialize(algoInputParameters)) throw;
-//  if(!seginstance.execute(algoOutputParameters )) throw;
+ if(!seginstance.initialize(algoInputParameters)) throw;
+ if(!seginstance.execute(algoOutputParameters )) throw;
 
-//  /* Export the segmentation into shapefile */
-//  std::vector<te::gm::Geometry*> geometries;
-//  te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get())->getGDALDataset()->GetRasterBand(1), geometries);
+ /* Export the segmentation into shapefile */
+ std::vector<te::gm::Geometry*> geometries;
+ algoOutputParameters.m_outputRasterPtr->vectorize( geometries, 0, 0, &polsValues );
 
-//  std::vector<te::gm::Polygon*> polygons;
-//  for (unsigned i = 0; i < geometries.size(); i++)
-//  {
-//    polygons.push_back(static_cast<te::gm::Polygon*> (geometries[i]));
-//    polygons[ i ]->setSRID( rin->getGrid()->getSRID() );
-//  }
+ for (unsigned i = 0; i < geometries.size(); i++)
+ {
+   polygons.push_back(static_cast<te::gm::Polygon*> (geometries[i]));
+ }
+}
 
-//  return polygons;
-//}
+void saveToShp( std::vector<te::gm::Polygon*> polygons, std::vector< double >& polygonsValues,
+  const std::string& shpBaseFileName )
+{
+  std::auto_ptr<te::da::DataSetType> dataSetTypePtr1(new te::da::DataSetType(shpBaseFileName));
+  
+  dataSetTypePtr1->add( new te::dt::SimpleProperty("value", te::dt::DOUBLE_TYPE, true) );  
+  dataSetTypePtr1->add( new te::dt::SimpleProperty("id", te::dt::DOUBLE_TYPE, true) );
+  dataSetTypePtr1->add( new te::gm::GeometryProperty("polygon", polygons[ 0 ]->getSRID(), 
+    te::gm::PolygonType, true) );  
+  
+  std::auto_ptr<te::da::DataSetType> dataSetTypePtr2( new te::da::DataSetType( *dataSetTypePtr1 ) );
+  
+  std::auto_ptr< te::mem::DataSet > memDataSetPtr( new te::mem::DataSet( dataSetTypePtr1.get()) );
+  
+  for( unsigned int polygonsIdx = 0 ; polygonsIdx < polygons.size() ; ++polygonsIdx )
+  {
+    te::mem::DataSetItem* dsItemPtr = new te::mem::DataSetItem(memDataSetPtr.get());
+    dsItemPtr->setDouble( 0, polygonsValues[ polygonsIdx ] );
+    dsItemPtr->setDouble( 1, polygonsIdx );
+    dsItemPtr->setGeometry( 2, (te::gm::Geometry*)polygons[ polygonsIdx ]->clone() );
+    
+    memDataSetPtr->add( dsItemPtr );
+  }
 
-//BOOST_AUTO_TEST_CASE(ISOSeg_test)
-//{
-//  /* First open the input image */
+  remove( ( shpBaseFileName + ".shx" ).c_str() );
+  remove( ( shpBaseFileName + ".shp" ).c_str() );
+  remove( ( shpBaseFileName + ".prj" ).c_str() );
+  remove( ( shpBaseFileName + ".dbf" ).c_str() );
+  
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = shpBaseFileName + ".shp";
+  
+  std::auto_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR") );
+  dsOGR->setConnectionInfo(connInfo);
+  dsOGR->open();
+  
+  memDataSetPtr->moveBeforeFirst();
+  
+  te::da::Create(dsOGR.get(), dataSetTypePtr2.get(), memDataSetPtr.get());
 
-//  std::map<std::string, std::string> rinfo;
-//  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  dsOGR->close();
+}  
 
-//  te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
+BOOST_AUTO_TEST_CASE(ISOSeg_test)
+{
+ /* First open the input image */
 
-//  /* Create output raster info */
+ std::map<std::string, std::string> rinfo;
+ rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
-//  std::map<std::string, std::string> orinfo;
-//  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_ISOSeg_Test.tif";
+ std::unique_ptr< te::rst::Raster > rin( te::rst::RasterFactory::open(rinfo) );
 
-//  /* To apply ISOSeg the image must be segmented */
-//  std::vector<te::gm::Polygon*> pin = SegmentImage(rin);
+ /* To apply ISOSeg the image must be segmented */
+ std::vector<te::gm::Polygon*> pin;
+ std::vector< double > polsValues;
+ SegmentImage(rin.get(), pin, polsValues );
+ saveToShp( pin, polsValues, "terralib_unittest_rp_Classifier_ISOSeg_Test" );
 
-//  /* Define classification parameters */
+ /* Define classification parameters */
 
-//  /* Input parameters */
-//  te::rp::Classifier::InputParameters algoInputParameters;
-//  algoInputParameters.m_inputRasterPtr = rin;
-//  algoInputParameters.m_inputRasterBands.push_back(0);
-//  algoInputParameters.m_inputRasterBands.push_back(1);
-//  algoInputParameters.m_inputRasterBands.push_back(2);
-//  algoInputParameters.m_inputPolygons = pin;
+ /* Input parameters */
+ te::rp::Classifier::InputParameters algoInputParameters;
+ algoInputParameters.m_inputRasterPtr = rin.get();
+ algoInputParameters.m_inputRasterBands.push_back(0);
+ algoInputParameters.m_inputRasterBands.push_back(1);
+ algoInputParameters.m_inputRasterBands.push_back(2);
+ algoInputParameters.m_inputPolygons = pin;
 
-//  /* Link specific parameters with chosen implementation */
+ /* Link specific parameters with chosen implementation */
 
-//  te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
-//  classifierparameters.m_acceptanceThreshold = 99.0;
+ te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
+ classifierparameters.m_acceptanceThreshold = 99.0;
+ algoInputParameters.m_strategyName = "isoseg";
+ 
+ // Mahalanobis distance test
 
-//  algoInputParameters.m_strategyName = "isoseg";
-//  algoInputParameters.setClassifierStrategyParams(classifierparameters);
+ {
+   classifierparameters.m_distanceType = 
+     te::rp::ClassifierISOSegStrategy::Parameters::MahalanobisDistanceType;
+   algoInputParameters.setClassifierStrategyParams(classifierparameters);   
+   
+   /* Output parameters */
+ 
+   std::map<std::string, std::string> orinfo;
+   orinfo["URI"] = 
+     "terralib_unittest_rp_Classifier_ISOSeg_Mahalanobis_Test.tif";
 
-//  /* Output parameters */
+   te::rp::Classifier::OutputParameters algoOutputParameters;
+   algoOutputParameters.m_rInfo = orinfo;
+   algoOutputParameters.m_rType = "GDAL";
 
-//  te::rp::Classifier::OutputParameters algoOutputParameters;
-//  algoOutputParameters.m_rInfo = orinfo;
-//  algoOutputParameters.m_rType = "GDAL";
+   /* Execute the algorithm */
 
-//  /* Execute the algorithm */
+   te::rp::Classifier algorithmInstance;
 
-//  te::rp::Classifier algorithmInstance;
+   BOOST_CHECK( algorithmInstance.initialize(algoInputParameters) );
+   BOOST_CHECK( algorithmInstance.execute(algoOutputParameters) );
+ }
+ 
+ // Bhattacharyya distance test
 
-//  BOOST_CHECK( algorithmInstance.initialize(algoInputParameters) );
-//  BOOST_CHECK( algorithmInstance.execute(algoOutputParameters) );
+ {
+   classifierparameters.m_distanceType = 
+     te::rp::ClassifierISOSegStrategy::Parameters::BhattacharyyaDistanceType;
+   algoInputParameters.setClassifierStrategyParams(classifierparameters);  
+   
+   /* Output parameters */
+ 
+   std::map<std::string, std::string> orinfo;
+   orinfo["URI"] = 
+     "terralib_unittest_rp_Classifier_ISOSeg_Bhattacharyya_Test.tif";
 
-//  /* Clean up */
-//  delete rin;
-//}
+   te::rp::Classifier::OutputParameters algoOutputParameters;
+   algoOutputParameters.m_rInfo = orinfo;
+   algoOutputParameters.m_rType = "GDAL";
+
+   /* Execute the algorithm */
+
+   te::rp::Classifier algorithmInstance;
+
+   BOOST_CHECK( algorithmInstance.initialize(algoInputParameters) );
+   BOOST_CHECK( algorithmInstance.execute(algoOutputParameters) );
+ } 
+}
 
 BOOST_AUTO_TEST_CASE(MAP_test)
 {
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
   /* Create output raster info */
 
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_MAP_Test.tif";
+  orinfo["URI"] = "terralib_unittest_rp_Classifier_MAP_Test.tif";
 
   /* Defining the classes samples */
 
@@ -244,14 +312,14 @@ BOOST_AUTO_TEST_CASE(EM_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
   /* Create output raster info */
 
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_EM_Test.tif";
+  orinfo["URI"] = "terralib_unittest_rp_Classifier_EM_Test.tif";
 
   /* Define classification parameters */
 
@@ -297,14 +365,14 @@ BOOST_AUTO_TEST_CASE(SAM_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
   /* Create output raster info */
 
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_SAM_Test.tif";
+  orinfo["URI"] = "terralib_unittest_rp_Classifier_SAM_Test.tif";
 
   /* Defining the classes samples */
 
@@ -376,14 +444,14 @@ BOOST_AUTO_TEST_CASE(KMeans_test)
   /* First open the input image */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
   /* Create output raster info */
 
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_KMeans_Test.tif";
+  orinfo["URI"] = "terralib_unittest_rp_Classifier_KMeans_Test.tif";
 
   /* Define classification parameters */
 

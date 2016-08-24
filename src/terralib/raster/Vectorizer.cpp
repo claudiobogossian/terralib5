@@ -122,11 +122,11 @@ bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons,
   std::vector<VectorizerPolygonStructure> containerPolygons;
 
 // creating a new RTree
-  te::sam::rtree::Index<unsigned int, 8, 4> rTreePolygons(*m_rasterPtr->getExtent());
+  te::sam::rtree::Index<std::size_t, 8, 4> rTreePolygons(*m_rasterPtr->getExtent());
 
   double currentPixelValue;
   int countObjects = 0;
-  std::vector<unsigned int> indexVec;
+  std::vector<std::size_t> indexVec;
   te::common::TaskProgress task(TE_TR("Vectorizing"), te::common::TaskProgress::UNDEFINED, m_nLines);
 
 // scanning rotulated image in row order to vectorize the cells

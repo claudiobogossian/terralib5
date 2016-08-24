@@ -216,11 +216,6 @@ std::string terralib4::TableDataSet::getPropertyName(std::size_t) const
   throw;
 }
 
-te::core::EncodingType terralib4::TableDataSet::getPropertyCharEncoding(std::size_t) const
-{
-  return te::core::EncodingType::UNKNOWN; // TODO
-}
-
 std::string terralib4::TableDataSet::getDatasetNameOfProperty(std::size_t) const
 {
   throw;

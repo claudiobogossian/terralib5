@@ -141,6 +141,7 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
     }
   }  
   
+  std::string wkt;
   if( srid == TE_UNKNOWN_SRS )
   {
     char* wktPtr = 0;
@@ -149,14 +150,14 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
     if( ogrReturn == OGRERR_NONE )
     {    
       std::pair< std::string, unsigned int > customSRID;
-      std::string projRefStr( wktPtr );
-      
+      wkt = std::string( wktPtr );
+
       OGRFree( wktPtr );
-      
+
       try
       {
         customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromWkt( 
-          projRefStr );
+          wkt);
         srid = (int)customSRID.second;
       }
       catch( te::common::Exception& )
@@ -165,6 +166,7 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
     }
   }  
   
+  std::string proj4;
   if( srid == TE_UNKNOWN_SRS )
   {
     char* proj4StrPtr = 0;
@@ -173,14 +175,14 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
     if( ogrReturn == OGRERR_NONE )
     {    
       std::pair< std::string, unsigned int > customSRID;
-      std::string projRefStr( proj4StrPtr );
+      proj4 = std::string ( proj4StrPtr );
       
       OGRFree( proj4StrPtr );
       
       try
       {
         customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt( 
-          projRefStr );
+          proj4);
         srid = (int)customSRID.second;
       }
       catch( te::common::Exception& )
@@ -212,6 +214,19 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
         else if (fsnorth == 0)
           srid = 31954+zone;
       }
+    }
+  }
+
+  if (srid == TE_UNKNOWN_SRS)
+  {
+    //if we have an Unkwnown SRID, but the WKT and PROJ4 representations of the SRS were correctly decoded,
+    //we have a valid user defined projection. Lets register it
+    if (wkt.empty() == false && proj4.empty() == false)
+    {
+      std::string strNewSRID = te::srs::SpatialReferenceSystemManager::getInstance().getNewUserDefinedSRID();
+      srid = boost::lexical_cast<int>(strNewSRID);
+      std::string newName = "USER:" + strNewSRID;
+      te::srs::SpatialReferenceSystemManager::getInstance().add(newName, proj4, wkt, srid, "USER");
     }
   }
   
@@ -349,16 +364,6 @@ te::dt::Property* te::ogr::Convert2TerraLib(OGRFieldDefn* fieldDef)
         sp = new te::dt::StringProperty(name, te::dt::STRING);
       else
         sp = new te::dt::StringProperty(name, te::dt::VAR_STRING, fieldDef->GetWidth());
-
-      //sp->setCharEncoding(te::core::EncodingType::UTF8); // GDAL/OGR handles strings internally in UTF-8 - *** Need review! ***
-
-      /* The original DBF standard defines to use ISO8859-1, and only ISO8859-1.
-         So, when you get a Shapefile that is really standards conform, it should be ISO8859-1.
-         Of course, this (very old) restriction is a not really usable nowadays.
-         ISO8859-1 - also called "Latin 1"
-         From: http://gis.stackexchange.com/questions/3529/which-character-encoding-is-used-by-the-dbf-file-in-shapefiles */
-      // for while...
-      sp->setCharEncoding(te::core::EncodingType::LATIN1);
 
       p = sp;
     }
@@ -646,25 +651,6 @@ std::string te::ogr::GetDriverName(const std::string& path)
   return "";
 }
 
-//std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate)
-//{
-//  std::vector<std::string> drivernames;
-//  
-//  int ndrivers = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-//  
-//  for (int i = 0; i < ndrivers; ++i)
-//  {
-//    OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriver(i);
-//    if (filterCreate && !driver->TestCapability(ODrCCreateDataSource))
-//      continue;
-//    if (filterCreate && !driver->GetMetadataItem(ODrCCreateDataSource))
-//      continue;
-//    drivernames.push_back(driver->GetName());
-//  }
-//  
-//  return drivernames;
-//}
-
 std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate)
 {
   std::vector<std::string> drivernames;
@@ -719,3 +705,8 @@ std::string te::ogr::RemoveSpatialSql(const std::string& sql)
   return newQuery;
 }
 
+TEOGREXPORT boost::mutex & te::ogr::getStaticMutex()
+{
+  static boost::mutex getStaticMutexStaticMutex;
+  return getStaticMutexStaticMutex;
+}

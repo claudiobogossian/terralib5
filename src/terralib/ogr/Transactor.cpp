@@ -39,6 +39,9 @@
 #include "Transactor.h"
 #include "Utils.h"
 
+//BOOST
+#include <boost/thread/locks.hpp>
+
 // OGR
 #include <ogrsf_frmts.h>
 
@@ -120,16 +123,32 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           bool /*connected*/,
                                           const te::common::AccessPolicy pol)
 {
+  boost::unique_lock< boost::mutex > lockGuard(getStaticMutex());
+
   if (!m_ogrDs->getOGRDataSource())
+  {
+    lockGuard.release();
+    getStaticMutex().unlock();
     return std::auto_ptr<te::da::DataSet>();
+  }
+
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(m_ogrDs->getEncoding()).c_str());
 
   unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
   GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
   if (!ds)
+  {
+    CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
     return std::auto_ptr<te::da::DataSet>();
+  }
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
+
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
+
+  lockGuard.release();
+  getStaticMutex().unlock();
 
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source."));
@@ -145,16 +164,32 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           bool /*connected*/,
                                           const te::common::AccessPolicy pol)
 {
+  boost::unique_lock< boost::mutex > lockGuard(getStaticMutex());
+
   if (!m_ogrDs->getOGRDataSource())
+  {
+    lockGuard.release();
+    getStaticMutex().unlock();
     return std::auto_ptr<te::da::DataSet>();
+  }
+
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(m_ogrDs->getEncoding()).c_str());
   
   unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
   GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
   if (!ds)
+  {
+    CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
     return std::auto_ptr<te::da::DataSet>();
+  }
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
+  
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
+
+  lockGuard.release();
+  getStaticMutex().unlock();
 
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source."));
@@ -172,16 +207,32 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           bool /*connected*/,
                                           const te::common::AccessPolicy pol)
 {
+  boost::unique_lock< boost::mutex > lockGuard(getStaticMutex());
+
   if (!m_ogrDs->getOGRDataSource())
+  {
+    lockGuard.release();
+    getStaticMutex().unlock();
     return std::auto_ptr<te::da::DataSet>();
-  
+  }
+
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(m_ogrDs->getEncoding()).c_str());
+
   unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
   GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
   if (!ds)
+  {
+    CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
     return std::auto_ptr<te::da::DataSet>();
+  }
 
   std::string sql = "SELECT FID, * FROM \"" + name + "\"";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
+
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
+
+  lockGuard.release();
+  getStaticMutex().unlock();
 
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source."));
@@ -200,13 +251,24 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
                                       bool /*connected*/,
                                       const te::common::AccessPolicy pol)
 {
+  boost::unique_lock< boost::mutex > lockGuard(getStaticMutex());
+
   if (!m_ogrDs->getOGRDataSource())
+  {
+    lockGuard.release();
+    getStaticMutex().unlock();
     return std::auto_ptr<te::da::DataSet>();
+  }
+
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(m_ogrDs->getEncoding()).c_str());
 
   unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
   GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
   if (!ds)
+  {
+    CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
     return std::auto_ptr<te::da::DataSet>();
+  }
 
   std::string sql;
 
@@ -217,9 +279,16 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
   sql = RemoveSpatialSql(sql);
 
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
+  
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
+
+  lockGuard.release();
+  getStaticMutex().unlock();
 
   if(layer == 0)
     throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
+
+  CPLSetConfigOption("SHAPE_ENCODING", "UTF-8");
 
   te::gm::Envelope* e = visitor.getMBR();
 
@@ -234,13 +303,24 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& que
                                       bool /*connected*/,
                                       const te::common::AccessPolicy pol)
 {
+  boost::unique_lock< boost::mutex > lockGuard(getStaticMutex());
+
   if (!m_ogrDs->getOGRDataSource())
+  {
+    lockGuard.release();
+    getStaticMutex().unlock();
     return std::auto_ptr<te::da::DataSet>();
+  }
+
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(m_ogrDs->getEncoding()).c_str());
 
   unsigned int ogropenflags = (pol == te::common::RWAccess || pol == te::common::WAccess) ? GDAL_OF_UPDATE : GDAL_OF_READONLY;
   GDALDataset* ds = (GDALDataset*)GDALOpenEx(m_ogrDs->getOGRDataSource()->GetDescription(), ogropenflags, NULL, NULL, NULL);
   if (!ds)
+  {
+    CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
     return std::auto_ptr<te::da::DataSet>();
+  }
   
   // Adding FID attribute case "SELECT *"
   std::string queryCopy = query;
@@ -252,6 +332,11 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& que
   }
 
   OGRLayer* layer = ds->ExecuteSQL(queryCopy.c_str(), 0, 0);
+  
+  CPLSetConfigOption("SHAPE_ENCODING", te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8).c_str());
+
+  lockGuard.release();
+  getStaticMutex().unlock();
 
   if(layer == 0)
   throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
@@ -1247,9 +1332,4 @@ void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet
 
 void te::ogr::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
-}
-
-te::core::EncodingType te::ogr::Transactor::getEncoding()
-{
-  return te::core::EncodingType::LATIN1;
 }

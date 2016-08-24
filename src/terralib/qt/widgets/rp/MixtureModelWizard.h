@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../Config.h"
 
 // STL
@@ -53,6 +54,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT MixtureModelWizard : public QWizard
       {
+        Q_OBJECT
+
         public:
 
           MixtureModelWizard(QWidget* parent);
@@ -67,6 +70,8 @@ namespace te
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
           void setLayer(te::map::AbstractLayerPtr layer);
 
         protected:
@@ -74,6 +79,14 @@ namespace te
           void addPages();
 
           bool execute();
+
+          void closeEvent(QCloseEvent* e);
+
+        signals:
+
+          void addLayer(te::map::AbstractLayerPtr layer);
+
+          void closeTool();
 
         private:
 

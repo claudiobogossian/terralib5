@@ -70,6 +70,7 @@
 #include "../../../geometry/Coord2D.h"
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/MixtureModel.h"
 #endif
@@ -93,7 +94,7 @@ namespace te
   {
     namespace widgets
     {
-      class RasterNavigatorDialog;
+      class RpToolsWidget;
 
       /*!
         \class MixtureModelWizardPage
@@ -138,6 +139,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
           te::map::AbstractLayerPtr get();
 
           te::rp::MixtureModel::InputParameters getInputParams();
@@ -162,9 +165,7 @@ namespace te
 
           void onRemoveToolButtonClicked();
 
-          void showNavigator(bool show);
-
-          void onNavigatorClosed();
+          void clearCanvas();
 
         protected:
 
@@ -179,7 +180,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::MixtureModelWizardPageForm> m_ui;
-          std::auto_ptr<te::qt::widgets::RasterNavigatorDialog> m_navigatorDlg;
+          std::auto_ptr<te::qt::widgets::RpToolsWidget> m_navigator;
 
           std::map<std::string, MixModelComponent > m_components;   //!< The map of selected components
           unsigned int m_countComponents;                           //!< The maximum number of components inserted.
@@ -187,6 +188,9 @@ namespace te
           te::map::AbstractLayerPtr m_layer;
           te::color::RGBAColor** m_rgbaMark;
           te::se::Mark* m_mark;
+
+          te::qt::widgets::Canvas* m_canvas;
+          te::qt::widgets::MapDisplay* m_mapDisplay;
       };
 
     } // end namespace widgets

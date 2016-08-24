@@ -59,12 +59,23 @@ void te::qt::widgets::ROIManagerDialog::setList(std::list<te::map::AbstractLayer
   m_widgetROIWidget->setList(layerList);
 }
 
+void te::qt::widgets::ROIManagerDialog::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_widgetROIWidget->setMapDisplay(mapDisplay);
+}
+
 void te::qt::widgets::ROIManagerDialog::set(te::map::AbstractLayerPtr layer)
 {
   m_widgetROIWidget->set(layer);
+}
+
+void te::qt::widgets::ROIManagerDialog::clearCanvas()
+{
+  m_widgetROIWidget->clearCanvas();
 }
 
 void te::qt::widgets::ROIManagerDialog::closeEvent(QCloseEvent* /*e*/)
 {
   emit roiManagerClosed();
 }
+

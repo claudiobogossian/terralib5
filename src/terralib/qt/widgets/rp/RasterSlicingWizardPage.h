@@ -171,6 +171,10 @@ namespace te
 
       private:
 
+        //No copy allowed
+        RasterSlicingWizardPage(const RasterSlicingWizardPage& rhs);
+        RasterSlicingWizardPage& operator=(const RasterSlicingWizardPage& rhs);
+
         te::gm::Envelope m_extent;  //!< The envelope that can be used to trim the output raster
         int m_srid;                 //!<  The current srid from the display
       };

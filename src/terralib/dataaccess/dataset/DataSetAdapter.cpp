@@ -87,11 +87,6 @@ std::string te::da::DataSetAdapter::getPropertyName(std::size_t pos) const
   return m_pnames[pos];
 }
 
-te::core::EncodingType te::da::DataSetAdapter::getPropertyCharEncoding(std::size_t i) const
-{
-  return te::core::EncodingType::UNKNOWN; // TODO!
-}
-
 std::string te::da::DataSetAdapter::getDatasetNameOfProperty(std::size_t pos) const
 {
   return "";

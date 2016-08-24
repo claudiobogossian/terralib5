@@ -163,6 +163,17 @@ te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getIn
 
     te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
     classifierparameters.m_acceptanceThreshold = m_ui->m_acceptanceThresholdComboBox->currentText().toDouble();
+    
+    if( m_ui->m_distanceTypeComboBox_->currentText() == "Mahalanobis" )
+    {
+      classifierparameters.m_distanceType = 
+        te::rp::ClassifierISOSegStrategy::Parameters::MahalanobisDistanceType;
+    }
+    else // Bhattacharyya
+    {
+      classifierparameters.m_distanceType = 
+        te::rp::ClassifierISOSegStrategy::Parameters::BhattacharyyaDistanceType;
+    }
 
     //get layer
     int idxLayer = m_ui->m_isosegLayersComboBox->currentIndex();
@@ -427,6 +438,11 @@ void te::qt::widgets::ClassifierWizardPage::onROIManagerClosed()
   m_ui->m_samAcquireToolButton->setChecked(false);
 }
 
+void te::qt::widgets::ClassifierWizardPage::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_roiMngDlg->setMapDisplay(mapDisplay);
+}
+
 void te::qt::widgets::ClassifierWizardPage::onRoiSetChanged(te::cl::ROISet* rs)
 {
   int idx = m_ui->m_classifierTypeComboBox->currentIndex();
@@ -540,5 +556,10 @@ void te::qt::widgets::ClassifierWizardPage::onRoiSetChanged(te::cl::ROISet* rs)
   }
 
   emit completeChanged();
+}
+
+void te::qt::widgets::ClassifierWizardPage::clearCanvas()
+{
+  m_roiMngDlg->clearCanvas();
 }
 

@@ -195,6 +195,13 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
   reader.next();
 
+  /* Encoding Element */
+  std::string encoding = te::map::serialize::ReadLayerEncoding(reader);
+  if (!encoding.empty())
+    reader.next();
+  else
+    encoding = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
+
   /* Grouping */
   te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
 
@@ -277,6 +284,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   layer->setCompositionMode((te::map::CompositionMode)compositionMode);
   layer->setStyle(style.release());
   layer->setSRID(srid);
+  layer->setEncoding(te::core::CharEncoding::getEncodingType(encoding));
     
   if(grouping)
     layer->setGrouping(grouping);
@@ -299,6 +307,13 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   reader.next();
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
   reader.next();
+
+  /* Encoding Element */
+  std::string encoding = te::map::serialize::ReadLayerEncoding(reader);
+  if (!encoding.empty())
+    reader.next();
+  else
+    encoding = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
 
   /* Grouping */
   te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
@@ -384,6 +399,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   layer->setRendererType(rendererId);
   layer->setCompositionMode((te::map::CompositionMode)compositionMode);
   layer->setStyle(style.release());
+  layer->setEncoding(te::core::CharEncoding::getEncodingType(encoding));
 
   if(grouping)
     layer->setGrouping(grouping);
