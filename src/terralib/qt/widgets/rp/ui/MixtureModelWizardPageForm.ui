@@ -264,10 +264,6 @@
                  <property name="text">
                   <string/>
                  </property>
-                 <property name="icon">
-                  <iconset>
-                   <normaloff>../../../../../../share/terralib/icons/terralib/scalable/edit_delete.svg</normaloff>../../../../../../share/terralib/icons/terralib/scalable/edit_delete.svg</iconset>
-                 </property>
                  <property name="checkable">
                   <bool>false</bool>
                  </property>

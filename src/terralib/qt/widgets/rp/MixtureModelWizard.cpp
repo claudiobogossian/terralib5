@@ -44,6 +44,7 @@
 // Qt
 #include <QApplication>
 #include <QMessageBox>
+#include <QActionGroup>
 
 //STL
 #include <memory>
@@ -71,7 +72,7 @@ te::qt::widgets::MixtureModelWizard::MixtureModelWizard(QWidget* parent)
 
 te::qt::widgets::MixtureModelWizard::~MixtureModelWizard()
 {
-
+  m_mixtureModelPage->clearCanvas();
 }
 
 bool te::qt::widgets::MixtureModelWizard::validateCurrentPage()
@@ -115,6 +116,11 @@ void te::qt::widgets::MixtureModelWizard::setList(std::list<te::map::AbstractLay
 void te::qt::widgets::MixtureModelWizard::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
 {
   m_mixtureModelPage->setMapDisplay(mapDisplay);
+}
+
+void te::qt::widgets::MixtureModelWizard::setActionGroup(QActionGroup* actionGroup)
+{
+  m_mixtureModelPage->setActionGroup(actionGroup);
 }
 
 void te::qt::widgets::MixtureModelWizard::setLayer(te::map::AbstractLayerPtr layer)
@@ -208,11 +214,4 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   QApplication::restoreOverrideCursor();
 
   return true;
-}
-
-void te::qt::widgets::MixtureModelWizard::closeEvent(QCloseEvent* e)
-{
-  m_mixtureModelPage->clearCanvas();
-
-  emit closeTool();
 }

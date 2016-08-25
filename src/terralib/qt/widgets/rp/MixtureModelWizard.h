@@ -36,6 +36,7 @@
 
 // Qt
 #include <QWizard>
+#include <QActionGroup>
 
 namespace te
 {
@@ -72,6 +73,8 @@ namespace te
 
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
 
+          void setActionGroup(QActionGroup* actionGroup);
+
           void setLayer(te::map::AbstractLayerPtr layer);
 
         protected:
@@ -80,13 +83,9 @@ namespace te
 
           bool execute();
 
-          void closeEvent(QCloseEvent* e);
-
         signals:
 
           void addLayer(te::map::AbstractLayerPtr layer);
-
-          void closeTool();
 
         private:
 
