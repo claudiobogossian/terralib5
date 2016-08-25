@@ -24,10 +24,9 @@
 */
 
 // Terralib
-#include "../../../qt/widgets/rp/ArithmeticOpWizard.h"
+#include "../../../qt/widgets/rp/ArithmeticOpDialogForm.h"
 #include "../../af/ApplicationController.h"
 #include "ArithmeticOpAction.h"
-
 
 // Qt
 #include <QtCore/QObject>
@@ -47,15 +46,19 @@ te::qt::plugins::rp::ArithmeticOpAction::~ArithmeticOpAction()
 
 void te::qt::plugins::rp::ArithmeticOpAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ArithmeticOpWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  te::qt::widgets::ArithmeticOpDialogForm dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+
+  connect(&dlg, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayer(te::map::AbstractLayerPtr)));
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
   dlg.setList( layersList );
-
-  if(dlg.exec() == QDialog::Accepted)
-  {
-    //add new layer
-    addNewLayer(dlg.getOutputLayer());
-  }
+  dlg.exec();
 }
+
+void te::qt::plugins::rp::ArithmeticOpAction::addLayer(te::map::AbstractLayerPtr outputLayer)
+{
+  //add new layer
+  addNewLayer(outputLayer);
+}
+

@@ -72,6 +72,8 @@ namespace te
 
           Ui::RasterHistogramWidgetForm* getForm() const;
 
+          void setChartInputColor(int red, int green, int blue);
+
           void setInputRaster(te::rst::Raster* raster);
 
           void setOutputRaster(te::rst::Raster* raster);
@@ -90,6 +92,7 @@ namespace te
 
           void updateMaximumValueLabel(QString value);
 
+          void clear();
 
         protected slots:
 
