@@ -88,17 +88,23 @@ namespace te
       \brief Defines some known UOM (Unit of Measure) codes.
 
       \note Values from 9001 to 9302 coincide with EPSG codes.
+      \note Used above 99xx values to represent area measure codes.
     */
     enum
     {
-      UOM_Metre        = 9001,
-      UOM_Foot         = 9002,
-      UOM_NauticalMile = 9030,
-      UOM_Kilometre    = 9036,
-      UOM_Yard         = 9096,
-      UOM_Radian       = 9101,
-      UOM_Degree       = 9102,
-      UOM_Unity        = 9201
+      UOM_Metre           = 9001,
+      UOM_Foot            = 9002,
+      UOM_NauticalMile    = 9030,
+      UOM_Kilometre       = 9036,
+      UOM_Yard            = 9096,
+      UOM_Radian          = 9101,
+      UOM_Degree          = 9102,
+      UOM_Unity           = 9201,
+      UOM_SquareMetre     = 9901,
+      UOM_SquareFoot      = 9902,
+      UOM_SquareKilometre = 9903,
+      UOM_Hectare         = 9904,
+      UOM_Acre            = 9905
     };
 
 
