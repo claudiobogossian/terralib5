@@ -399,6 +399,20 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( ( inputParamsPtr->m_windowH > 2 ) &&
         ( ( inputParamsPtr->m_windowH % 2 ) != 0 ),
         TE_TR( "Invalid mask window height" ) );
+      
+      TERP_TRUE_OR_RETURN_FALSE( 
+        ( 
+          inputParamsPtr->m_windowH 
+          <= 
+          inputParamsPtr->m_inRasterPtr->getNumberOfRows() 
+        ) 
+        &&
+        ( 
+          inputParamsPtr->m_windowW 
+          <= 
+          inputParamsPtr->m_inRasterPtr->getNumberOfColumns()
+        ),
+        TE_TR( "Invalid mask window sizes" ) );      
 
       TERP_TRUE_OR_RETURN_FALSE( ( inputParamsPtr->m_windowW > 2 ) &&
         ( ( inputParamsPtr->m_windowW % 2 ) != 0 ),
@@ -765,63 +779,110 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(),
         "Internal error" );
 
-      const unsigned int H = m_inputParameters.m_windowH;
-      const unsigned int W = m_inputParameters.m_windowW;
-
+      const unsigned int nRows = srcRaster.getNumberOfRows();
+      const unsigned int nCols = srcRaster.getNumberOfColumns();
+      const unsigned int windowHeight = m_inputParameters.m_windowH;
+      const unsigned int windowWidth = m_inputParameters.m_windowW;
+      const unsigned int windowRowRadius = ( windowHeight / 2 );
+      const unsigned int windowColRadius = ( windowWidth / 2 );
+      const unsigned int filterStartRowOffsetBound = nRows - windowHeight + 1;
+      const unsigned int filterStartColOffsetBound = nCols - windowWidth + 1;
+      const unsigned int validDataRowsBound = nRows - windowRowRadius;
+      const unsigned int validDataColsBound = nCols - windowColRadius;
+      unsigned int filterStartRow = 0;
+      unsigned int filterStartCol = 0;
+      unsigned int rowOffset = 0;
+      unsigned int colOffset = 0;
+      std::map< double , unsigned int > frequencies;
+      const te::rst::Band& srcBand = *( srcRaster.getBand( srcBandIdx ) );
+      te::rst::Band& dstBand = *( dstRaster.getBand( dstBandIdx ) );
+      const double srcNoDataValue = srcBand.getProperty()->m_noDataValue;
+      const double dstNoDataValue = dstBand.getProperty()->m_noDataValue;
+      double value = 0;
+      unsigned int row = 0;
+      unsigned int col = 0;
+      std::map< double , unsigned int >::iterator frequenciesIt;
+      std::map< double , unsigned int >::iterator frequenciesItEnd;
+      double higherFrequency = 0;
+      double higherFrequencyValue = 0;
+      
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
         task.reset( new te::common::TaskProgress(TE_TR("Mode Filter"),
-          te::common::TaskProgress::UNDEFINED, 100 ) );
-      }
-
-      unsigned int R = 0;
-      unsigned int C = 0;
-      const unsigned int MR = srcRaster.getNumberOfRows();
-      const unsigned int MC = srcRaster.getNumberOfColumns();
-
-      double dstBandAllowedMin = 0;
-      double dstBandAllowedMax = 0;
-      te::rp::GetDataTypeRange( dstRaster.getBand( dstBandIdx )->getProperty()->getType(), dstBandAllowedMin,
-        dstBandAllowedMax );
-
-      std::vector<double> pixels_in_window;
-      double pixel_mode = 0;
-
-      te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
-      te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);
-      te::rst::BandIteratorWindow<double> itend = te::rst::BandIteratorWindow<double>::end(band, W, H);
-
-      while (it != itend)
+          te::common::TaskProgress::UNDEFINED, filterStartRowOffsetBound + nRows ) );
+      }      
+      
+      for( row = 0 ; row < nRows ; ++row )
       {
-        R = it.getRow();
-        C = it.getColumn();
-
-        pixel_mode = it.getValue();
-        if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-            (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        for( col = 0 ; col < nCols ; ++col )
         {
-          pixels_in_window.clear();
-          for (int r = -1 * (int) (H / 2); r <= (int) (H / 2); r++)
-            for (int c = -1 * (int) (W / 2); c <= (int) (W / 2); c++)
-              pixels_in_window.push_back(it.getValue(c, r));
-          te::stat::NumericStatisticalSummary nss;
-          te::stat::Mode(pixels_in_window, nss);
-          if (nss.m_mode.size() > 0)
-            pixel_mode = nss.m_mode[0];
+          if( ( row < windowRowRadius ) || ( row >= validDataRowsBound ) ||
+            ( col < windowColRadius ) || ( col >= validDataColsBound ) )
+          {
+            dstBand.setValue( col, row, dstNoDataValue );
+          }
         }
-
-        pixel_mode = std::max( pixel_mode, dstBandAllowedMin );
-        pixel_mode = std::min( pixel_mode, dstBandAllowedMax );
-        dstRaster.setValue(C, R, pixel_mode, dstBandIdx);
-
+        
         if( useProgress )
         {
-          task->setCurrentStep( R / srcRaster.getNumberOfRows() );
+          task->pulse();
           if( !task->isActive() ) return false;
+        }         
+      }
+      
+      for( filterStartRow = 0 ; filterStartRow < filterStartRowOffsetBound ; ++filterStartRow )
+      {
+        for( filterStartCol = 0 ; filterStartCol < filterStartColOffsetBound ; ++filterStartCol )
+        {
+          frequencies.clear();
+          
+          for( rowOffset = 0 ; rowOffset < windowHeight ; ++rowOffset )
+          {
+            row = filterStartRow + rowOffset;
+            
+            for( colOffset = 0 ; colOffset < windowWidth ; ++colOffset )
+            {
+              col = filterStartCol + colOffset;
+              srcBand.getValue( col, row, value );
+              if( value != srcNoDataValue )
+              {
+                ++frequencies[ value ];
+              }
+            }
+          }
+          
+          frequenciesIt = frequencies.begin();
+          frequenciesItEnd = frequencies.end();
+          higherFrequency = 0;
+          while( frequenciesIt != frequenciesItEnd )
+          {
+            if( frequenciesIt->second > higherFrequency )
+            {
+              higherFrequency = frequenciesIt->second;
+              higherFrequencyValue = frequenciesIt->first;              
+            }
+            
+            ++frequenciesIt;
+          }
+          
+          if( higherFrequency == 0.0 )
+          {
+            dstBand.setValue( filterStartCol + windowColRadius, 
+              filterStartRow + windowRowRadius, dstNoDataValue );
+          }
+          else
+          {
+            dstBand.setValue( filterStartCol + windowColRadius, 
+              filterStartRow + windowRowRadius, higherFrequencyValue );
+          }
         }
-
-        ++it;
+        
+        if( useProgress )
+        {
+          task->pulse();
+          if( !task->isActive() ) return false;
+        }        
       }
 
       return true;
