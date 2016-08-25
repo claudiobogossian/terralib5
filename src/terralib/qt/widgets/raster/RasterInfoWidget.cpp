@@ -232,20 +232,19 @@ void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
       te::qt::widgets::GetFilePathFromSettings("rp_raster_info"), 
       te::qt::widgets::GetDiskRasterFileSelFilter(), 0 ,QFileDialog::ReadOnly).toStdString();
   }
-  
-  // Configure the interface
-  
+
+  // Configure the interface  
   if( ! m_originalFullFileName.empty() )
   {    
     boost::filesystem::path fullFilePath( m_originalFullFileName );
-    
+
     m_ui->m_fileNameLineEdit->setText(m_originalFullFileName.c_str());
     m_ui->m_nameLineEdit->setText(fullFilePath.stem().string().c_str());
 
     te::qt::widgets::AddFilePathToSettings(fullFilePath.parent_path().string().c_str(), 
       "rp_raster_info");    
   }  
-  
+
   updateRawRasterFileName();
 }
 

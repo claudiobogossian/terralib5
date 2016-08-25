@@ -99,7 +99,7 @@ bool te::edit::SubtractAreaTool::mouseReleaseEvent(QMouseEvent* e)
 {
   try
   {
-    if (m_mouseEventToSave != te::edit::mouseReleaseRightClick || e->button() != Qt::LeftButton)
+    if (m_mouseEventToSave != te::edit::mouseReleaseRightClick || e->button() != Qt::RightButton)
       return false;
 
     return subtractPolygon();

@@ -32,7 +32,6 @@
 #include "../raster/Raster.h"
 #include "../core/translator/Translator.h"
 #include "Config.h"
-#include "Band.h"
 #include "Raster.h"
 
 // GDAL
@@ -198,6 +197,16 @@ namespace te
       }
     }    
     
+    /*!
+    \brief A static map containing the drivers supported by GDAL.
+    */
+    static std::map< std::string, DriverMetadata >   m_driversMetadata;
+
+    /*!
+    \brief A static multimap containing the extensions supported by GDAL.
+    */
+    static std::multimap< std::string, std::string > m_extensions;
+
     /*!
      \brief Gets the grid definition from a GDAL dataset.
      \param gds A pointer to a GDAL dataset.
@@ -398,13 +407,13 @@ namespace te
      \brief Returns metadata from all registered GDAL drivers (key: driver name).
      \return Metadata from all registered GDAL drivers (key: driver name).
      */    
-    const std::map< std::string, DriverMetadata >& GetGDALDriversMetadata();
+    std::map< std::string, DriverMetadata >& GetGDALDriversMetadata();
     
     /*!
      \brief Returns a map all GDAL supported Upper-case extensions to their respective driver names.
      \return Returns a map all GDAL supported Upper-case extensions to their respective driver names.
      */    
-    const std::multimap< std::string, std::string >& GetGDALDriversUCaseExt2DriversMap();    
+    std::multimap< std::string, std::string >& GetGDALDriversUCaseExt2DriversMap();    
   } // end namespace gdal
 } // end namespace te
 #endif

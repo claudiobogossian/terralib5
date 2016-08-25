@@ -127,8 +127,9 @@ void te::gdal::Module::startup()
   // Supported file extensions capability
   
   std::set< std::string > supportedExtensionsSet;
+
   for( std::map< std::string, DriverMetadata >::const_iterator it = 
-    GetGDALDriversMetadata().begin() ; it != 
+    GetGDALDriversMetadata().begin() ; it !=
     GetGDALDriversMetadata().end() ; ++it )
   {
     if( !it->second.m_extension.empty() )

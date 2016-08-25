@@ -78,6 +78,22 @@ std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPt
   return res;
 }
 
+te::map::AbstractLayerPtr GetLayer(const te::da::DataSourceInfoPtr& info, std::string fileName)
+{
+  te::map::AbstractLayerPtr res;
+  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(info->getId(), info->getType(), info->getConnInfo());
+
+  te::da::DataSetTypePtr dss = ds->getDataSetType(fileName);
+
+  if (dss.get())
+  {
+    te::qt::widgets::DataSet2Layer layer(info->getId());
+    res = layer(dss);
+  }
+
+  return res;
+}
+
 void GetLayers(const te::da::DataSourceInfoPtr& info, std::list<te::map::AbstractLayerPtr>& layers)
 {
   std::list<te::map::AbstractLayerPtr> res;
@@ -122,22 +138,9 @@ void te::qt::plugins::gdal::Plugin::startup()
   e.m_actions << m_openMultipleFiles;
 
   emit triggered(&e);
-//  QAction* act = te::qt::af::AppCtrlSingleton::getInstance().findAction("Project.Add Layer.Tabular File");
-//  QMenu* mnu = te::qt::af::AppCtrlSingleton::getInstance().findMenu("Project.Add Layer");
-
-//  if(act != 0 && mnu != 0)
-//  {
-//    QWidget* parent = act->parentWidget();
-//    m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), parent);
-//    m_openFile->setObjectName("Project.Add Layer.Raster File");
-//    mnu->insertAction(act, m_openFile);
-//    //mnu->addAction(m_openFile);
-
-//    te::qt::af::AddActionToCustomToolbars(m_openFile);
 
     connect (m_openFile, SIGNAL(triggered()), SLOT(openFileDialog()));
     connect (m_openMultipleFiles, SIGNAL(triggered()), SLOT(openMultipleFilesDialog()));
-//  }
 }
 
 void te::qt::plugins::gdal::Plugin::shutdown()
@@ -151,20 +154,10 @@ void te::qt::plugins::gdal::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt GDAL widget shutdown!"));
 
   m_initialized = false;
-
-//  delete m_openFile;
 }
 
 void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
-//  te::qt::af::Project* proj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
-
-//  if(proj == 0)
-//  {
-//    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Raster File"), tr("Error: there is no opened project!"));
-//    return;
-//  }
-  
   std::auto_ptr< te::qt::widgets::RasterInfoDialog > diagPtr( 
     new te::qt::widgets::RasterInfoDialog( false,
     te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), 0 ) );
@@ -178,22 +171,13 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
   QStringList fileNames;
   fileNames << diagPtr->getWidget()->getFullName().c_str();
 
-//   QStringList fileNames = QFileDialog::getOpenFileNames(
-//     te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(),
-//     tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
-//     te::qt::widgets::GetDiskRasterFileSelFilter());
-// 
-//   if(fileNames.isEmpty())
-//     return;
-// 
-//   QFileInfo info(fileNames.value(0));
-
   te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "raster");
 
   std::list<te::map::AbstractLayerPtr> layers;
 
   for(QStringList::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
   {
+    te::map::AbstractLayerPtr layer;
     te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
 
     ds->setAccessDriver("GDAL");
@@ -222,17 +206,14 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     if(!te::da::DataSourceInfoManager::getInstance().add(ds))
       ds = te::da::DataSourceInfoManager::getInstance().getByConnInfo(ds->getConnInfoAsString());
 
-    GetLayers(ds, layers);
+    layer = GetLayer(ds, mpath.leaf().string());
+    if (layer.get())
+      layers.push_back(layer);
   }
 
   // If there is a parent folder layer that is selected, get it as the parent of the layer to be added;
   // otherwise, add the layer as a top level layer
   te::map::AbstractLayerPtr parentLayer(0);
-
-//  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::AppCtrlSingleton::getInstance().getProject()->getSelectedLayers();
-
-//  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
-//    parentLayer = selectedLayers.front();
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
