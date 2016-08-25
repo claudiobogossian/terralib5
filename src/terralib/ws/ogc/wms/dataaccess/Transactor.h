@@ -252,8 +252,6 @@ namespace te
 
           void optimize(const std::map<std::string, std::string>& opInfo);
 
-          te::core::EncodingType getEncoding();
-
         protected:
 
           std::vector<std::string> getLayerNames();
