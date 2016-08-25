@@ -443,6 +443,11 @@ void te::qt::widgets::ClassifierWizardPage::setMapDisplay(te::qt::widgets::MapDi
   m_roiMngDlg->setMapDisplay(mapDisplay);
 }
 
+void te::qt::widgets::ClassifierWizardPage::setActionGroup(QActionGroup* actionGroup)
+{
+  m_roiMngDlg->setActionGroup(actionGroup);
+}
+
 void te::qt::widgets::ClassifierWizardPage::onRoiSetChanged(te::cl::ROISet* rs)
 {
   int idx = m_ui->m_classifierTypeComboBox->currentIndex();

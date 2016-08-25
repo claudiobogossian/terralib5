@@ -72,6 +72,8 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
 {
   m_ui->setupUi(this);
 
+  m_mapDisplay = 0;
+
   m_ui->m_openLayerROIToolButton->setIcon(QIcon::fromTheme("folder-open"));
   m_ui->m_fileDialogToolButton->setIcon(QIcon::fromTheme("folder-open"));
   m_ui->m_removeROIToolButton->setIcon(QIcon::fromTheme("edit-deletetool"));
@@ -109,7 +111,7 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
   connect(m_navigator.get(), SIGNAL(geomAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
   connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
-  connect(m_navigator.get(), SIGNAL(pointPicked(double, double)), this, SLOT(onPointPicked(double, double)));
+  //connect(m_navigator.get(), SIGNAL(pointPicked(double, double)), this, SLOT(onPointPicked(double, double)));
 }
 
 te::qt::widgets::ROIManagerWidget::~ROIManagerWidget()
@@ -134,7 +136,19 @@ void te::qt::widgets::ROIManagerWidget::setMapDisplay(te::qt::widgets::MapDispla
 {
   m_navigator->setMapDisplay(mapDisplay);
   m_mapDisplay = mapDisplay;
+
+  connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
 }
+
+
+void te::qt::widgets::ROIManagerWidget::setActionGroup(QActionGroup* actionGroup)
+{
+  m_navigator->setActionGroup(actionGroup);
+
+  m_navigator->enableBoxAction();
+  m_navigator->enableGeomAction();
+}
+
 
 void te::qt::widgets::ROIManagerWidget::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {

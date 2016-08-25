@@ -45,11 +45,13 @@ te::qt::widgets::PolygonAcquire::PolygonAcquire(te::qt::widgets::MapDisplay* dis
   : AbstractTool(display, parent),
     m_isFinished(false)
 {
+  setCursor(Qt::ArrowCursor);
+
   // Setups the path style
   m_pen.setColor(QColor(0, 0, 0));
   m_pen.setWidth(2);
   m_brush = QColor(233, 88, 63, 80);
-
+  
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 }

@@ -52,6 +52,7 @@
 // Qt
 #include <QMessageBox>
 #include <QApplication>
+#include <QActionGroup>
 
 
 te::qt::widgets::ClassifierWizard::ClassifierWizard(QWidget* parent)
@@ -76,7 +77,7 @@ te::qt::widgets::ClassifierWizard::ClassifierWizard(QWidget* parent)
 
 te::qt::widgets::ClassifierWizard::~ClassifierWizard()
 {
-
+  m_classifierPage->clearCanvas();
 }
 
 bool te::qt::widgets::ClassifierWizard::validateCurrentPage()
@@ -114,6 +115,16 @@ void te::qt::widgets::ClassifierWizard::setList(std::list<te::map::AbstractLayer
   m_classifierPage->setList(layerList);
 }
 
+void te::qt::widgets::ClassifierWizard::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
+{
+  m_classifierPage->setMapDisplay(mapDisplay);
+}
+
+void te::qt::widgets::ClassifierWizard::setActionGroup(QActionGroup* actionGroup)
+{
+  m_classifierPage->setActionGroup(actionGroup);
+}
+
 te::map::AbstractLayerPtr te::qt::widgets::ClassifierWizard::getOutputLayer()
 {
   return m_outputLayer;
@@ -132,12 +143,6 @@ void te::qt::widgets::ClassifierWizard::addPages()
   //for contrast only one layer can be selected
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
 }
-
-void te::qt::widgets::ClassifierWizard::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
-{
-  m_classifierPage->setMapDisplay(mapDisplay);
-}
-
 
 bool te::qt::widgets::ClassifierWizard::execute()
 {
@@ -265,11 +270,4 @@ bool te::qt::widgets::ClassifierWizard::execute()
   QApplication::restoreOverrideCursor();
 
   return true;
-}
-
-void te::qt::widgets::ClassifierWizard::closeEvent(QCloseEvent* e)
-{
-  m_classifierPage->clearCanvas();
-
-  emit closeTool();
 }

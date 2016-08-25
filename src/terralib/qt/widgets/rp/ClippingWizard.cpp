@@ -52,7 +52,6 @@
 // Qt
 #include <QApplication>
 #include <QMessageBox>
-#include <QCloseEvent>
 #include <QActionGroup>
 
 
