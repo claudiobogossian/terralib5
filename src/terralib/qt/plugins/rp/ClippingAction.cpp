@@ -56,16 +56,22 @@ void te::qt::plugins::rp::ClippingAction::onActionActivated(bool checked)
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
   m_clippingWizard->setMapDisplay(ba->getMapDisplay());
 
+  connect(m_clippingWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
+
+  QActionGroup* m_mapEditionTools = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
+  assert(m_mapEditionTools);
+
+  m_clippingWizard->setActionGroup(m_mapEditionTools);
+
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
+
+  m_clippingWizard->setAttribute(Qt::WA_DeleteOnClose);
 
   m_clippingWizard->setList(layersList);
 
   m_clippingWizard->setModal(false);
 
   m_clippingWizard->show();
-
-  connect(m_clippingWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
-  connect(m_clippingWizard, SIGNAL(closeTool()), this, SLOT(closeTool()));
 }
 
 void te::qt::plugins::rp::ClippingAction::addLayerSlot(te::map::AbstractLayerPtr layer)
@@ -94,14 +100,5 @@ void te::qt::plugins::rp::ClippingAction::onPopUpActionActivated(bool checked)
   else
   {
     QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
-  }
-}
-
-void te::qt::plugins::rp::ClippingAction::closeTool()
-{
-  if (m_clippingWizard)
-  {
-    delete m_clippingWizard;
-    m_clippingWizard = 0;
   }
 }

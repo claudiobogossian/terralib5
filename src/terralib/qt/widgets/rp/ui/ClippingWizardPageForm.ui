@@ -408,7 +408,7 @@
                      <item row="3" column="0">
                       <widget class="QRadioButton" name="m_selectedGeomRadioButton">
                        <property name="text">
-                        <string>Use selecteds geometries</string>
+                        <string>Use selected geometries</string>
                        </property>
                       </widget>
                      </item>

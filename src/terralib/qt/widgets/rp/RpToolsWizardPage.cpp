@@ -30,6 +30,7 @@
 
 // Qt
 #include <QGridLayout>
+#include <qactiongroup.h>
 
 te::qt::widgets::RpToolsWizardPage::RpToolsWizardPage(QWidget* parent)
   : QWizardPage(parent)

@@ -39,6 +39,7 @@
 
 // Qt
 #include <QWizardPage>
+#include <QActionGroup>
 
 // Forward declaration
 namespace Ui { class ClippingWizardPageForm; }
@@ -89,6 +90,8 @@ namespace te
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
+          void setActionGroup(QActionGroup* actionGroup);
 
           te::map::AbstractLayerPtr get();
 
