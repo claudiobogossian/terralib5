@@ -505,13 +505,16 @@ namespace te
     bool ArithmeticOperations::isBinaryOperator( const std::string& inputToken ) const
     {
       return ( ( inputToken == "+" ) || ( inputToken == "-" ) || 
-        ( inputToken == "*" ) || ( inputToken == "/" ) ) ? 
+        (inputToken == "*") || (inputToken == "/") || (inputToken == "^")) ?
         true : false;
     }
 
     bool ArithmeticOperations::isUnaryOperator( const std::string& inputToken ) const
     {
-      return false;
+      return ((inputToken == "sqrt") || (inputToken == "sin") || (inputToken == "asin") ||
+        (inputToken == "cos") || (inputToken == "acos") || (inputToken == "log") ||
+        (inputToken == "tan") || (inputToken == "atan") || (inputToken == "ln")) ?
+        true : false;
     }
 
     bool ArithmeticOperations::op1HasGreaterOrEqualPrecedence( const std::string& operator1, 
@@ -603,6 +606,10 @@ namespace te
       else if( token == "/" )
       {
         binOptFunctPtr = &ArithmeticOperations::divisionBinOp;
+      }
+      else if (token == "^")
+      {
+        binOptFunctPtr = &ArithmeticOperations::exponencialBinOp;
       }
       else
       {
@@ -854,12 +861,168 @@ namespace te
       }
       
       return true;
-    }    
+    }
 
     bool ArithmeticOperations::execUnaryOperator( const std::string& token, ExecStackT& 
       execStack, bool generateOutput ) const
     {
-      return false;
+      if (execStack.size() != 1)
+      {
+        return false;
+      }
+
+      ExecStackElement sElem = execStack.top();
+      execStack.pop();
+
+      // Choosing the binary operator function
+
+      UnaryOpFuncPtrT unaryOptFunctPtr = 0;
+
+      if (token == "sqrt")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::sqrtUnaryOp;
+      }
+      else if (token == "sin")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::sinUnaryOp;
+      }
+      else if (token == "asin")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::asinUnaryOp;
+      }
+      else if (token == "cos")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::cosUnaryOp;
+      }
+      else if (token == "acos")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::acosUnaryOp;
+      }
+      else if (token == "log")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::logUnaryOp;
+      }
+      else if (token == "tan")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::tanUnaryOp;
+      }
+      else if (token == "atan")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::atanUnaryOp;
+      }
+      else if (token == "ln")
+      {
+        unaryOptFunctPtr = &ArithmeticOperations::lnUnaryOp;
+      }
+      else
+      {
+        TERP_LOG_AND_RETURN_FALSE("Invalid operator");
+      }
+
+      // executing the choosen operator
+
+      ExecStackElement outElement;
+      outElement.m_isRaster = true;
+      outElement.m_rasterBand = 0;
+
+      if (generateOutput)
+      {
+        if (sElem.m_isRaster)
+        {
+          TERP_TRUE_OR_RETURN_FALSE(execUnaryOperatorRaster(
+            *sElem.m_rasterNPtr, sElem.m_rasterBand, 
+            unaryOptFunctPtr, outElement.m_rasterHandler),
+            "Operator execution error");
+          outElement.m_rasterNPtr = outElement.m_rasterHandler.get();
+        }
+        else
+        {
+          TERP_LOG_AND_RETURN_FALSE("Invalid stack elements");
+        }
+      }
+
+      execStack.push(outElement);
+
+      return true;
+    }
+
+    bool ArithmeticOperations::execUnaryOperatorRaster(
+      const te::rst::Raster& inRaster,
+      const unsigned int bandIdx,
+      const UnaryOpFuncPtrT unaryOptFunctPtr,
+      std::auto_ptr<te::rst::Raster>& outRasterPtr) const
+    {
+      if (!allocResultRaster(*inRaster.getGrid(), outRasterPtr))
+      {
+        return false;
+      }
+
+        const unsigned int nRows = inRaster.getNumberOfRows();
+        const unsigned int nCols = inRaster.getNumberOfColumns();
+        const te::rst::Band& inBand = *inRaster.getBand(bandIdx);
+        te::rst::Band& outBand = *outRasterPtr->getBand(0);
+        const double inNoData = inBand.getProperty()->m_noDataValue;
+        const double outNoData = outBand.getProperty()->m_noDataValue;
+        unsigned int row = 0;
+        unsigned int col = 0;
+        double value = 0;
+        double outValue = 0;
+
+        for (row = 0; row < nRows; ++row)
+        {
+          for (col = 0; col < nCols; ++col)
+          {
+            inBand.getValue(col, row, value);
+
+            if ((value != inNoData))
+            {
+              (this->*unaryOptFunctPtr)(value, outValue);
+              outBand.setValue(col, row, outValue);
+            }
+            else
+            {
+              outBand.setValue(col, row, outNoData);
+            }
+          }
+        }
+
+      return true;
+    }
+
+    bool ArithmeticOperations::execUnaryOperatorReal(
+      const double value, const UnaryOpFuncPtrT unaryOptFunctPtr,
+      std::auto_ptr<te::rst::Raster>& outRasterPtr,
+      const bool realNumberIsRigthtTerm) const
+    {
+      const unsigned int nRows = outRasterPtr->getNumberOfRows();
+      const unsigned int nCols = outRasterPtr->getNumberOfColumns();
+      te::rst::Band& outBand = *outRasterPtr->getBand(0);
+      const double outNoData = outBand.getProperty()->m_noDataValue;
+      unsigned int row = 0;
+      unsigned int col = 0;
+      double value1 = 0;
+      double outValue = 0;
+
+      if (realNumberIsRigthtTerm)
+      {
+        for (row = 0; row < nRows; ++row)
+        {
+          for (col = 0; col < nCols; ++col)
+          {
+            if (value != outNoData)
+            {
+              (this->*unaryOptFunctPtr)(value, outValue);
+              outBand.setValue(col, row, outValue);
+            }
+            else
+            {
+              outBand.setValue(col, row, outNoData);
+            }
+          }
+        }
+      }
+
+      return true;
     }
 
     bool ArithmeticOperations::isRealNumberToken( const std::string& token, double& realValue ) const

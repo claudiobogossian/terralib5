@@ -100,6 +100,3 @@ target_link_libraries(terralib_unittest_rp terralib_mod_geometry
 add_test(NAME terralib_unittest_rp
          COMMAND terralib_unittest_rp
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/rp COMPONENT devel)

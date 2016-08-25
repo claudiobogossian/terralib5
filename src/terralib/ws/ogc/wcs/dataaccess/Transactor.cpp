@@ -354,11 +354,6 @@ bool te::ws::ogc::wcs::da::Transactor::dataSetExists(const std::string& name)
   return false;
 }
 
-te::core::EncodingType te::ws::ogc::wcs::da::Transactor::getEncoding()
-{
-  return te::core::EncodingType::UNKNOWN;
-}
-
 /** NOT SUPPORTED METHODS */
 //@{
 
