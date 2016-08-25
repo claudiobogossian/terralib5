@@ -18,16 +18,14 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build the Unit Test for the Edition.
+#  Description: Build the Unit-Test for the Edition Library.
 #
-#  Author: Thiago Aloizio Barbosa <thiago.aloi@funcate.org.br>
+#  Author: Thiago Aloizio Barbosa
 #
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
 
-include_directories(${Boost_INCLUDE_DIR}
-                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
-
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/edit/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/edit/*.h)
@@ -46,6 +44,3 @@ target_link_libraries(terralib_unittest_edit  terralib_mod_plugin
 add_test(NAME terralib_unittest_edit
          COMMAND terralib_unittest_edit
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/edit COMPONENT devel)
