@@ -256,6 +256,11 @@ te::color::RGBAColor te::map::RasterTransform::getMono2ThreeBand(double icol, do
 
     fixValue(val);
 
+    if(std::isnan(val))
+    {
+      return te::color::RGBAColor();
+    }
+
     te::color::RGBAColor c(static_cast<int>(val), static_cast<int>(val), static_cast<int>(val), static_cast<int>(m_transp));
 
     return c;
