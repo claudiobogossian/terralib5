@@ -69,7 +69,7 @@ namespace te
 
             CoverageDescription coverageDescription(const std::string coverageName);
 
-            void setCoverageRequest(const CoverageRequest coverageRequest);
+            void setCoverageRequest(const te::ws::ogc::wcs::CoverageRequest coverageRequest);
 
             te::da::DataSource* getDataSource() const;
 
