@@ -181,7 +181,7 @@ namespace te
         }
         
         m_inputParameters.m_geomTransfName = 
-          m_uiPtr->m_geomTransfNameComboBox->currentText().toStdString();
+          m_uiPtr->m_geomTransfNameComboBox->currentText().toUtf8().data();
           
         m_inputParameters.m_geometryFilterAssurance = 
           m_uiPtr->m_geometryFilterAssuranceLineEdit->text().toDouble();

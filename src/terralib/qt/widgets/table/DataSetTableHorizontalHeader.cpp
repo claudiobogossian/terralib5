@@ -143,7 +143,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
         m_connInfo = ds->getConnectionInfo();
         QString connInfo;
         connInfo.setNum((unsigned long long)&m_connInfo);
-        mimeData->setData("DataSourceConnInfo", connInfo.toStdString().c_str());
+        mimeData->setData("DataSourceConnInfo", connInfo.toUtf8().data());
         std::string lname(m_layer->getSchema()->getName());
         mimeData->setData("LayerName", lname.c_str());
         std::string ltytle(m_layer->getTitle());
@@ -157,14 +157,14 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
       size_t col = logicalIndexAt(e->pos());
       QString s;
       s.setNum(col);
-      mimeData->setData("FieldNumber", s.toStdString().c_str());
+      mimeData->setData("FieldNumber", s.toUtf8().data());
 
       std::string colName = m_dset->getPropertyName(col);
       mimeData->setData("FieldName", colName.c_str());
 
       int propType = m_dset->getPropertyDataType(col);
       s.setNum(propType);
-      mimeData->setData("FieldType", s.toStdString().c_str());
+      mimeData->setData("FieldType", s.toUtf8().data());
 
       QDrag drag(this);
       drag.setMimeData(mimeData);
@@ -219,7 +219,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::dropEvent(QDropEvent *e)
     return;
 
   const QMimeData* mdata = e->mimeData();
-  std::string text = mdata->text().toStdString();
+  std::string text = mdata->text().toUtf8().data();
   if(text == "TerraView: Link Table")
   {
     e->setDropAction(Qt::LinkAction);

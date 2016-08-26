@@ -183,7 +183,7 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     ds->setAccessDriver("GDAL");
 
     std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toStdString();
+    dsinfo["URI"] = it->toUtf8().data();
 
     ds->setConnInfo(dsinfo);
 
@@ -195,7 +195,7 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 
     ds->setId(id);
 
-    boost::filesystem::path mpath(it->toStdString());
+    boost::filesystem::path mpath(it->toUtf8().data());
 
     std::string fileBaseName = mpath.stem().string();
 
@@ -246,7 +246,7 @@ void te::qt::plugins::gdal::Plugin::openMultipleFilesDialog()
     ds->setAccessDriver("GDAL");
 
     std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toStdString();
+    dsinfo["URI"] = it->toUtf8().data();
 
     ds->setConnInfo(dsinfo);
 
@@ -258,7 +258,7 @@ void te::qt::plugins::gdal::Plugin::openMultipleFilesDialog()
 
     ds->setId(id);
 
-    boost::filesystem::path mpath(it->toStdString());
+    boost::filesystem::path mpath(it->toUtf8().data());
 
     std::string fileBaseName = mpath.stem().string();
 

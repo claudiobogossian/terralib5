@@ -78,5 +78,5 @@ std::string te::qt::af::XMLFormatter::format(const std::string &s, const bool& e
 {
   return (encode) ?
         QUrl::toPercentEncoding(s.c_str()).data() :
-        QUrl::fromPercentEncoding(QByteArray(s.c_str())).toStdString();
+        QUrl::fromPercentEncoding(QByteArray(s.c_str())).toUtf8().data();
 }

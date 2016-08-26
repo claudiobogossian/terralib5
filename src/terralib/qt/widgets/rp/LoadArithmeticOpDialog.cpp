@@ -117,7 +117,7 @@ void te::qt::widgets::LoadArithmeticOpDialog::onOperationComboBoxActivated(QStri
   m_ui->m_gainLineEdit->setText("");
   m_ui->m_offsetLineEdit->setText("");
 
-  std::string op = operation.toStdString();
+  std::string op = operation.toUtf8().data();
 
   std::vector<std::string> arithExpVec;
   boost::split(arithExpVec, op, boost::is_any_of(" "));
@@ -132,7 +132,7 @@ void te::qt::widgets::LoadArithmeticOpDialog::onOperationComboBoxActivated(QStri
       bool exist = false;
       for (int j = 0; j < m_ui->m_layersTableWidget->rowCount(); j++)
       {
-        std::string header = m_ui->m_layersTableWidget->verticalHeaderItem(j)->text().toStdString();
+        std::string header = m_ui->m_layersTableWidget->verticalHeaderItem(j)->text().toUtf8().data();
         if (rasterVec[0] == header)
           exist = true;
       }
@@ -271,7 +271,7 @@ void te::qt::widgets::LoadArithmeticOpDialog::onOkPushButtonClicked()
   m_operationExt = "";
   m_operation = "";
 
-  std::string operation = m_ui->m_operationComboBox->currentText().toStdString();
+  std::string operation = m_ui->m_operationComboBox->currentText().toUtf8().data();
 
   std::vector<std::string> arithExpVec;
   boost::split(arithExpVec, operation, boost::is_any_of(" "));
@@ -280,13 +280,13 @@ void te::qt::widgets::LoadArithmeticOpDialog::onOkPushButtonClicked()
   {
     if (te::common::Convert2LCase(arithExpVec[i]) == "gain")
     {
-      m_operationExt += " " + m_ui->m_gainLineEdit->text().toStdString();
-      m_operation += " " + m_ui->m_gainLineEdit->text().toStdString();
+      m_operationExt += " " + std::string(m_ui->m_gainLineEdit->text().toUtf8().data());
+      m_operation += " " + std::string(m_ui->m_gainLineEdit->text().toUtf8().data());
     }
     else if (te::common::Convert2LCase(arithExpVec[i]) == "offset")
     {
-      m_operationExt += " " + m_ui->m_offsetLineEdit->text().toStdString();
-      m_operation += " " + m_ui->m_offsetLineEdit->text().toStdString();
+      m_operationExt += " " + std::string(m_ui->m_offsetLineEdit->text().toUtf8().data());
+      m_operation += " " + std::string(m_ui->m_offsetLineEdit->text().toUtf8().data());
     }
     else
     {
@@ -304,15 +304,15 @@ void te::qt::widgets::LoadArithmeticOpDialog::onOkPushButtonClicked()
 
         for (int j = 0; j < nrows; j++)
         {
-          std::string header = m_ui->m_layersTableWidget->verticalHeaderItem(j)->text().toStdString();
+          std::string header = m_ui->m_layersTableWidget->verticalHeaderItem(j)->text().toUtf8().data();
 
           if (header == layerVec[0])
           {
             int index = m_layersComboBox[j]->currentIndex();
             m_mapLayer.insert(std::map<std::string, te::map::AbstractLayer*>::value_type(header, m_layers[index].get()));
 
-            m_operationExt += " " + m_layersComboBox[j]->currentText().toStdString() + ":B" + m_bandsComboBox[j]->currentText().toStdString();
-            m_operation += " " + m_ui->m_layersTableWidget->verticalHeaderItem(j)->text().toStdString() + ":" + m_bandsComboBox[j]->currentText().toStdString();
+            m_operationExt += " " + std::string(m_layersComboBox[j]->currentText().toUtf8().data()) + ":B" + m_bandsComboBox[j]->currentText().toUtf8().data();
+            m_operation += " " + std::string(m_ui->m_layersTableWidget->verticalHeaderItem(j)->text().toUtf8().data()) + ":" + m_bandsComboBox[j]->currentText().toUtf8().data();
             break;
           }
         }

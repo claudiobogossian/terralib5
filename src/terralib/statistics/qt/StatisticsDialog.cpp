@@ -111,7 +111,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
     }
     else
     {
-      throw te::common::Exception(tr("The selected column is empty.").toStdString());
+      throw te::common::Exception(tr("The selected column is empty.").toUtf8().data());
     }
   }
   else
@@ -237,7 +237,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
     }
     else
     {
-      throw te::common::Exception(tr("The selected column is empty.").toStdString());
+      throw te::common::Exception(tr("The selected column is empty.").toUtf8().data());
     }
   }
   m_ui->m_statTableWidget->resizeColumnToContents(0);
@@ -245,7 +245,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 
 void te::stat::StatisticsDialog::onSavePushButtonClicked()
 {
-  throw te::common::Exception(tr("Under development - It should save the result...").toStdString());
+  throw te::common::Exception(tr("Under development - It should save the result...").toUtf8().data());
 }
 
 void te::stat::StatisticsDialog::onCancelPushButtonClicked()

@@ -70,7 +70,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGeopackageToo
 
   //list gpkg datasets
   std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = fileName.toStdString();
+  connInfo["URI"] = fileName.toUtf8().data();
 
   std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("GPKG");
   dsGPKG->setConnectionInfo(connInfo);
@@ -98,7 +98,7 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGeopackageToo
 
 void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onGatheringComboBoxActivated(int index)
 {
-  std::string connInfo = m_ui->m_gatheringComboBox->itemData(index).toString().toStdString();
+  std::string connInfo = m_ui->m_gatheringComboBox->itemData(index).toString().toUtf8().data();
 
   for (int i = 0; i < m_ui->m_layerComboBox->count(); ++i)
   {
@@ -122,14 +122,14 @@ void te::qt::plugins::terramobile::GeoPackageSynchronizerDialog::onSynchronizePu
 {
   //input ds
   std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = m_ui->m_geopackageLineEdit->text().toStdString();
+  connInfo["URI"] = m_ui->m_geopackageLineEdit->text().toUtf8().data();
 
   std::auto_ptr<te::da::DataSource> dsGPKG = te::da::DataSourceFactory::make("GPKG");
   dsGPKG->setConnectionInfo(connInfo);
   dsGPKG->open();
 
   //input dataset
-  std::string inputDs = m_ui->m_gatheringComboBox->currentText().toStdString();
+  std::string inputDs = m_ui->m_gatheringComboBox->currentText().toUtf8().data();
 
   //output ds
   QVariant varLayer = m_ui->m_layerComboBox->currentData(Qt::UserRole);

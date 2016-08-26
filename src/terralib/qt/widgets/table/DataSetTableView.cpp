@@ -1154,16 +1154,16 @@ void te::qt::widgets::DataSetTableView::renameColumn(const int& column)
 {
   RenameColumnDialog dlg(parentWidget());
 
-  dlg.setOldColumnName(QString::fromStdString(m_dset->getPropertyName(column)));
+  dlg.setOldColumnName(QString::fromUtf8(m_dset->getPropertyName(column).c_str()));
 
   if(dlg.exec() == QDialog::Accepted)
   {
-    std::string oldName = dlg.getOldName().toStdString();
-    std::string newName = dlg.getNewName().toStdString();
+    std::string oldName = dlg.getOldName().toUtf8().data();
+    std::string newName = dlg.getNewName().toUtf8().data();
     te::da::DataSourcePtr dsrc = GetDataSource(m_layer);
 
     if(dsrc.get() == 0)
-      throw Exception(tr("Fail to get data source.").toStdString());
+      throw Exception(tr("Fail to get data source.").toUtf8().data());
 
     if(!dsrc->isPropertyNameValid(newName))
     {
@@ -1198,7 +1198,7 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
   prp = schema->getProperty(column);
 
   if(prp == 0)
-    throw Exception(tr("Fail to get property of the dataset.").toStdString());
+    throw Exception(tr("Fail to get property of the dataset.").toUtf8().data());
 
   columnName = prp->getName();
 
@@ -1211,7 +1211,7 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
     te::da::DataSourcePtr dsrc = GetDataSource(m_layer);
 
     if(dsrc.get() == 0)
-      throw Exception(tr("Fail to get data source.").toStdString());
+      throw Exception(tr("Fail to get data source.").toUtf8().data());
 
     setDataSet(0);
 
@@ -1255,9 +1255,9 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     te::da::DataSourcePtr dsrc = GetDataSource(m_layer);
 
     if(dsrc.get() == 0)
-      throw Exception(tr("Fail to get data source.").toStdString());
+      throw Exception(tr("Fail to get data source.").toUtf8().data());
 
-    std::string sql = "UPDATE " + dsetName + " SET " + columnName + " = " + dlg.getExpression().toStdString();
+    std::string sql = "UPDATE " + dsetName + " SET " + columnName + " = " + dlg.getExpression().toUtf8().data();
 
     try
     {
@@ -1516,7 +1516,7 @@ void te::qt::widgets::DataSetTableView::sortByColumns(const bool& asc)
     std::auto_ptr<te::da::DataSet> dset = GetDataSet(m_layer, m_orderby, asc);
 
     if(dset.get() == 0)
-      throw te::common::Exception(tr("Sort operation not supported by the source of data.").toStdString());
+      throw te::common::Exception(tr("Sort operation not supported by the source of data.").toUtf8().data());
 
     setDataSet(dset.release());
 
@@ -1564,18 +1564,18 @@ void te::qt::widgets::DataSetTableView::addColumn()
       te::da::DataSourcePtr ds = GetDataSource(m_layer);
 
       if(ds.get() == 0)
-        throw te::common::Exception(tr("Fail to get data source of the layer.").toStdString());
+        throw te::common::Exception(tr("Fail to get data source of the layer.").toUtf8().data());
 
       std::auto_ptr<te::dt::Property> p(dlg.getNewProperty());
 
       if(p->getName().empty())
-        throw te::common::Exception(tr("Name must not be empty.").toStdString());
+        throw te::common::Exception(tr("Name must not be empty.").toUtf8().data());
 
       if(!ds->isPropertyNameValid(p->getName()))
-        throw te::common::Exception(tr("The property name is invalid.").toStdString());
+        throw te::common::Exception(tr("The property name is invalid.").toUtf8().data());
 
       if(ds->propertyExists(dsName, p->getName()))
-        throw te::common::Exception(tr("There already exists a property with this name.").toStdString());
+        throw te::common::Exception(tr("There already exists a property with this name.").toUtf8().data());
 
       ds->addProperty(dsName, p.get());
 
@@ -1602,7 +1602,7 @@ void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
       te::da::DataSourcePtr ds = GetDataSource(m_layer);
 
       if(ds.get() == 0)
-        throw te::common::Exception(tr("Fail to get data source of the layer.").toStdString());
+        throw te::common::Exception(tr("Fail to get data source of the layer.").toUtf8().data());
 
       std::auto_ptr<te::da::DataSetType> ds_t = m_layer->getSchema();
       std::string dsName = ds_t->getName();
@@ -1673,7 +1673,7 @@ void te::qt::widgets::DataSetTableView::saveEditions()
     te::da::DataSourcePtr ds = GetDataSource(m_layer);
 
     if(ds.get() == 0)
-      throw te::common::Exception(tr("Fail to get data source from layer").toStdString());
+      throw te::common::Exception(tr("Fail to get data source from layer").toUtf8().data());
 
     te::da::ObjectIdSet* objs = 0;
 

@@ -121,7 +121,7 @@ void te::qt::widgets::DataSetWidget::setDataSetNames(std::vector<std::pair<std::
     {
       QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(j, 2);
 
-      if(itemName->text().toStdString() == list[j].second)
+      if(itemName->text().toUtf8().data() == list[j].second)
       {
         QMessageBox::warning(this, tr("Query Editor"), tr("Data Set Alias already defined!"));
         return;
@@ -137,10 +137,10 @@ void te::qt::widgets::DataSetWidget::setDataSetNames(std::vector<std::pair<std::
     connect(removeBtn, SIGNAL(clicked()), this, SLOT(onRemoveDataSetPushButtonClicked()));
     m_ui->m_dataSetTableWidget->setCellWidget(newrow, 0, removeBtn);
 
-    QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromStdString(list[i].first));
+    QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromUtf8(list[i].first.c_str()));
     m_ui->m_dataSetTableWidget->setItem(newrow, 1, itemDataSet);
 
-    QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromStdString(list[i].second));
+    QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromUtf8(list[i].second.c_str()));
     m_ui->m_dataSetTableWidget->setItem(newrow, 2, itemAlias);
 
     m_ui->m_dataSetTableWidget->resizeColumnToContents(0);
@@ -158,11 +158,11 @@ void te::qt::widgets::DataSetWidget::getDataSetNames(std::vector<std::pair<std::
   {
     //alias name
     QTableWidgetItem* itemAlias = m_ui->m_dataSetTableWidget->item(i, 2);
-    std::string alias = itemAlias->text().toStdString();
+    std::string alias = itemAlias->text().toUtf8().data();
 
     //data set name
     QTableWidgetItem* itemDataSet = m_ui->m_dataSetTableWidget->item(i, 1);
-    std::string dataSetName = itemDataSet->text().toStdString();
+    std::string dataSetName = itemDataSet->text().toUtf8().data();
 
     list.push_back(std::pair<std::string, std::string> (dataSetName, alias));
   }
@@ -172,8 +172,8 @@ void te::qt::widgets::DataSetWidget::onDataSetComboBoxActivated(const QString& v
 {
   if(value.isEmpty() == false)
   {
-    std::string dataSetName = value.toStdString();
-    std::string aliasName = value.toStdString();
+    std::string dataSetName = value.toUtf8().data();
+    std::string aliasName = value.toUtf8().data();
 
     std::size_t pos = dataSetName.find(".");
     if(pos != std::string::npos)
@@ -199,8 +199,8 @@ void te::qt::widgets::DataSetWidget::onAddDataSetPushButtonClicked()
     return;
   }
 
-  std::string dataSetName = m_ui->m_dataSetComboBox->currentText().toStdString();
-  std::string aliasName = m_ui->m_dataSetAliasLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_dataSetComboBox->currentText().toUtf8().data();
+  std::string aliasName = m_ui->m_dataSetAliasLineEdit->text().toUtf8().data();
 
   int newrow = m_ui->m_dataSetTableWidget->rowCount();
 
@@ -209,7 +209,7 @@ void te::qt::widgets::DataSetWidget::onAddDataSetPushButtonClicked()
   {
     QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(i, 2);
 
-    if(itemName->text().toStdString() == aliasName)
+    if(itemName->text().toUtf8().data() == aliasName)
     {
       QMessageBox::warning(this, tr("Query Builder"), tr("Data Set Alias already defined."));
       return;
@@ -225,10 +225,10 @@ void te::qt::widgets::DataSetWidget::onAddDataSetPushButtonClicked()
   connect(removeBtn, SIGNAL(clicked()), this, SLOT(onRemoveDataSetPushButtonClicked()));
   m_ui->m_dataSetTableWidget->setCellWidget(newrow, 0, removeBtn);
 
-  QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromStdString(dataSetName));
+  QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromUtf8(dataSetName.c_str()));
   m_ui->m_dataSetTableWidget->setItem(newrow, 1, itemDataSet);
 
-  QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromStdString(aliasName));
+  QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromUtf8(aliasName.c_str()));
   m_ui->m_dataSetTableWidget->setItem(newrow, 2, itemAlias);
 
   m_ui->m_dataSetTableWidget->resizeColumnToContents(0);

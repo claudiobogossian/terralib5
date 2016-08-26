@@ -262,7 +262,7 @@ bool te::qt::widgets::RasterizationWizard::execute()
       color.setRgb(it->second[1], it->second[2], it->second[3]);
 
       double dataDouble = it->second[0];
-      std::string colorStr = color.name().toStdString();
+      std::string colorStr = color.name().toUtf8().data();
 
       te::se::MapItem* m = new te::se::MapItem();
       m->setValue(new te::se::ParameterValue(colorStr));

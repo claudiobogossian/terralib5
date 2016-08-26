@@ -103,7 +103,7 @@ te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayerPtr layer) :
 
   updateChart();
 
-  m_toolTip = BuildToolIip(this).toStdString();
+  m_toolTip = BuildToolIip(this).toUtf8().data();
 }
 
 te::qt::widgets::LayerItem::~LayerItem()

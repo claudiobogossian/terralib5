@@ -128,7 +128,7 @@ void te::qt::widgets::SymbolSelectorDialog::onLoadSymbolLibraryPushButtonPressed
 
   try
   {
-     ReadSymbolLibrary(path.toStdString());
+     ReadSymbolLibrary(path.toUtf8().data());
      initialize();
   }
   catch(te::common::Exception& e)
@@ -159,7 +159,7 @@ void te::qt::widgets::SymbolSelectorDialog::initialize()
   std::map<std::string, SymbolLibrary*>::const_iterator itLibrary;
   for(itLibrary = iteratorsLibrary.first; itLibrary != iteratorsLibrary.second; ++itLibrary) // for each library
   {
-    QString libraryName = QString::fromStdString(itLibrary->second->getName());
+    QString libraryName = QString::fromUtf8(itLibrary->second->getName().c_str());
 
     QTreeWidgetItem* libraryItem = new QTreeWidgetItem(m_ui->m_symbolLibraryTreeWidget, LIBRARY);
     libraryItem->setText(0, libraryName);
@@ -234,14 +234,14 @@ te::qt::widgets::Symbol* te::qt::widgets::SymbolSelectorDialog::getSymbolFromIte
   QString name = parent->data(0, Qt::UserRole).toString();
   assert(!name.isEmpty());
 
-  SymbolLibrary* symbolLibrary = SymbolLibraryManager::getInstance().findByName(name.toStdString());
+  SymbolLibrary* symbolLibrary = SymbolLibraryManager::getInstance().findByName(name.toUtf8().data());
   assert(symbolLibrary);
 
   // Gets the symbol
   QString id = item->data(0, Qt::UserRole).toString();
   assert(!id.isEmpty());
 
-  Symbol* symbol = symbolLibrary->findById(id.toStdString());
+  Symbol* symbol = symbolLibrary->findById(id.toUtf8().data());
   assert(symbol);
 
   return symbol;

@@ -108,7 +108,7 @@ void te::qt::widgets::DataSetAdapterWidget::onRemoveToolButtonClicked()
   if(m_ui->m_tableWidget->currentRow() == -1)
     return;
 
-  std::string propName = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 1)->text().toStdString();
+  std::string propName = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 1)->text().toUtf8().data();
 
   m_dataSetConverter->remove(propName);
 
@@ -131,7 +131,7 @@ void te::qt::widgets::DataSetAdapterWidget::onDownToolButtonClicked()
 
 void te::qt::widgets::DataSetAdapterWidget::onCellClicked(int row, int col)
 {
-  std::string propName = m_ui->m_tableWidget->item(row, 1)->text().toStdString();
+  std::string propName = m_ui->m_tableWidget->item(row, 1)->text().toUtf8().data();
 
   std::vector<std::string> nap;
 
@@ -153,27 +153,27 @@ void te::qt::widgets::DataSetAdapterWidget::buidTypeMap()
 {
    m_typeMap.clear();
 
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::ARRAY_TYPE, tr("Array").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::BIT_TYPE, tr("Bit").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::BOOLEAN_TYPE, tr("Boolean").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, tr("Byte Array").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::CHAR_TYPE, tr("Char").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::COMPOSITE_TYPE, tr("Composite").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATASET_TYPE, tr("Data Set").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, tr("Date and Time").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, tr("Double").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::FLOAT_TYPE, tr("Float").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, tr("Geometry").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT16_TYPE, tr("Int 16").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, tr("Int 32").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, tr("Int 64").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, tr("Numeric").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::RASTER_TYPE, tr("Raster").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, tr("String").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UCHAR_TYPE, tr("U Char").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT16_TYPE, tr("U Int 16").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT32_TYPE, tr("U Int 32").toStdString()));
-   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT64_TYPE, tr("U Int 64").toStdString()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::ARRAY_TYPE, tr("Array").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::BIT_TYPE, tr("Bit").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::BOOLEAN_TYPE, tr("Boolean").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, tr("Byte Array").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::CHAR_TYPE, tr("Char").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::COMPOSITE_TYPE, tr("Composite").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATASET_TYPE, tr("Data Set").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, tr("Date and Time").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, tr("Double").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::FLOAT_TYPE, tr("Float").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, tr("Geometry").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT16_TYPE, tr("Int 16").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, tr("Int 32").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, tr("Int 64").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, tr("Numeric").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::RASTER_TYPE, tr("Raster").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, tr("String").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UCHAR_TYPE, tr("U Char").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT16_TYPE, tr("U Int 16").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT32_TYPE, tr("U Int 32").toUtf8().data()));
+   m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT64_TYPE, tr("U Int 64").toUtf8().data()));
 }
 
 void te::qt::widgets::DataSetAdapterWidget::fillDataSetTable()
@@ -197,7 +197,7 @@ void te::qt::widgets::DataSetAdapterWidget::fillDataSetTable()
     itemCheck->setIcon(QIcon::fromTheme("check"));
     m_ui->m_tableWidget->setItem(newrow, 0, itemCheck);
 
-    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(propName));
+    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromUtf8(propName.c_str()));
     itemName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     m_ui->m_tableWidget->setItem(newrow, 1, itemName);
 
@@ -220,7 +220,7 @@ void te::qt::widgets::DataSetAdapterWidget::fillDataSetTable()
     itemCheck->setIcon(QIcon::fromTheme("delete"));
     m_ui->m_tableWidget->setItem(newrow, 0, itemCheck);
 
-    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(nonAdaptedProperties[i]));
+    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromUtf8(nonAdaptedProperties[i].c_str()));
     itemName->setFlags(Qt::ItemIsEnabled);
     m_ui->m_tableWidget->setItem(newrow, 1, itemName);
   }

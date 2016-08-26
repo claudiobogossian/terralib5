@@ -77,7 +77,7 @@ void te::qt::widgets::CheckGeomValidityDialog::setLayers(std::list<te::map::Abst
 
   if (selectedLayer)
   {
-    m_ui->m_layersComboBox->setCurrentText(QString::fromStdString(selectedLayer->getTitle()));
+    m_ui->m_layersComboBox->setCurrentText(QString::fromUtf8(selectedLayer->getTitle().c_str()));
   }
 }
 

@@ -26,7 +26,7 @@ te::qt::af::AbstractSettingWidget* te::qt::af::ToolbarsWidgetFactory::build()
 }
 
 te::qt::af::ToolbarsWidgetFactory::ToolbarsWidgetFactory() :
-te::qt::af::SettingsWidgetsFactory(QObject::tr("Tool bars").toStdString())
+te::qt::af::SettingsWidgetsFactory(QObject::tr("Tool bars").toUtf8().data())
 {
 
 }

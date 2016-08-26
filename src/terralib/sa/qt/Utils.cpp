@@ -332,7 +332,7 @@ void te::sa::CreateKernelColorMaping(te::map::AbstractLayerPtr layer)
     if(i == colorVec.size() - 1)
     {
       QString rangeStr = legVec[i - 1]->getUpperLimit().c_str();
-      std::string colorStr = color.name().toStdString();
+      std::string colorStr = color.name().toUtf8().data();
 
       te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -344,7 +344,7 @@ void te::sa::CreateKernelColorMaping(te::map::AbstractLayerPtr layer)
     else
     {
       QString rangeStr = legVec[i]->getLowerLimit().c_str();
-      std::string colorStr = color.name().toStdString();
+      std::string colorStr = color.name().toUtf8().data();
 
       te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 

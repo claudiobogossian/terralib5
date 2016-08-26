@@ -4,6 +4,7 @@
 #include "Animation.h"
 #include "../canvas/MapDisplay.h"
 #include "../canvas/Canvas.h"
+#include "../../../core/encoding/CharEncoding.h"
 
 // Qt
 #include <QtCore/QPropertyAnimation>
@@ -85,7 +86,7 @@ bool te::qt::widgets::Eta5kmItem::getCtlParameters()
 {
   char buf[500];
   QString file(m_dir.path() + "/Prec5km.ctl");
-  FILE* fp = fopen(file.toStdString().c_str(), "r");
+  FILE* fp = fopen(te::core::CharEncoding::fromUTF8(file.toUtf8().data()).c_str(), "r");
   if (fp == 0)
     return false;
 
@@ -111,7 +112,7 @@ bool te::qt::widgets::Eta5kmItem::getCtlParameters()
   if (pos != -1)
   {
     s = ss.left((int)pos);
-    m_undef = atof(s.toStdString().c_str());
+    m_undef = atof(s.toUtf8().data());
     ss.remove(0, (int)pos);
 
     // get srid
@@ -119,7 +120,7 @@ bool te::qt::widgets::Eta5kmItem::getCtlParameters()
     ss.remove(0, (int)pos);
     pos = ss.indexOf("xdef ", Qt::CaseInsensitive);
     s = ss.left((int)pos);
-    m_SRID = atoi(s.toStdString().c_str());
+    m_SRID = atoi(s.toUtf8().data());
     ss.remove(0, (int)pos);
   }
   else
@@ -130,18 +131,18 @@ bool te::qt::widgets::Eta5kmItem::getCtlParameters()
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
   s = ss.left((int)pos);
-  m_ncols = atoi(s.toStdString().c_str());
+  m_ncols = atoi(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   pos = ss.indexOf("linear ", Qt::CaseInsensitive) + strlen("linear ");
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
   s = ss.left((int)pos);
-  double llx = atof(s.toStdString().c_str());
+  double llx = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
   pos = ss.indexOf("ydef ", Qt::CaseInsensitive);
   s = ss.left((int)pos);
-  double resX = atof(s.toStdString().c_str());
+  double resX = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   // get YDEF uly and resY values
@@ -149,18 +150,18 @@ bool te::qt::widgets::Eta5kmItem::getCtlParameters()
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
   s = ss.left((int)pos);
-  m_nlines = atoi(s.toStdString().c_str());
+  m_nlines = atoi(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   pos = ss.indexOf("linear ", Qt::CaseInsensitive) + strlen("linear ");
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
   s = ss.left((int)pos);
-  double lly = atof(s.toStdString().c_str());
+  double lly = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
   pos = ss.indexOf("zdef ", Qt::CaseInsensitive);
   s = ss.left((int)pos);
-  double resY = atof(s.toStdString().c_str());
+  double resY = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   double w = (double)m_ncols * resX;
@@ -227,7 +228,7 @@ void te::qt::widgets::Eta5kmItem::loadCurrentImage()
       auxFile.remove(0, (int)pos);
       pos = auxFile.indexOf("_");
       size_t pp = auxFile.indexOf(".bin");
-      int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toStdString().c_str());
+      int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toUtf8().data());
       size_t fileSize = m_nlines * m_ncols * 4 + 8; // dado � float e desprepreza 4 bytes iniciais e 4 bytes finais
       offset *= (int)fileSize;
       auxFile.remove((int)pos, auxFile.length() - (int)pos);
@@ -235,7 +236,7 @@ void te::qt::widgets::Eta5kmItem::loadCurrentImage()
 
       size_t nchars = m_ncols * 4;
       uchar* buf = new uchar[nchars];
-      FILE* fp = fopen(auxFile.toStdString().c_str(), "rb");
+      FILE* fp = fopen(te::core::CharEncoding::fromUTF8(auxFile.toUtf8().data()).c_str(), "rb");
       fseek(fp, offset, SEEK_SET);
       fseek(fp, 4, SEEK_CUR); // despreza 4 bytes da primeira linha
       m_image = new QImage((int)m_ncols, (int)m_nlines, QImage::Format_ARGB32);

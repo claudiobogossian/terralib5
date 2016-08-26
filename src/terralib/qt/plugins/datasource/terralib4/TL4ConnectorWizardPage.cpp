@@ -87,7 +87,7 @@ void te::qt::plugins::terralib4::TL4ConnectorWizardPage::onDirectoryPushButtonCl
 
   m_ui->m_dbComboBox->addItem(fileName);
 
-  boost::filesystem::path p(fileName.toStdString());
+  boost::filesystem::path p(fileName.toUtf8().data());
 
   p = p.filename();
 
@@ -187,12 +187,12 @@ std::map<std::string, std::string> te::qt::plugins::terralib4::TL4ConnectorWizar
 {
   std::map<std::string, std::string> connInfo;
 
-  connInfo["T4_DRIVER"] = getDriverName(m_ui->m_databaseTypeComboBox->currentText().toStdString());
-  connInfo["T4_DB_NAME"] = m_ui->m_dbComboBox->currentText().toStdString();
-  connInfo["T4_HOST"] = m_ui->m_hostLineEdit->text().toStdString();
-  connInfo["T4_PORT"] = m_ui->m_portLineEdit->text().toStdString();
-  connInfo["T4_USER"] = m_ui->m_userLineEdit->text().toStdString();
-  connInfo["T4_PASSWORD"] = m_ui->m_passwordLineEdit->text().toStdString();
+  connInfo["T4_DRIVER"] = getDriverName(m_ui->m_databaseTypeComboBox->currentText().toUtf8().data());
+  connInfo["T4_DB_NAME"] = m_ui->m_dbComboBox->currentText().toUtf8().data();
+  connInfo["T4_HOST"] = m_ui->m_hostLineEdit->text().toUtf8().data();
+  connInfo["T4_PORT"] = m_ui->m_portLineEdit->text().toUtf8().data();
+  connInfo["T4_USER"] = m_ui->m_userLineEdit->text().toUtf8().data();
+  connInfo["T4_PASSWORD"] = m_ui->m_passwordLineEdit->text().toUtf8().data();
 
   return connInfo;
 }

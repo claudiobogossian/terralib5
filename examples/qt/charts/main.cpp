@@ -85,12 +85,12 @@ void generateHistogram(te::da::DataSet* dataset, te::da::DataSourceTransactor* t
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
-  chartStyle->setTitle(QString::fromStdString("Histogram"));
-  chartStyle->setAxisX(QString::fromStdString(renda));
-  chartStyle->setAxisY(QString::fromStdString("Frequency"));
+  chartStyle->setTitle(QString::fromUtf8("Histogram"));
+  chartStyle->setAxisX(QString::fromUtf8(renda.c_str()));
+  chartStyle->setAxisY(QString::fromUtf8("Frequency"));
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromUtf8("Histogram"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
 
@@ -118,12 +118,12 @@ void generateScatter(te::da::DataSet* dataset, te::da::DataSourceTransactor* tra
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
-  chartStyle->setTitle(QString::fromStdString("Scatter"));
-  chartStyle->setAxisX(QString::fromStdString(renda));
-  chartStyle->setAxisY(QString::fromStdString(anosest));
+  chartStyle->setTitle(QString::fromUtf8("Scatter"));
+  chartStyle->setAxisX(QString::fromUtf8(renda.c_str()));
+  chartStyle->setAxisY(QString::fromUtf8(anosest.c_str()));
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromUtf8("Scatter"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
 

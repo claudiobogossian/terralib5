@@ -184,7 +184,7 @@ void te::qt::widgets::QueryDataSourceDialog::buildMap()
   m_keyWords.insert(std::map<std::string, Qt::GlobalColor>::value_type("BY", Qt::blue));
 
   //add data source specific key words
-  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toUtf8().data();
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
 
@@ -197,7 +197,7 @@ void te::qt::widgets::QueryDataSourceDialog::buildMap()
     QString s = names[t].c_str();
     QString sUpper = s.toUpper();
 
-    m_keyWords.insert(std::map<std::string, Qt::GlobalColor>::value_type(sUpper.toStdString(), Qt::red));
+    m_keyWords.insert(std::map<std::string, Qt::GlobalColor>::value_type(sUpper.toUtf8().data(), Qt::red));
   }
 
 }
@@ -210,7 +210,7 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSourceSelected(int index)
   m_ui->m_pkTableComboBox->clear();
   m_ui->m_pkAttrComboBox->clear();
 
-  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(index).toString().toStdString();
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(index).toString().toUtf8().data();
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
 
@@ -238,7 +238,7 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSourceSelected(int index)
 
 void te::qt::widgets::QueryDataSourceDialog::onBaseDataSetSelected(int index)
 {
-  std::string dataSet = m_ui->m_baseDataSetComboBox->itemText(index).toStdString();
+  std::string dataSet = m_ui->m_baseDataSetComboBox->itemText(index).toUtf8().data();
 
   m_ui->m_layerComboBox->clear();
 
@@ -269,9 +269,9 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSetItemClicked(QListWidgetIte
   if(!item)
     return;
 
-  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toUtf8().data();
 
-  std::string dataSetName = item->text().toStdString();
+  std::string dataSetName = item->text().toUtf8().data();
 
   te::da::DataSetType* dsType = te::da::GetDataSetType(dataSetName, dataSourceId);
 
@@ -287,9 +287,9 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSetItemClicked(QListWidgetIte
 
 void te::qt::widgets::QueryDataSourceDialog::onPkTableComboBoxSelected(int index)
 {
-  std::string dataSetName = m_ui->m_pkTableComboBox->itemText(index).toStdString();
+  std::string dataSetName = m_ui->m_pkTableComboBox->itemText(index).toUtf8().data();
 
-  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toUtf8().data();
 
   te::da::DataSetType* dsType = te::da::GetDataSetType(dataSetName, dataSourceId);
 
@@ -314,20 +314,20 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
     return;
   }
 
-  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toUtf8().data();
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
 
-  std::string dataSetName = m_ui->m_baseDataSetComboBox->currentText().toStdString();
+  std::string dataSetName = m_ui->m_baseDataSetComboBox->currentText().toUtf8().data();
 
   te::da::DataSetTypePtr dsType(te::da::GetDataSetType(dataSetName, dataSourceId));
 
   std::string sql = "";
 
   if(m_ui->m_sqlEditorTextEdit->textCursor().selectedText().isEmpty())
-    sql = m_ui->m_sqlEditorTextEdit->toPlainText().toStdString();
+    sql = m_ui->m_sqlEditorTextEdit->toPlainText().toUtf8().data();
   else
-    sql = m_ui->m_sqlEditorTextEdit->textCursor().selectedText().toStdString();
+    sql = m_ui->m_sqlEditorTextEdit->textCursor().selectedText().toUtf8().data();
 
   //get dataset
   std::auto_ptr<te::da::DataSet> dataSet;
@@ -415,7 +415,7 @@ void te::qt::widgets::QueryDataSourceDialog::onSQLEditorTextChanged()
   {
     QString w = words.value(i).toUpper();
 
-    std::string strW = w.toStdString();
+    std::string strW = w.toUtf8().data();
 
     std::map<std::string, Qt::GlobalColor>::iterator it = m_keyWords.find(strW);
 
@@ -554,20 +554,20 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toUtf8().data();
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
 
-  std::string dataSetName = m_ui->m_baseDataSetComboBox->currentText().toStdString();
+  std::string dataSetName = m_ui->m_baseDataSetComboBox->currentText().toUtf8().data();
 
   te::da::DataSetTypePtr dsType(te::da::GetDataSetType(dataSetName, dataSourceId));
 
   std::string sql = "";
 
   if(m_ui->m_sqlEditorTextEdit->textCursor().selectedText().isEmpty())
-    sql = m_ui->m_sqlEditorTextEdit->toPlainText().toStdString();
+    sql = m_ui->m_sqlEditorTextEdit->toPlainText().toUtf8().data();
   else
-    sql = m_ui->m_sqlEditorTextEdit->textCursor().selectedText().toStdString();
+    sql = m_ui->m_sqlEditorTextEdit->textCursor().selectedText().toUtf8().data();
 
   //get dataset
   std::auto_ptr<te::da::DataSet> dataSet;
@@ -644,20 +644,20 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
   //create dataset
-  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toUtf8().data();
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
 
-  std::string inputDataSetName = m_ui->m_baseDataSetComboBox->currentText().toStdString();
+  std::string inputDataSetName = m_ui->m_baseDataSetComboBox->currentText().toUtf8().data();
 
   te::da::DataSetTypePtr inputDataSetType(te::da::GetDataSetType(inputDataSetName, dataSourceId));
 
   std::string sql = "";
 
   if(m_ui->m_sqlEditorTextEdit->textCursor().selectedText().isEmpty())
-    sql = m_ui->m_sqlEditorTextEdit->toPlainText().toStdString();
+    sql = m_ui->m_sqlEditorTextEdit->toPlainText().toUtf8().data();
   else
-    sql = m_ui->m_sqlEditorTextEdit->textCursor().selectedText().toStdString();
+    sql = m_ui->m_sqlEditorTextEdit->textCursor().selectedText().toUtf8().data();
 
   std::auto_ptr<te::da::DataSet> dataSet;
 
@@ -683,7 +683,7 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   if(m_toFile)
   {
     //create new data source
-    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     std::map<std::string, std::string> dsInfo;
     dsInfo["URI"] = uri.string();
@@ -710,7 +710,7 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   }
 
   //get output dataset name
-  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::size_t idx = dataSetName.find(".");
   if (idx != std::string::npos)
@@ -771,7 +771,7 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
       //check primary key
       if (m_ui->m_pkCheckBox->isChecked())
       {
-        std::string pkAttrName = m_ui->m_pkAttrComboBox->itemText(m_ui->m_pkAttrComboBox->currentIndex()).toStdString();
+        std::string pkAttrName = m_ui->m_pkAttrComboBox->itemText(m_ui->m_pkAttrComboBox->currentIndex()).toUtf8().data();
 
         if (te::common::Convert2UCase(pkAttrName) == te::common::Convert2UCase(p->getName()))
         {
@@ -855,7 +855,7 @@ void te::qt::widgets::QueryDataSourceDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
 
   m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
 

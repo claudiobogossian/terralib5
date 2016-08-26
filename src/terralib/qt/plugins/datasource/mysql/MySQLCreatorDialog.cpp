@@ -118,80 +118,80 @@ void te::qt::plugins::mysql::MySQLCreatorDialog::getConnectionInfo(std::map<std:
   QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_HOST_NAME"] = qstr.toStdString();
+    connInfo["MY_HOST_NAME"] = qstr.toUtf8().data();
 
 // get port
   qstr = m_ui->m_portLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_PORT"] = qstr.toStdString();
+    connInfo["MY_PORT"] = qstr.toUtf8().data();
 
 // get user
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_USER_NAME"] = qstr.toStdString();
+    connInfo["MY_USER_NAME"] = qstr.toUtf8().data();
 
 // get password
   qstr = m_ui->m_passwordLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_PASSWORD"] = qstr.toStdString();
+    connInfo["MY_PASSWORD"] = qstr.toUtf8().data();
 
 // get dbname
   qstr = m_ui->m_schemaNameComboBox->currentText().trimmed();
   //qstr = m_ui->m_schemaNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SCHEMA"] = qstr.toStdString();
+    connInfo["MY_SCHEMA"] = qstr.toUtf8().data();
 
 // get charset
   qstr = m_ui->m_charsetComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_CHARSET_NAME"] = qstr.toStdString();
+    connInfo["MY_OPT_CHARSET_NAME"] = qstr.toUtf8().data();
     
 // get new host
   qstr = m_ui->m_newHostNameLineEdit->text().trimmed();
 
   if(!qstr.isEmpty())
-    connInfo["MY_NEW_SCHEMA_HOST"] = qstr.toStdString();
+    connInfo["MY_NEW_SCHEMA_HOST"] = qstr.toUtf8().data();
 
 // get new port
   qstr = m_ui->m_newPortLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_NEW_SCHEMA_PORT"] = qstr.toStdString();
+    connInfo["MY_NEW_SCHEMA_PORT"] = qstr.toUtf8().data();
 
 // get new user
   qstr = m_ui->m_newUserNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_NEW_SCHEMA_USER_NAME"] = qstr.toStdString();
+    connInfo["MY_NEW_SCHEMA_USER_NAME"] = qstr.toUtf8().data();
 
 // get new password
   qstr = m_ui->m_newPasswordLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_NEW_SCHEMA_PASSWORD"] = qstr.toStdString();
+    connInfo["MY_NEW_SCHEMA_PASSWORD"] = qstr.toUtf8().data();
 
 // get new dbname
   qstr = m_ui->m_newSchemaNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_NEW_SCHEMA_NAME"] = qstr.toStdString();
+    connInfo["MY_NEW_SCHEMA_NAME"] = qstr.toUtf8().data();
 
 // get new charset
   qstr = m_ui->m_newCharsetComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_NEW_SCHEMA_CHARSET_NAME"] = qstr.toStdString();
+    connInfo["MY_NEW_SCHEMA_CHARSET_NAME"] = qstr.toUtf8().data();
 
 // get new collate
   qstr = m_ui->m_newCollateComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_NEW_SCHEMA_COLLATE_NAME"] = qstr.toStdString();
+    connInfo["MY_NEW_SCHEMA_COLLATE_NAME"] = qstr.toUtf8().data();
 
   if(m_ui->m_createRasterMetadataCheckBox->isChecked())
     connInfo["MY_NEW_SCHEMA_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = "TRUE";

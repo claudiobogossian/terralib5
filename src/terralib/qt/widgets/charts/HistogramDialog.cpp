@@ -77,17 +77,17 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
-  chartStyle->setTitle(QString::fromStdString("Histogram"));
+  chartStyle->setTitle(QString::fromUtf8("Histogram"));
 
   if(m_histogramDataWidget->getForm()->m_summaryComboBox->currentText() != "None")
-    chartStyle->setAxisX(QString::fromStdString(m_histogramDataWidget->getSummaryFunction()) + ": " + m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
+    chartStyle->setAxisX(QString::fromUtf8(m_histogramDataWidget->getSummaryFunction().c_str()) + ": " + m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
   else
     chartStyle->setAxisX(m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
 
-  chartStyle->setAxisY(QString::fromStdString("Frequency"));
+  chartStyle->setAxisY(QString::fromUtf8("Frequency"));
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromUtf8("Histogram"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
   chartDisplay->show();

@@ -40,7 +40,7 @@
 
 te::qt::plugins::rp::RasterSlicingAction::RasterSlicingAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Raster Slicing...").toStdString(), "rasterslicing");
+  createAction(tr("Raster Slicing...").toUtf8().data(), "rasterslicing");
   m_action->setObjectName("Processing.Raster Processing.RasterSlicing");
 }
 

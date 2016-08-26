@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(datasource_open_test)
   te::da::DataSourceFactory::add(TE_OGC_WCS_DRIVER_IDENTIFIER, te::ws::ogc::wcs::da::Build);
 
   // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
 
   // WCS server URL.
   std::string url = "http://demo.opengeo.org/geoserver/ows";
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(datasource_open_exception_test)
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
   // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
 
   // WCS server URL.
   std::string url = "http://demo.opengeo.org/geoserver/ows";

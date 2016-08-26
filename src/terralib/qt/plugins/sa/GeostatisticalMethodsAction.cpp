@@ -31,7 +31,7 @@
 te::qt::plugins::sa::GeostatisticalMethodsAction::GeostatisticalMethodsAction(QMenu *menu) :
   AbstractAction(menu)
 {
-  createAction(tr("Geostatistical Methods...").toStdString(), "sa-measurespatialvar-icon");
+  createAction(tr("Geostatistical Methods...").toUtf8().data(), "sa-measurespatialvar-icon");
   m_action->setObjectName("Processing.Spatial Analysis.Geostatistical Methods");
 }
 

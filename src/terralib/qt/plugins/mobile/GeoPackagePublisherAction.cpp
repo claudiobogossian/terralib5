@@ -37,7 +37,7 @@
 
 te::qt::plugins::terramobile::GeoPackagePublisherAction::GeoPackagePublisherAction(QMenu* menu) :te::qt::plugins::terramobile::AbstractAction(menu)
 {
-  createAction(tr("GeoPackage Publisher...").toStdString(), "");
+  createAction(tr("GeoPackage Publisher...").toUtf8().data(), "");
 }
 
 te::qt::plugins::terramobile::GeoPackagePublisherAction::~GeoPackagePublisherAction()

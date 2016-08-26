@@ -99,7 +99,7 @@ void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer
 
     if(m_layer->getChart())
     {
-      int index = m_ui->m_summaryComboBox->findText(QString::fromStdString(m_layer->getChart()->getSummary()));
+      int index = m_ui->m_summaryComboBox->findText(QString::fromUtf8(m_layer->getChart()->getSummary().c_str()));
       m_ui->m_summaryComboBox->setCurrentIndex(index);
     }
 
@@ -144,7 +144,7 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
   chart->setContourWidth((std::size_t)m_ui->m_contourWidthSpinBox->value());
   chart->setContourColor(te::qt::widgets::Convert2TerraLib(m_colorPicker->getColor()));
   chart->setAvoidConflicts(m_ui->m_avoidConflictsCheckBox->isChecked());
-  chart->setSummary(m_ui->m_summaryComboBox->currentText().toStdString());
+  chart->setSummary(m_ui->m_summaryComboBox->currentText().toUtf8().data());
 
    // Is necessary compute the max value?
   if(chart->getType() == te::map::Bar)
@@ -228,7 +228,7 @@ void te::qt::widgets::ChartLayerWidget::updateUi()
 
 void te::qt::widgets::ChartLayerWidget::onAddToolButtonClicked()
 {
-  std::string value = m_ui->m_attrComboBox->currentText().toStdString();
+  std::string value = m_ui->m_attrComboBox->currentText().toUtf8().data();
 
   bool found = false;
 

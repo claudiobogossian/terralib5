@@ -202,7 +202,7 @@ void MainWindow::setupDockWindow()
 void MainWindow::addRasterLayer(const QString& path)
 {
  // * Under revision *
- // std::string datasetName = path.toStdString();
+ // std::string datasetName = path.toUtf8().data();
  // 
  // // set input raster name
  // std::map<std::string, std::string> rinfo;

@@ -237,7 +237,7 @@ void te::edit::EditInfoTool::getInfo(const te::gm::Envelope& e)
             if (m_dataset->getPropertyDataType(pos) == te::dt::STRING_TYPE)
             {
               std::string value = m_dataset->getString(pos);
-              qvalue = QString::fromStdString(value);
+              qvalue = QString::fromUtf8(value.c_str());
             }
             else
             {
@@ -336,25 +336,25 @@ std::auto_ptr<te::dt::AbstractData> te::edit::EditInfoTool::getValue(int type, Q
   switch (type)
   {
   case te::dt::INT16_TYPE:
-    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int16(atoi(value.toStdString().c_str())));
+    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int16(atoi(value.toUtf8().data())));
 
   case te::dt::INT32_TYPE:
-    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int32(atoi(value.toStdString().c_str())));
+    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int32(atoi(value.toUtf8().data())));
 
   case te::dt::INT64_TYPE:
-    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int64(atoi(value.toStdString().c_str())));
+    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int64(atoi(value.toUtf8().data())));
 
   case te::dt::FLOAT_TYPE:
-    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Float(atof(value.toStdString().c_str())));
+    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Float(atof(value.toUtf8().data())));
 
   case te::dt::DOUBLE_TYPE:
-    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Double(atof(value.toStdString().c_str())));
+    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Double(atof(value.toUtf8().data())));
 
   case te::dt::NUMERIC_TYPE:
-    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Numeric(value.toStdString().c_str()));
+    return std::auto_ptr<te::dt::AbstractData>(new te::dt::Numeric(value.toUtf8().data()));
 
   case te::dt::STRING_TYPE:
-    return std::auto_ptr<te::dt::AbstractData>(new te::dt::String(value.toStdString().c_str()));
+    return std::auto_ptr<te::dt::AbstractData>(new te::dt::String(value.toUtf8().data()));
 
   default:
     return std::auto_ptr<te::dt::AbstractData>(0);

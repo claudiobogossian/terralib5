@@ -119,7 +119,7 @@ void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty *p, int value
   if(p == m_opacityProperty)
   {
     double opacity = value / 100.0;
-    m_graphic->setOpacity(new te::se::ParameterValue(QString::number(opacity, 'g', 2).toStdString()));
+    m_graphic->setOpacity(new te::se::ParameterValue(QString::number(opacity, 'g', 2).toUtf8().data()));
     emit graphicChanged();
   }
 }
@@ -134,12 +134,12 @@ void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty *p, double va
 
   if(p == m_sizeProperty)
   {
-    m_graphic->setSize(new te::se::ParameterValue(valueStr.toStdString()));
+    m_graphic->setSize(new te::se::ParameterValue(valueStr.toUtf8().data()));
     emit graphicChanged();
   }
   else if(p == m_angleProperty)
   {
-    m_graphic->setRotation(new te::se::ParameterValue(valueStr.toStdString()));
+    m_graphic->setRotation(new te::se::ParameterValue(valueStr.toUtf8().data()));
     emit graphicChanged();
   }
 }
@@ -156,8 +156,8 @@ void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty* p, const QPo
   //if(p == m_displacementProperty)
   //{
   //  te::se::Displacement* disp = new te::se::Displacement;
-  //  disp->setDisplacementX(new te::se::ParameterValue(xStr.toStdString()));
-  //  disp->setDisplacementY(new te::se::ParameterValue(yStr.toStdString()));
+  //  disp->setDisplacementX(new te::se::ParameterValue(xStr.toUtf8().data()));
+  //  disp->setDisplacementY(new te::se::ParameterValue(yStr.toUtf8().data()));
   //  m_graphic->setDisplacement(disp);
 
   //  emit graphicChanged();
@@ -165,8 +165,8 @@ void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty* p, const QPo
   //else if(p == m_anchorProperty)
   //{
   //  te::se::AnchorPoint* ac = new te::se::AnchorPoint;
-  //  ac->setAnchorPointX(new te::se::ParameterValue(xStr.toStdString()));
-  //  ac->setAnchorPointY(new te::se::ParameterValue(yStr.toStdString()));
+  //  ac->setAnchorPointX(new te::se::ParameterValue(xStr.toUtf8().data()));
+  //  ac->setAnchorPointY(new te::se::ParameterValue(yStr.toUtf8().data()));
   //  m_graphic->setAnchorPoint(ac);
 
   //  emit graphicChanged();

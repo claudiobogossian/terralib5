@@ -51,7 +51,7 @@ te::qt::plugins::terralib4::TL4RasterFolderSelectionWizardPage::~TL4RasterFolder
 std::string te::qt::plugins::terralib4::TL4RasterFolderSelectionWizardPage::getPath()
 {
   te::qt::widgets::AddFilePathToSettings(m_ui->m_pathLineEdit->text(), "raster");
-  return m_ui->m_pathLineEdit->text().toStdString();
+  return m_ui->m_pathLineEdit->text().toUtf8().data();
 }
 
 void te::qt::plugins::terralib4::TL4RasterFolderSelectionWizardPage::onChooseToolButtonClicked()

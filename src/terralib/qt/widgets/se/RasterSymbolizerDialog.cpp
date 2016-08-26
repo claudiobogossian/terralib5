@@ -107,7 +107,7 @@ te::se::Symbolizer* te::qt::widgets::RasterSymbolizerDialog::getRasterSymbolizer
     QString qStrOpacity;
     qStrOpacity.setNum(seOpacity);
 
-    m_symbolizer->setOpacity(new te::se::ParameterValue(qStrOpacity.toStdString()));
+    m_symbolizer->setOpacity(new te::se::ParameterValue(qStrOpacity.toUtf8().data()));
   }
 
   if(m_channelSelectionWidget)

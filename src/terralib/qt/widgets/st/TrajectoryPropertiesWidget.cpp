@@ -51,14 +51,14 @@ Ui::TrajectoryPropertiesWidgetForm* te::qt::widgets::TrajectoryPropertiesWidget:
 int te::qt::widgets::TrajectoryPropertiesWidget::getId()
 {
   if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toStdString());
+    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toUtf8().data());
   else
     return -1;
 }
 
 std::string te::qt::widgets::TrajectoryPropertiesWidget::getGeometryId()
 {
-  return m_ui->m_geometryComboBox->currentText().toStdString();
+  return m_ui->m_geometryComboBox->currentText().toUtf8().data();
 }
 
 void te::qt::widgets::TrajectoryPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)
@@ -72,12 +72,12 @@ void te::qt::widgets::TrajectoryPropertiesWidget::setUp (const te::da::DataSetTy
   {
     if(properties.at(i)->getType() == te::dt::GEOMETRY_TYPE)
     {
-      item = QString::fromStdString(properties.at(i)->getName());
+      item = QString::fromUtf8(properties.at(i)->getName().c_str());
       m_ui->m_geometryComboBox->addItem(item);
     }
     else if(properties.at(i)->getType() != te::dt::DATETIME_TYPE)
     {
-      item = QString::fromStdString(properties.at(i)->getName());
+      item = QString::fromUtf8(properties.at(i)->getName().c_str());
       m_ui->m_idComboBox->addItem(item);
     }
   }

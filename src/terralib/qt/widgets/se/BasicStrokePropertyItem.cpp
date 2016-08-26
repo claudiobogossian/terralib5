@@ -222,7 +222,7 @@ void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, int v
     double opacity = value / 255.;
 
     // Updating stroke opacity
-    m_stroke->setOpacity(QString::number(opacity, 'g', 2).toStdString());
+    m_stroke->setOpacity(QString::number(opacity, 'g', 2).toUtf8().data());
     emit strokeChanged();
   }
   else if(p == m_dashProperty)
@@ -262,7 +262,7 @@ void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, doubl
     QString str;
     str.setNum(value);
 
-    m_stroke->setWidth(str.toStdString());
+    m_stroke->setWidth(str.toUtf8().data());
     emit strokeChanged();
   }
 
@@ -284,8 +284,8 @@ void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, const
     double alpha = value.alpha() / 255.;
 
     // Updating stroke color
-    m_stroke->setColor(m_color.name().toStdString());
-    m_stroke->setOpacity(QString::number(alpha, 'g', 2).toStdString());
+    m_stroke->setColor(m_color.name().toUtf8().data());
+    m_stroke->setOpacity(QString::number(alpha, 'g', 2).toUtf8().data());
 
     updateUi();
 

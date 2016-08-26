@@ -115,7 +115,7 @@ void te::qt::widgets::GlyphMarkWidget::updateUi()
 void te::qt::widgets::GlyphMarkWidget::updateMarkName()
 {
   QString name = te::qt::widgets::GlyphMarkRenderer::encode(m_ui->m_fontComboBox->currentFont().family(), m_charMapWidget->getCurrentChar());
-  m_mark->setWellKnownName(new std::string(name.toStdString()));
+  m_mark->setWellKnownName(new std::string(name.toUtf8().data()));
   emit markChanged();
 }
 

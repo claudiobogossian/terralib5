@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
 
   std::string url = "http://mapas.mma.gov.br/i3geo/ogc.php?tema=transporte";
 
