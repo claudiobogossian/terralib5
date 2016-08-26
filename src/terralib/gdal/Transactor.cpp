@@ -215,10 +215,15 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
     { 
       // it is a regular file and the dataset we expect
       std::auto_ptr<te::da::DataSetType> dsty = getType(path.string());
-      dsty->setName(name);
-      dsty->setTitle(name);
-      uri=path.string();
-      return dsty;
+      if (dsty.get())
+      {
+        dsty->setName(name);
+        dsty->setTitle(name);
+        uri = path.string();
+        return dsty;
+       }
+      else
+        return std::auto_ptr<te::da::DataSetType>();
     }
     else
     {
