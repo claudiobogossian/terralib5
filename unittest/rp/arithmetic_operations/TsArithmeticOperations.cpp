@@ -40,7 +40,7 @@ void loadDoubleRaster( const std::string& rasterFileName, std::auto_ptr< te::rst
   /* Open input raster */
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = rasterFileName;
   std::auto_ptr<te::rst::Raster> rin(te::rst::RasterFactory::open(rinfo));
 
   std::vector< te::rst::BandProperty * > bandsProperties;
@@ -711,7 +711,7 @@ BOOST_AUTO_TEST_CASE(asin_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(TERRALIB_DATA_DIR"/geotiff/landsat8_22768_ndvi.tif",
     rin);
 
   /* Defining input parameters, the arithmetic operation will be
@@ -746,6 +746,7 @@ BOOST_AUTO_TEST_CASE(asin_test)
     for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
     {
       rin->getValue(c, r, inputValue1, 0);
+
       outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
       BOOST_CHECK_CLOSE(asin(inputValue1), outputValue, 0.0000001);
     }
@@ -801,7 +802,7 @@ BOOST_AUTO_TEST_CASE(acos_test)
   /* Load input raster as a doubles raster */
 
   std::auto_ptr< te::rst::Raster > rin;
-  loadDoubleRaster(TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif",
+  loadDoubleRaster(TERRALIB_DATA_DIR"/geotiff/landsat8_22768_ndvi.tif",
     rin);
 
   /* Defining input parameters, the arithmetic operation will be
@@ -836,6 +837,7 @@ BOOST_AUTO_TEST_CASE(acos_test)
     for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
     {
       rin->getValue(c, r, inputValue1, 0);
+
       outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
       BOOST_CHECK_CLOSE(acos(inputValue1), outputValue, 0.0000001);
     }
