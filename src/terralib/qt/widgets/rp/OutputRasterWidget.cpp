@@ -42,6 +42,9 @@ te::qt::widgets::OutputRasterWidget::OutputRasterWidget(QWidget* parent, Qt::Win
 {
   m_ui->setupUi(this);
 
+  //add icons
+  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+
   connect(m_ui->m_targetFileToolButton, SIGNAL(clicked()), this, SLOT(onTargetFileToolButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(clicked()), this, SLOT(onTargetDatasourceToolButtonClicked()));
 }
