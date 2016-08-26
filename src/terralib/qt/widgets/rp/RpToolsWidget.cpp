@@ -64,18 +64,15 @@ te::qt::widgets::RpToolsWidget::RpToolsWidget(QWidget* parent, Qt::WindowFlags f
   : QWidget(parent, f),
     m_ui(new Ui::RpToolsWidgetForm),
     m_symbolizer(0),
-    m_tool(0),
-    m_draftOriginal(0)
+    m_draftOriginal(0),
+    m_mapDisplay(0),
+    m_actionGroup(0),
+    m_checkedTool(0)
 {
   m_ui->setupUi(this);
   m_pointCursor = Qt::CrossCursor;
 
-  m_mapDisplay = 0;
-  m_actionGroup = 0;
-
-  m_ui->m_redoActionToolButtontoolButton;
-
-// signals & slots
+//signals & slots
   connect(m_ui->m_undoActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onUndoToggled(bool)));
   connect(m_ui->m_redoActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onRedoToggled(bool)));
 
@@ -105,7 +102,12 @@ te::qt::widgets::RpToolsWidget::~RpToolsWidget()
   if(m_layer.get())
     m_layer->setVisibility(m_visibility);
 
-  delete m_tool;
+  if (m_checkedTool)
+  {
+    m_mapDisplay->setCursor(Qt::ArrowCursor);
+    m_mapDisplay->setCurrentTool(0, false);
+  }
+
   delete m_draftOriginal;
 }
 
@@ -436,17 +438,21 @@ void te::qt::widgets::RpToolsWidget::onRedoToggled(bool checked)
 
 void te::qt::widgets::RpToolsWidget::onPointPickerToggled(bool checked)
 {
+  m_checkedTool = checked;
+
   if (!checked)
     return;
-  
+
   te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, m_pointCursor);
   m_mapDisplay->setCurrentTool(pp);
-
+  
   connect(pp, SIGNAL(pointPicked(QPointF&)), this, SLOT(onPointPicked(QPointF&)));
 }
 
 void te::qt::widgets::RpToolsWidget::onGeomToggled(bool checked)
 {
+  m_checkedTool = checked;
+ 
   if (!checked)
     return;
 
@@ -458,6 +464,8 @@ void te::qt::widgets::RpToolsWidget::onGeomToggled(bool checked)
 
 void te::qt::widgets::RpToolsWidget::onBoxToggled(bool checked)
 {
+  m_checkedTool = checked;
+
   if (!checked)
     return;
 
@@ -469,11 +477,13 @@ void te::qt::widgets::RpToolsWidget::onBoxToggled(bool checked)
 
 void te::qt::widgets::RpToolsWidget::onReadPixelToggled(bool checked)
 {
+  m_checkedTool = checked;
+
   if (!checked)
     return;
 
   te::qt::widgets::ReadPixelTool* pa = new te::qt::widgets::ReadPixelTool(m_mapDisplay, m_layer);
-  setCurrentTool(pa);
+  m_mapDisplay->setCurrentTool(pa);
 }
 
 void te::qt::widgets::RpToolsWidget::onRecomposeClicked()
@@ -498,14 +508,6 @@ void te::qt::widgets::RpToolsWidget::onVSliderChanged(int value)
 void te::qt::widgets::RpToolsWidget::onHSliderChanged(int value)
 {
   drawOverlay();
-}
-
-void te::qt::widgets::RpToolsWidget::setCurrentTool(te::qt::widgets::AbstractTool* tool)
-{
-  delete m_tool;
-  m_tool = tool;
-
-  m_mapDisplay->installEventFilter(m_tool);
 }
 
 void te::qt::widgets::RpToolsWidget::setComboBoxText(QComboBox* cb, std::string value)

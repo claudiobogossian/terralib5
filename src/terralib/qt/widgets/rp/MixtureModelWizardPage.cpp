@@ -68,12 +68,11 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::MixtureModelWizardPageForm),
     m_countComponents(0),
-    m_layer(0)
+    m_layer(0),
+    m_mapDisplay(0)
 {
 //setup controls
   m_ui->setupUi(this);
-
-  m_mapDisplay = 0;
 
   m_ui->m_loadToolButton->setIcon(QIcon::fromTheme("document-open"));
   m_ui->m_saveToolButton->setIcon(QIcon::fromTheme("document-save"));

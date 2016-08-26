@@ -179,8 +179,6 @@ namespace te
 
         protected:
 
-          void setCurrentTool(te::qt::widgets::AbstractTool* tool);
-
           void setComboBoxText(QComboBox* cb, std::string value);
 
           void drawOverlay();
@@ -192,13 +190,14 @@ namespace te
           te::map::AbstractLayerPtr m_layer;
           te::se::RasterSymbolizer* m_symbolizer;
 
-          te::qt::widgets::AbstractTool* m_tool;
           te::qt::widgets::MapDisplay* m_mapDisplay;
 
           QActionGroup* m_actionGroup;
 
           int m_currentColumn;                                       //!< The column position of mouse in map display.
           int m_currentRow;                                          //!< The row position of mouse in map display.
+
+          bool m_checkedTool;
 
           te::map::Visibility m_visibility;
 

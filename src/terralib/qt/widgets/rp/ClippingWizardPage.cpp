@@ -59,12 +59,11 @@ Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::ClippingWizardPageForm),
-    m_layer(0)
+    m_layer(0),
+    m_mapDisplay(0)
 {
 // setup controls
   m_ui->setupUi(this);
-
-  m_mapDisplay = 0;
 
   fillClippingTypes();
 

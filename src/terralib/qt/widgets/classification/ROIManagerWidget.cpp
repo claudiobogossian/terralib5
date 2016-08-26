@@ -68,11 +68,10 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   : QWidget(parent, f),
     m_ui(new Ui::ROIManagerWidgetForm),
     m_rs(0),
-    m_sampleCounter(0)
+    m_sampleCounter(0),
+    m_mapDisplay(0)
 {
   m_ui->setupUi(this);
-
-  m_mapDisplay = 0;
 
   m_ui->m_openLayerROIToolButton->setIcon(QIcon::fromTheme("folder-open"));
   m_ui->m_fileDialogToolButton->setIcon(QIcon::fromTheme("folder-open"));
@@ -89,7 +88,6 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   QGridLayout* colorPickerLayout = new QGridLayout(m_ui->m_colorWidget);
   colorPickerLayout->setContentsMargins(0, 0, 0, 0);
   colorPickerLayout->addWidget(m_colorPicker);
-
 
   QGridLayout* layout = new QGridLayout(m_ui->m_navigatorWidget);
 	m_navigator.reset(new te::qt::widgets::RpToolsWidget(m_ui->m_navigatorWidget));
