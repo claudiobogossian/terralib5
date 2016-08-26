@@ -172,19 +172,6 @@
        <item>
         <widget class="QLineEdit" name="m_layerTitleLineEdit"/>
        </item>
-       <item>
-        <widget class="QToolButton" name="m_advancedToolButton">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="autoRaise">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item row="3" column="0">

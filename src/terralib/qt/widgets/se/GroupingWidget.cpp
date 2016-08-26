@@ -702,7 +702,7 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
 {
   assert(m_layer.get());
 
-  if(te::da::HasLinkedTable(m_layer->getSchema().get()))
+  if (te::da::HasLinkedTable(m_layer->getSchema().get()) && (m_ui->m_summaryComboBox->currentText().toStdString() != "NONE"))
   {
     getLinkedDataAsDouble(vec, attrName, dataType, nullValues);
     return;
@@ -920,7 +920,7 @@ void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& 
 {
   assert(m_layer.get());
 
-  if(te::da::HasLinkedTable(m_layer->getSchema().get()))
+  if (te::da::HasLinkedTable(m_layer->getSchema().get()) && (m_ui->m_summaryComboBox->currentText().toStdString() != "NONE"))
   {
     getLinkedDataAsString(vec, attrName,  nullValues);
     return;
@@ -1267,6 +1267,7 @@ void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr select
     m_ui->m_summaryComboBox->addItem("MEDIAN");
     m_ui->m_summaryComboBox->addItem("STDDEV");
     m_ui->m_summaryComboBox->addItem("VARIANCE");
+    m_ui->m_summaryComboBox->addItem("NONE");
 
     if(m_layer->getGrouping())
     {
