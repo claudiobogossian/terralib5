@@ -114,6 +114,9 @@ te::qt::widgets::ContrastDialogForm::ContrastDialogForm(QWidget* parent)
   connect(m_ui->m_roiRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRoiRadioButtonToggled(bool)));
   connect(m_ui->m_newROIPushButton, SIGNAL(clicked()), this, SLOT(onNewROIPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/rp/rp_contrast.html");
 }
 
 te::qt::widgets::ContrastDialogForm::~ContrastDialogForm()
@@ -632,6 +635,10 @@ void te::qt::widgets::ContrastDialogForm::applyPreview()
   if (!m_raster)
     return;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
   //set contrast parameters
@@ -678,7 +685,13 @@ void te::qt::widgets::ContrastDialogForm::applyPreview()
   catch (...)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   QApplication::restoreOverrideCursor();
 }
