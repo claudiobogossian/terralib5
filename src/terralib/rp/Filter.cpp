@@ -705,62 +705,99 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(),
         "Internal error" );
 
-      const unsigned int H = m_inputParameters.m_windowH;
-      const unsigned int W = m_inputParameters.m_windowW;
-
+      const unsigned int nRows = srcRaster.getNumberOfRows();
+      const unsigned int nCols = srcRaster.getNumberOfColumns();
+      const unsigned int windowHeight = m_inputParameters.m_windowH;
+      const unsigned int windowWidth = m_inputParameters.m_windowW;
+      const unsigned int windowRowRadius = ( windowHeight / 2 );
+      const unsigned int windowColRadius = ( windowWidth / 2 );
+      const unsigned int filterStartRowOffsetBound = nRows - windowHeight + 1;
+      const unsigned int filterStartColOffsetBound = nCols - windowWidth + 1;
+      const unsigned int validDataRowsBound = nRows - windowRowRadius;
+      const unsigned int validDataColsBound = nCols - windowColRadius;
+      unsigned int filterStartRow = 0;
+      unsigned int filterStartCol = 0;
+      unsigned int rowOffset = 0;
+      unsigned int colOffset = 0;
+      std::map< double , unsigned int > frequencies;
+      const te::rst::Band& srcBand = *( srcRaster.getBand( srcBandIdx ) );
+      te::rst::Band& dstBand = *( dstRaster.getBand( dstBandIdx ) );
+      const double srcNoDataValue = srcBand.getProperty()->m_noDataValue;
+      const double dstNoDataValue = dstBand.getProperty()->m_noDataValue;
+      double value = 0;
+      unsigned int row = 0;
+      unsigned int col = 0;
+      std::map< double , unsigned int >::iterator frequenciesIt;
+      std::map< double , unsigned int >::iterator frequenciesItEnd;
+      double meanValue = 0;
+      unsigned int meanValidPixelsNmb = 0;
+      
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TE_TR("Mean Filter"),
-          te::common::TaskProgress::UNDEFINED, 100 ) );
-      }
-
-      boost::numeric::ublas::matrix<double> window_mean(H, W);
-      double pixel_mean;
-      for (unsigned int i = 0; i < H; i++)
-        for (unsigned int j = 0; j < W; j++)
-          window_mean(i, j) = 1.0 / (W * H);
-
-      unsigned int R = 0;
-      unsigned int C = 0;
-      const unsigned int MR = srcRaster.getNumberOfRows();
-      const unsigned int MC = srcRaster.getNumberOfColumns();
-
-      double dstBandAllowedMin = 0;
-      double dstBandAllowedMax = 0;
-      te::rp::GetDataTypeRange( dstRaster.getBand( dstBandIdx )->getProperty()->getType(), dstBandAllowedMin,
-        dstBandAllowedMax );
-
-      te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
-      te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);
-      te::rst::BandIteratorWindow<double> itend = te::rst::BandIteratorWindow<double>::end(band, W, H);
-
-      while (it != itend)
+        task.reset( new te::common::TaskProgress(TE_TR("Mode Filter"),
+          te::common::TaskProgress::UNDEFINED, filterStartRowOffsetBound + nRows ) );
+      }      
+      
+      for( row = 0 ; row < nRows ; ++row )
       {
-        R = it.getRow();
-        C = it.getColumn();
-
-        if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-            (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        for( col = 0 ; col < nCols ; ++col )
         {
-          pixel_mean = 0.0;
-          for (int r = -1 * (int) (H / 2), rw = 0; r <= (int) (H / 2); r++, rw++)
-            for (int c = -1 * (int) (W / 2), cw = 0; c <= (int) (W / 2); c++, cw++)
-              pixel_mean += window_mean(rw, cw) * it.getValue(c, r);
+          if( ( row < windowRowRadius ) || ( row >= validDataRowsBound ) ||
+            ( col < windowColRadius ) || ( col >= validDataColsBound ) )
+          {
+            dstBand.setValue( col, row, dstNoDataValue );
+          }
         }
-        else
-          pixel_mean = it.getValue();
-
-        pixel_mean = std::max( pixel_mean, dstBandAllowedMin );
-        pixel_mean = std::min( pixel_mean, dstBandAllowedMax );
-        dstRaster.setValue(C, R, pixel_mean, dstBandIdx);
-
+        
         if( useProgress )
         {
-          task->setCurrentStep( R / srcRaster.getNumberOfRows() );
+          task->pulse();
           if( !task->isActive() ) return false;
+        }         
+      }
+      
+      for( filterStartRow = 0 ; filterStartRow < filterStartRowOffsetBound ; ++filterStartRow )
+      {
+        for( filterStartCol = 0 ; filterStartCol < filterStartColOffsetBound ; ++filterStartCol )
+        {
+          meanValue = 0;
+          meanValidPixelsNmb = 0;
+          
+          for( rowOffset = 0 ; rowOffset < windowHeight ; ++rowOffset )
+          {
+            row = filterStartRow + rowOffset;
+            
+            for( colOffset = 0 ; colOffset < windowWidth ; ++colOffset )
+            {
+              col = filterStartCol + colOffset;
+              srcBand.getValue( col, row, value );
+              if( value != srcNoDataValue )
+              {
+                meanValue += value;
+                ++meanValidPixelsNmb;
+              }
+            }
+          }
+          
+          if( meanValidPixelsNmb )
+          {
+            meanValue /= (double)meanValidPixelsNmb;
+            dstBand.setValue( filterStartCol + windowColRadius, 
+              filterStartRow + windowRowRadius, meanValue );            
+          }
+          else
+          {
+            dstBand.setValue( filterStartCol + windowColRadius, 
+              filterStartRow + windowRowRadius, dstNoDataValue );
+          }
         }
-        ++it;
+        
+        if( useProgress )
+        {
+          task->pulse();
+          if( !task->isActive() ) return false;
+        }        
       }
 
       return true;
@@ -803,7 +840,7 @@ namespace te
       unsigned int col = 0;
       std::map< double , unsigned int >::iterator frequenciesIt;
       std::map< double , unsigned int >::iterator frequenciesItEnd;
-      double higherFrequency = 0;
+      unsigned int higherFrequency = 0;
       double higherFrequencyValue = 0;
       
       std::auto_ptr< te::common::TaskProgress > task;
