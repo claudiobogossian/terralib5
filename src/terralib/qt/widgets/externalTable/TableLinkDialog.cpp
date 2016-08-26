@@ -239,11 +239,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
     std::string dataSetName = dataSetSelecteds[t].first;
 
     //get datasettype
-    std::auto_ptr<te::da::DataSetType> dsType(0);
-
-    //Acquiring the dataSet properties
-    std::vector<std::size_t> dataSetProperties;
-
+    std::auto_ptr<te::da::DataSetType> dsType;
 
     for(unsigned int i = 0; i < datasetNames.size(); ++i)
     {
@@ -371,7 +367,7 @@ void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
     alias = aux;
 
   //get datasettype
-  std::auto_ptr<te::da::DataSetType> dsType(0);
+  std::auto_ptr<te::da::DataSetType> dsType;
   dsType = m_ds->getDataSetType(alias);
 
   //Get Dataset
