@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
   // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
 
   // WCS server URL.
   std::string url = "http://demo.opengeo.org/geoserver/ows";

@@ -227,7 +227,7 @@ void te::sa::GeostatisticalMethodsDialog::onApplyPushButtonClicked()
   std::auto_ptr<te::da::DataSetType> dataSetType = l->getSchema();
 
   //get properties information
-  std::string attrName = m_ui->m_attributeComboBox->currentText().toStdString();
+  std::string attrName = m_ui->m_attributeComboBox->currentText().toUtf8().data();
   int attrIdx = te::da::GetPropertyIndex(dataSet.get(), attrName);
 
   te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dataSetType.get());
@@ -283,7 +283,7 @@ void te::sa::GeostatisticalMethodsDialog::onChangeAttrToolButtonClicked()
   std::auto_ptr<te::da::DataSet> dataSet = l->getData();
 
   //get properties information
-  std::string attrName = m_ui->m_attributeComboBox->currentText().toStdString();
+  std::string attrName = m_ui->m_attributeComboBox->currentText().toUtf8().data();
   int attrIdx = te::da::GetPropertyIndex(dataSet.get(), attrName);
 
   te::sa::SetMainDiagonal(m_method->getMatrix(), dataSet.get(), attrIdx);

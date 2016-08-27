@@ -87,7 +87,7 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   pluginMenu->insertAction(pluginsSeparator, m_action);
 
 // address geocoding log startup
-  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
   path += "/log/terralib_addressgeocoding.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)

@@ -39,7 +39,7 @@
 te::qt::plugins::vp::GeometricOpAction::GeometricOpAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Geometric Operation...").toStdString(), "vector-processing-geometric-op");
+  createAction(tr("Geometric Operation...").toUtf8().data(), "vector-processing-geometric-op");
   m_action->setObjectName("Processing.Vector Processing.Gometric Operation");
 }
 

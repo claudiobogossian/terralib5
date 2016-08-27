@@ -51,39 +51,39 @@ Ui::TimeSeriesPropertiesWidgetForm* te::qt::widgets::TimeSeriesPropertiesWidget:
 
 std::string te::qt::widgets::TimeSeriesPropertiesWidget::getIdPropName()
 {
-  return m_ui->m_idComboBox->currentText().toStdString();
+  return m_ui->m_idComboBox->currentText().toUtf8().data();
 }
 
 int te::qt::widgets::TimeSeriesPropertiesWidget::getIdIndex()
 {
   if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toStdString());
+    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toUtf8().data());
   else
     return -1;
 }
 
 std::string te::qt::widgets::TimeSeriesPropertiesWidget::getValuePropName()
 {
-  return m_ui->m_valueComboBox->currentText().toStdString();
+  return m_ui->m_valueComboBox->currentText().toUtf8().data();
 }
 
 int te::qt::widgets::TimeSeriesPropertiesWidget::getValueIndex()
 {
   if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_valueComboBox->currentText().toStdString());
+    return m_dataType->getPropertyPosition(m_ui->m_valueComboBox->currentText().toUtf8().data());
   else
     return -1;
 }
 
 std::string te::qt::widgets::TimeSeriesPropertiesWidget::getGeometryPropName()
 {
-  return m_ui->m_locationComboBox->currentText().toStdString();
+  return m_ui->m_locationComboBox->currentText().toUtf8().data();
 }
 
 int te::qt::widgets::TimeSeriesPropertiesWidget::getGeometryId()
 {
   if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_locationComboBox->currentText().toStdString());
+    return m_dataType->getPropertyPosition(m_ui->m_locationComboBox->currentText().toUtf8().data());
   else
     return -1;
 }
@@ -99,12 +99,12 @@ void te::qt::widgets::TimeSeriesPropertiesWidget::setUp(const te::da::DataSetTyp
   {
     if(properties.at(i)->getType() == te::dt::GEOMETRY_TYPE)
     {
-      item = QString::fromStdString(properties.at(i)->getName());
+      item = QString::fromUtf8(properties.at(i)->getName().c_str());
       m_ui->m_locationComboBox->addItem(item);
     }
     else if(properties.at(i)->getType() != te::dt::DATETIME_TYPE)
     {
-      item = QString::fromStdString(properties.at(i)->getName());
+      item = QString::fromUtf8(properties.at(i)->getName().c_str());
       m_ui->m_idComboBox->addItem(item);
       m_ui->m_valueComboBox->addItem(item);
     }

@@ -169,7 +169,7 @@ void te::qt::plugins::edit::ToolBar::updateLayer(te::map::AbstractLayer* layer, 
     for(std::map<std::string, te::gm::Geometry*>::iterator it = gms.begin(); it != gms.end(); ++it)
     {
       bool ok;
-      QString id = QString::fromStdString(it->first);
+      QString id = QString::fromUtf8(it->first.c_str());
       te::da::ObjectId* oid = new te::da::ObjectId;
 
       int v = id.toInt(&ok);

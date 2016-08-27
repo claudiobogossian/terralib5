@@ -67,9 +67,9 @@ void te::qt::widgets::ParameterTableWidget::add(const std::string& name, const s
   {
     QTableWidgetItem* itemName = m_ui->m_paramTableWidget->item(i, 0);
 
-    if(itemName->text().toStdString() == name)
+    if(itemName->text().toUtf8().data() == name)
     {
-      QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(value));
+      QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromUtf8(value.c_str()));
       m_ui->m_paramTableWidget->setItem(i, 1, itemValue);
 
       return;
@@ -79,10 +79,10 @@ void te::qt::widgets::ParameterTableWidget::add(const std::string& name, const s
   //new entry
   m_ui->m_paramTableWidget->insertRow(newrow);
 
-  QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(name));
+  QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromUtf8(name.c_str()));
   m_ui->m_paramTableWidget->setItem(newrow, 0, itemName);
 
-  QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(value));
+  QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromUtf8(value.c_str()));
   m_ui->m_paramTableWidget->setItem(newrow, 1, itemValue);
 
   m_ui->m_paramTableWidget->resizeRowsToContents();
@@ -104,7 +104,7 @@ std::map<std::string, std::string> te::qt::widgets::ParameterTableWidget::getMap
 
     QTableWidgetItem* itemValue = m_ui->m_paramTableWidget->item(i, 1);
 
-    kvpairs[itemName->text().toStdString()] = itemValue->text().toStdString();
+    kvpairs[itemName->text().toUtf8().data()] = itemValue->text().toUtf8().data();
   }
 
   return kvpairs;

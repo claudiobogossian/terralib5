@@ -123,7 +123,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Could not open POSTGIS data source due to an unknown error!"));
     }
     
-    QString title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_newDatabaseNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
+    QString title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromUtf8("@") + m_ui->m_newDatabaseNameLineEdit->text().trimmed() + QString::fromUtf8("@") + m_ui->m_userNameLineEdit->text().trimmed();
 
     std::map<std::string, std::string> connInfo;
     if(!dsInfo["PG_HOST"].empty())
@@ -157,7 +157,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
       m_datasource->setDescription("");
       m_datasource->setAccessDriver("POSTGIS");
       m_datasource->setType("POSTGIS");
@@ -166,7 +166,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(connInfo);
-      m_datasource->setTitle(title.toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
       m_datasource->setDescription("");
     }
 
@@ -210,19 +210,19 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::
   QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_HOST"] = qstr.toStdString();
+    connInfo["PG_HOST"] = qstr.toUtf8().data();
 
 // get port
   qstr = m_ui->m_portLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_PORT"] = qstr.toStdString();
+    connInfo["PG_PORT"] = qstr.toUtf8().data();
 
 // get user
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_USER"] = qstr.toStdString();
+    connInfo["PG_USER"] = qstr.toUtf8().data();
 
 // get password
   if(getPrivateKeys)
@@ -230,26 +230,26 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::
     qstr = m_ui->m_passwordLineEdit->text().trimmed();
   
     if(!qstr.isEmpty())
-      connInfo["PG_PASSWORD"] = qstr.toStdString();
+      connInfo["PG_PASSWORD"] = qstr.toUtf8().data();
   }
 
 // get dbname
   qstr = m_ui->m_newDatabaseNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_NAME"] = qstr.toStdString();
+    connInfo["PG_NEWDB_NAME"] = qstr.toUtf8().data();
 
 // get Template
   qstr = m_ui->m_templateComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_TEMPLATE"] = qstr.toStdString();
+    connInfo["PG_NEWDB_TEMPLATE"] = qstr.toUtf8().data();
 
 // get Owner
   qstr = m_ui->m_ownerComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_OWNER"] = qstr.toStdString();
+    connInfo["PG_NEWDB_OWNER"] = qstr.toUtf8().data();
 
 // get Encoding
  connInfo["PG_NEWDB_ENCODING"] = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
@@ -258,7 +258,7 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::
   qstr = m_ui->m_tablespaceLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_TABLESPACE"] = qstr.toStdString();
+    connInfo["PG_NEWDB_TABLESPACE"] = qstr.toUtf8().data();
 
 // get Connections limit
   if(!m_ui->m_noLimitConnectionsGroupBox->isChecked())
@@ -267,8 +267,8 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::
 
     if(!qstr.isEmpty())
     {
-      if(boost::lexical_cast<int>(qstr.toStdString()) >= 1)
-        connInfo["PG_NEWDB_CONN_LIMIT"] = qstr.toStdString();
+      if(boost::lexical_cast<int>(qstr.toUtf8().data()) >= 1)
+        connInfo["PG_NEWDB_CONN_LIMIT"] = qstr.toUtf8().data();
       else
         connInfo["PG_NEWDB_CONN_LIMIT"] = "-1";
     }

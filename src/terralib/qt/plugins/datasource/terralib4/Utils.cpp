@@ -389,7 +389,7 @@ te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
   c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
   QColor cWhite(Qt::white);
-  std::string colorWhiteStr = cWhite.name().toStdString();
+  std::string colorWhiteStr = cWhite.name().toUtf8().data();
 
   //added dummy color for values < than min values...
   c->addValue(new te::se::ParameterValue(colorWhiteStr));
@@ -407,7 +407,7 @@ te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
     QColor color(visual->color().red_, visual->color().green_, visual->color().blue_, 0);
 
     std::string rangeStr = le.from();
-    std::string colorStr = color.name().toStdString();
+    std::string colorStr = color.name().toUtf8().data();
 
     c->addThreshold(new te::se::ParameterValue(rangeStr));
     c->addValue(new te::se::ParameterValue(colorStr));

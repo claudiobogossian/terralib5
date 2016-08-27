@@ -79,7 +79,7 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportSearchPush
   //fill list
   GeopackagePublisher gpkgPub;
 
-  GeopackageFiles gpkgFiles = gpkgPub.getGeopackageFiles(m_ui->m_importURLLineEdit->text().toStdString());
+  GeopackageFiles gpkgFiles = gpkgPub.getGeopackageFiles(m_ui->m_importURLLineEdit->text().toUtf8().data());
 
   for (std::size_t t = 0; t < gpkgFiles.size(); ++t)
   {
@@ -132,7 +132,7 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportPushButton
     return;
   }
 
-  std::string dir = m_ui->m_importOutputLineEdit->text().toStdString();
+  std::string dir = m_ui->m_importOutputLineEdit->text().toUtf8().data();
 
   QItemSelectionModel* select = m_ui->m_importTableWidget->selectionModel();
 
@@ -142,7 +142,7 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportPushButton
     return;
   }
 
-  std::string url = m_ui->m_importURLLineEdit->text().toStdString();
+  std::string url = m_ui->m_importURLLineEdit->text().toUtf8().data();
 
   te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
 
@@ -160,9 +160,9 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onImportPushButton
     {
       GeopackageFile gpkgFile;
 
-      gpkgFile.m_name = m_ui->m_importTableWidget->item(i, 0)->text().toStdString();
-      gpkgFile.m_objId = m_ui->m_importTableWidget->item(i, 1)->text().toStdString();
-      gpkgFile.m_desc = m_ui->m_importTableWidget->item(i, 2)->text().toStdString();
+      gpkgFile.m_name = m_ui->m_importTableWidget->item(i, 0)->text().toUtf8().data();
+      gpkgFile.m_objId = m_ui->m_importTableWidget->item(i, 1)->text().toUtf8().data();
+      gpkgFile.m_desc = m_ui->m_importTableWidget->item(i, 2)->text().toUtf8().data();
 
       try
       {
@@ -204,7 +204,7 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
     return;
   }
 
-  std::string pathFile = m_ui->m_exportFileLineEdit->text().toStdString();
+  std::string pathFile = m_ui->m_exportFileLineEdit->text().toUtf8().data();
 
   if (m_ui->m_exportServerLineEdit->text().isEmpty())
   {
@@ -212,7 +212,7 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
     return;
   }
 
-  std::string url = m_ui->m_exportServerLineEdit->text().toStdString();
+  std::string url = m_ui->m_exportServerLineEdit->text().toUtf8().data();
 
 
   QFileInfo file(m_ui->m_exportFileLineEdit->text());
@@ -229,7 +229,7 @@ void te::qt::plugins::terramobile::GeoPackagePublisherDialog::onExportPushButton
 
   try
   {
-    gpkgPub.uploadGeopackageFile(url, pathFile, file.fileName().toStdString());
+    gpkgPub.uploadGeopackageFile(url, pathFile, file.fileName().toUtf8().data());
   }
   catch (std::exception const& e)
   {

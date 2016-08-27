@@ -37,7 +37,7 @@
 
 te::qt::plugins::terramobile::CreateLayerAction::CreateLayerAction(QMenu* menu) :te::qt::plugins::terramobile::AbstractAction(menu)
 {
-  createAction(tr("Create Layer...").toStdString(), "terraMobile");
+  createAction(tr("Create Layer...").toUtf8().data(), "terraMobile");
 }
 
 te::qt::plugins::terramobile::CreateLayerAction::~CreateLayerAction()

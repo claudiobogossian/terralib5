@@ -36,7 +36,7 @@
 
 te::qt::plugins::rp::ArithmeticOpAction::ArithmeticOpAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Arithmetic Operations...").toStdString(), "arithmeticOp");
+  createAction(tr("Arithmetic Operations...").toUtf8().data(), "arithmeticOp");
   m_action->setObjectName("Processing.Raster Processing.Arithmetic Operations");
 }
 

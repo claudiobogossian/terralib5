@@ -191,7 +191,7 @@ void te::edit::MergeGeometriesTool::getBaseOID(const te::da::ObjectIdSet& objSet
 
   for (it = objSet.begin(); it != objSet.end(); ++it)
   {
-    if ((*it)->getValueAsString() == qValue.toStdString())
+    if ((*it)->getValueAsString() == qValue.toUtf8().data())
     {
       m_chosenOid = (*it)->clone()->getValueAsString();
     }

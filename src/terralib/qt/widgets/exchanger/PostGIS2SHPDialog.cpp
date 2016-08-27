@@ -128,7 +128,7 @@ void te::qt::widgets::PostGIS2SHPDialog::onOkPushButtonClicked()
 
     //create data source
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = m_ui->m_dataSetLineEdit->text().toStdString();
+    connInfo["URI"] = m_ui->m_dataSetLineEdit->text().toUtf8().data();
     connInfo["DRIVER"] = "ESRI Shapefile"; // MUITO TENSO
   
     std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR"); // TENSO
@@ -139,7 +139,7 @@ void te::qt::widgets::PostGIS2SHPDialog::onOkPushButtonClicked()
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
 
-    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
+    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toUtf8().data());
 
     //exchange
     std::map<std::string,std::string> nopt;

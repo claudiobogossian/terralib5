@@ -183,7 +183,7 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   std::auto_ptr<te::da::DataSet>     toData = toLayer->getData();
   te::da::DataSourcePtr              toSource = te::da::GetDataSource(toLayer->getDataSourceId(), true);
 
-  std::string           outDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string           outDataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
   te::da::DataSourcePtr outSource;
 
   //progress
@@ -196,7 +196,7 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   if(m_toFile)
   {
-    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     if (boost::filesystem::exists(uri))
     {
@@ -426,7 +426,7 @@ void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
 
 te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getCurrentFromLayer()
 {
-  std::string layerID = m_ui->m_fromLayerComboBox->itemData(m_ui->m_fromLayerComboBox->currentIndex(), Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_fromLayerComboBox->itemData(m_ui->m_fromLayerComboBox->currentIndex(), Qt::UserRole).toString().toUtf8().data();
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
@@ -442,7 +442,7 @@ te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getCurrentFro
 
 te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getCurrentToLayer()
 {
-  std::string layerID = m_ui->m_toLayerComboBox->itemData(m_ui->m_toLayerComboBox->currentIndex(), Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_toLayerComboBox->itemData(m_ui->m_toLayerComboBox->currentIndex(), Qt::UserRole).toString().toUtf8().data();
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
@@ -476,7 +476,7 @@ void te::attributefill::VectorToVectorDialog::onSelectAllComboBoxChanged(int ind
   for(int i=0; i < listFound.size(); ++i)
   {
     std::vector<std::string> tokens;
-    te::common::Tokenize(listFound.at(i)->text().toStdString(), tokens, ":");
+    te::common::Tokenize(listFound.at(i)->text().toUtf8().data(), tokens, ":");
 
     if(tokens.size() < 2)
       continue;
@@ -504,7 +504,7 @@ void te::attributefill::VectorToVectorDialog::onRejectAllComboBoxChanged(int ind
   for(int i=0; i < listFound.size(); ++i)
   {
     std::vector<std::string> tokens;
-    te::common::Tokenize(listFound.at(i)->text().toStdString(), tokens, ":");
+    te::common::Tokenize(listFound.at(i)->text().toUtf8().data(), tokens, ":");
 
     if(tokens.size() < 2)
       continue;
@@ -550,7 +550,7 @@ void te::attributefill::VectorToVectorDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -574,7 +574,7 @@ std::map<std::string, std::vector<te::attributefill::OperationType> > te::attrib
     if(!item->isSelected())
       continue;
 
-    std::string itemText = item->text().toStdString();
+    std::string itemText = item->text().toUtf8().data();
 
     std::vector<std::string> tokens;
     te::common::Tokenize(itemText, tokens, ":");

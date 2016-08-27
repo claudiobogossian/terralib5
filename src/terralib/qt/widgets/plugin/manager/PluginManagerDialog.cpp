@@ -94,7 +94,7 @@ void CheckRequiredDependencies(te::plugin::PluginInfo* plg, std::vector<std::str
       QString msg("Unable to load <b>%1</b>. Dependency missed: <ul><li><b>%2</b></li></ul>.");
       msg = msg.arg(plg->m_name.c_str(), plgName.c_str()); 
 
-      throw te::qt::widgets::Exception(msg.toStdString());
+      throw te::qt::widgets::Exception(msg.toUtf8().data());
     }
 
     if(!te::plugin::PluginManager::getInstance().isLoaded(plgName))
@@ -233,7 +233,7 @@ void MakeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vec
 
 void AddPlugin(const QString& fileName, te::qt::widgets::PluginsModel* model)
 {
-  te::plugin::PluginInfo* pInfo = te::plugin::GetInstalledPlugin(QDir::toNativeSeparators(fileName).toStdString());
+  te::plugin::PluginInfo* pInfo = te::plugin::GetInstalledPlugin(QDir::toNativeSeparators(fileName).toUtf8().data());
 
   if(PluginExists(pInfo->m_name))
     return;

@@ -39,7 +39,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 te::qt::plugins::mnt::VolumeAction::VolumeAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("Volume...").toStdString(), "mnt-processing-volume");
+  createAction(tr("Volume...").toUtf8().data(), "mnt-processing-volume");
   m_action->setObjectName("Processing.DTM Processing.CALCULATE VOLUME");
 }
 

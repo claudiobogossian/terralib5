@@ -121,7 +121,7 @@ QString GetWindowTitle(const ProjectMetadata& project, te::qt::af::ApplicationCo
   title += project.m_title;
   title += " - ";
 
-  boost::filesystem::path p(project.m_fileName.toStdString());
+  boost::filesystem::path p(project.m_fileName.toUtf8().data());
 
   std::string filename = p.filename().string();
 
@@ -797,8 +797,8 @@ void TerraView::showAboutDialog()
 {
   AboutDialog dialog(this);
 
-  std::string logoTVLargeFileName = m_app->getAboutLogo().toStdString();
-  std::string logoTEFileName = m_app->getTlibLogo().toStdString();
+  std::string logoTVLargeFileName = m_app->getAboutLogo().toUtf8().data();
+  std::string logoTEFileName = m_app->getTlibLogo().toUtf8().data();
 
   dialog.setTerraViewLogoFilePath(logoTVLargeFileName);
   dialog.setTerraLibLogoFilePath(logoTEFileName);
@@ -1546,7 +1546,7 @@ void TerraView::onAddFolderLayerTriggered()
     return;
   }
 
-  getLayerExplorer()->addFolder(text.toStdString(), idx);
+  getLayerExplorer()->addFolder(text.toUtf8().data(), idx);
 
   projectChanged();
 }
@@ -1709,7 +1709,7 @@ void TerraView::onToolsDataExchangerDirectTriggered()
     QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
 
     if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
-      dlg.setLastDataSource(dsTypeSett.toStdString());
+      dlg.setLastDataSource(dsTypeSett.toUtf8().data());
 
     dlg.exec();
   }

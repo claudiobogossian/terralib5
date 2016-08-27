@@ -27,7 +27,7 @@ te::qt::af::AbstractSettingWidget* te::qt::af::TableWidgetFactory::build()
 }
 
 te::qt::af::TableWidgetFactory::TableWidgetFactory() :
-te::qt::af::SettingsWidgetsFactory(QObject::tr("Table").toStdString())
+te::qt::af::SettingsWidgetsFactory(QObject::tr("Table").toUtf8().data())
 {
 
 }

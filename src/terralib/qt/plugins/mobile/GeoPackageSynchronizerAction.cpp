@@ -37,7 +37,7 @@
 
 te::qt::plugins::terramobile::GeoPackageSynchronizerAction::GeoPackageSynchronizerAction(QMenu* menu) :te::qt::plugins::terramobile::AbstractAction(menu)
 {
-  createAction(tr("GeoPackage Synchronizer...").toStdString(), "");
+  createAction(tr("GeoPackage Synchronizer...").toUtf8().data(), "");
 }
 
 te::qt::plugins::terramobile::GeoPackageSynchronizerAction::~GeoPackageSynchronizerAction()

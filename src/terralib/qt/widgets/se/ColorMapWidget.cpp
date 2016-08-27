@@ -155,7 +155,7 @@ std::string te::qt::widgets::ColorMapWidget::getCurrentBand()
 {
   if(m_ui->m_bandComboBox->count() != 0)
   {
-    return m_ui->m_bandComboBox->currentText().toStdString();
+    return m_ui->m_bandComboBox->currentText().toUtf8().data();
   }
 
   return "";
@@ -491,7 +491,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
   c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
   QColor cWhite(Qt::white);
-  std::string colorWhiteStr = cWhite.name().toStdString();
+  std::string colorWhiteStr = cWhite.name().toUtf8().data();
 
   //added dummy color for values < than min values...
   c->addValue(new te::se::ParameterValue(colorWhiteStr));
@@ -500,15 +500,15 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
   {
     QColor color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(1,1));
 
-    std::string rangeStr = m_ui->m_tableWidget->item(i, 1)->text().toStdString();
-    std::string colorStr = color.name().toStdString();
+    std::string rangeStr = m_ui->m_tableWidget->item(i, 1)->text().toUtf8().data();
+    std::string colorStr = color.name().toUtf8().data();
 
     c->addThreshold(new te::se::ParameterValue(rangeStr));
     c->addValue(new te::se::ParameterValue(colorStr));
 
     if(i == m_ui->m_tableWidget->rowCount() - 1)
     {
-      rangeStr = m_ui->m_tableWidget->item(i, 2)->text().toStdString();
+      rangeStr = m_ui->m_tableWidget->item(i, 2)->text().toUtf8().data();
       c->addThreshold(new te::se::ParameterValue(rangeStr));
     }
   }
@@ -550,7 +550,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
   c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
   QColor cWhite(Qt::white);
-  std::string colorWhiteStr = cWhite.name().toStdString();
+  std::string colorWhiteStr = cWhite.name().toUtf8().data();
 
   //added dummy color for values < than min values...
   c->addValue(new te::se::ParameterValue(colorWhiteStr));
@@ -560,7 +560,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
     QColor color(colorVec[i].getRed(), colorVec[i].getGreen(), colorVec[i].getBlue(), colorVec[i].getAlpha());
 
     std::string rangeStr = legVec[i]->getLowerLimit();
-    std::string colorStr = color.name().toStdString();
+    std::string colorStr = color.name().toUtf8().data();
 
     c->addThreshold(new te::se::ParameterValue(rangeStr));
     c->addValue(new te::se::ParameterValue(colorStr));
@@ -601,7 +601,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
     {
       {
         QString rangeStr = m_ui->m_tableWidget->item(i, 1)->text();
-        std::string colorStr = color.name().toStdString();
+        std::string colorStr = color.name().toUtf8().data();
 
         te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -615,7 +615,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
         color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(22,1));
 
         QString rangeStr = m_ui->m_tableWidget->item(i, 2)->text();
-        std::string colorStr = color.name().toStdString();
+        std::string colorStr = color.name().toUtf8().data();
 
         te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -629,7 +629,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
     else
     {
       QString rangeStr = m_ui->m_tableWidget->item(i, 1)->text();
-      std::string colorStr = color.name().toStdString();
+      std::string colorStr = color.name().toUtf8().data();
 
       te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -682,7 +682,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
     if(i == colorVec.size() - 1)
     {
       QString rangeStr = legVec[i - 1]->getUpperLimit().c_str();
-      std::string colorStr = color.name().toStdString();
+      std::string colorStr = color.name().toUtf8().data();
 
       te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -694,7 +694,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
     else
     {
       QString rangeStr = legVec[i]->getLowerLimit().c_str();
-      std::string colorStr = color.name().toStdString();
+      std::string colorStr = color.name().toUtf8().data();
 
       te::se::InterpolationPoint* ip = new te::se::InterpolationPoint();
 
@@ -725,8 +725,8 @@ void te::qt::widgets::ColorMapWidget::buildRecodingMap()
     QColor color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(1, 1));
 
     double data = m_ui->m_tableWidget->item(i, 1)->text().toDouble();
-    std::string colorStr = color.name().toStdString();
-    std::string title = m_ui->m_tableWidget->item(i, 2)->text().toStdString();
+    std::string colorStr = color.name().toUtf8().data();
+    std::string title = m_ui->m_tableWidget->item(i, 2)->text().toUtf8().data();
 
     te::se::MapItem* m = new te::se::MapItem();
     m->setData(data);
@@ -779,7 +779,7 @@ void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
   vec.push_back(m_ui->m_minValueLineEdit->text().toDouble());
   vec.push_back(m_ui->m_maxValueLineEdit->text().toDouble());
 
-  std::string type = m_ui->m_typeComboBox->currentText().toStdString();
+  std::string type = m_ui->m_typeComboBox->currentText().toUtf8().data();
 
   if (type == "Equal Steps")
   {

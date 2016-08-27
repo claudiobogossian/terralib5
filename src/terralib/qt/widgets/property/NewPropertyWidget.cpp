@@ -166,12 +166,12 @@ bool te::qt::widgets::NewPropertyWidget::buildProperty()
     QMessageBox::warning(this, tr("Warning"), tr("Name not defined."));
     return false;
   }
-  std::string name = m_ui->m_nameLineEdit->text().toStdString();
+  std::string name = m_ui->m_nameLineEdit->text().toUtf8().data();
 
   std::string defaultValue = "";
   if(m_ui->m_defaultValueLineEdit->text().isEmpty() == false)
   {
-    defaultValue = m_ui->m_defaultValueLineEdit->text().toStdString();
+    defaultValue = m_ui->m_defaultValueLineEdit->text().toUtf8().data();
   }
 
   bool isRequired = m_ui->m_requiredCheckBox->isChecked();

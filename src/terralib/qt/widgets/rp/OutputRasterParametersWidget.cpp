@@ -79,7 +79,7 @@ std::map<std::string, std::string> te::qt::widgets::OutputRasterParametersWidget
   if(m_fileGDAL)
   {
     std::map<std::string, std::string> rinfo;
-    std::string name = m_ui->m_outputLineEdit->text().toStdString();
+    std::string name = m_ui->m_outputLineEdit->text().toUtf8().data();
     rinfo["URI"] = name;
 
     return rinfo;
@@ -94,7 +94,7 @@ std::string te::qt::widgets::OutputRasterParametersWidget::getName() const
     return m_rasterInfoDlg->getWidget()->getName();
 
   if(m_fileGDAL && !m_ui->m_outputLineEdit->text().isEmpty())
-    return m_ui->m_outputLineEdit->text().toStdString();
+    return m_ui->m_outputLineEdit->text().toUtf8().data();
 
   return "";
 }

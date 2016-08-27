@@ -97,7 +97,7 @@ void te::qt::widgets::GlyphMarkRenderer::getSupportedMarks(std::vector<std::stri
 
 QString te::qt::widgets::GlyphMarkRenderer::encode(const QString& font, const int& charCode)
 {
-  QString result = QString::fromStdString(sm_rendererKey);
+  QString result = QString::fromUtf8(sm_rendererKey.c_str());
   result += "://" + font + "#0x" + QString::number(charCode, 16);
   return result;
 }

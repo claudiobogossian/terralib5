@@ -79,7 +79,7 @@ void te::qt::widgets::HaloPropertyItem::valueChanged(QtProperty* p, int value)
   {
     m_update = false;
 
-    m_halo->setRadius(new te::se::ParameterValue(QString::number(value).toStdString()));
+    m_halo->setRadius(new te::se::ParameterValue(QString::number(value).toUtf8().data()));
     
     emit haloChanged();
     m_update = true;

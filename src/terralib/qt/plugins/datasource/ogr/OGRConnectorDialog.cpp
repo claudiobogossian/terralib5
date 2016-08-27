@@ -88,9 +88,9 @@ void te::qt::plugins::ogr::OGRConnectorDialog::set(const te::da::DataSourceInfoP
   {
     setConnectionInfo(m_datasource->getConnInfo());
 
-    m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString(m_datasource->getTitle()));
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
-    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromStdString(m_datasource->getDescription()));
+    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription().c_str()));
   }
 }
 
@@ -135,8 +135,8 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toUtf8().data());
       m_datasource->setAccessDriver("OGR");
       m_datasource->setType("OGR");
     }
@@ -144,8 +144,8 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
     }
 
     if(m_ui->m_fileRadioButton->isChecked())
@@ -279,7 +279,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::s
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TE_TR("Please select a feature file first!"));
   
-  connInfo["URI"] = qstr.toStdString();
+  connInfo["URI"] = qstr.toUtf8().data();
 }
 
 void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)

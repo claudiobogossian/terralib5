@@ -605,7 +605,7 @@ void te::qt::widgets::RasterNavigatorWidget::onRecomposeClicked()
 
 void te::qt::widgets::RasterNavigatorWidget::onRedComboBoxActivated(int index)
 {
-  std::string name = m_ui->m_redComboBox->itemText(index).toStdString();
+  std::string name = m_ui->m_redComboBox->itemText(index).toUtf8().data();
 
   m_symbolizer->getChannelSelection()->getRedChannel()->setSourceChannelName(name);
 
@@ -614,7 +614,7 @@ void te::qt::widgets::RasterNavigatorWidget::onRedComboBoxActivated(int index)
 
 void te::qt::widgets::RasterNavigatorWidget::onGreenComboBoxActivated(int index)
 {
-  std::string name = m_ui->m_greenComboBox->itemText(index).toStdString();
+  std::string name = m_ui->m_greenComboBox->itemText(index).toUtf8().data();
 
   m_symbolizer->getChannelSelection()->getGreenChannel()->setSourceChannelName(name);
 
@@ -623,7 +623,7 @@ void te::qt::widgets::RasterNavigatorWidget::onGreenComboBoxActivated(int index)
 
 void te::qt::widgets::RasterNavigatorWidget::onBlueComboBoxActivated(int index)
 {
-  std::string name = m_ui->m_blueComboBox->itemText(index).toStdString();
+  std::string name = m_ui->m_blueComboBox->itemText(index).toUtf8().data();
 
   m_symbolizer->getChannelSelection()->getBlueChannel()->setSourceChannelName(name);
 
@@ -632,7 +632,7 @@ void te::qt::widgets::RasterNavigatorWidget::onBlueComboBoxActivated(int index)
 
 void te::qt::widgets::RasterNavigatorWidget::onMonoComboBoxActivated(int index)
 {
-  std::string name = m_ui->m_monoComboBox->itemText(index).toStdString();
+  std::string name = m_ui->m_monoComboBox->itemText(index).toUtf8().data();
 
   m_symbolizer->getChannelSelection()->getGrayChannel()->setSourceChannelName(name);
 
@@ -644,7 +644,7 @@ void te::qt::widgets::RasterNavigatorWidget::onMonoToolClicked(bool flag)
   if(m_symbolizer->getChannelSelection()->getGrayChannel() == 0)
   {
     te::se::SelectedChannel* scMono = new te::se::SelectedChannel();
-    scMono->setSourceChannelName(m_ui->m_monoComboBox->currentText().toStdString());
+    scMono->setSourceChannelName(m_ui->m_monoComboBox->currentText().toUtf8().data());
     m_symbolizer->getChannelSelection()->setGrayChannel(scMono);
   }
 
@@ -660,7 +660,7 @@ void te::qt::widgets::RasterNavigatorWidget::onRedToolClicked(bool flag)
   if(m_symbolizer->getChannelSelection()->getRedChannel() == 0)
   {
     te::se::SelectedChannel* scRed = new te::se::SelectedChannel();
-    scRed->setSourceChannelName(m_ui->m_redComboBox->currentText().toStdString());
+    scRed->setSourceChannelName(m_ui->m_redComboBox->currentText().toUtf8().data());
     m_symbolizer->getChannelSelection()->setRedChannel(scRed);
   }
 
@@ -676,7 +676,7 @@ void te::qt::widgets::RasterNavigatorWidget::onGreenToolClicked(bool flag)
   if(m_symbolizer->getChannelSelection()->getGreenChannel() == 0)
   {
     te::se::SelectedChannel* scGreen = new te::se::SelectedChannel();
-    scGreen->setSourceChannelName(m_ui->m_greenComboBox->currentText().toStdString());
+    scGreen->setSourceChannelName(m_ui->m_greenComboBox->currentText().toUtf8().data());
     m_symbolizer->getChannelSelection()->setGreenChannel(scGreen);
   }
 
@@ -692,7 +692,7 @@ void te::qt::widgets::RasterNavigatorWidget::onBlueToolClicked(bool flag)
   if(m_symbolizer->getChannelSelection()->getBlueChannel() == 0)
   {
     te::se::SelectedChannel* scBlue = new te::se::SelectedChannel();
-    scBlue->setSourceChannelName(m_ui->m_blueComboBox->currentText().toStdString());
+    scBlue->setSourceChannelName(m_ui->m_blueComboBox->currentText().toUtf8().data());
     m_symbolizer->getChannelSelection()->setBlueChannel(scBlue);
   }
 
@@ -708,21 +708,21 @@ void te::qt::widgets::RasterNavigatorWidget::onCompositionToolClicked(bool flag)
   if(m_symbolizer->getChannelSelection()->getRedChannel() == 0)
   {
     te::se::SelectedChannel* scRed = new te::se::SelectedChannel();
-    scRed->setSourceChannelName(m_ui->m_redComboBox->currentText().toStdString());
+    scRed->setSourceChannelName(m_ui->m_redComboBox->currentText().toUtf8().data());
     m_symbolizer->getChannelSelection()->setRedChannel(scRed);
   }
 
   if(m_symbolizer->getChannelSelection()->getGreenChannel() == 0)
   {
     te::se::SelectedChannel* scGreen = new te::se::SelectedChannel();
-    scGreen->setSourceChannelName(m_ui->m_greenComboBox->currentText().toStdString());
+    scGreen->setSourceChannelName(m_ui->m_greenComboBox->currentText().toUtf8().data());
     m_symbolizer->getChannelSelection()->setGreenChannel(scGreen);
   }
 
   if(m_symbolizer->getChannelSelection()->getBlueChannel() == 0)
   {
     te::se::SelectedChannel* scBlue = new te::se::SelectedChannel();
-    scBlue->setSourceChannelName(m_ui->m_blueComboBox->currentText().toStdString());
+    scBlue->setSourceChannelName(m_ui->m_blueComboBox->currentText().toUtf8().data());
     m_symbolizer->getChannelSelection()->setBlueChannel(scBlue);
   }
 

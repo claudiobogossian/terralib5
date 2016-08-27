@@ -27,7 +27,7 @@ te::qt::af::AbstractSettingWidget* ProjectWidgetFactory::build()
 }
 
 ProjectWidgetFactory::ProjectWidgetFactory() :
-te::qt::af::SettingsWidgetsFactory(QObject::tr("Project").toStdString())
+te::qt::af::SettingsWidgetsFactory(QObject::tr("Project").toUtf8().data())
 {
 
 }

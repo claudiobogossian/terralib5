@@ -77,5 +77,5 @@ QString te::qt::widgets::DrawThread::errorMessage() const
 
 QString te::qt::widgets::DrawThread::layerId() const
 {
-  return QString::fromStdString(m_layer->getId());
+  return QString::fromUtf8(m_layer->getId().c_str());
 }

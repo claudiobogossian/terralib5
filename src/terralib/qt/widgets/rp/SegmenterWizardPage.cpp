@@ -162,7 +162,7 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
 
   int index = m_ui->m_strategyTypeComboBox->currentIndex();
 
-  std::string strategyName = m_ui->m_strategyTypeComboBox->itemData(index).toString().toStdString();
+  std::string strategyName = m_ui->m_strategyTypeComboBox->itemData(index).toString().toUtf8().data();
 
   if(strategyName == "RegionGrowingMean")
   {
@@ -207,7 +207,7 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
 
 void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int index)
 {
-  std::string strategyName = m_ui->m_strategyTypeComboBox->itemData(index).toString().toStdString();
+  std::string strategyName = m_ui->m_strategyTypeComboBox->itemData(index).toString().toUtf8().data();
 
   if(strategyName == "RegionGrowingMean")
   {

@@ -121,11 +121,11 @@ void te::addressgeocoding::ImportTableDialog::onInputDataToolButtonTriggered()
     te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
 
     //Getting the connection info
-    std::string ogrInfo("connection_string=" + fileName.toStdString());
+    std::string ogrInfo("connection_string=" + std::string(fileName.toUtf8().data()));
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = fileName.toStdString();
+    connInfo["URI"] = fileName.toUtf8().data();
 
-    boost::filesystem::path uri(fileName.toStdString());
+    boost::filesystem::path uri(fileName.toUtf8().data());
     std::string file = uri.stem().string();
 
     //Creating a DataSource
@@ -135,7 +135,7 @@ void te::addressgeocoding::ImportTableDialog::onInputDataToolButtonTriggered()
     te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
     dsInfo->setConnInfo(connInfo);
     dsInfo->setId(boost::uuids::to_string(u));
-    dsInfo->setTitle(fileName.toStdString());
+    dsInfo->setTitle(fileName.toUtf8().data());
     dsInfo->setDescription("");
     dsInfo->setAccessDriver("OGR");
     dsInfo->setType("OGR");
@@ -173,7 +173,7 @@ void te::addressgeocoding::ImportTableDialog::onInputDataToolButtonTriggered()
     //The table will display 10 rows of the data for previewing purposes
     std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*m_dataSet.get(), properties, 10)));
 
-    m_tblView->setDataSet(memFeature.release(), m_dataSource->getEncoding());
+    m_tblView->setDataSet(memFeature.release());
     m_tblView->resizeColumnsToContents();
     m_tblView->show();
   }

@@ -151,7 +151,7 @@ void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, int value
 void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, const QString& value)
 {
   //if(p->propertyName() == "title")
-  //  m_layer->setTitle(value.toStdString());
+  //  m_layer->setTitle(value.toUtf8().data());
 }
 
 void te::qt::widgets::LayerPropertiesInfo::setLayerRasterProperties(te::map::AbstractLayer* rasterLayer)

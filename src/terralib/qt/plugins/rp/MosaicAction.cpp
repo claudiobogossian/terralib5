@@ -37,7 +37,7 @@
 
 te::qt::plugins::rp::MosaicAction::MosaicAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Mosaic...").toStdString(), "mosaic");
+  createAction(tr("Mosaic...").toUtf8().data(), "mosaic");
   m_action->setObjectName("Processing.Raster Processing.Mosaic");
 }
 

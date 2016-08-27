@@ -63,7 +63,7 @@ QVariant te::qt::widgets::DataSourceItem::data(int /*column*/, int role) const
   }
 
   if(role == Qt::DisplayRole)
-    return QVariant(QString::fromStdString(m_ds->getTitle()));
+    return QVariant(QString::fromUtf8(m_ds->getTitle().c_str()));
 
   return QVariant();
 }

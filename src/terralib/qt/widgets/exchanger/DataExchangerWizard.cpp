@@ -277,7 +277,7 @@ void te::qt::widgets::DataExchangerWizard::exchange()
       DataExchangeStatus status;
       status.m_dataset = odset;
       status.m_successful = false;
-      status.m_exceptionMsg = tr("Unknown error!").toStdString();
+      status.m_exceptionMsg = tr("Unknown error!").toUtf8().data();
 
       result.push_back(status);
 

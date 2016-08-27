@@ -258,10 +258,10 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
 
       for(std::size_t i = 0; i < selectedLayerItems.size(); ++i)
       {
-        std::string targetDatasetName = selectedLayerItems[i]->text().toStdString();
+        std::string targetDatasetName = selectedLayerItems[i]->text().toUtf8().data();
 
   // is it a raster?
-        std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(selectedLayerItems[i]->text().toStdString()));
+        std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(selectedLayerItems[i]->text().toUtf8().data()));
 
         if(input_dataset_type->hasRaster())
         {
@@ -453,7 +453,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
     if(item_source == 0)
       throw te::common::Exception(TE_TR("Invalid source table item!"));
 
-    std::string sourceName = item_source->text().toStdString();
+    std::string sourceName = item_source->text().toUtf8().data();
 
 // get target dataset name
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
@@ -461,7 +461,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
     if(item_target == 0)
       throw te::common::Exception(TE_TR("Invalid target table item!"));
 
-    std::string targetName = item_target->text().toStdString();
+    std::string targetName = item_target->text().toUtf8().data();
 
 // ask if the dataset is a raster
     try
@@ -539,8 +539,8 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getOriginalName(cons
     QString originalNameInTable = m_resolveNameTableWidget->item(i, 1)->text();
     QString targetNameInTable = m_resolveNameTableWidget->item(i, 2)->text();
 
-    std::string originalFromTable = originalNameInTable.toStdString();
-    std::string targetFromTable = targetNameInTable.toStdString();
+    std::string originalFromTable = originalNameInTable.toUtf8().data();
+    std::string targetFromTable = targetNameInTable.toUtf8().data();
 
     if (targetFromTable == targetName)
       return originalFromTable;
@@ -557,10 +557,10 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getNewName(const std
   {
     QString oName = m_resolveNameTableWidget->item(i, 1)->text();
 
-    std::string aux = oName.toStdString();
+    std::string aux = oName.toUtf8().data();
 
     if(originalName.c_str() == aux)
-      return m_resolveNameTableWidget->item(i, 2)->text().toStdString();
+      return m_resolveNameTableWidget->item(i, 2)->text().toUtf8().data();
 
   }
 
@@ -642,7 +642,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       throw te::common::Exception(TE_TR("Invalid source table item!"));
     }
 
-    std::string sourceName = item_source->text().toStdString();
+    std::string sourceName = item_source->text().toUtf8().data();
 
 // get target dataset name
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
@@ -653,7 +653,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       throw te::common::Exception(TE_TR("Invalid target table item!"));
     }
 
-    std::string targetName = item_target->text().toStdString();
+    std::string targetName = item_target->text().toUtf8().data();
 
 // ask if the dataset is a raster
     try
