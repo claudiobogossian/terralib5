@@ -44,6 +44,7 @@
 
 //Terralib Includes
 #include "../../common/Exception.h"
+#include "../../core/encoding/CharEncoding.h"
 #include "../../core/translator/Translator.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSource.h"
@@ -102,7 +103,7 @@ void te::sa::SpatialWeightsExchanger::exportToGAL(te::sa::GeneralizedProximityMa
   assert(it.get());
 
   //create file
-  FILE* fp = fopen(pathFileName.c_str(), "w");
+  FILE* fp = fopen(te::core::CharEncoding::fromUTF8(pathFileName).c_str(), "w");
 
   assert(fp);
 
@@ -344,7 +345,7 @@ void te::sa::SpatialWeightsExchanger::exportToGWT(te::sa::GeneralizedProximityMa
   assert(it.get());
 
   //create file
-  FILE* fp = fopen(pathFileName.c_str(), "w");
+  FILE* fp = fopen(te::core::CharEncoding::fromUTF8(pathFileName).c_str(), "w");
 
   assert(fp);
 
