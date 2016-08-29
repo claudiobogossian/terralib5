@@ -27,7 +27,7 @@
 #include "../Config.h"
 #include <terralib/rp.h>
 #include <terralib/raster.h>
-#include <terralib/memory/ExpansibleRaster.h>
+#include <terralib/memory.h>
 
 // Boost
 #define BOOST_TEST_NO_MAIN

@@ -26,14 +26,7 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/rp/TiePointsLocator.h>
-#include <terralib/rp/TiePointsLocatorMoravecStrategy.h>
-#include <terralib/rp/TiePointsLocatorSURFStrategy.h>
-#include <terralib/raster/Enums.h>
-#include <terralib/raster/BandProperty.h>
-#include <terralib/raster/Grid.h>
-#include <terralib/raster/Band.h>
+#include <terralib/raster.h>
 
 // Boost
 #define BOOST_TEST_NO_MAIN

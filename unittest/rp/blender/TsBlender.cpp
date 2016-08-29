@@ -26,14 +26,9 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/raster/Raster.h>
-#include <terralib/raster/Band.h>
-#include <terralib/raster/BandProperty.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/geometry/GTFactory.h>
-#include <terralib/geometry/LinearRing.h>
-#include <terralib/common/progress/ConsoleProgressViewer.h>
-#include <terralib/common/progress/ProgressManager.h>
+#include <terralib/raster.h>
+#include <terralib/geometry.h>
+#include <terralib/common.h>
 
 // STL
 #include <memory>

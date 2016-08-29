@@ -26,7 +26,7 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/common.h>
 
 // Boost
 #define BOOST_TEST_NO_MAIN

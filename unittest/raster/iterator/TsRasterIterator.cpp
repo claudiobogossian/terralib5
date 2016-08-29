@@ -25,12 +25,10 @@
 
 // TerraLib
 #include <terralib/raster.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/dataaccess/utils/Utils.h>
-#include <terralib/geometry/Utils.h>
-#include <terralib/memory/DataSet.h>
-#include <terralib/memory/DataSetItem.h>
-#include <terralib/rp/Functions.h>
+#include <terralib/dataaccess.h>
+#include <terralib/geometry.h>
+#include <terralib/memory.h>
+#include <terralib/rp.h>
 #include "../Config.h"
 
 // STL
