@@ -80,7 +80,7 @@ int main(int argc, char** argv)
     LoadModules();
 
     // Instructions
-    QString text = QString::fromLatin1("<p>Here you have a Map Display component associated with a set of geographic tools.\
+    QString text = QString::fromUtf8("<p>Here you have a Map Display component associated with a set of geographic tools.\
                                         <p>There are somes tools always active. e.g.:\
                                         <ul><li><b>CoordTracking:</b> move the mouse on Map Display and see the tracked geographic coordinate on status bar;</li>\
                                             <li><b>ZoomWheel:</b> use the mouse wheel to performs a zoom on MapDisplay;</li>\

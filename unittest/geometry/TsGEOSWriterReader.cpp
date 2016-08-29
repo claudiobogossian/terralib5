@@ -24,6 +24,7 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/common/Globals.h>
+#include <terralib/core/encoding/CharEncoding.h>
 #include <terralib/geometry.h>
 #include <terralib/geometry/GEOSWriter.h>
 #include <terralib/geometry/GEOSReader.h>
@@ -210,7 +211,7 @@ void TsGEOSWriterReader::loadGeometry(std::vector<WKBEntry>& hwkbVec) const
 {
   hwkbVec.clear();
 
-  FILE* f = fopen( TERRALIB_DATA_DIR "/hwkb.csv", "r");
+  FILE* f = fopen( te::core::CharEncoding::fromUTF8(TERRALIB_DATA_DIR "/hwkb.csv").c_str(), "r");
 
   CPPUNIT_ASSERT(f != NULL);
 
@@ -263,7 +264,7 @@ void TsGEOSWriterReader::loadWKT(std::vector<std::string>& geom_wkt) const
 {
   geom_wkt.clear();
 
-  FILE* f = fopen( TERRALIB_DATA_DIR "/wkt_line.txt", "r");
+  FILE* f = fopen( te::core::CharEncoding::fromUTF8(TERRALIB_DATA_DIR "/wkt_line.txt").c_str(), "r");
 
   CPPUNIT_ASSERT(f != NULL);
 
@@ -293,7 +294,7 @@ void TsGEOSWriterReader::loadWKT(std::string filewkt, std::vector<std::string>& 
   geom_wkt.clear();
 
   std::string  filename = TERRALIB_DATA_DIR  + filewkt;
-  FILE* f = fopen( filename.c_str() , "r");
+  FILE* f = fopen( te::core::CharEncoding::fromUTF8(filename).c_str() , "r");
 
   CPPUNIT_ASSERT(f != NULL);
 

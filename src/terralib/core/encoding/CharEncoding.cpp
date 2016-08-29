@@ -37,7 +37,7 @@
 #include <boost/locale.hpp>
 
 const std::map<te::core::EncodingType, std::string>
-EncodingString = boost::assign::map_list_of(te::core::EncodingType::UTF8, "UTF8")
+EncodingString = boost::assign::map_list_of(te::core::EncodingType::UTF8, "UTF-8")
                                            (te::core::EncodingType::CP1250, "CP1250")
                                            (te::core::EncodingType::CP1251, "CP1251")
                                            (te::core::EncodingType::CP1252, "CP1252")

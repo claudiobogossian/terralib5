@@ -28,6 +28,7 @@
   #include "Macros.h"
 
   #include "../common/PlatformUtils.h"
+  #include "../core/encoding/CharEncoding.h"
   #include "../core/utils/Platform.h"
 
   #include <cstring>
@@ -910,7 +911,7 @@
         }
         else 
         {
-          (*fileptr) = std::fopen( fullFileName.c_str(),  "wb+"  );
+          (*fileptr) = std::fopen( te::core::CharEncoding::fromUTF8(fullFileName).c_str(),  "wb+"  );
           if( (*fileptr) == 0 )
           {
             returnValue = false;
@@ -949,7 +950,7 @@
           }
           else       
           {
-            (*fileptr) = std::fopen( fullFileName.c_str(),  "wb+"  );
+            (*fileptr) = std::fopen( te::core::CharEncoding::fromUTF8(fullFileName).c_str(),  "wb+"  );
             if( (*fileptr) == 0 )
             {
               returnValue = false;

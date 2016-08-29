@@ -164,7 +164,7 @@ void TabularViewerEx::updateViewer()
     delete m_dsrc;
   }
 
-  m_dsrc = getDataSource(fname.toLatin1().data());
+  m_dsrc = getDataSource(fname.toUtf8().data());
 
   if(m_dsrc != 0)
   {

@@ -182,7 +182,7 @@ void te::edit::MergeGeometriesTool::getBaseOID(const te::da::ObjectIdSet& objSet
   for (it = objSet.begin(); it != objSet.end(); ++it)
     qValues.append((*it)->getValueAsString().c_str());
 
-  QString qValue = QInputDialog::getItem(m_display, QString(tr("Merge Geometries")), QObject::tr(msg.toLatin1()), qValues, 0, false, &ok);
+  QString qValue = QInputDialog::getItem(m_display, QString(tr("Merge Geometries")), QObject::tr(msg.toUtf8().data()), qValues, 0, false, &ok);
 
   if (qValue.isEmpty() || !ok)
   {
