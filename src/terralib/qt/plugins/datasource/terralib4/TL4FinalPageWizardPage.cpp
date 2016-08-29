@@ -49,7 +49,7 @@ void te::qt::plugins::terralib4::TL4FinalPageWizardPage::setDataSets(const std::
 
   for(std::size_t i = 0; i < datasets.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(QString::fromUtf8(datasets[i]), m_ui->m_layersListWidget);
+    QListWidgetItem* item = new QListWidgetItem(QString::fromUtf8(datasets[i].c_str()), m_ui->m_layersListWidget);
 
     item->setCheckState(Qt::Checked);
 

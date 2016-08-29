@@ -78,7 +78,7 @@ void te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::setThemes(const st
 
     std::string names = "Layer: " + theme.m_layerName + " | View: " + theme.m_viewName + " | Theme: " + theme.m_name;
 
-    QListWidgetItem* item = new QListWidgetItem(QIcon::fromTheme("tl4-theme"), QString::fromUtf8(names), m_ui->m_themeListWidget, 1);
+    QListWidgetItem* item = new QListWidgetItem(QIcon::fromTheme("tl4-theme"), QString::fromUtf8(names.c_str()), m_ui->m_themeListWidget, 1);
 
     item->setData(Qt::UserRole, QVariant::fromValue(theme));
 
