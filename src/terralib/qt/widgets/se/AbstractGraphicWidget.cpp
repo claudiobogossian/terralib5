@@ -48,28 +48,28 @@ te::se::Graphic* te::qt::widgets::AbstractGraphicWidget::getGraphic() const
 
 void te::qt::widgets::AbstractGraphicWidget::setGraphicSize(const QString& size)
 {
-  m_graphic->setSize(new te::se::ParameterValue(size.toStdString()));
+  m_graphic->setSize(new te::se::ParameterValue(size.toUtf8().data()));
   emit graphicChanged();
 }
 
 void te::qt::widgets::AbstractGraphicWidget::setGraphicAngle(const QString& angle)
 {
-  m_graphic->setRotation(new te::se::ParameterValue(angle.toStdString()));
+  m_graphic->setRotation(new te::se::ParameterValue(angle.toUtf8().data()));
   emit graphicChanged();
 }
 
 void te::qt::widgets::AbstractGraphicWidget::setGraphicOpacity(int value)
 {
   double opacity = value / 100.0;
-  m_graphic->setOpacity(new te::se::ParameterValue(QString::number(opacity, 'g', 2).toStdString()));
+  m_graphic->setOpacity(new te::se::ParameterValue(QString::number(opacity, 'g', 2).toUtf8().data()));
   emit graphicChanged();
 }
 
 void te::qt::widgets::AbstractGraphicWidget::setGraphicDisplacement(const QString& dx, const QString& dy)
 {
   te::se::Displacement* disp = new te::se::Displacement;
-  disp->setDisplacementX(new te::se::ParameterValue(dx.toStdString()));
-  disp->setDisplacementY(new te::se::ParameterValue(dy.toStdString()));
+  disp->setDisplacementX(new te::se::ParameterValue(dx.toUtf8().data()));
+  disp->setDisplacementY(new te::se::ParameterValue(dy.toUtf8().data()));
   m_graphic->setDisplacement(disp);
   emit graphicChanged();
 }
@@ -77,8 +77,8 @@ void te::qt::widgets::AbstractGraphicWidget::setGraphicDisplacement(const QStrin
 void te::qt::widgets::AbstractGraphicWidget::setGraphicAnchorPoint(const QString& ax, const QString& ay)
 {
   te::se::AnchorPoint* ac = new te::se::AnchorPoint;
-  ac->setAnchorPointX(new te::se::ParameterValue(ax.toStdString()));
-  ac->setAnchorPointY(new te::se::ParameterValue(ay.toStdString()));
+  ac->setAnchorPointX(new te::se::ParameterValue(ax.toUtf8().data()));
+  ac->setAnchorPointY(new te::se::ParameterValue(ay.toUtf8().data()));
   m_graphic->setAnchorPoint(ac);
   emit graphicChanged();
 }

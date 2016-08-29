@@ -177,9 +177,9 @@ void te::ce::ScriptWidget::execute()
 
   try
   {
-    te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get(getScriptType().toStdString());
+    te::vm::core::VirtualMachine* vm = te::vm::core::VirtualMachineManager::instance().get(getScriptType().toUtf8().data());
 
-    vm->build(m_fileName.toStdString());
+    vm->build(m_fileName.toUtf8().data());
 
     vm->execute();
   }

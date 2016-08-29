@@ -46,7 +46,7 @@
 te::qt::plugins::st::ObservationAction::ObservationAction(QMenu* menu)
 : te::qt::plugins::st::AbstractAction(menu)
 {
-  createAction(tr("Observation...").toStdString(), "observation-layer");
+  createAction(tr("Observation...").toUtf8().data(), "observation-layer");
   //te::qt::widgets::AbstractTreeItemFactory::reg("OBSERVATIONDATASETLAYER", boost::bind(boost::factory<ObservationLayerItem*>(),_1, _2));
 }
 

@@ -129,12 +129,12 @@ void te::addressgeocoding::ConfigInputAddressDialog::setDataSource(te::da::DataS
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getAddressFileName()
 {
-  return m_ui->m_inputAddressLineEdit->text().toStdString();
+  return m_ui->m_inputAddressLineEdit->text().toUtf8().data();
 }
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetType()
 {
-  return m_ui->m_sTypeComboBox->currentText().toStdString();
+  return m_ui->m_sTypeComboBox->currentText().toUtf8().data();
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetType(std::string streetType)
@@ -144,7 +144,7 @@ void te::addressgeocoding::ConfigInputAddressDialog::setStreetType(std::string s
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetTitle()
 {
-  return m_ui->m_sTitleComboBox->currentText().toStdString();
+  return m_ui->m_sTitleComboBox->currentText().toUtf8().data();
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetTitle(std::string streetTitle)
@@ -154,7 +154,7 @@ void te::addressgeocoding::ConfigInputAddressDialog::setStreetTitle(std::string 
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetName()
 {
-  return m_ui->m_sNameComboBox->currentText().toStdString();
+  return m_ui->m_sNameComboBox->currentText().toUtf8().data();
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetName(std::string streetName)
@@ -164,7 +164,7 @@ void te::addressgeocoding::ConfigInputAddressDialog::setStreetName(std::string s
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetNumber()
 {
-  return m_ui->m_sNumberComboBox->currentText().toStdString();
+  return m_ui->m_sNumberComboBox->currentText().toUtf8().data();
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetNumber(std::string streetNumber)
@@ -174,7 +174,7 @@ void te::addressgeocoding::ConfigInputAddressDialog::setStreetNumber(std::string
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetNeighborhood()
 {
-  return m_ui->m_sNeighborhoodComboBox->currentText().toStdString();
+  return m_ui->m_sNeighborhoodComboBox->currentText().toUtf8().data();
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetNeighborhood(std::string streetNeighborhood)
@@ -184,7 +184,7 @@ void te::addressgeocoding::ConfigInputAddressDialog::setStreetNeighborhood(std::
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetPostalCode()
 {
-  return m_ui->m_sPostalCodeComboBox->currentText().toStdString();
+  return m_ui->m_sPostalCodeComboBox->currentText().toUtf8().data();
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetPostalCode(std::string streetPostalCode)
@@ -207,12 +207,12 @@ void te::addressgeocoding::ConfigInputAddressDialog::onOkPushButtonClicked()
   std::map<std::string, std::string> addressConfig;
   addressConfig.insert(std::pair<std::string,std::string>("fileName", dsNames[0]));
   addressConfig.insert(std::pair<std::string,std::string>("filePath", it->second));
-  addressConfig.insert(std::pair<std::string,std::string>("streetType", m_ui->m_sTypeComboBox->currentText().toStdString()));
-  addressConfig.insert(std::pair<std::string,std::string>("streetTitle", m_ui->m_sTitleComboBox->currentText().toStdString()));
-  addressConfig.insert(std::pair<std::string,std::string>("streetName", m_ui->m_sNameComboBox->currentText().toStdString()));
-  addressConfig.insert(std::pair<std::string,std::string>("number", m_ui->m_sNumberComboBox->currentText().toStdString()));
-  addressConfig.insert(std::pair<std::string,std::string>("neighborhood", m_ui->m_sNeighborhoodComboBox->currentText().toStdString()));
-  addressConfig.insert(std::pair<std::string,std::string>("postalCode", m_ui->m_sPostalCodeComboBox->currentText().toStdString()));
+  addressConfig.insert(std::pair<std::string,std::string>("streetType", m_ui->m_sTypeComboBox->currentText().toUtf8().data()));
+  addressConfig.insert(std::pair<std::string,std::string>("streetTitle", m_ui->m_sTitleComboBox->currentText().toUtf8().data()));
+  addressConfig.insert(std::pair<std::string,std::string>("streetName", m_ui->m_sNameComboBox->currentText().toUtf8().data()));
+  addressConfig.insert(std::pair<std::string,std::string>("number", m_ui->m_sNumberComboBox->currentText().toUtf8().data()));
+  addressConfig.insert(std::pair<std::string,std::string>("neighborhood", m_ui->m_sNeighborhoodComboBox->currentText().toUtf8().data()));
+  addressConfig.insert(std::pair<std::string,std::string>("postalCode", m_ui->m_sPostalCodeComboBox->currentText().toUtf8().data()));
   
   AddAddressConfigToSettings(addressConfig);
 
@@ -296,13 +296,13 @@ void te::addressgeocoding::ConfigInputAddressDialog::GetAddressConfigToSettings(
   std::string key6 = "Address Geocoding/neighborhood";
   std::string key7 = "Address Geocoding/postalCode";
 
-  filePath = sett.value(key1.c_str()).toString().toStdString();
-  streetType = sett.value(key2.c_str()).toString().toStdString();
-  streetTitle = sett.value(key3.c_str()).toString().toStdString();
-  streetName = sett.value(key4.c_str()).toString().toStdString();
-  number = sett.value(key5.c_str()).toString().toStdString();
-  neighborhood = sett.value(key5.c_str()).toString().toStdString();
-  postalCode = sett.value(key6.c_str()).toString().toStdString();
+  filePath = sett.value(key1.c_str()).toString().toUtf8().data();
+  streetType = sett.value(key2.c_str()).toString().toUtf8().data();
+  streetTitle = sett.value(key3.c_str()).toString().toUtf8().data();
+  streetName = sett.value(key4.c_str()).toString().toUtf8().data();
+  number = sett.value(key5.c_str()).toString().toUtf8().data();
+  neighborhood = sett.value(key5.c_str()).toString().toUtf8().data();
+  postalCode = sett.value(key6.c_str()).toString().toUtf8().data();
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::RemoveAddressConfigFromSettings(const QString& path, const QString& typeFile)

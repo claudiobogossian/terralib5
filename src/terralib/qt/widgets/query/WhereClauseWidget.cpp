@@ -109,25 +109,25 @@ te::da::Where* te::qt::widgets::WhereClauseWidget::getWhere()
     std::string propName = "";
     QTableWidgetItem* itemPropName = m_ui->m_whereClauseTableWidget->item(i, 1);
     if(itemPropName)
-      propName = itemPropName->text().toStdString();
+      propName = itemPropName->text().toUtf8().data();
     else
     {
       QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 1);
       QComboBox* cmbBox = dynamic_cast<QComboBox*>(w);
       if(cmbBox)
-        propName = cmbBox->currentText().toStdString();
+        propName = cmbBox->currentText().toUtf8().data();
     }
 
     std::string funcName = "";
     QTableWidgetItem* itemFuncName = m_ui->m_whereClauseTableWidget->item(i, 2);
     if(itemFuncName)
-      funcName = itemFuncName->text().toStdString();
+      funcName = itemFuncName->text().toUtf8().data();
     else
     {
       QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 2);
       QComboBox* cmbBox = dynamic_cast<QComboBox*>(w);
       if(cmbBox)
-        funcName = cmbBox->currentText().toStdString();
+        funcName = cmbBox->currentText().toUtf8().data();
     }
 
     int expIdx = -1;
@@ -168,7 +168,7 @@ te::da::Where* te::qt::widgets::WhereClauseWidget::getWhere()
     if(itemConnectorName)
     {
       if(itemPropName->text().isEmpty() == false)
-        lastConnectorName = itemConnectorName->text().toStdString();
+        lastConnectorName = itemConnectorName->text().toUtf8().data();
       else
         lastConnectorName = "";
     }
@@ -177,7 +177,7 @@ te::da::Where* te::qt::widgets::WhereClauseWidget::getWhere()
       QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 4);
       QComboBox* cmbBox = dynamic_cast<QComboBox*>(w);
       if(cmbBox)
-        lastConnectorName = cmbBox->currentText().toStdString();
+        lastConnectorName = cmbBox->currentText().toUtf8().data();
     }
   }
 
@@ -375,7 +375,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       }
     }
 
-    restrictValue = m_ui->m_restrictValueComboBox->currentText().toStdString();
+    restrictValue = m_ui->m_restrictValueComboBox->currentText().toUtf8().data();
 
     if(m_ui->m_OperatorComboBox->currentText().isEmpty())
     {
@@ -383,7 +383,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       QMessageBox::warning(this, tr("Query Builder"), tr("Operator not defined."));
       return;
     }
-    operatorStr = m_ui->m_OperatorComboBox->currentText().toStdString();
+    operatorStr = m_ui->m_OperatorComboBox->currentText().toUtf8().data();
 
     ExpressionProperty* ep = new ExpressionProperty();
     ep->m_isAttributeCriteria = true;
@@ -392,7 +392,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
     if(m_ui->m_valuePropertyRadioButton->isChecked())
     {
-      valueStr = m_ui->m_valuePropertyComboBox->currentText().toStdString();
+      valueStr = m_ui->m_valuePropertyComboBox->currentText().toUtf8().data();
 
       te::da::Expression* exp = new te::da::PropertyName(valueStr);
 
@@ -404,7 +404,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     }
     else if(m_ui->m_valueValueRadioButton->isChecked())
     {
-      valueStr = m_ui->m_valueValueComboBox->currentText().toStdString();
+      valueStr = m_ui->m_valueValueComboBox->currentText().toUtf8().data();
 
       te::da::Expression* exp = getExpression(m_ui->m_valueValueComboBox->currentText(), restrictValue);
 
@@ -415,7 +415,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       m_mapExp.insert(std::map<int, ExpressionProperty*>::value_type(expId, ep));
     }
 
-    std::string connector = tr("and").toStdString();
+    std::string connector = tr("and").toUtf8().data();
 
     //new entry
     int newrow = m_ui->m_whereClauseTableWidget->rowCount();
@@ -477,7 +477,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
     for(int i = 0; i < connectorCmbBox->count(); ++i)
     {
-      if(connectorCmbBox->itemText(i).toStdString() == connector)
+      if(connectorCmbBox->itemText(i).toUtf8().data() == connector)
       {
         connectorCmbBox->setCurrentIndex(i);
         break;
@@ -492,9 +492,9 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       QMessageBox::warning(this, tr("Query Builder"), tr("Operator not defined."));
       return;
     }
-    operatorStr = m_ui->m_SpatialOperatorComboBox->currentText().toStdString();
+    operatorStr = m_ui->m_SpatialOperatorComboBox->currentText().toUtf8().data();
 
-    restrictValue = m_ui->m_geomAttrComboBox->currentText().toStdString();
+    restrictValue = m_ui->m_geomAttrComboBox->currentText().toUtf8().data();
 
     //get layer
     int layerIdx = m_ui->m_layerComboBox->currentIndex();
@@ -554,7 +554,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       }
 
       //valueStr = geom->toString();
-      valueStr = tr("Geometry Value").toStdString();
+      valueStr = tr("Geometry Value").toUtf8().data();
 
       //create expression
       te::da::LiteralGeom* lGeom = new te::da::LiteralGeom(geom);
@@ -572,7 +572,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       std::string connector = "";
 
       if(count < dsSize - 1)
-        connector = tr("or").toStdString();
+        connector = tr("or").toUtf8().data();
 
       ++count;
 
@@ -618,7 +618,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       
       for(int i = 0; i < connectorCmbBox->count(); ++i)
       {
-        if(connectorCmbBox->itemText(i).toStdString() == connector)
+        if(connectorCmbBox->itemText(i).toUtf8().data() == connector)
         {
           connectorCmbBox->setCurrentIndex(i);
           break;
@@ -668,7 +668,7 @@ void te::qt::widgets::WhereClauseWidget::onRemoveWhereClausePushButtonClicked()
 
 void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
 {
-  std::string propertyName = m_ui->m_restrictValueComboBox->currentText().toStdString();
+  std::string propertyName = m_ui->m_restrictValueComboBox->currentText().toUtf8().data();
 
   m_ui->m_valueValueComboBox->clear();
   m_ui->m_valueValueComboBox->addItems(getPropertyValues(propertyName));
@@ -712,22 +712,22 @@ void te::qt::widgets::WhereClauseWidget::onComboBoxActivated(QString value)
     //update expression property
     if(column == 1) //property
     {
-      ep->m_property = value.toStdString();
+      ep->m_property = value.toUtf8().data();
 
       if(ep->m_isValueValue)
       {
         ep->m_valuesComboBox->clear();
         ep->m_valuesComboBox->addItems(getPropertyValues(ep->m_property));
-        ep->m_value = ep->m_valuesComboBox->currentText().toStdString();
+        ep->m_value = ep->m_valuesComboBox->currentText().toUtf8().data();
       }
     }
     else if(column == 2) //operator
     {
-      ep->m_operator = value.toStdString();
+      ep->m_operator = value.toUtf8().data();
     }
     else if(column == 3) //value
     {
-      ep->m_value = value.toStdString();
+      ep->m_value = value.toUtf8().data();
     }
 
     //re-create expression
@@ -812,7 +812,7 @@ te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QStr
       }
       else if(prop->getType() == te::dt::STRING_TYPE)
       {
-        l = new te::da::LiteralString(value.toStdString());
+        l = new te::da::LiteralString(value.toUtf8().data());
       }
     }
 
@@ -830,7 +830,7 @@ void te::qt::widgets::WhereClauseWidget::copyCombo(QComboBox* input, QComboBox* 
   {
     output->addItem(input->itemText(i));
 
-    if(!curValue.empty() && input->itemText(i).toStdString() == curValue)
+    if(!curValue.empty() && input->itemText(i).toUtf8().data() == curValue)
       idx = i;
   }
 

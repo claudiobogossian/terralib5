@@ -64,10 +64,10 @@ te::qt::widgets::DataSourceSelectorWidget::DataSourceSelectorWidget(QWidget* par
 
   while(it != itend)
   {
-    QString dsName = QString::fromStdString(it->second->getName());
+    QString dsName = QString::fromUtf8(it->second->getName().c_str());
     QIcon icon = it->second->getIcon(DataSourceType::ICON_DATASOURCE_SMALL);
-    QString title = QString::fromStdString(it->second->getTitle());
-    QString description = QString::fromStdString(it->second->getDescription());
+    QString title = QString::fromUtf8(it->second->getTitle().c_str());
+    QString description = QString::fromUtf8(it->second->getDescription().c_str());
 
     QListWidgetItem* item = new QListWidgetItem(icon, title);
 
@@ -162,7 +162,7 @@ std::list<te::da::DataSourceInfoPtr> te::qt::widgets::DataSourceSelectorWidget::
     if(id.isEmpty())
       throw Exception(TE_TR("Selected data source has no identification!"));
 
-    te::da::DataSourceInfoPtr selected(te::da::DataSourceInfoManager::getInstance().get(id.toStdString()));
+    te::da::DataSourceInfoPtr selected(te::da::DataSourceInfoManager::getInstance().get(id.toUtf8().data()));
 
     if(selected.get() == 0)
       throw Exception(TE_TR("Could not find selected data source!"));
@@ -206,7 +206,7 @@ void  te::qt::widgets::DataSourceSelectorWidget::showDataSourceWithDatabaseSuppo
   {
     QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
 
-    std::string name = item->data(Qt::UserRole).toString().toStdString();
+    std::string name = item->data(Qt::UserRole).toString().toUtf8().data();
 
     const te::qt::widgets::DataSourceType* type = DataSourceTypeManager::getInstance().get(name);
 
@@ -223,7 +223,7 @@ void  te::qt::widgets::DataSourceSelectorWidget::showDataSourceWithFileSupport(b
   {
     QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
 
-    std::string name = item->data(Qt::UserRole).toString().toStdString();
+    std::string name = item->data(Qt::UserRole).toString().toUtf8().data();
 
     const te::qt::widgets::DataSourceType* type = DataSourceTypeManager::getInstance().get(name);
 
@@ -240,7 +240,7 @@ void  te::qt::widgets::DataSourceSelectorWidget::showDataSourceWithRasterSupport
   {
     QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
 
-    std::string name = item->data(Qt::UserRole).toString().toStdString();
+    std::string name = item->data(Qt::UserRole).toString().toUtf8().data();
 
     const te::qt::widgets::DataSourceType* type = DataSourceTypeManager::getInstance().get(name);
 
@@ -257,7 +257,7 @@ void  te::qt::widgets::DataSourceSelectorWidget::showDataSourceWithVectorialSupp
   {
     QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
 
-    std::string name = item->data(Qt::UserRole).toString().toStdString();
+    std::string name = item->data(Qt::UserRole).toString().toUtf8().data();
 
     const te::qt::widgets::DataSourceType* type = DataSourceTypeManager::getInstance().get(name);
 
@@ -282,7 +282,7 @@ void te::qt::widgets::DataSourceSelectorWidget::addDataSourcePushButtonPressed()
 
   try
   {
-    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeId.toStdString());
+    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeId.toUtf8().data());
 
     if(dsType == 0)
       throw Exception(TE_TR("Unknown data source type!"));
@@ -306,8 +306,8 @@ void te::qt::widgets::DataSourceSelectorWidget::addDataSourcePushButtonPressed()
       if(it->get() == 0)
         return;
 
-      QListWidgetItem* item = new QListWidgetItem(QString::fromStdString((*it)->getTitle()));
-      item->setData(Qt::UserRole, QVariant(QString::fromStdString((*it)->getId())));
+      QListWidgetItem* item = new QListWidgetItem(QString::fromUtf8((*it)->getTitle().c_str()));
+      item->setData(Qt::UserRole, QVariant(QString::fromUtf8((*it)->getId().c_str())));
       m_ui->m_datasourceListWidget->addItem(item);
       m_ui->m_datasourceListWidget->setCurrentItem(item);
       dataSourcePressed(item);
@@ -345,7 +345,7 @@ void te::qt::widgets::DataSourceSelectorWidget::removeDataSourcePushButtonPresse
     if(dsTypeName.isEmpty())
       throw Exception(TE_TR("Unknown data source type!"));
     
-    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeName.toStdString());
+    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeName.toUtf8().data());
 
     if(dsType == 0)
       throw Exception(TE_TR("Could not find data source type!"));
@@ -428,7 +428,7 @@ void te::qt::widgets::DataSourceSelectorWidget::editDataSourcePushButtonPressed(
     if(dsTypeName.isEmpty())
       throw Exception(TE_TR("Unknown data source type!"));
     
-    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeName.toStdString());
+    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeName.toUtf8().data());
 
     if(dsType == 0)
       throw Exception(TE_TR("Could not find data source type!"));
@@ -458,9 +458,9 @@ void te::qt::widgets::DataSourceSelectorWidget::editDataSourcePushButtonPressed(
       if(dsId.isEmpty())
         throw Exception(TE_TR("Invalid data source id!"));
 
-      te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsId.toStdString());
+      te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsId.toUtf8().data());
 
-      item->setText(QString::fromStdString(ds->getTitle()));
+      item->setText(QString::fromUtf8(ds->getTitle().c_str()));
     }
 
     if(items.isEmpty())
@@ -499,7 +499,7 @@ void te::qt::widgets::DataSourceSelectorWidget::createDataSourcePushButtonPresse
 
   try
   {
-    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeId.toStdString());
+    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeId.toUtf8().data());
 
     if(dsType == 0)
       throw Exception(TE_TR("Unknown data source type!"));
@@ -523,8 +523,8 @@ void te::qt::widgets::DataSourceSelectorWidget::createDataSourcePushButtonPresse
       if(it->get() == 0)
         return;
 
-      QListWidgetItem* item = new QListWidgetItem(QString::fromStdString((*it)->getTitle()));
-      item->setData(Qt::UserRole, QVariant(QString::fromStdString((*it)->getId())));
+      QListWidgetItem* item = new QListWidgetItem(QString::fromUtf8((*it)->getTitle().c_str()));
+      item->setData(Qt::UserRole, QVariant(QString::fromUtf8((*it)->getId().c_str())));
       m_ui->m_datasourceListWidget->addItem(item);
       m_ui->m_datasourceListWidget->setCurrentItem(item);
       dataSourcePressed(item);
@@ -571,7 +571,7 @@ void te::qt::widgets::DataSourceSelectorWidget::dataSourceTypePressed(QListWidge
 
   std::vector<te::da::DataSourceInfoPtr> datasources;
 
-  te::da::DataSourceInfoManager::getInstance().getByType(dsTypeName.toStdString(), datasources);
+  te::da::DataSourceInfoManager::getInstance().getByType(dsTypeName.toUtf8().data(), datasources);
 
   for(std::size_t i = 0; i < datasources.size(); ++i)
   {
@@ -602,10 +602,10 @@ void te::qt::widgets::DataSourceSelectorWidget::dataSourceTypePressed(QListWidge
   m_ui->m_addDataSourceToolButton->setEnabled(m_addButtonEnabled);
   m_ui->m_createDataSourceToolButton->setEnabled(m_createButtonEnabled);
 
-  const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeName.toStdString());
+  const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeName.toUtf8().data());
 
   if(dsType != 0)
-    m_ui->m_datasourceDescriptionLabel->setText(QString::fromStdString(dsType->getDescription()));
+    m_ui->m_datasourceDescriptionLabel->setText(QString::fromUtf8(dsType->getDescription().c_str()));
 }
 
 void te::qt::widgets::DataSourceSelectorWidget::dataSourcePressed(QListWidgetItem* item)
@@ -622,7 +622,7 @@ void te::qt::widgets::DataSourceSelectorWidget::dataSourcePressed(QListWidgetIte
   if(id.isEmpty())
     return;
 
-  te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(id.toStdString());
+  te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(id.toUtf8().data());
 
   if(ds.get() == 0)
   {
@@ -633,7 +633,7 @@ void te::qt::widgets::DataSourceSelectorWidget::dataSourcePressed(QListWidgetIte
     return;
   }
 
-  m_ui->m_datasourceDescriptionLabel->setText(QString::fromStdString(ds->getDescription()));
+  m_ui->m_datasourceDescriptionLabel->setText(QString::fromUtf8(ds->getDescription().c_str()));
 
   m_ui->m_removeDataSourceToolButton->setEnabled(m_removeButtonEnabled);
   m_ui->m_editDataSourceToolButton->setEnabled(m_editButtonEnabled);
@@ -677,9 +677,9 @@ void te::qt::widgets::DataSourceSelectorWidget::dataSourceDoubleClicked(QListWid
 //  if(item == 0)
 //    return; // should be an exception!
 //
-//  item->setData(Qt::UserRole, QVariant(QString::fromStdString(ds->getId())));
+//  item->setData(Qt::UserRole, QVariant(QString::fromUtf8(ds->getId())));
 //
-//  item->setText(QString::fromStdString(ds->getTitle()));
+//  item->setText(QString::fromUtf8(ds->getTitle()));
 //
 //  m_ui->m_datasourceListWidget->update();
 //

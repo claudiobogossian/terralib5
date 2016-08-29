@@ -331,7 +331,7 @@ void te::qt::widgets::MultiThreadMapDisplay::onRenderingFinished()
       if(!errorm.isEmpty())
         errors[lId] = errorm;
 
-      RemoveImage(lId.toStdString(), m_images);
+      RemoveImage(lId.toUtf8().data(), m_images);
     }
   }
 

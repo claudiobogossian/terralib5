@@ -171,7 +171,7 @@ void te::qt::widgets::SHP2PostGISDialog::onOkPushButtonClicked()
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
     
-    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
+    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toUtf8().data());
 
     //create index
     if(m_ui->m_spatialIndexCheckBox->isChecked())

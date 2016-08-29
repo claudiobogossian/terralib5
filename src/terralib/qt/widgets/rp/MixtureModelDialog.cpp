@@ -223,7 +223,7 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
 // insert sensor description of band
       QComboBox *sensorComboBox = (QComboBox*) m_uiPtr->m_bandsListGroupBox->layout()->itemAt(i + 1)->widget();
 #if (QT_VERSION >= 0x050000)
-      algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toStdString()));
+      algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toUtf8().data()));
 #else
       algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toAscii()));
 #endif
@@ -315,10 +315,10 @@ void te::qt::widgets::MixtureModelDialog::on_keyPressedOverMapDisplay(int key)
     componentsVector.push_back(value);
   }
 
-  m_components[className->toStdString()] = componentsVector;
+  m_components[className->toUtf8().data()] = componentsVector;
 
   te::gm::Coord2D coordinate(currentColumn, currentRow);
-  m_coordinates[className->toStdString()] = coordinate;
+  m_coordinates[className->toUtf8().data()] = coordinate;
 
   updateComponentsGrid();
 }
@@ -328,7 +328,7 @@ void te::qt::widgets::MixtureModelDialog::on_removeButton_clicked()
   QPushButton* sender = (QPushButton*) QObject::sender();
 
 // retrieve component class name
-  std::string className = sender->statusTip().toStdString();
+  std::string className = sender->statusTip().toUtf8().data();
 
   m_components.erase(className);
   m_coordinates.erase(className);
@@ -375,8 +375,8 @@ void te::qt::widgets::MixtureModelDialog::updateComponentsGrid()
 // update class names
   for (int i = 0; i < (componentsListLayout->count() / 5); i++)
   {
-    std::string className = ((QLineEdit*) componentsListLayout->itemAtPosition(i, 1)->widget())->text().toStdString();
-    std::string originalClassName = ((QLineEdit*) componentsListLayout->itemAtPosition(i, 1)->widget())->toolTip().toStdString();
+    std::string className = ((QLineEdit*) componentsListLayout->itemAtPosition(i, 1)->widget())->text().toUtf8().data();
+    std::string originalClassName = ((QLineEdit*) componentsListLayout->itemAtPosition(i, 1)->widget())->toolTip().toUtf8().data();
 
 // check if className is already in m_components
     if (className != originalClassName)

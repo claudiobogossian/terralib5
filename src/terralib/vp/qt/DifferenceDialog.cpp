@@ -291,7 +291,7 @@ void te::vp::DifferenceDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -491,14 +491,14 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
 
 
 // Get the output dataset name.
-    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
 // Return of operation result.
     bool res = true;
     
     if (m_toFile)
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
       
       if (boost::filesystem::exists(uri))
       {
@@ -513,7 +513,7 @@ void te::vp::DifferenceDialog::onOkPushButtonClicked()
       if(idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      te::da::DataSourcePtr dsOGR = te::vp::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
+      te::da::DataSourcePtr dsOGR = te::vp::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
       dsOGR->open();
 

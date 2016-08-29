@@ -227,7 +227,7 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 
     ds->setAccessDriver("OGR");
     
-    std::string fpath = it->toStdString();
+    std::string fpath = it->toUtf8().data();
     std::map<std::string, std::string> dsinfo;
     dsinfo["URI"] = fpath;
 
@@ -259,7 +259,7 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     {
       QString datasetName(fileBaseName.c_str());
       datasetName.remove(".shp", Qt::CaseInsensitive);
-      shpWithoutSpatialIndex[id] = datasetName.toStdString();
+      shpWithoutSpatialIndex[id] = datasetName.toUtf8().data();
     }
 
     try

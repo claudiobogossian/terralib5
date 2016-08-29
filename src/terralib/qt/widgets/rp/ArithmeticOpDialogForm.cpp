@@ -141,7 +141,7 @@ void te::qt::widgets::ArithmeticOpDialogForm::setList(std::list<te::map::Abstrac
 
 std::string te::qt::widgets::ArithmeticOpDialogForm::getUserDefinedExpression()
 {
-  return m_ui->m_operationTextEdit->toPlainText().toStdString();
+  return m_ui->m_operationTextEdit->toPlainText().toUtf8().data();
 }
 
 std::string te::qt::widgets::ArithmeticOpDialogForm::getExpression()
@@ -175,7 +175,7 @@ void te::qt::widgets::ArithmeticOpDialogForm::onAddLayerPushButtonClicked()
 
   std::string nLayer = "R" + te::common::Convert2String(m_nLayer);
   m_mapLayer.insert(std::map<std::string, te::map::AbstractLayer*>::value_type(nLayer, m_layer));
-  std::string band = m_ui->m_bandComboBox->currentText().toStdString();
+  std::string band = m_ui->m_bandComboBox->currentText().toUtf8().data();
   m_bandsVec.push_back(band);
 
   m_nLayer++;
@@ -410,7 +410,7 @@ void te::qt::widgets::ArithmeticOpDialogForm::onSignalPushButtonClicked()
   if (m_ui->m_operationTextEdit->toPlainText().isEmpty())
     return;
 
-  std::string operation = m_ui->m_operationTextEdit->toPlainText().toStdString();
+  std::string operation = m_ui->m_operationTextEdit->toPlainText().toUtf8().data();
 
   std::string txt = "";
   int i;
@@ -506,7 +506,7 @@ void te::qt::widgets::ArithmeticOpDialogForm::onCePushButtonClicked()
   if (m_ui->m_operationTextEdit->toPlainText().isEmpty())
     return;
 
-  std::string operation = m_ui->m_operationTextEdit->toPlainText().toStdString();
+  std::string operation = m_ui->m_operationTextEdit->toPlainText().toUtf8().data();
 
   std::string txt = "";
   for (int i = operation.size() - 1; i >= 0; i--)
@@ -547,7 +547,7 @@ void te::qt::widgets::ArithmeticOpDialogForm::onSavePushButtonClicked()
   if (m_ui->m_operationTextEdit->toPlainText().isEmpty())
     return;
 
-  std::string arithOp = m_ui->m_operationTextEdit->toPlainText().toStdString();
+  std::string arithOp = m_ui->m_operationTextEdit->toPlainText().toUtf8().data();
   std::string arithExpStr = "";
 
   int nLayer = 0;

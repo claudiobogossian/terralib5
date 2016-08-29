@@ -52,7 +52,7 @@ void AddSliceItems(te::qt::widgets::ColorMapItem* item, const te::se::ColorMap* 
 
       QColor qC(color.getRed(), color.getGreen(), color.getBlue());
 
-      item->addChild(new te::qt::widgets::ColorMapSliceItem(title.toStdString(), qC));
+      item->addChild(new te::qt::widgets::ColorMapSliceItem(title.toUtf8().data(), qC));
     }
   }
   else if(cMap->getInterpolate())
@@ -81,7 +81,7 @@ void AddSliceItems(te::qt::widgets::ColorMapItem* item, const te::se::ColorMap* 
       title.append(" - ");
       title.append(QString::number(upperLimit));
 
-      item->addChild(new te::qt::widgets::ColorMapSliceItem(title.toStdString(), qBeg, qEnd));
+      item->addChild(new te::qt::widgets::ColorMapSliceItem(title.toUtf8().data(), qBeg, qEnd));
     }
   }
   else if (cMap->getRecode())
@@ -96,7 +96,7 @@ void AddSliceItems(te::qt::widgets::ColorMapItem* item, const te::se::ColorMap* 
       std::string title = mItems[i]->getTitle();
 
       if (title.empty())
-        title = QString::number(data).toStdString();
+        title = QString::number(data).toUtf8().data();
 
       te::color::RGBAColor color(colorName);
 
@@ -120,7 +120,7 @@ te::qt::widgets::ColorMapItem::ColorMapItem(const te::se::ColorMap* map) :
   else if (map->getRecode())
     type = QObject::tr("Recode");
 
-  m_label = (QObject::tr("Classification by") + " " + type).toStdString();
+  m_label = (QObject::tr("Classification by") + " " + type).toUtf8().data();
 
   AddSliceItems(this, m_colorMap);
 }

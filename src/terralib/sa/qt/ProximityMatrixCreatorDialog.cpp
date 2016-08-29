@@ -161,7 +161,7 @@ void te::sa::ProximityMatrixCreatorDialog::onOkPushButtonClicked()
   }
 
   //get input parameters
-  std::string attrName = m_ui->m_attrIdComboBox->currentText().toStdString();
+  std::string attrName = m_ui->m_attrIdComboBox->currentText().toUtf8().data();
 
   QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
   
@@ -274,9 +274,9 @@ void te::sa::ProximityMatrixCreatorDialog::onOkPushButtonClicked()
     else if(m_ui->m_gwtRadioButton->isChecked())
       ext = ".gwt";
 
-    std::string name = m_ui->m_nameLineEdit->text().toStdString();
+    std::string name = m_ui->m_nameLineEdit->text().toUtf8().data();
 
-    std::string fullFileName = m_ui->m_locationLineEdit->text().toStdString();
+    std::string fullFileName = m_ui->m_locationLineEdit->text().toUtf8().data();
 
     fullFileName += "/" + name + ext;
 

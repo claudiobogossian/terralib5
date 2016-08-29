@@ -143,7 +143,7 @@ void te::qt::widgets::QueryBuilderWizard::getDataSourceIds()
 
 void te::qt::widgets::QueryBuilderWizard::getDataSets()
 {
-  std::string dsId = m_ui->m_dataSourceComboBox->currentText().toStdString();
+  std::string dsId = m_ui->m_dataSourceComboBox->currentText().toUtf8().data();
 
   std::vector<std::string> datasetNames;
 
@@ -166,7 +166,7 @@ void te::qt::widgets::QueryBuilderWizard::getDataSets()
 void te::qt::widgets::QueryBuilderWizard::getProperties()
 {
   //get dataset list
-  std::string dsId = m_ui->m_dataSourceComboBox->currentText().toStdString();
+  std::string dsId = m_ui->m_dataSourceComboBox->currentText().toUtf8().data();
   te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().find(dsId);
   std::vector<std::string> datasetNames = ds->getDataSetNames();
 
@@ -180,11 +180,11 @@ void te::qt::widgets::QueryBuilderWizard::getProperties()
   {
     //alias name
     QTableWidgetItem* itemAlias = m_ui->m_dataSetTableWidget->item(i, 1);
-    std::string alias = itemAlias->text().toStdString();
+    std::string alias = itemAlias->text().toUtf8().data();
 
     //data set name
     QTableWidgetItem* itemDataSet = m_ui->m_dataSetTableWidget->item(i, 0);
-    std::string dataSetName = itemDataSet->text().toStdString();
+    std::string dataSetName = itemDataSet->text().toUtf8().data();
 
     //get datasettype
     std::auto_ptr<te::da::DataSetType> dsType;
@@ -223,16 +223,16 @@ void te::qt::widgets::QueryBuilderWizard::getProperties()
 
 void te::qt::widgets::QueryBuilderWizard::getOperators()
 {
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Plus, tr("+").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Minus, tr("-").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Multi, tr("*").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Div, tr("/").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Equal, tr("=").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Dif, tr("<>").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Great, tr(">").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_GreatEqual, tr(">=").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Less, tr("<").toStdString()));
-  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_LessEqual, tr("<=").toStdString()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Plus, tr("+").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Minus, tr("-").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Multi, tr("*").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Div, tr("/").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Equal, tr("=").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Dif, tr("<>").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Great, tr(">").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_GreatEqual, tr(">=").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_Less, tr("<").toUtf8().data()));
+  m_bimapOperator.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOperator_LessEqual, tr("<=").toUtf8().data()));
 
   m_ui->m_OperatorComboBox->clear();
 
@@ -247,11 +247,11 @@ void te::qt::widgets::QueryBuilderWizard::getOperators()
 
 void te::qt::widgets::QueryBuilderWizard::getConnectors()
 {
-  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_NONE, tr("---").toStdString()));
-  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_AND, tr("AND").toStdString()));
-  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_OR, tr("OR").toStdString()));
-  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_NOT, tr("NOT").toStdString()));
-  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_LIKE, tr("LIKE").toStdString()));
+  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_NONE, tr("---").toUtf8().data()));
+  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_AND, tr("AND").toUtf8().data()));
+  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_OR, tr("OR").toUtf8().data()));
+  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_NOT, tr("NOT").toUtf8().data()));
+  m_bimapConnector.insert(boost::bimap<int, std::string>::value_type(QueryBuilderConnector_LIKE, tr("LIKE").toUtf8().data()));
 
   m_ui->m_connectorComboBox->clear();
 
@@ -270,8 +270,8 @@ void te::qt::widgets::QueryBuilderWizard::getConnectors()
 
 void te::qt::widgets::QueryBuilderWizard::getOrders()
 {
-  m_bimapOrder.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOrder_ASC, tr("ASC").toStdString()));
-  m_bimapOrder.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOrder_DESC, tr("DESC").toStdString()));
+  m_bimapOrder.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOrder_ASC, tr("ASC").toUtf8().data()));
+  m_bimapOrder.insert(boost::bimap<int, std::string>::value_type(QueryBuilderOrder_DESC, tr("DESC").toUtf8().data()));
 
   m_ui->m_orderComboBox->clear();
 
@@ -357,7 +357,7 @@ bool te::qt::widgets::QueryBuilderWizard::buildQuery()
 
 void te::qt::widgets::QueryBuilderWizard::onDataSourceComboBoxActivated(const QString& value)
 {
-  std::string dataSourceName = value.toStdString();
+  std::string dataSourceName = value.toUtf8().data();
 
   te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().find(dataSourceName);
 }
@@ -382,8 +382,8 @@ void te::qt::widgets::QueryBuilderWizard::onAddDataSetPushButtonClicked()
     return;
   }
 
-  std::string dataSetName = m_ui->m_dataSetComboBox->currentText().toStdString();
-  std::string aliasName = m_ui->m_dataSetAliasLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_dataSetComboBox->currentText().toUtf8().data();
+  std::string aliasName = m_ui->m_dataSetAliasLineEdit->text().toUtf8().data();
 
   int newrow = m_ui->m_dataSetTableWidget->rowCount();
 
@@ -392,7 +392,7 @@ void te::qt::widgets::QueryBuilderWizard::onAddDataSetPushButtonClicked()
   {
     QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(i, 1);
 
-    if(itemName->text().toStdString() == aliasName)
+    if(itemName->text().toUtf8().data() == aliasName)
     {
       QMessageBox::warning(this, tr("Query Builder"), tr("Data Set Alias already defined."));
       return;
@@ -402,10 +402,10 @@ void te::qt::widgets::QueryBuilderWizard::onAddDataSetPushButtonClicked()
   //new entry
   m_ui->m_dataSetTableWidget->insertRow(newrow);
 
-  QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromStdString(dataSetName));
+  QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromUtf8(dataSetName.c_str()));
   m_ui->m_dataSetTableWidget->setItem(newrow, 0, itemDataSet);
 
-  QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromStdString(aliasName));
+  QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromUtf8(aliasName.c_str()));
   m_ui->m_dataSetTableWidget->setItem(newrow, 1, itemAlias);
 
   m_ui->m_dataSetTableWidget->resizeColumnToContents(0);
@@ -450,29 +450,29 @@ void te::qt::widgets::QueryBuilderWizard::onAddWhereClausePushButtonClicked()
 
   int newrow = m_ui->m_whereClauseTableWidget->rowCount();
 
-  std::string restrictValue = m_ui->m_restrictValueComboBox->currentText().toStdString();
-  std::string operatorStr = m_ui->m_OperatorComboBox->currentText().toStdString();
-  std::string connector = m_ui->m_connectorComboBox->currentText().toStdString();
+  std::string restrictValue = m_ui->m_restrictValueComboBox->currentText().toUtf8().data();
+  std::string operatorStr = m_ui->m_OperatorComboBox->currentText().toUtf8().data();
+  std::string connector = m_ui->m_connectorComboBox->currentText().toUtf8().data();
   
   std::string valueStr = "";
   if(m_ui->m_valuePropertyRadioButton->isChecked())
-    valueStr = m_ui->m_valuePropertyComboBox->currentText().toStdString();
+    valueStr = m_ui->m_valuePropertyComboBox->currentText().toUtf8().data();
   else if(m_ui->m_valueValueRadioButton->isChecked())
-    valueStr = m_ui->m_valueValueComboBox->currentText().toStdString();
+    valueStr = m_ui->m_valueValueComboBox->currentText().toUtf8().data();
 
 //new entry
   m_ui->m_whereClauseTableWidget->insertRow(newrow);
 
-  QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(restrictValue));
+  QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromUtf8(restrictValue.c_str()));
   m_ui->m_whereClauseTableWidget->setItem(newrow, 0, itemProperty);
 
-  QTableWidgetItem* itemOperator = new QTableWidgetItem(QString::fromStdString(operatorStr));
+  QTableWidgetItem* itemOperator = new QTableWidgetItem(QString::fromUtf8(operatorStr.c_str()));
   m_ui->m_whereClauseTableWidget->setItem(newrow, 1, itemOperator);
 
-  QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(valueStr));
+  QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromUtf8(valueStr.c_str()));
   m_ui->m_whereClauseTableWidget->setItem(newrow, 2, itemValue);
 
-  QTableWidgetItem* itemConnector = new QTableWidgetItem(QString::fromStdString(connector));
+  QTableWidgetItem* itemConnector = new QTableWidgetItem(QString::fromUtf8(connector.c_str()));
   m_ui->m_whereClauseTableWidget->setItem(newrow, 3, itemConnector);
 
   m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
@@ -498,16 +498,16 @@ void te::qt::widgets::QueryBuilderWizard::onAddOrderPushButton()
 
   int newrow = m_ui->m_orderTableWidget->rowCount();
 
-  std::string propertyValue = m_ui->m_orderPropertyComboBox->currentText().toStdString();
-  std::string order = m_ui->m_orderComboBox->currentText().toStdString();
+  std::string propertyValue = m_ui->m_orderPropertyComboBox->currentText().toUtf8().data();
+  std::string order = m_ui->m_orderComboBox->currentText().toUtf8().data();
 
 //new entry
   m_ui->m_orderTableWidget->insertRow(newrow);
 
-  QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(propertyValue));
+  QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromUtf8(propertyValue.c_str()));
   m_ui->m_orderTableWidget->setItem(newrow, 0, itemProperty);
 
-  QTableWidgetItem* itemOrder = new QTableWidgetItem(QString::fromStdString(order));
+  QTableWidgetItem* itemOrder = new QTableWidgetItem(QString::fromUtf8(order.c_str()));
   m_ui->m_orderTableWidget->setItem(newrow, 1, itemOrder);
 
   m_ui->m_orderTableWidget->resizeColumnsToContents();

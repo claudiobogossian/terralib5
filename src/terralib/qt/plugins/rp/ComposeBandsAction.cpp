@@ -37,7 +37,7 @@
 
 te::qt::plugins::rp::ComposeBandsAction::ComposeBandsAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Compose / Decompose Bands...").toStdString(), "compose-bands");
+  createAction(tr("Compose / Decompose Bands...").toUtf8().data(), "compose-bands");
   m_action->setObjectName("Processing.Raster Processing.Compose Decompose Bands");
 }
 

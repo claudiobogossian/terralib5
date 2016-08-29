@@ -207,7 +207,7 @@ te::map::AbstractLayerPtr te::vp::BufferDialog::getLayer()
 void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
 
   while(it != m_layers.end())
   {
@@ -331,7 +331,7 @@ void te::vp::BufferDialog::onTargetFileToolButtonPressed()
   if(fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -392,7 +392,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   {
     fixedDistance = 0;
     int i = m_ui->m_fromAttDistanceComboBox->currentIndex();
-    propDistance = m_ui->m_fromAttDistanceComboBox->itemText(i).toStdString();
+    propDistance = m_ui->m_fromAttDistanceComboBox->itemText(i).toUtf8().data();
   }*/
   
   // Checking consistency of output paramenters
@@ -413,7 +413,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   int bufferBoundariesRule = getBoundariesRule();
   bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
   int levels = m_ui->m_levelsNumComboBox->currentText().toInt();
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
   
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
@@ -425,7 +425,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 
     if(m_toFile)
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
       if(boost::filesystem::exists(uri))
       {

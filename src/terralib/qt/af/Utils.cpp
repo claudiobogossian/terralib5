@@ -165,7 +165,7 @@ void te::qt::af::SaveDataSourcesFile(te::qt::af::ApplicationController* appContr
 
   te::qt::af::XMLFormatter::formatDataSourceInfos(true);
 
-  te::serialize::xml::Save(fileName.toStdString());
+  te::serialize::xml::Save(fileName.toUtf8().data());
 
   te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 }
@@ -473,7 +473,7 @@ std::vector<std::string> te::qt::af::GetPluginsFiles()
 
   foreach(QFileInfo file, files)
   {
-    res.push_back(file.absoluteFilePath().toStdString());
+    res.push_back(file.absoluteFilePath().toUtf8().data());
   }
 
   return res;
@@ -484,7 +484,7 @@ std::vector<std::string> te::qt::af::GetDefaultPluginsNames(te::qt::af::Applicat
   std::vector<std::string> res;
 
 // Finding the Default plugins file.
-  std::string pluginsPath = appController->getAppPluginsPath().toStdString();
+  std::string pluginsPath = appController->getAppPluginsPath().toUtf8().data();
 
   if (pluginsPath == "")
     return res;
@@ -551,7 +551,7 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
 
   std::string olderFile = appSett.getValue("Application.UserSettingsFile.<xmlattr>.xlink:href");
 
-  appSett.setValue("Application.UserSettingsFile.<xmlattr>.xlink:href", fileName.toStdString());
+  appSett.setValue("Application.UserSettingsFile.<xmlattr>.xlink:href", fileName.toUtf8().data());
 
   if(removeOlder)
   {
@@ -568,10 +568,10 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
 #else
     boost::property_tree::xml_writer_settings<char> settings('\t', 1);
 #endif
-    boost::property_tree::write_xml(fileName.toStdString(), usrSett.getAllSettings(), std::locale(), settings);
+    boost::property_tree::write_xml(fileName.toUtf8().data(), usrSett.getAllSettings(), std::locale(), settings);
   }
 
-  usrSett.load(fileName.toStdString());
+  usrSett.load(fileName.toUtf8().data());
 }
 
 //void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
@@ -600,7 +600,7 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
 //#else
 //  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
 //#endif
-//  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
+//  boost::property_tree::write_xml(fileName.toUtf8().data(), p, std::locale(), settings);
 //}
 
 QString te::qt::af::GetGenerationDate()

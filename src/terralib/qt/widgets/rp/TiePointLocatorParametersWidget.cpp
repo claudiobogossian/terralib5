@@ -75,7 +75,7 @@ void te::qt::widgets::TiePointLocatorParametersWidget::setRescaleFactor(double v
 
 std::string te::qt::widgets::TiePointLocatorParametersWidget::getTransformationName()
 {
-  return  m_ui->m_geomTransfNameComboBox->currentText().toStdString();
+  return  m_ui->m_geomTransfNameComboBox->currentText().toUtf8().data();
 }
 
 te::rp::TiePointsLocator::InputParameters te::qt::widgets::TiePointLocatorParametersWidget::getTiePointInputParameters()
@@ -176,7 +176,7 @@ void te::qt::widgets::TiePointLocatorParametersWidget::updateAdvancedOptions()
   else
     m_inputParameters.m_interesPointsLocationStrategyName = "Moravec";
 
-  m_inputParameters.m_geomTransfName = m_ui->m_geomTransfNameComboBox->currentText().toStdString();
+  m_inputParameters.m_geomTransfName = m_ui->m_geomTransfNameComboBox->currentText().toUtf8().data();
 
   if(m_ui->m_geometryFilterAssuranceLineEdit->text().isEmpty())
   {

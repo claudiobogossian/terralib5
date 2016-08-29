@@ -89,7 +89,7 @@ te::da::Index* te::qt::widgets::IndexWidget::getIndex()
     return 0;
   }
 
-  std::string indexName = m_ui->m_nameLineEdit->text().toStdString();
+  std::string indexName = m_ui->m_nameLineEdit->text().toUtf8().data();
 
   //get index type
   int currIndex = m_ui->m_typeComboBox->currentIndex();

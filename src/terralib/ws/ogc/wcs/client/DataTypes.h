@@ -34,74 +34,107 @@ namespace te
   {
     namespace ogc
     {
-      struct Capabilities
+      namespace wcs
       {
-        std::vector< std::string > operations;
-        std::vector< std::string > coverages;
-      };
+        struct Capabilities
+        {
+          std::vector< std::string > operations;
+          std::vector< std::string > coverages;
+        };
 
-      struct SubSet
-      {
-        std::string axis;
-        std::string min;
-        std::string max;
-      };
+        struct SubSet
+        {
+          std::string axis;
+          std::string min;
+          std::string max;
+        };
 
-      struct DomainSet
-      {
-        std::vector< SubSet > subSet;
-      };
+        struct DomainSet
+        {
+          std::vector< SubSet > subSet;
+        };
 
-      struct EnvelopeWithTimePeriod
-      {
-        std::string srsName;
-        std::string srsDimension;
-        std::vector< std::string > uomLabels;
+        struct EnvelopeWithTimePeriod
+        {
+          std::string srsName;
+          std::string srsDimension;
+          std::vector< std::string > uomLabels;
 
-        std::string firstLabel;
-        std::string secondLabel;
+          std::string firstLabel;
+          std::string secondLabel;
 
-        std::string lowerCorner_X;
-        std::string lowerCorner_Y;
+          std::string lowerCorner_X;
+          std::string lowerCorner_Y;
 
-        std::string upperCorner_X;
-        std::string upperCorner_Y;
+          std::string upperCorner_X;
+          std::string upperCorner_Y;
 
-        std::string timeLabel;
-        std::string beginPosition;
-        std::string endPosition;
-      };
+          std::string timeLabel;
+          std::string beginPosition;
+          std::string endPosition;
+        };
 
-      struct ServiceParameters
-      {
-        std::string coverageSubtype;
-        std::string coverageSubtypeParent;
-        std::string nativeFormat;
-        std::string extension;
-      };
-
-      struct CoverageDescription
-      {
-        std::string coverageId;
-        struct EnvelopeWithTimePeriod envelope;
-        struct DomainSet domainSet;
-        struct ServiceParameters serviceParameters;
-        std::vector< std::string > fieldNames;
-        std::vector< std::string > extension;
-      };
+        struct ServiceParameters
+        {
+          std::string coverageSubtype;
+          std::string coverageSubtypeParent;
+          std::string nativeFormat;
+          std::string extension;
+        };
 
 
-      /*! \brief A struct to set the parameters of requested coverage */
-      struct CoverageRequest
-      {
-        std::string coverageID;
-        std::string format;
-        std::string mediaType;
-        EnvelopeWithTimePeriod envelope;
-        std::string time;
-        std::vector< SubSet > subSet;
-        std::map< std::string, std::string > additionalParameters;
-      };
+
+        /*!
+         * \brief The TimeInstant GML 3.2.1 struct.
+         *
+         * TimeInstant acts as a zero-dimensional geometric primitive that represents
+         * an identifiable position in time.
+         *
+         */
+        struct TimeInstant
+        {
+          std::string id;
+          std::string timePosition;
+        };
+
+        /*!
+         * \brief The TimeDomain GeoServer WCS 2.0.1 struct.
+         *
+         * A TimeDomain is description of the time domain for the coverage.
+         * It is a GeoServer implementation that contains a sequence of
+         * gml:AbstractTimeObject.
+         *
+         */
+        struct TimeDomain
+        {
+          std::string               defaultTime;
+          std::vector<TimeInstant>  timeInstant;
+        };
+
+        struct CoverageDescription
+        {
+          std::string                coverageId;
+          EnvelopeWithTimePeriod     envelope;
+          DomainSet                  domainSet;
+          ServiceParameters          serviceParameters;
+          std::vector< std::string > fieldNames;
+          TimeDomain                 timeDomain;
+          std::vector< std::string > extension;
+        };
+
+
+        /*! \brief A struct to set the parameters of requested coverage */
+        struct CoverageRequest
+        {
+          std::string coverageID;
+          std::string format;
+          std::string mediaType;
+          EnvelopeWithTimePeriod envelope;
+          std::string time;
+          std::vector< SubSet > subSet;
+          std::map< std::string, std::string > additionalParameters;
+        };
+      }
     }
   }
 }

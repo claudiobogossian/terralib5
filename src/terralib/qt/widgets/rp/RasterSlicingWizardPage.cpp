@@ -58,7 +58,7 @@ te::qt::widgets::RasterSlicingWizardPage::RasterSlicingWizardPage(QWidget *paren
   //Creating and adjusting the chart Display
   QGridLayout* chartLayout = new QGridLayout(m_ui->m_histWidget);
 
-  m_chartDisplay = new te::qt::widgets::ChartDisplay(m_ui->m_histWidget, QString::fromStdString(""), m_chartStyle);
+  m_chartDisplay = new te::qt::widgets::ChartDisplay(m_ui->m_histWidget, QString::fromUtf8(""), m_chartStyle);
   m_chartDisplay->adjustDisplay();
   m_chartDisplay->show();
   m_chartDisplay->replot();
@@ -102,7 +102,7 @@ te::se::ColorMap * te::qt::widgets::RasterSlicingWizardPage::getColorMap()
 
 std::string te::qt::widgets::RasterSlicingWizardPage::getCurrentBand()
 {
-  return m_ui->m_bandComboBox->currentText().toStdString();
+  return m_ui->m_bandComboBox->currentText().toUtf8().data();
 }
 
 const te::gm::Envelope& te::qt::widgets::RasterSlicingWizardPage::getExtent()

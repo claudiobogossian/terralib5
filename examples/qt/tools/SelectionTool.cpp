@@ -111,7 +111,7 @@ bool SelectionTool::mouseReleaseEvent(QMouseEvent* e)
       {
         int propertyType = dataset->getPropertyDataType(i);
         if(propertyType != te::dt::GEOMETRY_TYPE)
-          information += "<li><b>" + QString::fromStdString(dataset->getPropertyName(i)) + ":</b> " + QString::fromStdString(dataset->getAsString(i, 3)) + "</li>";
+          information += "<li><b>" + QString::fromUtf8(dataset->getPropertyName(i).c_str()) + ":</b> " + QString::fromUtf8(dataset->getAsString(i, 3).c_str()) + "</li>";
       }
     }
   }

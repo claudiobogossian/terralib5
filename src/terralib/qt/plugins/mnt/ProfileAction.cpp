@@ -39,7 +39,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 te::qt::plugins::mnt::ProfileAction::ProfileAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("Profile ...").toStdString(), "mnt-processing-profile");
+  createAction(tr("Profile ...").toUtf8().data(), "mnt-processing-profile");
   m_action->setObjectName("Processing.PROFILE Processing.PROFILE");
 
   QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();

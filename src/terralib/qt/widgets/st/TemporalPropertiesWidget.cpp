@@ -58,10 +58,10 @@ te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(QWidget* par
   m_ui->m_tempUnitComboBox->addItem(tr("Day of the Year"), QVariant(te::dt::DAY_OF_YEAR));
   m_ui->m_tempUnitComboBox->addItem(tr("Unknown")), QVariant(te::dt::UNKNOWN);
 
-  m_ui->m_formatComboBox->addItem(QString::fromStdString("YYYY"), QVariant(te::dt::YYYY));
-  m_ui->m_formatComboBox->addItem(QString::fromStdString("YY"), QVariant(te::dt::YY));
-  m_ui->m_formatComboBox->addItem(QString::fromStdString("YYYYMM"), QVariant(te::dt::YYYYMM));
-  m_ui->m_formatComboBox->addItem(QString::fromStdString("YYYYDDD"), QVariant(te::dt::YYYYDDD));
+  m_ui->m_formatComboBox->addItem(QString::fromUtf8("YYYY"), QVariant(te::dt::YYYY));
+  m_ui->m_formatComboBox->addItem(QString::fromUtf8("YY"), QVariant(te::dt::YY));
+  m_ui->m_formatComboBox->addItem(QString::fromUtf8("YYYYMM"), QVariant(te::dt::YYYYMM));
+  m_ui->m_formatComboBox->addItem(QString::fromUtf8("YYYYDDD"), QVariant(te::dt::YYYYDDD));
 
   // connect signal and slots
   connect(m_ui->m_typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeCBCurrentIndexChanged(int)));
@@ -80,17 +80,17 @@ Ui::TemporalPropertiesWidgetForm* te::qt::widgets::TemporalPropertiesWidget::get
 
 std::string te::qt::widgets::TemporalPropertiesWidget::getPhenomenonTime()
 {
-  return m_ui->m_phenomenomComboBox->currentText().toStdString();
+  return m_ui->m_phenomenomComboBox->currentText().toUtf8().data();
 }
 
 std::string te::qt::widgets::TemporalPropertiesWidget::getResultTime()
 {
-  return m_ui->m_resultComboBox->currentText().toStdString();
+  return m_ui->m_resultComboBox->currentText().toUtf8().data();
 }
 
 std::string te::qt::widgets::TemporalPropertiesWidget::getValidTime()
 {
-  return m_ui->m_validComboBox->currentText().toStdString();
+  return m_ui->m_validComboBox->currentText().toUtf8().data();
 }
 
 int te::qt::widgets::TemporalPropertiesWidget::getDateType()
@@ -110,12 +110,12 @@ int te::qt::widgets::TemporalPropertiesWidget::getTemporalUnit()
 
 std::string te::qt::widgets::TemporalPropertiesWidget::getTemporalValue()
 {
-  return m_ui->m_tempValueLineEdit->text().toStdString();
+  return m_ui->m_tempValueLineEdit->text().toUtf8().data();
 }
 
 std::string te::qt::widgets::TemporalPropertiesWidget::getUserOrdinalType()
 {
-  return m_ui->m_ordinalLineEdit->text().toStdString();
+  return m_ui->m_ordinalLineEdit->text().toUtf8().data();
 }
 
 int te::qt::widgets::TemporalPropertiesWidget::getDateFormat()
@@ -169,7 +169,7 @@ void te::qt::widgets::TemporalPropertiesWidget::setUp(const te::da::DataSetTypeP
   {
     if(properties.at(i)->getType() == te::dt::DATETIME_TYPE)
     {
-      item = QString::fromStdString(properties.at(i)->getName());
+      item = QString::fromUtf8(properties.at(i)->getName().c_str());
       m_ui->m_phenomenomComboBox->addItem(item);
       m_ui->m_resultComboBox->addItem(item);
       m_ui->m_validComboBox->addItem(item);

@@ -97,7 +97,7 @@ void te::qt::plugins::attributefill::Plugin::startup()
   m_popupAction->setText(TE_TR("Attribute Fill"));
 
   // attribute fill log startup
-  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
   path += "/log/terralib_attributefill.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)

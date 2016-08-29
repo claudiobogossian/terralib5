@@ -78,26 +78,26 @@ std::vector<std::string> te::qt::widgets::ObservationPropertiesWidget::getOutput
 
 std::string te::qt::widgets::ObservationPropertiesWidget::getGeometryPropName()
 {
-  return m_ui->m_geometryComboBox->currentText().toStdString();
+  return m_ui->m_geometryComboBox->currentText().toUtf8().data();
 }
 
 int te::qt::widgets::ObservationPropertiesWidget::getGeometryId()
 {
   if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_geometryComboBox->currentText().toStdString());
+    return m_dataType->getPropertyPosition(m_ui->m_geometryComboBox->currentText().toUtf8().data());
   else
     return -1;
 }
 
 std::string te::qt::widgets::ObservationPropertiesWidget::getIdPropName()
 {
-  return m_ui->m_idComboBox->currentText().toStdString();
+  return m_ui->m_idComboBox->currentText().toUtf8().data();
 }
 
 int te::qt::widgets::ObservationPropertiesWidget::getIdIndex()
 {
   if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toStdString());
+    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toUtf8().data());
   else
     return -1;
 }
@@ -112,8 +112,8 @@ void te::qt::widgets::ObservationPropertiesWidget::setUp (const te::da::DataSetT
 
   for (std::size_t i = 0; i < properties.size(); i++)
   {
-    item = QString::fromStdString(properties.at(i)->getName());
-    propertyNames.push_back(item.toStdString());
+    item = QString::fromUtf8(properties.at(i)->getName().c_str());
+    propertyNames.push_back(item.toUtf8().data());
 
     if(properties.at(i)->getType() == te::dt::GEOMETRY_TYPE)
       m_ui->m_geometryComboBox->addItem(item);

@@ -39,7 +39,7 @@
 te::qt::plugins::mnt::TINGenerationAction::TINGenerationAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("TIN Generation...").toStdString(), "mnt-processing-tin");
+  createAction(tr("TIN Generation...").toUtf8().data(), "mnt-processing-tin");
   m_action->setObjectName("Processing.DTM Processing.TIN");
 }
 

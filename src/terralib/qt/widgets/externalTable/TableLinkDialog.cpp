@@ -88,7 +88,7 @@ te::qt::widgets::TableLinkDialog::~TableLinkDialog()
 void te::qt::widgets::TableLinkDialog::setInputLayer(te::map::AbstractLayerPtr inLayer)
 {
   m_inputLayer.reset((te::map::DataSetLayer*)inLayer.get());
-  m_ui->m_dataSet1LineEdit->setText(QString::fromStdString(m_inputLayer->getDataSetName()));
+  m_ui->m_dataSet1LineEdit->setText(QString::fromUtf8(m_inputLayer->getDataSetName().c_str()));
   m_ds = te::da::DataSourceManager::getInstance().find(m_inputLayer->getDataSourceId());
 
   if(!m_ds->isOpened())
@@ -108,10 +108,10 @@ te::da::Join* te::qt::widgets::TableLinkDialog::getJoin()
     inputAlias = m_inputLayer->getDataSetName();
 
   te::da::DataSetName* inField  = new te::da::DataSetName(m_inputLayer->getDataSetName(), inputAlias);
-  te::da::DataSetName* tabField = new te::da::DataSetName(m_ui->m_dataSet2ComboBox->currentText().toStdString(), m_ui->m_dataSetAliasLineEdit->text().toStdString());
+  te::da::DataSetName* tabField = new te::da::DataSetName(m_ui->m_dataSet2ComboBox->currentText().toUtf8().data(), m_ui->m_dataSetAliasLineEdit->text().toUtf8().data());
 
-  te::da::Expression* exp1 = new te::da::PropertyName(m_ui->m_dataset1ColumnComboBox->currentText().toStdString());
-  te::da::Expression* exp2 = new te::da::PropertyName(m_ui->m_dataset2ColumnComboBox->currentText().toStdString());
+  te::da::Expression* exp1 = new te::da::PropertyName(m_ui->m_dataset1ColumnComboBox->currentText().toUtf8().data());
+  te::da::Expression* exp2 = new te::da::PropertyName(m_ui->m_dataset2ColumnComboBox->currentText().toUtf8().data());
   te::da::Expression* expression = new te::da::BinaryFunction("=", exp1, exp2);
 
   te::da::JoinType type = te::da::LEFT_JOIN;
@@ -160,7 +160,7 @@ te::map::AbstractLayerPtr te::qt::widgets::TableLinkDialog::getQueryLayer()
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
 
-  std::string title = m_ui->m_layerTitleLineEdit->text().toStdString();
+  std::string title = m_ui->m_layerTitleLineEdit->text().toUtf8().data();
 
   te::map::QueryLayerPtr layer(new te::map::QueryLayer(id, title));
   layer->setDataSourceId(m_ds->getId());
@@ -192,15 +192,15 @@ void te::qt::widgets::TableLinkDialog::getDataSets()
   for (size_t i = 0; i < datasetNames.size(); i++)
   {
     if(datasetNames[i] != m_inputLayer->getDataSetName())
-      m_ui->m_dataSet2ComboBox->addItem(QString::fromStdString(datasetNames[i]));
+      m_ui->m_dataSet2ComboBox->addItem(QString::fromUtf8(datasetNames[i].c_str()));
   }
 
-  std::string DsName = m_ui->m_dataSet2ComboBox->currentText().toStdString();
+  std::string DsName = m_ui->m_dataSet2ComboBox->currentText().toUtf8().data();
   size_t pos = DsName.find(".");
   if(pos != std::string::npos)
-    m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName.substr(pos + 1, DsName.size() - 1)));
+    m_ui->m_dataSetAliasLineEdit->setText(QString::fromUtf8(DsName.substr(pos + 1, DsName.size() - 1).c_str()));
   else
-    m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName));
+    m_ui->m_dataSetAliasLineEdit->setText(QString::fromUtf8(DsName.c_str()));
 }
 
 void te::qt::widgets::TableLinkDialog::getProperties()
@@ -224,7 +224,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
    inputAlias = m_inputLayer->getDataSetName();
 
   dataSetSelecteds.push_back(std::make_pair(m_inputLayer->getDataSetName(), inputAlias));
-  dataSetSelecteds.push_back(std::make_pair(m_ui->m_dataSet2ComboBox->currentText().toStdString(), m_ui->m_dataSetAliasLineEdit->text().toStdString()));
+  dataSetSelecteds.push_back(std::make_pair(m_ui->m_dataSet2ComboBox->currentText().toUtf8().data(), m_ui->m_dataSetAliasLineEdit->text().toUtf8().data()));
 
   std::vector<std::string> propertyNames;
   std::vector<std::string> keyProperties;
@@ -269,10 +269,10 @@ void te::qt::widgets::TableLinkDialog::getProperties()
           propertyNames.push_back(fullName);
 
         if(t == 0)
-          m_ui->m_dataset1ColumnComboBox->addItem(QString::fromStdString(fullName), QVariant(dsType->getProperty(i)->getType()));
+          m_ui->m_dataset1ColumnComboBox->addItem(QString::fromUtf8(fullName.c_str()), QVariant(dsType->getProperty(i)->getType()));
         else
         {
-          m_ui->m_dataset2ColumnComboBox->addItem(QString::fromStdString(fullName), QVariant(dsType->getProperty(i)->getType()));
+          m_ui->m_dataset2ColumnComboBox->addItem(QString::fromUtf8(fullName.c_str()), QVariant(dsType->getProperty(i)->getType()));
         }
       }
     }
@@ -292,7 +292,7 @@ void te::qt::widgets::TableLinkDialog::done(int r)
     QVariant dsv1, dsv2;
     dsv1 = m_ui->m_dataset1ColumnComboBox->itemData(m_ui->m_dataset1ColumnComboBox->currentIndex());
     dsv2 = m_ui->m_dataset2ColumnComboBox->itemData(m_ui->m_dataset2ColumnComboBox->currentIndex());
-    std::string title = m_ui->m_layerTitleLineEdit->text().toStdString();
+    std::string title = m_ui->m_layerTitleLineEdit->text().toUtf8().data();
 
      if(dsv1 != dsv2)
       {
@@ -342,12 +342,12 @@ int  te::qt::widgets::TableLinkDialog::exec()
 
 void te::qt::widgets::TableLinkDialog::onDataCBIndexChanged(int index)
 {
-  std::string DsName = m_ui->m_dataSet2ComboBox->currentText().toStdString();
+  std::string DsName = m_ui->m_dataSet2ComboBox->currentText().toUtf8().data();
   size_t pos = DsName.find(".");
   if(pos != std::string::npos)
-    m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName.substr(pos + 1, DsName.size() - 1)));
+    m_ui->m_dataSetAliasLineEdit->setText(QString::fromUtf8(DsName.substr(pos + 1, DsName.size() - 1).c_str()));
   else
-    m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName));
+    m_ui->m_dataSetAliasLineEdit->setText(QString::fromUtf8(DsName.c_str()));
 
   getProperties();
   m_ui->m_tabularFrame->hide();
@@ -357,7 +357,7 @@ void te::qt::widgets::TableLinkDialog::onDataCBIndexChanged(int index)
 
 void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
 {
-  std::string aux = m_ui->m_dataset2ColumnComboBox->currentText().toStdString();
+  std::string aux = m_ui->m_dataset2ColumnComboBox->currentText().toUtf8().data();
   std::string alias = "";
   size_t pos = aux.find(".");
 

@@ -37,7 +37,7 @@
 
 te::qt::plugins::rp::FilterAction::FilterAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Filter...").toStdString(), "mask");
+  createAction(tr("Filter...").toUtf8().data(), "mask");
   m_action->setObjectName("Processing.Raster Processing.Filter");
 }
 

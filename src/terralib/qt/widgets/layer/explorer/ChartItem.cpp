@@ -37,15 +37,15 @@ te::qt::widgets::ChartItem::ChartItem(te::map::Chart* chart) :
   switch(m_chart->getType())
   {
     case te::map::Pie:
-      m_label = QObject::tr("Pie Chart").toStdString();
+      m_label = QObject::tr("Pie Chart").toUtf8().data();
     break;
 
     case te::map::Bar:
-      m_label = QObject::tr("Bar Chart").toStdString();
+      m_label = QObject::tr("Bar Chart").toUtf8().data();
     break;
 
     default:
-      m_label = QObject::tr("Chart").toStdString();
+      m_label = QObject::tr("Chart").toUtf8().data();
   }
 
   AddSliceItems(this, m_chart);

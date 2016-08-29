@@ -465,7 +465,7 @@ QMimeData* te::qt::widgets::LayerItemModel::mimeData(const QModelIndexList& inde
   QString s;
   s.setNum((qulonglong)aux);
 
-  QByteArray encodedData(s.toStdString().c_str());
+  QByteArray encodedData(s.toUtf8());
 
   mimeData->setData("application/x-terralib;value=\"DraggedItems\"", encodedData);
 
@@ -559,10 +559,10 @@ QVariant te::qt::widgets::LayerItemModel::data(const QModelIndex &index, int rol
   }
 
   if(role == Qt::ToolTipRole)
-    return QString::fromStdString(item->getToolTip());
+    return QString::fromUtf8(item->getToolTip().c_str());
 
   if(role == Qt::DisplayRole)
-    return QString::fromStdString(item->getAsString());
+    return QString::fromUtf8(item->getAsString().c_str());
 
   return QVariant();
 }
@@ -609,7 +609,7 @@ QModelIndex te::qt::widgets::LayerItemModel::index(int row, int column, const QM
   TreeItem* parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
   if(parentItem == 0)
-    throw te::common::Exception(tr("Invalid data associated to the layer model!").toStdString());
+    throw te::common::Exception(tr("Invalid data associated to the layer model!").toUtf8().data());
 
   if(row >= (int)parentItem->getChildrenCount(""))
     return QModelIndex();
@@ -617,7 +617,7 @@ QModelIndex te::qt::widgets::LayerItemModel::index(int row, int column, const QM
   TreeItem* item = parentItem->getChild(row);
 
   if(item == 0)
-    throw te::common::Exception(tr("The layer item is not an AbstractTreeItem!").toStdString());
+    throw te::common::Exception(tr("The layer item is not an AbstractTreeItem!").toUtf8().data());
 
   return createIndex(row, column, item);
 }

@@ -46,7 +46,7 @@
 te::qt::plugins::st::TimeSeriesAction::TimeSeriesAction(QMenu* menu)
 : te::qt::plugins::st::AbstractAction(menu)
 {
-  createAction(tr("Time Series...").toStdString(), "timeseries-layer");
+  createAction(tr("Time Series...").toUtf8().data(), "timeseries-layer");
 //  te::qt::widgets::AbstractTreeItemFactory::reg("TIMESERIESDATASETLAYER", boost::bind(boost::factory<TimeSeriesLayerItem*>(),_1, _2));
 }
 

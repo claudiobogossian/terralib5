@@ -123,7 +123,7 @@ void te::qt::widgets::BasicFillWidget::onColorChanged(const QColor& color)
   updateUiFillColor();
 
   // Updating fill color
-  m_fill->setColor(m_color.name().toStdString());
+  m_fill->setColor(m_color.name().toUtf8().data());
   emit fillChanged();
 }
 
@@ -135,6 +135,6 @@ void te::qt::widgets::BasicFillWidget::onFillOpacitySliderValueChanged(int value
   updateUiFillColor();
 
   // Updating fill opacity
-  m_fill->setOpacity(QString::number(opacity, 'g', 2).toStdString());
+  m_fill->setOpacity(QString::number(opacity, 'g', 2).toUtf8().data());
   emit fillChanged();
 }

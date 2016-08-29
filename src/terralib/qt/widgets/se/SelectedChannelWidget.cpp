@@ -86,7 +86,7 @@ void te::qt::widgets::SelectedChannelWidget::setChannelNames(const QStringList& 
   m_ui->m_channelNameComboBox->clear();
   m_ui->m_channelNameComboBox->addItems(list);
 
-  m_se->setSourceChannelName(m_ui->m_channelNameComboBox->currentText().toStdString());
+  m_se->setSourceChannelName(m_ui->m_channelNameComboBox->currentText().toUtf8().data());
 }
 
 void te::qt::widgets::SelectedChannelWidget::initialize()
@@ -124,7 +124,7 @@ void te::qt::widgets::SelectedChannelWidget::updateUi()
 
 void te::qt::widgets::SelectedChannelWidget::onChannelNameChanged(QString value)
 {
-  m_se->setSourceChannelName(value.toStdString());
+  m_se->setSourceChannelName(value.toUtf8().data());
 
   emit selectedChannelChanged();
 }

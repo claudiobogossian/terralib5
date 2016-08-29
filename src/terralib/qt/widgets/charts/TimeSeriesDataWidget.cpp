@@ -48,13 +48,13 @@ te::qt::widgets::TimeSeriesDataWidget::TimeSeriesDataWidget(te::da::DataSet* dat
     switch(m_dataSet->getPropertyDataType(i))
     {
       case(te::dt::DATETIME_TYPE):
-        item = QString::fromStdString(m_dataSet->getPropertyName(i));
+        item = QString::fromUtf8(m_dataSet->getPropertyName(i).c_str());
         m_ui->m_timeComboBox->addItem(item, QVariant::fromValue(i));
         break;
       case(te::dt::GEOMETRY_TYPE):
         break;
       default:
-        item = QString::fromStdString(m_dataSet->getPropertyName(i));
+        item = QString::fromUtf8(m_dataSet->getPropertyName(i).c_str());
         m_ui->m_valueComboBox->addItem(item, QVariant::fromValue(i));
         m_ui->m_idComboBox->addItem(item, QVariant::fromValue(i));
     }
@@ -72,14 +72,14 @@ Ui::TimeSeriesDataWidgetForm* te::qt::widgets::TimeSeriesDataWidget::getForm()
 
 te::st::TimeSeries* te::qt::widgets::TimeSeriesDataWidget::getTimeSeries()
 {
-  te::st::TimeSeries* timeSeries = new te::st::TimeSeries(m_ui->m_idComboBox->currentText().toStdString());
+  te::st::TimeSeries* timeSeries = new te::st::TimeSeries(m_ui->m_idComboBox->currentText().toUtf8().data());
 
   m_dataSet->moveBeforeFirst();
   while(m_dataSet->moveNext())
   {
     //Get time and value of time series
-    std::auto_ptr<te::dt::DateTime> time(m_dataSet->getDateTime(m_ui->m_timeComboBox->currentText().toStdString()));
-    std::auto_ptr<te::dt::AbstractData> value(m_dataSet->getValue(m_ui->m_valueComboBox->currentText().toStdString()));
+    std::auto_ptr<te::dt::DateTime> time(m_dataSet->getDateTime(m_ui->m_timeComboBox->currentText().toUtf8().data()));
+    std::auto_ptr<te::dt::AbstractData> value(m_dataSet->getValue(m_ui->m_valueComboBox->currentText().toUtf8().data()));
     timeSeries->add(time.release(), value.release());
   }
 

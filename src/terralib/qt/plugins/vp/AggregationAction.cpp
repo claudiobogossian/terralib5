@@ -39,7 +39,7 @@
 te::qt::plugins::vp::AggregationAction::AggregationAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Dissolve...").toStdString(), "vector-processing-aggregation");
+  createAction(tr("Dissolve...").toUtf8().data(), "vector-processing-aggregation");
   m_action->setObjectName("Processing.Vector Processing.Aggregation");
 }
 

@@ -108,7 +108,7 @@ void te::qt::widgets::DataSetSelectorWidget::set(const te::da::DataSourceInfoPtr
   if(ds.get() == 0)
     return;
 
-  m_ui->m_datasetGroupBox->setTitle(QString::fromStdString(ds->getTitle()));
+  m_ui->m_datasetGroupBox->setTitle(QString::fromUtf8(ds->getTitle().c_str()));
 
   try
   {

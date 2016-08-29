@@ -36,7 +36,7 @@
 te::qt::plugins::vp::UnionAction::UnionAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Union...").toStdString(), "vector-processing-union");
+  createAction(tr("Union...").toUtf8().data(), "vector-processing-union");
   m_action->setObjectName("Processing.Vector Processing.Union");
 }
 
