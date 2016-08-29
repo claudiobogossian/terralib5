@@ -194,7 +194,7 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
 
   if(m_toFile)
   {
-    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data());
   }
   else
   {
@@ -202,7 +202,7 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
   }
 
   //get output dataset name
-  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::size_t idx = dataSetName.find(".");
   if (idx != std::string::npos)
@@ -242,7 +242,7 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
 
       ((te::sa::SamplePointsGeneratorStratified*)spga)->setNumberOfPoints(m_ui->m_nPointsStratifiedLineEdit->text().toInt());
       ((te::sa::SamplePointsGeneratorStratified*)spga)->setInputDataSet(l->getData());
-      ((te::sa::SamplePointsGeneratorStratified*)spga)->setInputAttributeName(m_ui->m_attrStratifiedComboBox->currentText().toStdString());
+      ((te::sa::SamplePointsGeneratorStratified*)spga)->setInputAttributeName(m_ui->m_attrStratifiedComboBox->currentText().toUtf8().data());
       ((te::sa::SamplePointsGeneratorStratified*)spga)->isProportionalToArea(m_ui->m_propStratifiedCheckBox->isChecked());
     }
 
@@ -326,7 +326,7 @@ void te::sa::SamplePointsGeneratorDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
 
   m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
 

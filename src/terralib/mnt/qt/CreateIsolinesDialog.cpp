@@ -327,7 +327,7 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
     this->setCursor(Qt::WaitCursor);
     m_inputLayer = 0;
     std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-    std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+    std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
     while (it != m_layers.end())
     {
       if (layerID == it->get()->getId().c_str())
@@ -510,7 +510,7 @@ void te::mnt::CreateIsolinesDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -555,9 +555,9 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
     if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
       throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
-    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
     std::map<std::string, std::string> outdsinfo;
-    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     bool result = false;
 

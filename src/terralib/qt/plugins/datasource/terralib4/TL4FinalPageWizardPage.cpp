@@ -49,7 +49,7 @@ void te::qt::plugins::terralib4::TL4FinalPageWizardPage::setDataSets(const std::
 
   for(std::size_t i = 0; i < datasets.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(QString::fromStdString(datasets[i]), m_ui->m_layersListWidget);
+    QListWidgetItem* item = new QListWidgetItem(QString::fromUtf8(datasets[i]), m_ui->m_layersListWidget);
 
     item->setCheckState(Qt::Checked);
 
@@ -68,7 +68,7 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::get
     if(item->checkState() != Qt::Checked)
       continue;
 
-    std::string aux = m_ui->m_layersListWidget->item(i)->text().toStdString();
+    std::string aux = m_ui->m_layersListWidget->item(i)->text().toUtf8().data();
 
     checked.push_back(aux);
   }

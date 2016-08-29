@@ -84,8 +84,8 @@ void te::qt::plugins::geofile::GeoFileConnectorDialog::set(const std::list<te::d
 
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = m_datasources.begin(); it != m_datasources.end(); ++it)
   {
-    QString id = QString::fromStdString((*it)->getId());
-    QString title = QString::fromStdString((*it)->getTitle());
+    QString id = QString::fromUtf8((*it)->getId());
+    QString title = QString::fromUtf8((*it)->getTitle());
 
     QListWidgetItem* item = new QListWidgetItem(title);
     item->setData(Qt::UserRole, QVariant(id));
@@ -173,14 +173,14 @@ void te::qt::plugins::geofile::GeoFileConnectorDialog::addDatasourceToolButtonPr
         title = m_ui->m_datasourceLineEdit->text().trimmed();
 
       nds->setId(dsId);
-      nds->setTitle(title.toUtf8().data());
-      nds->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      nds->setTitle(title.toUtf8().data().data());
+      nds->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data().data());
       nds->setAccessDriver(driver->getType());
       nds->setType("GEOFILE");
 
       m_datasources.push_back(nds);
 
-      QString id = QString::fromStdString(nds->getId());
+      QString id = QString::fromUtf8(nds->getId());
 
       QListWidgetItem* item = new QListWidgetItem(title);
       item->setData(Qt::UserRole, QVariant(id));
@@ -218,7 +218,7 @@ void te::qt::plugins::geofile::GeoFileConnectorDialog::removeDatasourceToolButto
   if(id.isEmpty())
     return;
 
-  std::string dsId = id.toStdString();
+  std::string dsId = id.toUtf8().data();
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
 
@@ -260,7 +260,7 @@ void te::qt::plugins::geofile::GeoFileConnectorDialog::dataSourcePressed(QListWi
   if(id.isEmpty())
     return;
 
-  std::string dsId = id.toStdString();
+  std::string dsId = id.toUtf8().data();
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
 
@@ -280,9 +280,9 @@ void te::qt::plugins::geofile::GeoFileConnectorDialog::dataSourcePressed(QListWi
   //{
   //}
 
-  m_ui->m_datasourceLineEdit->setText(QString::fromStdString(itdsinfo->second));
-  m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString((*it)->getTitle()));
-  m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromStdString((*it)->getDescription()));
+  m_ui->m_datasourceLineEdit->setText(QString::fromUtf8(itdsinfo->second));
+  m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8((*it)->getTitle()));
+  m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8((*it)->getDescription()));
 }
 
 te::da::DataSourcePtr te::qt::plugins::geofile::GeoFileConnectorDialog::test()
@@ -292,7 +292,7 @@ te::da::DataSourcePtr te::qt::plugins::geofile::GeoFileConnectorDialog::test()
 // check data acccess driver to be used
   std::string driverType;
 
-  boost::filesystem::path fp = m_ui->m_datasourceLineEdit->text().trimmed().toUtf8().data();
+  boost::filesystem::path fp = m_ui->m_datasourceLineEdit->text().trimmed().toUtf8().data().data();
 
   std::string fileExtension = boost::to_upper_copy(fp.extension().string());
 
@@ -302,7 +302,7 @@ te::da::DataSourcePtr te::qt::plugins::geofile::GeoFileConnectorDialog::test()
     if(te::da::DataSourceFactory::find("GEOFILE") == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for GEOFILE data sources!"));
 
-    dsInfo["SOURCE"] = m_ui->m_datasourceLineEdit->text().trimmed().toStdString();
+    dsInfo["SOURCE"] = m_ui->m_datasourceLineEdit->text().trimmed().toUtf8().data();
 
     driverType = "GEOFILE";
   }
@@ -311,7 +311,7 @@ te::da::DataSourcePtr te::qt::plugins::geofile::GeoFileConnectorDialog::test()
     if(te::da::DataSourceFactory::find("OGR") == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
 
-    dsInfo["SOURCE"] = m_ui->m_datasourceLineEdit->text().trimmed().toStdString();
+    dsInfo["SOURCE"] = m_ui->m_datasourceLineEdit->text().trimmed().toUtf8().data();
 
     driverType = "OGR";
   }

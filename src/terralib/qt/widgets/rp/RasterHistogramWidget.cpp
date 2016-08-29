@@ -68,7 +68,7 @@ te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Q
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
 
   //Creating and adjusting the chart Display
-  m_chartDisplay = new te::qt::widgets::ChartDisplay(m_ui->m_widget, QString::fromStdString(""), m_chartStyle);
+  m_chartDisplay = new te::qt::widgets::ChartDisplay(m_ui->m_widget, QString::fromUtf8(""), m_chartStyle);
   m_chartDisplay->adjustDisplay();
   m_chartDisplay->show();
   m_chartDisplay->replot();
@@ -201,7 +201,7 @@ void te::qt::widgets::RasterHistogramWidget::updateMinimumValueLine(int value, b
   if(!m_minValueLine)
   {
     m_minValueLine = new QwtPlotMarker();
-    m_minValueLine->setLabel(QString::fromStdString("Minimum"));
+    m_minValueLine->setLabel(QString::fromUtf8("Minimum"));
     m_minValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_minValueLine->setLabelOrientation(Qt::Vertical);
     m_minValueLine->setLineStyle(QwtPlotMarker::VLine);
@@ -241,7 +241,7 @@ void te::qt::widgets::RasterHistogramWidget::updateMaximumValueLine(int value, b
   if(!m_maxValueLine)
   {
     m_maxValueLine = new QwtPlotMarker();
-    m_maxValueLine->setLabel(QString::fromStdString("Maximum"));
+    m_maxValueLine->setLabel(QString::fromUtf8("Maximum"));
     m_maxValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_maxValueLine->setLabelOrientation(Qt::Vertical);
     m_maxValueLine->setLineStyle(QwtPlotMarker::VLine);

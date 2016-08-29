@@ -167,7 +167,7 @@ void te::mnt::MNTGenerationDialog::onInputComboBoxChanged(int index)
   m_ui->m_Zlabel->hide();
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
 
   while (it != m_layers.end())
   {
@@ -290,7 +290,7 @@ void te::mnt::MNTGenerationDialog::oninterpolatorComboBoxChanged(int index)
 {
   m_ui->m_interparamStackedWidget->hide();
 
-  std::string inter = m_ui->m_interpolatorComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string inter = m_ui->m_interpolatorComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
 
   switch (m_inputType)
   {
@@ -438,7 +438,7 @@ void te::mnt::MNTGenerationDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -482,8 +482,8 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
     if (m_ui->m_newLayerNameLineEdit->text().isEmpty())
       throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
-    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     if (boost::filesystem::exists(uri))
       throw te::common::Exception(TE_TR("Output file already exists. Remove it or select a new name and try again."));
@@ -550,7 +550,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
           grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
           grid->setOutput(outdsinfo);
-          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
+          grid->setParams(m_ui->m_ZcomboBox->currentText().toUtf8().data(), resxo, resyo, m_inter, radius, pow);
           grid->setSRID(m_outsrid);
 
           grid->run();
@@ -566,7 +566,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
           grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
           grid->setOutput(outdsinfo);
-          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
+          grid->setParams(m_ui->m_ZcomboBox->currentText().toUtf8().data(), resxo, resyo, m_inter, radius, pow);
           grid->setSRID(m_outsrid);
 
           grid->calculateGrid();
@@ -585,7 +585,7 @@ void te::mnt::MNTGenerationDialog::onOkPushButtonClicked()
 
           grid->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
           grid->setOutput(outdsinfo);
-          grid->setParams(m_ui->m_ZcomboBox->currentText().toStdString(), resxo, resyo, m_inter, radius, pow);
+          grid->setParams(m_ui->m_ZcomboBox->currentText().toUtf8().data(), resxo, resyo, m_inter, radius, pow);
           grid->setSRID(m_outsrid);
 
           grid->generateGrid();

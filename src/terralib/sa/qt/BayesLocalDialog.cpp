@@ -190,7 +190,7 @@ void te::sa::BayesLocalDialog::onOkPushButtonClicked()
   std::auto_ptr<te::da::DataSet> dataSet = l->getData();
 
 //create datasource to save the output information
-  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::size_t idx = dataSetName.find(".");
   if (idx != std::string::npos)
@@ -200,7 +200,7 @@ void te::sa::BayesLocalDialog::onOkPushButtonClicked()
 
   if(m_toFile)
   {
-    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data());
   }
   else
   {
@@ -211,8 +211,8 @@ void te::sa::BayesLocalDialog::onOkPushButtonClicked()
 
   inParams->m_ds = dataSet;
   inParams->m_dsType = dataSetType;
-  inParams->m_eventAttrName = m_ui->m_attrEventComboBox->currentText().toStdString();
-  inParams->m_populationAttrName = m_ui->m_attrPopComboBox->currentText().toStdString();
+  inParams->m_eventAttrName = m_ui->m_attrEventComboBox->currentText().toUtf8().data();
+  inParams->m_populationAttrName = m_ui->m_attrPopComboBox->currentText().toUtf8().data();
   inParams->m_rate = m_ui->m_rateComboBox->currentText().toDouble();
   inParams->m_gpmAttrLink = gpm->getAttributeName();
   inParams->m_gpm = gpm;
@@ -302,7 +302,7 @@ void te::sa::BayesLocalDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
 
   m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
 
@@ -326,7 +326,7 @@ void te::sa::BayesLocalDialog::onGPMToolButtonClicked()
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
   //check if the selected gpm is valid for selected layer
-  std::string path = fileName.toStdString();
+  std::string path = fileName.toUtf8().data();
   std::string dataSetName = "";
   std::string attrName = "";
 
@@ -338,7 +338,7 @@ void te::sa::BayesLocalDialog::onGPMToolButtonClicked()
     return;
   }
 
-  if(m_ui->m_attrLinkComboBox->currentText().toStdString() != attrName)
+  if(m_ui->m_attrLinkComboBox->currentText().toUtf8().data() != attrName)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Invalid GPM file for selected Attr Link."));
     return;
@@ -418,17 +418,17 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::BayesLocalDialog::load
     //load gpm
     QFileInfo file(m_ui->m_gpmLineEdit->text());
 
-    std::string extension = file.suffix().toStdString();
+    std::string extension = file.suffix().toUtf8().data();
 
     te::sa::SpatialWeightsExchanger swe;
 
     if(extension == "gal" || extension == "GAL")
     {
-      gpm.reset(swe.importFromGAL(m_ui->m_gpmLineEdit->text().toStdString(), ds.get()));
+      gpm.reset(swe.importFromGAL(m_ui->m_gpmLineEdit->text().toUtf8().data(), ds.get()));
     }
     else if(extension == "gwt" || extension == "GWT")
     {
-      gpm.reset(swe.importFromGWT(m_ui->m_gpmLineEdit->text().toStdString(), ds.get()));
+      gpm.reset(swe.importFromGWT(m_ui->m_gpmLineEdit->text().toUtf8().data(), ds.get()));
     }
   }
 

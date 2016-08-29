@@ -227,11 +227,11 @@ void te::qt::widgets::ROIManagerWidget::drawROISet()
 
     if(item->type() == ROI_POLYGON_TREE_ITEM)
     {
-      std::string id = item->data(0, Qt::UserRole).toString().toStdString();
+      std::string id = item->data(0, Qt::UserRole).toString().toUtf8().data();
 
       QTreeWidgetItem* parent = item->parent();
 
-      std::string label = parent->text(0).toStdString();
+      std::string label = parent->text(0).toUtf8().data();
 
       te::cl::ROI* roi = m_rs->getROI(label);
 
@@ -338,8 +338,8 @@ void te::qt::widgets::ROIManagerWidget::onAddROIToolButtonClicked()
   }
 
   //get roi info
-  std::string label = m_ui->m_labelROILineEdit->text().toStdString();
-  std::string color = m_colorPicker->getColor().name().toStdString();
+  std::string label = m_ui->m_labelROILineEdit->text().toUtf8().data();
+  std::string color = m_colorPicker->getColor().name().toUtf8().data();
 
   //create roi
   te::cl::ROI* roi = new te::cl::ROI(label);
@@ -382,18 +382,18 @@ void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
 
   if (item->type() == ROI_TREE_ITEM)
   {
-    std::string label = item->text(0).toStdString();
+    std::string label = item->text(0).toUtf8().data();
     m_rs->removeROI(label);
 
     delete item;
   }
   else if (item->type() == ROI_POLYGON_TREE_ITEM)
   {
-    std::string id = item->data(0, Qt::UserRole).toString().toStdString();
+    std::string id = item->data(0, Qt::UserRole).toString().toUtf8().data();
 
     QTreeWidgetItem* parent = item->parent();
 
-    std::string label = parent->text(0).toStdString();
+    std::string label = parent->text(0).toUtf8().data();
 
     te::cl::ROI* roi = m_rs->getROI(label);
 
@@ -441,11 +441,11 @@ void te::qt::widgets::ROIManagerWidget::onROITreItemClicked(QTreeWidgetItem* ite
   te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
   canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
 
-  std::string id = item->data(0, Qt::UserRole).toString().toStdString();
+  std::string id = item->data(0, Qt::UserRole).toString().toUtf8().data();
 
   QTreeWidgetItem* parent = item->parent();
 
-  std::string label = parent->text(0).toStdString();
+  std::string label = parent->text(0).toUtf8().data();
 
   te::cl::ROI* roi = m_rs->getROI(label);
 
@@ -469,7 +469,7 @@ void te::qt::widgets::ROIManagerWidget::onExportROISetToolButtonClicked()
     QMessageBox::warning(this, tr("Warning"), tr("File name not defined."));
     return;
   }
-  std::string fileName = m_ui->m_roiSetNameLineEdit->text().toStdString();
+  std::string fileName = m_ui->m_roiSetNameLineEdit->text().toUtf8().data();
 
   if(m_rs->getROISet().empty())
   {
@@ -558,7 +558,7 @@ void te::qt::widgets::ROIManagerWidget::onEnvelopeAcquired(te::gm::Envelope env)
   }
 
   //get roi
-  std::string label = item->text(0).toStdString();
+  std::string label = item->text(0).toUtf8().data();
   te::cl::ROI* roi = m_rs->getROI(label);
 
   bool repaint = false;
@@ -641,7 +641,7 @@ void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
   }
 
   //get roi
-  std::string label = item->text(0).toStdString();
+  std::string label = item->text(0).toUtf8().data();
   te::cl::ROI* roi = m_rs->getROI(label);
 
   bool repaint = false;

@@ -125,7 +125,7 @@ void te::qt::widgets::WellKnownMarkWidget::updateUi()
 
 void te::qt::widgets::WellKnownMarkWidget::onMarkTypeComboBoxCurrentIndexChanged(const QString& currentText)
 {
-  m_mark->setWellKnownName(new std::string(currentText.toStdString()));
+  m_mark->setWellKnownName(new std::string(currentText.toUtf8().data()));
   emit markChanged();
 }
 

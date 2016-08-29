@@ -39,7 +39,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 te::qt::plugins::mnt::CreateIsolinesAction::CreateIsolinesAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("Create Isolines ...").toStdString(), "mnt-processing-isolines");
+  createAction(tr("Create Isolines ...").toUtf8().data(), "mnt-processing-isolines");
   m_action->setObjectName("Processing.ISOLINES Processing.ISOLINES");
 }
 

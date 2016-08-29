@@ -70,7 +70,7 @@ void te::qt::widgets::DataExchangeSummaryWizardPage::set(const std::list<DataExc
     QTableWidgetItem* item = new QTableWidgetItem(it->m_successful ? QIcon::fromTheme("check") : QIcon::fromTheme("delete"), "");
     m_ui->m_reportTableWidget->setItem(row, 0, item);
 
-    item = new QTableWidgetItem(QString::fromStdString(it->m_dataset->getName()));
+    item = new QTableWidgetItem(QString::fromUtf8(it->m_dataset->getName().c_str()));
     m_ui->m_reportTableWidget->setItem(row, 1, item);
 
     if(it->m_successful)
@@ -104,13 +104,13 @@ void te::qt::widgets::DataExchangeSummaryWizardPage::set(const std::list<DataExc
         t += " seconds";
       }
 
-      item = new QTableWidgetItem(QString::fromStdString(t));
+      item = new QTableWidgetItem(QString::fromUtf8(t.c_str()));
       m_ui->m_reportTableWidget->setItem(row, 2, item);
     }
     else
       m_status = false;
 
-    item = new QTableWidgetItem(it->m_successful ? tr("Successfully transferred") : QString::fromStdString(it->m_exceptionMsg));
+    item = new QTableWidgetItem(it->m_successful ? tr("Successfully transferred") : QString::fromUtf8(it->m_exceptionMsg.c_str()));
     m_ui->m_reportTableWidget->setItem(row, 3, item);
 
     ++row;

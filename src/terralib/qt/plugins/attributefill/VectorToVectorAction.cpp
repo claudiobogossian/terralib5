@@ -39,7 +39,7 @@
 te::qt::plugins::attributefill::VectorToVectorAction::VectorToVectorAction(QMenu* menu)
   : te::qt::plugins::attributefill::AbstractAction(menu)
 {
-  createAction(tr("Vector to Vector...").toStdString(), "attributefill-vector2vector-icon");
+  createAction(tr("Vector to Vector...").toUtf8().data(), "attributefill-vector2vector-icon");
   m_action->setObjectName("Processing.Attribute Fill.Vector to Vector");
 }
 
@@ -65,7 +65,7 @@ void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(boo
   QString logPath = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir();
   logPath += "/log/terralib_attributefill.log";
 
-  dlg.setLogPath(logPath.toStdString());
+  dlg.setLogPath(logPath.toUtf8().data());
 
   if(dlg.exec() != QDialog::Accepted)
     return;

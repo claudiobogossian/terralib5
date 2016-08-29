@@ -201,11 +201,11 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onTreeItemClicked(QTr
 
   if (item->type() == PROPERTY_TREE_ITEM)
   {
-    std::string propertyName = item->text(0).toStdString();
+    std::string propertyName = item->text(0).toUtf8().data();
 
     QTreeWidgetItem* parent = item->parent();
 
-    std::string formName = parent->text(0).toStdString();
+    std::string formName = parent->text(0).toUtf8().data();
 
     //get form
     te::qt::plugins::terramobile::Form* form = getForm(formName);
@@ -362,7 +362,7 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onTreeItemClicked(QTr
   {
     m_ui->m_stackedWidget->setCurrentIndex(8);
 
-    std::string formName = item->text(0).toStdString();
+    std::string formName = item->text(0).toUtf8().data();
 
     //get form
     te::qt::plugins::terramobile::Form* form = getForm(formName);
@@ -414,7 +414,7 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onSaveFormItemToolBut
 
       if (m_ui->m_defaultValueBoolCheckBox->isChecked())
       {
-        std::string value = m_ui->m_boolComboBox->currentText().toStdString();
+        std::string value = m_ui->m_boolComboBox->currentText().toUtf8().data();
 
         if (value == "TRUE")
           fi->setValue(true);
@@ -450,7 +450,7 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onSaveFormItemToolBut
 
       if (m_ui->m_defaultValueLabelCheckBox->isChecked())
       {
-        fi->setValue(m_ui->m_labelLineEdit->text().toStdString());
+        fi->setValue(m_ui->m_labelLineEdit->text().toUtf8().data());
       }
     }
     else if (propType == PICTUREFORMITEMTYPE)
@@ -463,14 +463,14 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onSaveFormItemToolBut
 
       if (m_ui->m_defaultValueStringComboCheckBox->isChecked())
       {
-        fi->setValue(m_ui->m_stringComboLineEdit->text().toStdString());
+        fi->setValue(m_ui->m_stringComboLineEdit->text().toUtf8().data());
       }
 
       std::vector<std::string> values;
 
       for (int i = 0; i < m_ui->m_listWidget->count(); ++i)
       {
-        values.push_back(m_ui->m_listWidget->item(i)->text().toStdString());
+        values.push_back(m_ui->m_listWidget->item(i)->text().toUtf8().data());
       }
 
       fi->setValues(values);
@@ -481,7 +481,7 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onSaveFormItemToolBut
 
       if (m_ui->m_defaultValueStringCheckBox->isChecked())
       {
-        fi->setValue(m_ui->m_stringLineEdit->text().toStdString());
+        fi->setValue(m_ui->m_stringLineEdit->text().toUtf8().data());
       }
     }
     else if (propType == TIMEFORMITEMTYPE)
@@ -493,7 +493,7 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onSaveFormItemToolBut
 
     if (!m_ui->m_descLineEdit->text().isEmpty())
     {
-      desc = m_ui->m_descLineEdit->text().toStdString();
+      desc = m_ui->m_descLineEdit->text().toUtf8().data();
     }
 
     m_curFormItem->setLabel(desc);
@@ -506,7 +506,7 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onSaveFormItemToolBut
 
     for (int i = 0; i < m_ui->m_formItemsListWidget->count(); ++i)
     {
-      values.push_back(m_ui->m_formItemsListWidget->item(i)->text().toStdString());
+      values.push_back(m_ui->m_formItemsListWidget->item(i)->text().toUtf8().data());
     }
 
     std::vector<AbstractFormItem*> backupItems;
@@ -586,11 +586,11 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onItemTypeChanged(int
 
     if (widget && widget == cmbBox)
     {
-      std::string propertyName = item->text(0).toStdString();
+      std::string propertyName = item->text(0).toUtf8().data();
 
       QTreeWidgetItem* parent = item->parent();
 
-      std::string formName = parent->text(0).toStdString();
+      std::string formName = parent->text(0).toUtf8().data();
 
       //get form
       form = getForm(formName);
@@ -610,7 +610,7 @@ void te::qt::plugins::terramobile::BuilderFormsWizardPage::onItemTypeChanged(int
   }
 
   //create new item
-  std::string propType = cmbBox->itemText(index).toStdString();
+  std::string propType = cmbBox->itemText(index).toUtf8().data();
 
   te::qt::plugins::terramobile::AbstractFormItem* item;
 

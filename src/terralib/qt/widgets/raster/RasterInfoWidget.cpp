@@ -118,7 +118,7 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
 {
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = m_ui->m_fileNameLineEdit->text().toStdString();
+  rinfo["URI"] = m_ui->m_fileNameLineEdit->text().toUtf8().data();
 
   //get extra parameters
   
@@ -133,7 +133,7 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(in
 {
   std::map<std::string, std::string> rinfo;
 
-  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
   
   //std::string name = getBaseName();
 
@@ -158,7 +158,7 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(in
 
 std::auto_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSource() const
 {
-  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
   std::map<std::string, std::string> connInfoRaster;
   connInfoRaster["SOURCE"] = path.parent_path().string();
 
@@ -171,13 +171,13 @@ std::auto_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSour
 
 std::string te::qt::widgets::RasterInfoWidget::getName() const
 {
-  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
   return path.filename().string();
 }
 
 std::string te::qt::widgets::RasterInfoWidget::getShortName() const
 {
-  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
   std::string name = path.filename().string();
 
   std::size_t pos = name.find_last_of(".");
@@ -191,24 +191,24 @@ std::string te::qt::widgets::RasterInfoWidget::getShortName() const
 
 std::string te::qt::widgets::RasterInfoWidget::getFullName() const
 {
-  return m_ui->m_fileNameLineEdit->text().toStdString();
+  return m_ui->m_fileNameLineEdit->text().toUtf8().data();
 }
 
 std::string te::qt::widgets::RasterInfoWidget::getExtension() const
 {
-  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
   return path.extension().string();
 }
 
 std::string te::qt::widgets::RasterInfoWidget::getPath() const
 {
-  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
   return path.parent_path().string();
 }
 
 bool te::qt::widgets::RasterInfoWidget::fileExists() const
 {
-  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toStdString() );
+  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
   return boost::filesystem::exists( path );
 }
 
@@ -224,28 +224,27 @@ void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
   {
     m_originalFullFileName = QFileDialog::getSaveFileName(this, tr("Select the output file name"), 
       te::qt::widgets::GetFilePathFromSettings("rp_raster_info"), 
-      te::qt::widgets::GetDiskRasterFileSelFilter(), 0 , 0).toStdString();    
+      te::qt::widgets::GetDiskRasterFileSelFilter(), 0 , 0).toUtf8().data();    
   }
   else
   {
     m_originalFullFileName = QFileDialog::getOpenFileName(this, tr("Select File"), 
       te::qt::widgets::GetFilePathFromSettings("rp_raster_info"), 
-      te::qt::widgets::GetDiskRasterFileSelFilter(), 0 ,QFileDialog::ReadOnly).toStdString();
+      te::qt::widgets::GetDiskRasterFileSelFilter(), 0 ,QFileDialog::ReadOnly).toUtf8().data();
   }
-  
-  // Configure the interface
-  
+
+  // Configure the interface  
   if( ! m_originalFullFileName.empty() )
   {    
     boost::filesystem::path fullFilePath( m_originalFullFileName );
-    
+
     m_ui->m_fileNameLineEdit->setText(m_originalFullFileName.c_str());
     m_ui->m_nameLineEdit->setText(fullFilePath.stem().string().c_str());
 
     te::qt::widgets::AddFilePathToSettings(fullFilePath.parent_path().string().c_str(), 
       "rp_raster_info");    
   }  
-  
+
   updateRawRasterFileName();
 }
 
@@ -323,9 +322,9 @@ void te::qt::widgets::RasterInfoWidget::updateRawRasterFileName()
         const double upperLeftX = m_ui->m_upperLeftXLineEdit->text().toDouble();
         const double upperLeftY = m_ui->m_upperLeftYLineEdit->text().toDouble();
         const int SRID = m_ui->m_sridLineEdit->text().toInt();
-        const std::string byteOrder = m_ui->m_byteOrderComboBox->currentText().toStdString();
-        const std::string dataTypeString = m_ui->m_dataTypeComboBox->currentText().toStdString();;
-        const std::string interleaveString = m_ui->m_interleaveComboBox->currentText().toStdString();;
+        const std::string byteOrder = m_ui->m_byteOrderComboBox->currentText().toUtf8().data();
+        const std::string dataTypeString = m_ui->m_dataTypeComboBox->currentText().toUtf8().data();;
+        const std::string interleaveString = m_ui->m_interleaveComboBox->currentText().toUtf8().data();;
         
         unsigned int dataTypeSizeBytes = 0;
         if( dataTypeString == "Byte" )

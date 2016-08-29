@@ -39,7 +39,7 @@
 te::qt::plugins::vp::LineToPolygonAction::LineToPolygonAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Line to Polygon...").toStdString(), "linetopolygon-icon");
+  createAction(tr("Line to Polygon...").toUtf8().data(), "linetopolygon-icon");
   m_action->setObjectName("Processing.Vector Processing.Line to Polygon");
 }
 

@@ -94,8 +94,8 @@ void te::qt::widgets::ConstraintsIndexesListWidget::onRemoveToolButtonClicked()
   if(row < 0)
     return;
 
-  std::string type = m_ui->m_tableWidget->item(row, 1)->text().toStdString();
-  std::string name = m_ui->m_tableWidget->item(row, 0)->text().toStdString();
+  std::string type = m_ui->m_tableWidget->item(row, 1)->text().toUtf8().data();
+  std::string name = m_ui->m_tableWidget->item(row, 0)->text().toUtf8().data();
 
   if(type == CONSTRAINT_PK_TYPE)
   {
@@ -120,7 +120,7 @@ void te::qt::widgets::ConstraintsIndexesListWidget::onEditToolButtonClicked()
   if(!m_ui->m_tableWidget->currentItem())
     return;
 
-  std::string constIndxName = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 0)->text().toStdString();
+  std::string constIndxName = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 0)->text().toUtf8().data();
 
   te::qt::widgets::ConstraintsIndexesPropertyDialog w(m_dsType, this);
 
@@ -200,17 +200,17 @@ void te::qt::widgets::ConstraintsIndexesListWidget::addConstraint(te::da::Constr
 
   if(c->getType() == te::da::PRIMARY_KEY)
   {
-    type = tr(CONSTRAINT_PK_TYPE).toStdString();
+    type = tr(CONSTRAINT_PK_TYPE).toUtf8().data();
     properties = getPropertiesStr(dynamic_cast<te::da::PrimaryKey*>(c)->getProperties());
   }
   else if(c->getType() == te::da::UNIQUE_KEY)
   {
-    type = tr(CONSTRAINT_UK_TYPE).toStdString();
+    type = tr(CONSTRAINT_UK_TYPE).toUtf8().data();
     properties = getPropertiesStr(dynamic_cast<te::da::UniqueKey*>(c)->getProperties());
   }
   else
   {
-    type = tr(CONSTRAINT_UNKNOWN_TYPE).toStdString();
+    type = tr(CONSTRAINT_UNKNOWN_TYPE).toUtf8().data();
   }
 
   addTableItem(name, type, properties);
@@ -219,7 +219,7 @@ void te::qt::widgets::ConstraintsIndexesListWidget::addConstraint(te::da::Constr
 void te::qt::widgets::ConstraintsIndexesListWidget::addIndex(te::da::Index* i)
 {
   std::string name = i->getName();
-  std::string type = tr(INDEX_TYPE).toStdString();
+  std::string type = tr(INDEX_TYPE).toUtf8().data();
   std::string properties = getPropertiesStr(i->getProperties());
 
   addTableItem(name, type, properties);
@@ -274,15 +274,15 @@ void te::qt::widgets::ConstraintsIndexesListWidget::addTableItem(std::string nam
 
   m_ui->m_tableWidget->insertRow(newrow);
 
-  QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(name));
+  QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromUtf8(name.c_str()));
   m_ui->m_tableWidget->setItem(newrow, 0, itemName);
   itemName->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-  QTableWidgetItem* itemType = new QTableWidgetItem(QString::fromStdString(type));
+  QTableWidgetItem* itemType = new QTableWidgetItem(QString::fromUtf8(type.c_str()));
   m_ui->m_tableWidget->setItem(newrow, 1, itemType);
   itemType->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-  QTableWidgetItem* itemProp = new QTableWidgetItem(QString::fromStdString(properties));
+  QTableWidgetItem* itemProp = new QTableWidgetItem(QString::fromUtf8(properties.c_str()));
   m_ui->m_tableWidget->setItem(newrow, 2, itemProp);
   itemProp->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }

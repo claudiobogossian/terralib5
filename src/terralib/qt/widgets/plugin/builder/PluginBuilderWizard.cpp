@@ -231,7 +231,7 @@ bool te::qt::widgets::PluginBuilderWizard::pluginInfoPageCheck()
   }
   else
   {
-    std::string name = m_ui->m_pluginNameLineEdit->text().toStdString();
+    std::string name = m_ui->m_pluginNameLineEdit->text().toUtf8().data();
     m_pluginResources->add("SharedLibraryName", name);
 
     //perhaps this information should be generated elsewhere
@@ -331,18 +331,18 @@ bool te::qt::widgets::PluginBuilderWizard::dirPageCheck()
 void te::qt::widgets::PluginBuilderWizard::buildPlugin()
 {
   te::plugin::PluginInfo pi;
-  pi.m_name = m_ui->m_pluginNameLineEdit->text().toStdString();
-  pi.m_displayName = m_ui->m_pluginDisplayTextLineEdit->text().toStdString();
-  pi.m_description = m_ui->m_pluginDescriptionTextEdit->document()->toPlainText().toStdString();
-  pi.m_version = m_ui->m_pluginVersionLineEdit->text().toStdString();
-  pi.m_release = m_ui->m_pluginReleaseDateTime->text().toStdString();
-  pi.m_engine = m_ui->m_cPlusPlusLanguageRadioButton->text().toStdString();       // SET TO C++  CHANGE THIS IN THE FUTURE
-  pi.m_terralibVersion = m_ui->m_terralibVersionLineEdit->text().toStdString();
-  pi.m_licenseDescription = m_ui->m_pluginLicenseComboBox->currentText().toStdString();
-  pi.m_licenseURL = m_ui->m_pluginLicenseSiteLineEdit->text().toStdString();
-  pi.m_category = m_ui->m_pluginCategoryComboBox->currentText().toStdString();
-  pi.m_site = m_ui->m_pluginSiteLineEdit->text().toStdString();
-  //pi.m_folder = m_ui->m_buildLocationLineEdit->text().toStdString();
+  pi.m_name = m_ui->m_pluginNameLineEdit->text().toUtf8().data();
+  pi.m_displayName = m_ui->m_pluginDisplayTextLineEdit->text().toUtf8().data();
+  pi.m_description = m_ui->m_pluginDescriptionTextEdit->document()->toPlainText().toUtf8().data();
+  pi.m_version = m_ui->m_pluginVersionLineEdit->text().toUtf8().data();
+  pi.m_release = m_ui->m_pluginReleaseDateTime->text().toUtf8().data();
+  pi.m_engine = m_ui->m_cPlusPlusLanguageRadioButton->text().toUtf8().data();       // SET TO C++  CHANGE THIS IN THE FUTURE
+  pi.m_terralibVersion = m_ui->m_terralibVersionLineEdit->text().toUtf8().data();
+  pi.m_licenseDescription = m_ui->m_pluginLicenseComboBox->currentText().toUtf8().data();
+  pi.m_licenseURL = m_ui->m_pluginLicenseSiteLineEdit->text().toUtf8().data();
+  pi.m_category = m_ui->m_pluginCategoryComboBox->currentText().toUtf8().data();
+  pi.m_site = m_ui->m_pluginSiteLineEdit->text().toUtf8().data();
+  //pi.m_folder = m_ui->m_buildLocationLineEdit->text().toUtf8().data();
 
   pi.m_requiredPlugins = m_pluginDependencies->getOutputValues();
   pi.m_requiredPluginCategories = m_categoryDependencies->getOutputValues();
@@ -370,15 +370,15 @@ void te::qt::widgets::PluginBuilderWizard::buildPlugin()
 
   //aquire provider info
   te::plugin::Provider p;
-  p.m_name = m_ui->m_pluginProviderNameLineEdit->text().toStdString();
-  p.m_site = m_ui->m_pluginProviderSiteLineEdit->text().toStdString();
-  p.m_email = m_ui->m_pluginProviderEmailLineEdit->text().toStdString();
+  p.m_name = m_ui->m_pluginProviderNameLineEdit->text().toUtf8().data();
+  p.m_site = m_ui->m_pluginProviderSiteLineEdit->text().toUtf8().data();
+  p.m_email = m_ui->m_pluginProviderEmailLineEdit->text().toUtf8().data();
 
   //acquire dir informations
-  std::string teIncludeDir = m_ui->m_terralibIncludeDirLineEdit->text().replace(QRegExp("\\\\"), "/").toStdString();
-  std::string teCmakeDir = m_ui->m_terralibCmakeDirLineEdit->text().replace(QRegExp("\\\\"), "/").toStdString();
-  std::string pluginSrcDir = m_ui->m_sourceCodeLocationLineEdit->text().replace(QRegExp("\\\\"), "/").toStdString();
-  std::string pluginBuildDir = m_ui->m_buildLocationLineEdit->text().replace(QRegExp("\\\\"), "/").toStdString();
+  std::string teIncludeDir = m_ui->m_terralibIncludeDirLineEdit->text().replace(QRegExp("\\\\"), "/").toUtf8().data();
+  std::string teCmakeDir = m_ui->m_terralibCmakeDirLineEdit->text().replace(QRegExp("\\\\"), "/").toUtf8().data();
+  std::string pluginSrcDir = m_ui->m_sourceCodeLocationLineEdit->text().replace(QRegExp("\\\\"), "/").toUtf8().data();
+  std::string pluginBuildDir = m_ui->m_buildLocationLineEdit->text().replace(QRegExp("\\\\"), "/").toUtf8().data();
   // \\\\ is used to represente a back slash - Believe... QRegExp - Qt Documentation
 
   //targuet language information
@@ -387,8 +387,8 @@ void te::qt::widgets::PluginBuilderWizard::buildPlugin()
 
   if(m_ui->m_cPlusPlusLanguageRadioButton->isChecked())
   {
-    nameSpace = m_ui->m_cPlusPlusNameSpaceLineEdit->text().toStdString();
-    macroExport = m_ui->m_cPlusPlusMacroExportLineEdit->text().toStdString();
+    nameSpace = m_ui->m_cPlusPlusNameSpaceLineEdit->text().toUtf8().data();
+    macroExport = m_ui->m_cPlusPlusMacroExportLineEdit->text().toUtf8().data();
   }
 
   //create cmake files

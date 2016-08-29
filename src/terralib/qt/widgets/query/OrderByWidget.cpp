@@ -41,8 +41,8 @@ te::qt::widgets::OrderByWidget::OrderByWidget(QWidget* parent, Qt::WindowFlags f
   m_ui->setupUi(this);
 
   //set order types
-  m_orderTypes.insert(std::map<std::string, int>::value_type(tr("ASC").toStdString(), te::da::ASC));
-  m_orderTypes.insert(std::map<std::string, int>::value_type(tr("DESC").toStdString(), te::da::DESC));
+  m_orderTypes.insert(std::map<std::string, int>::value_type(tr("ASC").toUtf8().data(), te::da::ASC));
+  m_orderTypes.insert(std::map<std::string, int>::value_type(tr("DESC").toUtf8().data(), te::da::DESC));
 
   std::map<std::string, int>::iterator it = m_orderTypes.begin();
 
@@ -116,11 +116,11 @@ void te::qt::widgets::OrderByWidget::getOrderItems(std::vector<std::pair<std::st
   {
     //alias name
     QTableWidgetItem* itemType = m_ui->m_orderTableWidget->item(i, 1);
-    std::string type = itemType->text().toStdString();
+    std::string type = itemType->text().toUtf8().data();
 
     //data set name
     QTableWidgetItem* itemName = m_ui->m_orderTableWidget->item(i, 0);
-    std::string name = itemName->text().toStdString();
+    std::string name = itemName->text().toUtf8().data();
 
     list.push_back(std::pair<std::string, std::string> (name, type));
   }
@@ -136,16 +136,16 @@ void te::qt::widgets::OrderByWidget::onAddOrderPushButton()
 
   int newrow = m_ui->m_orderTableWidget->rowCount();
 
-  std::string propertyValue = m_ui->m_orderPropertyComboBox->currentText().toStdString();
-  std::string order = m_ui->m_orderComboBox->currentText().toStdString();
+  std::string propertyValue = m_ui->m_orderPropertyComboBox->currentText().toUtf8().data();
+  std::string order = m_ui->m_orderComboBox->currentText().toUtf8().data();
 
 //new entry
   m_ui->m_orderTableWidget->insertRow(newrow);
 
-  QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(propertyValue));
+  QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromUtf8(propertyValue.c_str()));
   m_ui->m_orderTableWidget->setItem(newrow, 0, itemProperty);
 
-  QTableWidgetItem* itemOrder = new QTableWidgetItem(QString::fromStdString(order));
+  QTableWidgetItem* itemOrder = new QTableWidgetItem(QString::fromUtf8(order.c_str()));
   m_ui->m_orderTableWidget->setItem(newrow, 1, itemOrder);
 
   m_ui->m_orderTableWidget->resizeColumnsToContents();

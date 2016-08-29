@@ -115,7 +115,7 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
     return false;
   }
 
-  std::string dsTypeName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dsTypeName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::auto_ptr<te::da::DataSetType> dsType(new te::da::DataSetType(dsTypeName));
 
@@ -129,7 +129,7 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
 
   if (m_toFile)
   {
-    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
     std::map<std::string, std::string> dsinfo;
     dsinfo["URI"] = uri.string();
 
@@ -179,7 +179,7 @@ te::map::AbstractLayerPtr te::qt::widgets::CreateLayerWidget::getLayer()
 {
   //std::string driverName = m_outputDatasource->getType();
   //std::map<std::string, std::string> connInfo = m_outputDatasource->getConnInfo();
-  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::size_t idx = dataSetName.find(".");
   if (idx != std::string::npos)
@@ -284,7 +284,7 @@ void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
 
   m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
 
@@ -295,7 +295,7 @@ void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
   m_toFile = true;
 
   //create new data source
-  boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+  boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
   std::map<std::string, std::string> dsInfo;
   dsInfo["URI"] = uri.string();

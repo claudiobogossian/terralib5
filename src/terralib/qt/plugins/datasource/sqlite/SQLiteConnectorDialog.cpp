@@ -79,9 +79,9 @@ void te::qt::plugins::sqlite::SQLiteConnectorDialog::set(const te::da::DataSourc
   {
     setConnectionInfo(m_datasource->getConnInfo());
 
-    m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString(m_datasource->getTitle()));
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle()));
 
-    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromStdString(m_datasource->getDescription()));
+    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription()));
   }
 }
 
@@ -121,8 +121,8 @@ void te::qt::plugins::sqlite::SQLiteConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toUtf8().data().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data().data());
       m_datasource->setAccessDriver("SQLITE");
       m_datasource->setType("SQLITE");
     }
@@ -130,8 +130,8 @@ void te::qt::plugins::sqlite::SQLiteConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toUtf8().data().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data().data());
     }
   }
   catch(const std::exception& e)
@@ -216,7 +216,7 @@ void te::qt::plugins::sqlite::SQLiteConnectorDialog::getConnectionInfo(std::map<
   if(qstr.isEmpty())
     connInfo["SQLITE_FILE"] = ":memory:";
   else
-    connInfo["SQLITE_FILE"] = qstr.toUtf8().data();
+    connInfo["SQLITE_FILE"] = qstr.toUtf8().data().data();
   
   connInfo["SQLITE_OPEN_READWRITE"] = m_ui->m_rwAccessCheckBox->isChecked() ? "FALSE" : "TRUE";
 

@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   te::qt::af::AppCtrlSingleton::getInstance().initialize();
 
   // Directory where temporary WCS data will be stored.
-  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
+  std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
 
   // WCS server URL.
   std::string url = "http://demo.opengeo.org/geoserver/ows";
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     // Makes GetCapabilities Request.
     client.updateCapabilities();
 
-    te::ws::ogc::Capabilities capabilities = client.getCapabilities();
+    te::ws::ogc::wcs::Capabilities capabilities = client.getCapabilities();
 
     std::vector<std::string> coverages = capabilities.coverages;
 
@@ -55,11 +55,11 @@ int main(int argc, char *argv[])
     // Coverage name that could be retrieved on GetCapabilities.
     std::string coverageName = "nasa__bluemarble";
 
-    te::ws::ogc::CoverageDescription description = client.describeCoverage(coverageName);
+    te::ws::ogc::wcs::CoverageDescription description = client.describeCoverage(coverageName);
 
     std::cout << "CoverageId: " << description.coverageId << std::endl;
 
-    te::ws::ogc::EnvelopeWithTimePeriod boundedBy = description.envelope;
+    te::ws::ogc::wcs::EnvelopeWithTimePeriod boundedBy = description.envelope;
 
     std::cout << "--- boundedBy attributes ---" << std::endl;
     std::cout << "Lower Corner X: " << boundedBy.lowerCorner_X << std::endl;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     std::string coverageId = "nasa__bluemarble";
 
     // Simple image request by id.
-    te::ws::ogc::CoverageRequest request;
+    te::ws::ogc::wcs::CoverageRequest request;
     request.coverageID = coverageId;
 
     std::string coverageDiskPath = client.getCoverage(request);

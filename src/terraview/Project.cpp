@@ -48,7 +48,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
 {
   std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
 
-  writer->setURI(proj.m_fileName.toStdString());
+  writer->setURI(proj.m_fileName.toUtf8().data());
 
   std::string schema_loc = te::core::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
@@ -71,8 +71,8 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
   writer->writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_loc);
   writer->writeAttribute("version", TERRALIB_VERSION_STRING);
 
-  writer->writeElement("Title", proj.m_title.toStdString());
-  writer->writeElement("Author", proj.m_author.toStdString());
+  writer->writeElement("Title", proj.m_title.toUtf8().data());
+  writer->writeElement("Author", proj.m_author.toUtf8().data());
 
   //write data source list
   writer->writeStartElement("te_da:DataSourceList");
@@ -156,12 +156,12 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
 void LoadProject(const QString& projFile, ProjectMetadata& proj, std::list<te::map::AbstractLayerPtr>& layers)
 {
   QFileInfo info(projFile);
-  std::string fName = projFile.toStdString();
+  std::string fName = projFile.toUtf8().data();
 
   if(!info.exists() || !info.isFile())
   {
     QString msg = QObject::tr("Could not read project file: ") + projFile;
-    throw te::common::Exception(msg.toStdString());
+    throw te::common::Exception(msg.toUtf8().data());
   }
 
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
@@ -171,19 +171,19 @@ void LoadProject(const QString& projFile, ProjectMetadata& proj, std::list<te::m
   if(!xmlReader->next())
   {
     QString msg = QObject::tr("Could not read project information in the file: ") + projFile + ".";
-    throw te::common::Exception(msg.toStdString());
+    throw te::common::Exception(msg.toUtf8().data());
   }
 
   if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
   {
     QString msg = QObject::tr("Error reading the document ") + projFile + QObject::tr(", the start element wasn't found.");
-    throw te::common::Exception(msg.toStdString());
+    throw te::common::Exception(msg.toUtf8().data());
   }
 
   if(xmlReader->getElementLocalName() != "Project")
   {
     QString msg = QObject::tr("The first tag in the document ") + projFile + QObject::tr(" is not 'Project'.");
-    throw te::common::Exception(msg.toStdString());
+    throw te::common::Exception(msg.toUtf8().data());
   }
 
   xmlReader->next();

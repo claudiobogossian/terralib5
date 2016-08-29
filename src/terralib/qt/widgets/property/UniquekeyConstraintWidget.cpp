@@ -53,7 +53,7 @@ te::da::Constraint* te::qt::widgets::UniqueKeyConstraintWidget::getConstraint()
     return 0;
   }
 
-  std::string constraintName = m_ui->m_nameLineEdit->text().toStdString();
+  std::string constraintName = m_ui->m_nameLineEdit->text().toUtf8().data();
 
   //get properties
   std::vector<std::string> vec = m_doubleListWidget->getOutputValues();

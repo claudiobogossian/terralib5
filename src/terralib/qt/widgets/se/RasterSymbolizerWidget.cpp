@@ -317,7 +317,7 @@ void te::qt::widgets::RasterSymbolizerWidget::updateUi()
     {
       QString s;
       s.setNum(m_gainValue);
-      m_symbolizer->setGain(new te::se::ParameterValue(s.toStdString()));
+      m_symbolizer->setGain(new te::se::ParameterValue(s.toUtf8().data()));
     }
 
     m_ui->m_gainValueLabel->setText(QString::number(m_gainValue + 1.));
@@ -331,7 +331,7 @@ void te::qt::widgets::RasterSymbolizerWidget::updateUi()
     {
       QString s;
       s.setNum(m_offsetValue);
-      m_symbolizer->setOffset(new te::se::ParameterValue(s.toStdString()));
+      m_symbolizer->setOffset(new te::se::ParameterValue(s.toUtf8().data()));
     }
 
     m_ui->m_offSetValueLabel->setText(QString::number(m_offsetValue));
@@ -457,7 +457,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onOpacityChanged(int value)
     QString qStrOpacity;
     qStrOpacity.setNum(seOpacity);
 
-    m_symbolizer->setOpacity(new te::se::ParameterValue(qStrOpacity.toStdString()));
+    m_symbolizer->setOpacity(new te::se::ParameterValue(qStrOpacity.toUtf8().data()));
   }
 }
 
@@ -471,7 +471,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onMonoChannelSelectionClicked()
   if(m_scMono == 0)
   {
     m_scMono = new te::se::SelectedChannel();
-    m_scMono->setSourceChannelName(m_ui->m_composeMComboBox->currentText().toStdString());
+    m_scMono->setSourceChannelName(m_ui->m_composeMComboBox->currentText().toUtf8().data());
     m_cs->setGrayChannel(m_scMono);
   }
 
@@ -492,7 +492,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onRedChannelSelectionClicked()
   if(m_scRed == 0)
   {
     m_scRed = new te::se::SelectedChannel();
-    m_scRed->setSourceChannelName(m_ui->m_composeRComboBox->currentText().toStdString());
+    m_scRed->setSourceChannelName(m_ui->m_composeRComboBox->currentText().toUtf8().data());
     m_cs->setRedChannel(m_scRed);
   }
 
@@ -513,7 +513,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onGreenChannelSelectionClicked()
   if(m_scGreen== 0)
   {
     m_scGreen = new te::se::SelectedChannel();
-    m_scGreen->setSourceChannelName(m_ui->m_composeGComboBox->currentText().toStdString());
+    m_scGreen->setSourceChannelName(m_ui->m_composeGComboBox->currentText().toUtf8().data());
     m_cs->setGreenChannel(m_scGreen);
   }
 
@@ -534,7 +534,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onBlueChannelSelectionClicked()
   if(m_scBlue== 0)
   {
     m_scBlue = new te::se::SelectedChannel();
-    m_scBlue->setSourceChannelName(m_ui->m_composeBComboBox->currentText().toStdString());
+    m_scBlue->setSourceChannelName(m_ui->m_composeBComboBox->currentText().toUtf8().data());
     m_cs->setBlueChannel(m_scBlue);
   }
 
@@ -555,21 +555,21 @@ void te::qt::widgets::RasterSymbolizerWidget::onCompositionChannelSelectionClick
   if(m_scRed == 0)
   {
     m_scRed = new te::se::SelectedChannel();
-    m_scRed->setSourceChannelName(m_ui->m_composeRComboBox->currentText().toStdString());
+    m_scRed->setSourceChannelName(m_ui->m_composeRComboBox->currentText().toUtf8().data());
     m_cs->setRedChannel(m_scRed);
   }
 
   if(m_scGreen== 0)
   {
     m_scGreen = new te::se::SelectedChannel();
-    m_scGreen->setSourceChannelName(m_ui->m_composeGComboBox->currentText().toStdString());
+    m_scGreen->setSourceChannelName(m_ui->m_composeGComboBox->currentText().toUtf8().data());
     m_cs->setGreenChannel(m_scGreen);
   }
 
   if(m_scBlue== 0)
   {
     m_scBlue = new te::se::SelectedChannel();
-    m_scBlue->setSourceChannelName(m_ui->m_composeBComboBox->currentText().toStdString());
+    m_scBlue->setSourceChannelName(m_ui->m_composeBComboBox->currentText().toUtf8().data());
     m_cs->setBlueChannel(m_scBlue);
   }
 
@@ -582,28 +582,28 @@ void te::qt::widgets::RasterSymbolizerWidget::onCompositionChannelSelectionClick
 
 void te::qt::widgets::RasterSymbolizerWidget::onMonoChannelNameChanged(QString s)
 {
-  m_scMono->setSourceChannelName(s.toStdString());
+  m_scMono->setSourceChannelName(s.toUtf8().data());
 
   onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onRedChannelNameChanged(QString s)
 {
-  m_scRed->setSourceChannelName(s.toStdString());
+  m_scRed->setSourceChannelName(s.toUtf8().data());
 
   onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onGreenChannelNameChanged(QString s)
 {
-  m_scGreen->setSourceChannelName(s.toStdString());
+  m_scGreen->setSourceChannelName(s.toUtf8().data());
 
   onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onBlueChannelNameChanged(QString s)
 {
-  m_scBlue->setSourceChannelName(s.toStdString());
+  m_scBlue->setSourceChannelName(s.toUtf8().data());
 
   onSymbolizerChanged();
 }
@@ -715,7 +715,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onIncreaseGain()
 
   if(m_symbolizer)
   {
-    m_symbolizer->setGain(new te::se::ParameterValue(s.toStdString()));
+    m_symbolizer->setGain(new te::se::ParameterValue(s.toUtf8().data()));
 
     onSymbolizerChanged();
   }
@@ -732,7 +732,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onDecreaseGain()
 
   if(m_symbolizer)
   {
-    m_symbolizer->setGain(new te::se::ParameterValue(s.toStdString()));
+    m_symbolizer->setGain(new te::se::ParameterValue(s.toUtf8().data()));
 
     onSymbolizerChanged();
   }
@@ -749,7 +749,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onDefaultGain()
 
   if(m_symbolizer)
   {
-    m_symbolizer->setGain(new te::se::ParameterValue(s.toStdString()));
+    m_symbolizer->setGain(new te::se::ParameterValue(s.toUtf8().data()));
 
     onSymbolizerChanged();
   }
@@ -766,7 +766,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onIncreaseOffset()
   
   if(m_symbolizer)
   {
-    m_symbolizer->setOffset(new te::se::ParameterValue(s.toStdString()));
+    m_symbolizer->setOffset(new te::se::ParameterValue(s.toUtf8().data()));
 
     onSymbolizerChanged();
   }
@@ -783,7 +783,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onDecreaseOffset()
   
   if(m_symbolizer)
   {
-    m_symbolizer->setOffset(new te::se::ParameterValue(s.toStdString()));
+    m_symbolizer->setOffset(new te::se::ParameterValue(s.toUtf8().data()));
 
     onSymbolizerChanged();
   }
@@ -800,7 +800,7 @@ void te::qt::widgets::RasterSymbolizerWidget::onDefaultOffset()
 
   if(m_symbolizer)
   {
-    m_symbolizer->setOffset(new te::se::ParameterValue(s.toStdString()));
+    m_symbolizer->setOffset(new te::se::ParameterValue(s.toUtf8().data()));
 
     onSymbolizerChanged();
   }

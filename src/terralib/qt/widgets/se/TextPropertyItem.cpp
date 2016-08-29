@@ -103,7 +103,7 @@ void te::qt::widgets::TextPropertyItem::valueChanged(QtProperty* p, const QFont 
 
     // Updating text
     te::se::Font* font = new te::se::Font();
-    font->setFamily(f.family().toStdString());
+    font->setFamily(f.family().toUtf8().data());
     font->setSize(te::common::Convert2String(f.pointSize()));
     font->setStyle((te::se::Font::FontStyleType)fontStyle);
     font->setWeight((te::se::Font::FontWeightType)weightStyle);

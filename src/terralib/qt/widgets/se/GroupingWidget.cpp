@@ -108,7 +108,7 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
     return group;
   }
 
-  std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
+  std::string attr = m_ui->m_attrComboBox->currentText().toUtf8().data();
   int attrIdx =  m_ui->m_attrComboBox->currentIndex();
   int attrType = m_ui->m_attrComboBox->itemData(attrIdx).toInt();
 
@@ -134,7 +134,7 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
   }
   group->setGroupingItems(groupingItems);
 
-  group->setSummary(m_ui->m_summaryComboBox->currentText().toStdString());
+  group->setSummary(m_ui->m_summaryComboBox->currentText().toUtf8().data());
 
   return group;
 }
@@ -254,7 +254,7 @@ void te::qt::widgets::GroupingWidget::updateUi(bool loadColorBar)
 
     //title
     {
-      QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getTitle()));
+      QTableWidgetItem* item = new QTableWidgetItem(QString::fromUtf8(gi->getTitle().c_str()));
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
       m_ui->m_tableWidget->setItem(newrow, 1, item);
     }
@@ -287,14 +287,14 @@ void te::qt::widgets::GroupingWidget::updateUi(bool loadColorBar)
       {
         //Min
         {
-          QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getLowerLimit()));
+          QTableWidgetItem* item = new QTableWidgetItem(QString::fromUtf8(gi->getLowerLimit().c_str()));
           item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
           m_ui->m_tableWidget->setItem(newrow, 2, item);
         }
 
         //Max
         {
-          QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getUpperLimit()));
+        QTableWidgetItem* item = new QTableWidgetItem(QString::fromUtf8(gi->getUpperLimit().c_str()));
           item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
           m_ui->m_tableWidget->setItem(newrow, 3, item);
         }
@@ -311,7 +311,7 @@ void te::qt::widgets::GroupingWidget::updateUi(bool loadColorBar)
       if(gi->getTitle() != NO_TITLE)
       {
         //Value
-        QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getValue()));
+        QTableWidgetItem* item = new QTableWidgetItem(QString::fromUtf8(gi->getValue().c_str()));
         item->setFlags(Qt::ItemIsEnabled);
         m_ui->m_tableWidget->setItem(newrow, 2, item);
       }
@@ -383,7 +383,7 @@ void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
 
   for(int i = 0; i < m_ui->m_attrComboBox->count(); ++i)
   {
-    if(attrName == m_ui->m_attrComboBox->itemText(i).toStdString())
+    if(attrName == m_ui->m_attrComboBox->itemText(i).toUtf8().data())
     {
       m_ui->m_attrComboBox->setCurrentIndex(i);
       break;
@@ -436,7 +436,7 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
   int prec = m_ui->m_precSpinBox->value();
   double stdDev = m_ui->m_stdDevDoubleSpinBox->value();
 
-  std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
+  std::string attr = m_ui->m_attrComboBox->currentText().toUtf8().data();
   int attrIdx =  m_ui->m_attrComboBox->currentIndex();
   int attrType = m_ui->m_attrComboBox->itemData(attrIdx).toInt();
 
@@ -579,7 +579,7 @@ void  te::qt::widgets::GroupingWidget::onTableWidgetItemChanged(QTableWidgetItem
 
   if(curCol == 1) // title
   {
-    m_legend[curRow]->setTitle(str.toStdString());
+    m_legend[curRow]->setTitle(str.toUtf8().data());
 
     m_manual = true;
   }
@@ -601,9 +601,9 @@ void  te::qt::widgets::GroupingWidget::onTableWidgetItemChanged(QTableWidgetItem
       else
       {
         if(curCol == 2)
-          m_legend[curRow]->setLowerLimit(item->text().toStdString());
+          m_legend[curRow]->setLowerLimit(item->text().toUtf8().data());
         else if(curCol ==3)
-          m_legend[curRow]->setUpperLimit(item->text().toStdString());
+          m_legend[curRow]->setUpperLimit(item->text().toUtf8().data());
 
         m_manual = true;
       }
@@ -763,7 +763,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
+  std::string function = m_ui->m_summaryComboBox->currentText().toUtf8().data();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -958,7 +958,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
+  std::string function = m_ui->m_summaryComboBox->currentText().toUtf8().data();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -1270,7 +1270,7 @@ void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr select
 
     if(m_layer->getGrouping())
     {
-      int index = m_ui->m_summaryComboBox->findText(QString::fromStdString(m_layer->getGrouping()->getSummary()));
+      int index = m_ui->m_summaryComboBox->findText(QString::fromUtf8(m_layer->getGrouping()->getSummary().c_str()));
       m_ui->m_summaryComboBox->setCurrentIndex(index);
     }
 

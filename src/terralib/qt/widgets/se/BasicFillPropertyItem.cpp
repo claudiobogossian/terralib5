@@ -80,7 +80,7 @@ void te::qt::widgets::BasicFillPropertyItem::valueChanged(QtProperty *p, int val
     double opacity = value / 255.;
 
     // Updating fill opacity
-    m_fill->setOpacity(QString::number(opacity, 'g', 2).toStdString());
+    m_fill->setOpacity(QString::number(opacity, 'g', 2).toUtf8().data());
 
     updateUi();
 
@@ -103,8 +103,8 @@ void te::qt::widgets::BasicFillPropertyItem::valueChanged(QtProperty *p, const Q
     double alpha = value.alpha() / 255.;
 
     // Updating fill color
-    m_fill->setColor(m_color.name().toStdString());
-    m_fill->setOpacity(QString::number(alpha, 'g', 2).toStdString());
+    m_fill->setColor(m_color.name().toUtf8().data());
+    m_fill->setOpacity(QString::number(alpha, 'g', 2).toUtf8().data());
 
     updateUi();
 

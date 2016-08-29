@@ -38,7 +38,7 @@
 
 te::qt::plugins::terramobile::GeoPackageBuilderAction::GeoPackageBuilderAction(QMenu* menu) :te::qt::plugins::terramobile::AbstractAction(menu)
 {
-  createAction(tr("GeoPackage Builder...").toStdString(), "terraMobile");
+  createAction(tr("GeoPackage Builder...").toUtf8().data(), "terraMobile");
 }
 
 te::qt::plugins::terramobile::GeoPackageBuilderAction::~GeoPackageBuilderAction()

@@ -184,7 +184,7 @@ void te::qt::widgets::HistogramChart::setData()
     setPen(blankPen);
 
     te::se::Stroke* blankStroke = new te::se::Stroke();
-    blankStroke->setOpacity(QString::number(0, 'g', 2).toStdString());
+    blankStroke->setOpacity(QString::number(0, 'g', 2).toUtf8().data());
     m_histogramStyle->setStroke(blankStroke);
     setSamples(samples);
   }
@@ -373,7 +373,7 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids,
       for (std::map<std::string, unsigned int>::iterator it = highlightedIntervals.begin();  it !=  highlightedIntervals.end(); ++it)
       {
         //Comparing label by label.
-        if(m_histogramScaleDraw->label(i).text().toStdString() == it->first)
+        if(m_histogramScaleDraw->label(i).text().toUtf8().data() == it->first)
         {
           QwtInterval qwtInterval(values->sample(i).interval.minValue(), values->sample(i).interval.maxValue());
           highlightedSamples.push_back(QwtIntervalSample(it->second, qwtInterval));
@@ -397,7 +397,7 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QPointF point)
     for(size_t i = 0; i < values->size(); ++i)
     {
       if(values->sample(i).interval.minValue() < point.rx() && values->sample(i).interval.maxValue() > point.rx() &&  values->sample(i).value > point.ry())
-        data.reset(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
+        data.reset(new te::dt::String(m_histogramScaleDraw->label(i).text().toUtf8().data()));
     }
 
     return m_histogram->find(data.get());
@@ -431,11 +431,11 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QRectF rect)
 
       //Checking if the interval is within the rectangle, works when a rectangle is drawn around the intervals
       if(min > rect.x() && (max < rect.x() + rect.width() || min < rect.x() + rect.width())  &&  (frequency > rect.y() && rect.y() + rect.height() > 0))
-        selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
+        selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toUtf8().data()));
 
       //Checking if the rectangle is within the interval, works when the user simply clicked on an interval
       else if(min < rect.x() && max > rect.x() &&  (frequency > rect.y() && rect.y() + rect.height() > 0))
-        selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
+        selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toUtf8().data()));
     }
   }
 

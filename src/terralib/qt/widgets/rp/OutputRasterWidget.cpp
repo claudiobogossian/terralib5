@@ -62,14 +62,14 @@ std::string te::qt::widgets::OutputRasterWidget::getOutputRaster()
 {
   std::string outputRaster = "";
   if (!m_ui->m_repositoryLineEdit->text().isEmpty())
-    outputRaster = m_ui->m_repositoryLineEdit->text().toStdString();
+    outputRaster = m_ui->m_repositoryLineEdit->text().toUtf8().data();
 
   return outputRaster;
 }
 
 bool te::qt::widgets::OutputRasterWidget::fileExists() const
 {
-  boost::filesystem::path path(m_ui->m_repositoryLineEdit->text().toStdString());
+  boost::filesystem::path path(m_ui->m_repositoryLineEdit->text().toUtf8().data());
   return boost::filesystem::exists(path);
 }
 
@@ -82,7 +82,7 @@ std::map<std::string, std::string> te::qt::widgets::OutputRasterWidget::getInfo(
 {
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = m_ui->m_repositoryLineEdit->text().toStdString();
+  rinfo["URI"] = m_ui->m_repositoryLineEdit->text().toUtf8().data();
 
   return rinfo;
 }
@@ -98,7 +98,7 @@ void te::qt::widgets::OutputRasterWidget::onTargetFileToolButtonClicked()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();

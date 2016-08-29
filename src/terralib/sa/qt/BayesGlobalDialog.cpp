@@ -167,7 +167,7 @@ void te::sa::BayesGlobalDialog::onOkPushButtonClicked()
   std::auto_ptr<te::da::DataSet> dataSet = l->getData();
 
 //create datasource to save the output information
-  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::size_t idx = dataSetName.find(".");
   if (idx != std::string::npos)
@@ -177,7 +177,7 @@ void te::sa::BayesGlobalDialog::onOkPushButtonClicked()
 
   if(m_toFile)
   {
-    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data());
   }
   else
   {
@@ -188,8 +188,8 @@ void te::sa::BayesGlobalDialog::onOkPushButtonClicked()
 
   inParams->m_ds = dataSet;
   inParams->m_dsType = dataSetType;
-  inParams->m_eventAttrName = m_ui->m_attrEventComboBox->currentText().toStdString();
-  inParams->m_populationAttrName = m_ui->m_attrPopComboBox->currentText().toStdString();
+  inParams->m_eventAttrName = m_ui->m_attrEventComboBox->currentText().toUtf8().data();
+  inParams->m_populationAttrName = m_ui->m_attrPopComboBox->currentText().toUtf8().data();
   inParams->m_rate = m_ui->m_rateComboBox->currentText().toDouble();
 
   te::sa::BayesOutputParams* outParams = new te::sa::BayesOutputParams();
@@ -277,7 +277,7 @@ void te::sa::BayesGlobalDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
 
   m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
 

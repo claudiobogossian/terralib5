@@ -98,7 +98,7 @@ void te::qt::widgets::SRSDialog::onOkPushButtonClicked()
   }
   
   bool exists = true;
-  std::string name = m_ui->m_name->toPlainText().toStdString();
+  std::string name = m_ui->m_name->toPlainText().toUtf8().data();
   try
   {
     std::pair<std::string,unsigned int> check = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromName(name);
@@ -114,7 +114,7 @@ void te::qt::widgets::SRSDialog::onOkPushButtonClicked()
     return;
   }
   
-  name = m_ui->m_p4desc->toPlainText().toStdString();
+  name = m_ui->m_p4desc->toPlainText().toUtf8().data();
   exists = true;
   try
   {
@@ -153,16 +153,16 @@ void te::qt::widgets::SRSDialog::onCancelPushButtonClicked()
 
 unsigned int te::qt::widgets::SRSDialog::getSRID() const
 {
-  std::string id = m_ui->m_srid->toPlainText().toStdString();
+  std::string id = m_ui->m_srid->toPlainText().toUtf8().data();
   return boost::lexical_cast<unsigned int >(id);
 }
 
 std::string te::qt::widgets::SRSDialog::getName() const
 {
-  return m_ui->m_name->toPlainText().toStdString();
+  return m_ui->m_name->toPlainText().toUtf8().data();
 }
 
 std::string te::qt::widgets::SRSDialog::getP4Desc() const
 {
-  return m_ui->m_p4desc->toPlainText().toStdString();
+  return m_ui->m_p4desc->toPlainText().toUtf8().data();
 }

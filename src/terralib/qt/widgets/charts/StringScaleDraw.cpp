@@ -42,7 +42,7 @@ QwtScaleDraw()
 
   for (labelsIt = labels.begin(); labelsIt != labels.end(); labelsIt++)
   {
-    qstr = qstr.fromStdString(*labelsIt);
+    qstr = qstr.fromUtf8((*labelsIt).c_str());
     m_labels.insert(qstr);
   }
 }

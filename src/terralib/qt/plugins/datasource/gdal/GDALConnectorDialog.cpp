@@ -88,9 +88,9 @@ void te::qt::plugins::gdal::GDALConnectorDialog::set(const te::da::DataSourceInf
   {
     setConnectionInfo(m_datasource->getConnInfo());
 
-    m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString(m_datasource->getTitle()));
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
-    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromStdString(m_datasource->getDescription()));
+    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription().c_str()));
   }
 }
 
@@ -135,8 +135,8 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toUtf8().data());
       m_datasource->setAccessDriver("GDAL");
       m_datasource->setType("GDAL");
     }
@@ -144,8 +144,8 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toUtf8().data());
     }
   }
   catch(const std::exception& e)
@@ -251,10 +251,10 @@ void te::qt::plugins::gdal::GDALConnectorDialog::getConnectionInfo(std::map<std:
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TE_TR("Please select a dataset first!"));
 
-  if(boost::filesystem::is_directory(qstr.toStdString()))
-    connInfo["SOURCE"] = qstr.toStdString();    
+  if(boost::filesystem::is_directory(qstr.toUtf8().data()))
+    connInfo["SOURCE"] = qstr.toUtf8().data();    
   else
-    connInfo["URI"] = qstr.toStdString();
+    connInfo["URI"] = qstr.toUtf8().data();
 }
 
 void te::qt::plugins::gdal::GDALConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
@@ -264,7 +264,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::setConnectionInfo(const std::ma
 
   if(it != itend)
   {
-    m_ui->m_datasetLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_datasetLineEdit->setText(QString::fromUtf8(it->second.c_str()));
     m_ui->m_dirRadioButton->setChecked(true);
     return;
   }
@@ -273,7 +273,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::setConnectionInfo(const std::ma
 
   if(it != itend)
   {
-    m_ui->m_datasetLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_datasetLineEdit->setText(QString::fromUtf8(it->second.c_str()));
     m_ui->m_fileRadioButton->setChecked(true);
   }
 }

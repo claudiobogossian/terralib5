@@ -115,7 +115,7 @@ TreeItem("LEGEND")
   if(rule->getName())
     m_label = *rule->getName();
 
-  m_label = QObject::tr("Style").toStdString();
+  m_label = QObject::tr("Style").toUtf8().data();
 }
 
 te::qt::widgets::LegendItem::LegendItem(const std::string& label, const std::vector<te::se::Symbolizer*>& symbolizers):

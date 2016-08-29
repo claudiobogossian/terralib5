@@ -39,7 +39,7 @@
 te::qt::plugins::mnt::SlopeAction::SlopeAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("Slope...").toStdString(), "mnt-processing-slope");
+  createAction(tr("Slope...").toUtf8().data(), "mnt-processing-slope");
   m_action->setObjectName("Processing.DTM Processing.SLOPE");
 }
 

@@ -844,12 +844,12 @@ void te::qt::widgets::TiePointLocatorWidget::onLoadTiePointsToolButtonClicked()
   
   if( !tiePointsFileName.isEmpty() )
   {
-    boost::filesystem::path fullFilePath( tiePointsFileName.toStdString() );
+    boost::filesystem::path fullFilePath( tiePointsFileName.toUtf8().data() );
     te::qt::widgets::AddFilePathToSettings(fullFilePath.parent_path().string().c_str(), 
       "tie_points_file_directory");        
     
     std::ifstream tiePointsFile;
-    tiePointsFile.open( tiePointsFileName.toStdString(), std::ofstream::in );
+    tiePointsFile.open( tiePointsFileName.toUtf8().data(), std::ofstream::in );
     if( !tiePointsFile.good() )
     {
       QMessageBox::critical(this, tr("Warning"), tr("Tie points file open error"));
@@ -963,7 +963,7 @@ void te::qt::widgets::TiePointLocatorWidget::onSaveTiePointsToolButtonClicked()
   
   if( !tiePointsFileName.isEmpty() )
   {
-    boost::filesystem::path fullFilePath( tiePointsFileName.toStdString() );
+    boost::filesystem::path fullFilePath( tiePointsFileName.toUtf8().data() );
     te::qt::widgets::AddFilePathToSettings(fullFilePath.parent_path().string().c_str(), 
       "tie_points_file_directory");   
     
@@ -971,7 +971,7 @@ void te::qt::widgets::TiePointLocatorWidget::onSaveTiePointsToolButtonClicked()
     std::auto_ptr< te::rst::Raster > adjRasterPtr = m_adjLayer->getData()->getRaster(0);
     
     std::ofstream tiePointsFile;
-    tiePointsFile.open( tiePointsFileName.toStdString(), std::ofstream::out | 
+    tiePointsFile.open( tiePointsFileName.toUtf8().data(), std::ofstream::out | 
       std::ofstream::trunc );
     if( !tiePointsFile.good() )
     {
@@ -1335,7 +1335,7 @@ void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()
     QPointF pointGeo = matrix.inverted().map(pointCanvas);
     refPoint.setX(pointGeo.x());
     refPoint.setY(pointGeo.y());
-    refCanvasInstance.drawText(&refPoint, QString::number(id).toStdString());
+    refCanvasInstance.drawText(&refPoint, QString::number(id).toUtf8().data());
 
     //adj coord
     te::gm::Coord2D adjCoord = it->second.m_tiePoint.second;
@@ -1352,7 +1352,7 @@ void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()
     pointGeo = matrix.inverted().map(pointCanvas);
     adjPoint.setX(pointGeo.x());
     adjPoint.setY(pointGeo.y());
-    adjCanvasInstance.drawText(&adjPoint, QString::number(id).toStdString());
+    adjCanvasInstance.drawText(&adjPoint, QString::number(id).toUtf8().data());
 
     ++it;
   }

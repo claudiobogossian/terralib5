@@ -536,7 +536,7 @@ void te::vp::UnionDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -577,7 +577,7 @@ void te::vp::UnionDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::string firstSourceId = m_firstSelectedLayer->getDataSourceId();
   std::string secondSourceId = m_secondSelectedLayer->getDataSourceId();
@@ -634,7 +634,7 @@ void te::vp::UnionDialog::onOkPushButtonClicked()
 
     if (m_toFile)
     {
-      ogrUri = m_ui->m_repositoryLineEdit->text().toStdString();
+      ogrUri = m_ui->m_repositoryLineEdit->text().toUtf8().data();
 
       if (boost::filesystem::exists(ogrUri))
       {

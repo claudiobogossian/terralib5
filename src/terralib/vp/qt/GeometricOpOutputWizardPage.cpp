@@ -138,7 +138,7 @@ void te::vp::GeometricOpOutputWizardPage::setAttributes(std::vector<std::string>
 
   for(std::size_t i = 0; i < attributes.size(); ++i)
   {
-    m_ui->m_attributesComboBox->addItem(QString::fromStdString(attributes[i]));
+    m_ui->m_attributesComboBox->addItem(QString::fromUtf8(attributes[i].c_str()));
   }
 }
 
@@ -161,7 +161,7 @@ bool te::vp::GeometricOpOutputWizardPage::hasOutputLayer()
 
 std::string te::vp::GeometricOpOutputWizardPage::getOutDsName()
 {
-  return m_ui->m_newLayerNameLineEdit->text().toStdString();
+  return m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 }
 
 bool te::vp::GeometricOpOutputWizardPage::getToFile()
@@ -176,13 +176,13 @@ te::da::DataSourceInfoPtr te::vp::GeometricOpOutputWizardPage::getDsInfoPtr()
 
 std::string te::vp::GeometricOpOutputWizardPage::getPath()
 {
-  return m_ui->m_repositoryLineEdit->text().toStdString();
+  return m_ui->m_repositoryLineEdit->text().toUtf8().data();
 }
 
 void te::vp::GeometricOpOutputWizardPage::onAttributeComboBoxChanged(int index)
 {
   if(m_ui->m_byAttributesRadioButton->isChecked())
-    m_attribute = m_ui->m_attributesComboBox->itemText(index).toStdString();
+    m_attribute = m_ui->m_attributesComboBox->itemText(index).toUtf8().data();
   else
     m_attribute = "";
 }
@@ -234,7 +234,7 @@ void te::vp::GeometricOpOutputWizardPage::onTargetFileToolButtonPressed()
   
   if(dir.isEmpty() == false)
   {
-    m_path = dir.replace(QRegExp("\\\\"), "/").toStdString();
+    m_path = dir.replace(QRegExp("\\\\"), "/").toUtf8().data();
 
     m_ui->m_repositoryLineEdit->setText(m_path.c_str());
 

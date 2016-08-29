@@ -31,7 +31,7 @@
 te::qt::plugins::sa::SpatialStatisticsAction::SpatialStatisticsAction(QMenu *menu) :
   AbstractAction(menu)
 {
-  createAction(tr("Spatial Statistics...").toStdString(), "sa-spatialstatistics-icon");
+  createAction(tr("Spatial Statistics...").toUtf8().data(), "sa-spatialstatistics-icon");
   m_action->setObjectName("Processing.Spatial Analysis.Spatial Statistics");
 }
 

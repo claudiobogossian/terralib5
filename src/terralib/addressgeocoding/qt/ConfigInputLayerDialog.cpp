@@ -135,7 +135,7 @@ void te::addressgeocoding::ConfigInputLayerDialog::onInputLayerComboBoxChanged(i
   m_widget->clearOutputValues();
   
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_inputLayerComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_inputLayerComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
 
   while(it != m_layers.end())
   {

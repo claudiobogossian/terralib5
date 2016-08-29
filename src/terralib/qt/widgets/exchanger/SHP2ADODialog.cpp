@@ -171,7 +171,7 @@ void te::qt::widgets::SHP2ADODialog::onOkPushButtonClicked()
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
     
-    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
+    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toUtf8().data());
 
     //exchange
     std::map<std::string,std::string> nopt;

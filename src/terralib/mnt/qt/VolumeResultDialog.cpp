@@ -87,7 +87,7 @@ void te::mnt::VolumeResultDialog::onSavePushButtonClicked()
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
     QString(), tr("txt (*.txt *.TXT);;"), 0, QFileDialog::DontConfirmOverwrite);
 
-  saveVolume(fileName.toStdString());
+  saveVolume(fileName.toUtf8().data());
 
   accept();
 }
@@ -116,7 +116,7 @@ void te::mnt::VolumeResultDialog::saveVolume(const std::string& path)
     {
       QTableWidgetItem *res = m_ui->m_resultTableWidget->horizontalHeaderItem(i);
       if (res)
-        item.add(res->text().toStdString(), m_ui->m_resultTableWidget->item(r, i)->text().toStdString());
+        item.add(res->text().toUtf8().data(), m_ui->m_resultTableWidget->item(r, i)->text().toUtf8().data());
     }
     itens.add_child("Polygon", item);
   }

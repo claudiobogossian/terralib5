@@ -81,7 +81,7 @@ std::vector<std::string> te::qt::widgets::ListWidget::getValues()
 
   for(int i = 0; i < count; ++i)
   {
-    vec.push_back(m_ui->m_listWidget->item(i)->text().toStdString());
+    vec.push_back(m_ui->m_listWidget->item(i)->text().toUtf8().data());
   }
 
   return vec;

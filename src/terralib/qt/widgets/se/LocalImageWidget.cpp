@@ -123,12 +123,12 @@ void te::qt::widgets::LocalImageWidget::onBrowsePushButtonPressed()
 
   // Updating external graphic path
   te::xl::SimpleLink* link = new te::xl::SimpleLink;
-  link->setHref(path.toStdString());
+  link->setHref(path.toUtf8().data());
   m_eg->setOnlineResource(link);
 
   // Updating external graphic format
   QString f(QImageReader::imageFormat(path));
-  m_eg->setFormat("image/" + f.toStdString()); // It's correct?!
+  m_eg->setFormat("image/" + std::string(f.toUtf8().data())); // It's correct?!
 
   emit externalGraphicChanged(img.size());
 
