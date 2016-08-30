@@ -51,6 +51,8 @@ namespace te
   {
     namespace widgets{class DataSourceSelectorWizardPage;}
 
+    namespace af { namespace evt { struct Event; } }
+
     namespace plugins
     {
       namespace terralib4
