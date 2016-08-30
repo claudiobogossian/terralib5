@@ -37,7 +37,7 @@
 te::qt::plugins::vp::TransformationAction::TransformationAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Transformation...").toStdString());
+  createAction(tr("Transformation...").toUtf8().data());
   m_action->setObjectName("Processing.Vector Processing.Transformation");
 }
 

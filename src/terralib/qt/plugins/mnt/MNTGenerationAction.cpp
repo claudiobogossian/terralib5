@@ -39,7 +39,7 @@
 te::qt::plugins::mnt::MNTGenerationAction::MNTGenerationAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("DTM Generation...").toStdString(), "mnt-processing-dtm");
+  createAction(tr("DTM Generation...").toUtf8().data(), "mnt-processing-dtm");
   m_action->setObjectName("Processing.DTM Processing.REGULAR GRID");
 }
 

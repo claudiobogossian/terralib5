@@ -119,7 +119,7 @@ void WriteDefaultProjectFile(const QString& fileName)
 #else
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
 #endif
-  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
+  boost::property_tree::write_xml(fileName.toUtf8().data(), p, std::locale(), settings);
 }
 
 void CreateDefaultSettings()

@@ -400,7 +400,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButt
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -411,7 +411,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButt
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
   
   std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = m_ui->m_repositoryLineEdit->text().toStdString();
+  connInfo["URI"] = m_ui->m_repositoryLineEdit->text().toUtf8().data();
   
   m_outDataSourceInfo.reset(new te::da::DataSourceInfo);
   
@@ -445,7 +445,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   if (m_ui->m_maskRadioButton->isChecked())
     referenceLayer = getReferenceLayer();
   
-  m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
   
   
   //progress
@@ -518,7 +518,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setResolutionUnit(te
   
   for(int i = 0; i < m_ui->m_unitComboBox->count(); ++i)
   {
-    std::string name = m_ui->m_unitComboBox->itemText(i).toStdString();
+    std::string name = m_ui->m_unitComboBox->itemText(i).toUtf8().data();
     
     if(unit->getName() == name)
     {
@@ -681,12 +681,12 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::showSRS()
 bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::string& errors)
 {
   bool noErrors = true;
-  errors = tr("Consistency errors:").toStdString();
+  errors = tr("Consistency errors:").toUtf8().data();
   
   te::gm::Envelope env = getEnvelope();
   if(!env.isValid())
   {
-    errors += "\n - " + tr("Invalid bounding box").toStdString();
+    errors += "\n - " + std::string(tr("Invalid bounding box").toUtf8().data());
     noErrors = false;
   }
   
@@ -695,7 +695,7 @@ bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::strin
   {
     char txt[40];
     sprintf(txt,"%.8g",env.getWidth());
-    errors += "\n - " + tr("X resolution must be greater than 0 and smaller than the bounding box Width ").toStdString() + txt;
+    errors += "\n - " + std::string(tr("X resolution must be greater than 0 and smaller than the bounding box Width ").toUtf8().data()) + txt;
     noErrors = false;
   }
   
@@ -704,14 +704,14 @@ bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::strin
   {
     char txt[40];
     sprintf(txt,"%.8g",env.getHeight());
-    errors += "\n - " + tr("Y resolution must be greater than 0 and smaller than the bounding box Height ").toStdString() + txt;
+    errors += "\n - " + std::string(tr("Y resolution must be greater than 0 and smaller than the bounding box Height ").toUtf8().data()) + txt;
     noErrors = false;
   }
   
-  std::string name = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string name = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
   if (name.empty())
   {
-    errors += "\n - " + tr("Output layer name is empty").toStdString();
+    errors += "\n - " + std::string(tr("Output layer name is empty").toUtf8().data());
     noErrors = false;
   }
   
@@ -721,7 +721,7 @@ bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::strin
     if (!((referenceLayer->getSRID() >  0 && m_bbSRID > 0) ||
           (referenceLayer->getSRID() <= 0 && m_bbSRID <= 0)))
     {
-      errors += "\n - " + tr("Reference layer and output layer have incompatible SRSs. It is not possible to create cells using polygons as masks.").toStdString();
+      errors += "\n - " + std::string(tr("Reference layer and output layer have incompatible SRSs. It is not possible to create cells using polygons as masks.").toUtf8().data());
       noErrors = false;
     }
   }

@@ -28,9 +28,9 @@
 te::qt::plugins::rp::RasterizationAction::RasterizationAction(QMenu *menu, QMenu *popupMenu) :
   AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Rasterization...").toStdString(), "rasterization");
+  createAction(tr("Rasterization...").toUtf8().data(), "rasterization");
   m_action->setObjectName("Processing.Raster Processing.Rasterization");
-  //createPopUpAction(tr("Rasterization...").toStdString(), "rasterization");
+  //createPopUpAction(tr("Rasterization...").toUtf8().data(), "rasterization");
 }
 
 te::qt::plugins::rp::RasterizationAction::~RasterizationAction()

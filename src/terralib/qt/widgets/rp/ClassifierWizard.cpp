@@ -226,7 +226,7 @@ bool te::qt::widgets::ClassifierWizard::execute()
     c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
     QColor cWhite(Qt::white);
-    std::string colorWhiteStr = cWhite.name().toStdString();
+    std::string colorWhiteStr = cWhite.name().toUtf8().data();
 
     //added dummy color for values < than min values...
     c->addValue(new te::se::ParameterValue(colorWhiteStr));
@@ -239,7 +239,7 @@ bool te::qt::widgets::ClassifierWizard::execute()
     while(it != roiSetMap.end())
     {
       std::string color = it->second->getColor();
-      std::string range = QString::number(count).toStdString();
+      std::string range = QString::number(count).toUtf8().data();
       
 
       c->addThreshold(new te::se::ParameterValue(range));
@@ -247,7 +247,7 @@ bool te::qt::widgets::ClassifierWizard::execute()
 
       if(count == roiSetMap.size())
       {
-        std::string rangeNext = QString::number(count + 1).toStdString();
+        std::string rangeNext = QString::number(count + 1).toUtf8().data();
         c->addThreshold(new te::se::ParameterValue(rangeNext));
       }
 

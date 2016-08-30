@@ -243,7 +243,7 @@ te::rp::WisperFusion::InputParameters te::qt::widgets::FusionWizardPage::getInpu
 
       idx = cmbBox->currentIndex();
       te::rp::srf::SensorType st = (te::rp::srf::SensorType)cmbBox->itemData(idx).toInt();
-      std::string stName = cmbBox->itemText(idx).toStdString();
+      std::string stName = cmbBox->itemText(idx).toUtf8().data();
       algoInputParams.m_lowResRasterBandsSRFs.push_back(getSRFMap(st, stName));
 
       //algoInputParams.m_lowResRasterBandSensors.push_back((te::rp::srf::SensorType)cmbBox->itemData(idx).toInt());
@@ -254,7 +254,7 @@ te::rp::WisperFusion::InputParameters te::qt::widgets::FusionWizardPage::getInpu
 
   idx = m_ui->m_sensorTypeComboBox->currentIndex();
   te::rp::srf::SensorType st = (te::rp::srf::SensorType)m_ui->m_sensorTypeComboBox->itemData(idx).toInt();
-  std::string stName = m_ui->m_sensorTypeComboBox->itemText(idx).toStdString();
+  std::string stName = m_ui->m_sensorTypeComboBox->itemText(idx).toUtf8().data();
   algoInputParams.m_hiResRasterBandsSRFs = getSRFMap(st, stName);
 
   //algoInputParams.m_hiResRasterBandSensor = (te::rp::srf::SensorType)m_ui->m_sensorTypeComboBox->itemData(idx).toInt();
@@ -289,7 +289,7 @@ void te::qt::widgets::FusionWizardPage::onHighResSensorTypeActivated(int idx)
   }
 
   te::rp::srf::SensorType st = (te::rp::srf::SensorType)m_ui->m_sensorTypeComboBox->itemData(idx).toInt();
-  std::string stName = m_ui->m_sensorTypeComboBox->itemText(idx).toStdString();
+  std::string stName = m_ui->m_sensorTypeComboBox->itemText(idx).toUtf8().data();
 
   std::map<double, double> srf = getSRFMap(st, stName);
   std::map<double, double>::iterator it;
@@ -349,7 +349,7 @@ void te::qt::widgets::FusionWizardPage::onLowResSensorTypeActivated(int idx)
   }
 
   te::rp::srf::SensorType st = (te::rp::srf::SensorType)cmbBox->itemData(idx).toInt();
-  std::string stName = cmbBox->itemText(idx).toStdString();
+  std::string stName = cmbBox->itemText(idx).toUtf8().data();
 
   std::map<double, double> srf = getSRFMap(st, stName);
   std::map<double, double>::iterator it;

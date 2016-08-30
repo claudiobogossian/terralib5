@@ -85,7 +85,7 @@ void te::qt::widgets::PointPlacementPropertyItem::valueChanged(QtProperty* p, in
   {
     m_update = false;
 
-    m_pointPlacement->setRotation(new te::se::ParameterValue(QString::number(value).toStdString()));
+    m_pointPlacement->setRotation(new te::se::ParameterValue(QString::number(value).toUtf8().data()));
     
     emit pointPlacementChanged();
     m_update = true;
@@ -102,8 +102,8 @@ void te::qt::widgets::PointPlacementPropertyItem::valueChanged(QtProperty* p, co
     m_update = false;
 
     te::se::Displacement* disp = new te::se::Displacement();
-    disp->setDisplacementX(new te::se::ParameterValue(QString::number(value.width()).toStdString()));
-    disp->setDisplacementY(new te::se::ParameterValue(QString::number(value.height()).toStdString()));
+    disp->setDisplacementX(new te::se::ParameterValue(QString::number(value.width()).toUtf8().data()));
+    disp->setDisplacementY(new te::se::ParameterValue(QString::number(value.height()).toUtf8().data()));
 
     m_pointPlacement->setDisplacement(disp);
 
@@ -119,8 +119,8 @@ void te::qt::widgets::PointPlacementPropertyItem::valueChanged(QtProperty* p, co
     double y = value.height() / 100.;
 
     te::se::AnchorPoint* ap = new te::se::AnchorPoint();
-    ap->setAnchorPointX(new te::se::ParameterValue(QString::number(x).toStdString()));
-    ap->setAnchorPointY(new te::se::ParameterValue(QString::number(y).toStdString()));
+    ap->setAnchorPointX(new te::se::ParameterValue(QString::number(x).toUtf8().data()));
+    ap->setAnchorPointY(new te::se::ParameterValue(QString::number(y).toUtf8().data()));
 
     m_pointPlacement->setAnchorPoint(ap);
 

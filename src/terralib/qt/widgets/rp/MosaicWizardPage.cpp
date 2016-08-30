@@ -194,7 +194,7 @@ te::rp::TiePointsMosaic::InputParameters te::qt::widgets::MosaicWizardPage::getI
   algoInputParams.m_autoEqualize = m_ui->m_autoEqualizeCheckBox->isChecked();
   algoInputParams.m_useRasterCache = m_ui->m_rasterCacheCheckBox->isChecked();
 
-  algoInputParams.m_geomTransfName = m_ui->m_smGeomTransformComboBox->currentText().toStdString();
+  algoInputParams.m_geomTransfName = m_ui->m_smGeomTransformComboBox->currentText().toUtf8().data();
   algoInputParams.m_tiePointsLinkType = tpLinkType;
   algoInputParams.m_tiePoints = m_tiePoints;
 
@@ -226,7 +226,7 @@ te::rp::SequenceMosaic::InputParameters te::qt::widgets::MosaicWizardPage::getIn
   algoInputParams.m_autoEqualize = m_ui->m_autoEqualizeCheckBox->isChecked();
   algoInputParams.m_useRasterCache = m_ui->m_rasterCacheCheckBox->isChecked();
 
-  algoInputParams.m_geomTransfName = m_ui->m_smGeomTransformComboBox->currentText().toStdString();
+  algoInputParams.m_geomTransfName = m_ui->m_smGeomTransformComboBox->currentText().toUtf8().data();
   algoInputParams.m_tiePointsLocationBandIndex = m_ui->m_smRefBandComboBox->currentText().toInt();
   algoInputParams.m_minRequiredTiePointsCoveredAreaPercent = m_ui->m_smMinTiePointsSpinBox->value();
 

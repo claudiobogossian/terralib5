@@ -37,7 +37,7 @@
 te::qt::plugins::vp::SummarizationAction::SummarizationAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Summarization...").toStdString());
+  createAction(tr("Summarization...").toUtf8().data());
   m_action->setObjectName("Processing.Vector Processing.Sumarization");
 }
 

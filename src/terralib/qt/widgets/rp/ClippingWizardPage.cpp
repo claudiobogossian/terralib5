@@ -365,7 +365,7 @@ void te::qt::widgets::ClippingWizardPage::getLayerClipping(
   }
   if(m_ui->m_groupByRadioButton->isChecked())
   {
-    std::string propName = m_ui->m_layerAttrComboBox->currentText().toStdString();
+    std::string propName = m_ui->m_layerAttrComboBox->currentText().toUtf8().data();
 
     std::map<std::string, std::vector<te::gm::Geometry*> > groups;
     std::map<std::string, std::vector<te::gm::Geometry*> >::iterator itg;

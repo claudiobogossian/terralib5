@@ -237,7 +237,7 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
   std::auto_ptr<te::da::DataSet> dataSet = l->getData();
 
 //create datasource to save the output information
-  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::size_t idx = dataSetName.find(".");
   if (idx != std::string::npos)
@@ -247,7 +247,7 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
 
   if(m_toFile)
   {
-    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data());
   }
   else
   {
@@ -268,7 +268,7 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
     inParams->m_aggregType = te::sa::Both;
     inParams->m_nClusters = (std::size_t)m_ui->m_nClustersLineEdit->text().toInt();
     inParams->m_minPop = (std::size_t)m_ui->m_minPopLineEdit->text().toInt();
-    inParams->m_attrPop = m_ui->m_popComboBox->currentText().toStdString();
+    inParams->m_attrPop = m_ui->m_popComboBox->currentText().toUtf8().data();
   }
   else if(m_ui->m_clustersCheckBox->isChecked())
   {
@@ -279,7 +279,7 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
   {
     inParams->m_aggregType = te::sa::Population;
     inParams->m_minPop = (std::size_t)m_ui->m_minPopLineEdit->text().toInt();
-    inParams->m_attrPop = m_ui->m_popComboBox->currentText().toStdString();
+    inParams->m_attrPop = m_ui->m_popComboBox->currentText().toUtf8().data();
   }
 
   inParams->m_attrs = attrs;
@@ -373,7 +373,7 @@ void te::sa::SkaterDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
 
   m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
 
@@ -397,7 +397,7 @@ void te::sa::SkaterDialog::onGPMToolButtonClicked()
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
   //check if the selected gpm is valid for selected layer
-  std::string path = fileName.toStdString();
+  std::string path = fileName.toUtf8().data();
   std::string dataSetName = "";
   std::string attrName = "";
 
@@ -409,7 +409,7 @@ void te::sa::SkaterDialog::onGPMToolButtonClicked()
     return;
   }
 
-  if(m_ui->m_attrLinkComboBox->currentText().toStdString() != attrName)
+  if(m_ui->m_attrLinkComboBox->currentText().toUtf8().data() != attrName)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Invalid GPM file for selected Attr Link."));
     return;
@@ -477,17 +477,17 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::SkaterDialog::loadGPM(
     //load gpm
     QFileInfo file(m_ui->m_gpmLineEdit->text());
 
-    std::string extension = file.suffix().toStdString();
+    std::string extension = file.suffix().toUtf8().data();
 
     te::sa::SpatialWeightsExchanger swe;
 
     if(extension == "gal" || extension == "GAL")
     {
-      gpm.reset(swe.importFromGAL(m_ui->m_gpmLineEdit->text().toStdString(), ds.get()));
+      gpm.reset(swe.importFromGAL(m_ui->m_gpmLineEdit->text().toUtf8().data(), ds.get()));
     }
     else if(extension == "gwt" || extension == "GWT")
     {
-      gpm.reset(swe.importFromGWT(m_ui->m_gpmLineEdit->text().toStdString(), ds.get()));
+      gpm.reset(swe.importFromGWT(m_ui->m_gpmLineEdit->text().toUtf8().data(), ds.get()));
     }
   }
 

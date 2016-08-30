@@ -214,8 +214,8 @@ void te::qt::widgets::SRSManagerDialog::onSRSTreeWidgetItemClicked(QTreeWidgetIt
     return;
   }
   m_selSrsId.first = item->text(1).toUInt();  
-  m_selSrsId.second = std::string(item->text(2).toStdString());
-  m_ui->m_p4descPlainTextEdit->setPlainText(te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(m_selSrsId.first,std::string(item->text(2).toStdString())).c_str());
+  m_selSrsId.second = std::string(item->text(2).toUtf8().data());
+  m_ui->m_p4descPlainTextEdit->setPlainText(te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(m_selSrsId.first,std::string(item->text(2).toUtf8().data())).c_str());
 }
 
 void te::qt::widgets::SRSManagerDialog::onSRSRecentTableWidgetItemClicked(QTableWidgetItem* item)

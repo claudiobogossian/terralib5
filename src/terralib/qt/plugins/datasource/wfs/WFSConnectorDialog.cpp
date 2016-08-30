@@ -79,11 +79,11 @@ void te::qt::plugins::wfs::WFSConnectorDialog::set(const te::da::DataSourceInfoP
 
     std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
     if(it != connInfo.end())
-      m_ui->m_serverLineEdit->setText(QString::fromStdString(it->second));
+      m_ui->m_serverLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
-    m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString(m_datasource->getTitle()));
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
-    m_ui->m_dataSourceDescriptionTextEdit->setText(QString::fromStdString(m_datasource->getDescription()));
+    m_ui->m_dataSourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription().c_str()));
   }
 }
 
@@ -126,8 +126,8 @@ void te::qt::plugins::wfs::WFSConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_dataSourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_dataSourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
       m_datasource->setAccessDriver("WFS");
       m_datasource->setType("WFS");
     }
@@ -135,8 +135,8 @@ void te::qt::plugins::wfs::WFSConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_dataSourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_dataSourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
     }
   }
   catch(const std::exception& e)
@@ -215,5 +215,5 @@ void te::qt::plugins::wfs::WFSConnectorDialog::getConnectionInfo(std::map<std::s
   if(!url.startsWith("WFS:"))
     url.prepend("WFS:");
 
-  connInfo["URI"] = url.toStdString();
+  connInfo["URI"] = url.toUtf8().data();
 }

@@ -37,7 +37,7 @@
 
 te::qt::plugins::rp::FusionAction::FusionAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Fusion...").toStdString(), "fusao");
+  createAction(tr("Fusion...").toUtf8().data(), "fusao");
   m_action->setObjectName("Processing.Raster Processing.Fusion");
 }
 

@@ -38,7 +38,7 @@ void updateSummary(te::da::DataSet* dataSet, Ui::ScatterDataWidgetForm* ui)
 {
   ui->m_summaryComboBox->clear();
 
-  ui->m_summaryComboBox->addItem(QString::fromStdString("None"), QVariant(-1));
+  ui->m_summaryComboBox->addItem(QString::fromUtf8("None"), QVariant(-1));
   ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), QVariant(te::stat::MIN_VALUE));
   ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), QVariant(te::stat::MAX_VALUE));
   //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), QVariant(te::stat::COUNT));
@@ -72,8 +72,8 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
       for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
-        m_ui->m_propertyXComboBox->addItem(QString::fromStdString("Band: ") + item);
-        m_ui->m_propertyYComboBox->addItem(QString::fromStdString("Band: ") + item);
+        m_ui->m_propertyXComboBox->addItem(QString::fromUtf8("Band: ") + item);
+        m_ui->m_propertyYComboBox->addItem(QString::fromUtf8("Band: ") + item);
       }
     }
   else
@@ -83,7 +83,7 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
     {
       if((dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE) & (dataSet->getPropertyDataType(i) != te::dt::STRING_TYPE))
       {
-        item = QString::fromStdString(dataSet->getPropertyName(i));
+        item = QString::fromUtf8(dataSet->getPropertyName(i).c_str());
         m_ui->m_propertyXComboBox->addItem(item);
         m_ui->m_propertyYComboBox->addItem(item);
       }
@@ -121,8 +121,8 @@ te::qt::widgets::Scatter* te::qt::widgets::ScatterDataWidget::getScatter()
   {
 
     return te::qt::widgets::createScatter(m_dataSet.get(), m_dataType.get(),
-                                         te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyXComboBox->currentText().toStdString()),
-                                         te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyYComboBox->currentText().toStdString()), stat);
+                                         te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyXComboBox->currentText().toUtf8().data()),
+                                         te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyYComboBox->currentText().toUtf8().data()), stat);
   }
 
 }

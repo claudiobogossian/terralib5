@@ -40,7 +40,7 @@
 te::qt::plugins::vp::DifferenceAction::DifferenceAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Difference...").toStdString(), "vector-processing-difference");
+  createAction(tr("Difference...").toUtf8().data(), "vector-processing-difference");
   m_action->setObjectName("Processing.Vector Processing.Difference");
 }
 

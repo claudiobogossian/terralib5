@@ -65,15 +65,15 @@ void buidTypeMap(std::map<int, std::string>& typeMap)
 {
   typeMap.clear();
 
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::ARRAY_TYPE, QObject::tr("Array").toStdString()));
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, QObject::tr("Byte Array").toStdString()));
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, QObject::tr("Date and Time").toStdString()));
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toStdString()));
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, QObject::tr("Geometry").toStdString()));
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toStdString()));
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toStdString()));
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toStdString()));
-  typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::ARRAY_TYPE, QObject::tr("Array").toUtf8().data()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, QObject::tr("Byte Array").toUtf8().data()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, QObject::tr("Date and Time").toUtf8().data()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toUtf8().data()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, QObject::tr("Geometry").toUtf8().data()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toUtf8().data()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toUtf8().data()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toUtf8().data()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toUtf8().data()));
 }
 
 te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std::string defaultValue = "", bool isRequired = false, bool isAutoNumber = true)
@@ -137,7 +137,7 @@ void fillComboBox(std::map<int, std::string> typeMap, QComboBox* box)
 {
   for(std::map<int, std::string>::iterator it = typeMap.begin(); it !=  typeMap.end(); ++it)
   {
-    box->addItem(QString::fromStdString(it->second), QVariant(it->first));
+    box->addItem(QString::fromUtf8(it->second.c_str()), QVariant(it->first));
   }
 }
 
@@ -222,8 +222,8 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
     te::gm::GeometryProperty* newGeom;
 
     std::vector<std::string> names;
-    names.push_back(m_ui->m_xAxisComboBox->currentText().toStdString());
-    names.push_back(m_ui->m_yAxisComboBox->currentText().toStdString());
+    names.push_back(m_ui->m_xAxisComboBox->currentText().toUtf8().data());
+    names.push_back(m_ui->m_yAxisComboBox->currentText().toUtf8().data());
     newGeom = new te::gm::GeometryProperty("OGR_POINT", true, new std::string());
     newGeom->setGeometryType(te::gm::PointType);
 
@@ -233,7 +233,7 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_dsConverter->getResult());
 
   if(gp && !m_ui->m_sridLineEdit->text().isEmpty())
-    gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+    gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toUtf8().data()));
 
   return m_dsConverter;
 }
@@ -263,11 +263,11 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
 
     //Getting the connection info
-    std::string ogrInfo("connection_string=" + fileName.toStdString());
+    std::string ogrInfo("connection_string=" + std::string(fileName.toUtf8().data()));
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = fileName.toStdString();
+    connInfo["URI"] = fileName.toUtf8().data();
 
-    boost::filesystem::path uri(fileName.toStdString());
+    boost::filesystem::path uri(fileName.toUtf8().data());
     std::string file = uri.stem().string();
 
     //Creating a DataSource
@@ -277,7 +277,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
     dsInfo->setConnInfo(connInfo);
     dsInfo->setId(boost::uuids::to_string(u));
-    dsInfo->setTitle(fileName.toStdString());
+    dsInfo->setTitle(fileName.toUtf8().data());
     dsInfo->setDescription("");
     dsInfo->setAccessDriver("OGR");
     dsInfo->setType("OGR");
@@ -340,7 +340,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
       //A checkbox used to know if the user wants to import that row's property
       QCheckBox* impCheck = new QCheckBox();
-      impCheck->setText(QString::fromStdString(propName));
+      impCheck->setText(QString::fromUtf8(propName.c_str()));
       impCheck->setCheckState(Qt::Checked);
 
       if(m_dataType->getProperty(t)->getType() == te::dt::GEOMETRY_TYPE)
@@ -428,8 +428,8 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
       if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || 
                 type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
       {
-        m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
-        m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
+        m_ui->m_xAxisComboBox->addItem(QString::fromUtf8(propName.c_str()));
+        m_ui->m_yAxisComboBox->addItem(QString::fromUtf8(propName.c_str()));
       }
     }
     emit itemChanged();
@@ -475,11 +475,11 @@ void te::qt::widgets::DatapPropertiesWidget::onPropertyTypeChanged(int row)
   //Acquiring the name of the cconfigured property and it's new type.
   QCheckBox* check = dynamic_cast<QCheckBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(row, 0));
   QComboBox* box = dynamic_cast<QComboBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(row, 1));
-  std::string propName = check->text().toStdString();
+  std::string propName = check->text().toUtf8().data();
   int type = box->itemData(box->currentIndex()).toInt();
 
   //Searching the property to see if it is already in the comboBoxes
-  int xyAxis = m_ui->m_xAxisComboBox->findText(QString::fromStdString(propName));
+  int xyAxis = m_ui->m_xAxisComboBox->findText(QString::fromUtf8(propName.c_str()));
 
   //Checking wheather the property needs to be added to or removed from the xAxisoOmboBox and yAxisoCOmboBox.
   //Their values will always be the same.
@@ -487,8 +487,8 @@ void te::qt::widgets::DatapPropertiesWidget::onPropertyTypeChanged(int row)
   {
     if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
     {
-      m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
-      m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
+      m_ui->m_xAxisComboBox->addItem(QString::fromUtf8(propName.c_str()));
+      m_ui->m_yAxisComboBox->addItem(QString::fromUtf8(propName.c_str()));
     }
   }
   else

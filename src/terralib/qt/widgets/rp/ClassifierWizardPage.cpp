@@ -489,7 +489,7 @@ void te::qt::widgets::ClassifierWizardPage::onRoiSetChanged(te::cl::ROISet* rs)
       itemColor->setFlags(Qt::ItemIsEnabled);
       m_ui->m_mapTableWidget->setItem(newrow, 0, itemColor);
 
-      QTableWidgetItem* itemLabel = new QTableWidgetItem(QString::fromStdString(label));
+      QTableWidgetItem* itemLabel = new QTableWidgetItem(QString::fromUtf8(label.c_str()));
       itemLabel->setFlags(Qt::ItemIsEnabled);
       m_ui->m_mapTableWidget->setItem(newrow, 1, itemLabel);
 
@@ -538,7 +538,7 @@ void te::qt::widgets::ClassifierWizardPage::onRoiSetChanged(te::cl::ROISet* rs)
       itemColor->setFlags(Qt::ItemIsEnabled);
       m_ui->m_samTableWidget->setItem(newrow, 0, itemColor);
 
-      QTableWidgetItem* itemLabel = new QTableWidgetItem(QString::fromStdString(label));
+      QTableWidgetItem* itemLabel = new QTableWidgetItem(QString::fromUtf8(label.c_str()));
       itemLabel->setFlags(Qt::ItemIsEnabled);
       m_ui->m_samTableWidget->setItem(newrow, 1, itemLabel);
 

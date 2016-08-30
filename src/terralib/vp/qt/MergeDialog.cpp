@@ -190,7 +190,7 @@ void te::vp::MergeDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -233,7 +233,7 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::string firstSourceId = m_firstSelectedLayer->getDataSourceId();
   std::string secondSourceId = m_secondSelectedLayer->getDataSourceId();
@@ -292,7 +292,7 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
 
     if (m_toFile)
     {
-      ogrUri = m_ui->m_repositoryLineEdit->text().toStdString();
+      ogrUri = m_ui->m_repositoryLineEdit->text().toUtf8().data();
 
       if (boost::filesystem::exists(ogrUri))
       {
@@ -558,11 +558,11 @@ std::vector<std::pair<std::string, std::string> > te::vp::MergeDialog::getTableP
 
   for (std::size_t i = 0; i < rowCount; ++i)
   {
-    std::string fp = m_ui->m_attributeTableWidget->item((int)i, 0)->text().toStdString();;
+    std::string fp = m_ui->m_attributeTableWidget->item((int)i, 0)->text().toUtf8().data();;
 
     QComboBox* cb = dynamic_cast<QComboBox*>(m_ui->m_attributeTableWidget->cellWidget((int)i, 1));
 
-    std::string sp = cb->currentText().toStdString();
+    std::string sp = cb->currentText().toUtf8().data();
 
     result.push_back(std::pair<std::string, std::string>(fp, sp));
   }

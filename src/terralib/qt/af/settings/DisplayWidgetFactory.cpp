@@ -50,7 +50,7 @@ te::qt::af::AbstractSettingWidget* te::qt::af::DisplayWidgetFactory::build()
 }
 
 te::qt::af::DisplayWidgetFactory::DisplayWidgetFactory() : 
-te::qt::af::SettingsWidgetsFactory(QObject::tr("Display").toStdString())
+te::qt::af::SettingsWidgetsFactory(QObject::tr("Display").toUtf8().data())
 {
 
 }

@@ -127,7 +127,7 @@ void te::qt::plugins::sqlite::SQLiteCreatorDialog::getConnectionInfo(std::map<st
   if(qstr.isEmpty())
     connInfo["SQLITE_FILE"] = ":memory:";
   else
-    connInfo["SQLITE_FILE"] = qstr.toStdString();
+    connInfo["SQLITE_FILE"] = qstr.toUtf8().data();
 
   connInfo["SQLITE_CREATE_INTERMEDIATE_DIR"] = m_ui->m_allowIntermediateDirCheckBox->isChecked() ? "TRUE" : "FALSE";
 

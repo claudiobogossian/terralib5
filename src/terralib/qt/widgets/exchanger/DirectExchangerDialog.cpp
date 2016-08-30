@@ -187,7 +187,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     //create data source
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = m_ui->m_dataSetLineEdit->text().toStdString();
+    connInfo["URI"] = m_ui->m_dataSetLineEdit->text().toUtf8().data();
 
     std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make(m_outputDataSourceType);
     dsOGR->setConnectionInfo(connInfo);
@@ -199,7 +199,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
 
-    boost::filesystem::path uri(m_ui->m_dataSetLineEdit->text().toStdString());
+    boost::filesystem::path uri(m_ui->m_dataSetLineEdit->text().toUtf8().data());
 
     std::string val = uri.stem().string();
 
@@ -218,7 +218,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
       }
       else
       {
-        throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+        throw te::common::Exception(tr("Layer name invalid for output datasource!").toUtf8().data());
       }
     }
 
@@ -265,7 +265,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
           ++it;
         }
 
-        throw te::common::Exception(err.toStdString());
+        throw te::common::Exception(err.toUtf8().data());
       }
     }
 
@@ -397,7 +397,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
     
-    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
+    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toUtf8().data());
 
     // Check dataset name
     if(!targetDSPtr->isDataSetNameValid(dsTypeResult->getName()))
@@ -412,7 +412,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
       }
       else
       {
-        throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+        throw te::common::Exception(tr("Layer name invalid for output datasource!").toUtf8().data());
       }
     }
 
@@ -459,7 +459,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
           ++it;
         }
 
-        throw te::common::Exception(err.toStdString());
+        throw te::common::Exception(err.toUtf8().data());
       }
     }
 
@@ -494,7 +494,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
       {
         te::da::Index* idx = new te::da::Index(dsTypeResult);
 
-        std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + p->getName() + "_idx";
+        std::string name = std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data()) + "_" + p->getName() + "_idx";
 
         boost::replace_all(name, ".", "_");
 
@@ -514,7 +514,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
       {
         te::da::PrimaryKey* pk = new te::da::PrimaryKey(dsTypeResult);
 
-        std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + dsType->getPrimaryKey()->getName() + "_pk";
+        std::string name = std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data()) + "_" + dsType->getPrimaryKey()->getName() + "_pk";
 
         boost::replace_all(name, ".", "_");
 
@@ -547,7 +547,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
     if (isLinked)
     {
-      std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_id";
+      std::string name = std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data()) + "_id";
 
       te::dt::SimpleProperty* p = new te::dt::SimpleProperty(name, te::dt::INT32_TYPE);
       p->setAutoNumber(true);
@@ -594,7 +594,7 @@ void te::qt::widgets::DirectExchangerDialog::onDataSourceTypeActivated(int index
 {
   QString value = m_ui->m_dsTypeComboBox->itemData(index).toString();
 
-  m_outputDataSourceType = value.toStdString();
+  m_outputDataSourceType = value.toUtf8().data();
 
   if(m_outputDataSourceType == "POSTGIS")
   {
@@ -744,7 +744,7 @@ void te::qt::widgets::DirectExchangerDialog::setOutputDataSources()
     if (dataSourceName == "POSTGIS" || dataSourceName == "ADO" || dataSourceName == "OGR")
     {
       QIcon icon = it->second->getIcon(DataSourceType::ICON_DATASOURCE_SMALL);
-      QString title = QString::fromStdString(it->second->getTitle());
+      QString title = QString::fromUtf8(it->second->getTitle().c_str());
 
       m_ui->m_dsTypeComboBox->addItem(icon, title, QVariant(dataSourceName.c_str()));
     }

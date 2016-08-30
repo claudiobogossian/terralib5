@@ -74,7 +74,7 @@ TerraViewController::TerraViewController(te::qt::af::ApplicationController* app,
 {
   te::common::SystemApplicationSettings::getInstance().load(appConfigFile);
 
-  m_appProjectExtension = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension"));
+  m_appProjectExtension = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension").c_str());
 }
 
 TerraViewController::~TerraViewController()

@@ -448,7 +448,7 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       {
         std::string value = m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
 
-        return QString::fromStdString(value);
+        return QString::fromUtf8(value.c_str());
       }
 
       if(m_dataset->isNull(index.column()))
@@ -458,7 +458,7 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       {
         std::string value = m_dataset->getString(index.column());
 
-        return QString::fromStdString(value);
+        return QString::fromUtf8(value.c_str());
       }
       else
         return m_dataset->getAsString(index.column(), 6).c_str();
@@ -562,7 +562,7 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
           value.toInt(&ok);
 
           if(!ok)
-            throw te::common::Exception(tr("Invalid int value.").toStdString());
+            throw te::common::Exception(tr("Invalid int value.").toUtf8().data());
         }
         break;
 
@@ -574,7 +574,7 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
           value.toDouble(&ok);
 
           if(!ok)
-            throw te::common::Exception(tr("Invalid double value.").toStdString());
+            throw te::common::Exception(tr("Invalid double value.").toUtf8().data());
         }
         break;
       }
@@ -584,7 +584,7 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
 
       if(curV != newV)
       {
-        std::string out = newV.toStdString();
+        std::string out = newV.toUtf8().data();
         m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), out);
       }
 

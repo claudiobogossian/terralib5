@@ -42,7 +42,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 te::qt::plugins::mnt::ShowValuesAction::ShowValuesAction(QMenu* menu)
   : te::qt::plugins::mnt::AbstractAction(menu)
 {
-  createAction(tr("Show Values").toStdString(), "mnt-processing-show values");
+  createAction(tr("Show Values").toUtf8().data(), "mnt-processing-show values");
   m_action->setObjectName("Processing.DTM Processing.SHOW VALUES");
   m_status = false;
   m_readpixel = 0;

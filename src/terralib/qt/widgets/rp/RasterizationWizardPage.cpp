@@ -180,7 +180,7 @@ void te::qt::widgets::RasterizationWizardPage::onApplyPushButtonClicked()
 
   int prec = m_ui->m_precSpinBox->value();
 
-  std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
+  std::string attr = m_ui->m_attrComboBox->currentText().toUtf8().data();
   int attrIdx = m_ui->m_attrComboBox->currentIndex();
   int attrType = m_ui->m_attrComboBox->itemData(attrIdx).toInt();
 
@@ -329,7 +329,7 @@ void te::qt::widgets::RasterizationWizardPage::onLoadPushButtonClicked()
   m_ui->m_tableWidget->setRowCount(0);
 
   boost::property_tree::ptree pt;
-  boost::property_tree::json_parser::read_json(fileName.toStdString(), pt);
+  boost::property_tree::json_parser::read_json(fileName.toUtf8().data(), pt);
 
   boost::property_tree::ptree legend = pt.get_child("Legend");
 
@@ -395,7 +395,7 @@ void te::qt::widgets::RasterizationWizardPage::onSavePushButtonClicked()
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
     QString(), tr("LEG (*.leg *.LEG);;"), 0, QFileDialog::DontConfirmOverwrite);
 
-  saveLegend(fileName.toStdString());
+  saveLegend(fileName.toUtf8().data());
 }
 
 void te::qt::widgets::RasterizationWizardPage::getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues)
@@ -440,7 +440,7 @@ void te::qt::widgets::RasterizationWizardPage::getLinkedDataAsString(std::vector
 
   //std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  //std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
+  //std::string function = m_ui->m_summaryComboBox->currentText().toUtf8().data();
   //std::vector<std::string> poid;
   //size_t pksize = 0;
   //te::map::QueryLayer* qlayer = 0;
@@ -677,7 +677,7 @@ void te::qt::widgets::RasterizationWizardPage::updateUi(bool loadColorBar)
     //class
     {
       //Value
-      QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getValue()));
+      QTableWidgetItem* item = new QTableWidgetItem(QString::fromUtf8(gi->getValue().c_str()));
       item->setFlags(Qt::ItemIsEnabled);
       m_ui->m_tableWidget->setItem(newrow, 0, item);
     }
@@ -907,7 +907,7 @@ void te::qt::widgets::RasterizationWizardPage::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -922,12 +922,12 @@ std::string te::qt::widgets::RasterizationWizardPage::getRepositoryName()
   if (m_ui->m_repositoryLineEdit->text().isEmpty())
     return "";
 
-  return m_ui->m_repositoryLineEdit->text().toStdString();
+  return m_ui->m_repositoryLineEdit->text().toUtf8().data();
 }
 
 std::string te::qt::widgets::RasterizationWizardPage::getAttributeName()
 {
-  return m_ui->m_attrComboBox->currentText().toStdString();
+  return m_ui->m_attrComboBox->currentText().toUtf8().data();
 }
 
 std::map<std::string, std::vector<int> > te::qt::widgets::RasterizationWizardPage::getInformations()
@@ -945,7 +945,7 @@ std::map<std::string, std::vector<int> > te::qt::widgets::RasterizationWizardPag
     v.push_back(m_ui->m_tableWidget->item(i, 2)->text().toInt());
     v.push_back(m_ui->m_tableWidget->item(i, 3)->text().toInt());
 
-    result[m_ui->m_tableWidget->item(i, 0)->text().toStdString()] = v;
+    result[m_ui->m_tableWidget->item(i, 0)->text().toUtf8().data()] = v;
   }
 
   return result;
@@ -1039,8 +1039,8 @@ void te::qt::widgets::RasterizationWizardPage::saveLegend(const std::string& pat
   boost::property_tree::ptree pt;
   boost::property_tree::ptree legend;
 
-  std::string attrName = m_ui->m_attrComboBox->currentText().toStdString();
-  std::string precision = m_ui->m_precSpinBox->text().toStdString();
+  std::string attrName = m_ui->m_attrComboBox->currentText().toUtf8().data();
+  std::string precision = m_ui->m_precSpinBox->text().toUtf8().data();
 
   legend.add("Attribute", attrName);
   legend.add("Precision", precision);
@@ -1050,10 +1050,10 @@ void te::qt::widgets::RasterizationWizardPage::saveLegend(const std::string& pat
   for (std::size_t i = 0; i < m_ui->m_tableWidget->rowCount(); ++i)
   {
     std::string idx = boost::lexical_cast<std::string>(i + 1);
-    std::string className = m_ui->m_tableWidget->item(i, 0)->text().toStdString();
-    std::string r = m_ui->m_tableWidget->item(i, 1)->text().toStdString();
-    std::string g = m_ui->m_tableWidget->item(i, 2)->text().toStdString();
-    std::string b = m_ui->m_tableWidget->item(i, 3)->text().toStdString();
+    std::string className = m_ui->m_tableWidget->item(i, 0)->text().toUtf8().data();
+    std::string r = m_ui->m_tableWidget->item(i, 1)->text().toUtf8().data();
+    std::string g = m_ui->m_tableWidget->item(i, 2)->text().toUtf8().data();
+    std::string b = m_ui->m_tableWidget->item(i, 3)->text().toUtf8().data();
 
     boost::property_tree::ptree item;
     item.add("ClassName", className);

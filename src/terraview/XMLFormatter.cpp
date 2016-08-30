@@ -31,8 +31,8 @@
 
 void XMLFormatter::format(ProjectMetadata* p, const std::list<te::map::AbstractLayerPtr>& layers, const bool& encode)
 {
-  p->m_author = QString::fromStdString(te::qt::af::XMLFormatter::format(p->m_author.toStdString(), encode).c_str());
-  p->m_title = QString::fromStdString(te::qt::af::XMLFormatter::format(p->m_title.toStdString(), encode));
+  p->m_author = QString::fromUtf8(te::qt::af::XMLFormatter::format(p->m_author.toUtf8().data(), encode).c_str());
+  p->m_title = QString::fromUtf8(te::qt::af::XMLFormatter::format(p->m_title.toUtf8().data(), encode).c_str());
 
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
     te::qt::af::XMLFormatter::format((*it).get(), encode);

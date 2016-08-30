@@ -161,7 +161,7 @@ void te::sa::SpatialStatisticsDialog::onGPMToolButtonClicked()
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
   //check if the selected gpm is valid for selected layer
-  std::string path = fileName.toStdString();
+  std::string path = fileName.toUtf8().data();
   std::string dataSetName = "";
   std::string attrName = "";
 
@@ -173,7 +173,7 @@ void te::sa::SpatialStatisticsDialog::onGPMToolButtonClicked()
     return;
   }
 
-  if(m_ui->m_attrLinkComboBox->currentText().toStdString() != attrName)
+  if(m_ui->m_attrLinkComboBox->currentText().toUtf8().data() != attrName)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Invalid GPM file for selected Attr Link."));
     return;
@@ -231,7 +231,7 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
 
   std::string attrLink = gpm->getAttributeName();
 
-  std::string attrName = m_ui->m_attrIdComboBox->currentText().toStdString();
+  std::string attrName = m_ui->m_attrIdComboBox->currentText().toUtf8().data();
 
   int type = m_ui->m_attrIdComboBox->itemData(m_ui->m_attrIdComboBox->currentIndex()).toInt();
 
@@ -376,7 +376,7 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
   }
 
   //save spatial statistics calculated into a new dataset
-  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::size_t idx = dataSetName.find(".");
   if (idx != std::string::npos)
@@ -386,7 +386,7 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
 
   if(m_toFile)
   {
-    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data());
   }
   else
   {
@@ -491,17 +491,17 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::SpatialStatisticsDialo
     //load gpm
     QFileInfo file(m_ui->m_gpmLineEdit->text());
 
-    std::string extension = file.suffix().toStdString();
+    std::string extension = file.suffix().toUtf8().data();
 
     te::sa::SpatialWeightsExchanger swe;
 
     if(extension == "gal" || extension == "GAL")
     {
-      gpm.reset(swe.importFromGAL(m_ui->m_gpmLineEdit->text().toStdString(), ds.get()));
+      gpm.reset(swe.importFromGAL(m_ui->m_gpmLineEdit->text().toUtf8().data(), ds.get()));
     }
     else if(extension == "gwt" || extension == "GWT")
     {
-      gpm.reset(swe.importFromGWT(m_ui->m_gpmLineEdit->text().toStdString(), ds.get()));
+      gpm.reset(swe.importFromGWT(m_ui->m_gpmLineEdit->text().toUtf8().data(), ds.get()));
     }
   }
 
@@ -540,7 +540,7 @@ void te::sa::SpatialStatisticsDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
 
   m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
 

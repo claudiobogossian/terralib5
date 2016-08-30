@@ -80,12 +80,12 @@ te::mnt::ProfileResultDialog::ProfileResultDialog(
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
   chartStyle->setTitle(tittle);
-  chartStyle->setAxisX(QString::fromStdString("Distance (m)"));
+  chartStyle->setAxisX(QString::fromUtf8("Distance (m)"));
   chartStyle->setAxisY(yaxis);
   chartStyle->setGridChecked(true);
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(this->parentWidget(), QString::fromStdString("Profile"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(this->parentWidget(), QString::fromUtf8("Profile"), chartStyle);
   chartDisplay->adjustDisplay();
 
   te::qt::widgets::ChartDisplayWidget* displayWidget = 0;

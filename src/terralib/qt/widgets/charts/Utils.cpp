@@ -767,12 +767,12 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createScatterDisplay(te::d
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
-  chartStyle->setTitle(QString::fromStdString("Scatter"));
-  chartStyle->setAxisX(QString::fromStdString(dataset->getPropertyName(propX)));
-  chartStyle->setAxisY(QString::fromStdString(dataset->getPropertyName(propY)));
+  chartStyle->setTitle(QString::fromUtf8("Scatter"));
+  chartStyle->setAxisX(QString::fromUtf8(dataset->getPropertyName(propX).c_str()));
+  chartStyle->setAxisY(QString::fromUtf8(dataset->getPropertyName(propY).c_str()));
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromUtf8("Scatter"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
 
@@ -1020,12 +1020,12 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te:
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
-  chartStyle->setTitle(QString::fromStdString("Histogram"));
-  chartStyle->setAxisX(QString::fromStdString(dataset->getPropertyName(propId)));
-  chartStyle->setAxisY(QString::fromStdString("Frequency"));
+  chartStyle->setTitle(QString::fromUtf8("Histogram"));
+  chartStyle->setAxisX(QString::fromUtf8(dataset->getPropertyName(propId).c_str()));
+  chartStyle->setAxisY(QString::fromUtf8("Frequency"));
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromUtf8("Histogram"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
 
@@ -1043,12 +1043,12 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te:
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
-  chartStyle->setTitle(QString::fromStdString("Histogram"));
-  chartStyle->setAxisX(QString::fromStdString(summary + ": " + dataset->getPropertyName(propId)));
-  chartStyle->setAxisY(QString::fromStdString("Frequency"));
+  chartStyle->setTitle(QString::fromUtf8("Histogram"));
+  chartStyle->setAxisX(QString::fromUtf8((summary + ": " + dataset->getPropertyName(propId)).c_str()));
+  chartStyle->setAxisY(QString::fromUtf8("Frequency"));
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromUtf8("Histogram"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
 
@@ -1203,13 +1203,13 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createNormalDistribution(t
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
-  chartStyle->setTitle(QString::fromStdString("Normal Probability: " + dataset->getPropertyName(propId)));
-  chartStyle->setAxisX( QString::fromStdString(dataset->getPropertyName(propId)));
-  chartStyle->setAxisY(QString::fromStdString("Probability"));
+  chartStyle->setTitle(QString::fromUtf8(("Normal Probability: " + dataset->getPropertyName(propId)).c_str()));
+  chartStyle->setAxisX(QString::fromUtf8(dataset->getPropertyName(propId).c_str()));
+  chartStyle->setAxisY(QString::fromUtf8("Probability"));
   chartStyle->setGridChecked(true);
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Normal Distribution"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromUtf8("Normal Distribution"), chartStyle);
   chartDisplay->adjustDisplay();
   baseCurve->attach(chartDisplay);
   normalCurve->attach(chartDisplay);

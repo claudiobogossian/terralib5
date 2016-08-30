@@ -87,9 +87,9 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::set(const te::da::DataSource
   {
     setConnectionInfo(m_datasource->getConnInfo());
 
-    m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString(m_datasource->getTitle()));
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
-    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromStdString(m_datasource->getDescription()));
+    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription().c_str()));
   }
 }
 
@@ -113,7 +113,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
     if(title.isEmpty())
-      title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_databaseComboBox->currentText().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
+      title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromUtf8("@") + m_ui->m_databaseComboBox->currentText().trimmed() + QString::fromUtf8("@") + m_ui->m_userNameLineEdit->text().trimmed();
 
     if(m_datasource.get() == 0)
     {
@@ -128,8 +128,8 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toUtf8().data());
       m_datasource->setAccessDriver("POSTGIS");
       m_datasource->setType("POSTGIS");
     }
@@ -137,8 +137,8 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(getConnectionInfo(m_ui->m_savePasswordCheckBox->isChecked()));
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toUtf8().data());
     }
   }
   catch(const std::exception& e)
@@ -204,19 +204,19 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISConnectorDialog
   QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_HOST"] = qstr.toStdString();
+    connInfo["PG_HOST"] = qstr.toUtf8().data();
 
 // get port
   qstr = m_ui->m_portLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_PORT"] = qstr.toStdString();
+    connInfo["PG_PORT"] = qstr.toUtf8().data();
 
 // get dbname
   qstr = m_ui->m_databaseComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_DB_NAME"] = qstr.toStdString();
+    connInfo["PG_DB_NAME"] = qstr.toUtf8().data();
 
 // get client encoding
   connInfo["PG_CLIENT_ENCODING"] = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
@@ -225,7 +225,7 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISConnectorDialog
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_USER"] = qstr.toStdString();
+    connInfo["PG_USER"] = qstr.toUtf8().data();
 
   if(getPrivateKeys)
   {
@@ -233,14 +233,14 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISConnectorDialog
     qstr = m_ui->m_passwordLineEdit->text().trimmed();
   
     if(!qstr.isEmpty())
-      connInfo["PG_PASSWORD"] = qstr.toStdString();
+      connInfo["PG_PASSWORD"] = qstr.toUtf8().data();
   }
 
 // get table info
   qstr = m_ui->m_tablesToHideLineEdit->text().trimmed();
 
   if(!qstr.isEmpty())
-    connInfo["PG_HIDE_TABLES"] = qstr.toStdString();
+    connInfo["PG_HIDE_TABLES"] = qstr.toUtf8().data();
 
   connInfo["PG_HIDE_SPATIAL_METADATA_TABLES"] = m_ui->m_hideMetadataTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
 
@@ -250,25 +250,25 @@ std::map<std::string, std::string> te::qt::plugins::pgis::PostGISConnectorDialog
   qstr = m_ui->m_connectTimeoutSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_CONNECT_TIMEOUT"] = qstr.toStdString();
+    connInfo["PG_CONNECT_TIMEOUT"] = qstr.toUtf8().data();
 
 // get MinPoolSize
   qstr = m_ui->m_minPoolSizeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_MIN_POOL_SIZE"] = qstr.toStdString();
+    connInfo["PG_MIN_POOL_SIZE"] = qstr.toUtf8().data();
 
 // get MaxPoolSize
   qstr = m_ui->m_maxPoolSizeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_MAX_POOL_SIZE"] = qstr.toStdString();
+    connInfo["PG_MAX_POOL_SIZE"] = qstr.toUtf8().data();
 
 // get options
   qstr = m_ui->m_optionsLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_OPTIONS"] = qstr.toStdString();
+    connInfo["PG_OPTIONS"] = qstr.toUtf8().data();
 
   return connInfo;
 }
@@ -279,29 +279,29 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std:
   std::map<std::string, std::string>::const_iterator itend = connInfo.end();
 
   if(it != itend)
-    m_ui->m_hostNameLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_hostNameLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
   it = connInfo.find("PG_HOST_ADDR");
 
   if(it != itend)
-    m_ui->m_hostNameLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_hostNameLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
   it = connInfo.find("PG_PORT");
 
   if(it != itend)
-    m_ui->m_portLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_portLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
   it = connInfo.find("PG_DB_NAME");
 
   if(it != itend)
   {
-    int pos = m_ui->m_databaseComboBox->findText(QString::fromStdString(it->second));
+    int pos = m_ui->m_databaseComboBox->findText(QString::fromUtf8(it->second.c_str()));
 
     if(pos != -1)
       m_ui->m_databaseComboBox->setCurrentIndex(pos);
     else
     {
-      m_ui->m_databaseComboBox->addItem(QString::fromStdString(it->second));
+      m_ui->m_databaseComboBox->addItem(QString::fromUtf8(it->second.c_str()));
       m_ui->m_databaseComboBox->setCurrentIndex(0);
     }
   }
@@ -309,12 +309,12 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std:
   it = connInfo.find("PG_USER");
 
   if(it != itend)
-    m_ui->m_userNameLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_userNameLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
   it = connInfo.find("PG_PASSWORD");
 
   if(it != itend)
-    m_ui->m_passwordLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_passwordLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
   it = connInfo.find("PG_CONNECT_TIMEOUT");
 
@@ -334,7 +334,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std:
   it = connInfo.find("PG_OPTIONS");
 
   if(it != itend)
-    m_ui->m_optionsLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_optionsLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
   it = connInfo.find("PG_HIDE_SPATIAL_METADATA_TABLES");
 
@@ -347,7 +347,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std:
   it = connInfo.find("PG_HIDE_TABLES");
 
   if(it != itend)
-    m_ui->m_tablesToHideLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_tablesToHideLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 }
 
 void te::qt::plugins::pgis::PostGISConnectorDialog::advancedConnectionOptionsCheckBoxToggled(bool t)
@@ -366,7 +366,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
       std::string curDb = "";
       
       if(!m_ui->m_databaseComboBox->currentText().isEmpty())
-        curDb = m_ui->m_databaseComboBox->currentText().toStdString();
+        curDb = m_ui->m_databaseComboBox->currentText().toUtf8().data();
 
       m_ui->m_databaseComboBox->clear();
 

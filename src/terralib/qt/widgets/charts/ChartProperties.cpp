@@ -79,7 +79,7 @@ te::qt::widgets::ChartProperties::ChartProperties(te::qt::widgets::ChartDisplayW
   m_ui->m_componentsListWidget->setFocus();
   m_ui->m_tabWidget->clear();
   m_curComp = te::qt::widgets::ChartWidgetFactory::make("Chart Style", m_ui->m_tabWidget);
-  m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString("Chart Style"));
+  m_ui->m_tabWidget->addTab(m_curComp, QString::fromUtf8("Chart Style"));
   m_curComp->setDisplay(m_chartWidget->getDisplay());
   m_ui->m_componentsListWidget->setCurrentRow(0);
   m_ui->m_helpPushButton->setPageReference("widgets/charts/style/style.html");
@@ -95,13 +95,13 @@ te::qt::widgets::ChartProperties::~ChartProperties()
 
 void te::qt::widgets::ChartProperties::onItemClicked(QListWidgetItem * current) 
 {
-  std::string value = current->text().toStdString();
+  std::string value = current->text().toUtf8().data();
   delete m_curComp;
   m_curComp = te::qt::widgets::ChartWidgetFactory::make(value, m_ui->m_tabWidget);
   m_curComp->setChart(m_chartWidget->getChart());
   m_curComp->setDisplay(m_chartWidget->getDisplay());
   m_ui->m_tabWidget->clear();
-  m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString(value));
+  m_ui->m_tabWidget->addTab(m_curComp, QString::fromUtf8(value.c_str()));
   m_curComp->show();
 }
 

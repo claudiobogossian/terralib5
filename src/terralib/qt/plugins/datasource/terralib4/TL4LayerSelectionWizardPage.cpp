@@ -90,7 +90,7 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Layers(std::
 {
   for(std::size_t i = 0; i < layers.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(getImage(LAYER), QString::fromStdString(layers[i]), m_ui->m_layersListWidget, LAYER);
+    QListWidgetItem* item = new QListWidgetItem(getImage(LAYER), QString::fromUtf8(layers[i].c_str()), m_ui->m_layersListWidget, LAYER);
     item->setCheckState(Qt::Checked);
     m_ui->m_layersListWidget->addItem(item);
   }
@@ -100,10 +100,10 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4RasterFiles(
 {
   for (std::size_t i = 0; i < rasterFiles.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(getImage(RASTER), QString::fromStdString(rasterFiles[i].first) + " (" + tr("Not supported") + "!)", m_ui->m_layersListWidget, RASTER);
+    QListWidgetItem* item = new QListWidgetItem(getImage(RASTER), QString::fromUtf8(rasterFiles[i].first.c_str()) + " (" + tr("Not supported") + "!)", m_ui->m_layersListWidget, RASTER);
     item->setCheckState(Qt::Unchecked);
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    item->setToolTip(QString::fromStdString(rasterFiles[i].second));
+    item->setToolTip(QString::fromUtf8(rasterFiles[i].second.c_str()));
     m_ui->m_layersListWidget->addItem(item);
   }
 }
@@ -112,7 +112,7 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Tables(std::
 {
   for(std::size_t i = 0; i < tables.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(getImage(TABLE), QString::fromStdString(tables[i]), m_ui->m_layersListWidget, TABLE);
+    QListWidgetItem* item = new QListWidgetItem(getImage(TABLE), QString::fromUtf8(tables[i].c_str()), m_ui->m_layersListWidget, TABLE);
     item->setCheckState(Qt::Checked);
     m_ui->m_layersListWidget->addItem(item);
   }
@@ -122,7 +122,7 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Rasters(std:
 {
   for(std::size_t i = 0; i < rasters.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(getImage(RASTER), QString::fromStdString(rasters[i]), m_ui->m_layersListWidget, RASTER);
+    QListWidgetItem* item = new QListWidgetItem(getImage(RASTER), QString::fromUtf8(rasters[i].c_str()), m_ui->m_layersListWidget, RASTER);
     item->setCheckState(Qt::Checked);
     m_ui->m_layersListWidget->addItem(item);
   }
@@ -134,7 +134,7 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage
   for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
-      checked.push_back(m_ui->m_layersListWidget->item(i)->text().toStdString());
+      checked.push_back(m_ui->m_layersListWidget->item(i)->text().toUtf8().data());
   }
 
   return checked;

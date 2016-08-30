@@ -50,7 +50,7 @@ te::qt::af::AbstractSettingWidget* te::qt::af::GeneralConfigWidgetFactory::build
 }
 
 te::qt::af::GeneralConfigWidgetFactory::GeneralConfigWidgetFactory() : 
-te::qt::af::SettingsWidgetsFactory(QObject::tr("General configurations").toStdString())
+te::qt::af::SettingsWidgetsFactory(QObject::tr("General configurations").toUtf8().data())
 {
 
 }

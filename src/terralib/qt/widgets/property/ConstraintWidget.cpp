@@ -81,7 +81,7 @@ bool te::qt::widgets::ConstraintWidget::checkParameters()
     return false;
   }
 
-  std::string constraintName = m_ui->m_nameLineEdit->text().toStdString();
+  std::string constraintName = m_ui->m_nameLineEdit->text().toUtf8().data();
 
 //get properties
   std::vector<std::string> vec = m_doubleListWidget->getOutputValues();

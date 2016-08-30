@@ -131,7 +131,7 @@ void te::vp::LineToPolygonDialog::onLayerComboBoxChanged(int index)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   
-  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
 
   while(it != m_layers.end())
   {
@@ -178,7 +178,7 @@ void te::vp::LineToPolygonDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -226,7 +226,7 @@ void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::string outputDataSet = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string outputDataSet = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
   if(outputDataSet.empty())
   {
     QMessageBox::information(this, "Line to polygon", "Define a name for the resulting layer.");
@@ -243,7 +243,7 @@ void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
   {
     if(m_toFile)
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
       if (boost::filesystem::exists(uri))
       {
         QMessageBox::information(this, "Line to polygon", "Output file already exists. Remove it or select a new name and try again.");

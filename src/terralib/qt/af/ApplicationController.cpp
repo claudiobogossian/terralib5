@@ -295,8 +295,8 @@ void  te::qt::af::ApplicationController::initialize()
   m_userDataDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
   
-  if(!boost::filesystem::exists(m_userDataDir.toStdString()))
-    boost::filesystem::create_directories(m_userDataDir.toStdString());
+  if(!boost::filesystem::exists(m_userDataDir.toUtf8().data()))
+    boost::filesystem::create_directories(m_userDataDir.toUtf8().data());
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
@@ -304,7 +304,7 @@ void  te::qt::af::ApplicationController::initialize()
 
 // terralib log startup
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-  std::string path = m_userDataDir.toStdString();
+  std::string path = m_userDataDir.toUtf8().data();
   path += "/log/terralib.log";
 
   log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
@@ -331,33 +331,33 @@ void  te::qt::af::ApplicationController::initialize()
 // general application info
   SplashScreenManager::getInstance().showMessage(tr("Application configuration file loaded!"));
 
-  m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
-  m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
-  //m_appProjectExtension = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension"));
-  m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
+  m_appName = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name").c_str());
+  m_appTitle = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title").c_str());
+  //m_appProjectExtension = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension"));
+  m_appIconName = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName").c_str());
   
-  if(!boost::filesystem::exists(m_appIconName.toStdString()))
-    m_appIconName = te::core::FindInTerraLibPath(m_appIconName.toStdString()).c_str();
+  if(!boost::filesystem::exists(m_appIconName.toUtf8().data()))
+    m_appIconName = te::core::FindInTerraLibPath(m_appIconName.toUtf8().data()).c_str();
 
-  m_appPluginsPath = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Plugins.<xmlattr>.xlink:href"));
+  m_appPluginsPath = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.Plugins.<xmlattr>.xlink:href").c_str());
 
-  if (!boost::filesystem::exists(m_appPluginsPath.toStdString()))
-    m_appPluginsPath = te::core::FindInTerraLibPath(m_appPluginsPath.toStdString()).c_str();
+  if (!boost::filesystem::exists(m_appPluginsPath.toUtf8().data()))
+    m_appPluginsPath = te::core::FindInTerraLibPath(m_appPluginsPath.toUtf8().data()).c_str();
 
-  m_aboutLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href"));
+  m_aboutLogo = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href").c_str());
   
-  if(!boost::filesystem::exists(m_aboutLogo.toStdString()))
-    m_aboutLogo = te::core::FindInTerraLibPath(m_aboutLogo.toStdString()).c_str();
+  if(!boost::filesystem::exists(m_aboutLogo.toUtf8().data()))
+    m_aboutLogo = te::core::FindInTerraLibPath(m_aboutLogo.toUtf8().data()).c_str();
   
-  m_tLibLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href"));
+  m_tLibLogo = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href").c_str());
   
-  if(!boost::filesystem::exists(m_tLibLogo.toStdString()))
-    m_tLibLogo = te::core::FindInTerraLibPath(m_tLibLogo.toStdString()).c_str();
+  if(!boost::filesystem::exists(m_tLibLogo.toUtf8().data()))
+    m_tLibLogo = te::core::FindInTerraLibPath(m_tLibLogo.toUtf8().data()).c_str();
 
   QString fullAppName = m_appName + "-" + QString(te::common::Version::asString().c_str());
   qApp->setApplicationName(fullAppName);
 
-  m_appOrganization = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Organization"));
+  m_appOrganization = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.Organization").c_str());
 
   qApp->setOrganizationName(m_appOrganization);
 
@@ -366,7 +366,7 @@ void  te::qt::af::ApplicationController::initialize()
   {
     std::string help_file = te::core::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.HelpFile.<xmlattr>.xlink:href"));
 
-    m_appHelpFile = QString::fromStdString(help_file);
+    m_appHelpFile = QString::fromUtf8(help_file.c_str());
 
     QFileInfo info(m_appHelpFile);
 
@@ -405,7 +405,7 @@ void  te::qt::af::ApplicationController::initialize()
 
     std::string icon_dir = te::core::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
     
-    m_appIconThemeDir = QString::fromStdString(icon_dir);
+    m_appIconThemeDir = QString::fromUtf8(icon_dir.c_str());
 
     if(!m_appIconThemeDir.isEmpty())
     {
@@ -416,7 +416,7 @@ void  te::qt::af::ApplicationController::initialize()
       QIcon::setThemeSearchPaths(ithemes);
     }
 
-    m_appDefaultIconTheme = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.DefaultTheme"));
+    m_appDefaultIconTheme = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.DefaultTheme").c_str());
     
     QVariant iconTheme = user_settings.value("icon_theme/selected_theme", m_appDefaultIconTheme);
 
@@ -455,7 +455,7 @@ void  te::qt::af::ApplicationController::initialize()
 // load registered data sources
   try
   {
-    m_appDatasourcesFile = user_settings.value("data_sources/data_file", "").toString().toStdString();
+    m_appDatasourcesFile = user_settings.value("data_sources/data_file", "").toString().toUtf8().data();
 
     if(!m_appDatasourcesFile.empty())
     {
@@ -485,7 +485,7 @@ void  te::qt::af::ApplicationController::initialize()
 
         if (reply == QMessageBox::Yes)
         {
-          std::string dataSourcesFile = fileName.toString().toStdString();
+          std::string dataSourcesFile = fileName.toString().toUtf8().data();
 
           te::serialize::xml::ReadDataSourceInfo(dataSourcesFile);
 
@@ -544,7 +544,7 @@ void te::qt::af::ApplicationController::initializePlugins()
 
       QString name = user_settings.value("name").toString();
 
-      user_enabled_plugins.insert(name.toStdString());
+      user_enabled_plugins.insert(name.toUtf8().data());
     }
 
     user_settings.endArray();
@@ -559,7 +559,7 @@ void te::qt::af::ApplicationController::initializePlugins()
 
       QString name = user_settings.value("name").toString();
 
-      user_unloaded_plugins.insert(name.toStdString());
+      user_unloaded_plugins.insert(name.toUtf8().data());
     }
 
     user_settings.endArray();
@@ -574,7 +574,7 @@ void te::qt::af::ApplicationController::initializePlugins()
 
       QString name = user_settings.value("name").toString();
 
-      user_broken_plugins.insert(name.toStdString());
+      user_broken_plugins.insert(name.toUtf8().data());
     }
 
     user_settings.endArray();

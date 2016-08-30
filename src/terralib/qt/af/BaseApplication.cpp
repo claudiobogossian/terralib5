@@ -472,9 +472,9 @@ void te::qt::af::BaseApplication::onLayerRenameTriggered()
   }
 
   if(item->getType() == "LAYER")
-    ((te::qt::widgets::LayerItem*)item)->getLayer()->setTitle(text.toStdString());
+    ((te::qt::widgets::LayerItem*)item)->getLayer()->setTitle(text.toUtf8().data());
   else if(item->getType() == "FOLDER")
-    ((te::qt::widgets::FolderItem*)item)->setTitle(text.toStdString());
+    ((te::qt::widgets::FolderItem*)item)->setTitle(text.toUtf8().data());
 
   std::list<te::map::AbstractLayerPtr> ls;
 
@@ -1028,7 +1028,7 @@ void te::qt::af::BaseApplication::makeDialog()
 void te::qt::af::BaseApplication::initFramework(const QString& cfgFile)
 {
   m_app = &AppCtrlSingleton::getInstance();
-  m_app->setConfigFile(cfgFile.toStdString());
+  m_app->setConfigFile(cfgFile.toUtf8().data());
   m_app->initialize();
 }
 

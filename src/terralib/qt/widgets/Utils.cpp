@@ -264,14 +264,14 @@ void te::qt::widgets::Config2DrawPoints(te::map::Canvas* canvas, const QColor& c
 void te::qt::widgets::Config2DrawPoints(te::map::Canvas* canvas, const QString& markName, const std::size_t& size,
                                         const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
 {
-  te::se::Stroke* stroke = te::se::CreateStroke(contourColor.name().toStdString(),
-                                                QString::number(contourWidth).toStdString(),
-                                                QString::number(contourColor.alphaF()).toStdString());
+  te::se::Stroke* stroke = te::se::CreateStroke(contourColor.name().toUtf8().data(),
+                                                QString::number(contourWidth).toUtf8().data(),
+                                                QString::number(contourColor.alphaF()).toUtf8().data());
 
-  te::se::Fill* fill = te::se::CreateFill(fillColor.name().toStdString(),
-                                          QString::number(fillColor.alphaF()).toStdString());
+  te::se::Fill* fill = te::se::CreateFill(fillColor.name().toUtf8().data(),
+                                          QString::number(fillColor.alphaF()).toUtf8().data());
 
-  te::se::Mark* mark = te::se::CreateMark(markName.toStdString(), stroke, fill);
+  te::se::Mark* mark = te::se::CreateMark(markName.toUtf8().data(), stroke, fill);
 
   te::color::RGBAColor** rgba = te::map::MarkRendererManager::getInstance().render(mark, size);
 
@@ -395,7 +395,7 @@ QString te::qt::widgets::Convert2Qt(const std::string& text, te::core::EncodingT
   if (encoding != te::core::EncodingType::UTF8)
     conv_text = te::core::CharEncoding::toUTF8(text, encoding);
 
-  return QString::fromStdString(conv_text);
+  return QString::fromUtf8(conv_text.c_str());
 }
 
 QString te::qt::widgets::GetDiskRasterFileSelFilter()

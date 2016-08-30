@@ -102,11 +102,11 @@ void te::ws::ogc::WCSClient::updateCapabilities()
   std::string xmlPath = te::ws::ogc::WCSClient::makeFileRequest(url, "capabilities.xml");
 
   // Parse the XML file into a struct
-  m_capabilities = parseCapabilities(xmlPath);
+  m_capabilities = m_parser.parseCapabilities(xmlPath);
 }
 
 
-te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const std::string coverage)
+te::ws::ogc::wcs::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const std::string coverage)
 {
 
   if(m_descriptionMap.find(coverage) != m_descriptionMap.end())
@@ -114,7 +114,7 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const 
     return m_descriptionMap[coverage];
   }
 
-  te::ws::ogc::CoverageDescription describeCoverage;
+  te::ws::ogc::wcs::CoverageDescription describeCoverage;
 
   std::string url = m_uri.uri();
 
@@ -133,7 +133,7 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const 
   std::string xmlPath = te::ws::ogc::WCSClient::makeFileRequest(url, "describeCoverage.xml");
 
   // Parse the XML file into a struct
-  describeCoverage = parseDescribeCoverage(xmlPath);
+  describeCoverage = m_parser.parseDescribeCoverage(xmlPath);
 
   m_descriptionMap[coverage] = describeCoverage;
 
@@ -141,7 +141,7 @@ te::ws::ogc::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(const 
 }
 
 
-std::string te::ws::ogc::WCSClient::getCoverage(const CoverageRequest coverageRequest) const
+std::string te::ws::ogc::WCSClient::getCoverage(const te::ws::ogc::wcs::CoverageRequest coverageRequest) const
 {
   std::string coveragePath;
 
@@ -157,7 +157,7 @@ std::string te::ws::ogc::WCSClient::getCoverage(const CoverageRequest coverageRe
     if(!coverageRequest.mediaType.empty())
       url += "&MEDIATYPE=" + coverageRequest.mediaType;
 
-    const EnvelopeWithTimePeriod* envelope = &coverageRequest.envelope;
+    const te::ws::ogc::wcs::EnvelopeWithTimePeriod* envelope = &coverageRequest.envelope;
 
     std::string x1 = envelope->lowerCorner_X;
     std::string y1 = envelope->lowerCorner_Y;
@@ -212,7 +212,7 @@ std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const
   return path;
 }
 
-const te::ws::ogc::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
+const te::ws::ogc::wcs::Capabilities& te::ws::ogc::WCSClient::getCapabilities() const
 {
   return m_capabilities;
 }

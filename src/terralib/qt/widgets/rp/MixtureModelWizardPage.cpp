@@ -224,7 +224,7 @@ te::rp::MixtureModel::InputParameters te::qt::widgets::MixtureModelWizardPage::g
       algoInputParams.m_inputRasterBands.push_back(i);
 
       QComboBox *sensorComboBox = (QComboBox*) m_ui->m_bandTableWidget->cellWidget(i, 1);
-      algoInputParams.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toStdString()));
+      algoInputParams.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toUtf8().data()));
     }
     else
       selectedBandsVector.push_back(false);
@@ -366,7 +366,7 @@ void te::qt::widgets::MixtureModelWizardPage::onSaveToolButtonClicked()
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save MixModel Components"), "", "JSON File (*.json)");
 
   if(!fileName.isEmpty())
-    saveMixtureModelComponents(fileName.toStdString());
+    saveMixtureModelComponents(fileName.toUtf8().data());
 }
 
 void te::qt::widgets::MixtureModelWizardPage::onLoadToolButtonClicked()
@@ -374,7 +374,7 @@ void te::qt::widgets::MixtureModelWizardPage::onLoadToolButtonClicked()
   QString fileName = QFileDialog::getOpenFileName(this, tr("Load MixModel Components"), "", "JSON File (*.json)");
 
   if(!fileName.isEmpty())
-    loadMixtureModelComponents(fileName.toStdString());
+    loadMixtureModelComponents(fileName.toUtf8().data());
 }
 
 void te::qt::widgets::MixtureModelWizardPage::onMapDisplayExtentChanged()
@@ -432,7 +432,7 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
 
       MixModelComponent mmc;
       mmc.m_id = id;
-      mmc.m_name = className.toStdString();
+      mmc.m_name = className.toUtf8().data();
       mmc.m_values = componentsVector;
       mmc.m_coordGrid = coordinateGrid;
       mmc.m_coordGeo = coordinateGeo;
@@ -446,9 +446,9 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
 
 void te::qt::widgets::MixtureModelWizardPage::onItemChanged(QTableWidgetItem* item)
 {
-  std::string id = item->data(Qt::UserRole).toString().toStdString();
+  std::string id = item->data(Qt::UserRole).toString().toUtf8().data();
 
-  std::string name = item->text().toStdString();
+  std::string name = item->text().toUtf8().data();
 
   std::map<std::string, MixModelComponent >::iterator it = m_components.find(id);
 
@@ -472,7 +472,7 @@ void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
   if(m_ui->m_tableWidget->currentRow() == -1)
     return;
 
-  std::string id = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 0)->data(Qt::UserRole).toString().toStdString();
+  std::string id = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 0)->data(Qt::UserRole).toString().toUtf8().data();
 
   std::map<std::string, MixModelComponent >::iterator it = m_components.find(id);
 
@@ -598,7 +598,7 @@ void te::qt::widgets::MixtureModelWizardPage::updateComponents()
     m_ui->m_tableWidget->insertRow(newrow);
     
     //name
-    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(it->second.m_name));
+    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromUtf8(it->second.m_name.c_str()));
     itemName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
     itemName->setData(Qt::UserRole, QVariant(it->second.m_id.c_str()));
     m_ui->m_tableWidget->setItem(newrow, 0, itemName);

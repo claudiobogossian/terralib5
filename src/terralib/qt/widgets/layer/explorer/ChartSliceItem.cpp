@@ -36,7 +36,7 @@ te::qt::widgets::ChartSliceItem::ChartSliceItem(const QString& propertyName, con
                                                 const QColor& contourColor, const int& contourWidth):
   TreeItem("CHARTSLICE")
 {
-  m_label = (QObject::tr("Property") + ": " + propertyName).toStdString();
+  m_label = (QObject::tr("Property") + ": " + propertyName).toUtf8().data();
 
   m_icon = CreateIcon(16, contourColor, color, contourWidth);
 }

@@ -94,7 +94,7 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
 {
   char buf[500];
   QString file(m_dir.path() + "/image.ctl");
-  FILE* fp = fopen(file.toStdString().c_str(), "r");
+  FILE* fp = fopen(te::core::CharEncoding::fromUTF8(file.toUtf8().data()).c_str(), "r");
   if (fp == 0)
     return false;
 
@@ -133,7 +133,7 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
   if (pos != -1)
   {
     s = ss.left((int)pos);
-    m_undef = atof(s.toStdString().c_str());
+    m_undef = atof(s.toUtf8().data());
     ss.remove(0, (int)pos);
 
     // get srid
@@ -141,7 +141,7 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
     ss.remove(0, (int)pos);
     pos = ss.indexOf(" llx", Qt::CaseInsensitive);
     s = ss.left((int)pos);
-    m_SRID = atoi(s.toStdString().c_str());
+    m_SRID = atoi(s.toUtf8().data());
     ss.remove(0, (int)pos);
   }
   else
@@ -152,7 +152,7 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" lly", Qt::CaseInsensitive);
   s = ss.left((int)pos);
-  double llx = atof(s.toStdString().c_str());
+  double llx = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   // get lly
@@ -160,7 +160,7 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" urx", Qt::CaseInsensitive);
   s = ss.left((int)pos);
-  double lly = atof(s.toStdString().c_str());
+  double lly = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   // get urx
@@ -168,13 +168,13 @@ bool te::qt::widgets::ImageItem::getCtlParameters()
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ury", Qt::CaseInsensitive);
   s = ss.left((int)pos);
-  double urx = atof(s.toStdString().c_str());
+  double urx = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   // get ury
   pos = ss.indexOf("ury ", Qt::CaseInsensitive) + strlen("ury ");
   ss.remove(0, (int)pos);
-  double ury = atof(ss.toStdString().c_str());
+  double ury = atof(ss.toUtf8().data());
 
   double w = urx - llx;
   double h = ury - lly;

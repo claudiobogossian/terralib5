@@ -136,7 +136,7 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
       m_datasource->setDescription("");
       m_datasource->setAccessDriver("ADO");
       m_datasource->setType("ADO");
@@ -145,7 +145,7 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(connInfo);
-      m_datasource->setTitle(title.toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
       m_datasource->setDescription("");
     }
   }
@@ -195,20 +195,20 @@ std::map<std::string, std::string> te::qt::plugins::ado::ADOCreatorDialog::getCo
   QString qstr = m_ui->m_fileLineEdit->text().trimmed();
 
   if(!qstr.isEmpty())
-    connInfo["DB_NAME"] = qstr.toStdString();
+    connInfo["DB_NAME"] = qstr.toUtf8().data();
 
   if(getPrivateKeys)
   {
     qstr = m_ui->m_passwordLineEdit->text().trimmed();
 
     if(!qstr.isEmpty())
-      connInfo["PASSWORD"] = qstr.toStdString();
+      connInfo["PASSWORD"] = qstr.toUtf8().data();
   }
 
   qstr = m_ui->m_providerComboBox->currentText().trimmed();
 
   if(!qstr.isEmpty())
-    connInfo["PROVIDER"] = qstr.toStdString();
+    connInfo["PROVIDER"] = qstr.toUtf8().data();
 
   if(m_ui->m_createOGCTablesCheckBox->isChecked())
     connInfo["CREATE_OGC_METADATA_TABLES"] = "TRUE";

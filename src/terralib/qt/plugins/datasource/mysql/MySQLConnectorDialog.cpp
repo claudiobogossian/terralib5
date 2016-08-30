@@ -83,9 +83,9 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::set(const te::da::DataSourceI
   {
     setConnectionInfo(m_datasource->getConnInfo());
 
-    m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString(m_datasource->getTitle()));
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle()));
 
-    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromStdString(m_datasource->getDescription()));
+    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription()));
   }
 }
 
@@ -111,7 +111,7 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
     if(title.isEmpty())
-      title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_schemaNameComboBox->currentText().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
+      title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromUtf8("@") + m_ui->m_schemaNameComboBox->currentText().trimmed() + QString::fromUtf8("@") + m_ui->m_userNameLineEdit->text().trimmed();
 
     if(m_datasource.get() == 0)
     {
@@ -126,8 +126,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
       m_datasource->setAccessDriver("MYSQL");
       m_datasource->setType("MYSQL");
     }
@@ -135,8 +135,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
     }
   }
   catch(const std::exception& e)
@@ -210,50 +210,50 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::getConnectionInfo(std::map<st
   QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_HOST_NAME"] = qstr.toStdString();
+    connInfo["MY_HOST_NAME"] = qstr.toUtf8().data();
 
 // get port
   qstr = m_ui->m_portLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_PORT"] = qstr.toStdString();
+    connInfo["MY_PORT"] = qstr.toUtf8().data();
 
 // get user
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_USER_NAME"] = qstr.toStdString();
+    connInfo["MY_USER_NAME"] = qstr.toUtf8().data();
 
 // get password
   qstr = m_ui->m_passwordLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_PASSWORD"] = qstr.toStdString();
+    connInfo["MY_PASSWORD"] = qstr.toUtf8().data();
 
 // get dbname
   qstr = m_ui->m_schemaNameComboBox->currentText().trimmed();
   //qstr = m_ui->m_schemaNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SCHEMA"] = qstr.toStdString();
+    connInfo["MY_SCHEMA"] = qstr.toUtf8().data();
 
 // get charset
   qstr = m_ui->m_charsetComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_CHARSET_NAME"] = qstr.toStdString();
+    connInfo["MY_OPT_CHARSET_NAME"] = qstr.toUtf8().data();
 
 // get the default table engine for spatial tables
   qstr = m_ui->m_spatialTableEngineComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_DEFAULT_ENGINE_FOR_SPATIAL_TABLES"] = qstr.toStdString();
+    connInfo["MY_DEFAULT_ENGINE_FOR_SPATIAL_TABLES"] = qstr.toUtf8().data();
 
 // get the list of tables to be hidden
   qstr = m_ui->m_tablesToHideLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_HIDE_TABLES"] = qstr.toStdString();
+    connInfo["MY_HIDE_TABLES"] = qstr.toUtf8().data();
 
 // check raster metadata creation
   connInfo["MY_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = m_ui->m_createRasterMetadataCheckBox->isChecked() ? "TRUE" : "FALSE";
@@ -268,75 +268,75 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::getConnectionInfo(std::map<st
   qstr = m_ui->m_maxPoolSizeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_MAX_POOL_SIZE"] = qstr.toStdString();
+    connInfo["MY_MAX_POOL_SIZE"] = qstr.toUtf8().data();
 
 // get MinPoolSize
   qstr = m_ui->m_minPoolSizeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_MIN_POOL_SIZE"] = qstr.toStdString();
+    connInfo["MY_MIN_POOL_SIZE"] = qstr.toUtf8().data();
 
 // get idle time
   qstr = m_ui->m_maxIdleTimeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_MAX_IDLE_TIME"] = qstr.toStdString();
+    connInfo["MY_MAX_IDLE_TIME"] = qstr.toUtf8().data();
   
 // get connect_timeout
   qstr = m_ui->m_connectTimeoutSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_CONNECT_TIMEOUT"] = qstr.toStdString();
+    connInfo["MY_OPT_CONNECT_TIMEOUT"] = qstr.toUtf8().data();
 
 // get connect_timeout
   qstr = m_ui->m_readTimeoutSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_READ_TIMEOUT"] = qstr.toStdString();
+    connInfo["MY_OPT_READ_TIMEOUT"] = qstr.toUtf8().data();
 
 // get connect_timeout
   qstr = m_ui->m_writeTimeoutSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_WRITE_TIMEOUT"] = qstr.toStdString();
+    connInfo["MY_OPT_WRITE_TIMEOUT"] = qstr.toUtf8().data();
 
 // get ssl info
   qstr = m_ui->m_sslKeyLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_KEY"] = qstr.toStdString();
+    connInfo["MY_SSL_KEY"] = qstr.toUtf8().data();
 
   qstr = m_ui->m_sslCertLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_CERT"] = qstr.toStdString();
+    connInfo["MY_SSL_CERT"] = qstr.toUtf8().data();
 
   qstr = m_ui->m_sslCALineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_KEY"] = qstr.toStdString();
+    connInfo["MY_SSL_KEY"] = qstr.toUtf8().data();
 
   qstr = m_ui->m_sslCAPathLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_CA"] = qstr.toStdString();
+    connInfo["MY_SSL_CA"] = qstr.toUtf8().data();
 
   qstr = m_ui->m_sslChiperLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_CA_PATH"] = qstr.toStdString();
+    connInfo["MY_SSL_CA_PATH"] = qstr.toUtf8().data();
 
 // get socket info
   qstr = m_ui->m_socketLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SOCKET"] = qstr.toStdString();
+    connInfo["MY_SOCKET"] = qstr.toUtf8().data();
 
 // get pipe info
   qstr = m_ui->m_pipeLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_PIPE"] = qstr.toStdString();
+    connInfo["MY_PIPE"] = qstr.toUtf8().data();
 
 // more options
   connInfo["MY_CLIENT_COMPRESS"] = m_ui->m_clientCompressCheckBox->isChecked() ? "TRUE" : "FALSE";

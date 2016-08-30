@@ -39,7 +39,7 @@
 te::qt::plugins::vp::MultipartToSinglepartAction::MultipartToSinglepartAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Multipart To Singlepart...").toStdString(), "vp-multiparttosinglepart-icon");
+  createAction(tr("Multipart To Singlepart...").toUtf8().data(), "vp-multiparttosinglepart-icon");
   m_action->setObjectName("Processing.Vector Processing.Multipart to Singlepart");
 }
 

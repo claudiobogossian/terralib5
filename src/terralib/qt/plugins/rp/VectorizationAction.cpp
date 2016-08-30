@@ -26,9 +26,9 @@
 te::qt::plugins::rp::VectorizationAction::VectorizationAction(QMenu *menu, QMenu *popupMenu) :
   AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Vectorization...").toStdString(), "vectorization");
+  createAction(tr("Vectorization...").toUtf8().data(), "vectorization");
   m_action->setObjectName("Processing.Raster Processing.Vectorization");
-  //createPopUpAction(tr("Vectorization...").toStdString(), "vectorization");
+  //createPopUpAction(tr("Vectorization...").toUtf8().data(), "vectorization");
 }
 
 te::qt::plugins::rp::VectorizationAction::~VectorizationAction()

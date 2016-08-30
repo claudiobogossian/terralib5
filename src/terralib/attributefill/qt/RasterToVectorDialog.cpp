@@ -220,7 +220,7 @@ void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   
-  std::string layerID = m_ui->m_inRasterComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_inRasterComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
 
   while(it != m_layers.end())
   {
@@ -247,7 +247,7 @@ void te::attributefill::RasterToVectorDialog::onVectorComboBoxChanged(int index)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   
-  std::string layerID = m_ui->m_inVectorComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_inVectorComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
 
   while(it != m_layers.end())
   {
@@ -326,7 +326,7 @@ void te::attributefill::RasterToVectorDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -432,7 +432,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
   
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
@@ -444,7 +444,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
 
     if(m_toFile)
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
       
       if (boost::filesystem::exists(uri))
       {

@@ -66,9 +66,9 @@ void te::qt::widgets::CharMapWidget::mouseMoveEvent(QMouseEvent* e)
   QPoint widgetPosition = mapFromGlobal(e->globalPos());
   uint key = (widgetPosition.y() / m_squareSize) * m_columns + widgetPosition.x() / m_squareSize;
 
-  QString text = QString::fromStdString("<p>Char: <span style=\"font-size: 28pt; font-family: %1\">").arg(m_font.family())
+  QString text = QString::fromUtf8("<p>Char: <span style=\"font-size: 28pt; font-family: %1\">").arg(m_font.family())
                 + QChar(key)
-                + QString::fromStdString("</span><p>Value: 0x")
+                + QString::fromUtf8("</span><p>Value: 0x")
                 + QString::number(key, 16);
 
   QToolTip::showText(e->globalPos(), text, this);

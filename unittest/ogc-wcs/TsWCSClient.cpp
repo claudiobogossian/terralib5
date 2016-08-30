@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(getcapabilities_test)
   // Makes GetCapabilities Test Request.
   BOOST_CHECK_NO_THROW(client.updateCapabilities());
 
-  te::ws::ogc::Capabilities capabilities = client.getCapabilities();
+  te::ws::ogc::wcs::Capabilities capabilities = client.getCapabilities();
 
   std::vector<std::string> coverages = capabilities.coverages;
 
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(describecoverage_test)
 
   BOOST_CHECK_NO_THROW(client.describeCoverage(coverageName));
 
-  te::ws::ogc::CoverageDescription description = client.describeCoverage(coverageName);
+  te::ws::ogc::wcs::CoverageDescription description = client.describeCoverage(coverageName);
 
   BOOST_CHECK(description.coverageId == coverageName);
 
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(getcoverage_test)
   std::string coverageId = "nasa__bluemarble";
 
   // Simple image request by id.
-  te::ws::ogc::CoverageRequest request;
+  te::ws::ogc::wcs::CoverageRequest request;
   request.coverageID = coverageId;
 
   std::string coverageDiskPath = client.getCoverage(request);

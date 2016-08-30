@@ -77,13 +77,13 @@ void te::qt::widgets::TimeSeriesDialog::onOkPushButtonClicked()
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
-  chartStyle->setTitle(QString::fromStdString("TimeSeries"));
+  chartStyle->setTitle(QString::fromUtf8("TimeSeries"));
 
   chartStyle->setAxisX(m_timeSeriesDataWidget->getForm()->m_timeComboBox->currentText());
   chartStyle->setAxisY(m_timeSeriesDataWidget->getForm()->m_valueComboBox->currentText());
 
   //Creating and adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("TimeSeries"), chartStyle);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromUtf8("TimeSeries"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
   chartDisplay->show();

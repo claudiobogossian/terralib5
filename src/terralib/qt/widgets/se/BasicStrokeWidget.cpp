@@ -254,7 +254,7 @@ void te::qt::widgets::BasicStrokeWidget::onColorChanged(const QColor& color)
   updateUiStrokeColor();
 
   // Updating stroke color
-  m_stroke->setColor(m_color.name().toStdString());
+  m_stroke->setColor(m_color.name().toUtf8().data());
   emit strokeChanged();
 }
 
@@ -266,13 +266,13 @@ void te::qt::widgets::BasicStrokeWidget::onStrokeOpacitySliderValueChanged(int v
   updateUiStrokeColor();
 
   // Updating stroke opacity
-  m_stroke->setOpacity(QString::number(opacity, 'g', 2).toStdString());
+  m_stroke->setOpacity(QString::number(opacity, 'g', 2).toUtf8().data());
   emit strokeChanged();
 }
 
 void te::qt::widgets::BasicStrokeWidget::onStrokeWidthDoubleSpinBoxValueChanged(const QString& text)
 {
-  m_stroke->setWidth(text.toStdString());
+  m_stroke->setWidth(text.toUtf8().data());
   emit strokeChanged();
 }
 

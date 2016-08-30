@@ -21,7 +21,7 @@ std::set<std::string> getIdsList(const QString& ids)
   QStringList::iterator it;
 
   for(it=iL.begin(); it!=iL.end(); ++it)
-    idList.insert((*it).toStdString());
+    idList.insert((*it).toUtf8().data());
 
   return idList;
 }

@@ -66,7 +66,7 @@ bool te::qt::widgets::HidroItem::getCtlParameters()
 {
   char buf[500];
   QString file(m_dir.path() + "/racc.ctl");
-  FILE* fp = fopen(file.toStdString().c_str(), "r");
+  FILE* fp = fopen(te::core::CharEncoding::fromUTF8(file.toUtf8().data()).c_str(), "r");
   if (fp == 0)
     return false;
 
@@ -91,7 +91,7 @@ bool te::qt::widgets::HidroItem::getCtlParameters()
   {
     pos = ss.indexOf("SRID", Qt::CaseInsensitive);
     s = ss.left((int)pos);
-    m_undef = atoi(s.toStdString().c_str());
+    m_undef = atoi(s.toUtf8().data());
     ss.remove(0, (int)pos);
 
     // get SRID
@@ -99,7 +99,7 @@ bool te::qt::widgets::HidroItem::getCtlParameters()
     ss.remove(0, (int)pos);
     pos = ss.indexOf("XDEF ", Qt::CaseInsensitive);
     s = ss.left((int)pos);
-    m_SRID = atoi(s.toStdString().c_str());
+    m_SRID = atoi(s.toUtf8().data());
     ss.remove(0, (int)pos);
   }
   else
@@ -110,18 +110,18 @@ bool te::qt::widgets::HidroItem::getCtlParameters()
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
   s = ss.left((int)pos);
-  m_ncols = atoi(s.toStdString().c_str());
+  m_ncols = atoi(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   pos = ss.indexOf("LINEAR ", Qt::CaseInsensitive) + strlen("LINEAR ");
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
   s = ss.left((int)pos);
-  double llx = atof(s.toStdString().c_str()) - 360.;
+  double llx = atof(s.toUtf8().data()) - 360.;
   ss.remove(0, (int)pos);
   pos = ss.indexOf("YDEF ", Qt::CaseInsensitive);
   s = ss.left((int)pos);
-  double resX = atof(s.toStdString().c_str());
+  double resX = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   // get YDEF uly and resY values
@@ -129,18 +129,18 @@ bool te::qt::widgets::HidroItem::getCtlParameters()
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
   s = ss.left((int)pos);
-  m_nlines = atoi(s.toStdString().c_str());
+  m_nlines = atoi(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   pos = ss.indexOf("LINEAR ", Qt::CaseInsensitive) + strlen("LINEAR ");
   ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
   s = ss.left((int)pos);
-  double lly = atof(s.toStdString().c_str());
+  double lly = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
   pos = ss.indexOf("ZDEF ", Qt::CaseInsensitive);
   s = ss.left((int)pos);
-  double resY = atof(s.toStdString().c_str());
+  double resY = atof(s.toUtf8().data());
   ss.remove(0, (int)pos);
 
   double w = (double)m_ncols * resX;
@@ -204,7 +204,7 @@ void te::qt::widgets::HidroItem::loadCurrentImage()
     {
       size_t nchars = m_ncols * 2;
       uchar* buf = new uchar[nchars];
-      FILE* fp = fopen(file.toStdString().c_str(), "rb");
+      FILE* fp = fopen(te::core::CharEncoding::fromUTF8(file.toUtf8().data()).c_str(), "rb");
       m_image = new QImage((int)m_ncols, (int)m_nlines, QImage::Format_ARGB32);
       m_image->fill(Qt::transparent);
 

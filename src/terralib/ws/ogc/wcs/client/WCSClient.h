@@ -90,7 +90,7 @@ namespace te
 
           \return Return the information of the coverage in the WCS
         */
-        CoverageDescription describeCoverage(const std::string coverage);
+        te::ws::ogc::wcs::CoverageDescription describeCoverage(const std::string coverage);
 
         /*!
           \brief Method to get the coverage from the WCS server
@@ -99,7 +99,7 @@ namespace te
 
           \return Returns a DataSet that contains the coverage
         */
-        std::string getCoverage(const struct CoverageRequest coverageRequest) const;
+        std::string getCoverage(const te::ws::ogc::wcs::CoverageRequest coverageRequest) const;
 
         /*!
           \brief Executes a request on a WCS server
@@ -118,7 +118,7 @@ namespace te
 
           \return Returns a path to a file
         */
-        const Capabilities& getCapabilities() const;
+        const te::ws::ogc::wcs::Capabilities& getCapabilities() const;
 
         /*!
          * \brief Sets the TerraLib CurlWrapper to be used internally.
@@ -133,9 +133,10 @@ namespace te
         std::string m_version;
         std::string m_dataDir;
         te::core::URI m_uri;
-        struct Capabilities m_capabilities;
+        te::ws::ogc::wcs::Capabilities m_capabilities;
         std::shared_ptr<te::ws::core::CurlWrapper> m_curl;
-        std::map<std::string, CoverageDescription> m_descriptionMap;
+        std::map<std::string, te::ws::ogc::wcs::CoverageDescription> m_descriptionMap;
+        te::ws::ogc::wcs::XMLParser                m_parser;
       };
     }
   }

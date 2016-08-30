@@ -31,7 +31,7 @@
 te::qt::plugins::sa::SkaterAction::SkaterAction(QMenu *menu) :
   AbstractAction(menu)
 {
-  createAction(tr("Skater...").toStdString(), "sa-skater-icon");
+  createAction(tr("Skater...").toUtf8().data(), "sa-skater-icon");
   m_action->setObjectName("Processing.Spatial Analysis.Skater");
 }
 

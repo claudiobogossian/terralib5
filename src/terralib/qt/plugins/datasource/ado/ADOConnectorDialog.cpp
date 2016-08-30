@@ -94,9 +94,9 @@ void te::qt::plugins::ado::ADOConnectorDialog::set(const te::da::DataSourceInfoP
   {
     setConnectionInfo(m_datasource->getConnInfo());
 
-    m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString(m_datasource->getTitle()));
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
-    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromStdString(m_datasource->getDescription()));
+    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription().c_str()));
   }
 }
 
@@ -136,8 +136,8 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
       m_datasource->setAccessDriver("ADO");
       m_datasource->setType("ADO");
     }
@@ -145,8 +145,8 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(getConnectionInfo(m_ui->m_savePasswordCheckBox->isChecked()));
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
     }
   }
   catch(const std::exception& e)
@@ -230,20 +230,20 @@ std::map<std::string, std::string> te::qt::plugins::ado::ADOConnectorDialog::get
   QString qstr = m_ui->m_fileLineEdit->text().trimmed();
 
   if(!qstr.isEmpty())
-    connInfo["DB_NAME"] = qstr.toStdString();
+    connInfo["DB_NAME"] = qstr.toUtf8().data();
 
   if(getPrivateKeys)
   {
     qstr = m_ui->m_passwordLineEdit->text().trimmed();
 
     if(!qstr.isEmpty())
-      connInfo["PASSWORD"] = qstr.toStdString();
+      connInfo["PASSWORD"] = qstr.toUtf8().data();
   }
 
   qstr = m_ui->m_providerComboBox->currentText().trimmed();
 
   if(!qstr.isEmpty())
-    connInfo["PROVIDER"] = qstr.toStdString();
+    connInfo["PROVIDER"] = qstr.toUtf8().data();
 
   return connInfo;
 }

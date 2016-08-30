@@ -84,7 +84,7 @@ te::tools::rastermanager::RasterManagerDialog::~RasterManagerDialog()
 
 void te::tools::rastermanager::RasterManagerDialog::inputPushButton_clicked()
 {  
-  std::string file = QFileDialog::getOpenFileName(this, tr("Open Raster"), "", "").toStdString();
+  std::string file = QFileDialog::getOpenFileName(this, tr("Open Raster"), "", "").toUtf8().data();
 
   if(file.empty())
     return;
@@ -142,11 +142,11 @@ void te::tools::rastermanager::RasterManagerDialog::inputPushButton_clicked()
 void te::tools::rastermanager::RasterManagerDialog::outputPushButton_clicked()
 {
 
-  std::string extension = boost::filesystem3::extension(inputLineEdit->text().toStdString());
-  std::string inName = boost::filesystem3::basename(inputLineEdit->text().toStdString());
+  std::string extension = boost::filesystem3::extension(inputLineEdit->text().toUtf8().data());
+  std::string inName = boost::filesystem3::basename(inputLineEdit->text().toUtf8().data());
   inName += extension;
   
-  std::string file = QFileDialog::getSaveFileName(this, tr("Save Raster"), inName.c_str(), "").toStdString();
+  std::string file = QFileDialog::getSaveFileName(this, tr("Save Raster"), inName.c_str(), "").toUtf8().data();
 
   if(file.empty())
     return;
@@ -162,7 +162,7 @@ void te::tools::rastermanager::RasterManagerDialog::copyPushButton_clicked()
   setWaitCursor(this);
 
   std::string errorMessage;
-  if(!m_rm->init(inputLineEdit->text().toStdString(), errorMessage))
+  if(!m_rm->init(inputLineEdit->text().toUtf8().data(), errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());    
@@ -173,12 +173,12 @@ void te::tools::rastermanager::RasterManagerDialog::copyPushButton_clicked()
   size_t it = 0;
   while(it != copyBandsListWidget->selectedItems().count())
   {
-    bands.push_back(atoi(copyBandsListWidget->selectedItems()[it]->text().toLatin1()));
+    bands.push_back(atoi(copyBandsListWidget->selectedItems()[it]->text().toUtf8().data()));
 
     ++it;
   }
 
-  if(!m_rm->copyRaster(outputLineEdit->text().toStdString(), bands, int(), errorMessage))
+  if(!m_rm->copyRaster(outputLineEdit->text().toUtf8().data(), bands, int(), errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
@@ -198,14 +198,14 @@ void te::tools::rastermanager::RasterManagerDialog::reprojectPushButton_clicked(
   setWaitCursor(this);
 
   std::string errorMessage;
-  if(!m_rm->init(inputLineEdit->text().toStdString(), errorMessage))
+  if(!m_rm->init(inputLineEdit->text().toUtf8().data(), errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
     return;
   }
   
-  if(!m_rm->reproject(outputLineEdit->text().toStdString(), atoi(sridLineEdit->text().toLatin1()), errorMessage))
+  if(!m_rm->reproject(outputLineEdit->text().toUtf8().data(), atoi(sridLineEdit->text().toUtf8().data()), errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
@@ -224,14 +224,14 @@ void te::tools::rastermanager::RasterManagerDialog::convertPushButton_clicked()
   setWaitCursor(this);
 
   std::string errorMessage;
-  if(!m_rm->init(inputLineEdit->text().toStdString(), errorMessage))
+  if(!m_rm->init(inputLineEdit->text().toUtf8().data(), errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
     return;
   }  
     
-  if(!m_rm->convert(outputLineEdit->text().toStdString(), extensionComboBox->currentText().toStdString(), 
+  if(!m_rm->convert(outputLineEdit->text().toUtf8().data(), extensionComboBox->currentText().toUtf8().data(), 
     std::vector<int>(), errorMessage))
   {
     setReleaseCursor(this);
@@ -258,14 +258,14 @@ void te::tools::rastermanager::RasterManagerDialog::resolutionPushButton_clicked
   }
 
   std::string errorMessage;
-  if(!m_rm->init(inputLineEdit->text().toStdString(), errorMessage))
+  if(!m_rm->init(inputLineEdit->text().toUtf8().data(), errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
     return;
   }
 
-  if(!m_rm->changeResolution(outputLineEdit->text().toStdString(), methodComboBox->currentIndex(), 
+  if(!m_rm->changeResolution(outputLineEdit->text().toUtf8().data(), methodComboBox->currentIndex(), 
     scaleSpinBox->value(), errorMessage))
   {
     setReleaseCursor(this);
@@ -294,7 +294,7 @@ void te::tools::rastermanager::RasterManagerDialog::trimPushButton_clicked()
   }
 
   std::string errorMessage;
-  if(!m_rm->init(inputLineEdit->text().toStdString(), errorMessage))
+  if(!m_rm->init(inputLineEdit->text().toUtf8().data(), errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
@@ -302,12 +302,12 @@ void te::tools::rastermanager::RasterManagerDialog::trimPushButton_clicked()
   }
 
   std::vector<double> env;
-  env[0] = atof(llxLineEdit->text().toLatin1());
-  env[1] = atof(llyLineEdit->text().toLatin1());
-  env[2] = atof(urxLineEdit->text().toLatin1());
-  env[3] = atof(uryLineEdit->text().toLatin1());
+  env[0] = atof(llxLineEdit->text().toUtf8().data());
+  env[1] = atof(llyLineEdit->text().toUtf8().data());
+  env[2] = atof(urxLineEdit->text().toUtf8().data());
+  env[3] = atof(uryLineEdit->text().toUtf8().data());
 
-  if(!m_rm->trim(outputLineEdit->text().toStdString(), env, errorMessage))
+  if(!m_rm->trim(outputLineEdit->text().toUtf8().data(), env, errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());

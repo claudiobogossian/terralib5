@@ -46,7 +46,7 @@ te::qt::widgets::GroupingItem::GroupingItem(te::map::Grouping* g) :
   TreeItem("GROUPING"),
   m_grouping(g)
 {
-  m_label = (QObject::tr("Classification by") + " " + m_grouping->getPropertyName().c_str()).toStdString();
+  m_label = (QObject::tr("Classification by") + " " + m_grouping->getPropertyName().c_str()).toUtf8().data();
 
   AddSliceItems(this, m_grouping);
 }
