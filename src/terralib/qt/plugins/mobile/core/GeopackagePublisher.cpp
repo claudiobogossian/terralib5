@@ -23,8 +23,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 \brief This file is used to Publisher operation.
 */
 
-
+//TerraLib
 #include "GeopackagePublisher.h"
+#include "../../../../core/encoding/CharEncoding.h"
 
 // libcurl
 #include <curl/curl.h>
@@ -214,7 +215,7 @@ void te::qt::plugins::terramobile::GeopackagePublisher::downloadGeopackageFile(s
 
   if (curl) 
   {
-    fp = fopen(outfilename.c_str(), "wb");
+    fp = fopen(te::core::CharEncoding::fromUTF8(outfilename).c_str(), "wb");
 
     /* what URL that receives this POST */
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());

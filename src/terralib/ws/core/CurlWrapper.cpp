@@ -31,6 +31,7 @@
 
 // Terralib
 #include "../../../terralib/common/Exception.h"
+#include "../../core/encoding/CharEncoding.h"
 #include "../../../terralib/core/translator/Translator.h"
 
 // LibCurl
@@ -79,7 +80,7 @@ int DownloadProgress(void *p,
 void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::string& filePath) const
 {
 
-  std::FILE* file = std::fopen(filePath.c_str(), "wb");
+  std::FILE* file = std::fopen(te::core::CharEncoding::fromUTF8(filePath).c_str(), "wb");
 
   if(!file)
     throw te::common::Exception(TE_TR("Could not open file to write!"));

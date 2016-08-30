@@ -173,7 +173,7 @@ void te::tools::rastermanager::RasterManagerDialog::copyPushButton_clicked()
   size_t it = 0;
   while(it != copyBandsListWidget->selectedItems().count())
   {
-    bands.push_back(atoi(copyBandsListWidget->selectedItems()[it]->text().toLatin1()));
+    bands.push_back(atoi(copyBandsListWidget->selectedItems()[it]->text().toUtf8().data()));
 
     ++it;
   }
@@ -205,7 +205,7 @@ void te::tools::rastermanager::RasterManagerDialog::reprojectPushButton_clicked(
     return;
   }
   
-  if(!m_rm->reproject(outputLineEdit->text().toUtf8().data(), atoi(sridLineEdit->text().toLatin1()), errorMessage))
+  if(!m_rm->reproject(outputLineEdit->text().toUtf8().data(), atoi(sridLineEdit->text().toUtf8().data()), errorMessage))
   {
     setReleaseCursor(this);
     QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
@@ -302,10 +302,10 @@ void te::tools::rastermanager::RasterManagerDialog::trimPushButton_clicked()
   }
 
   std::vector<double> env;
-  env[0] = atof(llxLineEdit->text().toLatin1());
-  env[1] = atof(llyLineEdit->text().toLatin1());
-  env[2] = atof(urxLineEdit->text().toLatin1());
-  env[3] = atof(uryLineEdit->text().toLatin1());
+  env[0] = atof(llxLineEdit->text().toUtf8().data());
+  env[1] = atof(llyLineEdit->text().toUtf8().data());
+  env[2] = atof(urxLineEdit->text().toUtf8().data());
+  env[3] = atof(uryLineEdit->text().toUtf8().data());
 
   if(!m_rm->trim(outputLineEdit->text().toUtf8().data(), env, errorMessage))
   {
