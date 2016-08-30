@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file AggregationMemory.h
+  \file IntersectionMemory.h
 
-  \brief Aggregation Vector Processing functions.
+  \brief Intersection Vector Processing functions.
 */
 
 //Terralib

@@ -20,7 +20,7 @@
 /*!
   \file MultipartToSinglepart.h
 
-  \brief Aggregation Vector Processing functions.
+  \brief Multipart to Singlepart Vector Processing functions.
 */
 
 //Terralib

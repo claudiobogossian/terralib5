@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file AggregationQuery.h
+  \file GeometricOpQuery.h
 
-  \brief Aggregation Vector Processing functions.
+  \brief Geometric Operation Vector Processing functions.
 */
 
 //Terralib

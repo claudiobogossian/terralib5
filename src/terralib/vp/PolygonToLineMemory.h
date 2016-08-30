@@ -75,5 +75,5 @@ namespace te
   } // end namespace vp
 }   // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_AGGREGATION_MEMORY_H
+#endif  // __TERRALIB_VP_INTERNAL_POLYGONTOLINE_MEMORY_H
 
