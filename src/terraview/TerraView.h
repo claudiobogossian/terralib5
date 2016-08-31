@@ -232,7 +232,6 @@ class TerraView : public te::qt::af::BaseApplication
     QAction* m_toolsDataSourceManagement;
     QAction* m_toolsQueryDataSource;
     QAction* m_toolsRasterMultiResolution;
-    QAction* m_toolsFixGeometry;
 
     QMenu* m_fileMenu;
     QMenu* m_helpMenu;
