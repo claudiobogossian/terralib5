@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/DeleteGeometryTool.h
+  \file terralib/edit/qt/tools/DeletePartTool.h
 
-  \brief This class implements a concrete tool to remove geometries.
+  \brief This class implements a concrete tool to delete parts of multi features (deleting polygons of a multi feature polygons for example).
 */
 
-#ifndef __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
-#define __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
+#ifndef __TERRALIB_EDIT_QT_INTERNAL_DELETEPARTTOOL_H
+#define __TERRALIB_EDIT_QT_INTERNAL_DELETEPARTTOOL_H
 
 // TerraLib
 #ifndef Q_MOC_RUN
@@ -57,11 +57,11 @@ namespace te
     class Feature;
 
     /*!
-      \class DeleteGeometryTool
+      \class DeletePartTool
 
-      \brief This class implements a concrete tool to remove geometries.
+      \brief This class implements a concrete tool to delete parts of multi features (deleting polygons of a multi feature polygons for example).
     */
-    class TEEDITQTEXPORT DeleteGeometryTool : public GeometriesUpdateTool
+    class TEEDITQTEXPORT DeletePartTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -80,10 +80,10 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+        DeletePartTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
         /*! \brief Destructor. */
-        ~DeleteGeometryTool();
+        ~DeletePartTool();
 
         //@}
 
@@ -98,6 +98,8 @@ namespace te
 
       private:
 
+        te::gm::Envelope m_mbr;
+
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
         void storeFeature();
@@ -108,4 +110,4 @@ namespace te
   }   // end namespace edit
 }     // end namespace te
 
-#endif  // __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
+#endif  // __TERRALIB_EDIT_QT_INTERNAL_DELETEPARTTOOL_H
