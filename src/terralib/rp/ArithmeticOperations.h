@@ -168,15 +168,15 @@ namespace te
 
             bool m_isUnaryOp; //!< true if this is a unary operator pointer element.
 
-            std::string m_binaryOp; //!< Binary operator.
-
-            std::string m_unaryOp; //!< Unary operator.
-
             double m_realNumberValue; //!< Real number value.
 
             unsigned int m_rasterBand; //!< Raster band index.
 
             te::rst::Raster* m_rasterNPtr; //!< Raster pointer.
+
+            std::string m_binaryOp; //!< Binary operator.
+
+            std::string m_unaryOp; //!< Unary operator.
             
             mutable std::auto_ptr< te::rst::Raster > m_rasterHandler; //!< Raster handler.
 
