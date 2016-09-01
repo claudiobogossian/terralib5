@@ -26,8 +26,8 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/raster.h>
+#include <terralib/dataaccess.h>
 
 // Boost
 #define BOOST_TEST_NO_MAIN

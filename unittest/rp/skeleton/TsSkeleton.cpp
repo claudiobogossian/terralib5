@@ -26,11 +26,9 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/rp/Skeleton.h>
-#include <terralib/raster/Grid.h>
-#include <terralib/raster/Raster.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/raster/Interpolator.h>
+#include <terralib/raster.h>
+
+// STL
 #include <cmath>
 
 // Boost

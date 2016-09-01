@@ -26,13 +26,9 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/rp/Segmenter.h>
-#include <terralib/rp/SegmenterRegionGrowingBaatzStrategy.h>
-#include <terralib/rp/SegmenterRegionGrowingMeanStrategy.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/common/progress/ConsoleProgressViewer.h>
-#include <terralib/common/progress/ProgressManager.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/raster.h>
+#include <terralib/common.h>
+#include <terralib/dataaccess.h>
 
 // STL
 #include <cmath>
