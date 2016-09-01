@@ -595,8 +595,7 @@ void te::map::serialize::WriteLayerGrouping(te::map::Grouping* g, te::xml::Abstr
   writer.writeElement("te_map:Type", GetGroupingType(type));
   writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
 
-  if(g->getSummary() != "NONE")
-    writer.writeElement("te_map:Summary", g->getSummary());
+  writer.writeElement("te_map:Summary", g->getSummary());
 
   if(type == te::map::STD_DEVIATION)
     writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());

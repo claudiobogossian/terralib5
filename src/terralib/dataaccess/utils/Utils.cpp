@@ -372,7 +372,8 @@ void te::da::GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, 
   {
     te::dt::Property* pRef =props[i];
     assert(pRef);
-    dsNames[pRef->getDatasetName()].first = dsNames.size();
+    int propPos = (int)dsNames.size();
+    dsNames[pRef->getDatasetName()].first = propPos;
     dsNames[pRef->getDatasetName()].second++;
   }
 

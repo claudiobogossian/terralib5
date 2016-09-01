@@ -49,7 +49,6 @@ namespace te
     namespace widgets
     {
       class DataSetTableView;
-      class FieldsDialog;
 
       /*!
         \class TableLinkDialog
@@ -126,19 +125,19 @@ namespace te
             */
             void onDataToolButtonnClicked();
 
-            /*!
-              \brief Displays or hides the widget's used to configure the query's fields.
-            */
-            void onAdvancedToolButtonnClicked();
-
             void onOkPushButtonClicked();
 
         private:
 
+          //No copy allowed
+          TableLinkDialog(const TableLinkDialog& rhs);
+          TableLinkDialog& operator=(const TableLinkDialog& rhs);
+
           te::map::DataSetLayerPtr                m_inputLayer;    //!< The layer the will serve as the base for the link.
           te::da::DataSourcePtr                   m_ds;            //!< The dasource of the layers to be linked.
+          std::vector<std::string>                m_properties;    //!< The name of the properties that the output layer will contain
+          std::vector<std::string>                m_keyProps;      //!< The name of the properties that form the primary key
           std::auto_ptr<DataSetTableView>         m_tabularView;   //!< The widget used to preview the data of the tabular dataset.
-          std::auto_ptr<FieldsDialog>             m_fieldsDialog;  //!< The widget used to select which fields will be added to the query.
           std::auto_ptr<Ui::TableLinkDialogForm>  m_ui;            //!< The widget's form.
       };
     }   // end namespace widgets
