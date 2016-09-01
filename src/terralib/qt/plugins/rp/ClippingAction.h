@@ -63,8 +63,6 @@ namespace te
 
             virtual void onPopUpActionActivated(bool checked);
 
-            void closeTool();
-
         private:
 
           te::qt::widgets::ClippingWizard* m_clippingWizard;

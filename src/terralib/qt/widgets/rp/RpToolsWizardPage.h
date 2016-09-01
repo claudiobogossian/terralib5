@@ -37,6 +37,7 @@
 
 // Qt
 #include <QWizardPage>
+#include <qactiongroup.h>
 
 namespace te
 {

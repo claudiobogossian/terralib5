@@ -63,8 +63,6 @@ namespace te
 
             void addLayerSlot(te::map::AbstractLayerPtr layer);
 
-            void closeTool();
-
         private:
 
           te::qt::widgets::MixtureModelWizard* m_mixtureModelWizard;

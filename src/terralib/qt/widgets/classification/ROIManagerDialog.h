@@ -38,6 +38,7 @@
 
 // Qt
 #include <QDialog>
+#include <QActionGroup>
 
 // Forward declaraion
 namespace Ui { class ROIManagerDialogForm; }
@@ -70,10 +71,23 @@ namespace te
           te::qt::widgets::ROIManagerWidget* getWidget();
 
           /*!
-            \brief This method is used to set the list of layers
-            
+          \brief This method is used to set the display
+
           */
+
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
+          /*!
+          \brief This method is used to set the action group
+
+          */
+
+          void setActionGroup(QActionGroup* actionGroup);
+
+          /*!
+          \brief This method is used to set the list of layers
+
+          */
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
           
@@ -82,6 +96,11 @@ namespace te
             
           */
           void set(te::map::AbstractLayerPtr layer);
+
+          /*!
+          \brief This method is used to clear canvas application
+
+          */
 
           void clearCanvas();
 

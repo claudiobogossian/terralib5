@@ -36,6 +36,7 @@
 
 // Qt
 #include <QWizard>
+#include <QActionGroup>
 
 namespace te
 {
@@ -66,9 +67,11 @@ namespace te
 
           virtual bool validateCurrentPage();
 
+          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
 
-          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+          void setActionGroup(QActionGroup* actionGroup);
 
           te::map::AbstractLayerPtr getOutputLayer();
 
@@ -78,13 +81,9 @@ namespace te
 
           bool execute();
 
-          void closeEvent(QCloseEvent* e);
-
         signals:
 
           void addLayer(te::map::AbstractLayerPtr layer);
-
-          void closeTool();
 
         private:
 

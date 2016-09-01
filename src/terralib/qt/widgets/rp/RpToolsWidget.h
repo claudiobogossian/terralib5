@@ -41,6 +41,7 @@
 // Qt
 #include <QComboBox>
 #include <QWidget>
+#include <qactiongroup.h>
 
 namespace Ui { class RpToolsWidgetForm; }
 
@@ -100,6 +101,8 @@ namespace te
 
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
 
+          void setActionGroup(QActionGroup* actionGroup);
+
           te::rst::Raster* getExtentRaster(bool fullScale = false);
 
           void drawRaster(te::rst::Raster* rst, te::se::Style* style = 0);
@@ -117,6 +120,18 @@ namespace te
           void hideBoxTool(bool hide);
 
           void hideInfoTool(bool hide);
+
+          void enableUndoAction();
+
+          void enableRedoAction();
+
+          void enablePickerAction();
+
+          void enableGeomAction();
+
+          void enableBoxAction();
+
+          void enableInfoAction();
 
           void setSelectionMode(bool mode);
 
@@ -164,8 +179,6 @@ namespace te
 
         protected:
 
-          void setCurrentTool(te::qt::widgets::AbstractTool* tool);
-
           void setComboBoxText(QComboBox* cb, std::string value);
 
           void drawOverlay();
@@ -177,11 +190,14 @@ namespace te
           te::map::AbstractLayerPtr m_layer;
           te::se::RasterSymbolizer* m_symbolizer;
 
-          te::qt::widgets::AbstractTool* m_tool;
           te::qt::widgets::MapDisplay* m_mapDisplay;
+
+          QActionGroup* m_actionGroup;
 
           int m_currentColumn;                                       //!< The column position of mouse in map display.
           int m_currentRow;                                          //!< The row position of mouse in map display.
+
+          bool m_checkedTool;
 
           te::map::Visibility m_visibility;
 

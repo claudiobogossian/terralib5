@@ -64,6 +64,11 @@ void te::qt::widgets::ROIManagerDialog::setMapDisplay(te::qt::widgets::MapDispla
   m_widgetROIWidget->setMapDisplay(mapDisplay);
 }
 
+void te::qt::widgets::ROIManagerDialog::setActionGroup(QActionGroup* actionGroup)
+{
+  m_widgetROIWidget->setActionGroup(actionGroup);
+}
+
 void te::qt::widgets::ROIManagerDialog::set(te::map::AbstractLayerPtr layer)
 {
   m_widgetROIWidget->set(layer);

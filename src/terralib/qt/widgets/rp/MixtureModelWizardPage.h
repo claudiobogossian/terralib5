@@ -82,6 +82,7 @@
 // Qt
 #include <QWizardPage>
 #include <QTableWidget>
+#include <QActionGroup>
 
 // Forward declaration
 namespace Ui { class MixtureModelWizardPageForm; }
@@ -141,6 +142,8 @@ namespace te
 
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
 
+          void setActionGroup(QActionGroup* actionGroup);
+
           te::map::AbstractLayerPtr get();
 
           te::rp::MixtureModel::InputParameters getInputParams();
@@ -189,7 +192,6 @@ namespace te
           te::color::RGBAColor** m_rgbaMark;
           te::se::Mark* m_mark;
 
-          te::qt::widgets::Canvas* m_canvas;
           te::qt::widgets::MapDisplay* m_mapDisplay;
       };
 
