@@ -127,6 +127,12 @@ void te::qt::widgets::Module::finalize()
 
   te::map::MarkRendererManager::getInstance().clear();
 
+  // It finalizes the ExternalGraphic renderer singleton
+  te::map::ExternalGraphicRendererManager::getInstance().clear();
+
+  // It finalizes the Chart Renderer singleton
+  te::map::ChartRendererManager::getInstance().set(0);
+
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();
   te::qt::widgets::GlyphGraphicWidgetFactory::finalize();
