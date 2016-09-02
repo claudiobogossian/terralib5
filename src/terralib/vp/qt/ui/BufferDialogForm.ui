@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>549</width>
-    <height>543</height>
+    <height>617</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -188,7 +188,7 @@
        </property>
        <widget class="QWidget" name="m_rulePolTab">
         <attribute name="title">
-         <string>Rule for polygons</string>
+         <string>Rule for geometries</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
