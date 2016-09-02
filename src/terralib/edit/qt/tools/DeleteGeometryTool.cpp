@@ -20,7 +20,7 @@
 /*!
   \file terralib/edit/qt/tools/DeleteGeometryTool.cpp
 
-  \brief This class implements a concrete tool to delete geometries.
+  \brief This class implements a concrete tool to remove geometries.
 */
 
 // TerraLib
@@ -41,8 +41,6 @@
 // Qt
 #include <QMessageBox>
 #include <QMouseEvent>
-#include <QPainter>
-#include <QPixmap>
 
 // STL
 #include <cassert>
