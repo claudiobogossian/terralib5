@@ -657,7 +657,6 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     bool isQuery = false;
 
     te::da::Select* inputSelect = 0;
-    te::da::DataSet* inputDataSet = 0;
 
     if (inputDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
     {
@@ -717,8 +716,6 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       m_params->setSpecificParams(specificParams);
 
       te::vp::Dissolve dissolve;
-
-      const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
 
       if (isQuery)
       {
@@ -783,8 +780,6 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       te::vp::Dissolve dissolve;
 
 // Select a strategy based on the capabilities of the input datasource
-      const te::da::DataSourceCapabilities inputDSCapabilities = inputDataSource->getCapabilities();
-
       if (isQuery)
       {
         res = dissolve.executeQuery(m_params);

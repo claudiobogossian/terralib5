@@ -391,7 +391,7 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet);
       dataSetItem->setInt32(0, pk); //pk
       dataSetItem->setInt32(1, (int)i+1); //level
-      dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
+      dataSetItem->setDouble(2, m_distance*(i+1)); //distance
         
       if(currentVec[j]->getGeomTypeId() == te::gm::MultiPolygonType)
       {

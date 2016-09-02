@@ -234,19 +234,48 @@ void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
       std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType));
 
       te::gm::GeomType gmType = geomProp->getGeometryType();
-      if(gmType == te::gm::PointType || gmType == te::gm::MultiPointType ||
-        gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType)
-      {
-        m_ui->m_ruleInOutRadioButton->setDisabled(true);
-        m_ui->m_ruleOnlyInRadioButton->setDisabled(true);
-        m_ui->m_ruleOnlyOutRadioButton->setChecked(true);
-      }
-      else
+
+      if(gmType == te::gm::PolygonType || gmType == te::gm::MultiPolygonType)
       {
         m_ui->m_ruleInOutRadioButton->setEnabled(true);
         m_ui->m_ruleOnlyInRadioButton->setEnabled(true);
+        m_ui->m_ruleOnlyOutRadioButton->setEnabled(true);
+
         m_ui->m_ruleInOutRadioButton->setChecked(true);
+
+        m_ui->m_okPushButton->setEnabled(true);
       }
+      else
+      if(gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType)
+      {
+        m_ui->m_ruleInOutRadioButton->setDisabled(true);
+        m_ui->m_ruleOnlyInRadioButton->setDisabled(true);
+
+        m_ui->m_ruleOnlyOutRadioButton->setEnabled(true);
+        m_ui->m_ruleOnlyOutRadioButton->setChecked(true);
+        onRuleOutToggled();
+
+        m_ui->m_okPushButton->setEnabled(true);
+      }
+      else
+      if(gmType == te::gm::PointType || gmType == te::gm::MultiPointType)
+      {
+        m_ui->m_ruleInOutRadioButton->setDisabled(true);
+        m_ui->m_ruleOnlyInRadioButton->setDisabled(true);
+
+        m_ui->m_ruleOnlyOutRadioButton->setEnabled(true);
+        m_ui->m_ruleOnlyOutRadioButton->setChecked(true);
+        onRuleOutToggled();
+
+        m_ui->m_okPushButton->setEnabled(true);
+      }
+      else
+      {
+        QMessageBox::information(this, "Buffer", "The geometry type ("+ QString(te::gm::Geometry::getGeomTypeString(geomProp->getGeometryType()).c_str()) +") is not supported to execute this operation.");
+        m_ui->m_okPushButton->setDisabled(true);
+        return;
+      }
+
       unsigned int srid = dsLayer->getSRID();
       if (srid != TE_UNKNOWN_SRS)
       {
@@ -254,7 +283,10 @@ void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
         m_ui->unitLabel->setText(unit->getSymbol().c_str());
       }
       else
+      {
         m_ui->unitLabel->setText("");
+      }
+
       return;
     }
     ++it;
@@ -280,7 +312,26 @@ void te::vp::BufferDialog::onRuleInOutToggled()
 
 void te::vp::BufferDialog::onRuleOutToggled()
 {
-  m_ui->m_ruleImgLabel->setPixmap(QIcon::fromTheme("buffer_only-outside").pixmap(150,60));
+  te::gm::GeometryProperty* geomProp;
+
+  for(std::size_t i = 0; i < m_properties.size(); ++i)
+  {
+    int propertyType = m_properties[i]->getType();
+
+    if(propertyType == te::dt::GEOMETRY_TYPE)
+      geomProp = static_cast<te::gm::GeometryProperty*>(m_properties[i]);
+  }
+
+  int geomType = geomProp->getGeometryType();
+
+  if(geomType == te::gm::PolygonType || geomType == te::gm::MultiPolygonType)
+    m_ui->m_ruleImgLabel->setPixmap(QIcon::fromTheme("buffer_only-outside").pixmap(150,60));
+  else
+  if(geomType == te::gm::LineStringType || geomType == te::gm::MultiLineStringType)
+    m_ui->m_ruleImgLabel->setPixmap(QIcon::fromTheme("buffer-line-outside").pixmap(150,60));
+  else
+  if(geomType == te::gm::PointType || geomType == te::gm::MultiPointType)
+    m_ui->m_ruleImgLabel->setPixmap(QIcon::fromTheme("buffer-point-outside").pixmap(150,60));
 }
 
 void te::vp::BufferDialog::onRuleInToggled()
