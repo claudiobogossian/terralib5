@@ -28,6 +28,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../geometry/Point.h"
+#include "../../../geometry/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -110,8 +111,8 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   mergeGeo = dynamic_cast<te::gm::Geometry*>(m_geocollection->getGeometryN(0)->clone());
 
-  for (std::size_t i = 1; i < m_geocollection->getNumGeometries(); i++)
-    mergeGeo = Union(*mergeGeo, *m_geocollection->getGeometryN(i));
+  for (std::size_t i = 1; i < m_geocollection->getNumGeometries(); ++i)
+    mergeGeo = te::gm::Validate(mergeGeo)->Union(te::gm::Validate(m_geocollection->getGeometryN(i)));
 
   mergeGeo = ConvertGeomType(m_layer, mergeGeo);
 
@@ -145,7 +146,7 @@ bool te::edit::MergeGeometriesTool::spatialRelationDisjoint(te::gm::GeometryColl
   std::size_t j = 0;
   std::size_t aux = 0;
 
-  for (std::size_t i = 0; i < gc.getNumGeometries(); i++)
+  for (std::size_t i = 0; i < gc.getNumGeometries(); ++i)
   {
     aux = 0;
 
@@ -181,7 +182,7 @@ void te::edit::MergeGeometriesTool::getBaseOID(const te::da::ObjectIdSet& objSet
   for (it = objSet.begin(); it != objSet.end(); ++it)
     qValues.append((*it)->getValueAsString().c_str());
 
-  QString qValue = QInputDialog::getItem(m_display, QString(tr("Merge Geometries")), QObject::tr(msg.toLatin1()), qValues, 0, false, &ok);
+  QString qValue = QInputDialog::getItem(m_display, QString(tr("Merge Geometries")), QObject::tr(msg.toUtf8().data()), qValues, 0, false, &ok);
 
   if (qValue.isEmpty() || !ok)
   {
@@ -190,7 +191,7 @@ void te::edit::MergeGeometriesTool::getBaseOID(const te::da::ObjectIdSet& objSet
 
   for (it = objSet.begin(); it != objSet.end(); ++it)
   {
-    if ((*it)->getValueAsString() == qValue.toStdString())
+    if ((*it)->getValueAsString() == qValue.toUtf8().data())
     {
       m_chosenOid = (*it)->clone()->getValueAsString();
     }
@@ -253,11 +254,6 @@ const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::Da
   return env;
 }
 
-te::gm::Geometry* te::edit::MergeGeometriesTool::Union(te::gm::Geometry& g1, te::gm::Geometry& g2)
-{
-  return g2.Union(&g1);
-}
-
 void te::edit::MergeGeometriesTool::draw()
 {
   const te::gm::Envelope& env = m_display->getExtent();
@@ -296,11 +292,6 @@ void te::edit::MergeGeometriesTool::storeFeature()
   }
 
   emit geometriesEdited();
-}
-
-void te::edit::MergeGeometriesTool::onExtentChanged()
-{
-  draw();
 }
 
 void te::edit::MergeGeometriesTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)

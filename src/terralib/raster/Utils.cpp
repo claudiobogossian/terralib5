@@ -26,6 +26,7 @@
 // TerraLib
 #include "../datatype/Enums.h"
 #include "../geometry/Coord2D.h"
+#include "../common/MathUtils.h"
 #include "BandIterator.h"
 #include "Exception.h"
 #include "PositionIterator.h"
@@ -422,57 +423,201 @@ void te::rst::FillBand(te::rst::Band* bin, const std::complex<double>& value)
 
 te::rst::RasterPtr te::rst::CropRaster(const te::rst::Raster& rin, const te::gm::Polygon& pin, const std::map<std::string, std::string>& rinfo, const std::string& rType)
 {
-  std::vector<te::rst::BandProperty*> bprops;
-  for(unsigned int b = 0; b < rin.getNumberOfBands(); b++)
-  {
-    bprops.push_back(new te::rst::BandProperty(*(rin.getBand(b)->getProperty())));
-  }
-
-// define new grid
-  te::gm::Envelope* envelope = new te::gm::Envelope(*pin.getMBR());
-  te::rst::Grid* grid = new te::rst::Grid(rin.getResolutionX(),
-                                          rin.getResolutionY(),
-                                          envelope,
-                                          rin.getSRID());
-// create the output raster
-  te::rst::RasterPtr rout;
-  rout.reset(te::rst::RasterFactory::make(rType, grid, bprops, rinfo, 0, 0));
-  if(rout.get() == 0)
-    return rout;
+  std::vector< te::gm::Geometry const *> geometries;
+  geometries.push_back( &pin );  
   
-// fill bands with no data
-  for (unsigned int b = 0; b < rin.getNumberOfBands(); b++)
-  {
-    double noDataValue = rin.getBand(b)->getProperty()->m_noDataValue;
-    FillBand(rout->getBand(b), noDataValue);
-  }
-  
-// make crop using polygon iterator
-  te::gm::Coord2D geoCoord;
-  te::gm::Coord2D gridCoord;
-  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&rin, &pin);
-  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&rin, &pin);
-  std::vector<double> pixels(rin.getNumberOfBands());
-  unsigned int gridColumn;
-  unsigned int gridRow;
-  while (it != itend)
-  {
-    for (unsigned int b = 0; b < rout->getNumberOfBands(); b++)
-      pixels[b] = (*it)[b];
-    geoCoord = rin.getGrid()->gridToGeo(it.getColumn(), it.getRow());
-    ++it;
-    gridCoord = rout->getGrid()->geoToGrid(geoCoord.x, geoCoord.y);
-    gridColumn = (unsigned int) gridCoord.x;
-    gridRow = (unsigned int) gridCoord.y;
-    if (gridColumn >= rout->getNumberOfColumns())
-      continue;
-    if (gridRow >= rout->getNumberOfRows())
-      continue;
-    rout->setValues(gridColumn, gridRow, pixels);
-  }
-  
-  return rout;
+  return te::rst::RasterPtr( CropRaster( rin, geometries, rinfo, rType ).release() );
 } 
+
+std::unique_ptr< te::rst::Raster > te::rst::CropRaster(const te::rst::Raster& rin, 
+  const std::vector< te::gm::Geometry const *> geometries,
+  const std::map<std::string, std::string>& rinfo,
+  const std::string& rType)
+{
+  std::unique_ptr< te::rst::Raster > outRasterPtr;
+  
+  // Guessing the output envelope
+  // Checking input geometries
+  
+  te::gm::Envelope outEnvelope;
+  
+  {
+    outEnvelope.m_llx = outEnvelope.m_lly = std::numeric_limits< double >::max();
+    outEnvelope.m_urx = outEnvelope.m_ury = -1.0 * std::numeric_limits< double >::max();
+    
+    const std::size_t geometriesSize = geometries.size();
+    std::size_t geometriesIdx = 0;
+    te::gm::Geometry const * gPtr = 0;
+    te::gm::Envelope const * gEnvelopePtr = 0;
+    
+    for( geometriesIdx = 0 ; geometriesIdx < geometriesSize ; ++geometriesIdx )
+    {
+      gPtr = geometries[ geometriesIdx ];
+      if(gPtr == 0 )
+      {
+        return outRasterPtr;
+      }
+      
+      if( 
+          ( gPtr->getGeomTypeId() != te::gm::PolygonType )
+          &&
+          ( gPtr->getGeomTypeId() != te::gm::MultiPolygonType )
+        )
+      {
+        return outRasterPtr;
+      }
+      
+      gEnvelopePtr = gPtr->getMBR();
+      
+      outEnvelope.m_llx = std::min( outEnvelope.m_llx, gEnvelopePtr->m_llx );
+      outEnvelope.m_lly = std::min( outEnvelope.m_lly, gEnvelopePtr->m_lly );
+      outEnvelope.m_urx = std::max( outEnvelope.m_urx, gEnvelopePtr->m_urx );
+      outEnvelope.m_ury = std::max( outEnvelope.m_ury, gEnvelopePtr->m_ury );
+    }
+  }
+  
+  // Creating the output raster
+  
+  unsigned int firstInputRow = 0;
+  unsigned int firstInputCol = 0;
+  
+  {
+    te::gm::Coord2D cllenv(rin.getGrid()->geoToGrid(outEnvelope.m_llx, 
+      outEnvelope.m_lly));
+    te::gm::Coord2D curenv(rin.getGrid()->geoToGrid(outEnvelope.m_urx, 
+      outEnvelope.m_ury));
+    
+    firstInputRow =
+      te::common::Round< double, unsigned int >(
+        std::min( 
+          (double)( rin.getGrid()->getNumberOfRows() - 1 )
+          ,
+          std::max( 
+            0.0
+            , 
+            curenv.getY()
+          )
+        )
+      );
+    firstInputCol = 
+      te::common::Round< double, unsigned int >(
+        std::min( 
+          (double)( rin.getGrid()->getNumberOfColumns() - 1 )
+          ,
+          std::max( 
+            0.0
+            , 
+            cllenv.getX()
+          )
+        )
+      );
+    const unsigned int lastInputRow =
+      te::common::Round< double, unsigned int >(
+        std::min( 
+          (double)( rin.getGrid()->getNumberOfRows() - 1 )
+          ,
+          std::max( 
+            0.0
+            , 
+            cllenv.getY()
+          )
+        )
+      );
+    const unsigned int lastInputCol =
+      te::common::Round< double, unsigned int >(
+        std::min( 
+          (double)( rin.getGrid()->getNumberOfColumns() - 1 )
+          ,
+          std::max( 
+            0.0
+            , 
+            curenv.getX()
+          )
+        )
+      ); 
+    
+    if( ( lastInputRow <= firstInputRow ) || ( lastInputCol <= firstInputCol ) )
+    {
+      return outRasterPtr;
+    }
+    
+    const unsigned int outputWidth = lastInputCol - firstInputCol + 1;
+    const unsigned int outputHeight = lastInputRow - firstInputRow + 1;
+    
+    if( ( outputHeight == 0 ) || ( outputHeight == 0 ) )
+    {
+      return outRasterPtr;
+    }
+    
+    te::gm::Coord2D ulc( rin.getGrid()->gridToGeo( ((double)firstInputCol) - 0.5,
+      ((double)firstInputRow) - 0.5 ) );
+    
+    te::rst::Grid* grid = new te::rst::Grid( outputWidth, outputHeight, 
+      rin.getResolutionX(), rin.getResolutionY(), &ulc, rin.getSRID() );
+
+    std::vector<te::rst::BandProperty*> bands;
+
+    for (std::size_t b = 0; b < rin.getNumberOfBands(); b++)
+    {
+      bands.push_back(new te::rst::BandProperty(*(rin.getBand(b)->getProperty())));
+      bands[ b ]->m_nblocksx = 1;
+      bands[ b ]->m_nblocksy = outputHeight;
+      bands[ b ]->m_blkw = outputWidth;
+      bands[ b ]->m_blkh = 1;
+    }
+
+    outRasterPtr.reset( te::rst::RasterFactory::make(rType, grid, bands, rinfo, 0, 0) );  
+    if( outRasterPtr.get() == 0 )
+    {
+      return outRasterPtr;
+    }
+  }
+  
+  // Data copy
+  
+  {
+    const std::size_t geometriesSize = geometries.size();
+    std::size_t geometriesIdx = 0;
+    std::vector< te::gm::Geometry * > singleGgeomsPtrs;
+    std::size_t singleGgeomsPtrsIdx = 0;
+    std::size_t singleGgeomsPtrsSize = 0;
+    std::vector<std::complex<double> > values;
+    unsigned int outRow = 0;
+    unsigned int outCol = 0;
+    
+    for( geometriesIdx = 0 ; geometriesIdx < geometriesSize ; ++geometriesIdx )
+    {
+      te::gm::Multi2Single( (te::gm::Geometry*)geometries[ geometriesIdx ], singleGgeomsPtrs );
+      
+      singleGgeomsPtrsSize = singleGgeomsPtrs.size();
+      
+      for( singleGgeomsPtrsIdx = 0 ; singleGgeomsPtrsIdx < singleGgeomsPtrsSize ;
+        ++singleGgeomsPtrsIdx )
+      {
+        assert( singleGgeomsPtrs[ singleGgeomsPtrsIdx ]->getGeomTypeId() == 
+          te::gm::PolygonType );
+        
+        PolygonIterator< double > it = PolygonIterator< double >::begin( 
+          outRasterPtr.get(), (te::gm::Polygon*)singleGgeomsPtrs[ singleGgeomsPtrsIdx ] );
+        PolygonIterator< double > itEnd = PolygonIterator< double >::end( 
+          outRasterPtr.get(), (te::gm::Polygon*)singleGgeomsPtrs[ singleGgeomsPtrsIdx ] );
+        
+        while( it != itEnd )
+        {
+          outRow = it.getRow();
+          outCol = it.getColumn();
+          
+          rin.getValues( outCol + firstInputCol, outRow + firstInputRow, values );
+          outRasterPtr->setValues( outCol, outRow, values );
+          
+          ++it;
+        }
+      }
+    }
+  }
+  
+  return outRasterPtr;
+}
 
 std::vector<te::gm::Point*> te::rst::GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints)
 {

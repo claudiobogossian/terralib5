@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../core/encoding/CharEncoding.h"
 #include "../core/translator/Translator.h"
 #include "../core/utils/Platform.h"
 #include "../raster/Band.h"
@@ -781,7 +782,7 @@ bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int 
   }
   else 
   {
-    (*fileptr) = std::fopen( fullFileName.c_str(),  "wb+"  );
+    (*fileptr) = std::fopen( te::core::CharEncoding::fromUTF8(fullFileName).c_str(),  "wb+"  );
     if( (*fileptr) == 0 )
     {
       returnValue = false;
@@ -820,7 +821,7 @@ bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int 
     }
     else       
     {
-      (*fileptr) = std::fopen( fullFileName.c_str(),  "wb+"  );
+      (*fileptr) = std::fopen( te::core::CharEncoding::fromUTF8(fullFileName).c_str(),  "wb+"  );
       if( (*fileptr) == 0 )
       {
         returnValue = false;

@@ -165,7 +165,7 @@ int te::qt::widgets::RetypeColumnDialog::getColumnSize() const
 std::auto_ptr<te::dt::Property> te::qt::widgets::RetypeColumnDialog::getProperty()
 {
   std::auto_ptr<te::dt::Property> res;
-  std::string name = m_ui->m_columnNameLineEdit->text().toStdString();
+  std::string name = m_ui->m_columnNameLineEdit->text().toUtf8().data();
 
   int cType = getColumnType();
 

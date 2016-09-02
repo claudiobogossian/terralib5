@@ -68,7 +68,7 @@ void te::qt::widgets::DataSetSelectorDialog::set(const te::da::DataSourceInfoPtr
     return;
 
   QString title(tr("Dataset Selection - %1"));
-  title = title.arg(QString::fromStdString(ds->getTitle()));
+  title = title.arg(QString::fromUtf8(ds->getTitle().c_str()));
 
   setWindowTitle(title);
 
@@ -78,7 +78,7 @@ void te::qt::widgets::DataSetSelectorDialog::set(const te::da::DataSourceInfoPtr
     return;
 
   title = tr("%1 - %2");
-  title = title.arg(QString::fromStdString(dsType->getTitle())).arg(QString::fromStdString(ds->getTitle()));
+  title = title.arg(QString::fromUtf8(dsType->getTitle().c_str())).arg(QString::fromUtf8(ds->getTitle().c_str()));
 
   m_ui->m_titleLabel->setText(title);
 }

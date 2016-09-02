@@ -114,7 +114,7 @@ set PNG=%LIBS_DIR%\libpng15.dll
 set HDF4=%LIBS_DIR%\hdfdll.dll
 set TIFF=%LIBS_DIR%\libtiff.dll
 set GEOTIFF=%LIBS_DIR%\libgeotiff.dll
-set ICU=%LIBS_DIR%\icuuc52.dll
+set ICU=%LIBS_DIR%\icuuc54.dll
 set XML2=%LIBS_DIR%\libxml2.dll
 set NETCDF=%LIBS_DIR%\netcdf.dll
 
@@ -1471,6 +1471,7 @@ set ICU_DIR=%ROOT_DIR%\icu
 set ICU_INCLUDE_DIR=%ICU_DIR%\include
 set ICU_LIBRARY=%ICU_DIR%\lib%_libF%\icuuc.lib
 set ICUD_LIBRARY=%ICU_DIR%\lib%_libF%\icuucd.lib
+set ICU_BIN=%ICU_DIR%\lib%_libF%
 ::set ICUDATA_LIBRARY=%ICU_DIR%\lib%_libF%\icudt.lib
 ::set ICUDATAD_LIBRARY=%ICU_DIR%\lib%_libF%\icudtd.lib
 ::set ICUIN_LIBRARY=%ICU_DIR%\lib%_libF%\icuin52.lib
@@ -1490,17 +1491,15 @@ call :append_log_begin icu
 
 :begin_icu
 
-set ICUROOT=%ICU_DIR%
-
 cd %ICU_DIR%\source\allinone >nul 2>nul
 
-( msbuild /m /t:clean /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean release" && goto xerces
+:: ( msbuild /m /t:clean /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean release" && goto xerces
 
-( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean debug" && goto xerces
+:: ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu  "clean debug" && goto xerces
 
-( msbuild /m /t:pkgdata /t:genrb /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build release" && goto xerces
+:: ( msbuild /m /t:pkgdata /t:genrb /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build release" && goto xerces
 
-( msbuild /m /t:io >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build debug" && goto xerces
+:: ( msbuild /m /t:io >>%BUILD_LOG% 2>nul ) || call :buildFailLog icu "build debug" && goto xerces
 
 xcopy %ICU_DIR%\bin%_libF%\icuuc*.dll %LIBS_DIR% /Y >nul 2>nul
 
@@ -1551,7 +1550,7 @@ cd %XERCESCROOT%\src\xercesc\util\MsgLoaders\ICU\resources >nul 2>nul
 :: Generating message files
 genrb root.txt 2> %XERCESCROOT%\..\build.log >nul 2>nul
 
-pkgdata --name xercesc_messages_3_1 --mode dll -d . -e xercesc_messages_3_1 res-file-list.txt >nul 2>nul
+pkgdata --name xercesc_messages_3_1 --mode dll -O %ICU_DIR% -c -d . -e xercesc_messages_3_1 res-file-list.txt -r _1 >nul 2>nul
 
 IF NOT EXIST %_libF% mkdir %_libF% >nul 2>nul
 
@@ -1696,7 +1695,7 @@ set "_bzip_bin=BZIP2_BINARY=libbz2"
 set "_zlib_bin=ZLIB_BINARY=zlib"
 set "_zlib_path=ZLIB_LIBPATH=%ZL_DIR%\build%_X86%\Release"
 
-( b2 --reconfigure toolset=msvc-12.0 %_am% variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --with-log --layout=tagged -sICU_PATH=%ICU_DIR% -s%_bzip_bin% -s BZIP2_INCLUDE=%BZIP2_INCLUDE_DIR% -s BZIP2_LIBPATH=%BZIP2_DIR%\lib%_X86% -s %_zlib_bin% -s ZLIB_INCLUDE=%ZL_DIR% -s ZLIB_LIBPATH=%_zlib_path% install %J4% >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
+( b2 --reconfigure toolset=msvc-12.0 %_am% variant=debug,release link=shared threading=multi runtime-link=shared --prefix=%TERRALIB_DEPENDENCIES_DIR% include=%ZL_DIR%\build%_X86% --with-chrono --with-date_time --with-filesystem --with-system --with-thread --with-timer --with-locale --with-iostreams --with-regex --with-test --with-exception --with-log --layout=tagged -sICU_PATH=%ICU_DIR%  install -j 4 >>%BUILD_LOG% 2>nul ) || call :buildFailLog libboost "building %_build_type%" && goto minizip
 
 echo done.
 
@@ -2328,7 +2327,7 @@ cd %ROOT_DIR%
 :qscintilla
 
 :: Qscintilla
-set QSCINTILLA_PATH=%ROOT_DIR%\QScintilla-gpl-2.8
+set QSCINTILLA_PATH=%ROOT_DIR%\QScintilla_gpl-2.9.3
 
 :: Check dependencies
 goto end_qscintilla_deps

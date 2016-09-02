@@ -132,7 +132,7 @@ std::string te::qt::widgets::VectorizationWizardPage::getLayerName()
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
     return "";
 
-  return m_ui->m_newLayerNameLineEdit->text().toStdString();
+  return m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 }
 
 std::string te::qt::widgets::VectorizationWizardPage::getRepositoryName()
@@ -140,7 +140,7 @@ std::string te::qt::widgets::VectorizationWizardPage::getRepositoryName()
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
     return "";
 
-  return m_ui->m_repositoryLineEdit->text().toStdString();
+  return m_ui->m_repositoryLineEdit->text().toUtf8().data();
 }
 
 void te::qt::widgets::VectorizationWizardPage::onTargetDatasourceToolButtonPressed()
@@ -175,7 +175,7 @@ void te::qt::widgets::VectorizationWizardPage::onTargetFileToolButtonPressed()
   if(fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();

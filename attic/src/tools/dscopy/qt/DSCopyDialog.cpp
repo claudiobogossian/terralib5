@@ -113,7 +113,7 @@ void te::tools::dscopy::DSCopyDialog::nextPushButton_clicked()
     {
       if(!inPathLineEdit->text().isEmpty())
       {
-        if(!m_controller->setOriginConnectionInfo(inComboBox->currentText().toStdString(), inPathLineEdit->text().toStdString(), errorMessage))
+        if(!m_controller->setOriginConnectionInfo(inComboBox->currentText().toUtf8().data(), inPathLineEdit->text().toUtf8().data(), errorMessage))
         {
           QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
           return;
@@ -148,12 +148,12 @@ void te::tools::dscopy::DSCopyDialog::nextPushButton_clicked()
       else
       {
 
-        if(!m_controller->setOriginConnectionInfo(inComboBox->currentText().toStdString(), 
-                                              hostLineEdit->text().toStdString(),
-                                              portLineEdit->text().toStdString(),
-                                              dsNameLineEdit->text().toStdString(),
-                                              userLineEdit->text().toStdString(),
-                                              pwLineEdit->text().toStdString(), errorMessage))
+        if(!m_controller->setOriginConnectionInfo(inComboBox->currentText().toUtf8().data(), 
+                                              hostLineEdit->text().toUtf8().data(),
+                                              portLineEdit->text().toUtf8().data(),
+                                              dsNameLineEdit->text().toUtf8().data(),
+                                              userLineEdit->text().toUtf8().data(),
+                                              pwLineEdit->text().toUtf8().data(), errorMessage))
         {
           QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
           return;
@@ -187,7 +187,7 @@ void te::tools::dscopy::DSCopyDialog::nextPushButton_clicked()
     std::vector<std::string> datasetsToCopy;
     for(size_t i = 0; i < dsListWidget->selectedItems().count(); i++)
     {
-      datasetsToCopy.push_back(dsListWidget->selectedItems().at(i)->text().toStdString());
+      datasetsToCopy.push_back(dsListWidget->selectedItems().at(i)->text().toUtf8().data());
     }
 
     m_controller->setDatasetsToCopy(datasetsToCopy);
@@ -209,7 +209,7 @@ void te::tools::dscopy::DSCopyDialog::nextPushButton_clicked()
     {
       if(!outPathLineEdit->text().isEmpty())
       {
-        if(!m_controller->setDestinationConnectionInfo(outComboBox->currentText().toStdString(), outPathLineEdit->text().toStdString(), errorMessage))
+        if(!m_controller->setDestinationConnectionInfo(outComboBox->currentText().toUtf8().data(), outPathLineEdit->text().toUtf8().data(), errorMessage))
         {
           QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
           return;
@@ -244,12 +244,12 @@ void te::tools::dscopy::DSCopyDialog::nextPushButton_clicked()
       else
       {
 
-        if(!m_controller->setDestinationConnectionInfo(outComboBox->currentText().toStdString(), 
-                                              outHostLineEdit->text().toStdString(),
-                                              outPortLineEdit->text().toStdString(),
-                                              outDsNameLineEdit->text().toStdString(),
-                                              outUserLineEdit->text().toStdString(),
-                                              outPwLineEdit->text().toStdString(), errorMessage))
+        if(!m_controller->setDestinationConnectionInfo(outComboBox->currentText().toUtf8().data(), 
+                                              outHostLineEdit->text().toUtf8().data(),
+                                              outPortLineEdit->text().toUtf8().data(),
+                                              outDsNameLineEdit->text().toUtf8().data(),
+                                              outUserLineEdit->text().toUtf8().data(),
+                                              outPwLineEdit->text().toUtf8().data(), errorMessage))
         {
           QMessageBox::warning(this, tr("Warning"), errorMessage.c_str());
           return;
@@ -304,7 +304,7 @@ void te::tools::dscopy::DSCopyDialog::inPathPushButton_clicked()
   QFileDialog fd(this);
   fd.setFileMode(QFileDialog::DirectoryOnly);
 
-  path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdString();
+  path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toUtf8().data();
 
   if(!path.empty())
     if(connStackedWidget->currentIndex() == 1)
@@ -319,7 +319,7 @@ void te::tools::dscopy::DSCopyDialog::outPathPushButton_clicked()
   QFileDialog fd(this);
   fd.setFileMode(QFileDialog::DirectoryOnly);
 
-  path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdString();
+  path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toUtf8().data();
 
   if(!path.empty())
     if(connOutStackedWidget->currentIndex() == 1)

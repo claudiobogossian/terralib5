@@ -20,13 +20,13 @@ void StashGeometries(const te::map::AbstractLayer* layer, const std::map<std::st
   if(!dir.exists())
     dir.mkpath(dir.path());
 
-  QString f = dir.path() + "/" + QString::fromStdString(layer->getTitle());
+  QString f = dir.path() + "/" + QString::fromUtf8(layer->getTitle().c_str());
   QString f2 = f + "_r";
 
   std::vector<te::gm::Geometry*> gs;
   std::vector<te::gm::Geometry*> gsR;
 
-  std::string fName = (f + ".ids").toStdString();
+  std::string fName = (f + ".ids").toUtf8().data();
 
   std::ofstream idsFile(fName.c_str(), std::ios::out);
   std::ofstream idsRFile((fName + "r").c_str(), std::ios::out);
@@ -50,8 +50,8 @@ void StashGeometries(const te::map::AbstractLayer* layer, const std::map<std::st
   idsFile.close();
   idsRFile.close();
 
-  GeometryFile::writeGeometries(f.toStdString().c_str(), gs);
-  GeometryFile::writeGeometries(f2.toStdString().c_str(), gsR);
+  GeometryFile::writeGeometries(f.toUtf8().data(), gs);
+  GeometryFile::writeGeometries(f2.toUtf8().data(), gsR);
 }
 
 
@@ -59,17 +59,17 @@ void GetStashedGeometries(const te::map::AbstractLayer* layer, std::map<std::str
 {
   QString userDataDir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
 
-  QDir dir(userDataDir + "/edition/" + QString::fromStdString(layer->getTitle()));
+  QDir dir(userDataDir + "/edition/" + QString::fromUtf8(layer->getTitle().c_str()));
 
   if(dir.exists())
   {
     GeometryFile f;
 
-    QString fName = dir.path() + "/" + QString::fromStdString(layer->getTitle()) + ".geom";
+    QString fName = dir.path() + "/" + QString::fromUtf8(layer->getTitle().c_str()) + ".geom";
 
-    f.openFile(fName.toStdString().c_str());
+    f.openFile(fName.toUtf8().data());
 
-    QFile qf(dir.path() + "/" + QString::fromStdString(layer->getTitle()) + ".ids");
+    QFile qf(dir.path() + "/" + QString::fromUtf8(layer->getTitle().c_str()) + ".ids");
 
     if(!qf.open(QIODevice::ReadOnly | QIODevice::Text))
       return;
@@ -87,20 +87,20 @@ void GetStashedGeometries(const te::map::AbstractLayer* layer, std::map<std::str
 
       id.toInt(&ok);
       
-      ops[id.toStdString()] = ((ok) ? te::edit::GEOMETRY_UPDATE : te::edit::GEOMETRY_CREATE);
+      ops[id.toUtf8().data()] = ((ok) ? te::edit::GEOMETRY_UPDATE : te::edit::GEOMETRY_CREATE);
 
       gm->setSRID(layer->getSRID());
 
-      geoms[id.toStdString()] = gm;
+      geoms[id.toUtf8().data()] = gm;
     }
 
-    fName = dir.path() + "/" + QString::fromStdString(layer->getTitle()) + "_r.geom";
+    fName = dir.path() + "/" + QString::fromUtf8(layer->getTitle().c_str()) + "_r.geom";
 
     GeometryFile f2;
 
-    f2.openFile(fName.toStdString().c_str());
+    f2.openFile(fName.toUtf8().data());
 
-    QFile qf2(dir.path() + "/" + QString::fromStdString(layer->getTitle()) + ".idsr");
+    QFile qf2(dir.path() + "/" + QString::fromUtf8(layer->getTitle().c_str()) + ".idsr");
 
     if(!qf2.open(QIODevice::ReadOnly | QIODevice::Text))
       return;
@@ -118,11 +118,11 @@ void GetStashedGeometries(const te::map::AbstractLayer* layer, std::map<std::str
 
       id.toInt(&ok);
 
-      ops[id.toStdString()] = te::edit::GEOMETRY_DELETE;
+      ops[id.toUtf8().data()] = te::edit::GEOMETRY_DELETE;
 
       gm->setSRID(layer->getSRID());
 
-      geoms[id.toStdString()] = gm;
+      geoms[id.toUtf8().data()] = gm;
     }
   }
 }
@@ -138,7 +138,7 @@ std::set<std::string> GetStashedLayers()
   QStringList lst = dir.entryList(QDir::Dirs);
 
   for(QStringList::iterator it = lst.begin(); it != lst.end(); ++it)
-    res.insert((*it).toStdString());
+    res.insert((*it).toUtf8().data());
 
   return res;
 }
@@ -147,7 +147,7 @@ void RemoveStash(const te::map::AbstractLayer* layer)
 {
   QString userDataDir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
 
-  QDir dir(userDataDir + "/edition/" + QString::fromStdString(layer->getTitle()));
+  QDir dir(userDataDir + "/edition/" + QString::fromUtf8(layer->getTitle().c_str()));
 
   if(dir.exists())
     if(!dir.removeRecursively())

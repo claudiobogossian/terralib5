@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
   QStringList pts = QIcon::themeSearchPaths();
 
-  pts << QString::fromStdString(iconThemePath);
+  pts << QString::fromUtf8(iconThemePath.c_str());
 
   QIcon::setThemeSearchPaths(pts);
 

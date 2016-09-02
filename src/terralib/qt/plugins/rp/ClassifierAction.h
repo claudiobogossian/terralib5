@@ -61,8 +61,6 @@ namespace te
 
             void addLayerSlot(te::map::AbstractLayerPtr layer);
 
-            void closeTool();
-
         private:
 
           te::qt::widgets::ClassifierWizard* m_classifierWizard;

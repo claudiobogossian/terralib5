@@ -25,6 +25,7 @@
 #include <terralib/Defines.h>
 #include <terralib/common.h>
 #include <terralib/common/Globals.h>
+#include <terralib/core/encoding/CharEncoding.h>
 #include <terralib/geometry.h>
 
 // STL
@@ -1357,7 +1358,7 @@ void TsGeometry::loadGeometry(std::vector<WKBEntry>& hwkbVec) const
 {
   hwkbVec.clear();
 
-  FILE* f = fopen( TERRALIB_DATA_DIR "/hwkb.csv", "r");
+  FILE* f = fopen( te::core::CharEncoding::fromUTF8(TERRALIB_DATA_DIR "/hwkb.csv").c_str(), "r");
 
   CPPUNIT_ASSERT(f != NULL);
 

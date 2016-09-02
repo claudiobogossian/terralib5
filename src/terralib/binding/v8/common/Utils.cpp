@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../common/Exception.h"
+#include "../../../core/encoding/CharEncoding.h"
 #include "../../../core/translator/Translator.h"
 #include "Utils.h"
 
@@ -34,7 +35,7 @@
 
 ::v8::Handle<::v8::String> te::v8::common::ReadFile(const std::string& fileName)
 {
-  FILE* file = fopen(fileName.c_str(), "rb");
+  FILE* file = fopen(te::core::CharEncoding::fromUTF8(fileName).c_str(), "rb");
 
   if(file == 0)
     throw te::common::Exception(TR_V8COMMON("Could not read the informed file"));

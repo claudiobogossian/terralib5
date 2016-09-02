@@ -51,6 +51,9 @@ are defined in the interface:<br style="font-family: Calibri Light;">
   <li><font face="Calibri Light"><span style="font-weight: bold;">(Gain
 * (Image A - Image B) / (Image A + Image B)) + Offset</span></font></li>
 </ul>
+<ul>
+  <li><font face="Calibri Light"><span style="font-weight: bold;">(2 * Image A +1 - <FONT FACE="Symbol">&#61654;</FONT> (((2 * Image A + 1) * (2 * Image A + 1)) - 8 * (Image A - Image B))) / 2</span></font></li>
+</ul>
 <font style="font-family: Calibri Light;" face="Calibri Light">
 It is
 accessible through:</font><font style="font-family: Calibri Light;"
@@ -59,84 +62,51 @@ accessible through:</font><font style="font-family: Calibri Light;"
 <font face="Calibri Light"><br>
 </font>
 <font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font><font
- style="font-family: Calibri Light;" face="Calibri Light"><b>Raster
-Processing &gt; Arithmetic Operations...</b></font><font
- style="font-family: Calibri Light;" face="Calibri Light"><b> </b>(list
-of all
-raster layers will be available)&nbsp;<br>
+ style="font-family: Calibri Light;" face="Calibri Light"><b>Processing &rarr; Raster
+Processing &rarr; Arithmetic Operations...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> </b><br>
 <br>
-<span style="font-family: Calibri Light;"></span></font><font
- style="font-family: Calibri Light;" face="Calibri Light">This
-wizard consists of the
-following steps:</font><font face="Calibri Light"><br>
-</font>
-<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
-Wizard Page 1 -&nbsp;</font><font face="Calibri Light"><span
- style="font-family: Calibri Light;">Selection
-of the layers to execute the operation (<span
- style="text-decoration: underline;"><a
- href="../../widgets/layer/search.html">Layer Search</a></span>)</span></font></h4>
 <ol>
-  <li><font face="Calibri Light">On the <i>List
-of Layers</i> select the raster layers to apply the operation.&nbsp;</font></li>
-  <li><font face="Calibri Light">Optionally use <i>Filter By Name</i>
-field
-giving part of the layer name to help find the layer in the list.</font></li>
-  <li><font face="Calibri Light">Press <b>Next&nbsp;</b>
-to go to next step or <b>Cancel </b>to close the
-dialog.&nbsp;</font></li>
-</ol>
-<div style="text-align: center;">
-<div style="text-align: left;"><font face="Calibri Light"><span
- style="font-family: Calibri Light;"></span></font>
-<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
-Wizard Page 2 - </font><font face="Calibri Light"><span
- style="font-family: Calibri Light;">Arithmetic Operations parameters</span></font></h4>
-<ol>
-  <li><span style="font-family: Calibri Light;">Select which layers
-will form part of the operation and their respective bands.</span></li>
-  <li><span style="font-family: Calibri Light;">Select the desired
-operation.</span></li>
-  <li><span style="font-family: Calibri Light;">Set the optional
-parameters.</span></li>
-  <ul>
-    <li><span style="font-family: Calibri Light;">Gain value,</span></li>
-  </ul>
-  <ul>
-    <li><span style="font-family: Calibri Light;">Offset value</span></li>
-  </ul>
-  <ul>
-    <li><span style="font-family: Calibri Light;">Normalize option (
-the values of the resulting image will be normalized ).</span></li>
-  </ul>
+  <li><font face="Calibri Light">To use predefined
+arithmetic operations click on the icon 
+<IMG  alt="" SRC="../../gen_icones/ic_document_open.png" NAME="graphics214" WIDTH=17 HEIGHT=17 BORDER=0>.&nbsp;</font></li>
+  <li><font face="Calibri Light">Set the layer and correspondent bands and enter the gain and offset values</font></li>
+  <li><font face="Calibri Light">Click on the <b>OK</b> button. The complete operation formula will be presented in the field below.&nbsp;</font></li>
+  <li><span style="font-family: Calibri Light;">Check in the <i>Normalize</i> box and the values of the resulting image will be normalized</span></li>
+  <li><span style="font-family: Calibri Light;"><I>Repository</I> -
+<SPAN STYLE="font-style: normal">Select one type of repository by
+clicking on the </SPAN><SPAN STYLE="font-style: normal">
+<IMG  alt="" SRC="../../gen_icones/ic_3points.png" NAME="graphics51" WIDTH=17 HEIGHT=17 BORDER=0></SPAN><SPAN STYLE="font-style: normal">
+button to save the output layer as a file or on the </SPAN><SPAN STYLE="font-style: normal">
+<IMG  alt="" SRC="../../gen_icones/ic_database.png" NAME="graphics216" WIDTH=17 HEIGHT=17 BORDER=0></SPAN><SPAN STYLE="font-style: normal">
+button to save it in the database.</span></li>
+  <li><span style="font-family: Calibri Light;">Click on the <b>OK</b> button to start the operation.</span></li>
+  
 </ol>
 <span style="font-family: Calibri Light;"></span><font
  face="Calibri Light"><span style="font-family: Calibri Light;"></span></font></div>
 </div>
 <font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font>
-<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
-Wizard Page 3 -&nbsp;</font><font face="Calibri Light"><span
- style="font-family: Calibri Light;">Output
-information</span></font></h4>
+<font face="Calibri Light">The user can create customized arithmetic operations using layer selection and the calculator operations.</font></li>
 <ol>
-  <li><font face="Calibri Light"><i>Raster Info</i>
-- First press <img alt="" src="../../gen_icones/ic_3points.PNG"
- height="19" width="27"> and inform the folder where the resulting
-file&nbsp;will be saved.</font></li>
-  <li><font face="Calibri Light"><i>Name - </i>inform
-the raster name.</font></li>
-  <li><font face="Calibri Light"><i>Extra
-Parameters</i> - if there are some, see the details on how to inform
-then <a href="../../widgets/rp/output_raster_info.html">here</a>.</font></li>
-  <li><font face="Calibri Light">Press <b>Finish</b>
-to save the resulting contrasted raster or&nbsp;<b>Back</b>
-to go to the previous wizard page.</font></li>
+  <li><font face="Calibri Light">Click on the icon 
+<IMG  alt="" SRC="../../gen_icones/ic_3points.png" NAME="graphics217" WIDTH=17 HEIGHT=17 BORDER=0>
+an in the <I>List of Layers</I> select the raster layers to apply the
+operation. (<span
+ style="text-decoration: underline;"><a
+ href="../../widgets/layer/search.html"><B>Layer Search</B></a></span>)</span></font></font></li>
+  <li><font face="Calibri Light">Choose the band to
+operate and click on icon 
+<IMG  alt="" SRC="../../gen_icones/ic_add.png" NAME="graphics53" WIDTH=17 HEIGHT=17 BORDER=0>.
+Write the desired operation using the calculator keyboard.</font></li>
+  <li><font face="Calibri Light">For future use the
+customized operation can be save by clicking in the icon 
+<IMG  alt="" SRC="../../gen_icones/ic_save_as" NAME="graphics52" WIDTH=17 HEIGHT=17 BORDER=0>.</font></li>
 </ol>
 <font face="Calibri Light">
-Hint: The resulting image will be added as a new layer at the TerraView
-project</font><font face="Calibri Light">
+Hint: For asin, acos and atan operations the values must be between -1 and
+1.</font><font face="Calibri Light">
 </font></div>
-<br>
 </div>
 </body>
 </html>

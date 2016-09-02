@@ -58,7 +58,7 @@ std::string te::qt::widgets::LayerAttributesWizardPage::getLayerName()
 
   if(m_ui->m_layerNameLineEdit->text().isEmpty() == false)
   {
-    name = m_ui->m_layerNameLineEdit->text().toStdString();
+    name = m_ui->m_layerNameLineEdit->text().toUtf8().data();
   }
 
   return name;

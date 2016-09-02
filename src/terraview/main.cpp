@@ -123,7 +123,7 @@ int main(int argc, char** argv)
         
       dPath.cd("Contents");
         
-      chdir(dPath.path().toStdString().c_str());
+      chdir(dPath.path().toUtf8().data().c_str());
 #endif
 
       tview.init();

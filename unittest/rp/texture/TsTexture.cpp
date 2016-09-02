@@ -27,8 +27,6 @@
 #include "../Config.h"
 #include <terralib/rp.h>
 #include <terralib/raster.h>
-#include <terralib/rp/RasterAttributes.h>
-#include <terralib/rp/Texture.h>
 
 // Boost
 #define BOOST_TEST_NO_MAIN

@@ -54,7 +54,7 @@ te::qt::widgets::DataSourceToolBox::DataSourceToolBox(QWidget * parent, Qt::Wind
 
     treeView->setModel(treeModel);
 
-    QString dsTypeTitle = QString::fromStdString(it->second->getTitle());
+    QString dsTypeTitle = QString::fromUtf8(it->second->getTitle().c_str());
 
     addItem(treeView, dsTypeTitle);
 

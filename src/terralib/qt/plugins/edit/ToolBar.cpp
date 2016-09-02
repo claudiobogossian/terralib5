@@ -38,6 +38,7 @@
 #include "../../../edit/qt/core/UndoStackManager.h"
 #include "../../../edit/qt/tools/AggregateAreaTool.h"
 #include "../../../edit/qt/tools/CreateLineTool.h"
+#include "../../../edit/qt/tools/CreatePointTool.h"
 #include "../../../edit/qt/tools/CreatePolygonTool.h"
 #include "../../../edit/qt/tools/DeleteGeometryTool.h"
 #include "../../../edit/qt/tools/EditInfoTool.h"
@@ -94,6 +95,7 @@ QObject(parent),
   m_featureAttributesAction(0),
   m_splitPolygonToolAction(0),
   m_mergeGeometriesToolAction(0),
+  m_createPointToolAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),
@@ -167,7 +169,7 @@ void te::qt::plugins::edit::ToolBar::updateLayer(te::map::AbstractLayer* layer, 
     for(std::map<std::string, te::gm::Geometry*>::iterator it = gms.begin(); it != gms.end(); ++it)
     {
       bool ok;
-      QString id = QString::fromStdString(it->first);
+      QString id = QString::fromUtf8(it->first.c_str());
       te::da::ObjectId* oid = new te::da::ObjectId;
 
       int v = id.toInt(&ok);
@@ -282,7 +284,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
     m_redoToolAction->setToolTip("Redo Action");
   }
 
-  createAction(m_vertexToolAction, tr("Vertex Tool - Move, add and remove"), "edit-vertex-tool", true, false, "vertex_tool", SLOT(onVertexToolActivated(bool)));
+  createAction(m_vertexToolAction, tr("Vertex Tool - Move, \nAdd [Double Click] and \nRemove [Shift+Click]"), "edit-vertex-tool", true, false, "vertex_tool", SLOT(onVertexToolActivated(bool)));
   createAction(m_createPolygonToolAction, tr("Create Polygon"), "edit-create-polygon", true, false, "create_polygon", SLOT(onCreatePolygonToolActivated(bool)));
   createAction(m_createLineToolAction, tr("Create Line"), "layout-drawline", true, false,"create_line", SLOT(onCreateLineToolActivated(bool)));
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false, "move_geometry", SLOT(onMoveGeometryToolActivated(bool)));
@@ -292,6 +294,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_featureAttributesAction, tr("Feature Attributes"), "edit-Info", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
   createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, true, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
   createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, true, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
+  createAction(m_createPointToolAction, tr("Create Point"), "edit-create-point", true, false, "create_point", SLOT(onCreatePointToolActivated(bool)));
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
@@ -301,6 +304,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_vertexToolAction);
   toolsGroup->addAction(m_createPolygonToolAction);
   toolsGroup->addAction(m_createLineToolAction);
+  toolsGroup->addAction(m_createPointToolAction);
   toolsGroup->addAction(m_moveGeometryToolAction);
   toolsGroup->addAction(m_aggregateAreaToolAction);
   toolsGroup->addAction(m_subtractAreaToolAction);
@@ -312,16 +316,17 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   // Grouping...
   m_tools.push_back(m_saveAction);
   m_tools.push_back(m_clearEditionAction);
-  m_tools.push_back(m_vertexToolAction);
   m_tools.push_back(m_createPolygonToolAction);
   m_tools.push_back(m_createLineToolAction);
+  m_tools.push_back(m_createPointToolAction);
+  m_tools.push_back(m_vertexToolAction);
   m_tools.push_back(m_moveGeometryToolAction);
+  m_tools.push_back(m_splitPolygonToolAction);
   m_tools.push_back(m_aggregateAreaToolAction);
   m_tools.push_back(m_subtractAreaToolAction);
-  m_tools.push_back(m_deleteGeometryToolAction);
-  m_tools.push_back(m_featureAttributesAction);
-  m_tools.push_back(m_splitPolygonToolAction);
   m_tools.push_back(m_mergeGeometriesToolAction);
+  m_tools.push_back(m_featureAttributesAction);
+  m_tools.push_back(m_deleteGeometryToolAction);
 
   // Adding tools to toolbar
   for (int i = 0; i < m_tools.size(); ++i)
@@ -335,6 +340,8 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
       m_toolBar->addAction(m_redoToolAction);
       m_toolBar->addSeparator();
     }
+    if (i == 4 || i == 7 || i == 10)
+      m_toolBar->addSeparator();
   }
 
   // Snap
@@ -490,7 +497,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       // Build the DataSet that will be used to update
       std::map<te::edit::OperationType, te::mem::DataSet* > operationds;
 
-      for (std::size_t i = 0; i <= te::edit::GEOMETRY_UPDATE_ATTRIBUTES; i++)
+      for (std::size_t i = 0; i <= te::edit::GEOMETRY_UPDATE_ATTRIBUTES; ++i)
         operationds[te::edit::OperationType(i)] = new te::mem::DataSet(schema.get());
 
       // Get the geometry property position
@@ -529,9 +536,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         // Get the edited geometry
         te::gm::Geometry* geom = te::edit::ConvertGeomType(layer, te::gm::Validate(features[i]->getGeometry()));
         assert(geom);
-
-        if (geom->getSRID() == TE_UNKNOWN_SRS || geom->getSRID() != layer->getSRID())
-          geom->transform(layer->getSRID());
 
         // Set the geometry type
         item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
@@ -615,7 +619,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       if (operationds[te::edit::GEOMETRY_UPDATE]->size() > 0)
       {
         std::vector<std::set<int> > properties;
-        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE]->size(); i++)
+        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE]->size(); ++i)
           properties.push_back(propertiesPos[te::edit::GEOMETRY_UPDATE]);
 
         std::vector<std::size_t> oidPropertyPosition;
@@ -642,7 +646,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       if (operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->size() > 0)
       {
         std::vector<std::set<int> > properties;
-        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->size(); i++)
+        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->size(); ++i)
           properties.push_back(propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]);
 
         std::vector<std::size_t> oidPropertyPosition;
@@ -712,7 +716,7 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::VertexTool(e.m_display->getDisplay(), layer, 0), e.m_display);
+  setCurrentTool(new te::edit::VertexTool(e.m_display->getDisplay(), layer, this), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
@@ -730,7 +734,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, Qt::LeftButton, 0), e.m_display);
+  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, te::edit::mouseDoubleClick, this), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
@@ -748,7 +752,7 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::CreateLineTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
+  setCurrentTool(new te::edit::CreateLineTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, this), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
@@ -766,17 +770,24 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::MoveGeometryTool(e.m_display->getDisplay(), layer, 0), e.m_display);
+  setCurrentTool(new te::edit::MoveGeometryTool(e.m_display->getDisplay(), layer, te::edit::mouseReleaseRightClick, this), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
 {
   te::edit::SnapOptionsDialog options(m_toolBar);
 
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  assert(e.m_display);
+
   te::qt::af::evt::GetAvailableLayers evt;
   emit triggered(&evt);
 
   options.setLayers(evt.m_layers);
+  options.setMapDisplay(e.m_display->getDisplay());
+
   options.exec();
 }
 
@@ -795,7 +806,7 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::EditInfoTool(e.m_display->getDisplay(), layer, 0), e.m_display);
+  setCurrentTool(new te::edit::EditInfoTool(e.m_display->getDisplay(), layer, this), e.m_display);
 
 }
 
@@ -814,7 +825,7 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::AggregateAreaTool(e.m_display->getDisplay(), layer, 0), e.m_display);
+  setCurrentTool(new te::edit::AggregateAreaTool(e.m_display->getDisplay(), layer, te::edit::mouseDoubleClick, this), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
@@ -832,9 +843,8 @@ void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::SubtractAreaTool(e.m_display->getDisplay(), layer, 0), e.m_display);
+  setCurrentTool(new te::edit::SubtractAreaTool(e.m_display->getDisplay(), layer, te::edit::mouseDoubleClick, this), e.m_display);
 }
-
 
 void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool)
 {
@@ -854,7 +864,7 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool)
 
     assert(e.m_display);
 
-    setCurrentTool(new te::edit::DeleteGeometryTool(e.m_display->getDisplay(), layer, 0), e.m_display);
+    setCurrentTool(new te::edit::DeleteGeometryTool(e.m_display->getDisplay(), layer, this), e.m_display);
   }
   catch(te::common::Exception& e)
   {
@@ -889,7 +899,7 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::MergeGeometriesTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
+  setCurrentTool(new te::edit::MergeGeometriesTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, this), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool)
@@ -918,7 +928,7 @@ void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool)
 
   assert(e.m_display);
 
-  setCurrentTool(new te::edit::SplitPolygonTool(e.m_display->getDisplay(), layer, Qt::LeftButton, 0), e.m_display);
+  setCurrentTool(new te::edit::SplitPolygonTool(e.m_display->getDisplay(), layer, te::edit::mouseDoubleClick, this), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onResetVisualizationToolActivated(bool /*checked*/)
@@ -956,6 +966,24 @@ void te::qt::plugins::edit::ToolBar::onResetVisualizationToolActivated(bool /*ch
 
 }
 
+void te::qt::plugins::edit::ToolBar::onCreatePointToolActivated(bool /*checked*/)
+{
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if (layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_createPolygonToolAction->setChecked(false);
+    return;
+  }
+
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  assert(e.m_display);
+
+  setCurrentTool(new te::edit::CreatePointTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, this), e.m_display);
+}
+
 void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool /*checked*/)
 {
   try
@@ -975,12 +1003,11 @@ void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool /*checked*/)
 
     if (m_undoView == 0)
     {
-      m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack(),0);
+      m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack(), this->get());
       m_undoView->setWindowTitle(tr("Edition List"));
       m_undoView->setFixedSize(QSize(300, 300));
       m_undoView->show();
       m_undoView->setAttribute(Qt::WA_QuitOnClose, true);
-
     }
 
   }
@@ -1046,27 +1073,53 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> act
     std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
     te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
 
-    if (geomProp->getGeometryType() == te::gm::MultiPolygonType ||
-      geomProp->getGeometryType() == te::gm::PolygonType)
+    if (geomProp == 0)
     {
-      geomType = 1;
-    }
-    else if (geomProp->getGeometryType() == te::gm::MultiLineStringType ||
-      geomProp->getGeometryType() == te::gm::LineStringType)
-    {
-      geomType = 2;
-    }
-    else
-      geomType = 3; // point...
+      for (QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
+        (*it)->setEnabled(false);
 
-    m_createLineToolAction->setEnabled(geomType == 2 ? true : false);
-    m_vertexToolAction->setEnabled(geomType == 1 ? true : false);
+      return;
+    }
+
+    switch (geomProp->getGeometryType())
+    {
+      case te::gm::MultiPolygonType:
+      case te::gm::PolygonType:
+        geomType = 1;
+        break;
+
+      case te::gm::MultiLineStringType:
+      case te::gm::LineStringType:
+        geomType = 2;
+        break;
+
+      case te::gm::MultiPointType:
+      case te::gm::PointType:
+        geomType = 3;
+        break;
+
+      default:
+        geomType = -1;
+    }
+
+    if (geomType == -1)
+    {
+      for (QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
+        (*it)->setEnabled(false);
+
+      return;
+    }
+
     m_createPolygonToolAction->setEnabled(geomType == 1 ? true : false);
-    m_moveGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
     m_aggregateAreaToolAction->setEnabled(geomType == 1 ? true : false);
     m_subtractAreaToolAction->setEnabled(geomType == 1 ? true : false);
-    m_deleteGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
-
+    m_mergeGeometriesToolAction->setEnabled(geomType == 1 ? true : false);
+    m_splitPolygonToolAction->setEnabled(geomType == 1 ? true : false);
+    m_createLineToolAction->setEnabled(geomType == 2 ? true : false);
+    m_vertexToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
+    m_moveGeometryToolAction->setEnabled(geomType >= 1 && geomType <= 3 ? true : false);
+    m_deleteGeometryToolAction->setEnabled(geomType >= 1 && geomType <= 3 ? true : false);
+    m_createPointToolAction->setEnabled(geomType == 3 ? true : false);
   }
 
 }

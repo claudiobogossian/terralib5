@@ -68,7 +68,7 @@ te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Q
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
 
   //Creating and adjusting the chart Display
-  m_chartDisplay = new te::qt::widgets::ChartDisplay(m_ui->m_widget, QString::fromStdString(""), m_chartStyle);
+  m_chartDisplay = new te::qt::widgets::ChartDisplay(m_ui->m_widget, QString::fromUtf8(""), m_chartStyle);
   m_chartDisplay->adjustDisplay();
   m_chartDisplay->show();
   m_chartDisplay->replot();
@@ -110,6 +110,11 @@ te::qt::widgets::RasterHistogramWidget::~RasterHistogramWidget()
 Ui::RasterHistogramWidgetForm* te::qt::widgets::RasterHistogramWidget::getForm() const
 {
   return m_ui.get();
+}
+
+void te::qt::widgets::RasterHistogramWidget::setChartInputColor(int red, int green, int blue)
+{
+  m_histogramChartInput->setBrush(QBrush(QColor(red, green, blue)));
 }
 
 void te::qt::widgets::RasterHistogramWidget::setInputRaster(te::rst::Raster* raster)
@@ -196,7 +201,7 @@ void te::qt::widgets::RasterHistogramWidget::updateMinimumValueLine(int value, b
   if(!m_minValueLine)
   {
     m_minValueLine = new QwtPlotMarker();
-    m_minValueLine->setLabel(QString::fromStdString("Minimum"));
+    m_minValueLine->setLabel(QString::fromUtf8("Minimum"));
     m_minValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_minValueLine->setLabelOrientation(Qt::Vertical);
     m_minValueLine->setLineStyle(QwtPlotMarker::VLine);
@@ -236,7 +241,7 @@ void te::qt::widgets::RasterHistogramWidget::updateMaximumValueLine(int value, b
   if(!m_maxValueLine)
   {
     m_maxValueLine = new QwtPlotMarker();
-    m_maxValueLine->setLabel(QString::fromStdString("Maximum"));
+    m_maxValueLine->setLabel(QString::fromUtf8("Maximum"));
     m_maxValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_maxValueLine->setLabelOrientation(Qt::Vertical);
     m_maxValueLine->setLineStyle(QwtPlotMarker::VLine);
@@ -258,6 +263,34 @@ void te::qt::widgets::RasterHistogramWidget::updateMaximumValueLabel(QString val
 {
   if(m_maxValueLine)
     m_maxValueLine->setLabel(value);
+}
+
+void te::qt::widgets::RasterHistogramWidget::clear()
+{
+  m_histogramChartInput->detach();
+  m_histogramChartOutput->detach();
+  delete m_histogramInput;
+  delete m_histogramOutput;
+
+  m_inputRaster.reset(NULL);
+  m_outputRaster.reset(NULL);
+
+  m_histogramInput = new te::qt::widgets::Histogram();
+  m_histogramChartInput = new te::qt::widgets::HistogramChart(m_histogramInput);
+  m_histogramChartInput->setPen(Qt::black);
+  m_histogramChartInput->setBrush(QBrush(Qt::blue));
+  m_histogramChartInput->attach(m_chartDisplay);
+  m_histogramChartInput->setTitle(tr("Input"));
+
+  m_histogramOutput = new te::qt::widgets::Histogram();
+  m_histogramChartOutput = new te::qt::widgets::HistogramChart(m_histogramOutput);
+  m_histogramChartOutput->setPen(Qt::black, 3.);
+  m_histogramChartOutput->setBrush(QBrush(QColor(255, 0, 0, 127)));
+  m_histogramChartOutput->setStyle(QwtPlotHistogram::Outline);
+  m_histogramChartOutput->attach(m_chartDisplay);
+  m_histogramChartOutput->setTitle(tr("Output"));
+
+  m_chartDisplay->replot();
 }
 
 void te::qt::widgets::RasterHistogramWidget::onApplyToolButtonClicked()

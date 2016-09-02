@@ -194,7 +194,7 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
 
   if(m_ui->m_useAttrLayerCheckBox->isChecked())
   {
-    kInParams->m_intensityAttrName = m_ui->m_attrLayerComboBox->currentText().toStdString();
+    kInParams->m_intensityAttrName = m_ui->m_attrLayerComboBox->currentText().toUtf8().data();
   }
 
   kInParams->m_ds = l->getData();
@@ -203,8 +203,8 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
   //set output kernel parameters
   te::sa::KernelOutputParams* kOutParams = new te::sa::KernelOutputParams();
 
-  kOutParams->m_outputPath = m_ui->m_repositoryLineEdit->text().toStdString();
-  kOutParams->m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  kOutParams->m_outputPath = m_ui->m_repositoryLineEdit->text().toUtf8().data();
+  kOutParams->m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   if(m_ui->m_gridRadioButton->isChecked())
   {
@@ -226,7 +226,7 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
     }
 
     kOutParams->m_storageType = te::sa::Attribute;
-    kOutParams->m_outputAttrName = m_ui->m_attrNameLineEdit->text().toStdString();
+    kOutParams->m_outputAttrName = m_ui->m_attrNameLineEdit->text().toUtf8().data();
   }
 
   //progress
@@ -277,15 +277,15 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
 
   if(m_ui->m_gridRadioButton->isChecked())
   {
-    outputDataSource = te::sa::CreateGDALDataSource(m_ui->m_repositoryLineEdit->text().toStdString(), m_ui->m_newLayerNameLineEdit->text().toStdString());
+    outputDataSource = te::sa::CreateGDALDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data(), m_ui->m_newLayerNameLineEdit->text().toUtf8().data());
 
-    dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString() + ".tif";
+    dataSetName = std::string(m_ui->m_newLayerNameLineEdit->text().toUtf8().data()) + ".tif";
   }
   else if(m_ui->m_attrRadioButton->isChecked())
   {
-    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString(), m_ui->m_newLayerNameLineEdit->text().toStdString());
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data(), m_ui->m_newLayerNameLineEdit->text().toUtf8().data());
 
-    dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    dataSetName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
   }
 
   //create layer
@@ -298,7 +298,7 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
   }
   else if(m_ui->m_attrRadioButton->isChecked())
   {
-    te::sa::CreateKernelGrouping(m_outputLayer, m_ui->m_attrNameLineEdit->text().toStdString());
+    te::sa::CreateKernelGrouping(m_outputLayer, m_ui->m_attrNameLineEdit->text().toUtf8().data());
   }
 
   accept();

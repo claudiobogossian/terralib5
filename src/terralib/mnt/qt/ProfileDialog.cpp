@@ -249,7 +249,7 @@ void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
 {
   m_inputLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_inputLayersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_inputLayersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
   while (it != m_layers.end())
   {
     if (layerID == it->get()->getId().c_str())
@@ -372,7 +372,7 @@ void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
   m_trajectoryLayer = 0;
   
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_vectorlayersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_vectorlayersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
   while (it != m_layers.end())
   {
     if (layerID == it->get()->getId().c_str())
@@ -646,7 +646,7 @@ void te::mnt::ProfileDialog::onOkPushButtonClicked()
     if (gin.get())
       if (!gin.get()->is3D())
       {
-        attrZ = m_ui->m_ZcomboBox->currentText().toStdString();
+        attrZ = m_ui->m_ZcomboBox->currentText().toUtf8().data();
         if (attrZ.empty())
         {
           std::stringstream msg;
@@ -819,7 +819,7 @@ void te::mnt::ProfileDialog::DrawSelected(const std::vector<te::gm::LineString*>
     if (visadas[v]->getSRID() != window->getMapDisplay()->getSRID())
     {
 #ifdef TERRALIB_LOGGER_ENABLED
-      TE_CORE_LOG_DEBUG("mnt", tr("SRID InputLayer different from SRID Display").toLatin1().data());
+      TE_CORE_LOG_DEBUG("mnt", tr("SRID InputLayer different from SRID Display").toUtf8().data().data());
 #endif
      }
     canvas.draw(visadas[v]);

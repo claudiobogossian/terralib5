@@ -40,7 +40,7 @@
 te::qt::plugins::terralib4::TL4ConverterAction::TL4ConverterAction(QMenu* menu)
   : m_menu(menu), m_action(0)
 {
-  createAction(tr("TerraLib4 Converter...").toStdString());
+  createAction(tr("TerraLib4 Converter...").toUtf8().data());
 }
 
 te::qt::plugins::terralib4::TL4ConverterAction::~TL4ConverterAction()

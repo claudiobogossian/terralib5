@@ -24,7 +24,7 @@ void GetFactoriesNames (QVector<QString>& facNames)
 QWidget* GetWidget(const QString& facName, QWidget* parent, te::qt::af::ApplicationController* app)
 {
   QScrollArea* scr = new QScrollArea(parent);
-  std::string value = facName.toStdString();
+  std::string value = facName.toUtf8().data();
 
   te::qt::af::AbstractSettingWidget* wid = te::qt::af::SettingsWidgetsFactory::make(value, scr);
   wid->setApplicationController(app);

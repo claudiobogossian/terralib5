@@ -38,7 +38,7 @@
 
 te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Classifier...").toStdString(), "classifier");
+  createAction(tr("Classifier...").toUtf8().data(), "classifier");
   m_action->setObjectName("Processing.Raster Processing.Classifier");
 }
 
@@ -53,28 +53,25 @@ void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
   m_classifierWizard->setMapDisplay(ba->getMapDisplay());
 
+  connect(m_classifierWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
+
+  QActionGroup* m_mapEditionTools = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
+  assert(m_mapEditionTools);
+
+  m_classifierWizard->setActionGroup(m_mapEditionTools);
+
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
+
+  m_classifierWizard->setAttribute(Qt::WA_DeleteOnClose);
 
   m_classifierWizard->setList(layersList);
 
   m_classifierWizard->setModal(false);
 
   m_classifierWizard->show();
-
-  connect(m_classifierWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
-  connect(m_classifierWizard, SIGNAL(closeTool()), this, SLOT(closeTool()));
 }
 
 void te::qt::plugins::rp::ClassifierAction::addLayerSlot(te::map::AbstractLayerPtr layer)
 {
   addNewLayer(layer);
-}
-
-void te::qt::plugins::rp::ClassifierAction::closeTool()
-{
-  if (m_classifierWizard)
-  {
-    delete m_classifierWizard;
-    m_classifierWizard = 0;
-  }
 }

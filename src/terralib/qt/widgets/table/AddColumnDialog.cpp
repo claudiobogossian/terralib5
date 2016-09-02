@@ -58,7 +58,7 @@ te::dt::Property* te::qt::widgets::AddColumnDialog::getNewProperty() const
 {
   te::dt::Property* pr = GetProperty(m_ui->m_colTypeCBB->currentText());
 
-  pr->setName(m_ui->m_colNameLNE->text().toStdString());
+  pr->setName(m_ui->m_colNameLNE->text().toUtf8().data());
 
   return pr;
 }

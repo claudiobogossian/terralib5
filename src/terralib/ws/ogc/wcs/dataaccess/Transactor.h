@@ -69,7 +69,7 @@ namespace te
 
             CoverageDescription coverageDescription(const std::string coverageName);
 
-            void setCoverageRequest(const CoverageRequest coverageRequest);
+            void setCoverageRequest(const te::ws::ogc::wcs::CoverageRequest coverageRequest);
 
             te::da::DataSource* getDataSource() const;
 
@@ -257,8 +257,6 @@ namespace te
                         std::size_t limit = 0);
 
             void optimize(const std::map<std::string, std::string>& opInfo);
-
-            te::core::EncodingType getEncoding();
 
           private:
 

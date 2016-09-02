@@ -28,6 +28,7 @@
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../Feature.h"
@@ -48,12 +49,13 @@
 #include <cassert>
 #include <memory>
 
-te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, bool rightButtonToSave, QObject* parent)
+te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+                                             const te::edit::MouseEventEdition mouseEventToSave, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
-    m_rightButtonToSave(rightButtonToSave),
     m_selected(false),
     m_moveStarted(false),
     m_vecFeature(0),
+    m_mouseEventToSave(mouseEventToSave),
     m_stack(UndoStackManager::getInstance())
 {
   updateCursor();
@@ -100,7 +102,7 @@ bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
   }
 
   if (!m_selected)
-    pickFeature(m_layer, GetPosition(e));
+    pickFeature(GetPosition(e));
 
   if (m_vecFeature.size())
     m_moveStarted = true;
@@ -125,7 +127,7 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
   // Move geometry using the current delta
   if (m_vecFeature.size())
   {
-    for (std::size_t i = 0; i < m_vecFeature.size(); i++)
+    for (std::size_t i = 0; i < m_vecFeature.size(); ++i)
       MoveGeometry(m_vecFeature[i]->getGeometry(), m_delta.x(), m_delta.y());
   }
 
@@ -138,7 +140,7 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 {
-  if (e->button() == Qt::RightButton && m_rightButtonToSave)
+  if (e->button() == Qt::RightButton && m_mouseEventToSave == te::edit::mouseReleaseRightClick)
     emit geometriesEdited();
 
   if (e->button() != Qt::LeftButton)
@@ -153,10 +155,7 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 
   storeUndoCommand();
 
-  if (!m_rightButtonToSave)
-    emit geometriesEdited();
-  else
-    draw();
+  draw();
 
   return false;
 }
@@ -174,7 +173,7 @@ void te::edit::MoveGeometryTool::reset()
   m_delta *= 0;
 }
 
-void te::edit::MoveGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::MoveGeometryTool::pickFeature(const QPointF& pos)
 {
   reset();
 
@@ -242,13 +241,24 @@ void te::edit::MoveGeometryTool::draw()
     return;
   }
 
-  for (std::size_t i = 0; i < m_vecFeature.size(); i++)
+  for (std::size_t i = 0; i < m_vecFeature.size(); ++i)
   { 
     // Draw the vertexes
     if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_vecFeature[i]->getId()) == false)
       renderer.draw(m_vecFeature[i]->getGeometry(), true);
     else
-      renderer.drawVertexes(m_vecFeature[i]->getGeometry());
+    {
+      switch (m_vecFeature[i]->getGeometry()->getGeomTypeId())
+      {
+        case te::gm::PointType:
+        case te::gm::MultiPointType:
+          renderer.draw(m_vecFeature[i]->getGeometry());
+          break;
+
+        default:
+          renderer.drawVertexes(m_vecFeature[i]->getGeometry());
+      }
+    }
   }
 
   renderer.end();
@@ -258,7 +268,20 @@ void te::edit::MoveGeometryTool::draw()
 
 void te::edit::MoveGeometryTool::updateCursor()
 {
-  m_display->setCursor(Qt::OpenHandCursor);
+  // Get the geometry type of layer
+  std::auto_ptr<te::da::DataSetType> dt = m_layer->getSchema();
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+  switch (geomProp->getGeometryType())
+  {
+    case te::gm::MultiPointType:
+    case te::gm::PointType:
+      m_display->setCursor(Qt::ArrowCursor);
+      break;
+
+    default:
+      m_display->setCursor(Qt::OpenHandCursor);
+  }
 }
 
 void te::edit::MoveGeometryTool::onExtentChanged()
@@ -271,7 +294,7 @@ void te::edit::MoveGeometryTool::storeFeature()
   if (!m_vecFeature.size())
     return;
 
-  for (std::size_t i = 0; i < m_vecFeature.size(); i++)
+  for (std::size_t i = 0; i < m_vecFeature.size(); ++i)
     RepositoryManager::getInstance().addFeature(m_layer->getId(), m_vecFeature[i]->clone());
 
 }
@@ -281,7 +304,7 @@ void te::edit::MoveGeometryTool::storeUndoCommand()
   if (!m_vecFeature.size())
     return;
 
-  for (std::size_t i = 0; i < m_vecFeature.size(); i++)
+  for (std::size_t i = 0; i < m_vecFeature.size(); ++i)
   {
     m_stack.addWatch(m_vecFeature[i]->clone());
 

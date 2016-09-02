@@ -148,7 +148,7 @@ bool te::qt::widgets::MultiResolutionWidget::fromFile()
   }
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = m_ui->m_fileLineEdit->text().toStdString();
+  rinfo["URI"] = m_ui->m_fileLineEdit->text().toUtf8().data();
 
   std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::open(rinfo));
 
@@ -179,7 +179,7 @@ bool te::qt::widgets::MultiResolutionWidget::fromFolder()
   }
 
   std::map<std::string, std::string> dsInfo;
-  dsInfo["SOURCE"] = m_ui->m_folderLineEdit->text().toStdString();
+  dsInfo["SOURCE"] = m_ui->m_folderLineEdit->text().toUtf8().data();
 
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
 

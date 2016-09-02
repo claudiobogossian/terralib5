@@ -54,6 +54,11 @@
 #include "common/UnitOfMeasure.h"
 #include "common/UnitsOfMeasureManager.h"
 #include "common/Visitor.h"
+#include "common/progress/AbstractProgressViewer.h"
+#include "common/progress/ConsoleProgressViewer.h"
+#include "common/progress/ProgressManager.h"
+#include "common/progress/ProgressTimer.h"
+#include "common/progress/TaskProgress.h"
 
 /*!
   \defgroup common Common

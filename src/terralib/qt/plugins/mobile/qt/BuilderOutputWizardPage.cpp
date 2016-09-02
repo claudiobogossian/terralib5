@@ -61,7 +61,7 @@ bool te::qt::plugins::terramobile::BuilderOutputWizardPage::isComplete() const
 std::string te::qt::plugins::terramobile::BuilderOutputWizardPage::getGeoPackageFilePath()
 {
   if (!m_ui->m_geopackageFileNameLineEdit->text().isEmpty())
-    return m_ui->m_geopackageFileNameLineEdit->text().toStdString();
+    return m_ui->m_geopackageFileNameLineEdit->text().toUtf8().data();
 
   return "";
 }
@@ -71,7 +71,7 @@ std::string te::qt::plugins::terramobile::BuilderOutputWizardPage::getGeoPackage
 std::string te::qt::plugins::terramobile::BuilderOutputWizardPage::getGeoPackageDescription()
 {
   if (!m_ui->m_gpkgDescLineEdit->text().isEmpty())
-    return m_ui->m_gpkgDescLineEdit->text().toStdString();
+    return m_ui->m_gpkgDescLineEdit->text().toUtf8().data();
 
   return "";
 }
@@ -83,7 +83,7 @@ bool te::qt::plugins::terramobile::BuilderOutputWizardPage::useVisibleArea()
 
 void te::qt::plugins::terramobile::BuilderOutputWizardPage::appendLogMesssage(std::string msg)
 {
-  m_ui->m_logPlainTextEdit->appendPlainText(QString::fromStdString(msg));
+  m_ui->m_logPlainTextEdit->appendPlainText(QString::fromUtf8(msg.c_str()));
   this->repaint();
 }
 

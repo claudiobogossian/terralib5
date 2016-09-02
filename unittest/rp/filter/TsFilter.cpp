@@ -26,9 +26,7 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/raster/Grid.h>
-#include <terralib/raster/Raster.h>
-#include <terralib/raster/RasterFactory.h>
+#include <terralib/raster.h>
 
 // Boost
 #define BOOST_TEST_NO_MAIN
@@ -64,7 +62,7 @@ BOOST_AUTO_TEST_CASE(sobelFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_SobelFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = "terralib_unittest_rp_Filter_SobelFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -103,7 +101,7 @@ BOOST_AUTO_TEST_CASE(robertsFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_RobertsFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = "terralib_unittest_rp_Filter_RobertsFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -141,7 +139,7 @@ BOOST_AUTO_TEST_CASE(meanFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_MeanFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = "terralib_unittest_rp_Filter_MeanFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -180,7 +178,7 @@ BOOST_AUTO_TEST_CASE(modeFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_ModeFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = "terralib_unittest_rp_Filter_ModeFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -218,7 +216,7 @@ BOOST_AUTO_TEST_CASE(medianFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_MedianFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = "terralib_unittest_rp_Filter_MedianFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -256,7 +254,7 @@ BOOST_AUTO_TEST_CASE(dilationFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_DilationFilter.tif";
+  algoOutputParams.m_rInfo["URI"] =  "terralib_unittest_rp_Filter_DilationFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -294,7 +292,7 @@ BOOST_AUTO_TEST_CASE(erosionFilter_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_ErosionFilter.tif";
+  algoOutputParams.m_rInfo["URI"] = "terralib_unittest_rp_Filter_ErosionFilter.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */
@@ -345,7 +343,7 @@ BOOST_AUTO_TEST_CASE(userDefinedWindow_test)
 
   te::rp::Filter::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_rInfo["URI"] = TERRALIB_DATA_DIR "/geotiff/terralib_unittest_rp_Filter_UserDefinedWindow.tif";
+  algoOutputParams.m_rInfo["URI"] = "terralib_unittest_rp_Filter_UserDefinedWindow.tif";
   algoOutputParams.m_rType = "GDAL";
 
   /* Executing the algorithm */

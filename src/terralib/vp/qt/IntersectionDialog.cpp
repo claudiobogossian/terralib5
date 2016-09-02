@@ -371,12 +371,12 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   
   try
   {
-    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
     bool res;
     if (m_toFile)
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
       
       if (boost::filesystem::exists(uri))
       {
@@ -655,7 +655,7 @@ void te::vp::IntersectionDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();

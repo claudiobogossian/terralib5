@@ -139,9 +139,9 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
 
   for(std::list<te::da::DataSetTypePtr>::const_iterator it = datasets.begin(); it != datasets.end(); ++it)
   {
-    QString title = QString::fromStdString((*it)->getTitle());
+    QString title = QString::fromUtf8((*it)->getTitle().c_str());
 
-    QString name = QString::fromStdString((*it)->getName());
+    QString name = QString::fromUtf8((*it)->getName().c_str());
 
     if(title.isEmpty())
       title = name;
@@ -197,7 +197,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
     }
   }
 
-  std::string dataSetAdapterName = item->text().toStdString();
+  std::string dataSetAdapterName = item->text().toUtf8().data();
 
   std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::iterator it = m_datasets.begin();
 
@@ -205,8 +205,8 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
   {
     if(it->second->getConvertee()->getName() == dataSetAdapterName)
     {
-      it->second->getResult()->setName(m_ui->m_datasetNameLineEdit->text().trimmed().toStdString());
-      it->second->getResult()->setTitle(m_ui->m_datasetTitleLineEdit->text().trimmed().toStdString());
+      it->second->getResult()->setName(m_ui->m_datasetNameLineEdit->text().trimmed().toUtf8().data());
+      it->second->getResult()->setTitle(m_ui->m_datasetTitleLineEdit->text().trimmed().toUtf8().data());
 
       //get srid information
       if (!m_ui->m_sridInputLineEdit->text().isEmpty())
@@ -267,7 +267,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
   if(item == 0)
     return;
 
-  std::string dataSetAdapterName = item->text().toStdString();
+  std::string dataSetAdapterName = item->text().toUtf8().data();
 
   std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::iterator it = m_datasets.begin();
 
@@ -279,10 +279,10 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
 
       // fill line edits
       m_ui->m_datasetNameLineEdit->setEnabled(true);
-      m_ui->m_datasetNameLineEdit->setText(QString::fromStdString(dataset->getName()));
+      m_ui->m_datasetNameLineEdit->setText(QString::fromUtf8(dataset->getName().c_str()));
 
       m_ui->m_datasetTitleLineEdit->setEnabled(true);
-      m_ui->m_datasetTitleLineEdit->setText(QString::fromStdString(dataset->getTitle()));
+      m_ui->m_datasetTitleLineEdit->setText(QString::fromUtf8(dataset->getTitle().c_str()));
 
       if(dataset->hasGeom())
       {
@@ -298,14 +298,14 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
 
         if (geomPropIn)
         {
-          m_ui->m_sridInputLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(geomPropIn->getSRID())));
+          m_ui->m_sridInputLineEdit->setText(QString::fromUtf8(boost::lexical_cast<std::string>(geomPropIn->getSRID()).c_str()));
         }
 
         te::gm::GeometryProperty* geomPropOut = dynamic_cast<te::gm::GeometryProperty*>(dataset->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
 
         if (geomPropOut)
         {
-          m_ui->m_sridOutputLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(geomPropOut->getSRID())));
+          m_ui->m_sridOutputLineEdit->setText(QString::fromUtf8(boost::lexical_cast<std::string>(geomPropOut->getSRID()).c_str()));
         }
       }
       else
@@ -339,7 +339,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
 //    if(dataset.get() == 0)
 //      return;
 //
-//    std::string name = m_ui->m_datasetNameLineEdit->text().trimmed().toStdString();
+//    std::string name = m_ui->m_datasetNameLineEdit->text().trimmed().toUtf8().data();
 //
 //    if(name != dataset->getName())
 //    {
@@ -354,7 +354,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
 //    if(dataset.get() == 0)
 //      return;
 //
-//    std::string title = m_ui->m_datasetTitleLineEdit->text().trimmed().toStdString();
+//    std::string title = m_ui->m_datasetTitleLineEdit->text().trimmed().toUtf8().data();
 //
 //    if(title != dataset->getTitle())
 //    {
@@ -374,7 +374,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
 //
 //    te::gm::GeometryProperty* gp = dataset->getDefaultGeomProperty();
 //
-//    int srid = boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString());
+//    int srid = boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toUtf8().data());
 //
 //    if(srid != gp->getSRID())
 //    {
@@ -391,7 +391,7 @@ te::da::DataSetTypePtr te::qt::widgets::DataSetOptionsWizardPage::getSelectedDat
   if(item == 0)
     return te::da::DataSetTypePtr();
 
-  std::string dataSetAdapterName = item->text().toStdString();
+  std::string dataSetAdapterName = item->text().toUtf8().data();
 
   std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::const_iterator it = m_datasets.begin();
 
@@ -427,7 +427,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::setControlsEnabled(bool enabled)
 
 te::qt::widgets::DataSetOptionsWizardPage::FindByName::FindByName(const QString& name)
 {
-  m_name = name.toStdString();
+  m_name = name.toUtf8().data();
 }
 
 bool te::qt::widgets::DataSetOptionsWizardPage::FindByName::operator()(const te::da::DataSetTypePtr& dataset) const

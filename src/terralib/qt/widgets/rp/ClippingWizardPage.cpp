@@ -59,7 +59,8 @@ Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::ClippingWizardPageForm),
-    m_layer(0)
+    m_layer(0),
+    m_mapDisplay(0)
 {
 // setup controls
   m_ui->setupUi(this);
@@ -128,7 +129,6 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
 
 te::qt::widgets::ClippingWizardPage::~ClippingWizardPage()
 {
-
 }
 
 bool te::qt::widgets::ClippingWizardPage::isComplete() const
@@ -211,6 +211,15 @@ void te::qt::widgets::ClippingWizardPage::setMapDisplay(te::qt::widgets::MapDisp
 {
   m_navigator->setMapDisplay(mapDisplay);
   m_mapDisplay = mapDisplay;
+
+  connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(drawGeom()));
+}
+
+void te::qt::widgets::ClippingWizardPage::setActionGroup(QActionGroup* actionGroup)
+{
+  m_navigator->setActionGroup(actionGroup);
+
+  m_navigator->enableBoxAction();
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::ClippingWizardPage::get()
@@ -258,25 +267,10 @@ void te::qt::widgets::ClippingWizardPage::onChangeCollectType()
 {
   if (m_ui->m_drawingRadioButton->isChecked())
   {
-    m_ui->m_llxLineEdit->clear();
-    m_ui->m_llyLineEdit->clear();
-    m_ui->m_urxLineEdit->clear();
-    m_ui->m_uryLineEdit->clear();
-
-    m_ui->m_llxLineEdit->setDisabled(true);
-    m_ui->m_llyLineEdit->setDisabled(true);
-    m_ui->m_urxLineEdit->setDisabled(true);
-    m_ui->m_uryLineEdit->setDisabled(true);
-    m_ui->m_previewButton->setDisabled(true);
     m_ui->m_frame->setDisabled(false);
   }
   else
   {
-    m_ui->m_llxLineEdit->setDisabled(false);
-    m_ui->m_llyLineEdit->setDisabled(false);
-    m_ui->m_urxLineEdit->setDisabled(false);
-    m_ui->m_uryLineEdit->setDisabled(false);
-    m_ui->m_previewButton->setEnabled(true);
     m_ui->m_frame->setDisabled(true);
   }
 }
@@ -371,7 +365,7 @@ void te::qt::widgets::ClippingWizardPage::getLayerClipping(
   }
   if(m_ui->m_groupByRadioButton->isChecked())
   {
-    std::string propName = m_ui->m_layerAttrComboBox->currentText().toStdString();
+    std::string propName = m_ui->m_layerAttrComboBox->currentText().toUtf8().data();
 
     std::map<std::string, std::vector<te::gm::Geometry*> > groups;
     std::map<std::string, std::vector<te::gm::Geometry*> >::iterator itg;
@@ -502,6 +496,12 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope en
   if (type == CLIPPING_ROI)
   {
     m_envExt = env;
+
+    m_ui->m_llxLineEdit->setText(QString::number(env.getLowerLeftX(), 'f', 5));
+    m_ui->m_llyLineEdit->setText(QString::number(env.getLowerLeftY(), 'f', 5));
+    m_ui->m_urxLineEdit->setText(QString::number(env.getUpperRightX(), 'f', 5));
+    m_ui->m_uryLineEdit->setText(QString::number(env.getUpperRightY(), 'f', 5));
+
   }
   else if (type == CLIPPING_DIMENSION)
   {

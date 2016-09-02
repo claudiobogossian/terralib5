@@ -189,12 +189,12 @@ void te::qt::widgets::Measure::drawLine(Canvas& canvas)
   // Measuring and feedback...
   if(m_measureType == Distance)
   {
-    drawText(canvas, (tr("Distance: ") + QString::number(calculateLength(line)) + " " + m_unit.c_str()).toStdString(), line->getEndPoint());
+    drawText(canvas, (tr("Distance: ") + QString::number(calculateLength(line)) + " " + m_unit.c_str()).toUtf8().data(), line->getEndPoint());
   }
   else if(m_measureType == Angle)
   {
     if(line->getNPoints() >= 3)
-      drawText(canvas, (tr("Angle: ") + QString::number(calculateAngle(line)) + " deg").toStdString(), line->getPointN(1));
+      drawText(canvas, (tr("Angle: ") + QString::number(calculateAngle(line)) + " deg").toUtf8().data(), line->getPointN(1));
   }
 
   delete line;
@@ -225,7 +225,7 @@ void te::qt::widgets::Measure::drawPolygon(Canvas& canvas)
   // Measuring and feedback...
   const te::gm::Envelope* env = polygon->getMBR();
   te::gm::Point p(env->getCenter().x, env->getCenter().y);
-  drawText(canvas, (tr("Area: ") + QString::number(polygon->getArea()) + (m_unit.empty() ? "" : (" " + m_unit + "^2").c_str())).toStdString(), &p);
+  drawText(canvas, (tr("Area: ") + QString::number(polygon->getArea()) + (m_unit.empty() ? "" : (" " + m_unit + "^2").c_str())).toUtf8().data(), &p);
 
   delete polygon;
 }

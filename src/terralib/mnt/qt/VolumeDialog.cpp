@@ -128,7 +128,7 @@ void te::mnt::VolumeDialog::onRasterInputComboBoxChanged(int index)
 {
   m_rasterinputLayer = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_rasterlayersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_rasterlayersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
   while (it != m_layers.end())
   {
     if (layerID == it->get()->getId().c_str())
@@ -175,7 +175,7 @@ void te::mnt::VolumeDialog::onVectorInputComboBoxChanged(int index)
   m_vectorinputLayer = 0;
   m_ui->m_attributeComboBox->clear();
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-  std::string layerID = m_ui->m_vectorlayersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_vectorlayersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
   while (it != m_layers.end())
   {
     if (layerID == it->get()->getId().c_str())
@@ -246,7 +246,7 @@ void te::mnt::VolumeDialog::onOkPushButtonClicked()
 
     Volume *calvol = new te::mnt::Volume();
 
-    std::string attr = m_ui->m_attributeComboBox->currentText().toStdString();
+    std::string attr = m_ui->m_attributeComboBox->currentText().toUtf8().data();
 
     int srid = m_vectorinputLayer->getSRID();
     calvol->setSRID(srid);

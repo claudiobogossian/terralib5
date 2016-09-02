@@ -186,7 +186,7 @@ bool te::qt::widgets::SaveSelectedObjectsWidget::execute(std::string& errorMessa
     return false;
   }
 
-  std::string dsTypeName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string dsTypeName = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   std::auto_ptr<te::da::DataSetType> dsType(new te::da::DataSetType(dsTypeName));
 
@@ -263,7 +263,7 @@ void te::qt::widgets::SaveSelectedObjectsWidget::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
 
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
 
   m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
 
@@ -274,7 +274,7 @@ void te::qt::widgets::SaveSelectedObjectsWidget::onTargetFileToolButtonPressed()
   m_toFile = true;
 
   //create new data source
-  boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+  boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
   std::map<std::string, std::string> dsInfo;
   dsInfo["URI"] = uri.string();

@@ -36,7 +36,7 @@
 
 te::qt::plugins::rp::RegisterAction::RegisterAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Register...").toStdString(), "register");
+  createAction(tr("Register...").toUtf8().data(), "register");
   m_action->setObjectName("Processing.Raster Processing.Register");
 }
 

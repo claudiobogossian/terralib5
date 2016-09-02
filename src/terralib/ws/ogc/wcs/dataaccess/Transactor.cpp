@@ -55,12 +55,12 @@ te::ws::ogc::wcs::da::Transactor::~Transactor()
 {
 }
 
-te::ws::ogc::CoverageDescription te::ws::ogc::wcs::da::Transactor::coverageDescription(const std::string coverageName)
+te::ws::ogc::wcs::CoverageDescription te::ws::ogc::wcs::da::Transactor::coverageDescription(const std::string coverageName)
 {
   return m_wcs->describeCoverage(coverageName);
 }
 
-void te::ws::ogc::wcs::da::Transactor::setCoverageRequest(const te::ws::ogc::CoverageRequest coverageRequest)
+void te::ws::ogc::wcs::da::Transactor::setCoverageRequest(const te::ws::ogc::wcs::CoverageRequest coverageRequest)
 {
   m_coverageRequest = coverageRequest;
 }
@@ -78,7 +78,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  m_coverageRequest = te::ws::ogc::CoverageRequest();
+  m_coverageRequest = te::ws::ogc::wcs::CoverageRequest();
   m_coverageRequest.coverageID = name;
   
   std::string coveragePath = m_wcs->getCoverage(m_coverageRequest);
@@ -107,7 +107,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  m_coverageRequest = te::ws::ogc::CoverageRequest();
+  m_coverageRequest = te::ws::ogc::wcs::CoverageRequest();
   m_coverageRequest.coverageID = name;
 
   std::string coveragePath = m_wcs->getCoverage(m_coverageRequest);
@@ -176,12 +176,12 @@ std::auto_ptr<te::da::DataSetType> te::ws::ogc::wcs::da::Transactor::getDataSetT
   if(!dataSetExists(name))
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  te::ws::ogc::CoverageDescription description =  this->coverageDescription(name);
+  te::ws::ogc::wcs::CoverageDescription description =  this->coverageDescription(name);
 
   te::da::DataSetType* type = new te::da::DataSetType(description.coverageId, 0);
   type->setTitle(description.coverageId);
 
-  te::ws::ogc::EnvelopeWithTimePeriod boundedBy = description.envelope;
+  te::ws::ogc::wcs::EnvelopeWithTimePeriod boundedBy = description.envelope;
 
   double llx = atof(boundedBy.lowerCorner_X.c_str());
   double lly = atof(boundedBy.lowerCorner_Y.c_str());
@@ -352,11 +352,6 @@ bool te::ws::ogc::wcs::da::Transactor::dataSetExists(const std::string& name)
   }
 
   return false;
-}
-
-te::core::EncodingType te::ws::ogc::wcs::da::Transactor::getEncoding()
-{
-  return te::core::EncodingType::UNKNOWN;
 }
 
 /** NOT SUPPORTED METHODS */

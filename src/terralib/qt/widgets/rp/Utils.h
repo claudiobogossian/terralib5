@@ -42,6 +42,8 @@ namespace te
       TEQTWIDGETSEXPORT te::map::AbstractLayerPtr createLayer(const std::string& driverName, 
                                                               const std::map<std::string, std::string>& connInfo);
 
+      TEQTWIDGETSEXPORT te::rst::Raster* getRasterVisibleArea(te::map::AbstractLayerPtr layer, te::gm::Envelope boxDisplay, int displaySRID);
+
     } // end namespace widgets
   }   // end namespace gm
 }     // end namespace te

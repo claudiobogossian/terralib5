@@ -39,6 +39,7 @@
 // Qt
 #include <QTreeWidgetItem>
 #include <QWidget>
+#include <QActionGroup>
 
 namespace Ui { class ROIManagerWidgetForm; }
 
@@ -86,6 +87,14 @@ namespace te
           */
 
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
+
+          /*!
+          \brief This method is used to set the action group
+
+          */
+
+          void setActionGroup(QActionGroup* actionGroup);
 
           /*!
             \brief This method is used to set the list of layers

@@ -84,6 +84,3 @@ target_link_libraries(terralib_unittest_raster terralib_mod_dataaccess
 add_test(NAME terralib_unittest_raster
          COMMAND terralib_unittest_raster
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/raster COMPONENT devel)

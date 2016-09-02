@@ -135,7 +135,7 @@ void te::qt::widgets::GlyphMarkPropertyItem::updateMarkName()
 
   QString name = te::qt::widgets::GlyphMarkRenderer::encode(f.family(), valStr.toInt());
 
-  m_mark->setWellKnownName(new std::string(name.toStdString()));
+  m_mark->setWellKnownName(new std::string(name.toUtf8().data()));
 
   if(!m_update)
     emit markChanged();

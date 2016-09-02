@@ -115,7 +115,7 @@ void te::qt::widgets::SegmenterDialog::on_okPushButton_clicked()
       algoInputParams.m_maxBlockSize = m_uiPtr->m_maximumBlockSizeLineEdit->text().toUInt();
       
       
-      algoInputParams.m_strategyName = m_uiPtr->m_segmenterStrategyComboBox->currentText().toStdString();
+      algoInputParams.m_strategyName = m_uiPtr->m_segmenterStrategyComboBox->currentText().toUtf8().data();
       
       if( algoInputParams.m_strategyName == "RegionGrowingMean" )
       {

@@ -92,7 +92,7 @@ void te::qt::widgets::ColorCatalogWidget::loadDefaultColorCatalog()
 
 void te::qt::widgets::ColorCatalogWidget::onCatalogComboBoxActivated(int index)
 {
-  std::string name = m_ui->m_catalogComboBox->itemText(index).toStdString();
+  std::string name = m_ui->m_catalogComboBox->itemText(index).toUtf8().data();
 
   te::color::ColorSchemeCatalog* csc = te::color::ColorSchemeCatalogManager::getInstance().findByName(name);
   
@@ -116,9 +116,9 @@ void te::qt::widgets::ColorCatalogWidget::onCatalogComboBoxActivated(int index)
 
 void te::qt::widgets::ColorCatalogWidget::onGroupComboBoxActivated(int index)
 {
-  std::string catalog = m_ui->m_catalogComboBox->currentText().toStdString();
+  std::string catalog = m_ui->m_catalogComboBox->currentText().toUtf8().data();
 
-  std::string group = m_ui->m_groupComboBox->itemText(index).toStdString();
+  std::string group = m_ui->m_groupComboBox->itemText(index).toUtf8().data();
 
   te::color::ColorSchemeCatalog* csc = te::color::ColorSchemeCatalogManager::getInstance().findByName(catalog);
 
@@ -152,11 +152,11 @@ void te::qt::widgets::ColorCatalogWidget::onGroupComboBoxActivated(int index)
 
 void te::qt::widgets::ColorCatalogWidget::onSchemaComboBoxActivated(int index)
 {
-  std::string catalog = m_ui->m_catalogComboBox->currentText().toStdString();
+  std::string catalog = m_ui->m_catalogComboBox->currentText().toUtf8().data();
 
-  std::string group = m_ui->m_groupComboBox->currentText().toStdString();
+  std::string group = m_ui->m_groupComboBox->currentText().toUtf8().data();
 
-  std::string schema = m_ui->m_schemaComboBox->itemText(index).toStdString();
+  std::string schema = m_ui->m_schemaComboBox->itemText(index).toUtf8().data();
 
   te::color::ColorSchemeCatalog* csc = te::color::ColorSchemeCatalogManager::getInstance().findByName(catalog);
 

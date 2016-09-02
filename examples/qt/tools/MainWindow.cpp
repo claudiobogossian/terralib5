@@ -214,7 +214,7 @@ void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
 {
   // Creates and connects data source
   std::map<std::string, std::string> connInfo;
-  driver == "OGR" ? connInfo["path"] = path.toStdString() : connInfo["URI"] = path.toStdString();
+  driver == "OGR" ? connInfo["path"] = path.toUtf8().data() : connInfo["URI"] = path.toUtf8().data();
 
   te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().open(boost::lexical_cast<std::string>(ms_id++), driver, connInfo);
 
@@ -357,7 +357,7 @@ void MainWindow::onStopAllTriggered()
 
 void MainWindow::onCoordTracked(QPointF& coordinate)
 {
-  QString text = QString::fromLatin1("Coordinates: (") + QString::number(coordinate.x()) + " , " + QString::number(coordinate.y()) + ")";
+  QString text = QString::fromUtf8("Coordinates: (") + QString::number(coordinate.x()) + " , " + QString::number(coordinate.y()) + ")";
   QStatusBar* sb = statusBar();
   sb->showMessage(text);
 }

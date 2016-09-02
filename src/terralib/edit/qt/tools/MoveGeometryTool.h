@@ -82,7 +82,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, bool rightButtonToSave = false, QObject *parent = 0);
+        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const te::edit::MouseEventEdition mouseEventToSave, QObject *parent = 0);
         /*! \brief Destructor. */
         ~MoveGeometryTool();
 
@@ -107,7 +107,7 @@ namespace te
 
         void reset();
 
-        void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
+        void pickFeature(const QPointF& pos);
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
@@ -125,14 +125,13 @@ namespace te
 
       protected:
 
-        bool m_rightButtonToSave;
         bool m_selected;
-        bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
-        QPointF m_origin;                   //!< Origin point on mouse pressed.
-        QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
+        bool m_moveStarted;                            //!< Flag that indicates if move operation was started.
+        QPointF m_origin;                              //!< Origin point on mouse pressed.
+        QPointF m_delta;                               //!< Difference between pressed point and destination point on mouse move.
         std::vector<te::edit::Feature*> m_vecFeature;
+        MouseEventEdition m_mouseEventToSave;
         UndoStackManager& m_stack;
-
     };
 
   }   // end namespace edit

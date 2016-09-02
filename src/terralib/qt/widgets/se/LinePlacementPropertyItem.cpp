@@ -70,7 +70,7 @@ void te::qt::widgets::LinePlacementPropertyItem::valueChanged(QtProperty* p, dou
   {
     m_update = false;
 
-    m_linePlacement->setPerpendicularOffset(new te::se::ParameterValue(QString::number(value).toStdString()));
+    m_linePlacement->setPerpendicularOffset(new te::se::ParameterValue(QString::number(value).toUtf8().data()));
     
     emit linePlacementChanged();
     m_update = true;

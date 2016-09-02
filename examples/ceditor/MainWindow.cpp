@@ -96,7 +96,7 @@ private:
 
   static void myQDebugMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
   {
-    std::cout << msg.toStdString();
+    std::cout << msg.toUtf8().data();
   }
 
   std::ostream &m_stream;
@@ -131,7 +131,7 @@ void MainWindow::open()
 {
   std::string exPath = te::core::FindInTerraLibPath("share/terralib/examples/lua");
 
-  m_fileName = QFileDialog::getOpenFileName(this, tr("Open Script File"), QString::fromStdString(exPath), tr("Lua files (*.lua *.LUA);; Pyhton files (*.py *.PY)"), 0);
+  m_fileName = QFileDialog::getOpenFileName(this, tr("Open Script File"), QString::fromUtf8(exPath.c_str()), tr("Lua files (*.lua *.LUA);; Pyhton files (*.py *.PY)"), 0);
 
   if(!m_fileName.isEmpty())
   {

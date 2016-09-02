@@ -25,9 +25,7 @@
 
 // TerraLib
 #include <terralib/raster.h>
-#include <terralib/raster/Grid.h>
-#include <terralib/geometry/Envelope.h>
-#include <terralib/geometry/Coord2D.h>
+#include <terralib/geometry.h>
 #include "../Config.h"
 
 // Boost

@@ -31,7 +31,7 @@
 te::qt::plugins::sa::SamplePointsGeneratorAction::SamplePointsGeneratorAction(QMenu *menu) :
   AbstractAction(menu)
 {
-  createAction(tr("Sample Points Generator...").toStdString(), "sa-samplepoint-icon");
+  createAction(tr("Sample Points Generator...").toUtf8().data(), "sa-samplepoint-icon");
   m_action->setObjectName("Processing.Spatial Analysis.Sample Points Generator");
 }
 

@@ -72,7 +72,7 @@ void te::qt::widgets::CharEncodingMenuWidget::setLayer(te::map::AbstractLayerPtr
 
   while (it != actions.end())
   {
-    std::string etCurName = (*it)->data().toString().toStdString();
+    std::string etCurName = (*it)->data().toString().toUtf8().data();
 
     if (etCurName == etName)
     {
@@ -116,7 +116,7 @@ void te::qt::widgets::CharEncodingMenuWidget::onEncodingClicked()
 
   if (act)
   {
-    std::string etName = act->data().toString().toStdString();
+    std::string etName = act->data().toString().toUtf8().data();
 
     std::vector<std::string> etNames = te::core::CharEncoding::getEncodingList();
 

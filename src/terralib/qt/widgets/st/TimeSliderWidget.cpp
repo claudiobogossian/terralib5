@@ -456,7 +456,7 @@ void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEven
     if (files.empty() == false)
     {
       QString file(path + "/" + files.first());
-      FILE* fp = fopen(file.toStdString().c_str(), "r");
+      FILE* fp = fopen(te::core::CharEncoding::fromUTF8(file.toUtf8().data()).c_str(), "r");
       char buf[2000];
       size_t c = fread(buf, sizeof(char), 2000, fp);
       fclose(fp);

@@ -99,22 +99,22 @@ void te::addressgeocoding::ConfigNumberDialog::setLayer(te::map::AbstractLayerPt
 
 std::string te::addressgeocoding::ConfigNumberDialog::getInitialLeft()
 {
-  return m_ui->m_iLeftComboBox->currentText().toStdString();
+  return m_ui->m_iLeftComboBox->currentText().toUtf8().data();
 }
 
 std::string te::addressgeocoding::ConfigNumberDialog::getFinalLeft()
 {
-  return m_ui->m_fLeftComboBox->currentText().toStdString();
+  return m_ui->m_fLeftComboBox->currentText().toUtf8().data();
 }
 
 std::string te::addressgeocoding::ConfigNumberDialog::getInitialRight()
 {
-  return m_ui->m_iRightComboBox->currentText().toStdString();
+  return m_ui->m_iRightComboBox->currentText().toUtf8().data();
 }
 
 std::string te::addressgeocoding::ConfigNumberDialog::getFinalRight()
 {
-  return m_ui->m_fRightComboBox->currentText().toStdString();
+  return m_ui->m_fRightComboBox->currentText().toUtf8().data();
 }
 
 void te::addressgeocoding::ConfigNumberDialog::onHelpPushButtonClicked()

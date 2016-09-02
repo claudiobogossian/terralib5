@@ -154,7 +154,7 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
   {
     std::vector<std::string> tokens;
     std::string pname;
-    std::string auxItem = itemList[i]->text().toStdString();
+    std::string auxItem = itemList[i]->text().toUtf8().data();
 
     boost::split(tokens, auxItem, boost::is_any_of(":"));
     if(tokens[0] != "")
@@ -212,7 +212,7 @@ std::vector<std::string> te::vp::AggregationDialog::getSelectedPropertyNames()
 
     if(m_ui->m_propertieslistWidget->isItemSelected(item))
     {
-      std::string name = item->text().toStdString();
+      std::string name = item->text().toUtf8().data();
       selectedPropertyNames.push_back(name);
     }
   }
@@ -406,7 +406,7 @@ void te::vp::AggregationDialog::onLayerComboBoxChanged(int index)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   
-  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
 
   m_ui->m_propertieslistWidget->clear();
 
@@ -562,7 +562,7 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
   if (fileName.isEmpty())
     return;
   
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();
   m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
   aux = outfile.string();
@@ -615,7 +615,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
   if (outputdataset.empty())
   {
@@ -689,7 +689,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
     if (m_toFile)
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
       if (boost::filesystem::exists(uri))
       {
@@ -702,7 +702,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      te::da::DataSourcePtr dsOGR = te::vp::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
+      te::da::DataSourcePtr dsOGR = te::vp::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
       dsOGR->open();
 

@@ -38,7 +38,7 @@ te::qt::plugins::st::TimeSliderWidgetAction::TimeSliderWidgetAction(QMenu* menu)
   : te::qt::plugins::st::AbstractAction(menu),
   m_timeSliderWidget(0)
 {
-  createAction(tr("Time Slider...").toStdString());
+  createAction(tr("Time Slider...").toUtf8().data());
 }
 
 te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
