@@ -40,7 +40,7 @@ te::map::ExternalGraphicRendererManager::ExternalGraphicRendererManager()
 
 te::map::ExternalGraphicRendererManager::~ExternalGraphicRendererManager()
 {
-  te::common::FreeContents(m_renderers);
+  clear();
 }
 
 te::color::RGBAColor** te::map::ExternalGraphicRendererManager::render(const te::se::ExternalGraphic* eg, std::size_t height, std::size_t& width)
@@ -69,4 +69,10 @@ te::color::RGBAColor** te::map::ExternalGraphicRendererManager::render(const te:
 void te::map::ExternalGraphicRendererManager::add(AbstractExternalGraphicRenderer* renderer)
 {
   m_renderers.push_back(renderer);
+}
+
+void te::map::ExternalGraphicRendererManager::clear()
+{
+  te::common::FreeContents(m_renderers);
+  m_renderers.clear();
 }
