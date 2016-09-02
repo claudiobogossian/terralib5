@@ -41,6 +41,7 @@
 #include "../../../edit/qt/tools/CreatePointTool.h"
 #include "../../../edit/qt/tools/CreatePolygonTool.h"
 #include "../../../edit/qt/tools/DeleteGeometryTool.h"
+#include "../../../edit/qt/tools/DeletePartTool.h"
 #include "../../../edit/qt/tools/EditInfoTool.h"
 #include "../../../edit/qt/tools/MergeGeometriesTool.h"
 #include "../../../edit/qt/tools/MoveGeometryTool.h"
@@ -96,6 +97,7 @@ QObject(parent),
   m_splitPolygonToolAction(0),
   m_mergeGeometriesToolAction(0),
   m_createPointToolAction(0),
+  m_deletePartToolAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),
@@ -284,17 +286,44 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
     m_redoToolAction->setToolTip("Redo Action");
   }
 
-  createAction(m_vertexToolAction, tr("Vertex Tool - Move, \nAdd [Double Click] and \nRemove [Shift+Click]"), "edit-vertex-tool", true, false, "vertex_tool", SLOT(onVertexToolActivated(bool)));
+  // Tools
   createAction(m_createPolygonToolAction, tr("Create Polygon"), "edit-create-polygon", true, false, "create_polygon", SLOT(onCreatePolygonToolActivated(bool)));
   createAction(m_createLineToolAction, tr("Create Line"), "layout-drawline", true, false,"create_line", SLOT(onCreateLineToolActivated(bool)));
+  createAction(m_createPointToolAction, tr("Create Point"), "edit-create-point", true, false, "create_point", SLOT(onCreatePointToolActivated(bool)));
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false, "move_geometry", SLOT(onMoveGeometryToolActivated(bool)));
+  createAction(m_vertexToolAction, tr("Vertex Tool - Move, \nAdd [Double Click] and \nRemove [Shift+Click]"), "edit-vertex-tool", true, false, "vertex_tool", SLOT(onVertexToolActivated(bool)));
   createAction(m_aggregateAreaToolAction, tr("Aggregate Area"), "edit-aggregateGeometry", true, false, "aggregate_area", SLOT(onAggregateAreaToolActivated(bool)));
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "edit-subtractGeometry", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
-  createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit-deletetool", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
-  createAction(m_featureAttributesAction, tr("Feature Attributes"), "edit-Info", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
-  createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, true, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
   createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, true, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
-  createAction(m_createPointToolAction, tr("Create Point"), "edit-create-point", true, false, "create_point", SLOT(onCreatePointToolActivated(bool)));
+  createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, true, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
+  createAction(m_featureAttributesAction, tr("Feature Attributes"), "edit-Info", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
+  createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit-deletetool", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
+  createAction(m_deletePartToolAction, tr("Delete Part"), "edit-deleteparttool", true, false, "delete_part", SLOT(onDeletePartToolActivated(bool)));
+  createAction(m_snapOptionsAction, tr("Snap Options"), "edit_snap", false, false, "snap_option", SLOT(onSnapOptionsActivated()));
+
+  m_toolBar->addAction(m_saveAction);
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_undoToolAction);
+  m_toolBar->addAction(m_redoToolAction);
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_createPolygonToolAction);
+  m_toolBar->addAction(m_createLineToolAction);
+  m_toolBar->addAction(m_createPointToolAction);
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_moveGeometryToolAction);
+  m_toolBar->addAction(m_vertexToolAction);
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_aggregateAreaToolAction);
+  m_toolBar->addAction(m_subtractAreaToolAction);
+  m_toolBar->addAction(m_mergeGeometriesToolAction);
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_splitPolygonToolAction);
+  m_toolBar->addAction(m_featureAttributesAction);
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_deleteGeometryToolAction);
+  m_toolBar->addAction(m_deletePartToolAction);
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_snapOptionsAction);
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
@@ -312,6 +341,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_featureAttributesAction);
   toolsGroup->addAction(m_splitPolygonToolAction);
   toolsGroup->addAction(m_mergeGeometriesToolAction);
+  toolsGroup->addAction(m_deletePartToolAction);
 
   // Grouping...
   m_tools.push_back(m_saveAction);
@@ -327,28 +357,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_mergeGeometriesToolAction);
   m_tools.push_back(m_featureAttributesAction);
   m_tools.push_back(m_deleteGeometryToolAction);
-
-  // Adding tools to toolbar
-  for (int i = 0; i < m_tools.size(); ++i)
-  {
-    m_toolBar->addAction(m_tools[i]);
-
-    if (i == 1)
-    {
-      m_toolBar->addSeparator();
-      m_toolBar->addAction(m_undoToolAction);
-      m_toolBar->addAction(m_redoToolAction);
-      m_toolBar->addSeparator();
-    }
-    if (i == 4 || i == 7 || i == 10)
-      m_toolBar->addSeparator();
-  }
-
-  // Snap
-  createAction(m_snapOptionsAction, tr("Snap Options"), "edit_snap", false, false, "snap_option", SLOT(onSnapOptionsActivated()));
-  m_toolBar->addSeparator();
-  m_toolBar->addAction(m_snapOptionsAction);
-
+  m_tools.push_back(m_deletePartToolAction);
 }
 
 void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member)
@@ -982,6 +991,24 @@ void te::qt::plugins::edit::ToolBar::onCreatePointToolActivated(bool /*checked*/
   assert(e.m_display);
 
   setCurrentTool(new te::edit::CreatePointTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, this), e.m_display);
+}
+
+void te::qt::plugins::edit::ToolBar::onDeletePartToolActivated(bool /*checked*/)
+{
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if (layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    m_deletePartToolAction->setChecked(false);
+    return;
+  }
+
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  assert(e.m_display);
+
+  setCurrentTool(new te::edit::DeletePartTool(e.m_display->getDisplay(), layer, this), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool /*checked*/)

@@ -1,7 +1,8 @@
 /*
   Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-  This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled
+  applications.
 
   TerraLib is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
@@ -30,6 +31,8 @@
 // TerraLib
 #include "Serializers.h"
 #include "Exception.h"
+#include "../encoding/CharEncoding.h"
+#include "../translator/Translator.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -37,11 +40,17 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-te::core::PluginInfo
-te::core::JSONPluginInfoSerializer(const std::string& file_name)
+te::core::PluginInfo te::core::JSONPluginInfoSerializer(
+    const std::string& file_name)
 {
   boost::property_tree::ptree doc;
 
+  if (!boost::filesystem::exists(te::core::CharEncoding::fromUTF8(file_name)))
+  {
+    boost::format err_msg(TE_TR("The file %1% doesn't exist."));
+    throw InvalidArgumentException()
+        << ErrorDescription((err_msg % file_name).str());
+  }
   boost::property_tree::json_parser::read_json(file_name, doc);
 
   PluginInfo plugin;
@@ -55,10 +64,11 @@ te::core::JSONPluginInfoSerializer(const std::string& file_name)
   plugin.license_description = doc.get<std::string>("license_description");
   plugin.license_URL = doc.get<std::string>("license_URL");
   plugin.site = doc.get<std::string>("site");
-  //plugin.description = doc.get<std::string>("provider");
-  //plugin.description = doc.get<std::string>("dependencies");
+  // plugin.description = doc.get<std::string>("provider");
+  // plugin.description = doc.get<std::string>("dependencies");
 
-  for(const boost::property_tree::ptree::value_type& v: doc.get_child("resources"))
+  for (const boost::property_tree::ptree::value_type& v :
+       doc.get_child("resources"))
   {
     Resource r;
 
@@ -68,8 +78,8 @@ te::core::JSONPluginInfoSerializer(const std::string& file_name)
     plugin.resources.push_back(r);
   }
 
-  //plugin.description = doc.get<std::string>("parameters");
-  //plugin.description = doc.get<std::string>("host_application");
+  // plugin.description = doc.get<std::string>("parameters");
+  // plugin.description = doc.get<std::string>("host_application");
 
   return plugin;
 }

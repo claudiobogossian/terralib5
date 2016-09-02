@@ -122,6 +122,8 @@ namespace te
 
           void onCreatePointToolActivated(bool checked);
 
+          void onDeletePartToolActivated(bool checked);
+
         Q_SIGNALS:
 
           /*! This signal is emitted when the layer selection changed. */
@@ -155,6 +157,7 @@ namespace te
           QAction* m_splitPolygonToolAction;
           QAction* m_mergeGeometriesToolAction;
           QAction* m_createPointToolAction;
+          QAction* m_deletePartToolAction;
           QAction* m_undoToolAction;
           QAction* m_redoToolAction;
           QList<QAction*> m_tools;

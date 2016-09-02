@@ -96,6 +96,12 @@ namespace te
         */
         void add(AbstractExternalGraphicRenderer* renderer);
 
+        /*!
+        \brief It clears the graphic renderers of the manager.
+
+        */
+        void clear();
+
      protected:
 
         /*! \brief It initializes the singleton instance of the external graphic renderer manager. */
