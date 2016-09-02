@@ -72,6 +72,19 @@ TERRALIB_REGISTER_TRANSLATION("terralib_unittest_core" "pt_BR"
 add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# Plugin for core/plugin
+
+file(GLOB TERRALIB_PLUGIN_CORE_PLUGIN_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin/*.cpp)
+
+add_library(terralib_unittest_core_plugin SHARED ${TERRALIB_PLUGIN_CORE_PLUGIN_SRC_FILES})
+target_link_libraries(terralib_unittest_core_plugin terralib_mod_core)
+
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin/plugin.teplg.json
+    DESTINATION ${CMAKE_BINARY_DIR}/unittest/plugins)
+
+add_dependencies(terralib_unittest_core terralib_unittest_core_plugin)
+
+
 if(WIN32)
   add_definitions(-DTECOREEXEMPDLL)
 endif()
@@ -93,3 +106,5 @@ set_target_properties(terralib_unittest_core_lib_function
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
 add_dependencies(terralib_unittest_core terralib_unittest_core_lib_function)
+
+
