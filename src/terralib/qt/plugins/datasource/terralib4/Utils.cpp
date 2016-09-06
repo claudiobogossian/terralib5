@@ -182,18 +182,23 @@ te::se::Style* te::qt::plugins::terralib4::Convert2TerraLib5(int geometryType, T
     switch(geometryType)
     {
       case te::gm::PolygonType:
+      case te::gm::MultiPolygonType:
       {
         visual = visualMap[TePOLYGONS];
         symb = GetPolygonSymbolizer(visual);
         break;
       }
+
       case te::gm::LineStringType:
+      case te::gm::MultiLineStringType:
       {
         visual = visualMap[TeLINES];
         symb = GetLineSymbolizer(visual);
         break;
       }
+
       case te::gm::PointType:
+      case te::gm::MultiPointType:
       {
         visual = visualMap[TePOINTS];
         symb = GetPointSymbolizer(visual);
