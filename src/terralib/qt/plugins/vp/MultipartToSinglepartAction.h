@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/vp/MultipartToSinglepartAction.h
 
-  \brief This file defines the Aggregation class
+  \brief This file defines the Multipart to Singlepart class
 */
 
 #ifndef __TE_QT_PLUGINS_VP_INTERNAL_MULTIPARTOTOSINGLEPARTACTION_H

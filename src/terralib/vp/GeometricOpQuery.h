@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AggregationQuery.h
+  \file GeometricOpQuery.h
    
   \brief 
  

@@ -81,5 +81,5 @@ namespace te
   } // end namespace vp
 }   // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_AGGREGATION_QUERY_H
+#endif  // __TERRALIB_VP_INTERNAL_BUFFER_QUERY_H
 

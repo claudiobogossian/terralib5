@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/MergeDialog.cpp
 
-  \brief A dialog for aggregation operation
+  \brief A dialog for merge operation
 */
 
 // TerraLib

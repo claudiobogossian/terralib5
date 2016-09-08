@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/vp/AggregationDialog.cpp
+  \file terralib/vp/StatisticsDialog.cpp
 
-  \brief A dialog for aggregation operation
+  \brief A dialog for statistics operation
 */
 
 // TerraLib

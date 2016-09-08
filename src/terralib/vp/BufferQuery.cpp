@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file AggregationQuery.h
+  \file BufferQuery.h
 
-  \brief Aggregation Vector Processing functions.
+  \brief Buffer Vector Processing functions.
 */
 
 //Terralib

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AggregationMemory.h
+  \file IntersectionMemory.h
    
   \brief 
  

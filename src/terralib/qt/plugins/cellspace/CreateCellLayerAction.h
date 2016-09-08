@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/AggregationAction.h
+  \file terralib/qt/plugins/vp/CreateCellLayerAction.h
 
-  \brief This file defines the Aggregation class
+  \brief This file defines the create cell layer class
 */
 
 #ifndef __TE_QT_PLUGINS_CELLSPACE_INTERNAL_CREATECELLLAYERACTION_H
