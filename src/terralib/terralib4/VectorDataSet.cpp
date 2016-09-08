@@ -298,7 +298,7 @@ std::string terralib4::VectorDataSet::getString(std::size_t i) const
 
   m_instance.getPropertyValue(val, ii);
 
-  val = te::core::CharEncoding::convert(val, te::core::EncodingType::LATIN1, te::core::EncodingType::UTF8);
+  val = te::core::CharEncoding::toUTF8(val, te::core::EncodingType::LATIN1);
 
   return val;
 }
