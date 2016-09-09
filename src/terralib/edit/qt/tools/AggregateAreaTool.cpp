@@ -260,7 +260,7 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
   {
     if (m_feature == 0)
     {
-      m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+      m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
 
       if (m_feature)
         m_oidsSet.insert(m_feature->getId()->getValueAsString());
@@ -268,7 +268,7 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
     }
     else
     {
-      Feature* feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+      Feature* feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
       if (feature)
       {
         if (m_oidsSet.find(feature->getId()->clone()->getValueAsString()) == m_oidsSet.end())

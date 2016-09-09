@@ -27,6 +27,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define __TERRALIB_EDIT_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../color/RGBAColor.h"
 #include "../maptools/AbstractLayer.h"
 #include "Config.h"
 
@@ -81,29 +82,22 @@ namespace te
     };
 
     /*!
-    \enum OperationsType
+    \enum FeatureType
 
-    \brief Defines the operations (CUD - Create, Update and Delete) and FreeCell/LockedCell to this tool.
-
-    \note The order of this enum should not be altered.
+    \brief Defines the feature type(Add, Update, Delete ...).
     */
-    enum OperationType
+    enum FeatureType
     {
-      GEOMETRY_CREATE = 0,                /*!< New Features        */
-      GEOMETRY_UPDATE = 1,                /*!< Features to update. */
-      GEOMETRY_DELETE = 2,                /*!< Features to delete. */
-      GEOMETRY_UPDATE_ATTRIBUTES = 3,     /*!< Features to update attributes. */
-      GEOMETRY_FREECELLS = 4,             /*!< Free cells, my cells... */
-      GEOMETRY_LOCKEDCELLS = 5,           /*!< Locked cells, other cells... */
-      GEOMETRY_SELECTED = 6               /*!< Used to select features.rs.. */
+      TO_BLOCKEDIT = 0,   //!< block feature to edition.
+      TO_ADD = 1,         //!< To be added.
+      TO_UPDATE = 2,      //!< To be updated.
+      TO_DELETE = 3       //!< To be removed.
     };
 
     /*!
     \enum MouseEventEdition
 
     \brief Defines which mouse event will be used in the tool to complete an operation.
-
-    \note The order of this enum should not be altered.
     */
     enum MouseEventEdition 
     {
@@ -111,9 +105,9 @@ namespace te
       mouseReleaseRightClick = 1
     };
 
-    TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, OperationType operation);
+    TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, FeatureType type);
 
-    TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayer* layer, const te::gm::Envelope& env, int srid, OperationType operation);
+    TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayer* layer, const te::gm::Envelope& env, int srid, FeatureType type);
 
     TEEDITEXPORT void GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines);
 

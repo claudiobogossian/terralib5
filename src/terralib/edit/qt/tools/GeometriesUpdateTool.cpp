@@ -52,7 +52,7 @@ void te::edit::GeometriesUpdateTool::setLayer(te::map::AbstractLayer* layer)
 
 void te::edit::GeometriesUpdateTool::saveGeometry(te::gm::Geometry* gm, const int& op)
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), gm, (OperationType) op);
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), gm, (FeatureType) op);
 
   m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *gm->getMBR(), gm->getSRID());
 

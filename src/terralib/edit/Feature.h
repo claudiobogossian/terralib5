@@ -61,11 +61,11 @@ namespace te
 
         Feature(te::da::ObjectId* id);
 
-        Feature(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
+        Feature(te::da::ObjectId* id, te::gm::Geometry* geom, te::edit::FeatureType type);
 
         ~Feature();
 
-        void set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
+        void set(te::da::ObjectId* id, te::gm::Geometry* geom, te::edit::FeatureType type);
 
         void setId(te::da::ObjectId* id);
 
@@ -73,9 +73,13 @@ namespace te
 
         void setData(const std::map<std::size_t, te::dt::AbstractData*>& data);
 
-        void setOperation(OperationType operation);
+        void setType(te::edit::FeatureType type);
 
         void setCoords(std::vector<te::gm::Coord2D> coords);
+
+        void setFillColor(const te::color::RGBAColor& fillColor);
+
+        void setContourColor(const te::color::RGBAColor& contourColor);
 
         te::da::ObjectId* getId() const;
 
@@ -83,9 +87,15 @@ namespace te
 
         const std::map<std::size_t, te::dt::AbstractData*>& getData() const;
 
-        OperationType getOperationType() const;
+        FeatureType getType() const;
 
         std::vector<te::gm::Coord2D> getCoords() const;
+
+        te::color::RGBAColor getFillColor() const;
+
+        te::color::RGBAColor getContourColor() const;
+
+        bool isColorChanged();
 
         bool isEquals(te::da::ObjectId* id);
 
@@ -96,8 +106,12 @@ namespace te
         te::da::ObjectId* m_id;
         te::gm::Geometry* m_geom;
         std::map<std::size_t, te::dt::AbstractData*> m_data;
-        OperationType m_operationType;
+        te::edit::FeatureType m_type;
         std::vector<te::gm::Coord2D> m_coords;
+
+        te::color::RGBAColor m_fillColor;
+        te::color::RGBAColor m_contourColor;
+        bool m_colorChanged;
 
     };
 

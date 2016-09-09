@@ -101,7 +101,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   env = getRefEnvelope(*ds, *geomProp);
 
-  m_feature = PickFeature(m_layer, *env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+  m_feature = PickFeature(m_layer, *env, m_display->getSRID(), te::edit::TO_UPDATE);
 
   if (m_feature == 0)
   {
@@ -288,7 +288,7 @@ void te::edit::MergeGeometriesTool::storeFeature()
       if ((*it)->getValueAsString() == m_chosenOid)
         RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
       else
-        RepositoryManager::getInstance().addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_DELETE);
+        RepositoryManager::getInstance().addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::TO_DELETE);
   }
 
   emit geometriesEdited();
@@ -302,7 +302,7 @@ void te::edit::MergeGeometriesTool::pickFeature(const te::map::AbstractLayerPtr&
 
   try
   {
-    m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+    m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
   }
   catch (std::exception& e)
   {

@@ -187,7 +187,7 @@ void te::qt::plugins::edit::ToolBar::updateLayer(te::map::AbstractLayer* layer, 
         oid->addValue(data);
       }
 
-      te::edit::RepositoryManager::getInstance().addGeometry(layer->getId(), oid, it->second, (te::edit::OperationType)ops[it->first]);
+      te::edit::RepositoryManager::getInstance().addGeometry(layer->getId(), oid, it->second, (te::edit::FeatureType)ops[it->first]);
     }
   }
 }
@@ -449,7 +449,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       gs[sOid] = geom;
 
-      ops[sOid] = (int)(*fIt)->getOperationType();
+      ops[sOid] = (int)(*fIt)->getType();
     }
 
     StashGeometries(layer.get(), gs, ops);
@@ -503,14 +503,18 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       // Get the edited geometries
       const std::vector<te::edit::Feature*>& features = repo->getAllFeatures();
 
-      // Build the DataSet that will be used to update
-      std::map<te::edit::OperationType, te::mem::DataSet* > operationds;
+      // Build the DataSet that will be used to add, update and remove.
+      std::map<te::edit::FeatureType, te::mem::DataSet* > featuresTypeDs;
 
-      for (std::size_t i = 0; i <= te::edit::GEOMETRY_UPDATE_ATTRIBUTES; ++i)
-        operationds[te::edit::OperationType(i)] = new te::mem::DataSet(schema.get());
+      //create dataset memory to insert into datasource.
+      featuresTypeDs[te::edit::TO_ADD] = new te::mem::DataSet(schema.get());
+      //create dataset memory to update into datasource.
+      featuresTypeDs[te::edit::TO_UPDATE] = new te::mem::DataSet(schema.get());
+      //create dataset memory to deletes into datasource.
+      featuresTypeDs[te::edit::TO_DELETE] = new te::mem::DataSet(schema.get());
 
       // Get the geometry property position
-      std::size_t gpos = te::da::GetFirstSpatialPropertyPos(operationds[te::edit::GEOMETRY_CREATE]);
+      std::size_t gpos = te::da::GetFirstSpatialPropertyPos(featuresTypeDs[te::edit::TO_ADD]);
       assert(gpos != std::string::npos);
 
       // Get the geometry type
@@ -519,17 +523,14 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       // Get the envelope of layer
       te::gm::Envelope env(layer->getExtent());
 
-      std::map<te::edit::OperationType, std::set<int> > propertiesPos;
+      std::map<te::edit::FeatureType, std::set<int> > propertiesPos;
 
       t->begin();
 
       for (std::size_t i = 0; i < features.size(); ++i) // for each edited feature
       {
-        if (features[i]->getOperationType() > te::edit::GEOMETRY_UPDATE_ATTRIBUTES)
-          continue;
-
         // Create the new item
-        te::mem::DataSetItem* item = new te::mem::DataSetItem(operationds[te::edit::GEOMETRY_CREATE]);
+        te::mem::DataSetItem* item = new te::mem::DataSetItem(featuresTypeDs[te::edit::TO_ADD]);
 
         // Get the object id
         te::da::ObjectId* oid = features[i]->getId();
@@ -549,9 +550,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         // Set the geometry type
         item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
 
-        switch (features[i]->getOperationType())
+        switch (features[i]->getType())
         {
-          case te::edit::GEOMETRY_CREATE:
+          case te::edit::TO_ADD:
           {
             te::mem::DataSet* tempDs = new te::mem::DataSet(schema.get());
 
@@ -560,38 +561,26 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
             // used to not insert the pk
             for (std::size_t j = 0; j < oidPropertyNames.size(); ++j)
             {
-              std::size_t pos = te::da::GetPropertyPos(operationds[te::edit::GEOMETRY_CREATE], oidPropertyNames[j]);
+              std::size_t pos = te::da::GetPropertyPos(featuresTypeDs[te::edit::TO_ADD], oidPropertyNames[j]);
               tempDs->drop(pos);
             }
 
             std::map<std::string, std::string> options;
 
-            t->add(layer->getDataSetName(), tempDs, options);
+            t->add(layer->getDataSetName(),tempDs, options);
 
             boost::int64_t id = t->getLastGeneratedId();
 
             for (std::size_t j = 0; j < values.size(); ++j)
               item->setValue(oidPropertyNames[j], new te::dt::SimpleData<int, te::dt::INT32_TYPE>((int)(id)));
 
-            operationds[te::edit::GEOMETRY_CREATE]->add(item);
+            featuresTypeDs[te::edit::TO_ADD]->add(item);
 
             env.Union(*geom->getMBR());
           }
             break;
 
-          case te::edit::GEOMETRY_UPDATE:
-
-            propertiesPos[te::edit::GEOMETRY_UPDATE].insert((int)gpos);
-
-            operationds[te::edit::GEOMETRY_UPDATE]->add(item);
-            break;
-
-          case te::edit::GEOMETRY_DELETE:
-
-            operationds[te::edit::GEOMETRY_DELETE]->add(item);
-            break;
-
-          case te::edit::GEOMETRY_UPDATE_ATTRIBUTES:
+          case te::edit::TO_UPDATE:
           {
             std::vector<std::size_t> objIdIdx;
             te::da::GetOIDPropertyPos(layer->getSchema().get(), objIdIdx);
@@ -601,14 +590,19 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
               if (std::find(objIdIdx.begin(), objIdIdx.end(), (int)it->first) == objIdIdx.end())
               {
                 item->setValue(it->first, it->second);
-                propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES].insert((int)it->first);
+                propertiesPos[te::edit::TO_UPDATE].insert((int)it->first);
               }
             }
 
-            propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES].insert((int)gpos);
+            propertiesPos[te::edit::TO_UPDATE].insert((int)gpos);
 
-            operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->add(item);
+            featuresTypeDs[te::edit::TO_UPDATE]->add(item);
           }
+            break;
+
+          case te::edit::TO_DELETE:
+
+            featuresTypeDs[te::edit::TO_DELETE]->add(item);
             break;
 
           default:
@@ -616,60 +610,43 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         }
       }
 
-      std::map<te::edit::OperationType, te::da::ObjectIdSet* > currentOids;
+      std::map<te::edit::FeatureType, te::da::ObjectIdSet* > currentOids;
 
-      if (operationds[te::edit::GEOMETRY_CREATE]->size() > 0)
+      if (featuresTypeDs[te::edit::TO_ADD]->size() > 0)
       {
-        currentOids[te::edit::GEOMETRY_CREATE] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_CREATE], schema.get());
+        currentOids[te::edit::TO_ADD] = te::da::GenerateOIDSet(featuresTypeDs[te::edit::TO_ADD], schema.get());
 
-        operationds[te::edit::GEOMETRY_CREATE]->moveBeforeFirst();
+        featuresTypeDs[te::edit::TO_ADD]->moveBeforeFirst();
       }
 
-      if (operationds[te::edit::GEOMETRY_UPDATE]->size() > 0)
+      if (featuresTypeDs[te::edit::TO_UPDATE]->size() > 0)
       {
         std::vector<std::set<int> > properties;
-        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE]->size(); ++i)
-          properties.push_back(propertiesPos[te::edit::GEOMETRY_UPDATE]);
+        for (std::size_t i = 0; i < featuresTypeDs[te::edit::TO_UPDATE]->size(); ++i)
+          properties.push_back(propertiesPos[te::edit::TO_UPDATE]);
 
         std::vector<std::size_t> oidPropertyPosition;
         for (std::size_t i = 0; i < oidPropertyNames.size(); ++i)
-          oidPropertyPosition.push_back(te::da::GetPropertyPos(operationds[te::edit::GEOMETRY_UPDATE], oidPropertyNames[i]));
+          oidPropertyPosition.push_back(te::da::GetPropertyPos(featuresTypeDs[te::edit::TO_UPDATE], oidPropertyNames[i]));
 
-        currentOids[te::edit::GEOMETRY_UPDATE] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_UPDATE], schema.get());
+        currentOids[te::edit::TO_UPDATE] = te::da::GenerateOIDSet(featuresTypeDs[te::edit::TO_UPDATE], schema.get());
 
-        operationds[te::edit::GEOMETRY_UPDATE]->moveBeforeFirst();
+        featuresTypeDs[te::edit::TO_UPDATE]->moveBeforeFirst();
 
-        t->update(layer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE], properties, oidPropertyPosition);
+        t->update(layer->getDataSetName(), featuresTypeDs[te::edit::TO_UPDATE], properties, oidPropertyPosition);
       }
 
-      if (operationds[te::edit::GEOMETRY_DELETE]->size() > 0)
+      if (featuresTypeDs[te::edit::TO_DELETE]->size() > 0)
       {
-        currentOids[te::edit::GEOMETRY_DELETE] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_DELETE], schema.get());
+        currentOids[te::edit::TO_DELETE] = te::da::GenerateOIDSet(featuresTypeDs[te::edit::TO_DELETE], schema.get());
 
-        operationds[te::edit::GEOMETRY_DELETE]->moveBeforeFirst();
+        featuresTypeDs[te::edit::TO_DELETE]->moveBeforeFirst();
 
-        t->remove(layer->getDataSetName(), currentOids[te::edit::GEOMETRY_DELETE]);
+        t->remove(layer->getDataSetName(), currentOids[te::edit::TO_DELETE]);
 
       }
 
-      if (operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->size() > 0)
-      {
-        std::vector<std::set<int> > properties;
-        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->size(); ++i)
-          properties.push_back(propertiesPos[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]);
-
-        std::vector<std::size_t> oidPropertyPosition;
-        for (std::size_t i = 0; i < oidPropertyNames.size(); ++i)
-          oidPropertyPosition.push_back(te::da::GetPropertyPos(operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], oidPropertyNames[i]));
-
-        currentOids[te::edit::GEOMETRY_UPDATE_ATTRIBUTES] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], schema.get());
-
-        operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->moveBeforeFirst();
-
-        t->update(layer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], properties, oidPropertyPosition);
-      }
-
-      env.Union(*operationds[te::edit::GEOMETRY_UPDATE]->getExtent(gpos).get());
+      env.Union(*featuresTypeDs[te::edit::TO_UPDATE]->getExtent(gpos).get());
 
       layer->setExtent(env);
 
