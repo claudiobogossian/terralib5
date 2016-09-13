@@ -51,10 +51,9 @@
 #include "RpToolsWidget.h"
 #include "ui_RpToolsWidgetForm.h"
 
-
 //QT
+#include <QActionGroup>
 #include <QUndoCommand>
-#include <qactiongroup.h>
 
 //STL
 #include <memory>
@@ -64,10 +63,10 @@ te::qt::widgets::RpToolsWidget::RpToolsWidget(QWidget* parent, Qt::WindowFlags f
   : QWidget(parent, f),
     m_ui(new Ui::RpToolsWidgetForm),
     m_symbolizer(0),
-    m_draftOriginal(0),
     m_mapDisplay(0),
     m_actionGroup(0),
-    m_checkedTool(0)
+    m_checkedTool(0),
+    m_draftOriginal(0)
 {
   m_ui->setupUi(this);
   m_pointCursor = Qt::CrossCursor;

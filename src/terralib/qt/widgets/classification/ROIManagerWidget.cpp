@@ -66,10 +66,10 @@ Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::ROIManagerWidgetForm),
-    m_rs(0),
-    m_sampleCounter(0),
-    m_mapDisplay(0)
+  m_ui(new Ui::ROIManagerWidgetForm),
+  m_mapDisplay(0),
+  m_rs(0),
+  m_sampleCounter(0)
 {
   m_ui->setupUi(this);
 
