@@ -54,163 +54,163 @@
       <Function name="st_equals">
         <FunctionEncoder alias="st_equals"/>
       </Function>
-	  <Function name="st_overlaps">
+      <Function name="st_overlaps">
         <FunctionEncoder alias="st_overlaps"/>
       </Function>
-	  <Function name="st_relate">
+      <Function name="st_relate">
         <FunctionEncoder alias="st_relate"/>
       </Function>
 	  <Function name="st_touches">
         <FunctionEncoder alias="st_touches"/>
       </Function>
-	  <Function name="st_intersects">
+      <Function name="st_intersects">
         <FunctionEncoder alias="st_intersects"/>
       </Function>
-	  <Function name="st_within">
+      <Function name="st_within">
         <FunctionEncoder alias="st_within"/>
       </Function>	
     </SpatialTopologicOperators> 
-	<SpatialMetricOperators>    
-	  <Function name="st_area">
+    <SpatialMetricOperators>    
+      <Function name="st_area">
         <FunctionEncoder alias="st_area"/>
       </Function>
-	  <Function name="st_distance">
+      <Function name="st_distance">
         <FunctionEncoder alias="st_distance"/>
       </Function>
-	  <Function name="st_length">
+      <Function name="st_length">
         <FunctionEncoder alias="st_length"/>
       </Function>
-	  <Function name="st_perimeter">
+      <Function name="st_perimeter">
         <FunctionEncoder alias="st_perimeter"/>
       </Function>	
-	</SpatialMetricOperators>	
-	<SpatialNewGeomOperators>
-	  <Function name="st_centroid">
+    </SpatialMetricOperators>	
+    <SpatialNewGeomOperators>
+      <Function name="st_centroid">
         <FunctionEncoder alias="st_centroid"/>
       </Function>
-	  <Function name="st_difference">
+      <Function name="st_difference">
         <FunctionEncoder alias="st_difference"/>
       </Function>
-	  <Function name="st_buffer">
+      <Function name="st_buffer">
         <FunctionEncoder alias="st_buffer"/>
       </Function>
-	  <Function name="st_convexhull">
+      <Function name="st_convexhull">
         <FunctionEncoder alias="st_convexhull"/>
       </Function>
-	  <Function name="st_intersection">
+      <Function name="st_intersection">
         <FunctionEncoder alias="st_intersection"/>
       </Function>
-	  <Function name="st_makepolygon">
+      <Function name="st_makepolygon">
         <FunctionEncoder alias="st_makepolygon"/>
       </Function>	 
-	  <Function name="st_symdifference">
+      <Function name="st_symdifference">
         <FunctionEncoder alias="st_symdifference"/>
       </Function>
-	  <Function name="st_union">
+      <Function name="st_union">
         <FunctionEncoder alias="st_union"/>
       </Function>
     </SpatialNewGeomOperators>	
-	<SpatialOperators>
-	  <Function name="st_boundary">
+    <SpatialOperators>
+      <Function name="st_boundary">
         <FunctionEncoder alias="st_boundary"/>
       </Function>
-	  <Function name="st_collect">
+      <Function name="st_collect">
         <FunctionEncoder alias="st_collect"/>
       </Function>
-	  <Function name="st_coorddim">
+      <Function name="st_coorddim">
         <FunctionEncoder alias="st_coorddim"/>
       </Function>
-	  <Function name="st_dimension">
+      <Function name="st_dimension">
         <FunctionEncoder alias="st_dimension"/>
       </Function>
-	  <Function name="st_dump">
+      <Function name="st_dump">
         <FunctionEncoder alias="st_dump"/>
       </Function>
-	  <Function name="st_dumprings">
+      <Function name="st_dumprings">
         <FunctionEncoder alias="st_dumprings"/>
       </Function>
-	  <Function name="st_endpoint">
+      <Function name="st_endpoint">
         <FunctionEncoder alias="st_endpoint"/>
       </Function>	  
-	  <Function name="st_envelope">
+      <Function name="st_envelope">
         <FunctionEncoder alias="st_envelope"/>
       </Function>
-	  <Function name="st_exteriorring">
+      <Function name="st_exteriorring">
         <FunctionEncoder alias="st_exteriorring"/>
       </Function>
-	  <Function name="st_geometryn">
+      <Function name="st_geometryn">
         <FunctionEncoder alias="st_geometryn"/>
       </Function>
-	  <Function name="st_geometrytype">
+      <Function name="st_geometrytype">
         <FunctionEncoder alias="st_geometrytype"/>
       </Function>
-	  <Function name="st_interiorringn">
+      <Function name="st_interiorringn">
         <FunctionEncoder alias="st_interiorringn"/>
       </Function>
-	  <Function name="st_isclosed">
+      <Function name="st_isclosed">
         <FunctionEncoder alias="st_isclosed"/>
       </Function>
-	  <Function name="st_isempty">
+      <Function name="st_isempty">
         <FunctionEncoder alias="st_isempty"/>
       </Function>
-	  <Function name="st_isring">
+      <Function name="st_isring">
         <FunctionEncoder alias="st_isring"/>
       </Function>
-	  <Function name="st_issimple">
+      <Function name="st_issimple">
         <FunctionEncoder alias="st_issimple"/>
       </Function>
-	  <Function name="st_isvalid">
+      <Function name="st_isvalid">
         <FunctionEncoder alias="st_isvalid"/>
       </Function> 
-	  <Function name="st_ndims">
+      <Function name="st_ndims">
         <FunctionEncoder alias="st_ndims"/>
       </Function>
-	  <Function name="st_nrings">
+      <Function name="st_nrings">
         <FunctionEncoder alias="st_nrings"/>
       </Function>
-	  	  <Function name="st_multi">
+      <Function name="st_multi">
         <FunctionEncoder alias="st_multi"/>
       </Function>
-	  <Function name="st_numgeometries">
+      <Function name="st_numgeometries">
         <FunctionEncoder alias="st_numgeometries"/>
       </Function>
-	  <Function name="st_numinteriorrings">
+      <Function name="st_numinteriorrings">
         <FunctionEncoder alias="st_numinteriorrings"/>
       </Function>
-	  <Function name="st_numpoints">
+      <Function name="st_numpoints">
         <FunctionEncoder alias="st_numinteriorrings"/>
       </Function>
-	  <Function name="st_pointn">
+      <Function name="st_pointn">
         <FunctionEncoder alias="st_pointn"/>
       </Function>
-	  <Function name="st_srid">
+      <Function name="st_srid">
         <FunctionEncoder alias="st_srid"/>
       </Function>
-	  <Function name="st_startpoint">
+      <Function name="st_startpoint">
         <FunctionEncoder alias="st_startpoint"/>
       </Function>
-	  <Function name="st_x">
+      <Function name="st_x">
         <FunctionEncoder alias="st_x"/>
       </Function>
-	  <Function name="st_y">
+      <Function name="st_y">
         <FunctionEncoder alias="st_y"/>
       </Function>
-	  <Function name="st_z">
+      <Function name="st_z">
         <FunctionEncoder alias="st_z"/>
       </Function>
-	  <Function name="st_m">
+      <Function name="st_m">
         <FunctionEncoder alias="st_m"/>
       </Function>
-	  <Function name="st_setsrid">
+      <Function name="st_setsrid">
         <FunctionEncoder alias="st_setsrid"/>
       </Function>
-	  <Function name="st_transform">
+      <Function name="st_transform">
         <FunctionEncoder alias="st_transform"/>
       </Function>
-	  <Function name="st_dfullywithin">
+      <Function name="st_dfullywithin">
         <FunctionEncoder alias="st_dfullywithin"/>
       </Function>
-	  <Function name="st_dwithin">
+      <Function name="st_dwithin">
         <FunctionEncoder alias="st_dwithin"/>
       </Function>
     </SpatialOperators>
@@ -223,6 +223,9 @@
       </Function>
       <Function name="not">
         <UnaryOpEncoder alias="not"/>
+      </Function>
+      <Function name="isnull">
+        <TemplateEncoder alias="" template="($1 isnull)"/>
       </Function>
     </LogicalOperators>
     <ComparsionOperators>
@@ -266,19 +269,19 @@
       </Function>
     </ArithmeticOperators>
     <Functions>	  
-	  <Function name="upper">
+      <Function name="upper">
         <FunctionEncoder alias="upper"/>
       </Function>
       <Function name="lower">
         <FunctionEncoder alias="lower"/>
       </Function>
-	  <Function name="sum">
+      <Function name="sum">
         <FunctionEncoder alias="sum"/>
       </Function>  
       <Function name="avg">
         <FunctionEncoder alias="avg"/>
       </Function>
-	  <Function name="coalesce">
+      <Function name="coalesce">
         <FunctionEncoder alias="coalesce"/>
       </Function>
       <Function name="count">
@@ -290,25 +293,25 @@
       <Function name="min">
         <FunctionEncoder alias="min"/>
       </Function>
-	  <Function name="stddev">
+      <Function name="stddev">
         <FunctionEncoder alias="stddev_pop"/>
       </Function>
-	  <Function name="variance">
+      <Function name="variance">
         <FunctionEncoder alias="var_pop"/>
       </Function>
-	  <Function name="substring">
+      <Function name="substring">
         <TemplateEncoder alias="substring" template="($1 from $2 for $3)"/>
       </Function>	  
-	  <Function name="trim">
+      <Function name="trim">
         <TemplateEncoder alias="trim" template="($1 from $2 for $3)"/>
       </Function>	  
-	  <Function name="second">
+      <Function name="second">
         <TemplateEncoder alias="extract" template="(both $1 from $2)"/>
       </Function>
-	  <Function name="year">
+      <Function name="year">
         <TemplateEncoder alias="extract" template="(year from $1)"/>
       </Function>
-	  <Function name="str">
+      <Function name="str">
         <TemplateEncoder alias="cast" template="($1 as varchar)"/>
       </Function>
     </Functions>	
