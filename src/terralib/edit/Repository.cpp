@@ -51,7 +51,7 @@ te::edit::Repository::~Repository()
   clear();
 }
 
-void te::edit::Repository::add(te::gm::Geometry* geom, OperationType operation)
+void te::edit::Repository::add(te::gm::Geometry* geom, FeatureType type)
 {
   assert(geom);
 
@@ -59,16 +59,16 @@ void te::edit::Repository::add(te::gm::Geometry* geom, OperationType operation)
 
   assert(!hasIdentifier(id));
 
-  add(id, geom, operation);
+  add(id, geom, type);
 
 }
 
-void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
+void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom, FeatureType type)
 {
   assert(id);
   assert(geom);
 
-  Feature* f = new Feature(id, geom, operation);
+  Feature* f = new Feature(id, geom, type);
 
   add(f);
 
@@ -94,13 +94,13 @@ void te::edit::Repository::add(Feature* f)
   set(pos, f);
 }
 
-void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
+void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom, FeatureType type)
 {
   assert(id);
   assert(geom);
-  assert(operation);
+  assert(type);
 
-  Feature* f = new Feature(id, geom, operation);
+  Feature* f = new Feature(id, geom, type);
 
   set(f);
 }
@@ -235,9 +235,6 @@ te::edit::Feature* te::edit::Repository::getFeature(const te::gm::Envelope& e, i
 
   for(std::size_t i = 0; i < candidates.size(); ++i)
   {
-    if (candidates[i]->getOperationType() > te::edit::GEOMETRY_UPDATE_ATTRIBUTES) //Ignores geometries that represent the cells.
-      continue;
-
     te::gm::Geometry* g = candidates[i]->getGeometry();
 
     if (g->getSRID() != srid)
@@ -257,6 +254,37 @@ te::edit::Feature* te::edit::Repository::getFeature(te::da::ObjectId* id) const
   for (std::size_t i = 0; i < m_features.size(); ++i)
     if (m_features[i]->isEquals(id))
       return m_features[i];
+
+  return 0;
+}
+
+te::edit::Feature* te::edit::Repository::getFeature(const te::gm::Envelope& e, int srid, te::edit::FeatureType tpToIgnored) const
+{
+  std::vector<te::edit::Feature*> candidates = getFeatures(e, srid);
+
+  if (candidates.empty())
+    return 0;
+
+  // Generates a geometry from the given extent. It will be used to refine the results
+  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&e, srid));
+
+  // The restriction point. It will be used to refine the results
+  te::gm::Coord2D center = e.getCenter();
+  te::gm::Point point(center.x, center.y, srid);
+
+  for (std::size_t i = 0; i < candidates.size(); ++i)
+  {
+    if (candidates[i]->getType() == tpToIgnored)
+      continue;
+
+    te::gm::Geometry* g = candidates[i]->getGeometry();
+
+    if (g->getSRID() != srid)
+      g->transform(srid);
+
+    if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g))  // Geometry found!
+      return candidates[i];
+  }
 
   return 0;
 }

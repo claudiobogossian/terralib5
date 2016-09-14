@@ -67,9 +67,9 @@ namespace te
 
     public:
 
-      void addGeometry(const std::string& source, te::gm::Geometry* geom, OperationType operation);
+      void addGeometry(const std::string& source, te::gm::Geometry* geom, FeatureType type);
 
-      void addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
+      void addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom, FeatureType type);
 
       void addFeature(const std::string& source, Feature* f);
 
@@ -84,6 +84,8 @@ namespace te
       Feature* getFeature(const std::string& source, const te::gm::Envelope& e, int srid) const;
 
       Feature* getFeature(const std::string& source, te::da::ObjectId* id) const;
+
+      Feature* getFeature(const std::string& source, const te::gm::Envelope& e, int srid, FeatureType tpToIgnored) const;
 
       void clearAll();
 

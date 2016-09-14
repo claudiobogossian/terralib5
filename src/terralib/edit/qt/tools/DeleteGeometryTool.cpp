@@ -61,7 +61,7 @@ bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
   if (e->button() != Qt::LeftButton)
     return false;
 
-  m_feature = PickFeature(m_layer, buildEnvelope(e->pos()), m_display->getSRID(), te::edit::GEOMETRY_DELETE);
+  m_feature = PickFeature(m_layer, buildEnvelope(e->pos()), m_display->getSRID(), te::edit::TO_DELETE);
 
   if (m_feature == 0)
   {
@@ -96,24 +96,23 @@ te::gm::Envelope te::edit::DeleteGeometryTool::buildEnvelope(const QPointF& pos)
 
 void te::edit::DeleteGeometryTool::storeFeature()
 {
-  te::edit::OperationType op = te::edit::GEOMETRY_DELETE;
+  te::edit::FeatureType op = te::edit::TO_DELETE;
 
   if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()->clone()) == true)
   {
-    switch (m_feature->clone()->getOperationType())
+    switch (m_feature->clone()->getType())
     {
-      case te::edit::GEOMETRY_DELETE:
+      case te::edit::TO_DELETE:
 
-        m_feature->setOperation(te::edit::GEOMETRY_UPDATE);
-        op = te::edit::GEOMETRY_UPDATE;
+        m_feature->setType(te::edit::TO_UPDATE);
+        op = te::edit::TO_UPDATE;
 
         break;
 
-      case te::edit::GEOMETRY_UPDATE:
-      case te::edit::GEOMETRY_UPDATE_ATTRIBUTES:
+      case te::edit::TO_UPDATE:
 
-        m_feature->setOperation(te::edit::GEOMETRY_DELETE);
-        op = te::edit::GEOMETRY_DELETE;
+        m_feature->setType(te::edit::TO_DELETE);
+        op = te::edit::TO_DELETE;
 
         break;
 

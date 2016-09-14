@@ -184,7 +184,7 @@ te::gm::Geometry* te::edit::CreateLineTool::buildLine()
 
 void te::edit::CreateLineTool::storeFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine(), te::edit::GEOMETRY_CREATE);
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine(), te::edit::TO_ADD);
   emit geometriesEdited();
 }
 

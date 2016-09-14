@@ -30,6 +30,10 @@
 
 #define NEW_FEATURE_ID_SUFFIX "-new"
 
+#define TE_EDIT_FEATURE_FILL_COLOR  0, 255, 0, 15
+
+#define TE_EDIT_FEATURE_CONTOUR_COLOR  255, 0, 0, 255
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

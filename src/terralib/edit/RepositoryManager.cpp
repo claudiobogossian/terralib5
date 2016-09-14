@@ -35,7 +35,7 @@
 // STL
 #include <cassert>
 
-void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm::Geometry* geom, OperationType operation)
+void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm::Geometry* geom, FeatureType type)
 {
   Repository* repository = getRepository(source);
 
@@ -45,17 +45,17 @@ void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm:
     repository = new Repository(source);
 
     // Add the geometry
-    repository->add(geom, operation);
+    repository->add(geom, type);
 
     // Store!
     m_repositories[source] = repository;
 
   }
   else
-    repository->add(geom, operation);
+    repository->add(geom, type);
 }
 
-void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
+void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom, FeatureType type)
 {
   Repository* repository = getRepository(source);
 
@@ -65,13 +65,13 @@ void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da:
     repository = new Repository(source);
 
     // Add the geometry
-    repository->add(id, geom, operation);
+    repository->add(id, geom, type);
 
     // Store!
     m_repositories[source] = repository;
   }
   else
-    repository->add(id, geom, operation);
+    repository->add(id, geom, type);
 }
 
 void te::edit::RepositoryManager::addFeature(const std::string& source, Feature* f)
@@ -148,6 +148,16 @@ te::edit::Feature* te::edit::RepositoryManager::getFeature(const std::string& so
     return 0;
 
   return repository->getFeature(id);
+}
+
+te::edit::Feature* te::edit::RepositoryManager::getFeature(const std::string& source, const te::gm::Envelope& e, int srid, FeatureType tpToIgnored) const
+{
+  Repository* repository = getRepository(source);
+
+  if (repository == 0)
+    return 0;
+
+  return repository->getFeature(e, srid, tpToIgnored);
 }
 
 void te::edit::RepositoryManager::clearAll()

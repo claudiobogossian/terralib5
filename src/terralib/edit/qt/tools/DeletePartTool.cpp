@@ -68,7 +68,7 @@ bool te::edit::DeletePartTool::mousePressEvent(QMouseEvent* e)
   if (!m_mbr.isValid())
     return false;
 
-  m_feature = PickFeature(m_layer, m_mbr, m_display->getSRID(), te::edit::GEOMETRY_DELETE);
+  m_feature = PickFeature(m_layer, m_mbr, m_display->getSRID(), te::edit::TO_DELETE);
 
   if (m_feature == 0)
   {
@@ -102,7 +102,7 @@ te::gm::Envelope te::edit::DeletePartTool::buildEnvelope(const QPointF& pos)
 
 void te::edit::DeletePartTool::storeFeature()
 {
-  te::edit::OperationType op = te::edit::GEOMETRY_UPDATE;
+  te::edit::FeatureType op = te::edit::TO_UPDATE;
 
   // Generates a geometry from the given extent. It will be used to refine the results
   std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&m_mbr, m_layer->getSRID()));
@@ -177,7 +177,7 @@ void te::edit::DeletePartTool::storeFeature()
       break;
 
     default:
-      op = te::edit::GEOMETRY_DELETE;
+      op = te::edit::TO_DELETE;
       break;
   }
 
