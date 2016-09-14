@@ -15,6 +15,7 @@ mydialect->insert("<=", new te::da::BinaryOpEncoder("<="));
 mydialect->insert("and", new te::da::BinaryOpEncoder("and"));
 mydialect->insert("or", new te::da::BinaryOpEncoder("or"));
 mydialect->insert("not", new te::da::UnaryOpEncoder("not"));
+mydialect->insert("isnull", new te::da::UnaryOpEncoder("isnull"));
 mydialect->insert("upper", new te::da::FunctionEncoder("upper"));
 mydialect->insert("lower", new te::da::FunctionEncoder("lower"));
 mydialect->insert("substring", new te::da::TemplateEncoder("substring", "($1 from $2 for $3)"));

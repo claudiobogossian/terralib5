@@ -34,6 +34,7 @@ queryCapabilities.setSupportAll();
 queryCapabilities.addLogicalOperator("and");
 queryCapabilities.addLogicalOperator("or");
 queryCapabilities.addLogicalOperator("not");
+queryCapabilities.addLogicalOperator("isnull");
 
 /* Arithmetic Operators */
 queryCapabilities.addArithmeticOperator("+");
