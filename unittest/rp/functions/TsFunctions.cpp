@@ -41,7 +41,7 @@
 
 BOOST_AUTO_TEST_SUITE (functions_tests)
 
-void CreateFixedStepPalette()
+BOOST_AUTO_TEST_CASE( createFixedStepPalette_test )
 {
   std::vector< te::rst::BandProperty * > bandsProps;
   bandsProps.push_back( new te::rst::BandProperty( 0, 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(rasterSlicing_test)
       *diskRasterPtr.get(), 
       0, 
       false,
-      255,
+      10,
       true,
       auxRasterInfo2,
       "GDAL",
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(rasterSlicing_test)
       *diskRasterPtr.get(), 
       0, 
       true,
-      255,
+      10,
       true,
       auxRasterInfo2,
       "GDAL",

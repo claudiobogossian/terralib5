@@ -3083,6 +3083,7 @@ namespace te
         bandsProperties[ 0 ]->m_colorInterp = te::rst::PaletteIdxCInt;
         bandsProperties[ 0 ]->m_paletteInterp = te::rst::RGBPalInt;
         bandsProperties[ 0 ]->m_palette = (*internalPalettePtr);
+        bandsProperties[ 0 ]->m_noDataValue = (double)internalPalettePtr->size();
         if( internalPalettePtr->size() <= std::numeric_limits< unsigned char >::max() )
         {
           bandsProperties[ 0 ]->m_type = te::dt::UCHAR_TYPE;
@@ -3108,10 +3109,11 @@ namespace te
         te::rst::Band& outBand = (*outRasterPtr->getBand( 0 ));
         const unsigned int nRows = internalInRasterPtr->getNumberOfRows();
         const unsigned int nCols = internalInRasterPtr->getNumberOfColumns();
-        const double inScale = ( inputRasterMax == inputRasterMin ) ? 0.0 :
-          ( 1.0 / ( inputRasterMax - inputRasterMin ) );
-        const double outScale = ( (double)internalPalettePtr->size() - 1 );
-        const double paletteSizeDouble = (double)internalPalettePtr->size();
+        const double lastPaletteIdx = (double)( internalPalettePtr->size() - 1 );
+        const double palleteStepSize = ( inputRasterMax - inputRasterMin ) /
+          ((double)internalPalettePtr->size());
+        const double inputNoDataValue = inBand.getProperty()->m_noDataValue;
+        const double outputNoDataValue = outBand.getProperty()->m_noDataValue;
         unsigned int col = 0;
         double value = 0;
         
@@ -3120,13 +3122,17 @@ namespace te
           for( col = 0 ; col < nCols ; ++col )
           {
             inBand.getValue( col, row, value );
-            value -= inputRasterMin;
-            value *= inScale;
-            value *= outScale;
-            value = std::floor( value );
-            value = std::max( 0.0, value );
-            value = std::min( paletteSizeDouble, value );            
-            outBand.setValue( col, row, value );
+            
+            if( value == inputNoDataValue )
+            {
+              outBand.setValue( col, row, outputNoDataValue );
+            }
+            else
+            {
+              value = std::floor( value / palleteStepSize );
+              value = std::min( lastPaletteIdx, value );            
+              outBand.setValue( col, row, value );
+            }
           }
           
           if( enableProgress )
@@ -3138,6 +3144,46 @@ namespace te
       }
       else
       {
+        short internalPaletteMaxValue = 0;
+        for( unsigned int internalPaletteIdx = 0 ; internalPaletteIdx < 
+          internalPalettePtr->size() ; ++internalPaletteIdx )
+        {
+          if( internalPalettePtr->operator[]( internalPaletteIdx ).c1 > 
+            internalPaletteMaxValue )
+          {
+            internalPaletteMaxValue = internalPalettePtr->operator[]( internalPaletteIdx ).c1;
+          }
+          if( internalPalettePtr->operator[]( internalPaletteIdx ).c2 > 
+            internalPaletteMaxValue )
+          {
+            internalPaletteMaxValue = internalPalettePtr->operator[]( internalPaletteIdx ).c2;
+          }
+          if( internalPalettePtr->operator[]( internalPaletteIdx ).c3 > 
+            internalPaletteMaxValue )
+          {
+            internalPaletteMaxValue = internalPalettePtr->operator[]( internalPaletteIdx ).c3;
+          }
+          if( internalPalettePtr->operator[]( internalPaletteIdx ).c4 > 
+            internalPaletteMaxValue )
+          {
+            internalPaletteMaxValue = internalPalettePtr->operator[]( internalPaletteIdx ).c4;
+          }                              
+        }    
+        
+        int outDataType = 0;
+        if( internalPaletteMaxValue < ( std::numeric_limits< unsigned char >::max() ) )
+        {
+          outDataType = te::dt::UCHAR_TYPE;
+        }
+        else if( internalPaletteMaxValue < ( std::numeric_limits< unsigned short int >::max() ) )
+        {
+          outDataType = te::dt::UINT16_TYPE;
+        }
+        else
+        {
+          outDataType = te::dt::UINT32_TYPE;
+        }         
+        
         std::vector< te::rst::BandProperty* > bandsProperties;
         bandsProperties.push_back( new te::rst::BandProperty( 
           * internalInRasterPtr->getBand( internalInRasterBand )->getProperty() ) );
@@ -3148,12 +3194,12 @@ namespace te
         bandsProperties[ 0 ]->m_colorInterp = te::rst::RedCInt;
         bandsProperties[ 1 ]->m_colorInterp = te::rst::GreenCInt;
         bandsProperties[ 2 ]->m_colorInterp = te::rst::BlueCInt;
-        bandsProperties[ 0 ]->m_type = te::dt::UCHAR_TYPE;
-        bandsProperties[ 1 ]->m_type = te::dt::UCHAR_TYPE;
-        bandsProperties[ 2 ]->m_type = te::dt::UCHAR_TYPE;
-        bandsProperties[ 0 ]->m_noDataValue = std::numeric_limits< double >::max();
-        bandsProperties[ 1 ]->m_noDataValue = std::numeric_limits< double >::max();
-        bandsProperties[ 2 ]->m_noDataValue = std::numeric_limits< double >::max();
+        bandsProperties[ 0 ]->m_type = outDataType;
+        bandsProperties[ 1 ]->m_type = outDataType;
+        bandsProperties[ 2 ]->m_type = outDataType;
+        bandsProperties[ 0 ]->m_noDataValue = internalPaletteMaxValue + 1;
+        bandsProperties[ 1 ]->m_noDataValue = internalPaletteMaxValue + 1;
+        bandsProperties[ 2 ]->m_noDataValue = internalPaletteMaxValue + 1;
         
         TERP_TRUE_OR_RETURN_FALSE( CreateNewRaster( *internalInRasterPtr->getGrid(),
           bandsProperties, rasterInfo, rasterType, outRasterPtr ),
@@ -3163,12 +3209,15 @@ namespace te
         te::rst::Band& outBandRed = (*outRasterPtr->getBand( 0 ));
         te::rst::Band& outBandGreen = (*outRasterPtr->getBand( 1 ));
         te::rst::Band& outBandBlue = (*outRasterPtr->getBand( 2 ));
+        const double rBandNoDataValue = outBandRed.getProperty()->m_noDataValue;
+        const double gBandNoDataValue = outBandGreen.getProperty()->m_noDataValue;
+        const double bBandNoDataValue = outBandBlue.getProperty()->m_noDataValue;
         const unsigned int nRows = internalInRasterPtr->getNumberOfRows();
         const unsigned int nCols = internalInRasterPtr->getNumberOfColumns();
-        const double inScale = ( inputRasterMax == inputRasterMin ) ? 0 :
-          ( 1.0 / ( inputRasterMax - inputRasterMin ) );
-        const double outScale = ( (double)internalPalettePtr->size() - 1 ); 
-        const double paletteSizeDouble = (double)internalPalettePtr->size();
+        const double lastPaletteIdx = (double)( internalPalettePtr->size() - 1 );
+        const double palleteStepSize = ( inputRasterMax - inputRasterMin ) /
+          ((double)internalPalettePtr->size());
+        const double inputNoDataValue = inBand.getProperty()->m_noDataValue;
         unsigned int col = 0;
         double value = 0;
         
@@ -3177,19 +3226,25 @@ namespace te
           for( col = 0 ; col < nCols ; ++col )
           {
             inBand.getValue( col, row, value );
-            value -= inputRasterMin;
-            value *= inScale;
-            value *= outScale;
-            value = std::floor( value );
-            value = std::max( 0.0, value );
-            value = std::min( paletteSizeDouble, value );
             
-            const te::rst::BandProperty::ColorEntry& cEntry = 
-              internalPalettePtr->operator[]( (unsigned int)value );
-            
-            outBandRed.setValue( col, row, cEntry.c1 );
-            outBandGreen.setValue( col, row, cEntry.c2 );
-            outBandBlue.setValue( col, row, cEntry.c3 );
+            if( value == inputNoDataValue )
+            {
+              outBandRed.setValue( col, row, rBandNoDataValue );
+              outBandGreen.setValue( col, row, gBandNoDataValue );
+              outBandBlue.setValue( col, row, bBandNoDataValue );
+            }
+            else
+            {
+              value = std::floor( value / palleteStepSize );
+              value = std::min( lastPaletteIdx, value );          
+              
+              const te::rst::BandProperty::ColorEntry& cEntry = 
+                internalPalettePtr->operator[]( (unsigned int)value );
+              
+              outBandRed.setValue( col, row, cEntry.c1 );
+              outBandGreen.setValue( col, row, cEntry.c2 );
+              outBandBlue.setValue( col, row, cEntry.c3 );
+            }
           }
           
           if( enableProgress )
