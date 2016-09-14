@@ -101,14 +101,11 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_fixedDistanceLineEdit->setEnabled(true);
   m_ui->m_fixedDistanceLineEdit->setValidator(new QDoubleValidator(this));
 
-  m_ui->m_fromAttRadioButton->setVisible(false);
-  m_ui->m_fromAttDistanceComboBox->setVisible(false);
-
   setPossibleLevels();
 
 //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
-//  connect(m_ui->m_fixedRadioButton, SIGNAL(toggled(bool)), this, SLOT(onFixedDistanceToggled()));
+  connect(m_ui->m_fixedAtRadioButton, SIGNAL(toggled(bool)), this, SLOT(onFixedDistanceToggled()));
   connect(m_ui->m_fromAttRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttDistanceToggled()));
   connect(m_ui->m_ruleInOutRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRuleInOutToggled()));
   connect(m_ui->m_ruleOnlyOutRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRuleOutToggled()));
@@ -166,7 +163,6 @@ void te::vp::BufferDialog::setAttributesForDistance(std::vector<te::dt::Property
        properties[i]->getType() == te::dt::INT32_TYPE ||
        properties[i]->getType() == te::dt::INT64_TYPE ||
        properties[i]->getType() == te::dt::FLOAT_TYPE ||
-       properties[i]->getType() == te::dt::NUMERIC_TYPE ||
        properties[i]->getType() == te::dt::UINT16_TYPE ||
        properties[i]->getType() == te::dt::UINT32_TYPE ||
        properties[i]->getType() == te::dt::UINT64_TYPE)
@@ -175,7 +171,7 @@ void te::vp::BufferDialog::setAttributesForDistance(std::vector<te::dt::Property
 
   if(m_ui->m_fromAttDistanceComboBox->count() > 0)
   {
-    //m_ui->m_fromAttRadioButton->setEnabled(true);
+    m_ui->m_fromAttRadioButton->setEnabled(true);
   }
   else
     m_ui->m_fromAttRadioButton->setEnabled(false);
@@ -428,23 +424,28 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   }
   
   // Check consistency of buffer parameters
-  double fixedDistance;
-  std::string propDistance = "";
-  //if(m_ui->m_fixedRadioButton->isChecked())
-  //{
-    fixedDistance = m_ui->m_fixedDistanceLineEdit->text().toDouble();
-    if (fixedDistance <= 0)
+  double distance;
+  int attributePosition = -1;
+
+  if(m_ui->m_fixedAtRadioButton->isChecked())
+  {
+    distance = m_ui->m_fixedDistanceLineEdit->text().toDouble();
+    if (distance <= 0)
     {
       QMessageBox::information(this, "Buffer", "Fixed distance value should be greater than 0.");
       return;
     }
-/*  }
+  }
   else
   {
-    fixedDistance = 0;
+    distance = 0;
+    std::string propDistance = "";
     int i = m_ui->m_fromAttDistanceComboBox->currentIndex();
     propDistance = m_ui->m_fromAttDistanceComboBox->itemText(i).toUtf8().data();
-  }*/
+
+    std::auto_ptr<const te::map::LayerSchema> schema(m_selectedLayer->getSchema());
+    attributePosition = te::da::GetPropertyPos(schema.get(), propDistance);
+  }
   
   // Checking consistency of output paramenters
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
@@ -523,7 +524,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 
       bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       bufferOp->setOutput(dsOGR, outputdataset);
-      bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
+      bufferOp->setParams(distance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels, attributePosition);
 
       if (!bufferOp->paramsAreValid())
         res = false;
@@ -594,7 +595,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 
       bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       bufferOp->setOutput(aux, outputdataset);
-      bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
+      bufferOp->setParams(distance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels, attributePosition);
 
       if (!bufferOp->paramsAreValid())
         res = false;

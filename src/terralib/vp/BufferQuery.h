@@ -51,31 +51,65 @@ namespace te
 {
   namespace vp
   {
+    /*!
+      \class BufferQuery
+
+      \brief A concrete class to compute the buffer operation.
+
+      \ingroup vp
+    */
     class TEVPEXPORT BufferQuery : public BufferOp
     {
     
     public:
       
+      /*! \brief Default constructor.*/
       BufferQuery();
       
+      /*! \brief Destructor. */
       ~BufferQuery();
       
+      /*!
+        \brief It executes the operation.
+
+        \return A Boolean value that means if the operation successfully completed or not.
+      */
       bool run() throw(te::common::Exception);
 
     protected:
 
+      /*!
+        \brief It dissolves the bounders between buffers.
+
+        \param outDSet  The dataSet with buffers.
+        \param levels   The number of levels the dataset has.
+
+        \note The outDSet is updated with dissolved buffers.
+      */
       std::vector<std::vector<te::gm::Geometry*> > dissolveQuery( te::da::DataSet* dsQuery,
                                                                   const int& levels);
 
-      void prepareDataSet(te::da::DataSetType* dataSetType, 
-                          te::da::DataSet* dataSetQuery,
-                          te::mem::DataSet* outputDataSet,
-                          const double& distance);
+      /*!
+        \brief It prepare the dataset to be persisted.
 
-      void prepareDataSet(te::da::DataSetType* dataSetType, 
-                          std::vector<std::vector<te::gm::Geometry*> > vecDissolvedGeom,
+        \param dataSetQuery   The dataSet that was returned by query.
+        \param outputDataSet  The dataSet prepared to be persisted.
+      */
+      void prepareDataSet(te::da::DataSet* dataSetQuery,
+                          te::mem::DataSet* outputDataSet);
+
+      /*!
+        \brief It prepare the dataset to be persisted with dissolved geometries.
+
+        \param vecDissolvedGeom   A vecter with dissolved geometries by level.
+        \param outputDataSet      The dataSet prepared to be persisted.
+        \param distance           The buffer distance.
+
+        \note The outDSet is updated with dissolved buffers.
+      */
+      void prepareDataSet(std::vector<std::vector<te::gm::Geometry*> > vecDissolvedGeom,
                           te::mem::DataSet* outputDataSet,
-                          const double& distance);
+                          const double &distance);
       
     }; // end class
   } // end namespace vp
