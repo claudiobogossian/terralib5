@@ -122,7 +122,7 @@ bool te::edit::EditInfoTool::mousePressEvent(QMouseEvent* e)
   if (m_feature == 0)
     return false;
 
-  if (m_feature->getOperationType() == te::edit::GEOMETRY_CREATE)
+  if (m_feature->getType() == te::edit::TO_ADD)
     return false;
 
   m_data = m_feature->getData();
@@ -184,7 +184,7 @@ void te::edit::EditInfoTool::pickFeature(const te::map::AbstractLayerPtr& layer,
 
   try
   {
-    m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+    m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
   }
   catch (std::exception& e)
   {
@@ -435,7 +435,7 @@ void te::edit::EditInfoTool::updateCursor()
 void te::edit::EditInfoTool::storeFeature()
 {
   m_feature->setData(m_data);
-  m_feature->setOperation(te::edit::GEOMETRY_UPDATE_ATTRIBUTES);
+  m_feature->setType(te::edit::TO_UPDATE);
 
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 }

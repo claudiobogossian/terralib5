@@ -283,7 +283,7 @@ void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, c
 
   try
   {
-    m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+    m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
 
     m_lines.clear();
 

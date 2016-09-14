@@ -145,7 +145,7 @@ te::gm::Geometry* te::edit::CreatePointTool::buildPoint()
 
 void te::edit::CreatePointTool::storeFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPoint(), te::edit::GEOMETRY_CREATE);
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPoint(), te::edit::TO_ADD);
 }
 
 void te::edit::CreatePointTool::resetVisualizationTool()

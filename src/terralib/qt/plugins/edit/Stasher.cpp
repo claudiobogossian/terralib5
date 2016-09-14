@@ -35,7 +35,7 @@ void StashGeometries(const te::map::AbstractLayer* layer, const std::map<std::st
   {
     std::string id = it->first;
 
-    if(ops.at(id) == te::edit::GEOMETRY_DELETE)
+    if(ops.at(id) == te::edit::TO_DELETE)
     {
       gsR.push_back(it->second);
       idsRFile << id << "\n";
@@ -87,7 +87,7 @@ void GetStashedGeometries(const te::map::AbstractLayer* layer, std::map<std::str
 
       id.toInt(&ok);
       
-      ops[id.toUtf8().data()] = ((ok) ? te::edit::GEOMETRY_UPDATE : te::edit::GEOMETRY_CREATE);
+      ops[id.toUtf8().data()] = ((ok) ? te::edit::TO_UPDATE : te::edit::TO_ADD);
 
       gm->setSRID(layer->getSRID());
 
@@ -118,7 +118,7 @@ void GetStashedGeometries(const te::map::AbstractLayer* layer, std::map<std::str
 
       id.toInt(&ok);
 
-      ops[id.toUtf8().data()] = te::edit::GEOMETRY_DELETE;
+      ops[id.toUtf8().data()] = te::edit::TO_DELETE;
 
       gm->setSRID(layer->getSRID());
 
