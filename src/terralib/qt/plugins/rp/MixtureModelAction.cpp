@@ -55,16 +55,22 @@ void te::qt::plugins::rp::MixtureModelAction::onActionActivated(bool checked)
   te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
   m_mixtureModelWizard->setMapDisplay(ba->getMapDisplay());
 
+  connect(m_mixtureModelWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
+
+  QActionGroup* m_mapEditionTools = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
+  assert(m_mapEditionTools);
+  
+  m_mixtureModelWizard->setActionGroup(m_mapEditionTools);
+
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
+
+  m_mixtureModelWizard->setAttribute(Qt::WA_DeleteOnClose);
 
   m_mixtureModelWizard->setList(layersList);
 
   m_mixtureModelWizard->setModal(false);
 
   m_mixtureModelWizard->show();
-
-  connect(m_mixtureModelWizard, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayerSlot(te::map::AbstractLayerPtr)));
-  connect(m_mixtureModelWizard, SIGNAL(closeTool()), this, SLOT(closeTool()));
 }
 
 void te::qt::plugins::rp::MixtureModelAction::addLayerSlot(te::map::AbstractLayerPtr layer)
@@ -91,14 +97,5 @@ void te::qt::plugins::rp::MixtureModelAction::onPopUpActionActivated(bool checke
   else
   {
     QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
-  }
-}
-
-void te::qt::plugins::rp::MixtureModelAction::closeTool()
-{
-  if (m_mixtureModelWizard)
-  {
-    delete m_mixtureModelWizard;
-    m_mixtureModelWizard = 0;
   }
 }

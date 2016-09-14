@@ -62,8 +62,6 @@ te::qt::widgets::TableLinkDialog::TableLinkDialog(QWidget* parent, Qt::WindowFla
   m_ui->setupUi(this);
   m_ui->m_dataToolButton->setIcon(QIcon::fromTheme("view-data-table"));
   m_ui->m_dataToolButton->setToolTip(tr("View dataset rows"));
-  m_ui->m_advancedToolButton->setIcon(QIcon::fromTheme("preferences-system"));
-  m_ui->m_advancedToolButton->setToolTip(tr("View advanced options"));
 
   //Adjusting the dataSetTableView that will be used to display the tabular dataset's data
   m_tabularView.reset(new DataSetTableView(m_ui->m_tabularFrame));
@@ -77,18 +75,9 @@ te::qt::widgets::TableLinkDialog::TableLinkDialog(QWidget* parent, Qt::WindowFla
   m_tabularView->hide();
   m_ui->m_dataPreviewGroupBox->hide();
 
-  //Adjusting the doubleListWidget that will be used to configure the query's fields.
-  m_fieldsDialog.reset(new te::qt::widgets::FieldsDialog(this));
-  m_ui->m_tabularFrame->hide();
-  m_ui->m_helpPushButton->setPageReference("widgets/external_table/table_link_dialog.html");
-
-  //Currently, this function is disabled, further enhancements to the linking functions are required to make such options available
-  m_ui->m_advancedToolButton->hide();
-
   //Connecting signals and slots
   connect(m_ui->m_dataSet2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataCBIndexChanged(int)));
   connect(m_ui->m_dataToolButton, SIGNAL(clicked()), this, SLOT(onDataToolButtonnClicked()));
-//  connect(m_ui->m_advancedToolButton, SIGNAL(clicked()), this, SLOT(onAdvancedToolButtonnClicked()));
   connect(m_ui->m_OkPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
 }
 
@@ -125,7 +114,7 @@ te::da::Join* te::qt::widgets::TableLinkDialog::getJoin()
   te::da::Expression* exp2 = new te::da::PropertyName(m_ui->m_dataset2ColumnComboBox->currentText().toUtf8().data());
   te::da::Expression* expression = new te::da::BinaryFunction("=", exp1, exp2);
 
-  te::da::JoinType type = m_fieldsDialog->getJoinType();
+  te::da::JoinType type = te::da::LEFT_JOIN;
 
   te::da::Join* join = new te::da::Join(inField, tabField, type, new te::da::JoinConditionOn(expression));
   return join;
@@ -134,7 +123,22 @@ te::da::Join* te::qt::widgets::TableLinkDialog::getJoin()
 te::da::Select te::qt::widgets::TableLinkDialog::getSelectQuery()
 {
   //fields
-  te::da::Fields* fields = m_fieldsDialog->getFields();
+  te::da::Fields* fields = new te::da::Fields;
+
+  for (size_t i = 0; i < m_keyProps.size(); ++i)
+  {
+    //Primary keys properties will have aliases to identify the original dataset
+    te::da::Field* f = new te::da::Field(m_keyProps[i], "\"" + m_keyProps[i] + "\"");
+
+    fields->push_back(f);
+  }
+
+  for (size_t t = 0; t < m_properties.size(); ++t)
+  {
+    te::da::Field* f = new te::da::Field(m_properties[t]);
+
+    fields->push_back(f);
+  }
 
   //from
   te::da::From* from = new te::da::From;
@@ -208,9 +212,6 @@ void te::qt::widgets::TableLinkDialog::getProperties()
   m_ui->m_dataset1ColumnComboBox->clear();
   m_ui->m_dataset2ColumnComboBox->clear();
 
-  m_fieldsDialog->clearInputValues();
-  m_fieldsDialog->clearOutputValues();
-
   //get the dataset names
   std::vector<std::string> datasetNames = m_ds->getDataSetNames();
   std::vector<std::pair<std::string, std::string> > dataSetSelecteds;
@@ -226,7 +227,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
   dataSetSelecteds.push_back(std::make_pair(m_ui->m_dataSet2ComboBox->currentText().toUtf8().data(), m_ui->m_dataSetAliasLineEdit->text().toUtf8().data()));
 
   std::vector<std::string> propertyNames;
-  std::vector<std::string> fixedProperties;
+  std::vector<std::string> keyProperties;
 
   //get properties for each data set
   for(size_t t = 0; t < dataSetSelecteds.size(); ++t)
@@ -238,11 +239,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
     std::string dataSetName = dataSetSelecteds[t].first;
 
     //get datasettype
-    std::auto_ptr<te::da::DataSetType> dsType(0);
-
-    //Acquiring the dataSet properties
-    std::vector<std::size_t> dataSetProperties;
-
+    std::auto_ptr<te::da::DataSetType> dsType;
 
     for(unsigned int i = 0; i < datasetNames.size(); ++i)
     {
@@ -266,8 +263,8 @@ void te::qt::widgets::TableLinkDialog::getProperties()
         std::string propName = dsType->getProperty(i)->getName();
         std::string fullName = alias + "." + propName;
 
-        if((dsType->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE) || (pk->has(dsType->getProperty(i))))
-          fixedProperties.push_back(fullName);
+        if (pk->has(dsType->getProperty(i)))
+          keyProperties.push_back(fullName);
         else
           propertyNames.push_back(fullName);
 
@@ -284,11 +281,8 @@ void te::qt::widgets::TableLinkDialog::getProperties()
   if(index != -1)
     m_ui->m_dataset1ColumnComboBox->setCurrentIndex(index);
 
-  //Adjusting the widget that is used to configure the query's field
-  m_fieldsDialog->setLeftLabel("Non-selected fields");
-  m_fieldsDialog->setRightLabel("Selected fields");
-  m_fieldsDialog->setOutputValues(propertyNames);
-  m_fieldsDialog->setFixedOutputValues(fixedProperties, "geometry");
+  m_keyProps = keyProperties;
+  m_properties = propertyNames;
 }
 
 void te::qt::widgets::TableLinkDialog::done(int r)
@@ -373,7 +367,7 @@ void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
     alias = aux;
 
   //get datasettype
-  std::auto_ptr<te::da::DataSetType> dsType(0);
+  std::auto_ptr<te::da::DataSetType> dsType;
   dsType = m_ds->getDataSetType(alias);
 
   //Get Dataset
@@ -403,15 +397,6 @@ void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
     m_ui->m_tabularFrame->hide();
     m_tabularView->hide();
     m_ui->m_dataPreviewGroupBox->hide();
-  }
-}
-
-void te::qt::widgets::TableLinkDialog::onAdvancedToolButtonnClicked()
-{
-  int res = m_fieldsDialog->exec();
-  if(res != QDialog::Accepted)
-  {
-    getProperties();
   }
 }
 

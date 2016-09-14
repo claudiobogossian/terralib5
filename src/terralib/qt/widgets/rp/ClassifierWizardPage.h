@@ -45,6 +45,7 @@
 // Qt
 #include <QWizardPage>
 #include <QTableWidget>
+#include <QActionGroup>
 
 // Forward declaration
 namespace Ui { class ClassifierWizardPageForm; }
@@ -96,6 +97,8 @@ namespace te
           void set(te::map::AbstractLayerPtr layer);
 
           void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+
+          void setActionGroup(QActionGroup* actionGroup);
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 

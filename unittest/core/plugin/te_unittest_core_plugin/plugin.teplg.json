@@ -1,0 +1,24 @@
+{
+	"name":"plugin",
+	"display_name":"Plugin",
+	"description":"This is an C++ Plugin for unittest",
+	"version":"0.0.1",
+	"release":"01/07/2016",
+	"engine":"C++",
+	"license_description":"",
+	"license_URL":"",
+	"site":"www.unittest.com/plugin",
+	"dependencies":[],
+	"linked_libraries":[],
+	"resources":{"shared_library_name":"terralib_unittest_core_plugin"},
+	"parameters":[],
+	"provider":{
+		"name":"unittest",
+		"site":"www.unittest.com",
+		"email":"unittest@unittest.com"
+	},
+	"host_application":{
+		"name":"TerraLib",
+		"version":"5.2.0"
+	}
+}

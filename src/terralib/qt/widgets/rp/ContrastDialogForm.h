@@ -182,7 +182,6 @@ namespace te
           std::unique_ptr<Ui::ContrastDialogForm> m_ui;
           std::unique_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
           std::unique_ptr<te::qt::widgets::RasterHistogramWidget> m_histogramWidget;
-          te::qt::widgets::OutputRasterWidget* m_outputWidget;
 
           QWidget* m_parent;
           te::map::AbstractLayerPtr m_layer;
@@ -196,6 +195,7 @@ namespace te
           te::se::ChannelSelection* m_channelSelect;
           std::vector<double> m_minValue;
           std::vector<double> m_maxValue;
+          te::qt::widgets::OutputRasterWidget* m_outputWidget;
 
           QComboBox* m_monoComboBox;
           QComboBox* m_redComboBox;

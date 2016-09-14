@@ -819,7 +819,7 @@ void te::mnt::ProfileDialog::DrawSelected(const std::vector<te::gm::LineString*>
     if (visadas[v]->getSRID() != window->getMapDisplay()->getSRID())
     {
 #ifdef TERRALIB_LOGGER_ENABLED
-      TE_CORE_LOG_DEBUG("mnt", tr("SRID InputLayer different from SRID Display").toUtf8().data().data());
+      TE_CORE_LOG_DEBUG("mnt", tr("SRID InputLayer different from SRID Display").toUtf8().data());
 #endif
      }
     canvas.draw(visadas[v]);

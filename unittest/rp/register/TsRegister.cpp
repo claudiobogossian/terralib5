@@ -26,11 +26,8 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/rp/Register.h>
-#include <terralib/raster/Grid.h>
-#include <terralib/raster/Raster.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/geometry/Envelope.h>
+#include <terralib/raster.h>
+#include <terralib/geometry.h>
 
 // STL
 #include <cmath>

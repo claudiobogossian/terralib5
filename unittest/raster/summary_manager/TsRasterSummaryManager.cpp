@@ -24,7 +24,7 @@
  */
 
 // TerraLib
-#include <terralib/raster/RasterSummaryManager.h>
+#include <terralib/raster.h>
 #include "../Config.h"
 
 // Boost

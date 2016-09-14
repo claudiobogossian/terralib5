@@ -57,6 +57,7 @@
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QTextEdit>
+#include <QPushButton>
 
 // stl
 #include <memory>
@@ -122,6 +123,9 @@ te::qt::widgets::ArithmeticOpDialogForm::ArithmeticOpDialogForm(QWidget* parent)
   connect(m_ui->m_savePushButton, SIGNAL(clicked()), this, SLOT(onSavePushButtonClicked()));
 
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/rp/rp_arithOp.html");
 }
 
 te::qt::widgets::ArithmeticOpDialogForm::~ArithmeticOpDialogForm()

@@ -51,8 +51,8 @@
 #include "RpToolsWidget.h"
 #include "ui_RpToolsWidgetForm.h"
 
-
 //QT
+#include <QActionGroup>
 #include <QUndoCommand>
 
 //STL
@@ -63,15 +63,15 @@ te::qt::widgets::RpToolsWidget::RpToolsWidget(QWidget* parent, Qt::WindowFlags f
   : QWidget(parent, f),
     m_ui(new Ui::RpToolsWidgetForm),
     m_symbolizer(0),
-    m_tool(0),
+    m_mapDisplay(0),
+    m_actionGroup(0),
+    m_checkedTool(0),
     m_draftOriginal(0)
 {
   m_ui->setupUi(this);
   m_pointCursor = Qt::CrossCursor;
 
-  m_ui->m_redoActionToolButtontoolButton;
-
-// signals & slots
+//signals & slots
   connect(m_ui->m_undoActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onUndoToggled(bool)));
   connect(m_ui->m_redoActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onRedoToggled(bool)));
 
@@ -101,7 +101,12 @@ te::qt::widgets::RpToolsWidget::~RpToolsWidget()
   if(m_layer.get())
     m_layer->setVisibility(m_visibility);
 
-  delete m_tool;
+  if (m_checkedTool)
+  {
+    m_mapDisplay->setCursor(Qt::ArrowCursor);
+    m_mapDisplay->setCurrentTool(0, false);
+  }
+
   delete m_draftOriginal;
 }
 
@@ -182,6 +187,11 @@ te::gm::Envelope te::qt::widgets::RpToolsWidget::getCurrentExtent()
 void te::qt::widgets::RpToolsWidget::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
 {
 	m_mapDisplay = mapDisplay;
+}
+
+void te::qt::widgets::RpToolsWidget::setActionGroup(QActionGroup* actionGroup)
+{
+  m_actionGroup = actionGroup;
 }
 
 te::rst::Raster* te::qt::widgets::RpToolsWidget::getExtentRaster(bool fullScale)
@@ -293,6 +303,84 @@ void te::qt::widgets::RpToolsWidget::hideInfoTool(bool hide)
   m_ui->m_readPixelActionToolButton->setVisible(!hide);
 }
 
+void te::qt::widgets::RpToolsWidget::enableUndoAction()
+{
+  QAction* undo = new QAction(this);
+  undo->setIcon(QIcon::fromTheme("edit-undo"));
+  undo->setToolTip(tr("Undo"));
+  undo->setCheckable(true);
+  undo->setEnabled(true);
+
+  m_ui->m_undoActionToolButtontoolButton->setDefaultAction(undo);
+
+  m_actionGroup->addAction(m_ui->m_undoActionToolButtontoolButton->defaultAction());
+}
+
+void te::qt::widgets::RpToolsWidget::enableRedoAction()
+{
+  QAction* redo = new QAction(this);
+  redo->setIcon(QIcon::fromTheme("edit-undo"));
+  redo->setToolTip(tr("Redo"));
+  redo->setCheckable(true);
+  redo->setEnabled(true);;
+
+  m_ui->m_redoActionToolButtontoolButton->setDefaultAction(redo);
+
+  m_actionGroup->addAction(m_ui->m_redoActionToolButtontoolButton->defaultAction());
+}
+
+void te::qt::widgets::RpToolsWidget::enablePickerAction()
+{
+  QAction* pointPicker = new QAction(this);
+  pointPicker->setIcon(QIcon::fromTheme("placemark"));
+  pointPicker->setToolTip(tr("Create by Point"));
+  pointPicker->setCheckable(true);
+  pointPicker->setEnabled(true);
+
+  m_ui->m_pointActionToolButtontoolButton->setDefaultAction(pointPicker);
+
+  m_actionGroup->addAction(m_ui->m_pointActionToolButtontoolButton->defaultAction());
+}
+
+void te::qt::widgets::RpToolsWidget::enableGeomAction()
+{
+  QAction* geom = new QAction(this);
+  geom->setIcon(QIcon::fromTheme("edit-polygon"));
+  geom->setToolTip(tr("Create by Polygon"));
+  geom->setCheckable(true);
+  geom->setEnabled(true);
+
+  m_ui->m_geomActionToolButtontoolButton->setDefaultAction(geom);
+
+  m_actionGroup->addAction(m_ui->m_geomActionToolButtontoolButton->defaultAction());
+}
+
+void te::qt::widgets::RpToolsWidget::enableBoxAction()
+{
+  QAction* extent = new QAction(this);
+  extent->setIcon(QIcon::fromTheme("edit-box"));
+  extent->setToolTip(tr("Create by Extent"));
+  extent->setCheckable(true);
+  extent->setEnabled(true);
+
+  m_ui->m_extentActionToolButtontoolButton->setDefaultAction(extent);
+
+  m_actionGroup->addAction(m_ui->m_extentActionToolButtontoolButton->defaultAction());
+}
+
+void te::qt::widgets::RpToolsWidget::enableInfoAction()
+{
+  QAction* readPixel = new QAction(this);
+  readPixel->setIcon(QIcon::fromTheme("color-picker"));
+  readPixel->setToolTip(tr("Read Pixel"));
+  readPixel->setCheckable(true);
+  readPixel->setEnabled(true);
+
+  m_ui->m_readPixelActionToolButton->setDefaultAction(readPixel);
+
+  m_actionGroup->addAction(m_ui->m_readPixelActionToolButton->defaultAction());
+}
+
 void te::qt::widgets::RpToolsWidget::setSelectionMode(bool mode)
 {
   if(mode)
@@ -349,48 +437,52 @@ void te::qt::widgets::RpToolsWidget::onRedoToggled(bool checked)
 
 void te::qt::widgets::RpToolsWidget::onPointPickerToggled(bool checked)
 {
-  if (checked)
-  {
-    te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, Qt::ArrowCursor);
-    m_mapDisplay->setCurrentTool(pp);
+  m_checkedTool = checked;
 
-    connect(pp, SIGNAL(pointPicked(QPointF&)), this, SLOT(onPointPicked(QPointF&)));
-  }
-  else
-  {
-    m_mapDisplay->setCurrentTool(NULL);
-  }
+  if (!checked)
+    return;
+
+  te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, m_pointCursor);
+  m_mapDisplay->setCurrentTool(pp);
+  
+  connect(pp, SIGNAL(pointPicked(QPointF&)), this, SLOT(onPointPicked(QPointF&)));
 }
 
 void te::qt::widgets::RpToolsWidget::onGeomToggled(bool checked)
 {
+  m_checkedTool = checked;
+ 
   if (!checked)
     return;
 
   te::qt::widgets::PolygonAcquire* pa = new te::qt::widgets::PolygonAcquire(m_mapDisplay);
-  setCurrentTool(pa);
+  m_mapDisplay->setCurrentTool(pa);
 
   connect(pa, SIGNAL(polygonAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
 }
 
 void te::qt::widgets::RpToolsWidget::onBoxToggled(bool checked)
 {
+  m_checkedTool = checked;
+
   if (!checked)
     return;
 
-  te::qt::widgets::ExtentAcquire* ea = new te::qt::widgets::ExtentAcquire(m_mapDisplay, Qt::BlankCursor);
-  setCurrentTool(ea);
+  te::qt::widgets::ExtentAcquire* ea = new te::qt::widgets::ExtentAcquire(m_mapDisplay, Qt::ArrowCursor);
+  m_mapDisplay->setCurrentTool(ea);
 
   connect(ea, SIGNAL(extentAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
 }
 
 void te::qt::widgets::RpToolsWidget::onReadPixelToggled(bool checked)
 {
-  if(!checked)
+  m_checkedTool = checked;
+
+  if (!checked)
     return;
 
   te::qt::widgets::ReadPixelTool* pa = new te::qt::widgets::ReadPixelTool(m_mapDisplay, m_layer);
-  setCurrentTool(pa);
+  m_mapDisplay->setCurrentTool(pa);
 }
 
 void te::qt::widgets::RpToolsWidget::onRecomposeClicked()
@@ -415,14 +507,6 @@ void te::qt::widgets::RpToolsWidget::onVSliderChanged(int value)
 void te::qt::widgets::RpToolsWidget::onHSliderChanged(int value)
 {
   drawOverlay();
-}
-
-void te::qt::widgets::RpToolsWidget::setCurrentTool(te::qt::widgets::AbstractTool* tool)
-{
-  delete m_tool;
-  m_tool = tool;
-
-  m_mapDisplay->installEventFilter(m_tool);
 }
 
 void te::qt::widgets::RpToolsWidget::setComboBoxText(QComboBox* cb, std::string value)

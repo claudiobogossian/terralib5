@@ -34,22 +34,31 @@
 #include <cassert>
 
 te::edit::Feature::Feature()
-  : m_geom(0)
+  : m_geom(0),
+    m_fillColor(TE_EDIT_FEATURE_FILL_COLOR),
+    m_contourColor(TE_EDIT_FEATURE_CONTOUR_COLOR),
+    m_colorChanged(false)
 {
   m_id = GenerateId();
 }
 
 te::edit::Feature::Feature(te::da::ObjectId* id)
   : m_id(id),
-    m_geom(0)
+    m_geom(0),
+    m_fillColor(TE_EDIT_FEATURE_FILL_COLOR),
+    m_contourColor(TE_EDIT_FEATURE_CONTOUR_COLOR),
+    m_colorChanged(false)
 {
   assert(m_id);
 }
 
-te::edit::Feature::Feature(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
+te::edit::Feature::Feature(te::da::ObjectId* id, te::gm::Geometry* geom, te::edit::FeatureType type)
   : m_id(id),
     m_geom(geom),
-    m_operationType(operation)
+    m_type(type),
+    m_fillColor(TE_EDIT_FEATURE_FILL_COLOR),
+    m_contourColor(TE_EDIT_FEATURE_CONTOUR_COLOR),
+    m_colorChanged(false)
 {
   assert(m_id);
   assert(m_geom);
@@ -64,11 +73,11 @@ te::edit::Feature::~Feature()
   te::common::FreeContents(m_data);
 }
 
-void te::edit::Feature::set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
+void te::edit::Feature::set(te::da::ObjectId* id, te::gm::Geometry* geom, te::edit::FeatureType type)
 {
   setId(id);
   setGeometry(geom);
-  m_operationType = operation;
+  m_type = type;
 }
 
 void te::edit::Feature::setId(te::da::ObjectId* id)
@@ -93,15 +102,29 @@ void te::edit::Feature::setData(const std::map<std::size_t, te::dt::AbstractData
   m_data = data;
 }
 
-void te::edit::Feature::setOperation(OperationType operation)
+void te::edit::Feature::setType(te::edit::FeatureType type)
 {
-  m_operationType = operation;
+  m_type = type;
 }
 
 void te::edit::Feature::setCoords(std::vector<te::gm::Coord2D> coords)
 {
   m_coords.clear();
   m_coords = coords;
+}
+
+void te::edit::Feature::setFillColor(const te::color::RGBAColor& fillColor)
+{
+  m_fillColor = fillColor;
+
+  m_colorChanged = true;
+}
+
+void te::edit::Feature::setContourColor(const te::color::RGBAColor& contourColor)
+{
+  m_contourColor = contourColor;
+
+  m_colorChanged = true;
 }
 
 te::da::ObjectId* te::edit::Feature::getId() const
@@ -119,14 +142,29 @@ const std::map<std::size_t, te::dt::AbstractData*>& te::edit::Feature::getData()
   return m_data;
 }
 
-te::edit::OperationType te::edit::Feature::getOperationType() const
+te::edit::FeatureType te::edit::Feature::getType() const
 {
-  return m_operationType;
+  return m_type;
 }
 
 std::vector<te::gm::Coord2D> te::edit::Feature::getCoords() const
 {
   return m_coords;
+}
+
+te::color::RGBAColor te::edit::Feature::getFillColor() const
+{
+  return m_fillColor;
+}
+
+te::color::RGBAColor te::edit::Feature::getContourColor() const
+{
+  return m_contourColor;
+}
+
+bool te::edit::Feature::isColorChanged()
+{
+  return m_colorChanged;
 }
 
 bool te::edit::Feature::isEquals(te::da::ObjectId* id)
@@ -158,9 +196,13 @@ te::edit::Feature* te::edit::Feature::clone() const
 
   f->setData(data);
 
-  f->setOperation(m_operationType);
+  f->setType(m_type);
 
   f->setCoords(m_coords);
+
+  f->setFillColor(m_fillColor);
+
+  f->setContourColor(m_contourColor);
 
   return f;
 }

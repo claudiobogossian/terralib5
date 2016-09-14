@@ -284,7 +284,7 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
     m_feature = new Feature();
 
   m_feature->setGeometry(buildPolygon());
-  m_feature->setOperation(te::edit::GEOMETRY_CREATE);
+  m_feature->setType(te::edit::TO_ADD);
   m_feature->setCoords(m_coords);
 
   m_stack.addWatch(m_feature->clone());

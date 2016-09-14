@@ -83,11 +83,11 @@ void te::ws::ogc::wcs::qt::WCSConnectorDialog::set(const te::da::DataSourceInfoP
 
     std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
     if(it != connInfo.end())
-      m_ui->m_serverLineEdit->setText(QString::fromUtf8(it->second));
+      m_ui->m_serverLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
-    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle()));
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
-    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription()));
+    m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromUtf8(m_datasource->getDescription().c_str()));
   }
 }
 

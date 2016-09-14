@@ -26,12 +26,8 @@
 // TerraLib
 #include "../Config.h"
 #include <terralib/rp.h>
-#include <terralib/raster/Grid.h>
-#include <terralib/raster/Raster.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/raster/BandProperty.h>
-#include <terralib/raster/Band.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/raster.h>
+#include <terralib/dataaccess.h>
 
 // STL
 #include <memory>

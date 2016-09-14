@@ -539,7 +539,7 @@ void te::map::QueryLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
 {
   assert(!geomPropertyName.empty());
 
-  if(te::da::HasLinkedTable(layer->getSchema().get()))
+  if (te::da::HasLinkedTable(layer->getSchema().get()) && (layer->getGrouping()->getSummary() != "NONE"))
   {
     drawLayerLinkedGroupingMem(layer, geomPropertyName, canvas, bbox, srid);
     return;
@@ -1278,22 +1278,13 @@ void te::map::QueryLayerRenderer::drawDatSetGeometries(te::da::DataSet* dataset,
       size_t i;
       for (i = 0; i < pksize; ++i)
       {
-        std::vector<std::string> tokens;
-        te::common::Tokenize(m_oid[i], tokens, ".");
-
-        size_t tkSize = tokens.size();
-        pkdata[i] = dataset->getAsString(tokens[tkSize - 1]);
+        pkdata[i] = dataset->getAsString(m_oid[i]);
       }
       
       for(i = 0; i < pksize; ++i)
       {
-        std::vector<std::string> tokens;
-        te::common::Tokenize(m_oid[i], tokens, ".");
-
-        size_t tkSize = tokens.size();
-
         if(dataset->isAtBegin())
-          pkdataaux[i] = dataset->getAsString(tokens[tkSize - 1]);
+          pkdataaux[i] = dataset->getAsString(m_oid[i]);
         else
         {
           if(pkdata[i] != pkdataaux[i])

@@ -179,7 +179,7 @@ void te::edit::SplitPolygonTool::splitPolygon(std::size_t index)
     if (!outPolygons.at(i)->equals(m_vecFeature.at(index)->getGeometry()) &&
          outPolygons.at(i)->coveredBy(m_vecFeature.at(index)->getGeometry()->buffer(m_tol)))
     {
-      Feature* f = new Feature(GenerateId(), outPolygons.at(i), te::edit::GEOMETRY_CREATE);
+      Feature* f = new Feature(GenerateId(), outPolygons.at(i), te::edit::TO_ADD);
       RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
       m_oidSet->add(f->getId());
@@ -257,7 +257,7 @@ void te::edit::SplitPolygonTool::pickFeatures()
     {
       std::auto_ptr<te::gm::Geometry> g(ds->getGeometry(gpos));
 
-      Feature* f = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), g.release(), te::edit::GEOMETRY_UPDATE);
+      Feature* f = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), g.release(), te::edit::TO_UPDATE);
       
       m_vecFeature.push_back(f);
       RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
