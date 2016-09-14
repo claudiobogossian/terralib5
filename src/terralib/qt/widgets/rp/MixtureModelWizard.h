@@ -75,7 +75,7 @@ namespace te
 
           void setActionGroup(QActionGroup* actionGroup);
 
-          void setLayer(te::map::AbstractLayerPtr layer);
+          void setLayer(std::list<te::map::AbstractLayerPtr> layers);
 
         protected:
 

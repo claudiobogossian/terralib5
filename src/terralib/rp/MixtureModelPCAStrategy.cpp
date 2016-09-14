@@ -115,9 +115,12 @@ bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster
   unsigned int i, j, k, m;
 
   std::vector<double> Qmax;
+  std::vector<double> Qmin;
   for (i = 0; i < inputSensorBands.size(); i++)
+  {
     Qmax.push_back(GetDigitalNumberBandMax(inputSensorBands[i]));
-
+    Qmin.push_back(GetDigitalNumberBandMin(inputSensorBands[i]));
+  }
 // buildind the SpectralBandsComponents Matrix
   boost::numeric::ublas::matrix<double> SpectralBandsComponents(nBands, nComponents);
   std::map<std::string, std::vector<double> >::const_iterator it;
@@ -132,7 +135,7 @@ bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster
 
 // Initializing SpectralBandsComponentsTransposed Matrix = Transpose of SpectralBandsComponents
   SpectralBandsComponentsTransposed = boost::numeric::ublas::trans(SpectralBandsComponents);
-
+  
 // compute componentsMean vector as the mean coefficient value per band and subtract the componentsMeanAfter from the coefficients matrix
 // creating two double vectors to store de means of the spectralBands of each component
   std::vector<double> componentsMean(nBands, 0.0);
@@ -263,7 +266,7 @@ bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster
     {
 // prepare y
       for (i = 0; i < nBands; i++)
-        auxMatrix(0, i) = (double) (rasterRowsIn(i, columnIn[i])) / 255.0 - componentsMean[i];
+        auxMatrix(0, i) = (double) (rasterRowsIn(i, columnIn[i])) / Qmax[i] - componentsMean[i];
 
       ymat = boost::numeric::ublas::prod(auxMatrix, eigenReduced);
 
@@ -274,10 +277,29 @@ bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster
       if (!fowardBackSubstitution(SpectralBandsComponentsPCA, y, nComponents, rows, nComponents, x, nComponents))
         return false; // print "error in function fowardBackSubstitution"
 
+      bool hasdummy = false;
+      for (i = 0; i < nBands; i++) //Verifica se naquele ponto nas imagens existe algum valor dummy
+      {
+        if (((rasterRowsIn(i, colout) == Qmax[i])))
+          hasdummy = true;
+      }
+
+      if (hasdummy)
+      {
+        for (i = 0; i < nComponents; i++) 
+        {
+          rasterRowsOut(i, colout) = Qmax[i]; //Ponto já é dummy
+          columnIn[i]++;
+        }
+        hasdummy = false;
+        continue;
+      }
+
 // store proportion in buffers
       for (i = 0; i < nComponents; i++)
       {
         prop = (short) (x[i] * 100 + 100);
+        prop = prop >= (double)Qmax[i] ? Qmax[i] - 1 : prop <= (double)Qmin[i] ? Qmin[i] : prop;
         rasterRowsOut(i, colout) = (unsigned char) prop;
       }
 
@@ -295,12 +317,12 @@ bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster
             aux += x[j] * SpectralBandsComponents(i, j);
 
 // compute error as module of the difference between the original value and aux
-          error = (long) (rasterRowsIn(i, columnIn[i])) / 255.0 - aux;
+          error = (long) (rasterRowsIn(i, columnIn[i])) / Qmax[i] - aux;
           if (error < 0)
             error *= -1;
 
           if (computeErrorRasters)
-            rasterRowsIn(i, colout) = error * 255.0;
+            rasterRowsIn(i, colout) = error * Qmax[i];
         }
       }
 
