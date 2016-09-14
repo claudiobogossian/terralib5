@@ -699,9 +699,9 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
         {
           std::pair<std::string, std::string> dproblem;
           dproblem.first = sourceName;
-          dproblem.second = "Layer '" + sourceName + "' has more than one representation(Polygon / Line / Point) -";
-          dproblem.second += " it will not be converted.\nIt must be exported from TerraView4.2.2 as shapefiles and added afterwards.";
-          dproblem.second += "\nCheck HELP for more details.";
+          dproblem.second = TE_TR("Layer '") + sourceName + TE_TR("' has more than one representation(Polygon / Line / Point) -");
+          dproblem.second += TE_TR(" it will not be converted.\nIt must be exported from TerraView4.2.2 as shapefiles and added afterwards.");
+          dproblem.second += TE_TR("\nCheck HELP for more details.");
 
           problematicDatasets.push_back(dproblem);
 
