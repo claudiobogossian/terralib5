@@ -25,7 +25,6 @@
 
 //Terralib
 
-#include "../common/progress/TaskProgress.h"
 #include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 
@@ -38,12 +37,20 @@
 #include "../datatype/StringProperty.h"
 
 #include "../dataaccess/dataset/ObjectIdSet.h"
+#include "../dataaccess/query/And.h"
+#include "../dataaccess/query/Cast.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
 #include "../dataaccess/query/Field.h"
 #include "../dataaccess/query/Fields.h"
 #include "../dataaccess/query/From.h"
 #include "../dataaccess/query/FromItem.h"
+#include "../dataaccess/query/IsNull.h"
+#include "../dataaccess/query/LiteralDouble.h"
+#include "../dataaccess/query/LiteralInt32.h"
+#include "../dataaccess/query/Not.h"
+#include "../dataaccess/query/NotEqualTo.h"
+#include "../dataaccess/query/Or.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/ST_Buffer.h"
@@ -86,9 +93,10 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
 {
   te::da::Fields* fields = new te::da::Fields;
 
+  std::vector<te::dt::Property*> props = m_converter->getResult()->getProperties();
+
   if(m_copyInputColumns)
   {
-    std::vector<te::dt::Property*> props = m_converter->getResult()->getProperties();
     for(std::size_t i=0; i < props.size(); ++i)
     {
       if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
@@ -103,8 +111,10 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
 
   te::da::Expression* e_buffer = 0;
   te::da::Expression* e_aux = 0;
+  te::da::Expression* e_distance = 0;
+
   te::da::Field* f_buffer = 0;
-  
+  te::da::Field* f_distance = 0;
 
   for(int i=1; i <= m_levels; ++i)
   {
@@ -113,25 +123,70 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
     std::string index = ss.str();
 
     //buffer
+    te::da::Expression* e_buffer1 = 0;
+    te::da::Expression* e_buffer2 = 0;
+
     if(m_bufferPolygonRule == te::vp::INSIDE_OUTSIDE)
     {
-      te::da::Expression* e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), m_distance*i);
-      te::da::Expression* e_buffer2 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), -m_distance*i);
+      if(m_attributePosition >= 0 && m_attributePosition < (int)props.size())
+      {
+        std::string distancePropName = props[m_attributePosition]->getName();
+        e_distance = new te::da::PropertyName(distancePropName + "*" + boost::lexical_cast<std::string>(i));
+        e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), distancePropName + "*" + boost::lexical_cast<std::string>(i));
+        e_buffer2 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), "-" + distancePropName + "*" + boost::lexical_cast<std::string>(i));
+      }
+      else
+      {
+        e_distance = new te::da::LiteralDouble(m_distance*i);
+        e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), m_distance*i);
+        e_buffer2 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), -m_distance*i);
+      }
+
       e_buffer = new te::da::ST_Difference(e_buffer1, e_buffer2);
+
+      f_distance = new te::da::Field(*e_distance, "distance");
       f_buffer = new te::da::Field(*e_buffer, "geom"+index);
     }
     else if(m_bufferPolygonRule == te::vp::ONLY_OUTSIDE)
     {
-      te::da::Expression* e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), m_distance*i);
-      te::da::Expression* e_buffer2 = new te::da::PropertyName(geom->getName());
+      if(m_attributePosition >= 0 && m_attributePosition < (int)props.size())
+      {
+        std::string distancePropName = props[m_attributePosition]->getName();
+        e_distance = new te::da::PropertyName(distancePropName + "*" + boost::lexical_cast<std::string>(i));
+        e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(
+                                            geom->getName()), distancePropName + "*" + boost::lexical_cast<std::string>(i));
+      }
+      else
+      {
+        e_distance = new te::da::LiteralDouble(m_distance*i);
+        e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), m_distance*i);
+      }
+
+      e_buffer2 = new te::da::PropertyName(geom->getName());
       e_buffer = new te::da::ST_Difference(e_buffer1, e_buffer2);
+
+      f_distance = new te::da::Field(*e_distance, "distance");
       f_buffer = new te::da::Field(*e_buffer, "geom"+index);
     }
     else
     {
-      te::da::Expression* e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), -m_distance*i);
-      te::da::Expression* e_buffer2 = new te::da::PropertyName(geom->getName());
+      if(m_attributePosition >= 0 && m_attributePosition < (int)props.size())
+      {
+        std::string distancePropName = props[m_attributePosition]->getName();
+        e_distance = new te::da::PropertyName(distancePropName + "*" + boost::lexical_cast<std::string>(i));
+        e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(
+                                            geom->getName()), "-" + distancePropName + "*"  + boost::lexical_cast<std::string>(i));
+      }
+      else
+      {
+        e_distance = new te::da::LiteralDouble(m_distance*i);
+        e_buffer1 = new te::da::ST_Buffer(te::da::PropertyName(geom->getName()), -m_distance*i);
+      }
+
+      e_buffer2 = new te::da::PropertyName(geom->getName());
       e_buffer = new te::da::ST_Difference(e_buffer2, e_buffer1);
+
+      f_distance = new te::da::Field(*e_distance, "distance");
       f_buffer = new te::da::Field(*e_buffer, "geom"+index);
     }
 
@@ -147,33 +202,58 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
       fields->push_back(f_buffer);
       e_aux = e_buffer;
     }
+
+    fields->push_back(f_distance);
   }
 
   te::da::FromItem* fromItem = new te::da::DataSetName(m_converter->getResult()->getName());
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
 
-  te::da::Where* w_oid = 0;
+  te::da::Where* where = 0;
 
-  if(m_oidSet)
+  if(m_attributePosition >= 0 && m_attributePosition < (int)props.size())
   {
-    w_oid = new te::da::Where(m_oidSet->getExpression());
+    te::da::PropertyName propName(props[m_attributePosition]->getName());
+
+    te::da::LiteralInt32 literalZero(0);
+    te::da::NotEqualTo notEqualTo(propName, literalZero);
+
+    te::da::IsNull isNull(propName);
+    te::da::Not isNot(isNull);
+
+    te::da::Or or_ex(notEqualTo, isNot);
+
+    if(m_oidSet)
+    {
+      te::da::And and_ex(or_ex, *m_oidSet->getExpression());
+      where = new te::da::Where(and_ex);
+    }
+    else
+    {
+      where = new te::da::Where(or_ex);
+    }
+  }
+  else
+  {
+    if(m_oidSet)
+      where = new te::da::Where(m_oidSet->getExpression());
   }
 
-  te::da::Select select(fields, from, w_oid);
-  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
+  te::da::Select select(fields, from, where);
+  std::unique_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
-  std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType());
-  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
+  std::unique_ptr<te::da::DataSetType> outDSType(GetDataSetType());
+  std::unique_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
 
   if(m_bufferBoundariesRule == te::vp::DISSOLVE)
   {
     std::vector<std::vector<te::gm::Geometry*> > vecDissolvedGeom = dissolveQuery(dsQuery.get(), m_levels);
-    prepareDataSet(outDSType.get(), vecDissolvedGeom, outDSet.get(), m_distance);
+    prepareDataSet(vecDissolvedGeom, outDSet.get(), m_distance);
   }
   else
   {
-    prepareDataSet(outDSType.get(), dsQuery.get(), outDSet.get(), m_distance);
+    prepareDataSet(dsQuery.get(), outDSet.get());
   }
 
 // Converter to use SRID from layer.
@@ -183,7 +263,7 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
   te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDSType.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
   te::da::AssociateDataSetTypeConverterSRID(converter, layerSRID);
   te::da::DataSetType* dsTypeResult = converter->getResult();
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(outDSet.get(), converter));
+  std::unique_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(outDSet.get(), converter));
 
   te::vp::Save(m_outDsrc.get(), dsAdapter.get(), dsTypeResult);
   return true;
@@ -193,10 +273,9 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
 std::vector<std::vector<te::gm::Geometry*> > te::vp::BufferQuery::dissolveQuery(te::da::DataSet* dsQuery,
                                                                                 const int& levels)
 {
-  std::map<int, std::vector<te::gm::Geometry*> > mapGeom;
   std::vector<std::vector<te::gm::Geometry*> > vecGeom;
 
-  for(int i = 0; i < levels; ++i)
+  for(int i = 0; i < levels*2; ++i)
   {
     te::sam::rtree::Index<te::gm::Geometry*, 4> rtree;
       
@@ -224,11 +303,12 @@ std::vector<std::vector<te::gm::Geometry*> > te::vp::BufferQuery::dissolveQuery(
     }
       
     std::vector<te::gm::Geometry*> geomVec;
-    std::auto_ptr<te::gm::Envelope> e = dsQuery->getExtent(i);
+    std::unique_ptr<te::gm::Envelope> e = dsQuery->getExtent(i);
     rtree.search(*(e.get()), geomVec);
     vecGeom.push_back(geomVec);
 
     rtree.clear();
+    ++i; //Because the next position is de distance of buffer.
   }
 
   std::size_t vecSize = vecGeom.size();
@@ -271,10 +351,8 @@ std::vector<std::vector<te::gm::Geometry*> > te::vp::BufferQuery::dissolveQuery(
   return vecGeom;
 }
 
-void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*, 
-                                        te::da::DataSet* dataSetQuery,
-                                        te::mem::DataSet* outputDataSet,
-                                        const double& distance)
+void te::vp::BufferQuery::prepareDataSet(te::da::DataSet* dataSetQuery,
+                                         te::mem::DataSet* outputDataSet)
 {
   std::size_t numProps = dataSetQuery->getNumProperties();
   std::size_t firstGeomPos = te::da::GetFirstSpatialPropertyPos(dataSetQuery);
@@ -286,7 +364,7 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*,
 
   while(dataSetQuery->moveNext())
   {
-    int numCurrentItem = 0;
+    int level = 1;
 
     for(int i = 0; i < numItems; ++i)
     {
@@ -295,6 +373,9 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*,
       for(std::size_t j = 0; j < numProps; ++j)
       {
         type = dataSetQuery->getPropertyDataType(j);
+
+        if(dataSetQuery->isNull(j))
+          continue;
 
         switch (type){
           case te::dt::INT32_TYPE:
@@ -309,30 +390,64 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*,
           case te::dt::STRING_TYPE:
             dataSetItem->setString(j+3, dataSetQuery->getString(j));
             break;
+          case te::dt::NUMERIC_TYPE:
+            dataSetItem->setNumeric(j+3, dataSetQuery->getNumeric(j));
+            break;
           case te::dt::GEOMETRY_TYPE:
             {
               dataSetItem->setInt32(0, pk); //pk
-              dataSetItem->setInt32(1, i+1); //level
-              dataSetItem->setDouble(2, distance*(i+1)); //distance
-            
-              std::auto_ptr<te::gm::Geometry> geom = dataSetQuery->getGeometry(j+numCurrentItem);
+              dataSetItem->setInt32(1, level); //level
 
-              if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
-              {
-                dataSetItem->setGeometry(j+3, geom.release());
+              double distance = 0;
+              unsigned int typeDistance = dataSetQuery->getPropertyDataType(j+i+1);
+              switch (typeDistance){
+                case te::dt::INT32_TYPE:
+                  distance = (double)dataSetQuery->getInt32(j+i+1);
+                  dataSetItem->setDouble(2, distance);
+                break;
+                case te::dt::INT64_TYPE:
+                  distance = (double)dataSetQuery->getInt64(j+i+1);
+                  dataSetItem->setDouble(2, distance);
+                break;
+                case te::dt::NUMERIC_TYPE:
+                {
+                  std::string strDistance = dataSetQuery->getNumeric(j+i+1);
+                  distance = boost::lexical_cast<double>(strDistance);
+                  dataSetItem->setDouble(2, distance);
+                }
+                break;
+                case te::dt::DOUBLE_TYPE:
+                  distance = dataSetQuery->getDouble(j+i+1);
+                  dataSetItem->setDouble(2, distance);
+                break;
+                default:
+                  dataSetItem->setDouble(2, distance);
+                break;
               }
-              else
+
+              std::unique_ptr<te::gm::Geometry> geom = dataSetQuery->getGeometry(j+i);
+
+              if(geom->isValid())
               {
-                std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
-                mPolygon->add(geom.release());
-                dataSetItem->setGeometry(j+3, mPolygon.release());
+                if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+                {
+                  dataSetItem->setGeometry(j+3, geom.release());
+                }
+                else
+                {
+                  std::unique_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
+                  mPolygon->add(geom.release());
+                  dataSetItem->setGeometry(j+3, mPolygon.release());
+                }
+
+                outputDataSet->add(dataSetItem);
+
+                ++pk;
               }
 
-              outputDataSet->add(dataSetItem);
-
-              ++numCurrentItem;
-              ++pk;
+              ++level;
               j = numProps;
+              ++i;
             }
             break;
           default:
@@ -346,10 +461,9 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*,
   }
 }
 
-void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*, 
-                                        std::vector<std::vector<te::gm::Geometry*> > vecDissolvedGeom,
-                                        te::mem::DataSet* outputDataSet,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                const double& distance)
+void te::vp::BufferQuery::prepareDataSet(std::vector<std::vector<te::gm::Geometry*> > vecDissolvedGeom,
+                                         te::mem::DataSet* outputDataSet,
+                                         const double& distance)
 {
   int pk = 0;
 
@@ -365,7 +479,7 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*,
       dataSetItem->setInt32(1, (int)i+1); //level
       dataSetItem->setDouble(2, distance*((int)i+1)); //distance
 
-      std::auto_ptr<te::gm::Geometry> geom(vecGeom[j]);
+      std::unique_ptr<te::gm::Geometry> geom(vecGeom[j]);
 
       if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
       {
@@ -373,7 +487,7 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*,
       }
       else
       {
-        std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
+        std::unique_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
         mPolygon->add(geom.release());
         dataSetItem->setGeometry(3, mPolygon.release());
       }
