@@ -87,7 +87,6 @@
 #include <terralib/qt/widgets/srs/SRSManagerDialog.h>
 #include <terralib/qt/widgets/tools/Measure.h>
 #include <terralib/qt/widgets/utils/CheckGeomValidityDialog.h>
-#include <terralib/qt/widgets/vector/FixGeometryDialog.h>
 
 #include "events/ProjectEvents.h"
 #include "settings/ProjectWidgetFactory.h"

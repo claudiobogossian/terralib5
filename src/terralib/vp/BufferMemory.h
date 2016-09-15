@@ -52,26 +52,70 @@ namespace te
 {
   namespace vp
   {
+    /*!
+      \class BufferMemory
+
+      \brief A concrete class to compute the buffer operation.
+
+      \ingroup vp
+    */
     class TEVPEXPORT BufferMemory : public BufferOp
     {
     
     public:
       
+      /*! \brief Default constructor.*/
       BufferMemory();
       
+      /*! \brief Destructor. */
       ~BufferMemory();
       
+      /*!
+        \brief It executes the operation.
+
+        \return A Boolean value that means if the operation successfully completed or not.
+      */
       bool run() throw(te::common::Exception);
 
     protected:
 
+      /*!
+        \brief It executes the buffer operator.
+
+        \param geom       The input geometry.
+        \param distance   The distance to set buffer.
+        \param level      How many levels the buffer will have.
+        \param auxGeom    The auxiliar geometry that represents the previous buffer result.
+                          This parameter is important when the buffer result has more than one level.
+
+        \return A geometry with buffer result.
+      */
       te::gm::Geometry* setBuffer(te::gm::Geometry* geom,
                                   const double& distance,
                                   const int& level,
                                   te::gm::Geometry*& auxGeom);
 
+      /*!
+        \brief It dissolves the bounders between buffers.
+
+        \param outDSet  The dataSet with buffers.
+        \param levels   The number of levels the dataset has.
+
+        \note The outDSet is updated with dissolved buffers.
+      */
       void dissolveMemory(te::mem::DataSet* outDSet,
                           const int& levels);
+
+      /*!
+        \brief It returns the distance of buffer by the attribute chosen.
+
+        \param dataSet  The input dataSet with the value.
+        \param position The position of attribute in dataSet.
+
+        \return The distance.
+      */
+      double getDistanceByAttribute(te::da::DataSet& dataSet,
+                                    const int& position);
 
     }; // end class
   } // end namespace vp
