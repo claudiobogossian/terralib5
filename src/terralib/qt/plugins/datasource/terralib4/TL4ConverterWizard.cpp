@@ -75,6 +75,7 @@
 
 // Boost
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
 // Qt
@@ -685,6 +686,28 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
           std::pair<std::string, std::string> dproblem;
           dproblem.first = sourceName;
           dproblem.second = TE_TR("Layer invalid: table without attributes!");
+
+          problematicDatasets.push_back(dproblem);
+
+          continue;
+        }
+
+        // Check Geometry Type
+        te::dt::Property* p = te::da::GetFirstSpatialProperty(input_dataset_type.get());
+        te::gm::GeometryProperty* geomP = dynamic_cast<te::gm::GeometryProperty*>(p);
+        te::gm::GeomType typeAux = geomP->getGeometryType();
+        if (typeAux == te::gm::GeometryCollectionType)
+        {
+          std::pair<std::string, std::string> dproblem;
+          dproblem.first = sourceName;
+
+          boost::format err_msg(TE_TR(
+            "Layer '%1%' has more than one representation(Polygon / Line / Point) -"
+            " it will not be converted.\nIt must be exported from TerraView4.2.2 as "
+            "shapefiles and added afterwards."
+            "\nCheck HELP for more details."));
+
+          dproblem.second = (err_msg % sourceName).str();
 
           problematicDatasets.push_back(dproblem);
 
