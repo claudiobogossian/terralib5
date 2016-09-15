@@ -197,44 +197,46 @@ bool te::qt::widgets::RasterSlicingWizard::execute()
     m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                  m_rasterInfoPage->getWidget()->getInfo());
 
-    std::unique_ptr<te::se::Style> style;
-
-    if (createPaletteRaster)
-      style.reset(te::se::CreateCoverageStyle(1));
-    else
-      style.reset(te::se::CreateCoverageStyle(inputRst->getNumberOfBands()));
-
-    te::se::RasterSymbolizer* rasterSymb = te::se::GetRasterSymbolizer(style.get());
-    
-    te::se::ColorMap* cm = m_wizardPage->getColorMap();
-
-    rasterSymb->setColorMap(cm);
-
-    te::se::ChannelSelection* cs = rasterSymb->getChannelSelection();
-
-    if (cs->getGrayChannel())
-    {
-      te::se::SelectedChannel* scGray = cs->getGrayChannel();
-
-      if(createPaletteRaster)
-        scGray->setSourceChannelName("0");
-      else
-        scGray->setSourceChannelName(m_wizardPage->getCurrentBand());
-    }
-    else
-    {
-      te::se::SelectedChannel* scGray = new te::se::SelectedChannel();
-
-      if (createPaletteRaster)
-        scGray->setSourceChannelName("0");
-      else
-        scGray->setSourceChannelName(m_wizardPage->getCurrentBand());
-
-      cs->setGrayChannel(scGray);
-    }
-
-    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
-    m_outputLayer->setStyle(style.release());
+// Output layer style will be disabled since the raster itself already contains the color info.    
+//
+//     std::unique_ptr<te::se::Style> style;
+// 
+//     if (createPaletteRaster)
+//       style.reset(te::se::CreateCoverageStyle(1));
+//     else
+//       style.reset(te::se::CreateCoverageStyle(inputRst->getNumberOfBands()));
+// 
+//     te::se::RasterSymbolizer* rasterSymb = te::se::GetRasterSymbolizer(style.get());
+//     
+//     te::se::ColorMap* cm = m_wizardPage->getColorMap();
+// 
+//     rasterSymb->setColorMap(cm);
+// 
+//     te::se::ChannelSelection* cs = rasterSymb->getChannelSelection();
+// 
+//     if (cs->getGrayChannel())
+//     {
+//       te::se::SelectedChannel* scGray = cs->getGrayChannel();
+// 
+//       if(createPaletteRaster)
+//         scGray->setSourceChannelName("0");
+//       else
+//         scGray->setSourceChannelName(m_wizardPage->getCurrentBand());
+//     }
+//     else
+//     {
+//       te::se::SelectedChannel* scGray = new te::se::SelectedChannel();
+// 
+//       if (createPaletteRaster)
+//         scGray->setSourceChannelName("0");
+//       else
+//         scGray->setSourceChannelName(m_wizardPage->getCurrentBand());
+// 
+//       cs->setGrayChannel(scGray);
+//     }
+// 
+//     cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+//     m_outputLayer->setStyle(style.release());
 
     QMessageBox::information(this, tr("Raster slicing"), tr("Raster slicing ended sucessfully"));
   }
