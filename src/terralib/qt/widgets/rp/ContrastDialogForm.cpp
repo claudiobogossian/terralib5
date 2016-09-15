@@ -360,6 +360,8 @@ void te::qt::widgets::ContrastDialogForm::onAllImageRadioButtonToggled(bool isCh
 
       m_raster = ds->getRaster(rpos).release();
 
+      m_histogramWidget->setInputRaster(m_raster);
+
       drawHistogram();
 
       if (m_ui->m_previewCheckBox->isChecked())
@@ -883,11 +885,9 @@ void te::qt::widgets::ContrastDialogForm::drawPreview(te::rst::Raster* raster)
 {
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
+  const te::gm::Envelope& envRaster = *raster->getExtent();
   const te::gm::Envelope& env = m_mapDisplay->getExtent();
   const te::gm::Envelope* envRst = &env;
-
-  if(m_ui->m_visibleAreaRadioButton->isChecked())
-    envRst = raster->getExtent();
 
   te::se::ChannelSelection* channel = getChannelSelection();
 
@@ -952,7 +952,7 @@ void te::qt::widgets::ContrastDialogForm::drawPreview(te::rst::Raster* raster)
   }
 
   // Draw raster
-  te::map::DrawRaster(raster, m_canvas, env, m_mapDisplay->getSRID(), *envRst, raster->getSRID(), cs, m_mapDisplay->getScale());
+  te::map::DrawRaster(raster, m_canvas, *envRst, m_mapDisplay->getSRID(), *envRst, raster->getSRID(), cs, m_mapDisplay->getScale());
 
   if(m_ui->m_roiRadioButton->isChecked())
   {
@@ -1129,6 +1129,9 @@ void te::qt::widgets::ContrastDialogForm::onCellChanged(int row, int column)
     double value = m_ui->m_bandTableWidget->item(row, column)->text().toDouble();
     onMaxValueSelected(value, band);
   }
+
+  applyPreview();
+  drawHistogram();
 }
 
 void te::qt::widgets::ContrastDialogForm::onGreenComboBoxCurrentIndexChanged(int index)
@@ -1178,10 +1181,6 @@ void te::qt::widgets::ContrastDialogForm::onMinValueSelected(int value, int band
   {
     return;
   }
-
-  applyPreview();
-
-  drawHistogram();
 }
 
 void te::qt::widgets::ContrastDialogForm::onMinValueSelected(double value, int band)
@@ -1221,10 +1220,6 @@ void te::qt::widgets::ContrastDialogForm::onMinValueSelected(double value, int b
   {
     return;
   }
-
-  applyPreview();
-
-  drawHistogram();
 }
 
 void te::qt::widgets::ContrastDialogForm::onMaxValueSelected(int value, int band)
@@ -1263,9 +1258,6 @@ void te::qt::widgets::ContrastDialogForm::onMaxValueSelected(int value, int band
   {
     return;
   }
-
-  applyPreview();
-  drawHistogram();
 }
 
 void te::qt::widgets::ContrastDialogForm::onMaxValueSelected(double value, int band)
@@ -1304,9 +1296,6 @@ void te::qt::widgets::ContrastDialogForm::onMaxValueSelected(double value, int b
   {
     return;
   }
-
-  applyPreview();
-  drawHistogram();
 }
 
 void te::qt::widgets::ContrastDialogForm::onMonoComboBoxCurrentIndexChanged(int index)
@@ -1399,16 +1388,27 @@ void te::qt::widgets::ContrastDialogForm::onVisibleAreaRadioButtonToggled(bool i
   {
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    m_raster = te::qt::widgets::getRasterVisibleArea(m_layer, m_mapDisplay->getExtent(), m_mapDisplay->getSRID());
+    te::gm::Envelope reprojectedBBOX(m_mapDisplay->getExtent());
+    reprojectedBBOX.transform(m_mapDisplay->getSRID(), m_layer->getSRID());
 
-    m_histogramWidget->setInputRaster(m_raster);
-
-    drawHistogram();
-
-    if (m_ui->m_previewCheckBox->isChecked())
+    if (!reprojectedBBOX.intersects(m_layer->getExtent()))
     {
-      applyPreview();
+      QMessageBox::warning(this, tr("Warning"), tr("Visible area doesn't intersect with the layer."));
+      return;
     }
+
+    te::gm::Envelope ibbox = reprojectedBBOX.intersection(m_layer->getExtent());
+
+    m_geom = 0;
+
+    if (ibbox.isValid())
+      m_geom = te::gm::GetGeomFromEnvelope(&ibbox, m_layer->getSRID());
+
+    m_canvas->draw(m_geom);
+
+    m_mapDisplay->repaint();
+
+    getRasterFromROI();
 
     QApplication::restoreOverrideCursor();
   }
@@ -1422,6 +1422,8 @@ void te::qt::widgets::ContrastDialogForm::drawHistogram()
 
   if(i == -1)
     return;
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
 
   bool hasChannel = false;
 
@@ -1529,6 +1531,8 @@ void te::qt::widgets::ContrastDialogForm::drawHistogram()
   }
 
   m_histogramWidget->drawHistogram(bandIdx);
+
+  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::ContrastDialogForm::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -1593,16 +1597,19 @@ void te::qt::widgets::ContrastDialogForm::onEnvelopeAcquired(te::gm::Envelope en
   if (!env.isValid())
     return;
 
-  m_geom = 0;
-
   if (env.getLowerLeftX() == 0 && env.getLowerLeftY() == 0 && env.getUpperRightX() == 0 && env.getUpperRightY() == 0)
     return;
 
+  if (!env.intersects(m_layer->getExtent()))
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("ROI is invalid."));
+    return;
+  }
+
+  m_geom = 0;
+
   if (env.isValid())
     m_geom = te::gm::GetGeomFromEnvelope(&env, m_layer->getSRID());
-
-  if (!env.intersects(*m_geom->getMBR()))
-    return;
 
   m_canvas->draw(m_geom);
 

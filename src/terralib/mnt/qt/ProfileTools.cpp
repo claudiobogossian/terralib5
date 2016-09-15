@@ -61,7 +61,7 @@ void te::mnt::ProfileTools::setLines(std::vector<te::gm::LineString*> &l)
 
   te::edit::RepositoryManager::getInstance().removeAll();
   for (size_t i = 0; i < m_lines.size(); i++)
-   te::edit::RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_lines[i], te::edit::GEOMETRY_CREATE);
+   te::edit::RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_lines[i], te::edit::TO_ADD);
 
 }
 
