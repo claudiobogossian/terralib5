@@ -37,6 +37,7 @@
 
 #include "Config.h"
 #include "../../common/progress/TaskProgress.h"
+#include "../../core/uri/URI.h"
 
 namespace te
 {
@@ -94,6 +95,16 @@ namespace te
         \param taskMessage new message.
       */
       virtual void setTaskMessage(const std::string& taskMessage);
+
+      virtual void post(const te::core::URI &uri, const std::string &postFields, const::std::string &header) const;
+
+      virtual void put(const te::core::URI &uri, const std::string &content, const std::string &header) const;
+
+      virtual void put(const te::core::URI &uri, const void *content, size_t size,  const::std::string &header) const;
+
+      virtual void putFile(const te::core::URI &uri, const std::string &filePath, const::std::string &header) const;
+
+      virtual void putFile(const te::core::URI &uri, const void *file, const size_t &size,  const::std::string &header) const;
 
     private:
       std::shared_ptr<CURL>  m_curl;

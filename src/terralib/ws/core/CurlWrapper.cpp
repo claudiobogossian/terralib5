@@ -27,8 +27,6 @@
 
 #include "CurlWrapper.h"
 
-
-
 // Terralib
 #include "../../../terralib/common/Exception.h"
 #include "../../core/encoding/CharEncoding.h"
@@ -37,22 +35,28 @@
 // LibCurl
 #include <curl/curl.h>
 
+// STL
 #include <sstream>
+#include <fstream>
+
 
 te::ws::core::CurlWrapper::CurlWrapper()
 {
   m_curl = std::shared_ptr<CURL>(curl_easy_init(), curl_easy_cleanup);
 }
 
+
 te::ws::core::CurlWrapper::~CurlWrapper()
 {
 }
+
 
 size_t WriteFileCallback(void *ptr, size_t size, size_t nmemb, void *data)
 {
   std::FILE *writehere = (std::FILE *)data;
   return fwrite(ptr, size, nmemb, writehere);
 }
+
 
 int DownloadProgress(void *p,
                      curl_off_t dltotal, curl_off_t dlnow,
@@ -77,6 +81,7 @@ int DownloadProgress(void *p,
   return 0;
 }
 
+
 void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::string& filePath) const
 {
 
@@ -93,6 +98,7 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::
     std::fclose(file);
 }
 
+
 void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* file) const
 {
   curl_easy_reset(m_curl.get());
@@ -108,7 +114,7 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
   std::shared_ptr<te::common::TaskProgress> task;
 
   task.reset( new te::common::TaskProgress(m_taskMessage,
-    te::common::TaskProgress::UNDEFINED, 100 ) );
+                                           te::common::TaskProgress::UNDEFINED, 100 ) );
 
   CurlProgress progress;
 
@@ -130,6 +136,7 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
     throw te::common::Exception(curl_easy_strerror(status));
 }
 
+
 std::string te::ws::core::CurlWrapper::getTaskMessage() const
 {
   return m_taskMessage;
@@ -139,3 +146,153 @@ void te::ws::core::CurlWrapper::setTaskMessage(const std::string &taskMessage)
 {
   m_taskMessage = taskMessage;
 }
+
+
+size_t read_stream_callback(char *buffer, size_t size, size_t nitems, void *instream)
+{
+  std::fstream* stream = static_cast<std::fstream*>(instream);
+  std::streampos begin,end;
+
+  if(!stream->is_open())
+  {
+    return -1;
+  }
+
+  stream->seekg (0, std::ios::end);
+  end = stream->tellg();
+  stream->seekg (0, std::ios::beg);
+  begin = stream->tellg();
+
+  long long int ret = end - begin;
+
+  stream->get(buffer, ret + 1);
+
+  return ret;
+}
+
+
+void te::ws::core::CurlWrapper::post(const te::core::URI &uri, const std::string &postFields, const::std::string &header) const
+{
+  curl_easy_reset(m_curl.get());
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+
+  struct curl_slist* headers= nullptr;
+  headers = curl_slist_append(headers, header.c_str());
+  curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_POSTFIELDS, postFields.c_str());
+
+  /* Perform the request, status will get the return code */
+  CURLcode status = curl_easy_perform(m_curl.get());
+
+  curl_slist_free_all(headers);
+
+  // Check for errors
+  if(status != CURLE_OK)
+    throw te::common::Exception(curl_easy_strerror(status));
+}
+
+
+void te::ws::core::CurlWrapper::put(const te::core::URI &uri, const std::string &content, const std::string &header) const
+{
+  std::fstream* stream = new std::fstream("file.txt");
+  std::streampos begin,end;
+
+  if(!stream->is_open())
+  {
+    throw te::common::Exception(TE_TR("Can't open the file!."));
+  }
+
+  *stream << content;
+  stream->flush();
+
+  stream->seekg (0, std::ios::end);
+  end = stream->tellg();
+  stream->seekg (0, std::ios::beg);
+  begin = stream->tellg();
+
+  put(uri, stream, (end-begin),header);
+}
+
+
+void te::ws::core::CurlWrapper::put(const te::core::URI &uri, const void *content, size_t size,  const::std::string &header) const
+{
+  curl_easy_reset(m_curl.get());
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+
+  struct curl_slist* headers= nullptr;
+  headers = curl_slist_append(headers, header.c_str());
+  curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_UPLOAD, true);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_READFUNCTION, read_stream_callback);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_READDATA, content);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
+
+  /* Perform the request, status will get the return code */
+  CURLcode status = curl_easy_perform(m_curl.get());
+
+  curl_slist_free_all(headers);
+
+  delete content;
+
+  // Check for errors
+  if(status != CURLE_OK)
+    throw te::common::Exception(curl_easy_strerror(status));
+}
+
+
+void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::string &filePath, const std::string &header) const
+{
+  std::fstream *stream = new std::fstream(filePath);
+  std::streampos begin,end;
+
+  if(!stream->is_open())
+  {
+    throw te::common::Exception(TE_TR("Can't open the file!."));
+  }
+
+  stream->seekg (0, std::ios::end);
+  end = stream->tellg();
+  stream->seekg (0, std::ios::beg);
+  begin = stream->tellg();
+
+  long long int size = end-begin;
+
+  putFile(uri, stream, size,header);
+}
+
+
+void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const void *file, const size_t &size,  const::std::string &header) const
+{
+  curl_easy_reset(m_curl.get());
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+
+  struct curl_slist* headers= nullptr;
+  headers = curl_slist_append(headers, header.c_str());
+  curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_UPLOAD, 1L);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_READFUNCTION, read_stream_callback);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_READDATA, file);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
+
+  /* Perform the request, status will get the return code */
+  CURLcode status = curl_easy_perform(m_curl.get());
+
+  curl_slist_free_all(headers);
+
+  // Check for errors
+  if(status != CURLE_OK)
+    throw te::common::Exception(curl_easy_strerror(status));
+}
+
