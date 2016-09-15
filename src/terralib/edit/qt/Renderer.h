@@ -1,20 +1,20 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
 
-TerraLib is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Lesser General Public License for more details.
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with TerraLib. See COPYING. If not, write to
-TerraLib Team at <terralib-team@terralib.org>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
@@ -77,9 +77,13 @@ namespace te
 
       void drawRepository(const std::string& source, const te::gm::Envelope& e, int srid);
 
-      void prepare(te::gm::GeomType type, OperationType operation = te::edit::GEOMETRY_SELECTED);
+      void prepare(te::gm::GeomType type);
 
-      void draw(te::gm::Geometry* geom, bool showVertexes = false, OperationType operation = te::edit::GEOMETRY_SELECTED);
+      void prepare(te::edit::Feature* feature);
+
+      void draw(te::gm::Geometry* geom, bool showVertexes = false);
+
+      void draw(te::edit::Feature* feature, bool showVertexes = false);
 
       void drawVertexes(te::gm::Geometry* geom);
 
@@ -95,10 +99,6 @@ namespace te
         const std::size_t& contourWidth, const std::size_t& size);
 
       void setLineStyle(const QColor& lineColor, const std::size_t& lineWidth);
-
-      void setUserCellStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth);
-
-      void setOtherCellStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth);
 
     protected:
 
@@ -129,14 +129,6 @@ namespace te
       QColor m_pointContourColor;
       std::size_t m_pointContourWidth;
       std::size_t m_pointSize;
-
-      QColor m_freeCellsFillColor;
-      QColor m_freeCellsContourColor;
-      std::size_t m_freeCellsContourWidth;
-
-      QColor m_lockedCellsFillColor;
-      QColor m_lockedCellsContourColor;
-      std::size_t m_lockedCellsContourWidth;
 
       te::gm::GeomType m_currentGeomType;
       bool m_styleChanged;

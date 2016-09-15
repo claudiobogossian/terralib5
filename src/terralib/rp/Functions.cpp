@@ -2451,8 +2451,8 @@ namespace te
     
     bool GetDetailedExtent( const te::rst::Grid& grid, te::gm::LinearRing& detailedExtent )
     {
-      const int nCols = (int)grid.getNumberOfColumns();
-      const int nRows = (int)grid.getNumberOfRows();
+      const unsigned int nCols = grid.getNumberOfColumns();
+      const unsigned int nRows = grid.getNumberOfRows();
       if( ( nCols == 0 ) || ( nRows == 0 ) )
       {
         return false;
@@ -2471,32 +2471,30 @@ namespace te
       const double& resX = grid.getResolutionX();
       const double& resY = grid.getResolutionY();        
       unsigned int ringIdx = 0;
-      int row = 0;
-      int col = 0;
+      unsigned int row = 0;
+      unsigned int col = 0;
       
       ring.setPoint( 0, lLX, uRY ); 
       
-      for( col = 0 ; col < nCols ; ++col )
+      for( col = 1 ; col <= nCols ; ++col )
       {
-        ring.setPoint( ++ringIdx, lLX + ( ((double)( col + 1 ) ) * resX ), uRY );
+        ring.setPoint( ++ringIdx, lLX + ( ((double)( col ) ) * resX ), uRY );
       }
 
-      for( row = 0 ; row < nRows ; ++row )
+      for( row = 1 ; row <= nRows ; ++row )
       {
-        ring.setPoint( ++ringIdx, uRX, uRY - ( ((double)( row + 1 ) ) * resY ) );
+        ring.setPoint( ++ringIdx, uRX, uRY - ( ((double)( row ) ) * resY ) );
       } 
       
-      for( col = nCols - 1 ; col > -1 ; --col )
+      for( col = 1 ; col <= nCols ; ++col )
       {
-        ring.setPoint( ++ringIdx, lLX + ( ((double)( col + 1 ) ) * resX ), lLY );
+        ring.setPoint( ++ringIdx, uRX - ( ((double)( col ) ) * resX ), lLY );
       }    
       
-      for( row = nRows - 1 ; row > 0 ; --row )
+      for( row = 1 ; row <= nRows ; ++row )
       {
-        ring.setPoint( ++ringIdx, lLX, uRY - ( ((double)( row + 1 ) ) * resY ) );
+        ring.setPoint( ++ringIdx, lLX, lLY + ( ((double)( row ) ) * resY ) );
       }
-      
-      ring.setPoint( ringSize - 1, lLX, uRY );
       
       detailedExtent = ring;
       
@@ -2506,8 +2504,8 @@ namespace te
     bool GetIndexedDetailedExtent( const te::rst::Grid& grid, 
       te::gm::LinearRing& indexedDetailedExtent )
     {
-      const int nCols = (int)grid.getNumberOfColumns();
-      const int nRows = (int)grid.getNumberOfRows();
+      const unsigned int nCols = grid.getNumberOfColumns();
+      const unsigned int nRows = grid.getNumberOfRows();
       if( ( nCols == 0 ) || ( nRows == 0 ) )
       {
         return false;
@@ -2522,8 +2520,8 @@ namespace te
       const double lLY = ((double)nRows) - 0.5;
       const double uRX = ((double)nCols) - 0.5;
       unsigned int ringIdx = 0;
-      int row = 0;
-      int col = 0;
+      unsigned int row = 0;
+      unsigned int col = 0;
       
       ring.setPoint( 0, -0.5, -0.5 );
       
@@ -2537,14 +2535,14 @@ namespace te
         ring.setPoint( ++ringIdx, uRX, 0.5 + ((double)row) );
       } 
       
-      for( col = nCols - 1 ; col > -1 ; --col )
+      for( col = 1; col <= nCols ; ++col )
       {
-        ring.setPoint( ++ringIdx, ((double)col) - 0.5, lLY );
+        ring.setPoint( ++ringIdx, uRX - ((double)col), lLY );
       }    
       
-      for( row = nRows - 1 ; row > -1 ; --row )
+      for( row = 1 ; row <= nRows ; ++row )
       {
-        ring.setPoint( ++ringIdx, (-0.5), ((double)row) - 0.5 );
+        ring.setPoint( ++ringIdx, (-0.5), lLY - ((double)row) );
       }       
       
       ring.setPoint( ringSize - 1, -0.5, -0.5 );            
@@ -3085,6 +3083,7 @@ namespace te
         bandsProperties[ 0 ]->m_colorInterp = te::rst::PaletteIdxCInt;
         bandsProperties[ 0 ]->m_paletteInterp = te::rst::RGBPalInt;
         bandsProperties[ 0 ]->m_palette = (*internalPalettePtr);
+        bandsProperties[ 0 ]->m_noDataValue = (double)internalPalettePtr->size();
         if( internalPalettePtr->size() <= std::numeric_limits< unsigned char >::max() )
         {
           bandsProperties[ 0 ]->m_type = te::dt::UCHAR_TYPE;
@@ -3110,10 +3109,11 @@ namespace te
         te::rst::Band& outBand = (*outRasterPtr->getBand( 0 ));
         const unsigned int nRows = internalInRasterPtr->getNumberOfRows();
         const unsigned int nCols = internalInRasterPtr->getNumberOfColumns();
-        const double inScale = ( inputRasterMax == inputRasterMin ) ? 0.0 :
-          ( 1.0 / ( inputRasterMax - inputRasterMin ) );
-        const double outScale = ( (double)internalPalettePtr->size() - 1 );
-        const double paletteSizeDouble = (double)internalPalettePtr->size();
+        const double lastPaletteIdx = (double)( internalPalettePtr->size() - 1 );
+        const double palleteStepSize = ( inputRasterMax - inputRasterMin ) /
+          ((double)internalPalettePtr->size());
+        const double inputNoDataValue = inBand.getProperty()->m_noDataValue;
+        const double outputNoDataValue = outBand.getProperty()->m_noDataValue;
         unsigned int col = 0;
         double value = 0;
         
@@ -3122,13 +3122,17 @@ namespace te
           for( col = 0 ; col < nCols ; ++col )
           {
             inBand.getValue( col, row, value );
-            value -= inputRasterMin;
-            value *= inScale;
-            value *= outScale;
-            value = std::floor( value );
-            value = std::max( 0.0, value );
-            value = std::min( paletteSizeDouble, value );            
-            outBand.setValue( col, row, value );
+            
+            if( value == inputNoDataValue )
+            {
+              outBand.setValue( col, row, outputNoDataValue );
+            }
+            else
+            {
+              value = std::floor( value / palleteStepSize );
+              value = std::min( lastPaletteIdx, value );            
+              outBand.setValue( col, row, value );
+            }
           }
           
           if( enableProgress )
@@ -3140,6 +3144,46 @@ namespace te
       }
       else
       {
+        short internalPaletteMaxValue = 0;
+        for( unsigned int internalPaletteIdx = 0 ; internalPaletteIdx < 
+          internalPalettePtr->size() ; ++internalPaletteIdx )
+        {
+          if( internalPalettePtr->operator[]( internalPaletteIdx ).c1 > 
+            internalPaletteMaxValue )
+          {
+            internalPaletteMaxValue = internalPalettePtr->operator[]( internalPaletteIdx ).c1;
+          }
+          if( internalPalettePtr->operator[]( internalPaletteIdx ).c2 > 
+            internalPaletteMaxValue )
+          {
+            internalPaletteMaxValue = internalPalettePtr->operator[]( internalPaletteIdx ).c2;
+          }
+          if( internalPalettePtr->operator[]( internalPaletteIdx ).c3 > 
+            internalPaletteMaxValue )
+          {
+            internalPaletteMaxValue = internalPalettePtr->operator[]( internalPaletteIdx ).c3;
+          }
+          if( internalPalettePtr->operator[]( internalPaletteIdx ).c4 > 
+            internalPaletteMaxValue )
+          {
+            internalPaletteMaxValue = internalPalettePtr->operator[]( internalPaletteIdx ).c4;
+          }                              
+        }    
+        
+        int outDataType = 0;
+        if( internalPaletteMaxValue < ( std::numeric_limits< unsigned char >::max() ) )
+        {
+          outDataType = te::dt::UCHAR_TYPE;
+        }
+        else if( internalPaletteMaxValue < ( std::numeric_limits< unsigned short int >::max() ) )
+        {
+          outDataType = te::dt::UINT16_TYPE;
+        }
+        else
+        {
+          outDataType = te::dt::UINT32_TYPE;
+        }         
+        
         std::vector< te::rst::BandProperty* > bandsProperties;
         bandsProperties.push_back( new te::rst::BandProperty( 
           * internalInRasterPtr->getBand( internalInRasterBand )->getProperty() ) );
@@ -3150,12 +3194,12 @@ namespace te
         bandsProperties[ 0 ]->m_colorInterp = te::rst::RedCInt;
         bandsProperties[ 1 ]->m_colorInterp = te::rst::GreenCInt;
         bandsProperties[ 2 ]->m_colorInterp = te::rst::BlueCInt;
-        bandsProperties[ 0 ]->m_type = te::dt::UCHAR_TYPE;
-        bandsProperties[ 1 ]->m_type = te::dt::UCHAR_TYPE;
-        bandsProperties[ 2 ]->m_type = te::dt::UCHAR_TYPE;
-        bandsProperties[ 0 ]->m_noDataValue = std::numeric_limits< double >::max();
-        bandsProperties[ 1 ]->m_noDataValue = std::numeric_limits< double >::max();
-        bandsProperties[ 2 ]->m_noDataValue = std::numeric_limits< double >::max();
+        bandsProperties[ 0 ]->m_type = outDataType;
+        bandsProperties[ 1 ]->m_type = outDataType;
+        bandsProperties[ 2 ]->m_type = outDataType;
+        bandsProperties[ 0 ]->m_noDataValue = internalPaletteMaxValue + 1;
+        bandsProperties[ 1 ]->m_noDataValue = internalPaletteMaxValue + 1;
+        bandsProperties[ 2 ]->m_noDataValue = internalPaletteMaxValue + 1;
         
         TERP_TRUE_OR_RETURN_FALSE( CreateNewRaster( *internalInRasterPtr->getGrid(),
           bandsProperties, rasterInfo, rasterType, outRasterPtr ),
@@ -3165,12 +3209,15 @@ namespace te
         te::rst::Band& outBandRed = (*outRasterPtr->getBand( 0 ));
         te::rst::Band& outBandGreen = (*outRasterPtr->getBand( 1 ));
         te::rst::Band& outBandBlue = (*outRasterPtr->getBand( 2 ));
+        const double rBandNoDataValue = outBandRed.getProperty()->m_noDataValue;
+        const double gBandNoDataValue = outBandGreen.getProperty()->m_noDataValue;
+        const double bBandNoDataValue = outBandBlue.getProperty()->m_noDataValue;
         const unsigned int nRows = internalInRasterPtr->getNumberOfRows();
         const unsigned int nCols = internalInRasterPtr->getNumberOfColumns();
-        const double inScale = ( inputRasterMax == inputRasterMin ) ? 0 :
-          ( 1.0 / ( inputRasterMax - inputRasterMin ) );
-        const double outScale = ( (double)internalPalettePtr->size() - 1 ); 
-        const double paletteSizeDouble = (double)internalPalettePtr->size();
+        const double lastPaletteIdx = (double)( internalPalettePtr->size() - 1 );
+        const double palleteStepSize = ( inputRasterMax - inputRasterMin ) /
+          ((double)internalPalettePtr->size());
+        const double inputNoDataValue = inBand.getProperty()->m_noDataValue;
         unsigned int col = 0;
         double value = 0;
         
@@ -3179,19 +3226,25 @@ namespace te
           for( col = 0 ; col < nCols ; ++col )
           {
             inBand.getValue( col, row, value );
-            value -= inputRasterMin;
-            value *= inScale;
-            value *= outScale;
-            value = std::floor( value );
-            value = std::max( 0.0, value );
-            value = std::min( paletteSizeDouble, value );
             
-            const te::rst::BandProperty::ColorEntry& cEntry = 
-              internalPalettePtr->operator[]( (unsigned int)value );
-            
-            outBandRed.setValue( col, row, cEntry.c1 );
-            outBandGreen.setValue( col, row, cEntry.c2 );
-            outBandBlue.setValue( col, row, cEntry.c3 );
+            if( value == inputNoDataValue )
+            {
+              outBandRed.setValue( col, row, rBandNoDataValue );
+              outBandGreen.setValue( col, row, gBandNoDataValue );
+              outBandBlue.setValue( col, row, bBandNoDataValue );
+            }
+            else
+            {
+              value = std::floor( value / palleteStepSize );
+              value = std::min( lastPaletteIdx, value );          
+              
+              const te::rst::BandProperty::ColorEntry& cEntry = 
+                internalPalettePtr->operator[]( (unsigned int)value );
+              
+              outBandRed.setValue( col, row, cEntry.c1 );
+              outBandGreen.setValue( col, row, cEntry.c2 );
+              outBandBlue.setValue( col, row, cEntry.c3 );
+            }
           }
           
           if( enableProgress )

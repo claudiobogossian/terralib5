@@ -55,6 +55,7 @@ te::qt::widgets::CheckGeomValidityDialog::CheckGeomValidityDialog(QWidget* paren
   
   m_ui->m_invalidTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
   m_ui->m_invalidTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+  m_ui->m_invalidTableWidget->horizontalHeader()->setStretchLastSection(true);
 
   connect(m_ui->m_verifyPushButton, SIGNAL(clicked()), this, SLOT(onVerifyPushButtonClicked()));
   connect(m_ui->m_invalidTableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
@@ -134,31 +135,50 @@ void te::qt::widgets::CheckGeomValidityDialog::onVerifyPushButtonClicked()
       break;
     }
 
-    std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(pos);
+    try
+    {
+      std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(pos);
 
-    te::gm::TopologyValidationError err;
-    bool isValid = te::gm::CheckValidity(geom.get(), err);
+      te::gm::TopologyValidationError err;
+      bool isValid = te::gm::CheckValidity(geom.get(), err);
 
-    if (!isValid)
+      if (!isValid)
+      {
+        m_ui->m_invalidTableWidget->insertRow(count);
+
+        QTableWidgetItem *msgItem = new QTableWidgetItem(err.m_message.c_str());
+        msgItem->setData(Qt::UserRole, QVariant::fromValue(err));
+        msgItem->setFlags(Qt::ItemIsEnabled);
+
+        if (pk)
+        {
+          QTableWidgetItem *idItem = new QTableWidgetItem(data->getAsString(pk->getProperties()[0]->getName()).c_str());
+          idItem->setFlags(Qt::ItemIsEnabled);
+
+          m_ui->m_invalidTableWidget->setItem(count, 0, idItem);
+        }
+
+        m_ui->m_invalidTableWidget->setItem(count, 1, msgItem);
+
+        ++count;
+      }
+    }
+    catch(te::common::Exception& e)
     {
       m_ui->m_invalidTableWidget->insertRow(count);
-      
-      QTableWidgetItem *msgItem = new QTableWidgetItem(err.m_message.c_str());
-      msgItem->setData(Qt::UserRole, QVariant::fromValue(err));
-      msgItem->setFlags(Qt::ItemIsEnabled);
+
+      QTableWidgetItem *msgItem = new QTableWidgetItem(e.what());
+      msgItem->setFlags(Qt::NoItemFlags);
 
       if (pk)
       {
         QTableWidgetItem *idItem = new QTableWidgetItem(data->getAsString(pk->getProperties()[0]->getName()).c_str());
-        idItem->setFlags(Qt::ItemIsEnabled);
+        idItem->setFlags(Qt::NoItemFlags);
 
         m_ui->m_invalidTableWidget->setItem(count, 0, idItem);
-        m_ui->m_invalidTableWidget->setItem(count, 1, msgItem);
       }
-      else
-      {
-        m_ui->m_invalidTableWidget->setItem(count, 1, msgItem);
-      }
+
+      m_ui->m_invalidTableWidget->setItem(count, 1, msgItem);
 
       ++count;
     }

@@ -218,6 +218,9 @@
       <Function name="not">
         <BinaryOpEncoder alias="not"/>
       </Function>
+      <Function name="isnull">
+        <TemplateEncoder alias="" template="$1 isnull"/>
+      </Function>
     </LogicalOperators>
     <ComparsionOperators>
       <Function name="=">

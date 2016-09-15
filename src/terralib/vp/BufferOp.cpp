@@ -60,16 +60,18 @@ void te::vp::BufferOp::setInput(te::da::DataSourcePtr inDsrc,
 }
 
 void te::vp::BufferOp::setParams(const double& distance,
-                                const int& bufferPolygonRule,
-                                const int& bufferBoundariesRule,
-                                const bool& copyInputColumns,
-                                const int& levels)
+                                 const int& bufferPolygonRule,
+                                 const int& bufferBoundariesRule,
+                                 const bool& copyInputColumns,
+                                 const int& levels,
+                                 const int& attributePosition)
 {
   m_distance = distance;
   m_bufferPolygonRule =  bufferPolygonRule;
   m_bufferBoundariesRule = bufferBoundariesRule;
   m_copyInputColumns = copyInputColumns;
   m_levels = levels;
+  m_attributePosition = attributePosition;
 }
 
 void te::vp::BufferOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)

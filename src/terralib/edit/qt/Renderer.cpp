@@ -24,10 +24,14 @@
 */
 
 // TerraLib
+#include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/ObjectId.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/LineString.h"
+#include "../../maptools/MarkRendererManager.h"
+#include "../../se/Mark.h"
+#include "../../se/Utils.h"
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../srs/Config.h"
@@ -79,24 +83,26 @@ void te::edit::Renderer::drawRepository(const std::string& source, const te::gm:
 
   std::vector<Feature*> features = repository->getFeatures(e, srid);
 
-  //need to reconfigure the canvas when there geometries, create a function on repository that count features by operation
   for (std::size_t i = 0; i < features.size(); ++i)
   {
-    if (features[i]->getOperationType() == GEOMETRY_DELETE || features[i]->getOperationType() >= te::edit::GEOMETRY_FREECELLS)
+    if (features[i]->getType() == TO_DELETE || features[i]->isColorChanged())
     {
       m_styleChanged = true;
       break;
     }
   }
 
-  for (std::size_t i = 0; i < features.size(); ++i) 
-    draw(features[i]->getGeometry(), false, features[i]->getOperationType());
-
+  for (std::size_t i = 0; i < features.size(); ++i)
+    draw(features[i], false);
 }
 
-void te::edit::Renderer::prepare(te::gm::GeomType type, OperationType operation)
+void te::edit::Renderer::prepare(te::edit::Feature* feature)
 {
   assert(m_canvas);
+  assert(feature);
+  
+  te::gm::GeomType type = feature->getGeometry()->getGeomTypeId();
+  te::edit::FeatureType op = feature->getType();
 
   if (m_currentGeomType == type && m_styleChanged == false)
     return; // No need reconfigure the canvas
@@ -115,31 +121,22 @@ void te::edit::Renderer::prepare(te::gm::GeomType type, OperationType operation)
     case te::gm::MultiPolygonZMType:
     {
       te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
-      m_canvas->setPolygonContourDashStyle((operation >= te::edit::GEOMETRY_FREECELLS) ? te::map::SolidLine : te::map::DashLine);
+      m_canvas->setPolygonContourDashStyle(feature->getType() == te::edit::TO_BLOCKEDIT ? te::map::SolidLine : te::map::DashLine);
 
-      switch (operation)
+      if (feature->isColorChanged())
       {
-        case te::edit::GEOMETRY_FREECELLS:
-          te::qt::widgets::Config2DrawPolygons(m_canvas, m_freeCellsFillColor, m_freeCellsContourColor, m_freeCellsContourWidth);
-          break;
+        m_canvas->setPolygonFillColor(feature->getFillColor());
+        m_canvas->setPolygonContourColor(feature->getContourColor());
+      }
 
-        case te::edit::GEOMETRY_LOCKEDCELLS:
-          te::qt::widgets::Config2DrawPolygons(m_canvas, m_lockedCellsFillColor, m_lockedCellsContourColor, m_lockedCellsContourWidth);
-          break;
+      if (op == te::edit::TO_DELETE)
+      {
+        QBrush f;
 
-        case te::edit::GEOMETRY_DELETE:
-        {
-          QBrush f;
+        f.setColor(Qt::black);
+        f.setStyle(Qt::DiagCrossPattern);
 
-          f.setColor(Qt::black);
-          f.setStyle(Qt::DiagCrossPattern);
-
-          m_canvas->setPolygonFillColor(f);
-          break;
-        }
-
-        default:
-          break;
+        m_canvas->setPolygonFillColor(f);
       }
     }
     break;
@@ -154,6 +151,12 @@ void te::edit::Renderer::prepare(te::gm::GeomType type, OperationType operation)
     case te::gm::MultiLineStringZMType:
     {
       te::qt::widgets::Config2DrawLines(m_canvas, m_lineColor, m_lineWidth);
+
+      if (feature->isColorChanged())
+        m_canvas->setLineColor(feature->getFillColor());
+
+      if (op == te::edit::TO_DELETE)
+        m_canvas->setLineDashStyle(te::map::DashLine);
     }
     break;
 
@@ -167,6 +170,26 @@ void te::edit::Renderer::prepare(te::gm::GeomType type, OperationType operation)
     case te::gm::MultiPointZMType:
     {
       te::qt::widgets::Config2DrawPoints(m_canvas, m_pointMark, m_pointSize, m_pointFillColor, m_pointContourColor, m_pointContourWidth);
+
+      if (feature->isColorChanged())
+        m_canvas->setPointColor(feature->getFillColor());
+
+      if (op == te::edit::TO_DELETE)
+      {
+        std::size_t size = 24;
+
+        te::se::Stroke* stroke = te::se::CreateStroke("#FF0000", "2", "0.5");
+        te::se::Fill* fill = te::se::CreateFill("#FFFFFF", "0.5");
+        te::se::Mark* mark = te::se::CreateMark("square", stroke, fill);
+
+        te::color::RGBAColor** rgba = te::map::MarkRendererManager::getInstance().render(mark, size);
+
+        m_canvas->setPointColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
+        m_canvas->setPointPattern(rgba, (int)size, (int)size);
+
+        te::common::Free(rgba, size);
+        delete mark;
+      }
     }
     break;
 
@@ -175,7 +198,63 @@ void te::edit::Renderer::prepare(te::gm::GeomType type, OperationType operation)
   }
 }
 
-void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes, OperationType operation)//const bool& removed)
+void te::edit::Renderer::prepare(te::gm::GeomType type)
+{
+  assert(m_canvas);
+
+  if (m_currentGeomType == type && m_styleChanged == false)
+    return; // No need reconfigure the canvas
+
+  m_currentGeomType = type;
+
+  switch(type)
+  {
+    case te::gm::PolygonType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZMType:
+    case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZMType:
+
+      te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
+      m_canvas->setPolygonContourDashStyle(te::map::DashLine);
+
+    break;
+
+    case te::gm::LineStringType:
+    case te::gm::LineStringZType:
+    case te::gm::LineStringMType:
+    case te::gm::LineStringZMType:
+    case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZMType:
+
+      te::qt::widgets::Config2DrawLines(m_canvas, m_lineColor, m_lineWidth);
+
+    break;
+
+    case te::gm::PointType:
+    case te::gm::PointZType:
+    case te::gm::PointMType:
+    case te::gm::PointZMType:
+    case te::gm::MultiPointType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZMType:
+
+      te::qt::widgets::Config2DrawPoints(m_canvas, m_pointMark, m_pointSize, m_pointFillColor, m_pointContourColor, m_pointContourWidth);
+
+    break;
+
+    default:
+      return;
+  }
+}
+
+void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes)
 {
   assert(m_canvas);
   assert(geom);
@@ -183,12 +262,28 @@ void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes, Operati
   if((geom->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (geom->getSRID() != m_srid))
     geom->transform(m_srid);
 
-  prepare(geom->getGeomTypeId(), operation);
+  prepare(geom->getGeomTypeId());
 
   m_canvas->draw(geom);
 
   if(showVertexes)
     drawVertexes(geom);
+}
+
+void te::edit::Renderer::draw(te::edit::Feature* feature, bool showVertexes)
+{
+  assert(m_canvas);
+  assert(feature);
+
+  if ((feature->getGeometry()->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (feature->getGeometry()->getSRID() != m_srid))
+    feature->getGeometry()->transform(m_srid);
+
+  prepare(feature);
+
+  m_canvas->draw(feature->getGeometry());
+
+  if (showVertexes)
+    drawVertexes(feature->getGeometry());
 }
 
 void te::edit::Renderer::drawVertexes(te::gm::Geometry* geom)
@@ -266,28 +361,10 @@ void te::edit::Renderer::setLineStyle(const QColor& lineColor, const std::size_t
   m_styleChanged = true;
 }
 
-void te::edit::Renderer::setUserCellStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
-{
-  m_freeCellsFillColor = fillColor;
-  m_freeCellsContourColor = contourColor;
-  m_freeCellsContourWidth = contourWidth;
-
-  m_styleChanged = true;
-}
-
-void te::edit::Renderer::setOtherCellStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
-{
-  m_lockedCellsFillColor = fillColor;
-  m_lockedCellsContourColor = contourColor;
-  m_lockedCellsContourWidth = contourWidth;
-
-  m_styleChanged = true;
-}
-
 void te::edit::Renderer::setupDefaultStyle()
 {
-  m_polygonFillColor = QColor(0, 255, 0, 15);
-  m_polygonContourColor = QColor(255, 0, 0);
+  m_polygonFillColor = QColor(TE_EDIT_FEATURE_FILL_COLOR);
+  m_polygonContourColor = QColor(TE_EDIT_FEATURE_CONTOUR_COLOR);
   m_polygonContourWidth = 2;
 
   m_lineColor = QColor(0, 0, 0, 80);
@@ -298,14 +375,6 @@ void te::edit::Renderer::setupDefaultStyle()
   m_pointContourColor = Qt::black;
   m_pointContourWidth = 1;
   m_pointSize = 8;
-
-  m_freeCellsFillColor = QColor(255, 255, 255, 0);
-  m_freeCellsContourColor = QColor(0, 255, 0);
-  m_freeCellsContourWidth = 2;
-
-  m_lockedCellsFillColor = QColor(255, 255, 255, 0);
-  m_lockedCellsContourColor = QColor(255, 0, 0);
-  m_lockedCellsContourWidth = 2;
 
   m_styleChanged = false;
 }

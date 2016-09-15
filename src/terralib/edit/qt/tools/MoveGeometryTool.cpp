@@ -90,7 +90,7 @@ bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
         while (ds->moveNext())
         {
           std::auto_ptr<te::gm::Geometry> g(ds->getGeometry(gpos));
-          m_feature = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), g.release(), te::edit::GEOMETRY_UPDATE);
+          m_feature = new Feature(te::da::GenerateOID(ds.get(), oidPropertyNames), g.release(), te::edit::TO_UPDATE);
           if (m_feature)
           {
             m_vecFeature.push_back(m_feature->clone());
@@ -181,7 +181,7 @@ void te::edit::MoveGeometryTool::pickFeature(const QPointF& pos)
 
   try
   {
-    m_feature = PickFeature(m_layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+    m_feature = PickFeature(m_layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
     if (m_feature)
       m_vecFeature.push_back(m_feature->clone());
 

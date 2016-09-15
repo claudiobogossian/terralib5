@@ -41,7 +41,7 @@
 
 BOOST_AUTO_TEST_SUITE (functions_tests)
 
-void CreateFixedStepPalette()
+BOOST_AUTO_TEST_CASE( createFixedStepPalette_test )
 {
   std::vector< te::rst::BandProperty * > bandsProps;
   bandsProps.push_back( new te::rst::BandProperty( 0, 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(rasterSlicing_test)
       *diskRasterPtr.get(), 
       0, 
       false,
-      255,
+      10,
       true,
       auxRasterInfo2,
       "GDAL",
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(rasterSlicing_test)
       *diskRasterPtr.get(), 
       0, 
       true,
-      255,
+      10,
       true,
       auxRasterInfo2,
       "GDAL",
@@ -556,32 +556,32 @@ BOOST_AUTO_TEST_CASE(getDetailedExtent_test)
   BOOST_CHECK( te::rp::GetDetailedExtent( grid, lr ) );
   BOOST_CHECK( lr.size() == 9 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 0 ), 0.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 0 ), 2.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 0 ), 0.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 0 ), 2.0 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 1 ), 1.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 1 ), 2.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 1 ), 1.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 1 ), 2.0 , 0.0000000001 );
 
-  BOOST_CHECK_CLOSE( lr.getX( 2 ), 2.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 2 ), 2.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 2 ), 2.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 2 ), 2.0 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 3 ), 2.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 3 ), 1.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 3 ), 2.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 3 ), 1.0 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 4 ), 2.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 4 ), 0.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 4 ), 2.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 4 ), 0.0 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 5 ), 1.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 5 ), 0.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 5 ), 1.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 5 ), 0.0 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 6 ), 0.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 6 ), 0.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 6 ), 0.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 6 ), 0.0 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 7 ), 0.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 7 ), 1.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 7 ), 0.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 7 ), 1.0 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 8 ), 0.0 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 8 ), 2.0 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 8 ), 0.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 8 ), 2.0 , 0.0000000001 );
 }
 
 BOOST_AUTO_TEST_CASE(getIndexedDetailedExtent_test)
@@ -593,32 +593,32 @@ BOOST_AUTO_TEST_CASE(getIndexedDetailedExtent_test)
   BOOST_CHECK( te::rp::GetIndexedDetailedExtent( grid, lr ) );
   BOOST_CHECK( lr.size() == 9 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 0 ), -0.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 0 ), -0.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 0 ), -0.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 0 ), -0.5 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 1 ), 0.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 1 ), -0.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 1 ), 0.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 1 ), -0.5 , 0.0000000001 );
 
-  BOOST_CHECK_CLOSE( lr.getX( 2 ), 1.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 2 ), -0.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 2 ), 1.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 2 ), -0.5 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 3 ), 1.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 3 ), 0.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 3 ), 1.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 3 ), 0.5 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 4 ), 1.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 4 ), 1.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 4 ), 1.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 4 ), 1.5 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 5 ), 0.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 5 ), 1.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 5 ), 0.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 5 ), 1.5 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 6 ), -0.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 6 ), 1.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 6 ), -0.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 6 ), 1.5 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 7 ), -0.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 7 ), 0.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 7 ), -0.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 7 ), 0.5 , 0.0000000001 );
   
-  BOOST_CHECK_CLOSE( lr.getX( 8 ), -0.5 , 1.0000000001 );
-  BOOST_CHECK_CLOSE( lr.getY( 8 ), -0.5 , 1.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getX( 8 ), -0.5 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( lr.getY( 8 ), -0.5 , 0.0000000001 );
 }
 
 BOOST_AUTO_TEST_CASE(waveletAtrous_test)

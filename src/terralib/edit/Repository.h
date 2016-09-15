@@ -68,13 +68,13 @@ namespace te
 
         ~Repository();
 
-        void add(te::gm::Geometry* geom, OperationType = GEOMETRY_CREATE);
+        void add(te::gm::Geometry* geom, FeatureType = TO_ADD);
 
-        void add(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
+        void add(te::da::ObjectId* id, te::gm::Geometry* geom, FeatureType type);
 
         void add(Feature* f);
 
-        void set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
+        void set(te::da::ObjectId* id, te::gm::Geometry* geom, FeatureType type);
 
         void set(Feature* f);
 
@@ -95,6 +95,8 @@ namespace te
         Feature* getFeature(const te::gm::Envelope& e, int srid) const;
 
         Feature* getFeature(te::da::ObjectId* id) const;
+
+        Feature* getFeature(const te::gm::Envelope& e, int srid, FeatureType tpToIgnored) const;
 
         void clear();
 

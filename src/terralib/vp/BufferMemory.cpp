@@ -69,21 +69,21 @@ te::vp::BufferMemory::~BufferMemory()
 
 bool te::vp::BufferMemory::run() throw(te::common::Exception)
 {
-  std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType());
-  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
+  std::unique_ptr<te::da::DataSetType> outDSType(GetDataSetType());
+  std::unique_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
   te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(outDSType.get());
 
   int type;
   int pk = 0;
 
-  std::auto_ptr<te::da::DataSet> inDsetSrc;
+  std::unique_ptr<te::da::DataSet> inDsetSrc;
   
   if(m_oidSet == 0)
     inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
   else
     inDsetSrc = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
   
-  std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
+  std::unique_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
 
   inDset->moveBeforeFirst();
 
@@ -91,62 +91,79 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
   {
     te::gm::Geometry* auxGeom = 0;
 
-    for(int i = 1; i <= m_levels; ++i)
+    for(int level = 1; level <= m_levels; ++level)
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet.get());
 
-      for(std::size_t j = 0; j < inDset->getNumProperties(); ++j)
+      for(std::size_t property = 0; property < inDset->getNumProperties(); ++property)
       {
-        type = inDset->getPropertyDataType(j);
+        if(inDset->isNull(property))
+          continue;
+
+        type = inDset->getPropertyDataType(property);
         if(m_copyInputColumns)
         {
           switch (type)
           {
             case te::dt::INT32_TYPE:
-              if(inDset->getPropertyName(j) != "FID")
-                dataSetItem->setInt32(j+2, inDset->getInt32(j));
+              if(inDset->getPropertyName(property) != "FID")
+                dataSetItem->setInt32(property+2, inDset->getInt32(property));
               break;
             case te::dt::INT64_TYPE:
-              dataSetItem->setInt64(j+2, inDset->getInt64(j));
+              dataSetItem->setInt64(property+2, inDset->getInt64(property));
               break;
             case te::dt::DOUBLE_TYPE:
-              dataSetItem->setDouble(j+2, inDset->getDouble(j));
+              dataSetItem->setDouble(property+2, inDset->getDouble(property));
               break;
             case te::dt::STRING_TYPE:
-              dataSetItem->setString(j+2, inDset->getString(j));
+              dataSetItem->setString(property+2, inDset->getString(property));
               break;
             case te::dt::GEOMETRY_TYPE:
               {
-                dataSetItem->setInt32(0, pk); //pk
-                dataSetItem->setInt32(1, i); //level
-                dataSetItem->setDouble(2, m_distance*(i)); //distance
+                std::unique_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(property);
+                std::unique_ptr<te::gm::Geometry> outGeom;
 
-                std::auto_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(j);
-                std::auto_ptr<te::gm::Geometry> outGeom;
-
-                if (currentGeom->isValid())
+                if (!currentGeom->isValid())
                 {
-                  outGeom.reset(setBuffer(currentGeom.get(), m_distance, i, auxGeom));
-                  outGeom->setSRID(geomProp->getSRID());
+#ifdef TERRALIB_LOGGER_ENABLED
+                    TE_CORE_LOG_DEBUG("vp", "Buffer - Invalid geometry found");
+#endif //TERRALIB_LOGGER_ENABLED
+
+                  continue;
+                }
+
+                dataSetItem->setInt32(0, pk); //pk
+                dataSetItem->setInt32(1, level); //level
+
+                if (m_attributePosition >= 0 && m_attributePosition < (int)inDset->getNumProperties())
+                {
+                  double distance = getDistanceByAttribute(*inDset.get(), m_attributePosition);
+                  dataSetItem->setDouble(2, distance*(level)); //distance
+
+                  if(distance != 0) //The distance can be negative.
+                    outGeom.reset(setBuffer(currentGeom.get(), m_distance, level, auxGeom));
+
+                  //TO DO: EMITIR MSG PARA USUARIO AVISANDO QUE HÁ VALORES NULOS OU ZERADOS.
                 }
                 else
                 {
-#ifdef TERRALIB_LOGGER_ENABLED
-                  TE_CORE_LOG_DEBUG("vp", "Buffer - Invalid geometry found");
-#endif //TERRALIB_LOGGER_ENABLED
+                  dataSetItem->setDouble(2, m_distance*(level)); //distance
+                  outGeom.reset(setBuffer(currentGeom.get(), m_distance, level, auxGeom));
                 }
 
                 if(outGeom.get() && outGeom->isValid())
                 {
+                  outGeom->setSRID(geomProp->getSRID());
+
                   if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
                   {
-                    dataSetItem->setGeometry(j+2, outGeom.release());
+                    dataSetItem->setGeometry(property+2, outGeom.release());
                   }
                   else
                   {
-                    std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
+                    std::unique_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
                     mPolygon->add(outGeom.release());
-                    dataSetItem->setGeometry(j+2, mPolygon.release());
+                    dataSetItem->setGeometry(property+2, mPolygon.release());
                   }
 
                   outDSet->add(dataSetItem);
@@ -157,7 +174,7 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
             default:
               {
 #ifdef TERRALIB_LOGGER_ENABLED
-                TE_CORE_LOG_DEBUG("vp", "Buffer - Type not found.");
+                TE_CORE_LOG_DEBUG("vp", "Buffer - The type of input layer attribute (" + inDset->getPropertyName(property) +") was not found.");
 #endif //TERRALIB_LOGGER_ENABLED
               }
           }
@@ -166,34 +183,49 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
         {
           if(type == te::dt::GEOMETRY_TYPE)
           {
-            dataSetItem->setInt32(0, pk); //pk
-            dataSetItem->setInt32(1, i); //level
-            dataSetItem->setDouble(2, m_distance*(i)); //distance
+            std::unique_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(property);
+            std::unique_ptr<te::gm::Geometry> outGeom;
 
-            std::auto_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(j);
-            std::auto_ptr<te::gm::Geometry> outGeom;
-
-            if (currentGeom->isValid())
+            if (!currentGeom->isValid())
             {
-              outGeom.reset(setBuffer(currentGeom.get(), m_distance, i, auxGeom));
-              outGeom->setSRID(geomProp->getSRID());
+#ifdef TERRALIB_LOGGER_ENABLED
+                TE_CORE_LOG_DEBUG("vp", "Buffer - Invalid geometry found");
+#endif //TERRALIB_LOGGER_ENABLED
+
+              continue;
+            }
+
+            dataSetItem->setInt32(0, pk); //pk
+            dataSetItem->setInt32(1, level); //level
+
+            if (m_attributePosition >= 0 && m_attributePosition < (int)inDset->getNumProperties())
+            {
+              double distance = getDistanceByAttribute(*inDset.get(), m_attributePosition);
+              dataSetItem->setDouble(2, distance*(level)); //distance
+
+              if(distance != 0) //The distance can be negative.
+                outGeom.reset(setBuffer(currentGeom.get(), distance, level, auxGeom));
+
+              //TO DO: EMITIR MSG PARA USUARIO AVISANDO QUE HÁ VALORES NULOS OU ZERADOS.
             }
             else
             {
-#ifdef TERRALIB_LOGGER_ENABLED
-              TE_CORE_LOG_DEBUG("vp", "Buffer - Invalid geometry found");
-#endif //TERRALIB_LOGGER_ENABLED
+              dataSetItem->setDouble(2, m_distance*(level)); //distance
+              outGeom.reset(setBuffer(currentGeom.get(), m_distance, level, auxGeom));
             }
+
 
             if(outGeom.get() && outGeom->isValid())
             {
+              outGeom->setSRID(geomProp->getSRID());
+
               if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
               {
                 dataSetItem->setGeometry(3, outGeom.release());
               }
               else
               {
-                std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
+                std::unique_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
                 mPolygon->add(outGeom.release());
                 dataSetItem->setGeometry(3, mPolygon.release());
               }
@@ -224,8 +256,8 @@ te::gm::Geometry* te::vp::BufferMemory::setBuffer(te::gm::Geometry* geom,
 {
   te::gm::Geometry* geomResult = 0;
   te::gm::Geometry* geomTemp = 0;
-  std::auto_ptr<te::gm::Geometry> outGeom;
-  std::auto_ptr<te::gm::Geometry> inGeom;
+  std::unique_ptr<te::gm::Geometry> outGeom;
+  std::unique_ptr<te::gm::Geometry> inGeom;
   switch(m_bufferPolygonRule)
   {
     case (te::vp::INSIDE_OUTSIDE):
@@ -326,7 +358,7 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
     }
       
     std::vector<te::gm::Geometry*> geomVec;
-    std::auto_ptr<te::gm::Envelope> e = outDSet->getExtent(geomPos);
+    std::unique_ptr<te::gm::Envelope> e = outDSet->getExtent(geomPos);
     rtree.search(*(e.get()), geomVec);
 
     vecGeom.push_back(geomVec);
@@ -391,7 +423,13 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet);
       dataSetItem->setInt32(0, pk); //pk
       dataSetItem->setInt32(1, (int)i+1); //level
-      dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
+
+      te::da::DataSetType* dsType = m_converter->getConvertee();
+
+      if(m_attributePosition >= 0 && m_attributePosition < (int)dsType->getProperties().size())
+        dataSetItem->setDouble(2, 0); //the dissolve in buffer by attribute can use buffers with differents distances.
+      else
+        dataSetItem->setDouble(2, m_distance*((int)i+1)); //fixed distance.
         
       if(currentVec[j]->getGeomTypeId() == te::gm::MultiPolygonType)
       {
@@ -399,7 +437,7 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
       }
       else
       {
-        std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, currentVec[j]->getSRID()));
+        std::unique_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, currentVec[j]->getSRID()));
         te::gm::GeometryCollection* gcIn = dynamic_cast<te::gm::GeometryCollection*>(currentVec[j]);
         if(gcIn == 0)
           mPolygon->add(currentVec[j]);
@@ -416,3 +454,42 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
   }
 }
 
+double te::vp::BufferMemory::getDistanceByAttribute(te::da::DataSet& dataSet,
+                                                    const int& position)
+{
+  double distance = 0;
+
+  if(dataSet.isNull(position))
+    return distance;
+
+  int type = dataSet.getPropertyDataType(position);
+
+  switch (type) {
+  case te::dt::INT16_TYPE:
+  case te::dt::CINT16_TYPE:
+  case te::dt::UINT16_TYPE:
+    distance = (double)dataSet.getInt16(position);
+    break;
+  case te::dt::INT32_TYPE:
+  case te::dt::CINT32_TYPE:
+  case te::dt::UINT32_TYPE:
+    distance = (double)dataSet.getInt32(position);
+    break;
+  case te::dt::INT64_TYPE:
+  case te::dt::UINT64_TYPE:
+    distance = (double)dataSet.getInt64(position);
+    break;
+  case te::dt::FLOAT_TYPE:
+  case te::dt::CFLOAT_TYPE:
+    distance = (double)dataSet.getFloat(position);
+    break;
+  case te::dt::DOUBLE_TYPE:
+  case te::dt::CDOUBLE_TYPE:
+    distance = dataSet.getDouble(position);
+    break;
+  default:
+    te::common::Exception(TE_TR("The chosen attribute has not a valid type to execute the buffer operation!"));
+    break;
+  }
+  return distance;
+}

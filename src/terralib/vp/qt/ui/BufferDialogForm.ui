@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>549</width>
-    <height>543</height>
+    <height>617</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,7 +104,7 @@
         <string>Distance</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="1">
+        <item row="1" column="1">
          <widget class="QLineEdit" name="m_fixedDistanceLineEdit">
           <property name="enabled">
            <bool>false</bool>
@@ -114,17 +114,17 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
+        <item row="1" column="2">
          <widget class="QLabel" name="unitLabel">
           <property name="text">
            <string>TextLabel</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="QRadioButton" name="m_fromAttRadioButton">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="toolTip">
            <string>This option is not implemented yet</string>
@@ -137,17 +137,20 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <widget class="QComboBox" name="m_fromAttDistanceComboBox">
           <property name="enabled">
            <bool>false</bool>
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="m_fixedAtLabel">
+        <item row="1" column="0">
+         <widget class="QRadioButton" name="m_fixedAtRadioButton">
           <property name="text">
-           <string>Fixed At</string>
+           <string>Fixed at</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -188,7 +191,7 @@
        </property>
        <widget class="QWidget" name="m_rulePolTab">
         <attribute name="title">
-         <string>Rule for polygons</string>
+         <string>Rule for geometries</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
