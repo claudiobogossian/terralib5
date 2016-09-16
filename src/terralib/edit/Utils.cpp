@@ -1,20 +1,20 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-TerraLib is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Lesser General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with TerraLib. See COPYING. If not, write to
-TerraLib Team at <terralib-team@terralib.org>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
@@ -54,12 +54,12 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <cmath>
 #include <memory>
 
-te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, OperationType operation)
+te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, FeatureType type)
 {
-  return PickFeature(layer.get(), env, srid, operation);
+  return PickFeature(layer.get(), env, srid, type);
 }
 
-te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayer* layer, const te::gm::Envelope& env, int srid, OperationType operation)
+te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayer* layer, const te::gm::Envelope& env, int srid, FeatureType type)
 {
   if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
     return 0;
@@ -70,7 +70,7 @@ te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayer* layer, co
     reprojectedEnvelope.transform(srid, layer->getSRID());
 
   // Try retrieves from RepositoryManager...
-  Feature* f = RepositoryManager::getInstance().getFeature(layer->getId(), env, srid);
+  Feature* f = RepositoryManager::getInstance().getFeature(layer->getId(), env, srid, te::edit::TO_BLOCKEDIT);
   if(f)
     return f->clone();
 
@@ -107,7 +107,7 @@ te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayer* layer, co
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
     if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get())) // Geometry found!
-      return new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release(), operation);
+      return new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release(), type);
 
   }
 
@@ -292,7 +292,8 @@ void te::edit::MoveGeometry(te::gm::Geometry* geom, const double& deltax, const 
       p->setX(p->getX() + deltax);
       p->setY(p->getY() + deltay);
     }
-    break;
+      break;
+
     case te::gm::MultiPointType:
     {
       te::gm::MultiPoint* mp = dynamic_cast<te::gm::MultiPoint*>(geom);
@@ -305,7 +306,7 @@ void te::edit::MoveGeometry(te::gm::Geometry* geom, const double& deltax, const 
         point->setY(point->getY() + deltay);
       }
     }
-    break;
+      break;
 
     case te::gm::PolygonType:
     case te::gm::MultiPolygonType:
