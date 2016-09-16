@@ -798,3 +798,8 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpDialo
 
   return params;
 }
+
+void te::qt::widgets::ArithmeticOpDialogForm::closeEvent(QCloseEvent* e)
+{
+  emit closeTool();
+}
