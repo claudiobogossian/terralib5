@@ -85,6 +85,8 @@ namespace te
 
           te::rp::ArithmeticOperations::InputParameters paramsFromOpUserdDef();
 
+          void closeEvent(QCloseEvent* e);
+
         public slots:
 
           void onAddLayerPushButtonClicked();
@@ -130,6 +132,8 @@ namespace te
         signals:
 
           void addLayer(te::map::AbstractLayerPtr layer);
+
+          void closeTool();
 
         protected:
 
