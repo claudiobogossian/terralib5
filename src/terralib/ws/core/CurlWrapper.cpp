@@ -158,16 +158,11 @@ size_t read_stream_callback(char *buffer, size_t size, size_t nitems, void *inst
     return -1;
   }
 
-  stream->seekg (0, std::ios::end);
-  end = stream->tellg();
-  stream->seekg (0, std::ios::beg);
-  begin = stream->tellg();
+  size_t nbytes = size * nitems;
 
-  long long int ret = end - begin;
+  stream->readsome(buffer, nbytes);
 
-  stream->get(buffer, ret + 1);
-
-  return ret;
+  return nbytes;
 }
 
 
@@ -239,8 +234,6 @@ void te::ws::core::CurlWrapper::put(const te::core::URI &uri, const void *conten
 
   curl_slist_free_all(headers);
 
-  delete content;
-
   // Check for errors
   if(status != CURLE_OK)
     throw te::common::Exception(curl_easy_strerror(status));
@@ -249,30 +242,38 @@ void te::ws::core::CurlWrapper::put(const te::core::URI &uri, const void *conten
 
 void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::string &filePath, const std::string &header) const
 {
-  std::fstream *stream = new std::fstream(filePath);
+  std::fstream stream(filePath);
   std::streampos begin,end;
 
-  if(!stream->is_open())
+  if(!stream.is_open())
   {
     throw te::common::Exception(TE_TR("Can't open the file!."));
   }
 
-  stream->seekg (0, std::ios::end);
-  end = stream->tellg();
-  stream->seekg (0, std::ios::beg);
-  begin = stream->tellg();
+  // Set the fstream to the end of and storing the position
+  stream.seekg (0, std::ios::end);
+  end = stream.tellg();
+
+  // Set the fstream to begin and storing the position
+  stream.seekg (0, std::ios::beg);
+  begin = stream.tellg();
 
   long long int size = end-begin;
-
+  size += 1;
   putFile(uri, stream, size,header);
 }
 
 
-void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const void *file, const size_t &size,  const::std::string &header) const
+void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fstream& file, const size_t &size,  const::std::string &header) const
 {
+  char errbuf[CURL_ERROR_SIZE];
+
   curl_easy_reset(m_curl.get());
 
   curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
+  errbuf[0] = 0;
 
   struct curl_slist* headers= nullptr;
   headers = curl_slist_append(headers, header.c_str());
@@ -282,7 +283,7 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const void *fi
 
   curl_easy_setopt(m_curl.get(), CURLOPT_READFUNCTION, read_stream_callback);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_READDATA, file);
+  curl_easy_setopt(m_curl.get(), CURLOPT_READDATA, (const std::fstream*)&file);
 
   curl_easy_setopt(m_curl.get(), CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
 
@@ -293,6 +294,9 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const void *fi
 
   // Check for errors
   if(status != CURLE_OK)
+  {
+    std::cout << errbuf << std::endl;
     throw te::common::Exception(curl_easy_strerror(status));
+  }
 }
 

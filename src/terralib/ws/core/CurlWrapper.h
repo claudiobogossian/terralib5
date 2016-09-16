@@ -104,7 +104,7 @@ namespace te
 
       virtual void putFile(const te::core::URI &uri, const std::string &filePath, const::std::string &header) const;
 
-      virtual void putFile(const te::core::URI &uri, const void *file, const size_t &size,  const::std::string &header) const;
+      virtual void putFile(const te::core::URI &uri, const std::fstream& file, const size_t &size,  const::std::string &header) const;
 
     private:
       std::shared_ptr<CURL>  m_curl;
