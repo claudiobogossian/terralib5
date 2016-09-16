@@ -27,6 +27,7 @@
 #define __TE_QT_PLUGINS_RP_INTERNAL_ARITHMETICOPACTION_H
 
 // TerraLib
+#include "../../../qt/widgets/rp/ArithmeticOpDialogForm.h"
 #include "Config.h"
 #include "AbstractAction.h"
 
@@ -59,6 +60,11 @@ namespace te
             virtual void onActionActivated(bool checked);
 
             void addLayer(te::map::AbstractLayerPtr outputLayer);
+
+            void closeTool();
+
+        private:
+          te::qt::widgets::ArithmeticOpDialogForm* m_arithOpDlg;
         };
 
       } // end namespace rp

@@ -36,29 +36,53 @@
 
 te::qt::plugins::rp::ArithmeticOpAction::ArithmeticOpAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
+  m_arithOpDlg = 0;
+
   createAction(tr("Arithmetic Operations...").toUtf8().data(), "arithmeticOp");
   m_action->setObjectName("Processing.Raster Processing.Arithmetic Operations");
 }
 
 te::qt::plugins::rp::ArithmeticOpAction::~ArithmeticOpAction()
 {
+  if (m_arithOpDlg)
+  {
+    delete m_arithOpDlg;
+    m_arithOpDlg = 0;
+  }
 }
 
 void te::qt::plugins::rp::ArithmeticOpAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ArithmeticOpDialogForm dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  if (m_arithOpDlg)
+  {
+    delete m_arithOpDlg;
+    m_arithOpDlg = 0;
+  }
 
-  connect(&dlg, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayer(te::map::AbstractLayerPtr)));
+  m_arithOpDlg = new te::qt::widgets::ArithmeticOpDialogForm (te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+
+  connect(m_arithOpDlg, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayer(te::map::AbstractLayerPtr)));
+  connect(m_arithOpDlg, SIGNAL(closeTool()), this, SLOT(closeTool()));
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  dlg.setList( layersList );
-  dlg.exec();
+  m_arithOpDlg->setModal(false);
+  m_arithOpDlg->setList(layersList);
+  m_arithOpDlg->show();
 }
 
 void te::qt::plugins::rp::ArithmeticOpAction::addLayer(te::map::AbstractLayerPtr outputLayer)
 {
   //add new layer
   addNewLayer(outputLayer);
+}
+
+void te::qt::plugins::rp::ArithmeticOpAction::closeTool()
+{
+  if (m_arithOpDlg)
+  {
+    delete m_arithOpDlg;
+    m_arithOpDlg = 0;
+  }
 }
 
