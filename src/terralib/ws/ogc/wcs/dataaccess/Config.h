@@ -62,7 +62,7 @@
 
   #ifdef TEOGCWCSDATAACCESSSTATIC
     #define TEOGCWCSDATAACCESSEXPORT                          // Don't need to export/import... it is a static library
-  #elif TEWCSDLL
+  #elif TEWSWCSDATAACCESSDLL
     #define TEOGCWCSDATAACCESSEXPORT  __declspec(dllexport)   // export DLL information
   #else
     #define TEOGCWCSDATAACCESSEXPORT  __declspec(dllimport)   // import DLL information

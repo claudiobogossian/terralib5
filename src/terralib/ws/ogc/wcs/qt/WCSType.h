@@ -40,7 +40,7 @@ namespace te
         namespace qt
         {
 
-          class WCSType : public te::qt::widgets::DataSourceType
+          class TEOGCWCSQTEXPORT WCSType : public te::qt::widgets::DataSourceType
           {
             public:
 

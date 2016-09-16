@@ -30,7 +30,8 @@
 #define __TERRALIB_WS_CORE_EXCEPTION_H__
 
 //TerraLib
-#include "../../Exception.h"
+#include "../../../../common/Exception.h"
+#include "Config.h"
 
 namespace te
 {
@@ -39,7 +40,7 @@ namespace te
     namespace core
     {
       //! Base exception class for WS Core Runtime Library.
-      struct Exception: virtual te::Exception { };
+      TE_DECLARE_EXCEPTION_CLASS(TEWSCOREEXPORT, Exception, te::common::Exception)
     }
   }
 }

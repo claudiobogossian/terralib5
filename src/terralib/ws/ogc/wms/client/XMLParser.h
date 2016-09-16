@@ -39,7 +39,7 @@ namespace te
 
         \brief A class responsible to parse WMS XML files to WMS TerraLib data types.
       */
-      class XMLParser
+      class TEOGCWMSEXPORT XMLParser
       {
       public:
 
