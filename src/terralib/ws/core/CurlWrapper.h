@@ -98,13 +98,9 @@ namespace te
 
       virtual void post(const te::core::URI &uri, const std::string &postFields, const::std::string &header) const;
 
-      virtual void put(const te::core::URI &uri, const std::string &content, const std::string &header) const;
-
-      virtual void put(const te::core::URI &uri, const void *content, size_t size,  const::std::string &header) const;
-
       virtual void putFile(const te::core::URI &uri, const std::string &filePath, const::std::string &header) const;
 
-      virtual void putFile(const te::core::URI &uri, const std::fstream& file, const size_t &size,  const::std::string &header) const;
+      virtual void putFile(const te::core::URI &uri, const std::fstream& file,  const::std::string &header) const;
 
     private:
       std::shared_ptr<CURL>  m_curl;
