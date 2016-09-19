@@ -23,6 +23,7 @@
   \brief A Wrapper for Lib Curl.
 
   \author Emerson Moraes
+  \author Vinicius Campanha
  */
 
 #ifndef __TERRALIB_WS_CORE_CURLWRAPPER_H
@@ -96,10 +97,28 @@ namespace te
       */
       virtual void setTaskMessage(const std::string& taskMessage);
 
+      /*!
+       * \brief Method to request a post in a determined URI
+       * \param uri The URI with the address information to post
+       * \param postFields The parameters and values to post
+       * \param header A header to the post request
+       */
       virtual void post(const te::core::URI &uri, const std::string &postFields, const::std::string &header) const;
 
+      /*!
+       * \brief Method to request a put with a file in a determined URI
+       * \param uri The URI with the address information
+       * \param file Path The full path of the file to put
+       * \param header A header to the put request
+       */
       virtual void putFile(const te::core::URI &uri, const std::string &filePath, const::std::string &header) const;
 
+      /*!
+       * \brief Method to request a put a file in a determined URI
+       * \param uri The URI with the address information
+       * \param file Contains the file opened by the fstream
+       * \param header A header to the put request
+       */
       virtual void putFile(const te::core::URI &uri, const std::fstream& file,  const::std::string &header) const;
 
     private:

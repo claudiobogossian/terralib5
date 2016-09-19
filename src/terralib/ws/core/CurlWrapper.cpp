@@ -23,6 +23,7 @@
   \brief A Wrapper for Lib Curl.
 
   \author Emerson Moraes
+  \author Vinicius Campanha
  */
 
 #include "CurlWrapper.h"
