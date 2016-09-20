@@ -306,7 +306,15 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
 
   if (geomColl->getSRID() != inputRst->getSRID())
   {
-    geomColl->transform(inputRst->getSRID());
+    try
+    {
+      geomColl->transform(inputRst->getSRID());
+    }
+    catch(...)
+    {
+      QMessageBox::critical(this, tr("Clipping"), tr("Layer reprojection failed."));
+      return false;
+    }
   }
 
   // Creating the output raster (single raster case)
@@ -332,7 +340,19 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
     std::map<std::string, std::string> rinfo =
       m_rasterInfoPage->getWidget()->getInfo();
 
-    outputRst.reset(te::rst::RasterFactory::make(type, grid, bands, rinfo));
+    try
+    {
+      outputRst.reset(te::rst::RasterFactory::make(type, grid, bands, rinfo));
+    }
+    catch(...)
+    {
+      outputRst.reset();
+    }
+    if( outputRst.get() == 0 )
+    {
+      QMessageBox::critical(this, tr("Clipping"), tr("Output raster creation error."));
+      return false;
+    }
 
     te::rst::FillRaster(outputRst.get(), outputRst->getBand(0)->getProperty()->m_noDataValue);
   }
@@ -380,8 +400,20 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
         std::map<std::string, std::string> rinfo =
           m_rasterInfoPage->getWidget()->getInfo(singleGeometriesPtrsIdx);
 
-        outputRst.reset(te::rst::RasterFactory::make(type, grid, bands, rinfo));
-
+        try
+        {
+          outputRst.reset(te::rst::RasterFactory::make(type, grid, bands, rinfo));
+        }
+        catch(...)
+        {
+          outputRst.reset();
+        }
+        if( outputRst.get() == 0 )
+        {
+          QMessageBox::critical(this, tr("Clipping"), tr("Output raster creation error."));
+          return false;
+        }
+        
         te::rst::FillRaster(outputRst.get(), outputRst->getBand(0)->getProperty()->m_noDataValue);
       }
 
@@ -413,10 +445,10 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
         ++it;
       }
 
-      outputRst.reset();
-
       if (!m_clippingPage->isSingleRasterResult())
       {
+        outputRst.reset();
+        
         //set output layer
         m_outputLayer.push_back(te::qt::widgets::createLayer(
           m_rasterInfoPage->getWidget()->getType(),
@@ -429,6 +461,8 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
 
   if (m_clippingPage->isSingleRasterResult())
   {
+    outputRst.reset();
+    
     m_outputLayer.push_back(te::qt::widgets::createLayer(
       m_rasterInfoPage->getWidget()->getType(),
       m_rasterInfoPage->getWidget()->getInfo()));

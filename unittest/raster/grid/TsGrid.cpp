@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_CASE (gridConstructor1_test)
   BOOST_CHECK_CLOSE( 2.0, grid.getResolutionX(), 0.0000000001 );
   BOOST_CHECK_CLOSE( 1.0, grid.getResolutionY(), 0.0000000001 );
   BOOST_CHECK( grid.getSRID() == 12345 );
-  BOOST_CHECK_CLOSE( 0.0, grid.getExtent()->m_llx, 1.0000000001 );
-  BOOST_CHECK_CLOSE( 0.0, grid.getExtent()->m_lly, 1.0000000001 );
+  BOOST_CHECK_CLOSE( 1.0, grid.getExtent()->m_llx, 0.0000000001 );
+  BOOST_CHECK_CLOSE( 1.0, grid.getExtent()->m_lly, 0.0000000001 );
   BOOST_CHECK_CLOSE( 5.0, grid.getExtent()->m_urx, 0.0000000001 );
   BOOST_CHECK_CLOSE( 3.0, grid.getExtent()->m_ury, 0.0000000001 );
   

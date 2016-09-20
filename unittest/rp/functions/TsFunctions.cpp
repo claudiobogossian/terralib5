@@ -582,6 +582,11 @@ BOOST_AUTO_TEST_CASE(getDetailedExtent_test)
   
   BOOST_CHECK_CLOSE( lr.getX( 8 ), 0.0 , 0.0000000001 );
   BOOST_CHECK_CLOSE( lr.getY( 8 ), 2.0 , 0.0000000001 );
+  
+  BOOST_CHECK_CLOSE( grid.getExtent()->m_llx, 0.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( grid.getExtent()->m_lly, 0.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( grid.getExtent()->m_urx, 2.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( grid.getExtent()->m_ury, 2.0 , 0.0000000001 );
 }
 
 BOOST_AUTO_TEST_CASE(getIndexedDetailedExtent_test)
@@ -619,6 +624,11 @@ BOOST_AUTO_TEST_CASE(getIndexedDetailedExtent_test)
   
   BOOST_CHECK_CLOSE( lr.getX( 8 ), -0.5 , 0.0000000001 );
   BOOST_CHECK_CLOSE( lr.getY( 8 ), -0.5 , 0.0000000001 );
+  
+  BOOST_CHECK_CLOSE( grid.getExtent()->m_llx, 0.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( grid.getExtent()->m_lly, 0.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( grid.getExtent()->m_urx, 2.0 , 0.0000000001 );
+  BOOST_CHECK_CLOSE( grid.getExtent()->m_ury, 2.0 , 0.0000000001 );  
 }
 
 BOOST_AUTO_TEST_CASE(waveletAtrous_test)

@@ -2545,8 +2545,6 @@ namespace te
         ring.setPoint( ++ringIdx, (-0.5), lLY - ((double)row) );
       }       
       
-      ring.setPoint( ringSize - 1, -0.5, -0.5 );            
-      
       indexedDetailedExtent = ring;
       
       return true;
