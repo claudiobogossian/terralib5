@@ -37,8 +37,10 @@
 // TerraLib
 #include "../../../../core/uri/URI.h"
 #include "../../../core/CurlWrapper.h"
-#include "XMLParser.h"
+#include "Config.h"
 #include "DataTypes.h"
+#include "XMLParser.h"
+
 
 namespace te
 {
@@ -52,7 +54,7 @@ namespace te
 
       \brief A class to retrieve information and data from a Web Map Service.
     */
-    class WMSClient
+    class TEOGCWMSEXPORT WMSClient
     {
     public:
 

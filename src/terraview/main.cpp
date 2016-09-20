@@ -30,6 +30,7 @@
 #include "TerraViewApp.h"
 
 // TerraLib
+#include <terralib/Exception.h>
 #include <terralib/core/utils/Platform.h>
 #include <terralib/qt/af/Utils.h>
 #include <terralib/qt/af/SplashScreenManager.h>
@@ -88,7 +89,7 @@ int main(int argc, char** argv)
   const int RESTART_CODE = 1000;
   try
   {
-    do 
+    do
     {
       std::string splash_pix = te::core::FindInTerraLibPath(TVIEW_SPLASH_SCREEN_PIXMAP);
 
@@ -107,22 +108,22 @@ int main(int argc, char** argv)
       TerraView tview;
 
       //tview.resetTerraLib(waitVal != RESTART_CODE);
-      
+
 #if TE_PLATFORM == TE_PLATFORMCODE_APPLE
       CFBundleRef mainBundle = CFBundleGetMainBundle();
       CFURLRef execPath = CFBundleCopyBundleURL(mainBundle);
-        
+
       char path[PATH_MAX];
-      
+
       if (!CFURLGetFileSystemRepresentation(execPath, TRUE, (UInt8 *)path, PATH_MAX))
         throw; // error!
-        
+
       CFRelease(execPath);
-        
+
       QDir dPath(path);
-        
+
       dPath.cd("Contents");
-        
+
       chdir(dPath.path().toUtf8().data());
 #endif
 
@@ -148,6 +149,15 @@ int main(int argc, char** argv)
       //tview.resetTerraLib(waitVal != RESTART_CODE);
 
     } while(waitVal == RESTART_CODE);
+  }
+  catch(const boost::exception& e)
+  {
+    if(const std::string* d =
+           boost::get_error_info<te::ErrorDescription>(e))
+      QMessageBox::warning(0, "TerraView", d->c_str());
+    else
+      QMessageBox::warning(0,"TerraView", "An unknown error has occurred");
+    return EXIT_FAILURE;
   }
   catch(const std::exception& e)
   {

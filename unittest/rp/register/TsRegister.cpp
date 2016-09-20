@@ -44,7 +44,12 @@ BOOST_AUTO_TEST_SUITE (register_tests)
   const double diffx = pt1.x - pt2.x; \
   const double diffy = pt1.y - pt2.y; \
   const double error = std::sqrt( ( diffx * diffx ) + ( diffy * diffy ) ); \
-  BOOST_CHECK_CLOSE( 0, error, maxDist ); \
+  BOOST_CHECK( error <= maxDist ); \
+}
+
+#define ASSERTMAXDIFF( value1, value2, maxDiff ) \
+{ \
+  BOOST_CHECK( ( std::abs( value1 - value2 ) <= maxDiff ) ); \
 }
 
 BOOST_AUTO_TEST_CASE(register_test)
@@ -57,6 +62,16 @@ BOOST_AUTO_TEST_CASE(register_test)
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   BOOST_CHECK( inputRasterPtrPointer.get() );
+
+  te::gm::LinearRing detailedExtent(te::gm::LineStringType, 0, 0);
+  ( te::rp::GetDetailedExtent( 
+    *inputRasterPtrPointer->getGrid(), detailedExtent ),
+    "Indexed extent creation error" );    
+  
+  te::gm::LinearRing indexedDetailedExtent(te::gm::LineStringType, 0, 0);
+  ( te::rp::GetIndexedDetailedExtent( 
+    *inputRasterPtrPointer->getGrid(), indexedDetailedExtent ),
+    "Indexed extent creation error" );  
     
   /* Creating the algorithm parameters */
   
@@ -120,17 +135,17 @@ BOOST_AUTO_TEST_CASE(register_test)
   BOOST_CHECK( algorithmInstance.initialize( algoInputParams ) );
   BOOST_CHECK( algorithmInstance.execute( algoOutputParams ) );
   
-  BOOST_CHECK_CLOSE( inputRasterPtrPointer->getResolutionX(),
-    algoOutputParams.m_outputRasterPtr->getResolutionX(), 0.00001 );
-  BOOST_CHECK_CLOSE( inputRasterPtrPointer->getResolutionY(),
-    algoOutputParams.m_outputRasterPtr->getResolutionY(), 0.00001 );
+  ASSERTMAXDIFF( inputRasterPtrPointer->getResolutionX(),
+    algoOutputParams.m_outputRasterPtr->getResolutionX(), 0.1 );
+  ASSERTMAXDIFF( inputRasterPtrPointer->getResolutionY(),
+    algoOutputParams.m_outputRasterPtr->getResolutionY(), 0.1 );
     
   ASSERTMAXDIST( inputRasterPtrPointer->getGrid()->getExtent()->getLowerLeft(),
     algoOutputParams.m_outputRasterPtr->getGrid()->getExtent()->getLowerLeft(),
-    0.000001 );
+    0.1 );
   ASSERTMAXDIST( inputRasterPtrPointer->getGrid()->getExtent()->getUpperRight(),
     algoOutputParams.m_outputRasterPtr->getGrid()->getExtent()->getUpperRight(),
-    0.000001 );
+    0.1 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

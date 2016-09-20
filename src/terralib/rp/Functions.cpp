@@ -884,6 +884,11 @@ namespace te
       return GetDigitalNumberBandInfo(bandName).second;
     }
 
+    double GetDigitalNumberBandMin(std::string bandName)
+    {
+      return GetDigitalNumberBandInfo(bandName).first;
+    }
+
     bool NormalizeRaster(te::rst::Raster& inraster, double nmin, double nmax)
     {
       if (nmin > nmax)
@@ -2544,8 +2549,6 @@ namespace te
       {
         ring.setPoint( ++ringIdx, (-0.5), lLY - ((double)row) );
       }       
-      
-      ring.setPoint( ringSize - 1, -0.5, -0.5 );            
       
       indexedDetailedExtent = ring;
       

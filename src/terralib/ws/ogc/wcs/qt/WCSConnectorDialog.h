@@ -34,6 +34,8 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #endif
 
+#include "Config.h"
+
 // STL
 #include <memory>
 
@@ -57,7 +59,7 @@ namespace te
 
             \brief A dialog window for showing the WCS connector widget.
           */
-          class WCSConnectorDialog : public QDialog
+          class TEOGCWCSQTEXPORT WCSConnectorDialog : public QDialog
           {
             Q_OBJECT
 

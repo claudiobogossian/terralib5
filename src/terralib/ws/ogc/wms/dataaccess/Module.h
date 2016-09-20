@@ -47,7 +47,7 @@ namespace te
 
             \brief The TerraLib OGC WMS driver as a plugin.
           */
-          class Module : public te::plugin::Plugin
+          class TEOGCWMSDATAACCESSEXPORT Module : public te::plugin::Plugin
           {
           public:
 

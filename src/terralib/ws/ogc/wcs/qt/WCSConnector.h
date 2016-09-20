@@ -28,6 +28,7 @@
 
 //TerraLib
 #include "../../../../qt/widgets/datasource/connector/AbstractDataSourceConnector.h"
+#include "Config.h"
 
 // Qt
 #include <QWidget>
@@ -47,7 +48,7 @@ namespace te
 
             \brief OGC Web Coverage Service (WCS) connector implementation for the Qt data source widget.
           */
-          class WCSConnector : public te::qt::widgets::AbstractDataSourceConnector
+          class TEOGCWCSQTEXPORT WCSConnector : public te::qt::widgets::AbstractDataSourceConnector
           {
           public:
 
