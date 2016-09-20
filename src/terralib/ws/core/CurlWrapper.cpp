@@ -244,3 +244,26 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
   }
 }
 
+
+void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const std::string& request) const
+{
+  curl_easy_reset(m_curl.get());
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+
+  char errbuf[CURL_ERROR_SIZE];
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
+  errbuf[0] = 0;
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_CUSTOMREQUEST, request.c_str());
+
+  /* Perform the request, status will get the return code */
+  CURLcode status = curl_easy_perform(m_curl.get());
+
+  if(status != CURLE_OK)
+  {
+    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    throw te::common::Exception(msg);
+  }
+}

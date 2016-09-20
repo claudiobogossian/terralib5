@@ -121,6 +121,13 @@ namespace te
        */
       virtual void putFile(const te::core::URI &uri, const std::fstream& file,  const::std::string &header) const;
 
+      /*!
+       * \brief Method to make a custom request, useful for performing a HTTP DELETE request.
+       * \param uri The URI with the address information
+       * \param request The custom request
+       */
+      virtual void customRequest(const te::core::URI &uri, const std::string& request) const;
+
     private:
       std::shared_ptr<CURL>  m_curl;
       std::string            m_taskMessage;
