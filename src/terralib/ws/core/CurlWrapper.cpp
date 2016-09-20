@@ -40,8 +40,6 @@
 #include <sstream>
 #include <fstream>
 
-#include <cstdlib>
-
 
 te::ws::core::CurlWrapper::CurlWrapper()
 {
@@ -157,7 +155,7 @@ size_t read_stream_callback(char *buffer, size_t size, size_t nitems, void *inst
 
   if(!stream->is_open())
   {
-    return -1;
+    return 0;
   }
 
   size_t nbytes = size * nitems;
@@ -174,6 +172,11 @@ void te::ws::core::CurlWrapper::post(const te::core::URI &uri, const std::string
 
   curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
 
+  char errbuf[CURL_ERROR_SIZE];
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
+  errbuf[0] = 0;
+
   struct curl_slist* headers= nullptr;
   headers = curl_slist_append(headers, header.c_str());
   curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
@@ -187,7 +190,10 @@ void te::ws::core::CurlWrapper::post(const te::core::URI &uri, const std::string
 
   // Check for errors
   if(status != CURLE_OK)
-    throw te::common::Exception(curl_easy_strerror(status));
+  {
+    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    throw te::common::Exception(msg);
+  }
 }
 
 
@@ -206,11 +212,11 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::str
 
 void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fstream& file, const::std::string &header) const
 {
-  char errbuf[CURL_ERROR_SIZE];
-
   curl_easy_reset(m_curl.get());
 
   curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+
+  char errbuf[CURL_ERROR_SIZE];
 
   curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
   errbuf[0] = 0;
@@ -233,8 +239,8 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
   // Check for errors
   if(status != CURLE_OK)
   {
-    std::cout << errbuf << std::endl;
-    throw te::common::Exception(curl_easy_strerror(status));
+    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    throw te::common::Exception(msg);
   }
 }
 
