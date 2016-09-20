@@ -94,8 +94,6 @@ BOOST_AUTO_TEST_CASE(encoding_test_utils)
                     te::core::Exception);
 
   BOOST_CHECK_NO_THROW(te::core::CharEncoding::getEncodingList());
-
-  return;
 }
 
 BOOST_AUTO_TEST_CASE(encoding_test_utf8_latin1)
@@ -108,8 +106,6 @@ BOOST_AUTO_TEST_CASE(encoding_test_utf8_latin1)
   BOOST_CHECK(utf8_from_latin1 == text_in_utf8);
 
   BOOST_CHECK(latin1_from_utf8 == text_in_latin1);
-
-  return;
 }
 
 BOOST_AUTO_TEST_CASE(encoding_test_utf8_cp1252)
@@ -124,10 +120,6 @@ BOOST_AUTO_TEST_CASE(encoding_test_utf8_cp1252)
 
   BOOST_CHECK(cp1252_from_utf8 == text_in_cp1252);
 
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  cp1252_from_utf8 = te::core::CharEncoding::fromUTF8(text_in_utf8);
-  BOOST_CHECK(text_in_cp1252 == cp1252_from_utf8);
-#endif
 }
 
 BOOST_AUTO_TEST_CASE(encoding_test_latin_cp1252)
@@ -148,8 +140,11 @@ BOOST_AUTO_TEST_CASE(encoding_test_latin_cp1252)
 BOOST_AUTO_TEST_CASE(encoding_test_locale_utf8)
 {
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  latin1_from_utf8 = te::core::CharEncoding::fromUTF8(text_in_utf8);
+  std::string latin1_from_utf8 = te::core::CharEncoding::fromUTF8(text_in_utf8);
   BOOST_CHECK(text_in_latin1 == latin1_from_utf8);
+
+  std::string cp1252_from_utf8 = te::core::CharEncoding::fromUTF8(text_in_utf8);
+  BOOST_CHECK(text_in_cp1252 == cp1252_from_utf8);
 #endif
 }
 
@@ -164,7 +159,7 @@ BOOST_AUTO_TEST_CASE(enconding_test_wrong_type)
 
   BOOST_CHECK(text_in_latin1 != wrong_latin1);
 
-  BOOST_CHECK(text_in_utf)
+  BOOST_CHECK(text_in_utf8 != wrong_utf8);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
