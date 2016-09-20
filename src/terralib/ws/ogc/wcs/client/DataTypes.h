@@ -28,6 +28,8 @@
 #ifndef __TERRALIB_WS_OGC_WCS_DATATYPES_H
 #define __TERRALIB_WS_OGC_WCS_DATATYPES_H
 
+#include "Config.h"
+
 namespace te
 {
   namespace ws
@@ -36,25 +38,25 @@ namespace te
     {
       namespace wcs
       {
-        struct Capabilities
+        struct TEOGCWCSEXPORT Capabilities
         {
           std::vector< std::string > operations;
           std::vector< std::string > coverages;
         };
 
-        struct SubSet
+        struct TEOGCWCSEXPORT SubSet
         {
           std::string axis;
           std::string min;
           std::string max;
         };
 
-        struct DomainSet
+        struct TEOGCWCSEXPORT DomainSet
         {
           std::vector< SubSet > subSet;
         };
 
-        struct EnvelopeWithTimePeriod
+        struct TEOGCWCSEXPORT EnvelopeWithTimePeriod
         {
           std::string srsName;
           std::string srsDimension;
@@ -74,7 +76,7 @@ namespace te
           std::string endPosition;
         };
 
-        struct ServiceParameters
+        struct TEOGCWCSEXPORT ServiceParameters
         {
           std::string coverageSubtype;
           std::string coverageSubtypeParent;
@@ -91,7 +93,7 @@ namespace te
          * an identifiable position in time.
          *
          */
-        struct TimeInstant
+        struct TEOGCWCSEXPORT TimeInstant
         {
           std::string id;
           std::string timePosition;
@@ -105,13 +107,13 @@ namespace te
          * gml:AbstractTimeObject.
          *
          */
-        struct TimeDomain
+        struct TEOGCWCSEXPORT TimeDomain
         {
           std::string               defaultTime;
           std::vector<TimeInstant>  timeInstant;
         };
 
-        struct CoverageDescription
+        struct TEOGCWCSEXPORT CoverageDescription
         {
           std::string                coverageId;
           EnvelopeWithTimePeriod     envelope;
@@ -124,7 +126,7 @@ namespace te
 
 
         /*! \brief A struct to set the parameters of requested coverage */
-        struct CoverageRequest
+        struct TEOGCWCSEXPORT CoverageRequest
         {
           std::string coverageID;
           std::string format;

@@ -25,6 +25,10 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
+if(WIN32)
+  add_definitions(-DTEWSWMSCLIENTDLL)
+endif()
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wms/client/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wms/client/*.h)
 

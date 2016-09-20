@@ -26,6 +26,10 @@
 include_directories(${Boost_INCLUDE_DIR}
                     ${CURL_INCLUDE_DIRS})
 
+if(WIN32)
+  add_definitions(-DTEWSCOREDLL)
+endif()
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/core/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/core/*.h)
 

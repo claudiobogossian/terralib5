@@ -57,7 +57,7 @@ namespace te
 
         \brief A class to retrieve information and data from a Web Coverage Service.
       */
-      class WCSClient
+      class TEOGCWCSEXPORT WCSClient
       {
       public:
 

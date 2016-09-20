@@ -28,6 +28,8 @@
 #ifndef __TERRALIB_WS_OGC_WMS_DATATYPES_H
 #define __TERRALIB_WS_OGC_WMS_DATATYPES_H
 
+#include "Config.h"
+
 #include <vector>
 #include <string>
 
@@ -46,13 +48,13 @@ namespace te
        * An OnlineResource is typically an HTTP URL.
        * The URL is placed in the xlink:href attribute, and the value "simple" is placed in the xlink:type attribute.
        */
-      struct OnlineResource
+      struct TEOGCWMSEXPORT OnlineResource
       {
         std::string m_href;
         std::string m_type;
       };
 
-      struct HTTP
+      struct TEOGCWMSEXPORT HTTP
       {
         OnlineResource m_get;
         OnlineResource m_post;
@@ -63,7 +65,7 @@ namespace te
        *
        * The EX_GeographicBoundingBox attributes indicate the limits of the enclosing rectangle in longitude and latitude decimal degrees.
        */
-      struct GeographicBoundingBox
+      struct TEOGCWMSEXPORT GeographicBoundingBox
       {
         double m_westBoundLongitude;
         double m_eastBoundLongitude;
@@ -83,7 +85,7 @@ namespace te
        *
        * The BoundingBox attributes indicate the limits of the bounding box in units of the specified coordinate reference system.
        */
-      struct BoundingBox
+      struct TEOGCWMSEXPORT BoundingBox
       {
         std::string m_crs;
         double      m_minX;
@@ -108,7 +110,7 @@ namespace te
        *
        * The Dimension element declares the existence of a dimension and indicates what values along a dimension are valid.
        */
-      struct Dimension
+      struct TEOGCWMSEXPORT Dimension
       {
         std::string m_name;
         std::string m_units;
@@ -132,7 +134,7 @@ namespace te
        * The Format element indicates the MIME type of the legend.
        * Width and height attributes may be provided to assist client applications in laying out space to display the legend.
        */
-      struct LegendURL
+      struct TEOGCWMSEXPORT LegendURL
       {
         std::string    m_format;
         OnlineResource m_onlineResource;
@@ -151,7 +153,7 @@ namespace te
        * For each operation offered by the server,
        * list the available output formats and the online resource.
        */
-      struct Operation
+      struct TEOGCWMSEXPORT Operation
       {
         std::vector<std::string> m_formats;
         std::vector<HTTP>        m_dcps;
@@ -162,7 +164,7 @@ namespace te
        *
        * StyleSheeetURL provides symbology information for each Style of a Layer.
        */
-      struct StyleSheetURL
+      struct TEOGCWMSEXPORT StyleSheetURL
       {
         std::string    m_format;
         OnlineResource m_onlineResource;
@@ -177,7 +179,7 @@ namespace te
        * Viewer Clients and Cascading Map Servers can make use of this.
        * A possible use could be to allow a Map Server to provide legend information.
        */
-      struct StyleURL
+      struct TEOGCWMSEXPORT StyleURL
       {
         std::string    m_format;
         OnlineResource m_onlineResource;
@@ -189,7 +191,7 @@ namespace te
        * A Style element lists the name by which a style is requested and a human-readable title for pick lists,
        * optionally (and ideally) provides a human-readable description, and optionally gives a style URL.
        */
-      struct Style
+      struct TEOGCWMSEXPORT Style
       {
         std::string   m_name;
         std::string   m_title;
@@ -204,7 +206,7 @@ namespace te
        *
        * Nested list of zero or more map Layers offered by WMS server.
        */
-      struct Layer
+      struct TEOGCWMSEXPORT Layer
       {
         std::string              m_name;
         std::string              m_title;
@@ -242,7 +244,7 @@ namespace te
        *
        * Available WMS Operations are listed in a Request element.
        */
-      struct Request
+      struct TEOGCWMSEXPORT Request
       {
         Operation m_getCapabilities;
         Operation m_getMap;
@@ -255,7 +257,7 @@ namespace te
        * A Capability lists available request types.
        * It also includes an optional list of map layers available from this server.
        */
-      struct Capability
+      struct TEOGCWMSEXPORT Capability
       {
         Request m_request;
         Layer   m_layer;
@@ -267,7 +269,7 @@ namespace te
        * A WMSCapabilities document is returned in response
        * to a GetCapabilities request made on a WMS.
        */
-      struct WMSCapabilities
+      struct TEOGCWMSEXPORT WMSCapabilities
       {
         Capability m_capability;
       };

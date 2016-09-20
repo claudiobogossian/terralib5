@@ -39,7 +39,7 @@ namespace te
       {
         namespace qtplugin
         {
-          class Plugin : public te::plugin::Plugin
+          class TEOGCWCSQTPLUGINEXPORT Plugin : public te::plugin::Plugin
           {
             public:
 

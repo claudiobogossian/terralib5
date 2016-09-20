@@ -35,6 +35,7 @@
 #include <iostream>
 #include <memory>
 
+#include "Config.h"
 #include "../../common/progress/TaskProgress.h"
 
 namespace te
@@ -44,7 +45,7 @@ namespace te
     namespace core
     {
 
-    struct CurlProgress
+    struct TEWSCOREEXPORT CurlProgress
     {
       std::shared_ptr<te::common::TaskProgress> m_task;
       std::shared_ptr<CURL> m_curl;
@@ -56,7 +57,7 @@ namespace te
 
       \brief An abstraction to Lib Curl functions.
     */
-    class CurlWrapper
+    class TEWSCOREEXPORT CurlWrapper
     {
     public:
       CurlWrapper();

@@ -25,6 +25,10 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
+if(WIN32)
+  add_definitions(-DTEWSWCSQTDLL)
+endif()
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/qt/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/qt/*.h)
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/qt/ui/*.ui)
