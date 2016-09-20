@@ -884,6 +884,11 @@ namespace te
       return GetDigitalNumberBandInfo(bandName).second;
     }
 
+    double GetDigitalNumberBandMin(std::string bandName)
+    {
+      return GetDigitalNumberBandInfo(bandName).first;
+    }
+
     bool NormalizeRaster(te::rst::Raster& inraster, double nmin, double nmax)
     {
       if (nmin > nmax)

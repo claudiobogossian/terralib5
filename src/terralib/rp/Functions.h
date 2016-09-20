@@ -343,11 +343,17 @@ namespace te
     */
     TERPEXPORT std::pair<double, double> GetDigitalNumberBandInfo(std::string bandName);
 
-    /*! 
-      \brief Returns the maximum digital number of a given sensor/band. 
-      \ingroup rp_func
+    /*!
+    \brief Returns the maximum digital number of a given sensor/band.
+    \ingroup rp_func
     */
     TERPEXPORT double GetDigitalNumberBandMax(std::string bandName);
+
+    /*!
+    \brief Returns the minimum digital number of a given sensor/band.
+    \ingroup rp_func
+    */
+    TERPEXPORT double GetDigitalNumberBandMin(std::string bandName);
 
     /*!
       \brief Normalizes one raster in a given interval.
