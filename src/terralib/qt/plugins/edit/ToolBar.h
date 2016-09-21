@@ -124,6 +124,8 @@ namespace te
 
           void onDeletePartToolActivated(bool checked);
 
+          void onNewShapeFileActivated();
+
         Q_SIGNALS:
 
           /*! This signal is emitted when the layer selection changed. */
@@ -158,6 +160,7 @@ namespace te
           QAction* m_mergeGeometriesToolAction;
           QAction* m_createPointToolAction;
           QAction* m_deletePartToolAction;
+          QAction* m_newShapeFileAction;
           QAction* m_undoToolAction;
           QAction* m_redoToolAction;
           QList<QAction*> m_tools;

@@ -48,15 +48,18 @@
 #include "../../../edit/qt/tools/SplitPolygonTool.h"
 #include "../../../edit/qt/tools/SubtractAreaTool.h"
 #include "../../../edit/qt/tools/VertexTool.h"
+#include "../../../edit/qt/NewShapeFileDialog.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
 #include "../../../edit/qt/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../memory/DataSet.h"
 #include "../../../memory/DataSetItem.h"
+#include "../../widgets/Utils.h"
 #include "../../widgets/canvas/MapDisplay.h"
 #include "../../widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/events/ApplicationEvents.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/events/MapEvents.h"
 
@@ -98,6 +101,7 @@ QObject(parent),
   m_mergeGeometriesToolAction(0),
   m_createPointToolAction(0),
   m_deletePartToolAction(0),
+  m_newShapeFileAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),
@@ -219,12 +223,45 @@ te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getLayer(const std::st
 
 bool te::qt::plugins::edit::ToolBar::dataSrcIsPrepared(const te::map::AbstractLayerPtr& layer)
 {
-  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.get()->getDataSourceId());
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
 
   if (info->getType() != "POSTGIS" && info->getType() != "OGR")
   {
-    m_toolBar->setEnabled(false);
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Under Development to this data source: ") + QString(info->getType().c_str()));
+    return false;
+  }
+
+  if (info->getType() == "OGR")
+    return true;
+
+  std::auto_ptr<te::da::DataSetType> toSchema = layer->getSchema();
+
+  if (!toSchema->getPrimaryKey() || toSchema->getPrimaryKey()->getProperties().empty())
+  {
+    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), tr("Invalid Data Set Primary Key."));
+    return false;
+  }
+
+  std::vector<te::dt::Property*> pkProps = toSchema->getPrimaryKey()->getProperties();
+
+  bool hasAutoIncrement = false;
+  for (std::size_t j = 0; j < pkProps.size(); ++j)
+  {
+    te::dt::SimpleProperty* simpleProp = dynamic_cast<te::dt::SimpleProperty*>(pkProps[j]);
+
+    if (simpleProp)
+    {
+      if (simpleProp->isAutoNumber())
+      {
+        hasAutoIncrement = true;
+        break;
+      }
+    }
+  }
+
+  if (!hasAutoIncrement)
+  {
+    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), tr("The Primary Key has not auto-increment!"));
     return false;
   }
 
@@ -234,7 +271,7 @@ bool te::qt::plugins::edit::ToolBar::dataSrcIsPrepared(const te::map::AbstractLa
 void te::qt::plugins::edit::ToolBar::initialize()
 {
   // Create the main toolbar
-  m_toolBar = new QToolBar;
+  m_toolBar = new QToolBar("Edit Tool Bar");
 
   initializeActions();
 
@@ -244,9 +281,9 @@ void te::qt::plugins::edit::ToolBar::initialize()
     m_tools[i]->setEnabled(true);
 
   m_snapOptionsAction->setEnabled(true);
+  m_newShapeFileAction->setEnabled(true);
 
   enableActionsByGeomType(m_tools, false);
-
 }
 
 void te::qt::plugins::edit::ToolBar::initializeActions()
@@ -255,6 +292,11 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_editAction, tr("Turn on/off edition mode"), QString("edit-enable"), true, true, "edit_enable", SLOT(onEditActivated(bool)));
   m_toolBar->addAction(m_editAction);
 
+  m_toolBar->addSeparator();
+
+  // New ShapeFile Layer
+  createAction(m_newShapeFileAction, tr("New ShapeFile Layer"), "edit_newshapefile", false, false, "new_shapefile", SLOT(onNewShapeFileActivated()));
+  m_toolBar->addAction(m_newShapeFileAction);
   m_toolBar->addSeparator();
 
   // Save
@@ -675,7 +717,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     m_layerIsStashed = false;
 
-    m_currentTool->resetVisualizationTool();
+    if (m_currentTool)
+      m_currentTool->resetVisualizationTool();
   }
   catch(te::common::Exception& ex)
   {
@@ -988,6 +1031,28 @@ void te::qt::plugins::edit::ToolBar::onDeletePartToolActivated(bool /*checked*/)
   setCurrentTool(new te::edit::DeletePartTool(e.m_display->getDisplay(), layer, this), e.m_display);
 }
 
+void te::qt::plugins::edit::ToolBar::onNewShapeFileActivated()
+{
+  te::edit::NewShapeFileDialog dlg(m_toolBar);
+
+  te::qt::af::evt::GetLayerExplorer e;
+  emit triggered(&e);
+
+  dlg.setLayerExplorer(e.m_layerExplorer);
+
+  te::qt::af::evt::GetMapDisplay d;
+  emit triggered(&d);
+
+  dlg.setSRID(d.m_display->getDisplay()->getSRID());
+
+  dlg.exec();
+
+  std::list<te::map::AbstractLayerPtr> ls;
+  te::qt::widgets::GetValidLayers(e.m_layerExplorer->model(), QModelIndex(), ls);
+
+  d.m_display->draw(ls);
+}
+
 void te::qt::plugins::edit::ToolBar::onCreateUndoViewActivated(bool /*checked*/)
 {
   try
@@ -1038,15 +1103,19 @@ void te::qt::plugins::edit::ToolBar::enableCurrentTool(const bool& enable)
   if(e.m_display == 0)
     return;
 
+  m_currentTool->setInUse(enable);
+
   if(enable)
     e.m_display->getDisplay()->setCurrentTool(m_currentTool);
   else
   {
     e.m_display->getDisplay()->setCursor(Qt::ArrowCursor);
     e.m_display->getDisplay()->setCurrentTool(0, false);
-  }
+    m_currentTool = 0;
 
-  m_currentTool->setInUse(enable);
+    for (int i = 0; i < m_tools.size(); ++i)
+      m_tools[i]->setChecked(false);
+  }
 }
 
 void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTool* tool, te::qt::af::MapDisplay* display)
