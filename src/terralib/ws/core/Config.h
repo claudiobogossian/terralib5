@@ -59,7 +59,7 @@
     #define TEWSCOREEXPORT  __declspec(dllimport)   // import DLL information
   #endif
 #else
-  #define TEOGCWCSEXPORT
+  #define TEWSCOREEXPORT
 #endif
 
 //@}

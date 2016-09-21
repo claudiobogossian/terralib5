@@ -30,7 +30,7 @@
 #define __TERRALIB_WS_CORE_EXCEPTION_H__
 
 //TerraLib
-#include "../../../../common/Exception.h"
+#include "../../common/Exception.h"
 #include "Config.h"
 
 namespace te
