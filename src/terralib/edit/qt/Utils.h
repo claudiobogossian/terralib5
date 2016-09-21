@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "../../maptools/AbstractLayer.h"
 
 // Qt
 #include <QMouseEvent>
