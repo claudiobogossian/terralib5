@@ -278,9 +278,8 @@ void te::qt::widgets::ClippingWizardPage::onChangeCollectType()
     m_ui->m_frame->setDisabled(false);
     m_ui->m_selectLayerComboBox->setDisabled(true);
   }
-  else if(m_ui->m_parameterRadioButton->isChecked())
+  else
   {
-    m_ui->m_frame->setDisabled(true);
     m_ui->m_frame->setDisabled(true);
     m_ui->m_selectLayerComboBox->setDisabled(false);
     onSelectLayerComboBoxChanged(m_ui->m_selectLayerComboBox->currentIndex());
