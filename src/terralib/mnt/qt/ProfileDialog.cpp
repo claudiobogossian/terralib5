@@ -384,6 +384,7 @@ void te::mnt::ProfileDialog::onVectorInputComboBoxChanged(int index)
         m_trajectoryLayer = 0;
         throw te::common::Exception(TE_TR("Trajectory layer must be different from input layer!"));
       }
+      break;
     }
     ++it;
   }
