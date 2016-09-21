@@ -258,6 +258,7 @@ void te::mnt::ProfileDialog::onInputComboBoxChanged(int index)
       std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
       te::map::DataSetLayer* indsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inputLayer.get());
       te::da::DataSourcePtr inDataSource = te::da::GetDataSource(indsLayer->getDataSourceId(), true);
+      m_ui->m_ZcomboBox->clear();
 
       m_inputType = getMNTType(dsType.get());
 
