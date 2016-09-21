@@ -80,7 +80,7 @@ void te::qt::widgets::DoubleListWidget::setInputValues(std::vector<std::string> 
 
   for(size_t i = 0; i < values.size(); ++i)
   {
-    m_ui->m_leftListWidget->addItem(values[i].c_str());
+    m_ui->m_leftListWidget->addItem(QString::fromUtf8(values[i].c_str()));
   }
 }
 
@@ -99,7 +99,7 @@ void te::qt::widgets::DoubleListWidget::setInputDataValues(std::vector<std::stri
   for (size_t i = 0; i < values.size(); ++i)
   {
     QListWidgetItem* item = new QListWidgetItem(m_ui->m_leftListWidget);
-    item->setText(values[i].c_str());
+    item->setText(QString::fromUtf8(values[i].c_str()));
     item->setData(Qt::UserRole, QVariant(ids[i]));
 
     m_ui->m_leftListWidget->addItem(item);
@@ -117,7 +117,7 @@ void te::qt::widgets::DoubleListWidget::setOutputValues(std::vector<std::string>
 
   for(size_t i = 0; i < values.size(); ++i)
   {
-    m_ui->m_rightListWidget->addItem(values[i].c_str());
+    m_ui->m_rightListWidget->addItem(QString::fromUtf8(values[i].c_str()));
   }
 }
 
@@ -136,7 +136,7 @@ void te::qt::widgets::DoubleListWidget::setOutputDataValues(std::vector<std::str
   for (size_t i = 0; i < values.size(); ++i)
   {
     QListWidgetItem* item = new QListWidgetItem(m_ui->m_rightListWidget);
-    item->setText(values[i].c_str());
+    item->setText(QString::fromUtf8(values[i].c_str()));
     item->setData(Qt::UserRole, QVariant(ids[i]));
 
     m_ui->m_rightListWidget->addItem(item);
@@ -148,7 +148,7 @@ void te::qt::widgets::DoubleListWidget::setFixedOutputValues(std::vector<std::st
   for(size_t i = 0; i < values.size(); ++i)
   {
     QListWidgetItem* item = new QListWidgetItem(m_ui->m_rightListWidget);
-    item->setText(values[i].c_str());
+    item->setText(QString::fromUtf8(values[i].c_str()));
     item->setFlags(Qt::ItemIsEnabled);
     item->setIcon(QIcon::fromTheme(iconName.c_str()));
   }
