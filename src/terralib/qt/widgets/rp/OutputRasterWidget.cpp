@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../datasource/selector/DataSourceSelectorDialog.h"
+#include "../Utils.h"
 #include "OutputRasterWidget.h"
 #include "ui_OutputRasterWidgetForm.h"
 
@@ -92,8 +93,9 @@ void te::qt::widgets::OutputRasterWidget::onTargetFileToolButtonClicked()
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
 
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-    QString(), tr("Image File(*.tif *.tiff);; "), 0, QFileDialog::DontConfirmOverwrite);
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Select the output file name"),
+    te::qt::widgets::GetFilePathFromSettings("rp_raster_info"),
+    te::qt::widgets::GetDiskRasterFileSelFilter(), 0, 0).toUtf8().data();
 
   if (fileName.isEmpty())
     return;
