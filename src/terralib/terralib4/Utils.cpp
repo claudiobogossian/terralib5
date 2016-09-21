@@ -57,17 +57,10 @@ std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attR
 
   bool isRequired = !attRep.null_;
 
-  /*std::string attrRepNameUtf8 = Convert2Utf8(attRep.name_);
+  std::string attrRepNameUtf8 = Convert2Utf8(attRep.name_);
 
   bool changed;
-  std::string normalName = te::common::ReplaceSpecialChars(attrRepNameUtf8, changed);*/
-
-  bool changed;
-  std::string normalName = te::common::ReplaceSpecialChars(attRep.name_, changed);
-
-  normalName = Convert2Utf8(normalName);
-
-  //TODO: Alterar essa ordem de conversao quando ReplaceSpecialChars para utf8 estiver feito
+  std::string normalName = te::common::ReplaceSpecialChars(attrRepNameUtf8, changed);
 
   switch(attRep.type_)
   {
