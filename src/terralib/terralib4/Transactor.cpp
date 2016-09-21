@@ -87,7 +87,9 @@ int getViewId(const std::string& viewName, TeViewMap& viewMap)
 
   while(it != viewMap.end())
   {
-    if(it->second->name() == viewName)
+    std::string viewNameUtf8 = terralib4::Convert2Utf8(it->second->name());
+
+    if (viewNameUtf8 == viewName)
       return it->second->id();
 
     ++it;
@@ -145,13 +147,15 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
 {
   TeLayer* layer = 0;
 
-  if(m_db->layerExist(name))
+  std::string nameLatin1 = terralib4::Convert2Latin1(name);
+
+  if (m_db->layerExist(nameLatin1))
   {
     std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
 
     while(it != m_layerMap.end())
     {
-      if(it->second->name() == name)
+      if (it->second->name() == nameLatin1)
       {
         layer = it->second;
         break;
@@ -175,7 +179,7 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
 
     for(std::size_t i = 0; i < tables.size(); ++i)
     {
-      if(tables[i].tableType() == TeAttrExternal && tables[i].name() == name)
+      if(tables[i].tableType() == TeAttrExternal && tables[i].name() == nameLatin1)
       {
         table = tables[i];
         break;
@@ -288,7 +292,9 @@ std::vector<std::string> terralib4::Transactor::getDataSetNames()
 
   while(it != m_layerMap.end())
   {
-    dataSets.push_back(it->second->name());
+    std::string layerNameUtf8 = terralib4::Convert2Utf8(it->second->name());
+
+    dataSets.push_back(layerNameUtf8);
 
     ++it;
   }
@@ -298,8 +304,12 @@ std::vector<std::string> terralib4::Transactor::getDataSetNames()
 
   for(std::size_t i = 0; i < tableVector.size(); ++i)
   {
-    if(tableVector[i].tableType() == TeAttrExternal)
-      dataSets.push_back(tableVector[i].name());
+    if (tableVector[i].tableType() == TeAttrExternal)
+    {
+      std::string tableNameUtf8 = terralib4::Convert2Utf8(tableVector[i].name());
+
+      dataSets.push_back(tableNameUtf8);
+    }
   }
 
   return dataSets;
@@ -314,13 +324,15 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 {
   TeLayer* layer = 0;
 
-  if(m_db->layerExist(name))
+  std::string nameLatin1 = terralib4::Convert2Latin1(name);
+
+  if (m_db->layerExist(nameLatin1))
   {
     std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
 
     while(it != m_layerMap.end())
     {
-      if(it->second->name() == name)
+      if (it->second->name() == nameLatin1)
       {
         layer = it->second;
         break;
@@ -338,7 +350,7 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
     for(std::size_t i = 0; i < tables.size(); i++)
     {
-      if(tables[i].tableType() == TeAttrExternal && name == tables[i].name())
+      if (tables[i].tableType() == TeAttrExternal && nameLatin1 == tables[i].name())
       {
         table = tables[i];
         break;
@@ -352,7 +364,9 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
     if(layer->hasGeometry(TeRASTER))
     {
-      std::auto_ptr<te::da::DataSetType> dst(new te::da::DataSetType(layer->name(), 0));
+      std::string layerNameUtf8 = terralib4::Convert2Utf8(layer->name());
+
+      std::auto_ptr<te::da::DataSetType> dst(new te::da::DataSetType(layerNameUtf8, 0));
 
   // TODO: handle rasters with multiple objectid!
       te::rst::RasterProperty* prop = Convert2T5(layer->raster()->params());
@@ -368,7 +382,10 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
   }
 
   std::auto_ptr<te::da::DataSetType> mainDst(terralib4::Convert2T5(table));
-  mainDst->setTitle(table.name());
+
+  std::string tableNameUtf8 = terralib4::Convert2Utf8(table.name());
+
+  mainDst->setTitle(tableNameUtf8);
 
   std::vector<std::string> pkey;
   table.primaryKeys(pkey);
@@ -377,7 +394,7 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
   if(!pkey.empty())
   {
-    pk = new te::da::PrimaryKey(table.name() + "_pk", mainDst.get());
+    pk = new te::da::PrimaryKey(tableNameUtf8 + "_pk", mainDst.get());
 
     std::vector<te::dt::Property*> pkProps;
     for(std::size_t i = 0; i < pkey.size(); ++i)
@@ -393,13 +410,13 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
     TeAttribute attLink;
     table.attrLink(attLink);
 
-    std::string attLinkName = attLink.rep_.name_;
+    std::string attLinkNameUtf8 = terralib4::Convert2Utf8(attLink.rep_.name_);
 
-    if(!attLinkName.empty())
+    if (!attLinkNameUtf8.empty())
     {
       pk = new te::da::PrimaryKey(table.name() + "_pk", mainDst.get());
 
-      te::dt::Property* p = mainDst->getProperty(attLinkName);
+      te::dt::Property* p = mainDst->getProperty(attLinkNameUtf8);
 
       std::vector<te::dt::Property*> pkProps;
       pkProps.push_back(p);
@@ -537,9 +554,11 @@ void terralib4::Transactor::addProperty(const std::string& datasetName, te::dt::
   if(propertyExists(datasetName, name))
     throw Exception((boost::format(TE_TR("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % name).str());
 
+  std::string propertyNameLatin1 = terralib4::Convert2Latin1(name);
+
   TeAttributeRep newProperty;
 
-  newProperty.name_ = name;
+  newProperty.name_ = propertyNameLatin1;
   
   if(p->getType() != te::dt::GEOMETRY_TYPE)
     newProperty.type_ = terralib4::Convert2T4(p->getType());
@@ -555,7 +574,9 @@ void terralib4::Transactor::addProperty(const std::string& datasetName, te::dt::
 
   while(it != m_layerMap.end())
   {
-    if(it->second->name() == datasetName)
+    std::string layerNameUtf8 = terralib4::Convert2Utf8(it->second->name());
+
+    if (layerNameUtf8 == datasetName)
     {
       layer = it->second;
       break;
@@ -565,9 +586,9 @@ void terralib4::Transactor::addProperty(const std::string& datasetName, te::dt::
 
   TeAttrTableVector tables;
   layer->getAttrTables(tables);
-  std::string tableName = tables[0].name();
+  std::string tableNameUtf8 = terralib4::Convert2Utf8(tables[0].name());
 
-  m_db->addColumn(tableName, newProperty);
+  m_db->addColumn(tableNameUtf8, newProperty);
 }
 
 void terralib4::Transactor::dropProperty(const std::string&, const std::string&)
@@ -827,7 +848,11 @@ std::vector<std::string> terralib4::Transactor::getTL4Layers()
   while(it != m_layerMap.end())
   {
     if (!it->second->hasGeometry(TeRASTER) && !it->second->hasGeometry(TeRASTERFILE))
-      layers.push_back(it->second->name());
+    {
+      std::string strConverted = terralib4::Convert2Utf8(it->second->name());
+
+      layers.push_back(strConverted);
+    }
 
     ++it;
   }
@@ -842,8 +867,12 @@ std::vector<std::string> terralib4::Transactor::getTL4Tables()
   TeAttrTableVector tables;
   m_db->getAttrTables(tables, TeAttrExternal);
 
-  for(std::size_t i = 0; i < tables.size(); i++)
-    tablesVec.push_back(tables[i].name());
+  for (std::size_t i = 0; i < tables.size(); i++)
+  {
+    std::string strConverted = terralib4::Convert2Utf8(tables[i].name());
+
+    tablesVec.push_back(strConverted);
+  }
 
   return tablesVec;
 }
@@ -858,7 +887,9 @@ std::vector<std::string> terralib4::Transactor::getTL4Rasters()
   {
     if(it->second->hasGeometry(TeRASTER))
     {
-      rasters.push_back(it->second->name());
+      std::string strConverted = terralib4::Convert2Utf8(it->second->name());
+
+      rasters.push_back(strConverted);
     }
     ++it;
   }
@@ -877,8 +908,8 @@ std::vector<std::pair<std::string, std::string> > terralib4::Transactor::getTL4R
     if (it->second->hasGeometry(TeRASTERFILE))
     {
       std::pair<std::string, std::string> pair;
-      pair.first = it->second->name();
-      pair.second = it->second->raster()->params().fileName_;
+      pair.first = terralib4::Convert2Utf8(it->second->name());
+      pair.second = terralib4::Convert2Utf8(it->second->raster()->params().fileName_);
       rasters.push_back(pair);
     }
     ++it;
@@ -913,9 +944,9 @@ std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
         if(theme->view() == view->id())
         {
           ::terralib4::ThemeInfo themeInfo;
-          themeInfo.m_name = theme->name();
-          themeInfo.m_viewName = view->name();
-          themeInfo.m_layerName = theme->layer()->name();
+          themeInfo.m_name = terralib4::Convert2Utf8(theme->name());
+          themeInfo.m_viewName = terralib4::Convert2Utf8(view->name());
+          themeInfo.m_layerName = terralib4::Convert2Utf8(theme->layer()->name());
 
           themes.push_back(themeInfo);
         }
@@ -942,7 +973,9 @@ TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo& theme)
       {
         TeTheme* tl4Theme = dynamic_cast<TeTheme*>(abTheme);
 
-        if(tl4Theme->layer()->name() == theme.m_layerName)
+        std::string themeNameUtf8 = terralib4::Convert2Utf8(tl4Theme->layer()->name());
+
+        if(themeNameUtf8 == theme.m_layerName)
         {
           return tl4Theme;
         }
@@ -961,7 +994,9 @@ int terralib4::Transactor::getLayerSRID(const std::string & layerName)
 
   while(it != m_layerMap.end())
   {
-    if(it->second->name() == layerName)
+    std::string nameUtf8 = terralib4::Convert2Utf8(it->second->name());
+
+    if (nameUtf8 == layerName)
     {
       int srid = it->second->projection()->epsgCode();
       if(srid == 4979)

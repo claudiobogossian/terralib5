@@ -26,6 +26,7 @@
 // TerraLib 5
 #include "../common/Exception.h"
 #include "../common/StringUtils.h"
+#include "../core/encoding/CharEncoding.h"
 #include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/NumericProperty.h"
@@ -56,8 +57,17 @@ std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attR
 
   bool isRequired = !attRep.null_;
 
+  /*std::string attrRepNameUtf8 = Convert2Utf8(attRep.name_);
+
+  bool changed;
+  std::string normalName = te::common::ReplaceSpecialChars(attrRepNameUtf8, changed);*/
+
   bool changed;
   std::string normalName = te::common::ReplaceSpecialChars(attRep.name_, changed);
+
+  normalName = Convert2Utf8(normalName);
+
+  //TODO: Alterar essa ordem de conversao quando ReplaceSpecialChars para utf8 estiver feito
 
   switch(attRep.type_)
   {
@@ -132,12 +142,11 @@ std::auto_ptr<TeDatabaseFactoryParams> terralib4::Convert2T4DatabaseParams(const
 {
   std::auto_ptr<TeDatabaseFactoryParams> fparams(new TeDatabaseFactoryParams());
 
-  fparams->dbms_name_ = dsInfo.at("T4_DRIVER");
-  fparams->database_ = dsInfo.at("T4_DB_NAME");
-  fparams->host_ = dsInfo.at("T4_HOST");
-  //fparams->port_ = boost::lexical_cast<int>(dsInfo.at("T4_PORT"));
-  fparams->user_ = dsInfo.at("T4_USER");
-  fparams->password_ = dsInfo.at("T4_PASSWORD");
+  fparams->dbms_name_ = Convert2Latin1(dsInfo.at("T4_DRIVER"));
+  fparams->database_  = Convert2Latin1(dsInfo.at("T4_DB_NAME"));
+  fparams->host_      = Convert2Latin1(dsInfo.at("T4_HOST"));
+  fparams->user_      = Convert2Latin1(dsInfo.at("T4_USER"));
+  fparams->password_  = Convert2Latin1(dsInfo.at("T4_PASSWORD"));
 
   return fparams;
 }
@@ -364,7 +373,9 @@ std::auto_ptr<te::da::DataSetType> terralib4::Convert2T5(TeTable table)
 {
   TeAttributeList attrList = table.attributeList();
 
-  std::auto_ptr<te::da::DataSetType> newDst(new te::da::DataSetType(table.name()));
+  std::string tableNameUtf8 = Convert2Utf8(table.name());
+
+  std::auto_ptr<te::da::DataSetType> newDst(new te::da::DataSetType(tableNameUtf8));
 
   for(std::size_t i = 0; i < attrList.size(); ++i)
   {
@@ -513,4 +524,14 @@ te::gm::GeomType terralib4::GetCollection(TeGeomRep rep)
     default:
       return te::gm::UnknownGeometryType;
   }
+}
+
+std::string terralib4::Convert2Utf8(const std::string& str)
+{
+  return te::core::CharEncoding::toUTF8(str, te::core::EncodingType::LATIN1);
+}
+
+std::string terralib4::Convert2Latin1(const std::string& str)
+{
+  return te::core::CharEncoding::fromUTF8(str, te::core::EncodingType::LATIN1);
 }
