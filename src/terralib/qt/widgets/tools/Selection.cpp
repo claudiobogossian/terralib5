@@ -196,6 +196,9 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
+        if(g.get() == 0)
+          continue;
+
         if(g->getSRID() == TE_UNKNOWN_SRS)
           g->setSRID(layer->getSRID());
 
@@ -217,6 +220,9 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
       while(dataset->moveNext())
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
+
+        if(g.get() == 0)
+          continue;
 
         if(g->getSRID() == TE_UNKNOWN_SRS)
           g->setSRID(layer->getSRID());
