@@ -125,15 +125,8 @@ std::auto_ptr<te::gm::MultiPolygon> te::vp::LineToPolygonMemory::line2Polygon(te
 
   getPolygons(geom, polygons);
 
-  if(polygons.size() > 1)
-  {
-    for(std::size_t i = 0; i < polygons.size(); ++i)
-      polygonResult->add(polygons[i]);
-  }
-  else
-  {
-    polygonResult->add(polygons[0]);
-  }
+  for(std::size_t i = 0; i < polygons.size(); ++i)
+    polygonResult->add(polygons[i]);
 
   return polygonResult;
 }
@@ -150,6 +143,18 @@ void te::vp::LineToPolygonMemory::getPolygons(te::gm::Geometry* geom, std::vecto
     break;
 
     case te::gm::LineStringType:
+      getPolygons(dynamic_cast<te::gm::LineString*>(geom), polygons);
+    break;
+
+    case te::gm::LineStringZType:
+      getPolygons(dynamic_cast<te::gm::LineString*>(geom), polygons);
+    break;
+
+    case te::gm::LineStringMType:
+      getPolygons(dynamic_cast<te::gm::LineString*>(geom), polygons);
+    break;
+
+    case te::gm::LineStringZMType:
       getPolygons(dynamic_cast<te::gm::LineString*>(geom), polygons);
     break;
 
