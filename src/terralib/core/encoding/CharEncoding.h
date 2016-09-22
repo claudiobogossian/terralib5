@@ -1,7 +1,8 @@
 /*
   Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-  This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled
+  applications.
 
   TerraLib is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
@@ -34,7 +35,6 @@
 #include "../Config.h"
 
 // STL
-#include <map>
 #include <vector>
 #include <string>
 
@@ -42,7 +42,6 @@ namespace te
 {
   namespace core
   {
-
     /*!
       \enum EncodingType
 
@@ -50,14 +49,14 @@ namespace te
     */
     enum class EncodingType
     {
-      UTF8,     /*!< UTF-8 encoding.               */
-      CP1250,   /*!< CP1250 encoding.              */
-      CP1251,   /*!< CP1251 encoding.              */
-      CP1252,   /*!< CP1252 encoding.              */
-      CP1253,   /*!< CP1253 encoding.              */
-      CP1254,   /*!< CP1254 encoding.              */
-      CP1257,   /*!< CP1257 encoding.              */
-      LATIN1    /*!< Latin1 encoding (ISO8859-1).  */
+      UTF8,   /*!< UTF-8 encoding.               */
+      CP1250, /*!< CP1250 encoding.              */
+      CP1251, /*!< CP1251 encoding.              */
+      CP1252, /*!< CP1252 encoding.              */
+      CP1253, /*!< CP1253 encoding.              */
+      CP1254, /*!< CP1254 encoding.              */
+      CP1257, /*!< CP1257 encoding.              */
+      LATIN1  /*!< Latin1 encoding (ISO8859-1).  */
     };
 
     /*!
@@ -67,88 +66,107 @@ namespace te
      */
     class TECOREEXPORT CharEncoding
     {
-      public:
-        /*!
-          \brief Convert a string in UTF-8 to the current locale encoding.
+     public:
+      /*!
+        \brief Convert a string in UTF-8 to the current locale encoding.
 
-          \param src UTF - 8 string.
+        \param src UTF-8 string.
 
-          \return String encoded according to new character encoding.
-         */
-        static std::string fromUTF8(const std::string& src);
+        \exception te::Exception if the system locale cannot be retrieved.
 
-        /*!
-          \brief Convert a string in UTF-8 to another character encoding.
+        \return String encoded according to new character encoding.
+       */
+      static std::string fromUTF8(const std::string& src);
 
-          \param src UTF-8 string.
-          \param to  The target character encoding.
-         
-          \return String encoded according to new character encoding.
-         */
-        static std::string fromUTF8(const std::string& src, EncodingType to);
+      /*!
+        \brief Convert a string in UTF-8 to another character encoding.
 
-        /*!
-          \brief Convert a string from a current locale encoding to UTF-8.
+        \param src UTF-8 string.
+        \param to  The target character encoding.
 
-          \param src  String to be encoded in UTF-8.
+        \return String encoded according to new character encoding.
+       */
+      static std::string fromUTF8(const std::string& src, EncodingType to);
 
-          \return String encoded in UTF-8.
-         */
-        static std::string toUTF8(const std::string& src);
+      /*!
+        \brief Convert a string from a current locale encoding to UTF-8.
 
-        /*!
-          \brief Convert a string from a given character encoding to UTF-8.
+        \param src  String to be encoded in UTF-8.
 
-          \param src  String to be encoded in UTF-8.
+        \exception te::Exception if the system locale cannot be retrieved.
 
-          \return String encoded in UTF-8.
-         */
-        static std::string toUTF8(const std::string& src, EncodingType from);
-          
-        /*!
-          \brief Convert a string from one character encoding to another one.
+        \return String encoded in UTF-8.
+       */
+      static std::string toUTF8(const std::string& src);
 
-          \param src  String encoded according to "from" encoding type.
-          \param from Current string encoding.
-          \param to   New encoding for the string.
+      /*!
+        \brief Convert a string from a given character encoding to UTF-8.
 
-          \return String in a new encoding.
-         */
-        static std::string convert(const std::string& src,
-                                   EncodingType from,
-                                   EncodingType to);
-        /*!
-          \brief Retrive a string from a given character encoding type enum.
+        \param src  String to be encoded in UTF-8.
 
-          \param et Encoding Type to be retrieved as string.
+        \return String encoded in UTF-8.
+       */
+      static std::string toUTF8(const std::string& src, EncodingType from);
 
-          \return Encoding Type as string.
-         */
-        static std::string getEncodingName(EncodingType et);
+      /*!
+        \brief Convert a string from one character encoding to another one.
 
-        /*!
-          \brief Retrive an EncodingType from a given character encoding name.
+        \param src  String encoded according to "from" encoding type.
+        \param from Current string encoding.
+        \param to   New encoding for the string.
 
-          \param name Encoding name to be retrieved as enum.
+        \return String in a new encoding.
+       */
+      static std::string convert(const std::string& src, EncodingType from,
+                                 EncodingType to);
+      /*!
+        \brief Decomposes a UTF-8 encoded string and extracts its ASCII
+        characters.
 
-          \return Encoding as enum.
-         */
-        static te::core::EncodingType getEncodingType(const std::string &name);
+        \note Non-ascii characters will be skipped.
 
-        /*!
+        \param src UTF-8 encoded string.
+
+        \exception te::Exception if the given string cannot be decomposed.
+
+        \return ASCII String.
+      */
+      static std::string toASCII(const std::string& src);
+
+      /*!
+        \brief Retrive a string from a given character encoding type enum.
+
+        \param et Encoding Type to be retrieved as string.
+
+        \return Encoding Type as string.
+       */
+      static std::string getEncodingName(EncodingType et);
+
+      /*!
+        \brief Retrive an EncodingType from a given character encoding name.
+
+        \param name Encoding name to be retrieved as enum.
+
+        \return Encoding as enum.
+       */
+      static te::core::EncodingType getEncodingType(const std::string& name);
+
+      /*!
         \brief Retrive a vector of string with all available encoding types name.
 
         \return A vector of encoding type as string.
-        */
-        static std::vector<std::string> getEncodingList();
+      */
+      static std::vector<std::string> getEncodingList();
 
-      private:
-
+     private:
 // Not instatiable
-        CharEncoding();
-        ~CharEncoding();
+      CharEncoding();
+      ~CharEncoding();
+// No copy allowed
+      CharEncoding(CharEncoding const&);
+      CharEncoding& operator=(CharEncoding const&);
     };
   }  // end namespace core
-}    // end namespace te
+}  // end namespace te
 
-#endif //__TERRALIB_CORE_ENCODING_CHARENCODING_H__
+#endif  //__TERRALIB_CORE_ENCODING_CHARENCODING_H__
