@@ -390,6 +390,11 @@ namespace te
           {
             result += c;
           }
+          else if (c == 32)
+          {
+            unsigned char add = 95;
+            result += add;
+          }
         }
         else
         {
