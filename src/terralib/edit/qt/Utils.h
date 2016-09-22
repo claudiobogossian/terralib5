@@ -27,8 +27,8 @@
 #define __TERRALIB_EDIT_INTERNAL_QTUTILS_H
 
 // TerraLib
-#include "Config.h"
 #include "../../maptools/AbstractLayer.h"
+#include "Config.h"
 
 // Qt
 #include <QMouseEvent>
