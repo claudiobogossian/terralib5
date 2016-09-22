@@ -587,6 +587,7 @@ std::unique_ptr< te::rst::Raster > te::rst::CropRaster(const te::rst::Raster& ri
     
     for( geometriesIdx = 0 ; geometriesIdx < geometriesSize ; ++geometriesIdx )
     {
+      singleGgeomsPtrs.clear();
       te::gm::Multi2Single( (te::gm::Geometry*)geometries[ geometriesIdx ], singleGgeomsPtrs );
       
       singleGgeomsPtrsSize = singleGgeomsPtrs.size();
