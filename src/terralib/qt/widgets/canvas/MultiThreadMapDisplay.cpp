@@ -349,6 +349,7 @@ void te::qt::widgets::MultiThreadMapDisplay::onRenderingFinished()
 void te::qt::widgets::MultiThreadMapDisplay::onDrawCanceled()
 {
   m_cancel = true;
-  m_tmger->stopProccess();
+  if (m_tmger != 0)
+    m_tmger->stopProccess();
 }
 

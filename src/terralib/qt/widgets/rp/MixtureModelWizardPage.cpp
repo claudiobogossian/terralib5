@@ -44,6 +44,9 @@
 #include "RpToolsWidget.h"
 #include "RpToolsDialog.h"
 
+#include "../../widgets/tools/PointPicker.h"
+
+
 #include "ui_MixtureModelWizardPageForm.h"
 
 // Qt
@@ -152,6 +155,8 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   QPixmap px(16, 16);
   px.fill(m_color);
   m_ui->m_colorToolButton->setIcon(px);
+
+  m_ui->m_normalizeOutputCheckBox->setVisible(false); //In future see this option, currently not normalizes
 
 }
 
@@ -559,8 +564,10 @@ void te::qt::widgets::MixtureModelWizardPage::addComponent()
     QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
     if (checkBox && checkBox->isChecked())
     {
+      QComboBox* comboBox = (QComboBox*)m_ui->m_bandTableWidget->cellWidget(i, 1);
+
       QTreeWidgetItem* item = new QTreeWidgetItem(compItem);
-      item->setText(0, checkBox->text());
+      item->setText(0, comboBox->currentText());
       item->setText(1, QString::number(0.0));
       item->setForeground(0, brush);
       item->setForeground(1, brush);
@@ -576,7 +583,6 @@ void te::qt::widgets::MixtureModelWizardPage::addComponent()
 
   m_ui->m_componentTreeWidget->addTopLevelItem(compItem);
   m_ui->m_componentTreeWidget->setCurrentItem(compItem);
-
 }
 
 void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
@@ -650,6 +656,7 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
       // define sensor information
       QStringList sensorsDescriptions;
       std::vector<std::string> bandNames = te::rp::GetBandNames();
+      std::sort(bandNames.begin(), bandNames.end());
 
       for(unsigned int i = 0; i < bandNames.size(); i++)
         sensorsDescriptions.append(bandNames[i].c_str());
@@ -677,7 +684,9 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
 
         m_ui->m_bandTableWidget->setCellWidget(newrow, 0, bandCheckBox);
         m_ui->m_bandTableWidget->setCellWidget(newrow, 1, sensorDescriptionComboBox);
-          newrow++;
+        m_ui->m_bandTableWidget->resizeColumnToContents(0);
+       // m_ui->m_bandTableWidget->resizeColumnToContents(1);
+        newrow++;
 
         bandCheckBox->setChecked(true);
       }
@@ -744,8 +753,8 @@ void te::qt::widgets::MixtureModelWizardPage::updateComponents()
   size_t i = 0;
   for(size_t t = 0; t < it->second.m_values.size(); ++t)
   {
-    QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget((int)i++, 0);
-    std::string b = checkBox->text().toUtf8().data();
+    QComboBox* comboBox = (QComboBox*)m_ui->m_bandTableWidget->cellWidget((int)i++, 1);
+    std::string b = comboBox->currentText().toUtf8().data();
     std::string v = QString::number(it->second.m_values[t]).toUtf8().data();
     (*itqt)->setForeground(0, brush);
     for (int c = 0; c < (*itqt)->childCount(); c++)
@@ -755,6 +764,9 @@ void te::qt::widgets::MixtureModelWizardPage::updateComponents()
         (*itqt)->child(c)->setText(1, v.c_str());
         (*itqt)->child(c)->setForeground(0, brush);
         (*itqt)->child(c)->setForeground(1, brush);
+        m_ui->m_componentTreeWidget->setCurrentItem((*itqt)->child(c));
+        m_ui->m_componentTreeWidget->resizeColumnToContents(0);
+        m_ui->m_componentTreeWidget->resizeColumnToContents(1);
         break;
       }
     }
@@ -764,9 +776,6 @@ void te::qt::widgets::MixtureModelWizardPage::updateComponents()
   px.fill(m_color);
   m_ui->m_colorToolButton->setIcon(px);
 
-  //m_ui->m_componentTreeWidget->resizeColumnToContents(0);
-  //m_ui->m_componentTreeWidget->resizeColumnToContents(1);
-    
   drawMarks();
 
   PlotSpectralSignature();
@@ -778,10 +787,12 @@ void te::qt::widgets::MixtureModelWizardPage::onComponentItemClicked(QTreeWidget
 {
   assert(item);
   if (!item->childCount())
-    return;
-
-  QString a = item->text(0);
-  QString b = item->text(1);
+  {
+    QTreeWidgetItem* parent = item->parent();
+    if (!parent)
+      return;
+    item = parent;
+  }  
 
   m_ui->m_componentLineEdit->setText(item->text(0));
 
@@ -873,6 +884,7 @@ double te::qt::widgets::MixtureModelWizardPage::GetMediumWavelength(std::string 
 
 void te::qt::widgets::MixtureModelWizardPage::oncomponentChanged()
 {
+  m_navigator->setPointPickedTool(true);
   updateComponents();
 }
 
