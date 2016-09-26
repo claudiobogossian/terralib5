@@ -125,6 +125,10 @@ namespace terralib4
 
   te::gm::GeomType GetCollection(TeGeomRep rep);
 
+  TETERRALIB4EXPORT std::string Convert2Utf8(const std::string& str);
+
+  TETERRALIB4EXPORT std::string Convert2Latin1(const std::string& str);
+
 } // end namespace terralib4
 
 #endif  // __TERRALIB_T4_INTERNAL_UTILS_H

@@ -30,6 +30,7 @@
 
 #include "../../../../qt/widgets/layer/selector/AbstractLayerSelector.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "Config.h"
 
 namespace te
 {
@@ -47,7 +48,7 @@ namespace te
 
             \brief A simple widget that allows the selection of datasets from a given WCS server.
           */
-          class WCSLayerSelector : public te::qt::widgets::AbstractLayerSelector
+          class TEOGCWCSQTEXPORT WCSLayerSelector : public te::qt::widgets::AbstractLayerSelector
           {
 
           public:

@@ -505,10 +505,20 @@ void te::mnt::CreateIsolinesDialog::onTargetFileToolButtonPressed()
   m_ui->m_repositoryLineEdit->clear();
 
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-    QString(), tr("Shapefile (*.shp *.SHP);;"), 0, QFileDialog::DontConfirmOverwrite);
+    QString(), tr("Shapefile (*.shp *.SHP);;"), 0);
 
   if (fileName.isEmpty())
     return;
+
+  try
+  {
+    boost::filesystem::remove(fileName.toUtf8().data());
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::information(this, tr("Create Isolines"), e.what());
+    return;
+  }
 
   boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string aux = outfile.leaf().string();

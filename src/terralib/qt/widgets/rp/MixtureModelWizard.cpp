@@ -83,9 +83,9 @@ bool te::qt::widgets::MixtureModelWizard::validateCurrentPage()
 
     if(list.empty() == false)
     {
-      te::map::AbstractLayerPtr l = *list.begin();
+      //te::map::AbstractLayerPtr l = *list.begin();
 
-      m_mixtureModelPage->set(l);
+      m_mixtureModelPage->set(list);
     }
 
     return m_layerSearchPage->isComplete();
@@ -123,11 +123,11 @@ void te::qt::widgets::MixtureModelWizard::setActionGroup(QActionGroup* actionGro
   m_mixtureModelPage->setActionGroup(actionGroup);
 }
 
-void te::qt::widgets::MixtureModelWizard::setLayer(te::map::AbstractLayerPtr layer)
+void te::qt::widgets::MixtureModelWizard::setLayer(std::list<te::map::AbstractLayerPtr> layers)
 {
   removePage(m_layerSearchId);
 
-  m_mixtureModelPage->set(layer);
+  m_mixtureModelPage->set(layers);
 }
 
 void te::qt::widgets::MixtureModelWizard::addPages()
@@ -153,8 +153,11 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   }
 
   //get layer
-  te::map::AbstractLayerPtr l = m_mixtureModelPage->get();
-  std::auto_ptr<te::da::DataSet> ds(l->getData());
+  std::list<te::map::AbstractLayerPtr> l = m_mixtureModelPage->get();
+  std::list<te::map::AbstractLayerPtr> ::iterator it_l;
+  for (it_l = l.begin(); it_l != l.end(); it_l++)
+  {
+    std::auto_ptr<te::da::DataSet> ds(it_l->get()->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
@@ -210,8 +213,10 @@ bool te::qt::widgets::MixtureModelWizard::execute()
 
     return false;
   }
+  }
 
   QApplication::restoreOverrideCursor();
 
   return true;
 }
+

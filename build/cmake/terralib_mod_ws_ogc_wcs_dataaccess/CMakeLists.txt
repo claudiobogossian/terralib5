@@ -25,6 +25,10 @@
 
 include_directories(${Boost_INCLUDE_DIR}
                     ${GDAL_INCLUDE_DIR})
+					
+if(WIN32)
+  add_definitions(-DTEWSWCSDATAACCESSDLL)
+endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/dataaccess/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wcs/dataaccess/*.h)
@@ -40,7 +44,8 @@ target_link_libraries(terralib_mod_ws_ogc_wcs_dataaccess terralib_mod_common
                                                          terralib_mod_dataaccess
                                                          terralib_mod_datatype
                                                          terralib_mod_plugin
-                                                         terralib_mod_ws_ogc_wcs_client)
+                                                         terralib_mod_ws_ogc_wcs_client
+														 ${GDAL_LIBRARY})
 
 set_target_properties(terralib_mod_ws_ogc_wcs_dataaccess
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

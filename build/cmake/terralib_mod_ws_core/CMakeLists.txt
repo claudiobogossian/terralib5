@@ -26,6 +26,10 @@
 include_directories(${Boost_INCLUDE_DIR}
                     ${CURL_INCLUDE_DIRS})
 
+if(WIN32)
+  add_definitions(-DTEWSCOREDLL)
+endif()
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/core/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/core/*.h)
 
@@ -37,6 +41,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_library(terralib_mod_ws_core SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_mod_ws_core    terralib_mod_common
+                                              terralib_mod_core
                                               ${CURL_LIBRARIES})
 
 install(TARGETS terralib_mod_ws_core

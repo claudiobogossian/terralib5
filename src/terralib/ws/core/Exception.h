@@ -38,10 +38,11 @@ namespace te
   {
     namespace core
     {
-      //! Base exception class for WS Core Runtime Library.
+      /*! \brief Base exception class for WS Core Runtime Library. */
       struct Exception: virtual te::Exception { };
-    }
-  }
-}
 
-#endif
+    } // end namespace core
+  } // end namespace ws
+} // end namespace te
+
+#endif // __TERRALIB_WS_CORE_EXCEPTION_H__

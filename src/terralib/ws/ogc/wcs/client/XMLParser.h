@@ -39,6 +39,7 @@
 
 // TerraLib
 #include "../../../../xml.h"
+#include "Config.h"
 #include "DataTypes.h"
 
 namespace te
@@ -54,7 +55,7 @@ namespace te
 
           \brief A class responsible to parse WCS XML files to WCS TerraLib data types.
         */
-        class XMLParser
+        class TEOGCWCSEXPORT XMLParser
         {
         public:
 

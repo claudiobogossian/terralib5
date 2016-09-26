@@ -222,7 +222,7 @@ bool te::qt::widgets::ClippingWizard::executeExtentClipping()
 
   m_clippingPage->getExtentClipping(env);
 
-  if (!env.isValid() && !env.intersects(*inputRst->getExtent()))
+  if (!env.intersects(*inputRst->getExtent()))
   {
     QMessageBox::warning(this, tr("Clipping"), tr("Selected area do not intersects the raster extent."));
     return false;

@@ -47,7 +47,7 @@ namespace te
 
             \brief The TerraLib OGC WCS driver as a plugin.
           */
-          class Module : public te::plugin::Plugin
+          class TEOGCWCSDATAACCESSEXPORT Module : public te::plugin::Plugin
           {
           public:
 

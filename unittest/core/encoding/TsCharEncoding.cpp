@@ -42,24 +42,31 @@
 
 struct F
 {
-  F() : text_in_utf8(""), text_in_latin1(""), text_in_cp1252("")
+  F()
+      : text_in_utf8(""),
+        text_in_latin1(""),
+        text_in_cp1252(""),
+        text_in_ascii("")
   {
     std::ifstream utf8_file(TERRALIB_DATA_DIR "/encoding/arq_utf8.txt");
     std::ifstream latin1_file(TERRALIB_DATA_DIR "/encoding/arq_latin1.txt");
     std::ifstream cp1252_file(TERRALIB_DATA_DIR "/encoding/arq_cp1252.txt");
-
+    std::ifstream ascii_file(TERRALIB_DATA_DIR "/encoding/arq_ascii.txt");
     text_in_utf8 = std::string((std::istreambuf_iterator<char>(utf8_file)),
-                             std::istreambuf_iterator<char>());
+                               std::istreambuf_iterator<char>());
     text_in_latin1 = std::string((std::istreambuf_iterator<char>(latin1_file)),
-                               std::istreambuf_iterator<char>());
-   text_in_cp1252 = std::string((std::istreambuf_iterator<char>(cp1252_file)),
-                               std::istreambuf_iterator<char>());
+                                 std::istreambuf_iterator<char>());
+    text_in_cp1252 = std::string((std::istreambuf_iterator<char>(cp1252_file)),
+                                 std::istreambuf_iterator<char>());
+    text_in_ascii = std::string((std::istreambuf_iterator<char>(ascii_file)),
+                                std::istreambuf_iterator<char>());
   }
   ~F() {}
 
   std::string text_in_utf8;
   std::string text_in_latin1;
   std::string text_in_cp1252;
+  std::string text_in_ascii;
 };
 
 BOOST_FIXTURE_TEST_SUITE(encoding, F)
@@ -94,8 +101,6 @@ BOOST_AUTO_TEST_CASE(encoding_test_utils)
                     te::core::Exception);
 
   BOOST_CHECK_NO_THROW(te::core::CharEncoding::getEncodingList());
-
-  return;
 }
 
 BOOST_AUTO_TEST_CASE(encoding_test_utf8_latin1)
@@ -108,8 +113,6 @@ BOOST_AUTO_TEST_CASE(encoding_test_utf8_latin1)
   BOOST_CHECK(utf8_from_latin1 == text_in_utf8);
 
   BOOST_CHECK(latin1_from_utf8 == text_in_latin1);
-
-  return;
 }
 
 BOOST_AUTO_TEST_CASE(encoding_test_utf8_cp1252)
@@ -123,11 +126,6 @@ BOOST_AUTO_TEST_CASE(encoding_test_utf8_cp1252)
   BOOST_CHECK(utf8_from_cp1252 == text_in_utf8);
 
   BOOST_CHECK(cp1252_from_utf8 == text_in_cp1252);
-
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  cp1252_from_utf8 = te::core::CharEncoding::fromUTF8(text_in_utf8);
-  BOOST_CHECK(text_in_cp1252 == cp1252_from_utf8);
-#endif
 }
 
 BOOST_AUTO_TEST_CASE(encoding_test_latin_cp1252)
@@ -145,11 +143,21 @@ BOOST_AUTO_TEST_CASE(encoding_test_latin_cp1252)
   BOOST_CHECK(cp1252_from_latin1 == text_in_cp1252);
 }
 
+BOOST_AUTO_TEST_CASE(encoding_test_utf8_ascii)
+{
+  std::string ascii_from_utf8 = te::core::CharEncoding::toASCII(text_in_utf8);
+
+  BOOST_CHECK(ascii_from_utf8 == text_in_ascii);
+}
+
 BOOST_AUTO_TEST_CASE(encoding_test_locale_utf8)
 {
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  latin1_from_utf8 = te::core::CharEncoding::fromUTF8(text_in_utf8);
+  std::string latin1_from_utf8 = te::core::CharEncoding::fromUTF8(text_in_utf8);
   BOOST_CHECK(text_in_latin1 == latin1_from_utf8);
+
+  std::string cp1252_from_utf8 = te::core::CharEncoding::fromUTF8(text_in_utf8);
+  BOOST_CHECK(text_in_cp1252 == cp1252_from_utf8);
 #endif
 }
 
@@ -164,7 +172,7 @@ BOOST_AUTO_TEST_CASE(enconding_test_wrong_type)
 
   BOOST_CHECK(text_in_latin1 != wrong_latin1);
 
-  BOOST_CHECK(text_in_utf)
+  BOOST_CHECK(text_in_utf8 != wrong_utf8);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

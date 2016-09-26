@@ -23,6 +23,7 @@
   \brief A Wrapper for Lib Curl.
 
   \author Emerson Moraes
+  \author Vinicius Campanha
  */
 
 #ifndef __TERRALIB_WS_CORE_CURLWRAPPER_H
@@ -35,7 +36,9 @@
 #include <iostream>
 #include <memory>
 
+#include "Config.h"
 #include "../../common/progress/TaskProgress.h"
+#include "../../core/uri/URI.h"
 
 namespace te
 {
@@ -44,7 +47,7 @@ namespace te
     namespace core
     {
 
-    struct CurlProgress
+    struct TEWSCOREEXPORT CurlProgress
     {
       std::shared_ptr<te::common::TaskProgress> m_task;
       std::shared_ptr<CURL> m_curl;
@@ -56,7 +59,7 @@ namespace te
 
       \brief An abstraction to Lib Curl functions.
     */
-    class CurlWrapper
+    class TEWSCOREEXPORT CurlWrapper
     {
     public:
       CurlWrapper();
@@ -93,6 +96,37 @@ namespace te
         \param taskMessage new message.
       */
       virtual void setTaskMessage(const std::string& taskMessage);
+
+      /*!
+       * \brief Method to request a post in a determined URI
+       * \param uri The URI with the address information to post
+       * \param postFields The parameters and values to post
+       * \param header A header to the post request
+       */
+      virtual void post(const te::core::URI &uri, const std::string &postFields, const::std::string &header) const;
+
+      /*!
+       * \brief Method to request a put with a file in a determined URI
+       * \param uri The URI with the address information
+       * \param file Path The full path of the file to put
+       * \param header A header to the put request
+       */
+      virtual void putFile(const te::core::URI &uri, const std::string &filePath, const::std::string &header) const;
+
+      /*!
+       * \brief Method to request a put a file in a determined URI
+       * \param uri The URI with the address information
+       * \param file Contains the file opened by the fstream
+       * \param header A header to the put request
+       */
+      virtual void putFile(const te::core::URI &uri, const std::fstream& file,  const::std::string &header) const;
+
+      /*!
+       * \brief Method to make a custom request, useful for performing a HTTP DELETE request.
+       * \param uri The URI with the address information
+       * \param request The custom request
+       */
+      virtual void customRequest(const te::core::URI &uri, const std::string& request) const;
 
     private:
       std::shared_ptr<CURL>  m_curl;

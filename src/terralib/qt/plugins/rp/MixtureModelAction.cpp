@@ -80,9 +80,10 @@ void te::qt::plugins::rp::MixtureModelAction::addLayerSlot(te::map::AbstractLaye
 
 void te::qt::plugins::rp::MixtureModelAction::onPopUpActionActivated(bool checked)
 {
-  te::map::AbstractLayerPtr layer = getCurrentLayer();
+  std::list<te::map::AbstractLayerPtr> layer;
+  layer.push_back(getCurrentLayer());
 
-  if(layer.get())
+  if (layer.size())
   {
     te::qt::widgets::MixtureModelWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
