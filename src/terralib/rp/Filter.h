@@ -167,11 +167,11 @@ namespace te
 
         Filter::InputParameters m_inputParameters; //!< Input parameters.
 
-        double** m_conv_buf; //!< Convolution Buffer.
+        double** m_convBuffer; //!< Convolution Buffer.
 
-        unsigned int m_conv_buf_lines; //!< Convolution Buffer lines.
+        unsigned int m_convBufferLines; //!< Convolution Buffer lines.
 
-        unsigned int m_conv_buf_columns; //!< Convolution Buffer columns.
+        unsigned int m_convBufferColumns; //!< Convolution Buffer columns.
 
         /*!
           \brief Applay the Roberts filter over the source raster band.
@@ -280,7 +280,7 @@ namespace te
         \param lines Convolution buffer lines.
         \param columns Convolution buffer columns.
         */
-        void reset_conv_buf(unsigned int lines, unsigned int columns);
+        void ResetConvBuffer(unsigned int lines, unsigned int columns);
 
         /*!
         \brief Updates the convolution buffer with a new raster line.
@@ -288,13 +288,13 @@ namespace te
         \param line Raster line.
         \param band Raster band.
         */
-        void up_conv_buf(const te::rst::Band& inBand, unsigned int line);
+        void UpdateConvBuffer(const te::rst::Band& inBand, unsigned int line);
 
         /*!
         \brief Rools up the convolution buffer count lines.
         \param count Count times to rool convolution buffer.
         */
-        void conv_buf_roolup(unsigned int count);
+        void ConvBufferRoolup(unsigned int count);
     };
 
   } // end namespace rp

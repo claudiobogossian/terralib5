@@ -140,6 +140,17 @@ namespace te
 
     Filter::~Filter()
     {
+      if (m_convBuffer != 0) {
+        for (unsigned int line = 0; line < m_convBufferLines; ++line) {
+          delete[] m_convBuffer[line];
+        }
+
+        delete[] m_convBuffer;
+
+        m_convBuffer = 0;
+        m_convBufferLines = 0;
+        m_convBufferColumns = 0;
+      }
     }
 
     bool Filter::execute( AlgorithmOutputParameters& outputParams )
@@ -361,9 +372,9 @@ namespace te
       m_isInitialized = false;
       m_inputParameters.reset();
 
-      m_conv_buf = 0;
-      m_conv_buf_lines = 0;
-      m_conv_buf_columns = 0;
+      m_convBuffer = 0;
+      m_convBufferLines = 0;
+      m_convBufferColumns = 0;
     }
 
     bool Filter::initialize( const AlgorithmInputParameters& inputParams )
@@ -571,7 +582,7 @@ namespace te
       const unsigned int nCols = (unsigned int)( srcRaster.getNumberOfColumns() );
       const unsigned int colsBound = (unsigned int)( nCols - 2 );
 
-      reset_conv_buf(3, nCols);
+      ResetConvBuffer(3, nCols);
 
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
@@ -608,7 +619,7 @@ namespace te
       /* Fills the convolution buffer with the first "mask_lines" from the raster */
 
       for (unsigned int line = 0; line < 2; ++line) {
-        up_conv_buf(srcBand, line);
+        UpdateConvBuffer(srcBand, line);
       }
 
       /* raster convolution */
@@ -616,23 +627,23 @@ namespace te
       for( unsigned int row = 0; row < rowsBound ; ++row )
       {
         /* Getting one more line from the source raster and adding to buffer */
-        up_conv_buf(srcBand, row + 2);
+        UpdateConvBuffer(srcBand, row + 2);
 
         for( col = 0 ; col < colsBound ; ++col )
         {
-          gX = m_conv_buf[2][col] +
-            (2 * m_conv_buf[2][col + 1]) +
-            m_conv_buf[2][col + 2] -
-            m_conv_buf[0][col] -
-            (2 * m_conv_buf[0][col + 1]) -
-            m_conv_buf[0][col + 2];
+          gX = m_convBuffer[2][col] +
+            (2 * m_convBuffer[2][col + 1]) +
+            m_convBuffer[2][col + 2] -
+            m_convBuffer[0][col] -
+            (2 * m_convBuffer[0][col + 1]) -
+            m_convBuffer[0][col + 2];
 
-          gY = m_conv_buf[0][col + 2] +
-            (2 * m_conv_buf[1][col + 2]) +
-            m_conv_buf[2][col + 2] -
-            m_conv_buf[0][col] -
-            (2 * m_conv_buf[1][col]) -
-            m_conv_buf[2][col];
+          gY = m_convBuffer[0][col + 2] +
+            (2 * m_convBuffer[1][col + 2]) +
+            m_convBuffer[2][col + 2] -
+            m_convBuffer[0][col] -
+            (2 * m_convBuffer[1][col]) -
+            m_convBuffer[2][col];
 
           outValue = std::sqrt( ( gY * gY ) +
             ( gX * gX ) );
@@ -1187,76 +1198,76 @@ namespace te
       return (i < j);
     }
 
-    void Filter::reset_conv_buf(unsigned int lines, unsigned int columns)
+    void Filter::ResetConvBuffer(unsigned int lines, unsigned int columns)
     {
-      if (m_conv_buf != 0) {
-        for (unsigned int line = 0; line < m_conv_buf_lines; ++line) {
-          delete[] m_conv_buf[line];
+      if (m_convBuffer != 0) {
+        for (unsigned int line = 0; line < m_convBufferLines; ++line) {
+          delete[] m_convBuffer[line];
         }
 
-        delete[] m_conv_buf;
+        delete[] m_convBuffer;
 
-        m_conv_buf = 0;
-        m_conv_buf_lines = 0;
-        m_conv_buf_columns = 0;
+        m_convBuffer = 0;
+        m_convBufferLines = 0;
+        m_convBufferColumns = 0;
       }
 
       if ((lines > 0) && (columns > 0)) {
-        m_conv_buf = new double*[lines];
+        m_convBuffer = new double*[lines];
 
-        TERP_DEBUG_TRUE_OR_THROW(m_conv_buf != 0, "Memory allocation error");
+        TERP_DEBUG_TRUE_OR_THROW(m_convBuffer != 0, "Memory allocation error");
 
         for (unsigned int line = 0; line < lines; ++line) {
-          m_conv_buf[line] = new double[columns];
+          m_convBuffer[line] = new double[columns];
 
-          TERP_DEBUG_TRUE_OR_THROW(m_conv_buf[line] != 0, "Memory allocation error");
+          TERP_DEBUG_TRUE_OR_THROW(m_convBuffer[line] != 0, "Memory allocation error");
         }
 
-        m_conv_buf_lines = lines;
-        m_conv_buf_columns = columns;
+        m_convBufferLines = lines;
+        m_convBufferColumns = columns;
       }
     }
 
-    void Filter::up_conv_buf(const te::rst::Band& inRaster, unsigned int line)
+    void Filter::UpdateConvBuffer(const te::rst::Band& inRaster, unsigned int line)
     {
       TERP_DEBUG_TRUE_OR_THROW((inRaster.getRaster()->getNumberOfRows() > (int)line),
         "Trying to get a non existent line from raster");
       TERP_DEBUG_TRUE_OR_THROW((inRaster.getRaster()->getNumberOfColumns() ==
-        (int)m_conv_buf_columns),
+        (int)m_convBufferColumns),
         "Buffer columns number not equal to raster columns");
 
-      double dummy_value = inRaster.getProperty()->m_noDataValue;
+      double dummyValue = inRaster.getProperty()->m_noDataValue;
 
       /* Buffer roll up */
 
-      conv_buf_roolup(1);
+      ConvBufferRoolup(1);
 
       /* Updating the last line */
 
-      unsigned int conv_buf_last_line = m_conv_buf_lines - 1;
+      unsigned int convBufferLastLine = m_convBufferLines - 1;
 
-      for (unsigned int bufcolumn = 0; bufcolumn < m_conv_buf_columns; ++bufcolumn) {
+      for (unsigned int bufcolumn = 0; bufcolumn < m_convBufferColumns; ++bufcolumn) {
         inRaster.getValue(bufcolumn, line,
-          m_conv_buf[conv_buf_last_line][bufcolumn]);
+          m_convBuffer[convBufferLastLine][bufcolumn]);
       }
     }
 
-    void Filter::conv_buf_roolup(unsigned int count)
+    void Filter::ConvBufferRoolup(unsigned int count)
     {
-      TERP_DEBUG_TRUE_OR_THROW((m_conv_buf_lines > 0), "Invalid convolution buffer lines");
+      TERP_DEBUG_TRUE_OR_THROW((m_convBufferLines > 0), "Invalid convolution buffer lines");
 
-      double* first_buf_line_ptr;
-      unsigned int conv_buf_last_line = m_conv_buf_lines - 1;
+      double* firstBufferLinePtr;
+      unsigned int convBufferLastLine = m_convBufferLines - 1;
       unsigned int bufline;
 
-      for (unsigned int cur_count = 0; cur_count < count; ++cur_count) {
-        first_buf_line_ptr = m_conv_buf[0];
+      for (unsigned int curCount = 0; curCount < count; ++curCount) {
+        firstBufferLinePtr = m_convBuffer[0];
 
-        for (bufline = 1; bufline < m_conv_buf_lines; ++bufline) {
-          m_conv_buf[bufline - 1] = m_conv_buf[bufline];
+        for (bufline = 1; bufline < m_convBufferLines; ++bufline) {
+          m_convBuffer[bufline - 1] = m_convBuffer[bufline];
         }
 
-        m_conv_buf[conv_buf_last_line] = first_buf_line_ptr;
+        m_convBuffer[convBufferLastLine] = firstBufferLinePtr;
       }
     }
   } // end namespace rp
