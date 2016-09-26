@@ -72,8 +72,8 @@ void terralib4::DataSource::open()
 {
   close();
 
-  std::string dbInfo = m_dbInfo.at("T4_DRIVER");
-  std::string auxDbName = m_dbInfo.at("T4_DB_NAME");
+  std::string dbInfo = terralib4::Convert2Latin1(m_dbInfo.at("T4_DRIVER"));
+  std::string auxDbName = terralib4::Convert2Latin1(m_dbInfo.at("T4_DB_NAME"));
   std::string hostName = "";
   std::string userName = "";
   std::string password = "";

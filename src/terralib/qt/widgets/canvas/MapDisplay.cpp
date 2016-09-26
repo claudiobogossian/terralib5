@@ -97,12 +97,11 @@ m_tool(0)
 
 te::qt::widgets::MapDisplay::~MapDisplay()
 {
-  delete m_displayPixmap;
-  delete m_draftPixmap;
-
- 
   if ( m_tool != 0 )
   delete m_tool;
+
+  delete m_displayPixmap;
+  delete m_draftPixmap;
 
 //  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
   //for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)

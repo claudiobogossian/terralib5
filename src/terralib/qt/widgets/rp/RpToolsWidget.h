@@ -135,7 +135,9 @@ namespace te
 
           void setSelectionMode(bool mode);
 
-        protected slots:
+          void setPointPickedTool(bool checked);
+
+          protected slots:
 
           void onEnvelopeAcquired(te::gm::Envelope env);
 

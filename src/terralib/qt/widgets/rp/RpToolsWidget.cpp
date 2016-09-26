@@ -549,3 +549,10 @@ void te::qt::widgets::RpToolsWidget::drawOverlay()
 
   m_mapDisplay->repaint();
 }
+
+void te::qt::widgets::RpToolsWidget::setPointPickedTool(bool checked)
+{
+  if (!checked)
+    return;
+  onPointPickerToggled(checked);
+}

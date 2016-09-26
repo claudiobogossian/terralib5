@@ -64,7 +64,7 @@ std::auto_ptr<te::da::DataSourceTransactor> te::ws::ogc::wms::da::DataSource::ge
 {
   if(!m_isOpened)
   {
-    throw te::common::Exception(TE_TR("The data source is not opened!"));
+    throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The data source is not opened!"));
   }
 
   return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_wms));
@@ -89,7 +89,7 @@ void te::ws::ogc::wms::da::DataSource::open()
   }
   catch(...)
   {
-    throw te::common::Exception(TE_TR("Unknow error!"));
+    throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("Unknow error!"));
   }
 
   m_isOpened = true;
@@ -143,12 +143,12 @@ const te::da::SQLDialect* te::ws::ogc::wms::da::DataSource::getDialect() const
 
 void te::ws::ogc::wms::da::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  throw te::common::Exception(TE_TR("The create() method is not supported by the WMS driver!"));
+  throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The create() method is not supported by the WMS driver!"));
 }
 
 void te::ws::ogc::wms::da::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  throw te::common::Exception(TE_TR("The drop() method is not supported by the WMS driver!"));
+  throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The drop() method is not supported by the WMS driver!"));
 }
 
 bool te::ws::ogc::wms::da::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
@@ -197,19 +197,19 @@ std::vector<te::core::EncodingType> te::ws::ogc::wms::da::DataSource::getEncodin
 void te::ws::ogc::wms::da::DataSource::verifyConnectionInfo() const
 {
   if(m_connectionInfo.empty())
-    throw te::common::Exception(TE_TR("The connection information is empty!"));
+    throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The connection information is empty!"));
 
   std::map<std::string, std::string>::const_iterator uri = m_connectionInfo.find("URI");
   if(uri == m_connectionInfo.end())
-    throw te::common::Exception(TE_TR("The connection information is invalid. Missing URI parameter!"));
+    throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The connection information is invalid. Missing URI parameter!"));
 
   std::map<std::string, std::string>::const_iterator version = m_connectionInfo.find("VERSION");
   if(version == m_connectionInfo.end())
-    throw te::common::Exception(TE_TR("The connection information is invalid. Missing VERSION parameter!"));
+    throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The connection information is invalid. Missing VERSION parameter!"));
 
   std::map<std::string, std::string>::const_iterator usrDataDir = m_connectionInfo.find("USERDATADIR");
   if(usrDataDir == m_connectionInfo.end())
-    throw te::common::Exception(TE_TR("The connection information is invalid. Missing USERDATADIR parameter!"));
+    throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The connection information is invalid. Missing USERDATADIR parameter!"));
 
   std::string dataDir = usrDataDir->second + "/wms/";
 

@@ -31,9 +31,8 @@ TerraLib Team at <terralib - team@terralib.org>.
 #include <QMessageBox>
 
 // BOOST
+#include <boost/filesystem.hpp>
 #include <boost/property_tree/json_parser.hpp>
-
-
 
 
 te::mnt::VolumeResultDialog::VolumeResultDialog(std::vector<std::string> &polyvec,
@@ -85,7 +84,21 @@ void te::mnt::VolumeResultDialog::onHelpPushButtonClicked()
 void te::mnt::VolumeResultDialog::onSavePushButtonClicked()
 {
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-    QString(), tr("txt (*.txt *.TXT);;"), 0, QFileDialog::DontConfirmOverwrite);
+    QString(), tr("txt (*.txt *.TXT);;"), 0);
+
+
+  if (fileName.isEmpty())
+    return;
+
+  try
+  {
+    boost::filesystem::remove(fileName.toUtf8().data());
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::information(this, tr("TIN Generation"), e.what());
+    return;
+  }
 
   saveVolume(fileName.toUtf8().data());
 

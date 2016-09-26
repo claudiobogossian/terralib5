@@ -28,6 +28,7 @@
 #include "Band.h"
 #include "Exception.h"
 #include "Raster.h"
+#include "Utils.h"
 
 // TerraLib 4.x
 #include <terralib4/kernel/TeDecoderDatabase.h>
@@ -88,9 +89,9 @@ void terralib4::Band::read(int x, int y, void* buffer) const
 {
   TeDecoderDatabase* decDb = dynamic_cast<TeDecoderDatabase*>(m_pImpl->m_raster->decoder());
 
-  std::string bdIdx = decDb->codifyId(x, y, (int)m_idx, 1, 0);
+  std::string decDbIdxUtf8 = terralib4::Convert2Utf8(decDb->codifyId(x, y, (int)m_idx, 1, 0));
 
-  decDb->getRasterBlock(bdIdx, buffer);
+  decDb->getRasterBlock(decDbIdxUtf8, buffer);
 }
 
 void* terralib4::Band::read(int, int)

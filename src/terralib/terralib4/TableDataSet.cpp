@@ -86,7 +86,8 @@ terralib4::TableDataSet::TableDataSet( TeDatabase* db, TeTable table)
   m_data = new te::mem::DataSet(m_dt);
 
   TeDatabasePortal* portal = m_db->getPortal();
-  portal->query("SELECT * FROM " + m_table.name());
+  std::string queryLatin1 = terralib4::Convert2Latin1(std::string("SELECT * FROM "));
+  portal->query(queryLatin1 + m_table.name());
 
   m_size = portal->numRows();
 
@@ -101,8 +102,11 @@ terralib4::TableDataSet::TableDataSet( TeDatabase* db, TeTable table)
       switch(pType)
       {
         case TeSTRING:
-          item->setString(i, portal->getData(i));
+        {
+          std::string aux(portal->getData(i));
+          item->setString(i, terralib4::Convert2Utf8(aux));
           break;
+        }
 
         case TeREAL:
           item->setDouble(i, portal->getDouble(i));//Numeric(i, portal->getData(i));
@@ -137,7 +141,7 @@ terralib4::TableDataSet::TableDataSet( TeDatabase* db, TeTable table)
           }
           else if(subType == te::dt::TIME_INSTANT)
           {
-			te::dt::Date dt((unsigned short)y, (unsigned short)m, (unsigned short)d);
+            te::dt::Date dt((unsigned short)y, (unsigned short)m, (unsigned short)d);
             te::dt::TimeDuration td(h, min, s);
             dateTime = new te::dt::TimeInstant(dt, td);
           }

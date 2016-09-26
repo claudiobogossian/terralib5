@@ -317,7 +317,7 @@ te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
   TeGrouping group = theme->grouping();
 
   TeAttributeRep attr = group.groupAttribute_;
-  std::string propertyName = attr.name_;
+  std::string propertyName = ::terralib4::Convert2Utf8(attr.name_);
   std::vector<std::string> tokens;
   te::common::Tokenize(propertyName, tokens, ".");
   propertyName = tokens[1];
@@ -398,7 +398,7 @@ te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
   {
     TeLegendEntry le = leg[i];
 
-    std::string title = le.label();
+    std::string title = ::terralib4::Convert2Utf8(le.label());
 
     TeGeomRepVisualMap map = le.getVisualMap();
 
@@ -406,7 +406,7 @@ te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
 
     QColor color(visual->color().red_, visual->color().green_, visual->color().blue_, 0);
 
-    std::string rangeStr = le.from();
+    std::string rangeStr = ::terralib4::Convert2Utf8(le.from());
     std::string colorStr = color.name().toUtf8().data();
 
     c->addThreshold(new te::se::ParameterValue(rangeStr));
@@ -414,7 +414,7 @@ te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
 
     if(i == slices - 1)
     {
-      rangeStr = le.to();
+      rangeStr = ::terralib4::Convert2Utf8(le.to());
       c->addThreshold(new te::se::ParameterValue(rangeStr));
     }
   }
