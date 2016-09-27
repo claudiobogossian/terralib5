@@ -27,6 +27,7 @@
 #define __TE_QT_PLUGINS_RP_INTERNAL_FILTERACTION_H
 
 // TerraLib
+#include "../../../qt/widgets/rp/FilterDialogForm.h"
 #include "Config.h"
 #include "AbstractAction.h"
 
@@ -57,6 +58,13 @@ namespace te
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            void addLayer(te::map::AbstractLayerPtr outputLayer);
+
+            void closeTool();
+
+          private:
+            te::qt::widgets::FilterDialogForm* m_filterDlg;
         };
 
       } // end namespace rp
