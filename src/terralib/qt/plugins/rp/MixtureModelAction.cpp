@@ -38,6 +38,8 @@
 
 te::qt::plugins::rp::MixtureModelAction::MixtureModelAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
+  m_mixtureModelWizard = 0;
+
   createAction(tr("Mixture Model...").toUtf8().data(), "mixmodel");
   m_action->setObjectName("Processing.Raster Processing.Mixture Model");
 
@@ -47,7 +49,9 @@ te::qt::plugins::rp::MixtureModelAction::MixtureModelAction(QMenu* menu, QMenu* 
 te::qt::plugins::rp::MixtureModelAction::~MixtureModelAction()
 {
   if(m_mixtureModelWizard)
-     m_mixtureModelWizard->setParent(0);
+  {
+    m_mixtureModelWizard->setParent(0);
+  }
 
   delete m_mixtureModelWizard;
 }

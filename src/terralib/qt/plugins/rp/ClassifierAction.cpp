@@ -38,6 +38,8 @@
 
 te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
+  m_classifierWizard = 0;
+
   createAction(tr("Classifier...").toUtf8().data(), "classifier");
   m_action->setObjectName("Processing.Raster Processing.Classifier");
 }
@@ -45,11 +47,12 @@ te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popu
 te::qt::plugins::rp::ClassifierAction::~ClassifierAction()
 {
   if(m_classifierWizard)
+  {
      m_classifierWizard->setParent(0);
+  }
 
   delete m_classifierWizard;
 }
-
 void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
 {
   m_classifierWizard = new te::qt::widgets::ClassifierWizard(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
