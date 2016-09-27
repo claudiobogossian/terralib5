@@ -124,16 +124,19 @@ namespace te
 
 
   /*!
-....\ Computes an intersection point between two segments, if there is one.
-....\ There may be 0, 1 or many intersection points between two segments.
-....\ If there are 0, null is returned. If there is 1 or more, a single
-....\ one is returned (chosen at the discretion of the algorithm).
-....\ If more information is required about the details of the
-....\ intersection, the LineIntersector class should be used.
-....
-....\param line other segmento to calculate intersection
-....\param coord the Coordinate to write the result into
-....\return true if an intersection was found, false otherwise
+      \brief Computes an intersection point between two segments, if there is one.
+      
+      \note There may be 0, 1 or many intersection points between two segments.
+      
+      \note If there are 0, null is returned. If there is 1 or more, a single one is returned (chosen at the discretion of the algorithm).
+      
+      \note If more information is required about the details of the intersection, the LineIntersector class should be used.
+
+....  \param line other segmento to calculate intersection
+
+....  \param coord the Coordinate to write the result into
+
+....  \return true if an intersection was found, false otherwise
 ....*/
     using LineString::intersection;
     bool intersection(const Line& line, Point& coord) const;
