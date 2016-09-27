@@ -46,6 +46,10 @@ te::qt::plugins::rp::MixtureModelAction::MixtureModelAction(QMenu* menu, QMenu* 
 
 te::qt::plugins::rp::MixtureModelAction::~MixtureModelAction()
 {
+  if(m_mixtureModelWizard)
+     m_mixtureModelWizard->setParent(0);
+
+  delete m_mixtureModelWizard;
 }
 
 void te::qt::plugins::rp::MixtureModelAction::onActionActivated(bool checked)

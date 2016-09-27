@@ -44,6 +44,10 @@ te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popu
 
 te::qt::plugins::rp::ClassifierAction::~ClassifierAction()
 {
+  if(m_classifierWizard)
+     m_classifierWizard->setParent(0);
+
+  delete m_classifierWizard;
 }
 
 void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
