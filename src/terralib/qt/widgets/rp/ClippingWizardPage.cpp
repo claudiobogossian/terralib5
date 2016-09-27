@@ -53,6 +53,8 @@
 
 // STL
 #include <memory>
+#include <stdio.h>
+#include <stdlib.h>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
@@ -105,6 +107,7 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   connect(m_ui->m_strategyTypeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onStrategyTypeComboBoxChanged(int)));
   connect(m_ui->m_layerComboBox, SIGNAL(activated(int)), this, SLOT(onLayerComboBoxActivated(int)));
   connect(m_ui->m_layerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
+  connect(m_ui->m_selectLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectLayerComboBoxChanged(int)));
 
   connect(m_ui->m_llxLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
   connect(m_ui->m_llyLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
@@ -198,7 +201,12 @@ void te::qt::widgets::ClippingWizardPage::setList(std::list<te::map::AbstractLay
     std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
     if(dsType->hasGeom())
+    {
       m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+      m_ui->m_selectLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+    }
+    else
+      m_ui->m_selectLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
   }
@@ -268,34 +276,23 @@ void te::qt::widgets::ClippingWizardPage::onChangeCollectType()
   if (m_ui->m_drawingRadioButton->isChecked())
   {
     m_ui->m_frame->setDisabled(false);
+    m_ui->m_selectLayerComboBox->setDisabled(true);
   }
   else
   {
     m_ui->m_frame->setDisabled(true);
+    m_ui->m_selectLayerComboBox->setDisabled(false);
+    onSelectLayerComboBoxChanged(m_ui->m_selectLayerComboBox->currentIndex());
   }
 }
 
 void te::qt::widgets::ClippingWizardPage::getExtentClipping(te::gm::Envelope& env)
 {
-  if (m_ui->m_drawingRadioButton->isChecked())
-  {
-    if (m_envExt.isValid())
-    {
-      env.m_llx = m_envExt.getLowerLeftX();
-      env.m_lly = m_envExt.getLowerLeftY();
-      env.m_urx = m_envExt.getUpperRightX();
-      env.m_ury = m_envExt.getUpperRightY();
-    }
-  }
-  else
-  {
-    env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
-    env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
-    env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
-    env.m_ury = m_ui->m_uryLineEdit->text().toDouble();
-  }
+  env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
+  env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
+  env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
+  env.m_ury = m_ui->m_uryLineEdit->text().toDouble();
 }
-
 
 void te::qt::widgets::ClippingWizardPage::getPolygonClipping(te::gm::Polygon* poly)
 {
@@ -485,6 +482,27 @@ void te::qt::widgets::ClippingWizardPage::onLayerComboBoxChanged(int index)
   }
 }
 
+void te::qt::widgets::ClippingWizardPage::onSelectLayerComboBoxChanged(int index)
+{
+  if(((m_ui->m_strategyTypeComboBox->currentText() == "Region of interest")
+          && m_ui->m_selectLayerComboBox->count() > 0) && m_ui->m_parameterRadioButton->isChecked())
+  {
+    QVariant varLayer = m_ui->m_selectLayerComboBox->itemData(index, Qt::UserRole);
+    te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+    te::gm::Envelope e = layer->getExtent();
+
+    e.transform(layer->getSRID(), get()->getSRID());
+
+    m_ui->m_llxLineEdit->setText(QString::number(e.getLowerLeftX(), 'f', 5));
+    m_ui->m_llyLineEdit->setText(QString::number(e.getLowerLeftY(), 'f', 5));
+    m_ui->m_urxLineEdit->setText(QString::number(e.getUpperRightX(), 'f', 5));
+    m_ui->m_uryLineEdit->setText(QString::number(e.getUpperRightY(), 'f', 5));
+
+    emit completeChanged();
+  }
+}
+
 void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope env)
 {
   if (!env.isValid())
@@ -532,8 +550,6 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope en
 
   emit completeChanged();
 }
-
-
 
 void te::qt::widgets::ClippingWizardPage::onEnvelopeDimensionAcquired()
 {

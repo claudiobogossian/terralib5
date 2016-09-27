@@ -367,40 +367,84 @@ namespace te
     }
 
     /*!
-    \brief It build two string vectors with special upper case characters and the his respective normal characters
-
-    \param vecUpperIn  The vector with upper case special characters.
-    \param vecUpperOut The vector with upper case normal characters.
-
-    */
-    TECOMMONEXPORT void GetAccentuatedUpperVector(std::vector<std::string> & vecUpperIn, std::vector<std::string> & vecUpperOut);
-
-    /*!
-    \brief It build two string vectors with special lower case characters and the his respective normal characters
-
-    \param vecUpperIn  The vector with lower case special characters.
-    \param vecUpperOut The vector with lower case normal characters.
-
-    */
-    TECOMMONEXPORT void GetAccentuatedLowerVector(std::vector<std::string> & vecLowerIn, std::vector<std::string> & vecLowerOut);
-
-    /*!
-      \brief It build two string vectors with special characters and the his respective normal characters
-
-      \param especialIn  The vector with special characters.
-      \param especialOut The vector with normal characters.
-
-    */
-    TECOMMONEXPORT void GetEspecialCharsFixVector(std::vector<std::string> & especialIn, std::vector<std::string> & especialOut);
-
-    /*!
       \brief It replace special characters of a string.
 
       \param str     The string that will be verify.
       \param changed Boolean that records whether there was a change.
 
     */
-    TECOMMONEXPORT std::string ReplaceSpecialChars(const std::string& str, bool& changed);
+    inline std::string ReplaceSpecialChars(const std::string& str, bool& changed)
+    {
+      std::string result;
+
+      for (std::size_t i = 0; i < str.size(); ++i)
+      {
+        unsigned char c = (unsigned char)str.at(i);
+
+        if (c <= 127)
+        {
+          if ((c == 95) ||
+            (c >= 48 && c <= 57) ||
+            (c >= 65 && c <= 90) ||
+            (c >= 97 && c <= 122))
+          {
+            result += c;
+          }
+          else if (c == 32)
+          {
+            unsigned char add = 95;
+            result += add;
+          }
+        }
+        else
+        {
+          unsigned char cAux = (unsigned char)str.at(i + 1);
+
+          if (c == 195)
+          {
+            int value = -1;
+
+            if (cAux >= 128 && cAux <= 133)
+              value = 65;
+            else if (cAux >= 136 && cAux <= 139)
+              value = 69;
+            else if (cAux >= 140 && cAux <= 143)
+              value = 73;
+            else if (cAux >= 146 && cAux <= 150)
+              value = 79;
+            else if (cAux >= 153 && cAux <= 156)
+              value = 85;
+            else if (cAux >= 160 && cAux <= 165)
+              value = 97;
+            else if (cAux >= 168 && cAux <= 171)
+              value = 101;
+            else if (cAux >= 172 && cAux <= 175)
+              value = 105;
+            else if (cAux >= 178 && cAux <= 182)
+              value = 111;
+            else if (cAux >= 185 && cAux <= 188)
+              value = 117;
+
+            if (value >= 0)
+            {
+              unsigned char add = value;
+              result += add;
+            }
+          }
+
+          ++i;
+
+        }
+
+      }
+
+      changed = false;
+
+      if (result != str)
+        changed = true;
+
+      return result;
+    }
 
     TECOMMONEXPORT std::vector<std::string> SplitString(const std::string& str, const char& delimiter);
 

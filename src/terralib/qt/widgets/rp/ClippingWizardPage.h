@@ -121,6 +121,8 @@ namespace te
           
           void onLayerComboBoxChanged(int index);
 
+          void onSelectLayerComboBoxChanged(int index);
+
           void onEnvelopeAcquired(te::gm::Envelope env);
 
           void onEnvelopeDimensionAcquired();

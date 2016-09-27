@@ -404,36 +404,19 @@ void te::mnt::TINGenerationDialog::onTargetFileToolButtonPressed()
   m_ui->m_repositoryLineEdit->clear();
 
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-    QString(), tr("Shapefile (*.shp *.SHP);;"), 0, QFileDialog::DontConfirmOverwrite);
+    QString(), tr("Shapefile (*.shp *.SHP);;"), 0);
 
   if (fileName.isEmpty())
     return;
 
-  QFile qf(fileName);
-  if (qf.exists())
+  try
   {
-    QString msg(tr("File already exists. Subscript?"));
-    int reply = QMessageBox::question(this, tr("TIN Generation"), msg, QMessageBox::No, QMessageBox::Yes);
-    if (reply == QMessageBox::Yes)
-    {
-      std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-
-      while (it != m_layers.end())
-      {
-        if (it->get())
-        {
-          std::string title = it->get()->getTitle();
-        }
-        it++;
-      }
-
-      qf.close();
-      qf.remove();
-    }
-    else
-    {
-      onTargetFileToolButtonPressed();
-    }
+    boost::filesystem::remove(fileName.toUtf8().data());
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::information(this, tr("TIN Generation"), e.what());
+    return;
   }
 
   boost::filesystem::path outfile(fileName.toUtf8().data());

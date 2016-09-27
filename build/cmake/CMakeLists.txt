@@ -1133,6 +1133,7 @@ endif()
 
 if(TERRALIB_MOD_WS_CORE_ENABLED)
   add_subdirectory(terralib_mod_ws_core)
+  list(APPEND TERRALIB_MODULES ws_core)
 endif()
 
 if(TERRALIB_MOD_WS_OGC_WCS_CLIENT_ENABLED)

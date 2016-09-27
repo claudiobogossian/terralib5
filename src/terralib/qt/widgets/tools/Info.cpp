@@ -81,6 +81,7 @@ te::qt::widgets::Info::Info(te::qt::widgets::MapDisplay* display, const QCursor&
 te::qt::widgets::Info::~Info()
 {
   QPixmap* draft = m_display->getDraftPixmap();
+
   draft->fill(Qt::transparent);
 
   m_infoWidget->close();
@@ -240,6 +241,10 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
   while(dataset->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
+
+    if(g.get() == 0)
+      continue;
+
     g->setSRID(srid);
 
     if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
